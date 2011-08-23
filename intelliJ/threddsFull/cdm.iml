@@ -134,7 +134,6 @@
     <orderEntry type="module" module-name="grib" />
     <orderEntry type="module" module-name="visad" />
     <orderEntry type="module" module-name="opendap" />
-    <orderEntry type="module" module-name="common" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
