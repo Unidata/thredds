@@ -39,13 +39,13 @@
 
 
 
-package opendap.server;
+package opendap.servers;
 
 import opendap.dap.*;
 
 import java.io.*;
 
-import opendap.server.parsers.ExprParserConstants;
+import opendap.servers.parsers.ExprParserConstants;
 
 /**
  * Holds a OPeNDAP Server <code>String</code> value.

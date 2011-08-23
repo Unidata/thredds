@@ -39,7 +39,7 @@
 
 
 
-package opendap.server;
+package opendap.servers;
 
 /**
  * Thrown when a <code>RelOp</code> operation is called

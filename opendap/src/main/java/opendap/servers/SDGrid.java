@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.server;
+package opendap.servers;
 
 import java.util.Vector;
 import java.util.Enumeration;

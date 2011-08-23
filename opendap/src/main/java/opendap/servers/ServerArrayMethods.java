@@ -40,7 +40,7 @@
 
 
 
-package opendap.server;
+package opendap.servers;
 
 import opendap.dap.InvalidDimensionException;
 //import opendap.dap.NoSuchVariableException;

@@ -46,7 +46,7 @@ import java.io.*;
 
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import opendap.server.*;
+import opendap.servers.*;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 import opendap.util.Debug;
@@ -98,7 +98,7 @@ public class testDataset implements GuardedDataset {
      * </ul>
      *
      * @return The <code>ServerDDS</code> for the named data set.
-     * @see opendap.server.ServerDDS
+     * @see opendap.servers.ServerDDS
      * @see test_ServerFactory
      */
     public ServerDDS getDDS() throws DAP2Exception, ParseException {

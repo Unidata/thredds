@@ -46,8 +46,8 @@ import java.util.Vector;
 
 import opendap.dap.NoSuchVariableException;
 import opendap.dap.BaseType;
-import opendap.server.SDSequence;
-import opendap.server.ServerMethods;
+import opendap.servers.SDSequence;
+import opendap.servers.ServerMethods;
 
 /**
  * Holds a OPeNDAP Server <code>Sequence</code> value.

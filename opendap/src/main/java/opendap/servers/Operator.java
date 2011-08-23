@@ -37,9 +37,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package opendap.server;
+package opendap.servers;
 
-import opendap.server.parsers.ExprParserConstants;
+import opendap.servers.parsers.ExprParserConstants;
 import opendap.dap.*;
 //import gnu.regexp.*;
 import java.util.regex.*;
@@ -71,14 +71,14 @@ public class Operator implements ExprParserConstants
      * and <code>InvalidOperatorException</code> is thrown.
      *
      * @param oprtr The operatoration to perform as defined in <code>
-     *              opendap.server.parsers.ExprParserConstants</code>
+     *              opendap.servers.parsers.ExprParserConstants</code>
      * @param lop   A BaseType to be used as the left operand.
      * @param rop   A BaseType to be used as the right operand.
      * @return True is the operation evaluates as true, flase otherwise.
      * @throws InvalidOperatorException
      * @throws RegExpException
      * @throws SBHException
-     * @see opendap.server.parsers.ExprParserConstants
+     * @see opendap.servers.parsers.ExprParserConstants
      */
     public static boolean op(int oprtr, BaseType lop, BaseType rop) throws InvalidOperatorException,
             RegExpException,

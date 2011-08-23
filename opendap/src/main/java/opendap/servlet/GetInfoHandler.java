@@ -45,7 +45,7 @@ import java.util.*;
 
 import opendap.dap.*;
 import opendap.util.dasTools;
-import opendap.server.*;
+import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 
 /**

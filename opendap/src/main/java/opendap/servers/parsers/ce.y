@@ -4,7 +4,7 @@
 %error-verbose
 
 %define public
-%define package "opendap.server.parsers"
+%define package "opendap.servers.parsers"
 %define extends "Ceparse"
 %define throws "ParseException"
 %define lex_throws "ParseException"
@@ -12,7 +12,7 @@
 %code imports {
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import opendap.server.*;
+import opendap.servers.*;
 import java.io.*;
 import java.util.*;
 }

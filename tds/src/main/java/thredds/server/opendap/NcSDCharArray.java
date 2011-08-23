@@ -38,7 +38,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 
 import opendap.dap.*;
-import opendap.server.*;
+import opendap.servers.*;
 
 import java.io.IOException;
 import java.io.EOFException;

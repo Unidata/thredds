@@ -47,7 +47,7 @@ import javax.servlet.http.*;
 
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import opendap.server.ServerDDS;
+import opendap.servers.ServerDDS;
 import opendap.servlet.www.jscriptCore;
 import opendap.servlet.www.wwwFactory;
 import opendap.servlet.www.wwwOutPut;

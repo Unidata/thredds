@@ -39,7 +39,7 @@
 
 
 
-package opendap.server;
+package opendap.servers;
 
 import opendap.dap.*;
 
@@ -54,7 +54,7 @@ import opendap.dap.NoSuchVariableException;
  * @version $Revision: 16122 $
  * @see BaseType
  */
-public abstract class SDByte extends DByte implements ServerMethods, RelOps, opendap.server.parsers.ExprParserConstants {
+public abstract class SDByte extends DByte implements ServerMethods, RelOps, opendap.servers.parsers.ExprParserConstants {
     private boolean Synthesized;
     private boolean ReadMe;
 

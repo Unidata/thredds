@@ -37,7 +37,7 @@ import opendap.dap.DAPNode;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
 
-import opendap.server.*;
+import opendap.servers.*;
 import opendap.dap.BaseType;
 
 import java.util.*;

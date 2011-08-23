@@ -40,7 +40,7 @@
 
 
 
-package opendap.server;
+package opendap.servers;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

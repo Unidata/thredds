@@ -40,7 +40,7 @@
 
 package opendap.dap;
 
-import opendap.server.SDArray;
+import opendap.servers.SDArray;
 import opendap.dap.parsers.DDSXMLParser;
 
 import java.io.*;

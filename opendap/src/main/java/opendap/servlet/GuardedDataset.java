@@ -40,7 +40,7 @@
 package opendap.servlet;
 
 import opendap.dap.parsers.ParseException;
-import opendap.server.ServerDDS;
+import opendap.servers.ServerDDS;
 import opendap.dap.DAS;
 
 

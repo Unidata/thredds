@@ -39,7 +39,7 @@
 
 
 
-package opendap.server;
+package opendap.servers;
 
 /**
  * DAP2 Exception for use by a server.

@@ -36,7 +36,7 @@ package thredds.server.opendap;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.BaseType;
-import opendap.server.*;
+import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 
 import javax.servlet.ServletOutputStream;

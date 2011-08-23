@@ -30,7 +30,7 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-package opendap.server.parsers;
+package opendap.servers.parsers;
 /* First part of user declarations.  */
 
 /* "%code imports" blocks.  */
@@ -40,7 +40,7 @@ package opendap.server.parsers;
 
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import opendap.server.*;
+import opendap.servers.*;
 import java.io.*;
 import java.util.*;
 

@@ -3,14 +3,14 @@
 
 /****************************************************/
 
-package opendap.server.parsers;
+package opendap.servers.parsers;
 
 import opendap.dap.*;
-import opendap.server.*;
+import opendap.servers.*;
 import opendap.dap.parsers.*;
 
 
-import static opendap.server.parsers.CeParser.*;
+import static opendap.servers.parsers.CeParser.*;
 
 import java.util.*;
 

@@ -47,7 +47,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import opendap.dap.*;
-import opendap.server.*;
+import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
 import ucar.nc2.util.net.EscapeStrings;
@@ -210,7 +210,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @throws DAP2Exception
    * @throws IOException
    * @throws ParseException
-   * @see opendap.server.ServerDDS
+   * @see opendap.servers.ServerDDS
    */
   protected abstract opendap.servlet.GuardedDataset getDataset(opendap.servlet.ReqState rs)
           throws Exception;

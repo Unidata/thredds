@@ -50,7 +50,7 @@ import java.util.zip.DeflaterOutputStream;
 
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
-import opendap.server.*;
+import opendap.servers.*;
 import opendap.servlet.AbstractServlet;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;

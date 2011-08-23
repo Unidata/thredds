@@ -40,7 +40,7 @@
 
 package opendap.test.dts;
 
-import opendap.server.*;
+import opendap.servers.*;
 import opendap.dap.*;
 
 import java.io.*;

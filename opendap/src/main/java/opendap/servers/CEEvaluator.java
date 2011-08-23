@@ -38,12 +38,12 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.server;
+package opendap.servers;
 
 import java.util.*;
 import java.io.*;
 
-import opendap.server.parsers.CeParser;
+import opendap.servers.parsers.CeParser;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servlet.ReqState;
@@ -161,7 +161,7 @@ public class CEEvaluator {
      * as such in the CEEvaluator's ServerDDS instance. The selection
      * subexpression is then parsed and a list of Clause objects is built.
      * <p/>
-     * The parser is located in opendap.server.parsers.CeParser.
+     * The parser is located in opendap.servers.parsers.CeParser.
      *
      * @param constraint The constraint expression to parse.
      * @throws ParseException
