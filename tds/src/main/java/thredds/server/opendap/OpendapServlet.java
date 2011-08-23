@@ -88,7 +88,7 @@ public class OpendapServlet extends AbstractServlet
   public String getDefaultContextPath() {return DEFAULTCONTEXTPATH;}
 
   public void init() throws javax.servlet.ServletException {
-    super.init();
+     super.init();
 
     org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
     logServerStartup.info(getClass().getName() + " initialization start - " + UsageLog.setupNonRequestContext());

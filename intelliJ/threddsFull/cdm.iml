@@ -21,11 +21,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="ehcache" level="project" />
-    <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="module" module-name="bufr" />
-    <orderEntry type="module" module-name="grib" />
-    <orderEntry type="module" module-name="visad" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -53,6 +48,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="ehcache" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -107,6 +103,24 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -125,6 +139,11 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="bufr" />
+    <orderEntry type="module" module-name="grib" />
+    <orderEntry type="module" module-name="visad" />
+    <orderEntry type="module" module-name="opendap" />
+    <orderEntry type="module" module-name="common" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
