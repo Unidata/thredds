@@ -97,7 +97,27 @@ second
   }
 
   public void testProblem()  {
-    testBase("msecs since 1970-01-01T00:00:00Z");
+    //testCoord("0.5 days since 2007");
+    testCoord("365.5 days since 2007");
+  }
+
+  private void testCoord(String unit) {
+    for (Calendar cal : Calendar.values())
+      testCoord(cal, unit);
+  }
+
+  private void testCoord(Calendar cal, String unit) {
+    if (cal == Calendar.gregorian) {
+      Date date = DateUnit.getStandardDate(unit);
+      System.out.printf("     udunits %s == %s%n", unit, CalendarDateFormatter.toDateTimeStringISO(date));
+      //assert date.equals(cd.getDateTime().toDate());
+    }
+
+    CalendarDate cd = CalendarDate.parseUdunits(cal.toString(), unit);
+    System.out.printf("CalendarDate (%10s) %s == %s%n", cal, unit, CalendarDateFormatter.toDateTimeStringISO(cd));
+
+    if (cal == Calendar.none)
+      System.out.println("HEY");
   }
 
   public void testUU() throws Exception {

@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.grid;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
@@ -177,7 +178,7 @@ public class GridIndexToNC {
     //  ncfile.addAttribute(null, new Attribute("center_name", center));
 
     // CDM attributes
-    ncfile.addAttribute(null, new Attribute("CF:feature_type", FeatureType.GRID.toString()));
+    ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, FeatureType.GRID.toString()));
     ncfile.addAttribute(null, new Attribute("file_format", lookup.getGridType()));
     ncfile.addAttribute(null,
         new Attribute("location", ncfile.getLocation()));

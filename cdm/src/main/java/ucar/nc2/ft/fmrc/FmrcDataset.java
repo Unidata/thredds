@@ -291,7 +291,7 @@ class FmrcDataset {
       Group root = result.getRootGroup();
       root.addAttribute(new Attribute("Conventions", "CF-1.4, " + _Coordinate.Convention));
       root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-      root.addAttribute(new Attribute("CF:feature_type", FeatureType.GRID.toString()));
+      root.addAttribute(new Attribute(CF.featureTypeAtt, FeatureType.GRID.toString()));
       root.addAttribute(new Attribute("location", "Proto "+fmrcInv.getName()));
 
       // remove some attributes that can cause trouble

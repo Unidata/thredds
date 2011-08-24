@@ -44,10 +44,11 @@ public interface CF {
   public final static String POSITIVE_UP = "up";
   public final static String POSITIVE_DOWN = "down";
 
-  public static final String featureTypeAtt4 = "CF:featureType";
-  public static final String featureTypeAtt2 = "CF-featureType";
-  public static final String featureTypeAtt3 = "CFfeatureType";
   public static final String featureTypeAtt = "featureType";
+  public static final String featureTypeAtt2 = "CF:featureType";
+  public static final String featureTypeAtt3 = "CF:feature_type"; // GRIB was using this form (!)
+  //public static final String featureTypeAtt2 = "CF-featureType";
+  //public static final String featureTypeAtt3 = "CFfeatureType";
 
   // standard attributes
   public static final String ADD_OFFSET = "add_offset";
@@ -189,10 +190,10 @@ maybe:
       String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
       if (ftypeS == null)
         ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
-      if (ftypeS == null)
+      /* if (ftypeS == null)
         ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
       if (ftypeS == null)
-        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt4, null);
+        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt4, null); */
 
       if (ftypeS == null)
         return null;

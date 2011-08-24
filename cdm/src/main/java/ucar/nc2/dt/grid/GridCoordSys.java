@@ -78,7 +78,8 @@ import ucar.nc2.units.DateRange;
  */
 
 public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCoordSystem {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordSys.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordSys.class);
+  static private final boolean warnUnits = false;
 
   /**
    * Determine if this CoordinateSystem can be made into a GridCoordSys. Optionally for a given variable.
@@ -319,7 +320,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   private VerticalTransform vt;
   private Dimension timeDim;
 
-  private boolean isDate = false;
   private boolean isLatLon = false;
 
   // deferred creation
@@ -624,7 +624,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     try {
       factor = axisUnit.convertTo(1.0, SimpleUnit.kmUnit);
     } catch (IllegalArgumentException e) {
-      log.warn("convertUnits failed", e);
+      if (warnUnits) log.warn("convertUnits failed", e);
       return axis;
     }
     if (factor == 1.0) return axis;

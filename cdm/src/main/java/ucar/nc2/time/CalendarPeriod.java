@@ -51,11 +51,8 @@ public class CalendarPeriod {
   }
 
   /**
-   * Convert a udunit string into a CalendarPeriod.Field.
-   * Allowable strings = "msec", "sec", "minute", "hour", "day", "month", "year". Plural form also accepted.
-   * Case insensitive. Plural form also accepted.
-   *
-   * @param udunit udunit string
+   * Convert a period string into a CalendarPeriod.Field.
+   * @param udunit period string
    * @return CalendarPeriod enum
    */
   public static CalendarPeriod.Field fromUnitString(String udunit) {
@@ -63,6 +60,7 @@ public class CalendarPeriod {
     udunit = udunit.toLowerCase();
 
     if (udunit.equals("s")) return Field.Second;
+    if (udunit.equals("ms")) return Field.Millisec;
 
       // eliminate plurals
     if (udunit.endsWith("s")) udunit = udunit.substring(0, udunit.length()-1);
@@ -112,7 +110,7 @@ public class CalendarPeriod {
     return field;
   }
 
-  public int subtract(CalendarDate start, CalendarDate end) { // LOOK something better to do ?
+  public int subtract(CalendarDate start, CalendarDate end) {
     if (field == CalendarPeriod.Field.Month || field == CalendarPeriod.Field.Year) {
       log.warn(" using Month or Year");
       long diff = end.getDifferenceInMsecs(start);
@@ -128,7 +126,7 @@ public class CalendarPeriod {
    * Get the duration in seconds                                               -+
    *
    * @return the duration in seconds
-   * @deprecated dont use - approximate!
+   * @deprecated dont use because these are fixed length and thus approximate.
    */
   public double getValueInMillisecs() {
      if (field == CalendarPeriod.Field.Month)

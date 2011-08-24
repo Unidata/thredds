@@ -60,6 +60,8 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
+import ucar.nc2.constants.CF;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateFormatter;
 
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -127,8 +129,7 @@ public class AreaReader {
      *
      * @throws AreaFileException problem opening the area file
      */
-    public boolean init(RandomAccessFile raf, NetcdfFile ncfile)
-            throws AreaFileException {
+    public boolean init(RandomAccessFile raf, NetcdfFile ncfile) throws AreaFileException {
 
         af = new AreaFile(raf.getLocation());
 
@@ -315,14 +316,12 @@ public class AreaReader {
 
         ncfile.addVariable(null, proj);
 
-        // add the attributes
+        // add global attributes
         ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
-        ncfile.addAttribute(null, new Attribute("netCDF-Java", "4.0"));
-        ncfile.addAttribute(null,
-                            new Attribute("nominal_image_time",
-                                          df.toDateTimeString(nomTime)));
-        String encStr = "netCDF encoded on "
-                        + df.toDateTimeString(new Date());
+        ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, FeatureType.GRID.toString()));
+        ncfile.addAttribute(null, new Attribute("nominal_image_time", df.toDateTimeString(nomTime)));
+
+        String encStr = "netCDF encoded on " + df.toDateTimeString(new Date());
         ncfile.addAttribute(null, new Attribute("history", encStr));
 
         //Lastly, finish the file

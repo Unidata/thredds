@@ -59,7 +59,14 @@ public class CalendarDateUnit {
    * @return CalendarDateUnit
    */
   static public CalendarDateUnit of(String calendarName, String udunitString) {
-    return new CalendarDateUnit(calendarName, udunitString);
+    Calendar calt = Calendar.get(calendarName);
+    if (calt == null)
+      calt = Calendar.getDefault();
+    return new CalendarDateUnit(calt, udunitString);
+  }
+
+  static public CalendarDateUnit withCalendar(Calendar calt, String udunitString) {
+    return new CalendarDateUnit(calt, udunitString);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -69,11 +76,8 @@ public class CalendarDateUnit {
   private final CalendarDate baseDate;
   private final boolean isCalendarField;
 
-  private CalendarDateUnit(String calendarName, String dateUnitString) {
-    Calendar calt = Calendar.get(calendarName);
-    if (calt == null)
-      calt = Calendar.getDefault();
-    cal = calt;
+  private CalendarDateUnit(Calendar calt, String dateUnitString) {
+    this.cal = calt;
 
     dateUnitString = dateUnitString.trim();
     dateUnitString = dateUnitString.toLowerCase();

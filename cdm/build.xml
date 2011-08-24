@@ -83,7 +83,7 @@
   <!-- source -->
   <path id="sourcepath">
     <pathelement location="${src.dir}"/>
-    <pathelement location="${commonSrc.dir}"/>
+    <!--pathelement location="${commonSrc.dir}"/-->
   </path>
 
   <!-- Libraries -->

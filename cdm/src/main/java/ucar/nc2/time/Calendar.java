@@ -62,6 +62,7 @@ public enum Calendar {
     // Although the Gregorian calendar did not exist before 1582 CE, this chronology assumes it did, thus it is proleptic.
     // This implementation also fixes the start of the year at January 1, and defines the year zero.
     CHRONOLOGIES.put(Calendar.proleptic_gregorian, ISOChronology.getInstanceUTC());
+    CHRONOLOGIES.put(Calendar.none, ISOChronology.getInstanceUTC());
 
     // Implements a pure proleptic Julian calendar system, which defines every fourth year as leap. This implementation follows
     // the leap year rule strictly, even for dates before 8 CE, where leap years were actually irregular. In the Julian calendar,

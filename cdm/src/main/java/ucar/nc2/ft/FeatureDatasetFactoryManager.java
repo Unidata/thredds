@@ -35,6 +35,7 @@ package ucar.nc2.ft;
 
 import thredds.inventory.CollectionManager;
 import thredds.inventory.DatasetCollectionMFiles;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
@@ -375,13 +376,15 @@ public class FeatureDatasetFactoryManager {
     }
 
     // LOOK - compare to CF names when those are finalized
-    String cf_datatype = ncd.findAttValueIgnoreCase(null, "CF:featureType", null);
-    if (cf_datatype == null)
-      cf_datatype = ncd.findAttValueIgnoreCase(null, "CFfeatureType", null);
+    String ftypeS = ncd.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
+    if (ftypeS == null)
+      ftypeS = ncd.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
+    if (ftypeS == null)
+      ftypeS = ncd.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
 
-    if (cf_datatype != null) {
-      if (debug) System.out.println(" wrapUnknown found cf_datatype " + cdm_datatype);
-      return FeatureType.getType(cdm_datatype);
+    if (ftypeS != null) {
+      if (debug) System.out.println(" wrapUnknown found cf_datatype " + ftypeS);
+      return FeatureType.getType(ftypeS);
     }
 
     return null;
