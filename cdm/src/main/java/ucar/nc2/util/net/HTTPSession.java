@@ -34,6 +34,7 @@
 package ucar.nc2.util.net;
 
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.params.*;
 import org.apache.commons.httpclient.protocol.Protocol;
@@ -45,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import sun.net.www.http.*;
 import ucar.unidata.util.Urlencoded;
 
 
@@ -94,6 +96,7 @@ public class HTTPSession
     static boolean globalauthpreemptive = false;
     static Authenticator globalAuthenticator = null;
     static CredentialsProvider globalProvider = null;
+    static String globalPrincipal = null; //==ANY_PRINCIPAL
 
 
     static {
@@ -106,6 +109,8 @@ public class HTTPSession
         Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
         sessionList = new ArrayList<HTTPSession>(); // see kill function
     }
+
+    // ////////////////////////////////////////////////////////////////////////
 
     static enum Methods
     {
@@ -151,6 +156,12 @@ public class HTTPSession
     }
 
 
+    static public Cookie[] getGlobalCookies()
+    {
+        HttpClient client = new HttpClient(connmgr);
+        Cookie[] cookies = client.getState().getCookies();
+        return cookies;
+    }
 
     // Provide a way to kill everything at the end of a Test
 
@@ -436,7 +447,10 @@ public class HTTPSession
       }
     }
 
-
+    static synchronized public void setGlobalPrincipal(String principal)
+    {
+        globalPrincipal = principal;
+    }
 
 
     ////////////////////////////////////////////////

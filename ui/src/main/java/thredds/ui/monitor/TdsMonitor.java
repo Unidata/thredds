@@ -85,8 +85,8 @@ public class TdsMonitor extends JPanel {
   private FileManager fileChooser;
   private ManageForm manage;
 
-  //private HTTPSession session;
   private CredentialsProvider provider;
+
 
   public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
     this.mainPrefs = prefs;
@@ -113,13 +113,11 @@ public class TdsMonitor extends JPanel {
     add(tabbedPane, BorderLayout.CENTER);
 
     CredentialsProvider provider = new UrlAuthenticatorDialog(null);
-    session = new HTTPSession("TdsMonitor");
-    session.setCredentialsProvider(provider);
-    session.setUserAgent("TdsMonitor");
+    HTTPSession.setGlobalCredentialsProvider(provider);
+    HTTPSession.setGlobalUserAgent("TdsMonitor");
   }
 
   public void exit() {
-    session.close();
 
     if (dnsCache != null) {
       System.out.printf(" cache= %s%n", dnsCache.toString());
@@ -232,7 +230,7 @@ public class TdsMonitor extends JPanel {
               File localDir = LogLocalManager.getDirectory(data.server, "");
               localDir.mkdirs();
               File file = new File(localDir, "roots.txt");
-              HttpClientManager.copyUrlContentsToFile(session, urls, file);
+              HttpClientManager.copyUrlContentsToFile(null, urls, file);
               String roots = IO.readFile(file.getPath());
 
               JTextArea ta = manage.getTextArea();

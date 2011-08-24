@@ -463,9 +463,7 @@ private void checkHeaders(HTTPMethod method) {
   if (debugHeaders)
     System.out.println("OpenConnection Headers for " + method.getPath());
 
-  try {
-      HTTPSession _session = new HTTPSession("");
-      Cookie[] cookies = _session.getCookies();
+      Cookie[] cookies = HTTPSession.getGlobalCookies();
 
       if (cookies.length > 0) {
         if (debugHeaders) System.out.println("Cookies= ");
@@ -477,8 +475,6 @@ private void checkHeaders(HTTPMethod method) {
             hasSession = true;
         }
       }
-      if(_session != null) _session.close();
-  } catch(HTTPException he) {/*ignore*/};
 }
 
 private interface Command {

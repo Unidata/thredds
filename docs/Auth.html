@@ -1,0 +1,264 @@
+<html>
+<head>
+<title>Auth</title>
+</head>
+<body>
+<center>
+<h1>Authorization Control<br>
+for netCDF Opendap</h1>
+<h2>Dennis Heimbigner<br>
+Unidata<br>
+Draft 1: July 20, 2011</h2>
+</center>
+
+<h2><a name="HTTPAuthStore"><u>HTTPAuthStore</u></a></h2>
+New classes are introduced to the package ucar.nc2.util.net.
+These are
+<i>HTTPAuthStore</i>
+and <i>HTTPCreds</i>.
+The goal is to provide a general approach to the problem of
+client-side authorization with respect to some server.
+The approach is to provide various kinds of authorization
+credentials (broadly construed) to servers by clients.
+Currently, the focus is on authorization for the OPeNDAP
+DAP2 protocol, but future extensions will address additional
+protocols.
+<p>
+Before reading this document, the reader should have read
+the <i>Sessions.html</i> document to understand the context in
+which the authorization mechanisms operate.
+<p>
+At least the following scenarios must be
+supported (pardon me if I am a bit loose with terminology).
+<ol>
+<li> Client-side credentials:
+     <ul>
+     <li> basic password credentials
+     <li> java keystore client-side keys (initially for
+          ESG credentialling).
+     <li> OPEN-ID credentials (probably restricted
+          to web-browser access only)
+     <li> Additional credentialing mechanisms as requested by users.
+     </ul>
+<p>
+<li> Server-side credentials support:
+     <ul>
+     <li> Currently basic and keystore are already supported
+          in apache httpclient-3.
+     <li> OPEN-ID support will require additional server-side code.
+     </ul>
+<p>
+<li> Proxy support
+     <ul>
+     <li> providing password access to get through proxies.
+     </ul>
+</ol>
+<p>
+<h3>Global and Per-Connection Credentials</h3>
+There is an additional factor.  It is desirable to support both "global"
+and "per-connection" credentialing.
+<ul>
+<li>Global &mdash; this means that a single set of
+    credentials is set globally and is adequate for all
+    code running within a single program (i.e. linux or
+    windows process).
+<p>
+<li>Per-connection &mdash; this means that each connection
+         to a server may have a separate set of
+         credentials. Further, it must be guaranteed that no
+         connection is re-used to avoid inadvertent access
+         to some other set of credentials.
+</ul>
+<h3>Delegation</h3>
+Finally, there is the "delegation" problem.  This is when a client program
+(or a server program acting as a client) wants to masquerade as some user
+and utilize the authorizations provided for that user.
+Of course, this requires that the program be sufficiently trusted
+so that is will handle the delegation responsibly.
+<p>
+Delegation is likely to be most common on the server-side
+because a server will be handling multiple clients and may
+have to access additional information on behalf of various clients.
+
+<h2>Approach</h2>
+Access rights are stored in a "database" that is
+globally accessible to all code within a single operating
+system process and is independent of any threading.
+The fact that this database is shared is important so that
+a consistent set of credentials is provided everywhere within
+the operating system process.
+<p>
+This database is kept as class level object consisting of a set
+of row instances of type <i>HTTPAuthStore.Row</i>.
+The columns of each row are as follows.
+<ol>
+ <li> Principal (aka user id) of type String,
+ <li> Hostname of type String,
+ <li> Port of type integer,
+ <li> Realm of type string,
+ <li> Scheme of enum type <i>HTTPAuthstore.Scheme</i>,
+ <li> Credentials of class type <i>HTTPCreds</i>.
+</ol>
+<p>
+The term "realm" is used in the security community, but
+does not seem to have a well defined meaning. So here, it
+is interpreted to mean the path part of a url. For example,
+given the url "http://motherlode.ucar.edu/thredds",
+the realm would be "thredds".
+<p>
+The scheme field is a tag indicating the kind of authorization
+to use. Currently, the legal values are as follows.
+<ul>
+ <li> BASIC
+ <li> DIGEST
+ <li> KEYSTORE
+ <li> PROXY
+</ul>
+BASIC and DIGEST operate essentially the same and require as credentials
+a principal and a password. The KEYSTORE scheme is to accomodata client
+authentication in an https connection. It requires information
+about a keystore and truststore and their associated passwords.
+The PROXY scheme requires as credentials a principal and password.
+<p>
+The Credentials field is assumed to store an instance of
+<a href="#HTTPCreds">HTTPCreds</a>.
+<p>
+The <i>HTTPAuthStore</i> <a href="#HTTPAuthStore.API">API</a>
+provides operations to insert and delete rows, and to search
+for rows matching specified criteria.
+
+<h2><a name="HTTPCreds">HTTPCreds</a></h2>
+<i>HTTPCreds</i> is a class intended to hold arbitrary credentials information.
+In keeping with the approach used in Apache httpclient code, HTTPCreds
+is primarily a database of (key,value) pairs. Where the key is a string
+and the value is an arbitrary object.
+The specific contents depends on what type of authorization is being
+supported.
+<p>
+Note specifically that <i>HTTPCreds</i> does not implement
+or subtype either 
+<i>Credentials</i> or <i>CredentialsProvider</i> , although it may contain
+instances of those in its database.
+
+<h3>Credential Information for: BASIC, DIGEST, and PROXY</h3>
+For these schemes, which are password based, the HTTPCreds instance
+will store the following.
+<ul>
+ <li> The actual credentials (user+password)
+     using the key tag "HTTPCreds.CREDENTIALS"
+     and the value which is an instance of the class <i>Credentials</i>.
+ <li> An instance of <i>CredentialsProvider</i>, stored using the key tag
+     "HTTPCreds.CREDENTIALSPROVIDER". At the appropriate time,
+     the credentials provider will be invoked to obtain the necessary
+     credentials. The resulting credentials will then be cached
+     as in #1 above.
+</ul>
+<p>
+If both a set of credentials and a credential provider are provided, then
+the credentials will take precedence.
+
+<h3>Credential Information for: KEYSTORE</h3>
+For the keystore scheme, the HTTPCreds object must contain
+keys identifying the following items of information.
+<table border=1>
+<tr valign=center><th>Key<th>Value<th>Description
+<tr valign=top><td>KEYSTORE<td>String
+<td>An absolute file path pointing to the keystore file.
+<tr valign=top><td>KEYSTOREPASSWORD<td>String
+<td>The password for the specified keystore
+<tr valign=top><td>TRUSTSTORE<td>String
+<td>(Optional) An absolute file path pointing to the truststore file.
+<tr valign=top><td>TRUSTSTOREPASSWORD<td>String
+<td>The password for the truststore (if specified)
+</table>
+<p>
+If the truststore is not specified then essentially any certificate provided
+by the server will be accepted (including, specifically,
+self-signed certificates).
+
+<h2><a name="Appendices"><u>Appendices: Authorization APIs</u></a></h2>
+
+<h3><a name"HTTPAuthStore.API">HTTPAuthStore API</a></h3>
+<ul>
+<li> boolean insert(String principal, String host, int port, String realm, Scheme scheme, HTTPCreds creds)
+     <ul>
+     <li> Insert a complete row into the HTTPAuthStore database.
+     <li> Return false if it replaces an existing row.
+     <li> Throws HTTPException
+     </ul>
+     
+<li> boolean insert(String url, Scheme scheme, HTTPCreds creds)
+    throws HTTPException
+     <ul>
+     <li> Insert a complete row into the HTTPAuthStore database
+          where the principal is ANY_PRINCIPAL, and the
+          host, port, and realm are extracted
+          from the <i>url</i> argument.
+     <li> Return false if it replaces an existing row.
+     <li> Throws HTTPException
+     </ul>
+<li> boolean insert(String principal, String url, Scheme scheme, HTTPCreds creds)
+    throws HTTPException
+     <ul>
+     <li> Insert a complete row into the HTTPAuthStore database
+          where the host, port, and realm are extracted
+          from the <i>url</i> argument.
+     <li> Return false if it replaces an existing row.
+     <li> Throws HTTPException
+     </ul>
+<li> boolean remove(String principal, String host, int port, String realm, Scheme scheme)
+    throws HTTPException
+     <ul>
+     <li> Remove a matching row from the HTTPAuthStore database.
+     <li> Return false if the row does not exist.
+     <li> Throws HTTPException
+     </ul>
+<li> Row[] search(String principal, String url)
+    throws HTTPException
+     <ul>
+     <li> Search for all rows matching the principal, and the host, port,
+          and realm matching the url; the scheme is ANY_SCHEME.
+     <li> Return array of matching rows (may have zero length).
+     <li> Throws HTTPException
+     </ul>
+<li> Entry[] search(String principal, String url, Scheme scheme)
+    throws HTTPException
+     <ul>
+     <li> Search for all rows matching the principal and scheme,
+          and the host, port, and realm matching the url.
+     <li> Return array of matching rows (may have zero length).
+     <li> Throws HTTPException
+     </ul>
+<li> Entry[] search(String principal, String host, int port, String realm, Scheme scheme)
+    throws HTTPException
+     <ul>
+     <li> Search for all rows matching the principal, host, port, realm,
+          and scheme.
+     <li> Return array of matching rows (may have zero length).
+     <li> Throws HTTPException
+     </ul>
+</ul>
+
+<h3><a name"HTTPCreds.API">HTTPCreds API</a></h3>
+The primary (static) methods of <i>HTTPCreds</i>
+are factory methods for creating <i>HTTPCreds</i>
+instances for each of the supported schemes.
+<ul>
+<li> static HTTPCreds createSchemeHttpBasic(CredentialsProvider provider)
+<li> static HTTPCreds createSchemeHttpBasic(String user, String pwd)
+<li> static HTTPCreds createSchemeHttpDigest(CredentialsProvider provider)
+<li> static HTTPCreds createSchemeHttpDigest(String user, String pwd)
+<li> static HTTPCreds createSchemeKeystore(String keypath, String keypwd)
+<li> static HTTPCreds createSchemeKeystore(String keypath, String keypwd, String trustpath, String trustpwd)
+</ul>
+
+<h2><u>Author</u></h2>
+Author: Dennis Heimbigner<br>
+Affiliation: UCAR/Unidata<br>
+email: dmh@ucar.edu
+
+
+</body>
+</html>
+
+

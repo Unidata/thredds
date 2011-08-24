@@ -58,7 +58,6 @@ public class TdsDownloader {
 
   private ManageForm.Data config;
   private Type type;
-  private HTTPSession session;
 
   private File localDir;
   private JTextArea ta;
@@ -69,11 +68,8 @@ public class TdsDownloader {
     this.config = config;
     this.type = type;
 
-    this.session = new HTTPSession("TdsMonitor");
-    session.setCredentialsProvider(provider);
-    session.setUserAgent("TdsMonitor");
-
-    this.session = session;
+    HTTPSession.setGlobalCredentialsProvider(provider);
+    HTTPSession.setGlobalUserAgent("TdsMonitor");
 
     localDir = LogLocalManager.getDirectory(config.server, type.toString());
     if (!localDir.exists() && !localDir.mkdirs()) {
@@ -90,7 +86,7 @@ public class TdsDownloader {
 
     final String contents;
     try {
-      contents = HttpClientManager.getContentAsString(session, urls);
+      contents = HttpClientManager.getContentAsString(null, urls);
       if ((contents == null) || (contents.length() == 0)) {
         ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
         return;
@@ -163,14 +159,14 @@ public class TdsDownloader {
     void read() throws HTTPException {
       String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
       ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
-      HttpClientManager.copyUrlContentsToFile(session, urls, localFile);
+      HttpClientManager.copyUrlContentsToFile(null, urls, localFile);
     }
 
     void append() throws HTTPException {
       String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
       long start = localFile.length();
       long want = size - start;
-      long got = HttpClientManager.appendUrlContentsToFile(session, urls, localFile, start, size);
+      long got = HttpClientManager.appendUrlContentsToFile(null, urls, localFile, start, size);
       if (want == got)
         ta.append(String.format(" append %d bytes to %s %n", got, localFile.getPath()));
       else
