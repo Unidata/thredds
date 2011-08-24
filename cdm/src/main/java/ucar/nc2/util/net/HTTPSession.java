@@ -189,11 +189,40 @@ public class HTTPSession
     CredentialsProvider  sessionProvider = null;
     String uriencoded = null;
 
-    // Note that session level principal is disabled because it does not appear
-    // that it is possible to do per-method execution principals because all
-    // method executions share same session state. HttpContext in httpclient-4
-    // should fix this.
+    /**
+     * A session is encapsulated in an instance of the class HTTPSession.
+     * The encapsulation is with respect to a specific uri and (optionally) principal.
+     * This means that once a session is specified, it is tied permanently to that url and principal.
+     * Note that the term "principal" is another name for user id.
+     * If no principal is ever set, the the session assumes a special principal called ANY_PRINCIPAL.
+     * Currently principals are ignored, but will become important when new authorization mechanisms are put in place.
+     * Also, per-instance setting of principals is disabled because the Apache httpclient-3 library cannot
+     * utilize them. They will be activated when the httpclient-4 library replaces the httpclient-3 library.
+     * It is important to note that Session objects do NOT correspond with the HttpClient objects
+     * of the Apache httpclient library.
+     * A Session encapulates an instance of an Apache HttpClient,
+     * but Sessions also wrap and control httpclient library methods such as GetMethod via the class HTTPMethod.
+     * This is so it can ensure that the Session - url correspondence is not violated.
+     *
+     * It is possible to specify a url when invoking, for example, HTTPMethod.Get.
+     * This is because the url argument to the HTTPSession constructor actually serves two purposes.
+     * First, if the method is created without specifying a url, then the session url is used to specify
+     * the data to be retrieved by the method invocation.
+     * Second, if the method is created and specifies a url, for example,
+     *        HTTPMethod m = HTTPMethod.Get(session,url2);
+     * this second url is used to specify the data to be retrieved by the method invocation.
+     * This might (and does) occur if, for example, the url given to HTTPSession represented
+     * some general url such as http://motherlode.ucar.edu/path/file.nc and the url given to
+     * HTTPMethod.Get was for something more specific such as http://motherlode.ucar.edu/path/file.nc.dds.
+     *
+     * The important point is that this second, method, url must be "compatible" with the session url.
+     * The term "compatible" basically means that the HTTPSession url, as a string, must be a prefix
+     * of the url given to HTTPMethod.Get. This maintains the semantics of the Session but allows flexibility
+     * in accessing data from the server.
+     */
 
+    @Urlencoded  // Note: this a user-defined annotation for tracking which url parameters
+                 // are expected to be encoded.
     public HTTPSession(String uri) throws ucar.nc2.util.net.HTTPException
     {
         construct(uri);
@@ -452,6 +481,10 @@ public class HTTPSession
         globalPrincipal = principal;
     }
 
+    // Note that session level principal is disabled because it does not appear
+    // that it is possible to do per-method execution principals because all
+    // method executions share same session state. HttpContext in httpclient-4
+    // should fix this.
 
     ////////////////////////////////////////////////
     // Combine Session creation with method creation

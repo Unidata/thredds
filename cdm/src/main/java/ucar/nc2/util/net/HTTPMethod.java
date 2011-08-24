@@ -44,6 +44,7 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.*;
+import ucar.unidata.util.Urlencoded;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -108,6 +109,25 @@ static HashMap<String, Object> globalparams = new HashMap<String, Object>();
     HTTPSession.Methods methodclass = null;
     Part[] multiparts = null;
 
+    /**
+     * It is possible to specify a url when invoking, for example, HTTPMethod.Get.
+     * This is because the url argument to the HTTPSession constructor actually serves two purposes.
+     * First, if the method is created without specifying a url, then the session url is used to specify
+     * the data to be retrieved by the method invocation.
+     * Second, if the method is created and specifies a url, for example,
+     *        HTTPMethod m = HTTPMethod.Get(session,url2);
+     * this second url is used to specify the data to be retrieved by the method invocation.
+     * This might (and does) occur if, for example, the url given to HTTPSession represented
+     * some general url such as http://motherlode.ucar.edu/path/file.nc and the url given to
+     * HTTPMethod.Get was for something more specific such as http://motherlode.ucar.edu/path/file.nc.dds.
+     *
+     * The important point is that this second, method, url must be "compatible" with the session url.
+     * The term "compatible" basically means that the HTTPSession url, as a string, must be a prefix
+     * of the url given to HTTPMethod.Get. This maintains the semantics of the Session but allows flexibility
+     * in accessing data from the server.
+     */
+
+    @Urlencoded
     public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String uriencoded)
             throws HTTPException
     {

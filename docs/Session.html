@@ -51,7 +51,7 @@ httpclient library methods such as GetMethod via the class
 <i><a href="#HTTPMethod">HTTPMethod</a></i>. This is so
 it can ensure that the Session - url correspondence
 is not violated
-(see <a href="#HTTPMethodURL">here</a> for additional details).
+(see <a href="#HTTPMethod.URL">here</a> for additional details).
 
 <h3><a name="HTTPMethod">HTTPMethod</a></h3>
 This class encapsulates the information
@@ -168,7 +168,7 @@ public class Main
 }
 </pre>
 
-<h3><a name="HTTPMethodURL"><u>Specifying a url when creating an HTTPMethod Instance</u></a></h3>
+<h3><a name="HTTPMethod.URL"><u>Specifying a url when creating an HTTPMethod Instance</u></a></h3>
 It is possible to specify a  url when invoking, for example,
 <i>HTTPMethod.Get</i>.
 This is because the url argument to the <i>HTTPSession</i> constructor actually serves two purposes.
@@ -181,7 +181,7 @@ HTTPMethod m = HTTPMethod.Get(session,url2);
 </pre>
 this second url is used to specify the data to be retrieved by the method invocation.
 <p>
-This might occur if, for example, the url given to <i>HTTPSession</i>
+This might occur (and does) if, for example, the url given to <i>HTTPSession</i>
 represented some general url such as
 <i>http://motherlode.ucar.edu/path/file.nc</i>
 and the url given to <i>HTTPMethod.Get</i> was for something more specific
@@ -201,24 +201,24 @@ should be referenced to see any modifications.
 <h3><a name"HTTPSession.API">HTTPSession API</a></h3>
 <h4>Static Get/Set Methods</h4>
 <ul>
-<li>public static synchronized void setGlobalPrincipal(String p)
+<li>static synchronized void setGlobalPrincipal(String p)
      <ul>
      <li> Set a principal that will be used when establishing
           any session.
      </ul>
-<li>public static synchronized String getGlobalPrincipal()
-<li>public static synchronized void setGlobalUserAgent(String _userAgent)
+<li>static synchronized String getGlobalPrincipal()
+<li>static synchronized void setGlobalUserAgent(String _userAgent)
      <ul>
      <li> Set a user agent that will be used when establishing
           any session.
      </ul>
-<li>public static String getGlobalUserAgent()
-<li>public static void setGlobalThreadCount(int nthreads)
+<li>static String getGlobalUserAgent()
+<li>static void setGlobalThreadCount(int nthreads)
      <ul>
      <li> Set the max number of threads that will be supported.
      </ul>
-<li>public static int getGlobalThreadCount()
-<li>static public void setGlobalCredentialsProvider(CredentialsProvider)
+<li>static int getGlobalThreadCount()
+<li>static void setGlobalCredentialsProvider(CredentialsProvider)
      <ul>
      <li> Backward compatibility; will create a row
           in <i>HTTPAuthStore</i> and an instance of
@@ -226,15 +226,15 @@ should be referenced to see any modifications.
           using the specified credentials provider.
      <li> throws HTTPException
      </ul>
-<li>public static Cookie[] getGlobalCookies()
+<li>static Cookie[] getGlobalCookies()
      <ul>
      <li> Returns the set of cookies available on a generic session.
      </ul>
-<li>public void setGlobalAuthenticationPreemptive(boolean tf)
+<li>void setGlobalAuthenticationPreemptive(boolean tf)
      <ul>
      <li> Specifies that all HTTPSession instances should use global preemption
      </ul>
-<li>public void setGlobalCredentialsProvider(CredentialsProvider cp)
+<li>void setGlobalCredentialsProvider(CredentialsProvider cp)
      <ul>
      <li> Specifies that all HTTPSession instances should use the specified
           CredentialsProvider for authentication.
@@ -243,7 +243,7 @@ should be referenced to see any modifications.
 
 <h4>Constructor(s)</h4>
 <ul>
-<li>public HTTPSession(String url)
+<li>HTTPSession(String url)
      <ul>
      <li> Creates a session object with the specified
           session defining url.
@@ -252,19 +252,15 @@ should be referenced to see any modifications.
 
 <h4>Instance Get/Set Methods</h4>
 <ul>
-<li>public void setAuthenticationPreemptive(boolean tf)
-<li>public void setUserAgent(String agent)
-<li>public void setConnectionManagerTimeout(long timeout)
-<li>public void setSoTimeout(int timeout)
-<li>public void setGlobalMethodParameter(String name, Object value)
-    <ul>
-    <li> Note that this a session instance 
-    </ul>
-<li>public String getCookiePolicy()
-<li>public Cookie[] getCookies()
-<li>public void setContext(HttpState cxt)
-<li>public HttpState getContext()
-<li>public void setProxy()
+<li>void setAuthenticationPreemptive(boolean tf)
+<li>void setUserAgent(String agent)
+<li>void setConnectionManagerTimeout(long timeout)
+<li>void setSoTimeout(int timeout)
+<li>String getCookiePolicy()
+<li>Cookie[] getCookies()
+<li>void setContext(HttpState cxt)
+<li>HttpState getContext()
+<li>void setProxy()
      <ul>
      <li> Set proxy authorization using the two system properties
 		"http.proxyHost" and "http.proxyPort".
@@ -273,71 +269,94 @@ should be referenced to see any modifications.
 
 <h4>Session Shutdown Methods</h4>
 <ul>
-<li>public synchronized void close()
+<li>synchronized void close()
      <ul>
      <li> Close this session and also any active HTTPMethods
           associated with this session.
      </ul>
 </ul>
 
-<h4>Session HTTPMethod Creation Methods</h4>
+<h3><a name"HTTPMethod.API">HTTPMethod API</a></h3>
+<h4>Static Methods</h4>
 <ul>
-<li>public HTTPMethod newMethod{Get|Head|Put|Post|Options}(String uri) throws HTTPException
+<li>static HTTPMethod {Get|Head|Put|Post|Options}(HTTPSession session) throws HTTPException
+    <ul>
+    <li> Create a method associated with the specified session and session url.
+    </ul>
+<li>static HTTPMethod {Get|Head|Put|Post|Options}(HTTPSession session, String uri) throws HTTPException
+    <ul>
+    <li> Create a method associated with the specified session, but using the specified
+         "compatible" url.
+    </ul>
+<li>static void setGlobalMethodParameter(String name, Object value)
+    <ul>
+    <li> Set a parameter that is to be applied to all method instance <u>requests</u>.
+    </ul>
+<li> static Enumeration getAllowedMethods()
 </ul>
 
-<h3><a name"HTTPMethod.API">HTTPMethod API</a></h3>
-The API has a number of groups of methods.
-<h4>Core</h4>
+<h4>Constructor(s)</h4>
 <ul>
-<li> public int execute()
+<li>HTTPMethod newMethod{Get|Head|Put|Post|Options}(String uri) throws HTTPException
+     <ul>
+     <li> deprecated in favor of the e.g. HTTPMethod.Get factory methods.
+     </ul>
+</ul>
+
+<h4>Execute</h4>
+<ul>
+<li> int execute()
      <ul>
      <li> throws HTTPException
      </ul>
-<li> public int getStatusCode()
-<li> public String getStatusLine()
-<li> public void setFollowRedirects(boolean tf)
-<li> public static Enumeration getAllowedMethods()
 </ul>
 
 <h4>Responsebody</h4>
 The API has a number of methods for getting the response
 body in various forms. 
 <ul>
-<li> public InputStream getResponseBodyAsStream()
+<li> InputStream getResponseBodyAsStream()
 <li>(aka getResponseAsStream)
-<li> public byte[] getResponseAsBytes(int maxsize)
-<li> public byte[] getResponseAsBytes()
-<li> public String getResponseAsString(String charset)
+<li> byte[] getResponseAsBytes(int maxsize)
+<li> byte[] getResponseAsBytes()
+<li> String getResponseAsString(String charset)
 (aka getResponseAsString)
+</ul>
+
+<h4>Instance Get/Set</h4>
+<ul>
+<li> int getStatusCode()
+<li> String getStatusLine()
+<li> void setFollowRedirects(boolean tf)
 </ul>
 
 <h4>Request Header Set/Get</h4>
 <ul>
-<li> public void setMethodHeaders(List<Header> headers) throws HTTPException
-<li> public void setRequestHeader(String name, String value) throws HTTPException
-<li> public void setRequestHeader(Header h) throws HTTPException
-<li> public Header getRequestHeader(String name)
-<li> public Header[] getRequestHeaders()
+<li> void setMethodHeaders(List<Header> headers) throws HTTPException
+<li> void setRequestHeader(String name, String value) throws HTTPException
+<li> void setRequestHeader(Header h) throws HTTPException
+<li> Header getRequestHeader(String name)
+<li> Header[] getRequestHeaders()
 </ul>
 
 <h4>Reponse Header Get</h4>
 <ul>
-<li> public Header getResponseHeader(String name)
-<li> public Header[] getResponseHeaders()
-<li> public Header[] getResponseFooters()
+<li> Header getResponseHeader(String name)
+<li> Header[] getResponseHeaders()
+<li> Header[] getResponseFooters()
 </ul>
 
 <h4>Request Parameter Set/Get</h4>
 <ul>
-<li> public void setRequestParameter(String name, Object value)
-<li> public Object getMethodParameter(String key)
-<li> public HttpMethodParams getMethodParameters()
+<li> void setRequestParameter(String name, Object value)
+<li> Object getMethodParameter(String key)
+<li> HttpMethodParams getMethodParameters()
 </ul>
 
 <h4>Request Content Set</h4>
 <ul>
-<li> public void setRequestContentAsString(String content) throws HTTPException
-<li> public void setMultipartRequest(Part[] parts) throws HTTPException
+<li> void setRequestContentAsString(String content) throws HTTPException
+<li> void setMultipartRequest(Part[] parts) throws HTTPException
 </ul>
 </ul>
 
