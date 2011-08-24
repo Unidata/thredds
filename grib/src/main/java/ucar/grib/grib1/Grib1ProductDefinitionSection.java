@@ -405,8 +405,7 @@ public final class Grib1ProductDefinitionSection {
     baseTime = calendar.getTime();
     refTime = calendar.getTimeInMillis();
 
-    parameter_table = GribPDSParamTable.getParameterTable(center_id,
-            subcenter_id, table_version);
+    parameter_table = GribPDSParamTable.getParameterTable(center_id, subcenter_id, table_version);
     parameter = parameter_table.getParameter(parameterNumber);
     Grib1Pds gpv = pdsVars;
     if (false && gpv.isEnsemble()) {

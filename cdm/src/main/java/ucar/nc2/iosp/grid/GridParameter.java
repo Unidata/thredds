@@ -32,6 +32,8 @@
  */
 package ucar.nc2.iosp.grid;
 
+import ucar.nc2.grib.table.GribTables;
+
 /**
  * Class which represents a grid parameter.
  * A parameter consists of a number that can be used to look up in a table,
@@ -40,120 +42,107 @@ package ucar.nc2.iosp.grid;
  */
 
 public class GridParameter {
+  protected int number;
+  protected String name;
+  protected String description;
+  protected String unit;
 
-    /**
-     * parameter number.
-     */
-    // TODO: reinstate private
-    //private int number;
-    protected int number;
+  /**
+   * constructor.
+   */
+  public GridParameter() {
+    number = -1;
+    name = "undefined";
+    description = "undefined";
+    unit = "undefined";
+  }
 
-    /**
-     * name of parameter.
-     */
-    //private String name;
-    protected String name;
+  /**
+   * constructor.
+   *
+   * @param number
+   * @param name
+   * @param description
+   * @param unit        of parameter
+   */
+  public GridParameter(int number, String name, String description, String unit) {
+    this.number = number;
+    this.name = name;
+    this.description = description;
+    this.unit = unit;
+  }
 
-    /**
-     * description of parameter.
-     */
-    //private String description;
-    protected String description;
+  /**
+   * number of parameter.
+   *
+   * @return number
+   */
+  public final int getNumber() {
+    return number;
+  }
 
-    /**
-     * unit of Parameter.
-     */
-    //private String unit;
-    protected String unit;
+  /**
+   * name of parameter.
+   *
+   * @return name
+   */
+  public final String getName() {
+    return name;
+  }
 
-    /**
-     * constructor.
-     */
-    public GridParameter() {
-        number      = -1;
-        name        = "undefined";
-        description = "undefined";
-        unit        = "undefined";
-    }
+  /**
+   * description of parameter.
+   *
+   * @return description
+   */
+  public final String getDescription() {
+    return description;
+  }
 
-    /**
-     * constructor.
-     * @param number
-     * @param name
-     * @param description
-     * @param unit of parameter
-     */
-    public GridParameter(int number, String name, String description, String unit) {
-      this.number      = number;
-        this.name        = name;
-        this.description = description;
-        this.unit        = unit;
-    }
+  /**
+   * unit of parameter.
+   *
+   * @return unit
+   */
+  public final String getUnit() {
+    return unit;
+  }
 
-    /**
-     * number of parameter.
-     * @return number
-     */
-    public final int getNumber() {
-        return number;
-    }
+  /**
+   * sets number of parameter.
+   *
+   * @param number of parameter
+   */
+  public final void setNumber(int number) {
+    this.number = number;
+  }
 
-    /**
-     * name of parameter.
-     * @return name
-     */
-    public final String getName() {
-        return name;
-    }
+  /**
+   * sets name of parameter.
+   *
+   * @param name of parameter
+   */
+  public final void setName(String name) {
+    this.name = name;
+  }
 
-    /**
-     * description of parameter.
-     *
-     * @return description
-     */
-    public final String getDescription() {
-        return description;
-    }
+  /**
+   * sets description of parameter.
+   *
+   * @param description of parameter
+   */
+  public final void setDescription(String description) {
+    this.description = description;
+  }
 
-    /**
-     * unit of parameter.
-     * @return unit
-     */
-    public final String getUnit() {
-        return unit;
-    }
-
-    /**
-     * sets number of parameter.
-     * @param number of parameter
-     */
-    public final void setNumber(int number) {
-        this.number = number;
-    }
-
-    /**
-     * sets name of parameter.
-     * @param name  of parameter
-     */
-    public final void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * sets description of parameter.
-     * @param description of parameter
-     */
-    public final void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * sets unit of parameter.
-     * @param unit of parameter
-     */
-    public final void setUnit(String unit) {
-        this.unit = unit;
-    }
+  /**
+   * sets unit of parameter.
+   *
+   * @param unit of parameter
+   */
+  public final void setUnit(String unit) {
+    this.unit = unit;
+  }
 
   /**
    * Return a String representation of this object
@@ -170,33 +159,30 @@ public class GridParameter {
             '}';
   }
 
-    /**
-     * Check for equality
-     *
-     * @param o  the object in question
-     *
-     * @return  true if has the same parameters
-     */
-    public boolean equals(Object o) {
-        if ((o == null) || !(o instanceof GridParameter)) {
-            return false;
-        }
-        GridParameter that = (GridParameter) o;
-        return (number == that.number) && name.equals(that.name)
-               && description.equals(that.description)
-               && unit.equals(that.unit);
+  /**
+   * Check for equality
+   *
+   * @param o the object in question
+   * @return true if has the same parameters
+   */
+  public boolean equals(Object o) {
+    if ((o == null) || !(o instanceof GridParameter)) {
+      return false;
     }
+    GridParameter that = (GridParameter) o;
+    return (number == that.number) && name.equals(that.name)
+            && description.equals(that.description)
+            && unit.equals(that.unit);
+  }
 
-    /**
-     * Generate a hash code.
-     *
-     * @return  the hash code
-     */
-    public int hashCode() {
-        return number + name.hashCode() + description.hashCode()
-               + unit.hashCode();
-    }
-
+  /**
+   * Generate a hash code.
+   *
+   * @return the hash code
+   */
+  public int hashCode() {
+    return number + name.hashCode() + description.hashCode() + unit.hashCode();
+  }
 
 
 }

@@ -1,8 +1,9 @@
 package ucar.nc2.ui;
 
 import ucar.grib.GribResourceReader;
-import ucar.grib.grib1.Grib1Tables;
+import ucar.grib.NotSupportedException;
 import ucar.grib.grib1.GribPDSParamTable;
+import ucar.nc2.ft.scan.FeatureScan;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.iosp.grid.*;
@@ -10,6 +11,7 @@ import ucar.nc2.ui.dialog.Grib1TableDialog;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.TableParser;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -20,9 +22,12 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.List;
 
 /**
  * Show Grib1 Tables
@@ -62,6 +67,47 @@ public class Grib1TablesViewer extends JPanel {
       }
     });
 
+    varPopup.addAction("Compare to default WMO table", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        TableBean bean = (TableBean) codeTable.getSelectedBean();
+        if (bean == null) return;
+
+        GribPDSParamTable wmo = null;
+        try {
+          wmo = GribPDSParamTable.getParameterTable( 0, 0, bean.getVersion());
+        } catch (NotSupportedException e1) {
+          infoTA.setText(e1.toString());
+          infoWindow.showIfNotIconified();
+          return;
+        }
+        if (wmo == null) {
+          infoTA.setText("Cant find WMO version "+bean.getVersion());
+          infoWindow.showIfNotIconified();
+          return;
+        }
+
+        Formatter f = new Formatter();
+        compare(wmo, bean.table, false, f);
+        infoTA.setText(f.toString());
+        infoTA.gotoTop();
+        infoWindow.showIfNotIconified();
+      }
+    });
+
+    varPopup.addAction("Compare two tables", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = codeTable.getSelectedBeans();
+        if (list.size() == 2) {
+          TableBean bean1 = (TableBean) list.get(0);
+          TableBean bean2 = (TableBean) list.get(1);
+          Formatter f = new Formatter();
+          compare(bean1.table, bean2.table, true, f);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.showIfNotIconified();
+        }
+      }
+    });
 
     entryTable = new BeanTableSorted(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
     entryTable.addListSelectionListener(new ListSelectionListener() {
@@ -93,11 +139,9 @@ public class Grib1TablesViewer extends JPanel {
     });
     buttPanel.add(infoButton);
 
-    ///
-
     try {
-      GribPDSParamTable[] tables = GribPDSParamTable.getParameterTables();
-      java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.length);
+      List<GribPDSParamTable> tables = GribPDSParamTable.getParameterTables();
+      java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.size());
       for (GribPDSParamTable t : tables) {
         beans.add(new TableBean(t));
       }
@@ -119,9 +163,68 @@ public class Grib1TablesViewer extends JPanel {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+/*
+          1         2         3         4         5         6         7         8         9         10        11        12
+0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+  1 |                                  Pressure |                   Pa  |                 PRES |
+  2  5
+*/
+  public void setFilename(String filename) throws IOException {
+    GribPDSParamTable table = new GribPDSParamTable(filename);
+    codeTable.addBean(new TableBean(table));
+  }
+
+  private boolean skipNames = false;
+  private boolean skipUnits = false;
+  private boolean skipDesc = false;
+  private void compare(GribPDSParamTable t1, GribPDSParamTable t2, boolean showMissing, Formatter out) {
+
+    out.format("Compare%n %s%n %s%n", t1.toString(), t2.toString());
+    Map<Integer, GridParameter> h1 = t1.getParameters();
+    Map<Integer, GridParameter> h2 = t2.getParameters();
+    List<Integer> keys = new ArrayList<Integer>(h1.keySet());
+    Collections.sort(keys);
+
+    for (Integer key : keys) {
+      GridParameter d1 = h1.get(key);
+      GridParameter d2 = h2.get(key);
+      if (d2 == null) {
+        if (showMissing) out.format("**No key %s (%s) in second table%n", key, d1);
+      } else {
+        if (!skipNames) {
+          if (!equiv(d1.getName(), d2.getName()))
+            out.format(" %d name%n   %s%n   %s%n", d1.getNumber(), d1.getName(), d2.getName());
+        }
+        if (!skipUnits) {
+          if (!equiv(d1.getUnit(), d2.getUnit()))
+            out.format(" %s units%n   %s%n   %s%n", d1.getNumber(), d1.getUnit(), d2.getUnit());
+        }
+        if (!skipDesc) {
+          if (!equiv(d1.getDescription(), d2.getDescription()))
+            out.format(" %s desc%n   %s%n   %s%n", d1.getNumber(), d1.getDescription(), d2.getDescription());
+        }
+      }
+    }
+
+    if (showMissing) {
+      out.format("%n***Check if entries are missing in first table%n");
+      keys = new ArrayList<Integer>(h2.keySet());
+      Collections.sort(keys);
+      for (Integer key : keys) {
+        GridParameter d1 = h1.get(key);
+        GridParameter d2 = h2.get(key);
+        if (d1 == null)
+          out.format("**No key %s (%s) in first table%n", key, d2);
+      }
+    }
 
   }
 
+  private boolean equiv(String org1, String org2) {
+    return org1.equalsIgnoreCase(org2);
+  }
 
   public void save() {
     codeTable.saveState(false);
@@ -134,12 +237,12 @@ public class Grib1TablesViewer extends JPanel {
   }
 
   public void setEntries(GribPDSParamTable table) {
-    Map<String, GridParameter> map = table.getParameters();
-    ArrayList<String> params = new ArrayList<String>();
+    Map<Integer, GridParameter> map = table.getParameters();
+    ArrayList<Integer> params = new ArrayList<Integer>();
     params.addAll(map.keySet());
     Collections.sort(params);
     java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
-    for (String key : params) {
+    for (Integer key : params) {
       beans.add(new EntryBean(key, map.get(key)));
     }
     entryTable.setBeans(beans);
@@ -175,8 +278,8 @@ public class Grib1TablesViewer extends JPanel {
       return table.getSubcenter_id();
     }
 
-    public int getVersionNumber() {
-      return table.getTable_number();
+    public int getVersion() {
+      return table.getVersion();
     }
 
     public String getPath() {
@@ -189,25 +292,25 @@ public class Grib1TablesViewer extends JPanel {
       if (ret == 0)
         ret = getSubcenter_id() - o.getSubcenter_id();
       if (ret == 0)
-        ret = getVersionNumber() - o.getVersionNumber();
+        ret = getVersion() - o.getVersion();
       return  ret;
     }
   }
 
   public class EntryBean {
     GridParameter param;
-    String key;
+    Integer key;
 
     // no-arg constructor
     public EntryBean() {
     }
 
-    public EntryBean(String key, GridParameter param) {
+    public EntryBean(Integer key, GridParameter param) {
       this.key = key;
       this.param = param;
     }
 
-    public String getKey() {
+    public int getKey() {
       return key;
     }
 

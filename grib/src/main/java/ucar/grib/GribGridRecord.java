@@ -50,7 +50,7 @@ import java.util.Formatter;
  * Represents information for one record in the Grib file.
  */
 public final class GribGridRecord implements GridRecord {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribGridRecord.class);
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribGridRecord.class);
 
   //// from  indicator section
 
@@ -250,7 +250,7 @@ public final class GribGridRecord implements GridRecord {
   }
 
   private GridParameter getParameter() {
-    GridParameter p = null;
+    GridParameter p;
       if (edition == 2) {
         Grib2Pds pds2 = (Grib2Pds) pds;
         p = ParameterTable.getParameter(discipline, pds2.getParameterCategory(), pds.getParameterNumber());

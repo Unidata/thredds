@@ -3035,13 +3035,18 @@ public class ToolsUI extends JPanel {
     Grib1TablesViewer codeTable;
 
     Grib1TablePanel(PreferencesExt p) {
-      super(p, "table:", false, false);
+      super(p, "table:", true, false);
       codeTable = new Grib1TablesViewer(prefs, buttPanel);
       add(codeTable, BorderLayout.CENTER);
     }
 
     boolean process(Object command) {
-      return true;
+      try {
+        codeTable.setFilename((String) command);
+        return true;
+      } catch (IOException e) {
+        return false;
+      }
     }
 
     void save() {

@@ -124,19 +124,7 @@ public class GribTables {
       this.number = number;
       this.name = name.trim(); // StringUtil.toLowerCaseExceptFirstCharUpper(name.toLowerCase());
       this.abbrev = abbrev;
-
-      // massage units
-      if (unit != null) {
-        if (unit.equalsIgnoreCase("-")) unit = "";
-        else {
-          if (unit.startsWith("/")) unit = "1" + unit;
-          unit = unit.trim();
-          unit = StringUtil2.remove(unit, "^");
-          unit = StringUtil2.replace(unit, ' ', ".");
-          unit = StringUtil2.replace(unit, '*', ".");
-        }
-      }
-      this.unit = unit;
+      this.unit = cleanupUnits(unit);
     }
 
     public String getId() {
@@ -201,6 +189,19 @@ public class GribTables {
 
   static public boolean isLocal(Parameter p) {
     return ((p.getCategory() > 191) || (p.getNumber() > 191));
+  }
+
+  static public String cleanupUnits(String unit) {
+    if (unit == null) return null;
+    if (unit.equalsIgnoreCase("-")) unit = "";
+    else {
+      if (unit.startsWith("/")) unit = "1" + unit;
+      unit = unit.trim();
+      unit = StringUtil2.remove(unit, "^");
+      unit = StringUtil2.replace(unit, ' ', ".");
+      unit = StringUtil2.replace(unit, '*', ".");
+    }
+    return unit;
   }
 
   ///////////////////////////////////////////////////////////////

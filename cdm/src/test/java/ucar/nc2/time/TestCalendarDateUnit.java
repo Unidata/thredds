@@ -62,9 +62,22 @@ second
     testCalendar(null, "secs since 0000-01-01");
     testCalendar(null, "secs since 0001-01-01");
     testCalendar(null, "secs since -0001-01-01");
-    testCalendar("gregorian", "secs since 0000-01-01");
     testCalendar("gregorian", "secs since 0001-01-01");
     testCalendar("gregorian", "secs since -0001-01-01");
+  }
+
+  // expect to fail
+  public void testFail() {
+    String s = "secs since 0000-01-01";
+    try {
+      CalendarDateUnit cdu = CalendarDateUnit.of("gregorian", s);
+      System.out.printf("%s == %s (joda %s) %n", s, cdu, cdu.getCalendar());
+    } catch (Exception e) {
+      System.out.printf("%s == %s %n", s, e.getMessage());
+      assert true;
+      return;
+    }
+    assert false;
   }
 
   // UNIT since [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]
@@ -237,5 +250,30 @@ second
     System.out.printf("%n");
   }
 
+  public void testMinMax() {
+    CalendarDate max = CalendarDate.of(Long.MAX_VALUE);
+    System.out.printf("CalendarDate%n");
+    System.out.printf(" max = %s%n", max);
+    CalendarDate min = CalendarDate.of(Long.MIN_VALUE);
+    System.out.printf(" min = %s%n", min);
+
+    System.out.printf("%nDate%n");
+    Date d = new Date(Long.MAX_VALUE);
+    System.out.printf("max = %s%n", d);
+    Date ds = new Date(Long.MIN_VALUE);
+    System.out.printf("min = %s%n", ds);
+  }
+
+  public void testBig() {
+    CalendarDateUnit cdu = CalendarDateUnit.of(null, "years since 1970-01-01");
+    long val = 50*1000*1000;
+    CalendarDate cd = cdu.makeCalendarDate(val);
+    System.out.printf("%d %s == %s%n", val, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));
+
+    cdu = CalendarDateUnit.of(null, "calendar years since 1970-01-01");
+    cd = cdu.makeCalendarDate(val);
+    System.out.printf("%n%d %s == %s%n", val, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));
+
+  }
 
 }

@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import com.jgoodies.forms.factories.*;
-import com.jgoodies.forms.layout.*;
 import ucar.grib.grib1.GribPDSParamTable;
 
 /**
@@ -207,7 +206,7 @@ public class Grib1TableDialog extends JDialog {
         if (t == null)
           result.setText("NOT FOUND");
         else
-          result.setText(t.getCenter_id()+" "+t.getSubcenter_id()+" "+t.getTable_number()+": "+t.getFilename());
+          result.setText(t.getCenter_id()+" "+t.getSubcenter_id()+" "+t.getVersion()+": "+t.getFilename());
 
       } catch (Exception ee) {
 

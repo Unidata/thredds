@@ -1331,7 +1331,7 @@ public class GribRawPanel extends JPanel {
       return CommonCodeTable.getCenterName(pds.getCenter(), 1) + " (" + pds.getCenter() + "/" + pds.getSubCenter() + ")";
     }
 
-    public int getTable() {
+    public int getVersion() {
       return pds.getTableVersion();
     }
 
