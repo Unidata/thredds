@@ -47,7 +47,7 @@ import java.net.URISyntaxException;
 import org.xml.sax.SAXException;
 
 /**
- * Represent an XML namespace inlucing, if available, the location of the
+ * Represent an XML namespace including, if available, the location of the
  * XML Schema for the namespace as both a local resource name and as a
  * remote resource URL.
  *
@@ -58,11 +58,11 @@ public enum CatalogNamespace
 {
   CATALOG_1_0( "",
                "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0",
-               "/resources/thredds/schemas/InvCatalog.1.0.2.xsd",
-               "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd"),
+               "/resources/thredds/schemas/InvCatalog.1.0.4.xsd",
+               "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.4.xsd"),
   CATALOG_0_6( "oldThredds",
                "http://www.unidata.ucar.edu/thredds",
-               "/resources/thredds/schemas/InvCatalog.0.6.xsd",
+          "/src/main/archive/schemas/thredds/InvCatalog.0.6.xsd",
                "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.6.xsd"),
   XLINK( "xlink",
          "http://www.w3.org/1999/xlink",

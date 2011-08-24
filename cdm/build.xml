@@ -393,74 +393,6 @@
 
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
-  <!-- source release -->
-
-  <property name="ncSrcRelease.jar" value="ncSrc-${release.version}.zip"/>
-  <target name="makeSrc-CDM" description="create CDM source release">
-
-    <jar jarfile="${build.dir}/${ncSrcRelease.jar}" index="true" duplicate="preserve">
-      <fileset dir="${root.dir}/..">
-        <include name="cdm/build.xml"/>
-        <include name="cdm/README.TEMPLATE"/>
-        <include name="cdm/CHANGES.txt"/>
-        <include name="cdm/src/main/**"/>
-        <include name="common/src/**"/>
-        <include name="lib/external/**"/>
-        <include name="lib/release/**"/>
-        <include name="ui/src/main/**"/>
-      </fileset>
-
-      <manifest>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${build.time}"/>
-        <attribute name="Implementation-Title" value="netCDF-Java/CDM and ToolsUI Source"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
-    </jar>
-
-  </target>
-
-  <property name="fullSrc.jar" value="threddsSrc-${release.version.minor}.jar"/>
-  <target name="makeSrc-Full" description="make nj22/tds full source jar = threddsSrc-${release.version.minor}.jar">
-    <jar jarfile="${build.dir}/${fullSrc.jar}" index="true" duplicate="preserve">
-      <fileset dir="${root.dir}/..">
-        <include name="cdm/src/main/**"/>
-        <include name="common/src/**"/>
-        <include name="lib/external/**"/>
-        <include name="lib/release/**"/>
-        <include name="ui/src/main/**"/>
-        <include name="tds/src/main/**"/>
-      </fileset>
-
-      <manifest>
-        <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Built-On" value="${build.time}"/>
-        <attribute name="Implementation-Title" value="THREDDS Source (CDM, TDS, ToolsUI)"/>
-        <attribute name="Implementation-Version" value="${release.version.minor}"/>
-        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-      </manifest>
-    </jar>
-
-  </target>
-
-  <!-- temp
-  <property name="makeViewerJar.tempdir" location="C:/TEMP/viewerJar/"/>
-  <target name="makeViewerJar">
-    <!- delete dir="${makeViewerJar.tempdir}" failonerror="false"/>
-    <mkdir dir="${makeViewerJar.tempdir}"/>
-    <mkdir dir="${makeViewerJar.tempdir}/saidinViewer"/>
-
-    <copy todir="${makeViewerJar.tempdir}/saidinViewer" overwrite="true" preservelastmodified="true">
-      <fileset dir="C:/dev/thredds/tds/target/classes/saidinViewer"/>
-    </copy ->
-
-    <jar jarfile="${lib.dir}/external/viewerJar.jar" index="true" duplicate="preserve">
-      <fileset dir="${makeViewerJar.tempdir}"/>
-    </jar>
-  </target -->
-
-  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- make javadoc -->
   <property name="jarJavadoc" value="javadoc-${release.version}.jar"/>
   <target name="javadoc" description="make the javadocs">
@@ -757,7 +689,7 @@
   </target>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
-  <target name="dist" depends="makeAll, makeIDVjar, thredds, makeSrc-CDM, javadoc, javadocAll"
+  <target name="dist" depends="makeAll, makeIDVjar, thredds, javadoc, javadocAll"
           description="create a full distribution"/>
 
   <target  name="cleanReleaseInternal" depends="clean, makeAll, makeIDVjar, thredds" />
@@ -780,7 +712,6 @@
       <fileset dir="${build.dir}" includes="${jarCore}"/>
       <fileset dir="${build.dir}" includes="${jarMain}"/>
       <fileset dir="${build.dir}" includes="${jarMainComplete}"/>
-      <fileset dir="${build.dir}" includes="${ncSrcRelease.jar}"/>
       <fileset dir="${build.dir}" includes="${jarIdv}"/>
       <fileset dir="${build.dir}" includes="${jarUI}"/>
       <fileset dir="${build.dir}" includes="${toolsUI}"/>
@@ -812,7 +743,7 @@
 
   <target name="releaseInvCatSchema" description="Release InvCatalog schema to web.">
     <copy todir="${release.schema.dir}/thredds" overwrite="true">
-      <fileset file="${resources.dir}/resources/thredds/schemas/InvCatalog.1.0.2.xsd"/>
+      <fileset file="${resources.dir}/resources/thredds/schemas/InvCatalog.1.0.4.xsd"/>
     </copy>
   </target>
 

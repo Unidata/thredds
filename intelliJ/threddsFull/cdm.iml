@@ -10,8 +10,8 @@
       <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/timing/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../../cdm/target" />
     </content>
-    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
