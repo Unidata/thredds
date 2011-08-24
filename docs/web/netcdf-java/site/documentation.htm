@@ -60,7 +60,8 @@ cd thredds
 mvn install</pre>
     </blockquote>
   </blockquote>
-<h3><strong><a name="v43" id="v43"></a> Development version (4.3) </strong><strong>(requires  Java 6) </strong></h3>
+<h3><strong><a name="v43" id="v43"></a> Development version 4.3 </strong><strong>(requires  Java 6) </strong></h3>
+<p>See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want:</p>
 <ul>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdf-4.3.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdf-4.3.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
@@ -69,58 +70,29 @@ mvn install</pre>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv.jar">ncIdv.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv.jar.MD5">MD5</a>) which you can use in the IDV</li>
   <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncCore-4.3.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncCore-4.3.jar.MD5">MD5</a>) just reads netcdf-3  files.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfUI-4.3.jar">unbundled GUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfUI-4.3.jar.MD5">MD5</a>) for GUI applications that want to choose   which other jars are needed</li>
-  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncSrc-4.3.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncSrc-4.3.zip.MD5">MD5</a>) (unzip and follow the <a href="v4.3/README">README</a>)</li>
   <li>See <a href="v4.3/CHANGES">CHANGES</a> for version changes.</li>
   <li>Try out the <strong> 4.3</strong> version of ToolsUI application: <a href="v4.3/webstart/netCDFtools.jnlp">launch from webstart</a>. </li>
   <li><a href="v4.3/javadoc/index.html">Public javadoc</a>, downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/javadoc-4.3.jar">jar file</a>. This is the public interface. Future changes to the API will remain backwards compatible with this API. </li>
   <li><a href="v4.3/javadocAll/index.html">All javadoc, </a>downloadable<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/javadocAll-4.3.jar"> jar file. </a>This is the javadoc for all packages and all methods except private.  CAREFUL, some of this may change.</li>
 </ul>
 <blockquote>
-  <h4><strong><a name="maven" id="v2"></a>Building from source </strong>with maven</h4>
-  <p>TDS source is now hosted on <a href="reference/Git.html">GitHub</a>. To build version 4.3 from source with maven:</p>
+  <h4><strong><a name="maven" id="v2"></a>Building from source</strong></h4>
+  <p>TDS source is now hosted on <a href="reference/Git.html">GitHub</a>, and the source jar is no longer available. To build version 4.3 from source with maven:</p>
   <blockquote>
     <pre>
 git clone git://github.com/Unidata/thredds.git thredds
 cd thredds
 mvn install</pre>
+    </blockquote>
+  <p>To build version 4.3 from source with ant:</p>
+  <blockquote>
+    <pre>
+git clone git://github.com/Unidata/thredds.git thredds
+cd thredds/cdm
+
+ant clean makeMainComplete</pre>
   </blockquote>
 </blockquote>
-<h3><strong><a name="v4"></a> Last version for Java 5 (4.0.49) </strong></h3>
-<ul>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.zip.MD5">MD5</a>) includes all the jar files you might need. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/toolsUI-4.0.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/toolsUI-4.0.jar.MD5">MD5</a>) allows you to run the netCDF ToolsUI application directly from it. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar">ncIdv.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar.MD5">MD5</a>) which you can use in the IDV</li>
-  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar.MD5">MD5</a>) just reads netcdf-3  files.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfUI-4.0.jar">unbundled GUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfUI-4.0.jar.MD5">MD5</a>) for GUI applications that want to choose   which other jars are needed</li>
-  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.zip.MD5">MD5</a>) (unzip and follow the <a href="v4.0/README">README</a>)</li>
-  <li>See <a href="v4.0/CHANGES">CHANGES</a> for version changes.</li>
-  <li>Try out the <strong> 4.0</strong> version of ToolsUI application: <a href="v4.0/webstart/netCDFtools.jnlp">launch from webstart</a>. </li>
-</ul>
-<ul>
-  <li> <a href="v4.0/javadoc/index.html">Public javadoc</a>, downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadoc-4.0.jar">jar file</a>. This is the public interface. Future changes to the API will remain backwards compatible with this API. </li>
-  <li><a href="v4.0/javadocAll/index.html">All javadoc, </a>downloadable<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadocAll-4.0.jar"> jar file. </a>This is the javadoc for all packages and all methods except private.  CAREFUL, some of this may change.</li>
-  <li><a href="transition4.html">Transitioning to version 4.0</a> </li>
-  <li><a href="http://ulisse.pin.unifi.it:8080/archiva/browse/essi-unidata/netcdf-java/4.0.41">Maven repository</a></li>
-</ul>
-<h3><strong><a name="v22"></a>Last version for Java 4.2 (2.2.20)</strong></h3>
-<ul>
-  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.20.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.20.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.20.jar">netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.20.jar.MD5">MD5</a>) implements the full CDM model. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfUI-2.2.20.jar">netcdfUI library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfUI-2.2.20.jar.MD5">MD5</a>) includes the netCDF library plus the user interface classes for the netCDF ToolsUI application.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfAll-2.2.20.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfAll-2.2.20.zip.MD5">MD5</a>) includes the netcdfUI library plus all other jar files you might need. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/toolsUI-2.2.20.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/toolsUI-2.2.20.jar.MD5">MD5</a>) is a nice fat jar containing everything in a single jar. You can run the netCDF ToolsUI application directly from it. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/nc2.2.jar">nc2.2.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/nc2.2.jar.MD5">MD5</a>), which you can use in the IDV. </li>
-  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncSrc-2.2.20.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncSrc-2.2.20.zip.MD5">MD5</a>) (unzip and follow the <a href="v2.2.20/README">README</a>)</li>
-  <li>See <a href="v2.2.20/CHANGES">CHANGES</a> for version changes.</li>
-  <li>Try out the<strong> 2.2.20</strong> library through the ToolsUI application: <a href="v2.2/webstart/index.html">launch from webstart</a>.</li>
-</ul>
-<ul>
-  <li> <a href="v2.2.20/javadoc/index.html">Public javadoc</a>: This is the public interface. </li>
-  <li><a href="v2.2.20/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. CAREFUL, some of this may change.</li>
-  <li> User's documentation (incomplete): <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.doc">doc</a> <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.pdf">pdf</a></li>
-</ul>
 <h3>File format<a name="formats"></a> types</h3>
 <p>The NetCDF-Java library   can read these <a href="formats/FileTypes.html">file types and remote access protocols</a>.</p>
 <h3><strong>Caveats and not-so-stable APIs</strong>:</h3>
@@ -210,12 +182,50 @@ mvn install</pre>
   <li>Talk at netCDF workshop 2009 (<a href="talks/NetCDFworkshop2009.ppt">ppt</a>)</li>
   <li>Unidata public<a href="http://svn.unidata.ucar.edu/repos/thredds/"> svn repository</a></li>
   <li>NetCDF-Java <a href="ring2.jpg">logo</a></li>
-  <li><a href="http://www.unidata.ucar.edu/staff/caron/bufr/">BUFR Tables</a> project (in progress)</li>
+  <li><a href="http://www.unidata.ucar.edu/staff/caron/bufr/">BUFR Tables</a> project (in progress)  </li>
+</ul>
+<hr>
+<h2>Older versions (not supported)</h2>
+<h3><strong><a name="v4"></a> Last version for Java 5 (4.0.49) </strong></h3>
+<ul>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.zip.MD5">MD5</a>) includes all the jar files you might need. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/toolsUI-4.0.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/toolsUI-4.0.jar.MD5">MD5</a>) allows you to run the netCDF ToolsUI application directly from it. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar">ncIdv.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncIdv.jar.MD5">MD5</a>) which you can use in the IDV</li>
+  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncCore-4.0.jar.MD5">MD5</a>) just reads netcdf-3  files.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfUI-4.0.jar">unbundled GUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfUI-4.0.jar.MD5">MD5</a>) for GUI applications that want to choose   which other jars are needed</li>
+  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/ncSrc-4.0.zip.MD5">MD5</a>) (unzip and follow the <a href="v4.0/README">README</a>)</li>
+  <li>See <a href="v4.0/CHANGES">CHANGES</a> for version changes.</li>
+  <li>Try out the <strong> 4.0</strong> version of ToolsUI application: <a href="v4.0/webstart/netCDFtools.jnlp">launch from webstart</a>. </li>
+</ul>
+<ul>
+  <li> <a href="v4.0/javadoc/index.html">Public javadoc</a>, downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadoc-4.0.jar">jar file</a>. This is the public interface. Future changes to the API will remain backwards compatible with this API. </li>
+  <li><a href="v4.0/javadocAll/index.html">All javadoc, </a>downloadable<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/javadocAll-4.0.jar"> jar file. </a>This is the javadoc for all packages and all methods except private.  CAREFUL, some of this may change.</li>
+  <li><a href="transition4.html">Transitioning to version 4.0</a> </li>
+  <li><a href="http://ulisse.pin.unifi.it:8080/archiva/browse/essi-unidata/netcdf-java/4.0.41">Maven repository</a></li>
+</ul>
+<h3><strong><a name="v22"></a>Last version for Java 4.2 (2.2.20)</strong></h3>
+<ul>
+  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.20.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncCore-2.2.20.jar.MD5">MD5</a>) just reads netcdf-3 (eventually netcdf-4) files.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.20.jar">netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdf-2.2.20.jar.MD5">MD5</a>) implements the full CDM model. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfUI-2.2.20.jar">netcdfUI library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfUI-2.2.20.jar.MD5">MD5</a>) includes the netCDF library plus the user interface classes for the netCDF ToolsUI application.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfAll-2.2.20.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/netcdfAll-2.2.20.zip.MD5">MD5</a>) includes the netcdfUI library plus all other jar files you might need. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/toolsUI-2.2.20.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/toolsUI-2.2.20.jar.MD5">MD5</a>) is a nice fat jar containing everything in a single jar. You can run the netCDF ToolsUI application directly from it. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/nc2.2.jar">nc2.2.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/nc2.2.jar.MD5">MD5</a>), which you can use in the IDV. </li>
+  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncSrc-2.2.20.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2.20/ncSrc-2.2.20.zip.MD5">MD5</a>) (unzip and follow the <a href="v2.2.20/README">README</a>)</li>
+  <li>See <a href="v2.2.20/CHANGES">CHANGES</a> for version changes.</li>
+  <li>Try out the<strong> 2.2.20</strong> library through the ToolsUI application: <a href="v2.2/webstart/index.html">launch from webstart</a>.</li>
+</ul>
+<ul>
+  <li> <a href="v2.2.20/javadoc/index.html">Public javadoc</a>: This is the public interface. </li>
+  <li><a href="v2.2.20/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. CAREFUL, some of this may change.</li>
+  <li> User's documentation (incomplete): <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.doc">doc</a> <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.pdf">pdf</a></li>
 </ul>
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated May 2011
+and was last updated August 2011
 </address>
 
 </body>

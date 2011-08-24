@@ -15,8 +15,8 @@ dl {margin: 10px 5px 5px 15px;}
 <hr />
 <h2>Version 4.3</h2>
 <h3>Which jar file should I use?</h3>
-<p>1. Many prefer to use <strong>netcdfAll-{version}.jar</strong>. This includes all other  jars, and uses JDK logging. Use it when you want all the capabilities of the netcdf-java/CDM library.</p>
-<p>2. The <strong>netcdf.jar</strong> implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netcdf-java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
+<p>1. Simplest is to use <strong>netcdfAll-{version}.jar</strong>. This includes all other  jars, and uses JDK logging. Use it when you want all the capabilities of the netCDF-Java/CDM library, and are not concerned about jar size and compatiblity with other libraries.</p>
+<p>2. The <strong>netcdf-{version}.jar</strong> implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netCDF-Java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
 <ol>
   <li>Always include <strong>netcdf-{version}.jar<strong>,<strong> jdom.jar, <strong>jodatime.jar</strong></strong>, </strong></strong> and a logger</li>
   <li>Optionally include:
@@ -29,7 +29,7 @@ dl {margin: 10px 5px 5px 15px;}
       <li>Reading GEMPAK GRID files: <strong>visadCdm.jar, grib.jar</strong></li>
       <li>Using aggregations: <strong>je.jar</strong> (Berkely DB, Java Edition)</li>
       <li>Object caching:<strong> ehcache.jar</strong> </li>
-      <li>ncstream, cdmRemote: <strong>protobuf.jar</strong></li>
+      <li>Using ncstream, cdmRemote: <strong>protobuf.jar</strong></li>
     </ol>
   </li>
 </ol>
@@ -50,7 +50,6 @@ dl {margin: 10px 5px 5px 15px;}
     <li>ncstream, cdmRemote: <strong>protobuf.jar</strong></li>
   </ul>
 </blockquote>
-<blockquote>&nbsp;</blockquote>
 <h3><strong>CDM Complete Library: netcdfAll-{version}.jar</strong></h3>
 <blockquote>
   <p>The <strong>netcdfAll.jar</strong> implements the full CDM model, and includes all other needed jars, using JDK logging. Use it when you want all the capabilities of the netcdf-java/CDM library.</p>

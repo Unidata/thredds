@@ -85,7 +85,8 @@ public class TdsMonitor extends JPanel {
   private FileManager fileChooser;
   private ManageForm manage;
 
-  private HTTPSession session;
+  //private HTTPSession session;
+  private CredentialsProvider provider;
 
   public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
     this.mainPrefs = prefs;
@@ -218,11 +219,11 @@ public class TdsMonitor extends JPanel {
             manage.getStopButton().setCancel(false); // clear the cancel state
 
             if (data.wantAccess) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.access, session);
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.access, provider);
               logManager.getRemoteFiles(manage.getStopButton());
             }
             if (data.wantServlet) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.thredds, session);
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.thredds, provider);
               logManager.getRemoteFiles(manage.getStopButton());
             }
 

@@ -33,14 +33,13 @@
 
 package thredds.ui.monitor;
 
-//import ucar.nc2.util.net.HTTPException;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 import ucar.nc2.util.net.HTTPException;
 import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.*;
-
 import javax.swing.*;
 
 /**
@@ -65,10 +64,15 @@ public class TdsDownloader {
   private JTextArea ta;
   private CancelTask cancel;
 
-  TdsDownloader(JTextArea ta, ManageForm.Data config, Type type, HTTPSession session) throws IOException {
+  TdsDownloader(JTextArea ta, ManageForm.Data config, Type type, CredentialsProvider provider) throws IOException {
     this.ta = ta;
     this.config = config;
     this.type = type;
+
+    this.session = new HTTPSession("TdsMonitor");
+    session.setCredentialsProvider(provider);
+    session.setUserAgent("TdsMonitor");
+
     this.session = session;
 
     localDir = LogLocalManager.getDirectory(config.server, type.toString());
