@@ -204,19 +204,19 @@ public class CalendarDate implements Comparable<CalendarDate> {
   public CalendarDate add(double value, CalendarPeriod.Field unit) {
     switch (unit) {
       case Millisec:
-        return new CalendarDate(cal, dateTime.plusMillis( (int) value ));
+        return new CalendarDate(cal, dateTime.plus( (long) value ));
       case Second:
-        return new CalendarDate(cal, dateTime.plusMillis( (int) (value * 1000) ));
+        return new CalendarDate(cal, dateTime.plus( (long) (value * 1000) ));
       case Minute:
-        return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 60) ));
+        return new CalendarDate(cal, dateTime.plus( (long) (value * 60  * 1000) ));
       case Hour:
-        return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 60 * 60) ));
+        return new CalendarDate(cal, dateTime.plus( (long) (value * 60 * 60  * 1000) ));
       case Day:
-        return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 86400) ));
+        return new CalendarDate(cal, dateTime.plus( (long) (value * 86400  * 1000) ));
       case Month: // LOOK should we throw warning ?
-        return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 2629743.831225) ));
+        return new CalendarDate(cal, dateTime.plus( (long) (value * 2629743.831225  * 1000) ));
       case Year:  // LOOK should we throw warning ?
-        return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 3.15569259747E7) ));
+        return new CalendarDate(cal, dateTime.plus( (long) (value * 3.15569259747E10) )); // millisecs!
     }
     throw new UnsupportedOperationException("period units = "+unit);
   }

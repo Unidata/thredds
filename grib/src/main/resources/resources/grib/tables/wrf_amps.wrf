@@ -1,0 +1,31 @@
+   1 |                                  Pressure |                   Pa  |                 PRES |
+   2 |                        Sea-level pressure |                   Pa  |                  SLP |
+   7 |                       Geopotential height |                  gpm  |                  HGT |
+  11 |                               Temperature |                    K  |                  TMP |
+  33 |            U-component of horizontal wind |                  m/s  |                 UGRD |
+  34 |            V-component of horizontal wind |                  m/s  |                 VGRD |
+  40 |                         Vertical velocity |                  m/s  |                 DZDT |
+  52 |             Relative humidity (wrt water) |                    %  |                   RH |
+  53 |                  Water vapor mixing ratio |                kg/kg  |                 MIXR |
+  54 |          Precipitable water (water vapor) |                kg/m2  |                 PWAT |
+  61 |                             Precipitation |                kg/m2  |                  PCP |
+  81 |                             Land/Sea mask |          Binary flag  |              LANDSEA |
+  84 |                                    Albedo |                    %  |                ALBDO |
+  91 |                                   Sea Ice |           proportion  |               SEAICE |
+ 121 |                          Latent heat flux |                 W/m2  |                 LHFX |
+ 122 |                        Sensible heat flux |                 W/m2  |                 SHFX |
+ 153 |                  Cloud water mixing ratio |                kg/kg  |                  CLW |
+ 170 |                   Rain water mixing ratio |                kg/kg  |                 RWMR |
+ 171 |                         Snow mixing ratio |                kg/kg  |                 SNMR |
+ 176 |                                  Latitude |                deg N  |                  LAT |
+ 177 |                                 Longitude |                deg E  |                  LON |
+ 178 |                          Ice mixing ratio |                kg/kg  |                 ICMR |
+ 204 |         Downward shortwave radiation flux |                 W/m2  |                 SWDN |
+ 205 |          Downward longwave radiation flux |                 W/m2  |                 LWDN |
+ 248 |                            Cloud Fraction |                    m  |               CLDFRC |
+ 249 |                          Inversion height |                    m  |               INVHGT |
+ 250 |                        Inversion strength |                    K  |               INVSTR |
+ 251 |                    Column integrated snow |                kg/m2  |               INTSNW |
+ 252 |              Column integrated rain water |                kg/m2  |               INTRNW |
+ 253 |               Column integrated cloud ice |                kg/m2  |               INTCLI |
+ 254 |      Column integrated cloud liquid water |                kg/m2  |               INTCLW |

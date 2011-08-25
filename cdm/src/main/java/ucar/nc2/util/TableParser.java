@@ -94,6 +94,10 @@ import java.net.URL;
       stationTableHash.put(s.id, s);
       if (showStations) System.out.println(" station= " + s);
     }
+
+          1         2         3         4         5         6         7         8         9         10        11        12
+0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+
  */
 public class TableParser {
 
@@ -138,6 +142,7 @@ public class TableParser {
     ios.close();
     return result;
   }
+
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
