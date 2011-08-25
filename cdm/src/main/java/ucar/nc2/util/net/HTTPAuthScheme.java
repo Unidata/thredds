@@ -45,13 +45,13 @@ import org.apache.commons.httpclient.auth.*;
 import static ucar.nc2.util.net.HTTPAuthStore.*;
 
 /**
- * HTTPCreds contains the necessary information to support a given
+ * HTTPAuthScheme contains the necessary information to support a given
  * authorization scheme in the context of HTTPSession.
  * <p/>
  * It is intended to be thread safe using, currently,
  * serial (synchronized) access.
  * <p/>
- * The primary component of HTTPCreds is (key,value) pair
+ * The primary component of HTTPAuthScheme is a (key,value) pair
  * store implementing the HttpParams Interface.  The contents of the pair
  * store depends on the particular auth scheme (HTTP Basic, ESG Keystore,
  * etc.)
