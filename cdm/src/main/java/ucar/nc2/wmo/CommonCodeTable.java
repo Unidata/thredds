@@ -225,7 +225,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
    */
   static public String getCenterName(int center_id, int edition) {
     String result = (edition == 1) ? getTableValue(1, center_id) : getTableValue(11, center_id);
-    return result != null ? result : "Unknown center=" + center_id;
+    if (result != null) return result;
+    if (center_id == 0) return "WMO standard table";
+    return "Unknown center=" + center_id;
   }
 
   /**
@@ -237,7 +239,9 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
    */
   static public String getCenterNameBufr(int center_id, int edition) {
     String result = (edition < 4) ? getTableValue(1, center_id) : getTableValue(11, center_id);
-    return result != null ? result : "Unknown center=" + center_id;
+    if (result != null) return result;
+    if (center_id == 0) return "WMO standard table";
+    return "Unknown center=" + center_id;
   }
 
   /**

@@ -1,0 +1,26 @@
+Notes for grib tables
+
+GRIB2
+ - stored in wmo/* and local/*
+
+GRIB1
+ - stored in tables/*
+ - starting from robb kambic's work in earlier version. He processed all tables into a uniform format. No documentation
+   about the original sources. He filled in missing values with "varN" which probably has to be undone.
+ - also see tables/tables.txt
+
+GRIB1 CHANGES
+ 8/24/2011 refactored grib1 table processing: defaults to wmo table. missing entries are taken from default table if exist.
+
+ 8/24/2011 no significant differences between wmo_2_v1.tab, wmo_2_v2.tab, wmo_2_v3.tab, removed first 2
+
+ 8/24/2011 Spot check on WRF AMPS (Grib1) showed it was using ncar_0_200.tab. Correct table is taken from
+    http://www.mmm.ucar.edu/rt/amps/wrf_grib and is now named wrf_amps.wrf. These differ in all entries >= 248.
+    center=60,subcenter=255,version=2. Correspond with kevin manning (kmanning@ucar.edu) to get a subcenter assigned to
+    AMPS and to properly version their tables.
+
+ 8/25/2011 Check current wmo table (wmo_2_v3.tab) against whats at http://dss.ucar.edu/docs/formats/grib/gribdoc/ (10.2).
+    units differ for entries 10, 19, 53, 76, 120. switch to using dss doc (wmo-grib1.dss).
+
+ 8/25/2011 Some differences between wmo-grib1.dss and ncep tables (nceptab_3.tab). compare to dss ncep tables when those are fixed.
+    at this point, id say all grib2 tables are suspect.

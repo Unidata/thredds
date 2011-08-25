@@ -204,6 +204,13 @@ public class GribTables {
     return unit;
   }
 
+  static public String cleanupDescription(String desc) {
+    if (desc == null) return null;
+    int pos = desc.indexOf("(see");
+    if (pos > 0) return desc.substring(0,pos).trim();
+    return desc.trim();
+  }
+
   ///////////////////////////////////////////////////////////////
   protected final int center, subCenter, masterVersion, localVersion;
 
