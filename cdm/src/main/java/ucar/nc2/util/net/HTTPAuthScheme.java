@@ -55,10 +55,12 @@ import static ucar.nc2.util.net.HTTPAuthStore.*;
  * store implementing the HttpParams Interface.  The contents of the pair
  * store depends on the particular auth scheme (HTTP Basic, ESG Keystore,
  * etc.)
+ *
+ * HTTPAuthScheme implements the AuthScheme interface, but its functionality
+ * is intended to be broader than that interface.
  */
 
-public class HTTPCreds implements Serializable
-
+public class HTTPAuthScheme implements Serializable, AuthScheme
 {
 
 //////////////////////////////////////////////////
@@ -82,36 +84,39 @@ public class HTTPCreds implements Serializable
     static public final String PROXY_AUTH_RESP = "Proxy-Authorization"; // from HttpMethodDirector
 
 //////////////////////////////////////////////////
+
+//////////////////////////////////////////////////
 // Instance variables
     protected HashMap<String, Object> params;
 
 //////////////////////////////////////////////////
 // Constructor(s)
 
-    public HTTPCreds()
+    public HTTPAuthScheme()
     {
         params = new HashMap<String, Object>();
     }
 
 //////////////////////////////////////////////////
 // External API: One or more procedures per scheme
+
 // Factory methods
 
 // Scheme.BASIC
 
-    static public HTTPCreds
+    static public HTTPAuthScheme
     createSchemeHttpBasic(CredentialsProvider provider)
     {
-        HTTPCreds creds = new HTTPCreds();
+        HTTPAuthScheme creds = new HTTPAuthScheme();
         creds.insert(SCHEME, Scheme.BASIC);
         creds.insert(CREDENTIALSPROVIDER, provider);
         return creds;
     }
 
-    static public HTTPCreds
+    static public HTTPAuthScheme
     createSchemeHttpBasic(String user, String pwd)
     {
-        HTTPCreds creds = new HTTPCreds();
+        HTTPAuthScheme creds = new HTTPAuthScheme();
         creds.insert(SCHEME, Scheme.BASIC);
         creds.insert(PASSWORD, pwd);
         creds.insert(USER, user);
@@ -120,19 +125,19 @@ public class HTTPCreds implements Serializable
 
 // Scheme.DIGEST
 
-    static public HTTPCreds
+    static public HTTPAuthScheme
     createSchemeHttpDigest(CredentialsProvider provider)
     {
-        HTTPCreds creds = new HTTPCreds();
+        HTTPAuthScheme creds = new HTTPAuthScheme();
         creds.insert(SCHEME, Scheme.DIGEST);
         creds.insert(CREDENTIALSPROVIDER, provider);
         return creds;
     }
 
-    static public HTTPCreds
+    static public HTTPAuthScheme
     createSchemeHttpDigest(String user, String pwd)
     {
-        HTTPCreds creds = new HTTPCreds();
+        HTTPAuthScheme creds = new HTTPAuthScheme();
         creds.insert(SCHEME, Scheme.DIGEST);
         creds.insert(PASSWORD, pwd);
         creds.insert(USER, user);
@@ -140,16 +145,16 @@ public class HTTPCreds implements Serializable
     }
 
 // Scheme.KEYSTORE
-    static public HTTPCreds
+    static public HTTPAuthScheme
     createSchemeKeystore(String keypath, String keypwd)
     {
         return createSchemeKeystore(keypath, keypwd, null, null);
     }
 
-    static public HTTPCreds
+    static public HTTPAuthScheme
     createSchemeKeystore(String keypath, String keypwd, String trustpath, String trustpwd)
     {
-        HTTPCreds creds = new HTTPCreds();
+        HTTPAuthScheme creds = new HTTPAuthScheme();
         creds.insert(SCHEME, Scheme.KEYSTORE);
         creds.insert(KEYSTORE, keypath);
         creds.insert(KEYSTOREPASSWORD, keypwd);
@@ -160,10 +165,10 @@ public class HTTPCreds implements Serializable
 
 // Scheme.OTHER
 
-    static public HTTPCreds
+    static public HTTPAuthScheme
     createSchemeOther(String authstring)
     {
-        HTTPCreds creds = new HTTPCreds();
+        HTTPAuthScheme creds = new HTTPAuthScheme();
         creds.insert(SCHEME, Scheme.OTHER);
         creds.insert(AUTHSTRING, authstring);
         return creds;
@@ -200,9 +205,9 @@ public class HTTPCreds implements Serializable
 //////////////////////////////////////////////////
 // Clone-like Interface, but never fails
 
-    public HTTPCreds duplicate()
+    public HTTPAuthScheme duplicate()
     {
-        HTTPCreds clone = new HTTPCreds();
+        HTTPAuthScheme clone = new HTTPAuthScheme();
         Set<String> keys = params.keySet();
         for(String key: keys) {
             Object value = params.get(key);

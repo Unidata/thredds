@@ -33,7 +33,8 @@
 
 package ucar.nc2.util.net;
 
-import java.net.MalformedURIException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.io.*;
 
@@ -62,67 +63,112 @@ static public enum Scheme {
     BASIC,
     DIGEST,
     KEYSTORE,
-    PROXY
+    PROXY,
+    OTHER
 }
-
 
 //////////////////////////////////////////////////
 /**
- * The auth store is (conceptually) a set of tuples (rows) of the form
- *     String(principal) X String(uri) X HTTPAuthScheme
- * The scheme indicates the kind of authorization (e.g. basic, keystore, etc).
- * 
- * The primary component of HTTPAuthScheme is (key,value) pair store.
- * The contents of the pair store depends on the particular scheme.
- * As a rule, it will contain either credentials or a credentials provider.
+
+The auth store is (conceptually) a set of tuples (rows) of the form
+HTTPSession(session) X String(principal) X String(host) X int(port) X String(path) X HTTPAuthScheme
+The scheme specifies the kind of authorization
+(e.g. basic, keystore, etc) and the info to support it.
 */
 
 
 static public class Entry implements Serializable, Comparable
 {
+    public HTTPSession session;
     public String principal;
     public String host;
     public int port;
-    public String path;
-    public HTTPAuthScheme scheme;
+    public String realm;
+    public Scheme scheme;
+    public HTTPCreds credentials;
 
     public Entry()
     {
-	constructor(ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,null);
+	this(null,ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,null);
     }
 
-    public Entry(String principal,
-                 String host,
-                 int port,
-		 String path,
-		 HTTPAuthScheme scheme)
+    /**
+     * @param session
+     * @param principal
+     * @param host
+     * @param port
+     * @param path
+     * @param scheme
+     */
+    public Entry(HTTPSession session, String principal, String host, int port, String path, HTTPAuthScheme scheme)
     {
-	constructor(principal,host,port,path,scheme);
+         constructor(HTTPSession session, String principal, String host, int port, String path, HTTPAuthScheme scheme);
     }
 
-    @Urlencoded
-    public Entry(String principal, String uriencoded, HTTPAuthScheme scheme)
+    /**
+     * @param entry
+     */
+
+    public Entry(Entry entry)
     {
-	URI uri = new URI(uriencoded);
-	constructor(principal == null ? uri.getUserInfo() : principal,
-                    uri.getHost(),	
-                    uri.getPort(),	
-                    uri.getRawPath(),
-		    scheme);
+	this(entry.session,
+	     entry.principal,
+	     entry.host,
+	     entry.port,
+	     entry.path,
+	     entry.scheme);
     }
 
-    @Urlencoded
-    public Entry(String uriencoded, HTTPAuthScheme scheme)
+    /**
+     * @param session
+     * @param pattern
+     * @param scheme
+     */
+
+    public Entry(HTTPSession session, String pattern, HTTPAuthScheme scheme)
     {
-	this(null,uri);
+        URI uri = null;
+        try {
+            URI uri = new URI(pattern);
+        } catch (MalformedURLException mue) {
+            throw new HTTPException(mue);
+        }
+        if(session == null) session = ANY_SESSION;
+        String principal = uri.getUserInfo();
+        String host = uri.getHost();        
+        String port = uri.getPort();        
+        String path = uri.getRawPath();
+        if(principal == null || principal.equals(PLACEHOLDER))
+            principal = ANY_PRINCIPAL
+        if(host == null || host.equals(PLACEHOLDER))
+            host = ANY_HOST
+        if(port == null || port.equals(PLACEHOLDER))
+            port = ANY_PORT
+        if(path == null || path.equals(PLACEHOLDER))
+            path = ANY_PATH
+	
+	constructor(session,principal,host,port,path,scheme);
     }
 
-    public void constructor(String principal,
-                            String host,
-                            int port,
-		            String path,
-		            HTTPAuthScheme scheme)
+    /**
+     * Shared constructor code
+     * @param session
+     * @param principal
+     * @param host
+     * @param port
+     * @param path
+     * @param scheme
+     */
+
+    protected void constructor(HTTPSession session, String principal, String host, int port, String path, HTTPAuthScheme scheme)
     {
+	if(session == null) session = ANY_SESSION;
+	if(principal == null) principal = ANY_PRINCIPAL;
+	if(host == null) host = ANY_HOST;
+	if(port <= 0) port = ANY_PORT
+	if(path == null) path = ANY_PATH;
+	scheme = new HTTPAuthScheme(scheme);
+	this.session = session;
         this.principal = principal;
 	this.host = host;
 	this.port = port;
@@ -130,45 +176,52 @@ static public class Entry implements Serializable, Comparable
 	this.scheme = scheme;
     }
 
+/* NOTUSED
     public Entry duplicate()
     {
-	Entry clone = new Entry(this.principal,
-				this.host,
-				this.port,
-				this.path,
-				this.scheme.duplicate());
+	Entry clone = new Entry(this.session,
+                                this.principal,
+                                this.host,
+                                this.port,
+                                this.path
+                                this.scheme.duplicate());
         return clone;
     }
+*/
 
     public String toString()
     {
-        return String.format("http://%s%s%s/%s %s",
-		principal==ANY_PRINCIPAL ? "_@" : principal+"@",
-		host==ANY_HOST ? "_" : uri.getHost()
-		port > 0 ? ":" + port : ":_",
-		path==ANY_PATH ? "/_" : uri.getPath()
-		scheme.toString());
+	String session = (this.session == ANY_SESSION ? PLACEHOLDER : "this");
+	String principal = (this.principal == ANY_PRINCIPAL ? PLACEHOLDER : this.principal);
+	String host = (this.host == ANY_HOST ? PLACEHOLDER : this.host);
+	String port = (this.port == ANY_PORT ? PLACEHOLDER : ""+this.port);
+	String path = (this.path == ANY_PATH ? PLACEHOLDER : this.path);
+	String scheme = (this.scheme == null ? "null" : this.scheme.toString());
+        return String.format("%s://%s@%s:%s/%s{%s}",session,principal,host,port,path,scheme);
     }
 
     private void writeObject(java.io.ObjectOutputStream oos)
         throws IOException
     {
+	// Only global sessions are written
+        if(this.session != ANY_SESSION) return;
         oos.writeObject(this.principal);
         oos.writeObject(this.host);
         oos.writeInt(this.port);
         oos.writeObject(this.path);
+        oos.writeObject(this.path);
         oos.writeObject(this.scheme);
-
     }
 
     private void readObject(java.io.ObjectInputStream ois)
             throws IOException, ClassNotFoundException
     {
+	this.session = ANY_SESSION;
         this.principal = (String)ois.readObject();
         this.host = (String)ois.readObject();
         this.port = ois.readInt();
         this.path = (String)ois.readObject();
-        this.scheme = (HTTPAuthScheme)ois.readObject();
+        this.scheme = (HTTPAuthStore)ois.readObject();
     }
 
     /**
@@ -178,10 +231,10 @@ static public class Entry implements Serializable, Comparable
       *   follow all fields with specific values.
       * - fields both with defined values, but different
       *   are considered equally restrictive
-      * - for realm/realm, longer matches should precede
+      * - for path/path, longer matches should precede
       *   shorter matches.
       * - the fields are considered in this order:
-      * 	principal,host,port,path
+      * 	principal,host,port,path,scheme
       */
 
     public boolean equals(Entry e1) {return (compareTo(e1)==0);}
@@ -195,9 +248,13 @@ static public class Entry implements Serializable, Comparable
 
     static protected int compare(Entry e1, Entry e2)
   {
+      if(e1.session != e2.session)) {
+          if(e1.session == ANY_SESSION) return 1;
+          if(e2.session == ANY_SESSION) return -1;
+      }
       if(!e1.principal.equals(e2.principal)) {
           if(e1.principal == ANY_PRINCIPAL) return 1;
-      if(e2.principal == ANY_PRINCIPAL) return -1;
+          if(e2.principal == ANY_PRINCIPAL) return -1;
       }
       if(!e1.host.equals(e2.host)) {
           if(e1.host == ANY_HOST) return 1;
@@ -207,117 +264,128 @@ static public class Entry implements Serializable, Comparable
           if(e1.port == ANY_PORT) return 1;
           if(e2.port == ANY_PORT) return -1;
       }
-      int cmp = e1.path.compareTo(e2.path);
-      if(cmp != 0) return cmp;
+      if(!e1.path.equals(e2.path)) {
+          if(e1.path == ANY_PATH) return 1;
+          if(e2.path == ANY_PATH) return -1;
+          int cmp = e1.path.compareTo(e2.path);
+          if(cmp != 0) return cmp;
       }
       return 0;
   }
 
 }
 
-private Hashtable<String, List<Entry>> rows
-	= new Hashtable<String,List<Entry>>();
+static private Hashtable<HTTPSession, List<Entry>> rows = new Hashtable<HTTPSession,List<Entry>>();
 
-static public final HTTPSession ANY_SESSION = null;
-static public final String ANY_PRINCIPAL = "";
-static public final String ANY_HOST = "";
-static public final int ANY_PORT = -1;
-static public final String ANY_PATH = "";
+static public final String         ANY_SESSION = null;
+static public final String         GLOBAL_SESSION = ANY_SESSION; // alias
+static public final String         ANY_PRINCIPAL = "";
+static public final String         ANY_HOST = "";
+static public final int            ANY_PORT = -1;
+static public final String         ANY_PATH = "";
 static public final HTTPAuthScheme ANY_SCHEME = null;
+
+static public final String PLACEHOLDER = "_";
+
 
 //////////////////////////////////////////////////
 /**
 Primary external interface
  */
 
-    /**
-     *
-     * @param principal
-     * @param host
-     * @param port
-     * @param pat
-     * @param scheme
-     * @return true if entry already existed and was replaced
-     * @throws HTTPException
-     */
-synchronized protected boolean
-insert(String principal, String host, int port, String path, HTTPAuthScheme scheme)
+/**
+ * @param entry
+ * @return true if entry already existed and was replaced
+ */
+
+static synchronized public boolean
+insert(Entry entry)
 {
     boolean rval = false;
 
     List<Entry> list = rows.get(principal);
     if(list == null) {
 	list = new ArrayList<Entry>();
-	rows.put(principal,list);
+	rows.put(entry.principal,list);
     }
     Entry found = null;
     for(Entry e: list) {
-	if(host.equals(e.host)
-	   && port == e.port
-	   && path.equals(path)) {
+	if(entry.session == e.session
+	   && entry.host.equals(e.host)
+	   && entry.port == e.port
+	   && entry.path.equals(path)) {
 	    found = e;
 	    break;
 	}
     }
     // If the entry already exists, then overwrite it and return true
-    HTTPAuthScheme newscheme = scheme.duplicate();
-    newscheme = (HTTPAuthScheme)scheme.duplicate(); // to avoid external modification
-
     if(found != null) {
-        found.scheme = newscheme;
+        found.scheme = new HTTPAuthScheme(entry.scheme);
 	rval = true;
     } else {
-	Entry e = new Entry(principal,host,port,path,newscheme);
-        list.add(e);
+        Entry newentry = new Entry(entry);
+        list.add(newentry);
     }
 
     return rval;
 }
 
 /**
- *
- * @param uri
+ * @param session
+ * @param principal
+ * @param host
+ * @param port
+ * @param path
  * @param scheme
- * @return
- * @throws HTTPException
+ * @return true if entry already existed and was replaced
  */
 
-@Urlencoded
-synchronized public boolean
-insert(String principal, String uri, HTTPAuthScheme scheme)
-    throws HTTPException
+static synchronized public boolean
+insert(HTTPSession session,
+       String principal,
+       String host,
+       int port,
+       String path,
+       HTTPAuthScheme scheme)
 {
-    URI uri = new URI(uriencoded);
-    return insert(principal == null ? uri.getUserInfo() : principal,
-                  uri.getHost(),	
-                  uri.getPort(),	
-                  uri.getRawPath(),
-	          scheme);
+    return insert(new Entry(session,principal,host,port,path,scheme));
 }
 
-@Urlencoded
-synchronized public boolean
-insert(String uri, HTTPAuthScheme scheme)
-    throws HTTPException
+
+/**
+ *
+ * @param url
+ * @param scheme
+ * @param creds
+ * @return true if entry already existed and was replaced
+ */
+
+static synchronized public boolean
+insert(HTTPSession session, String pattern, HTTPAuthScheme scheme)
 {
-    return insert(null,uri,scheme);
+    return insert(new Entry(session,pattern,scheme));
 }
 
-synchronized public boolean
-remove(String principal, String host, int port, String path)
-    throws HTTPException
+/**
+ * @param entry
+ * @return true if entry existed and was removed
+ */
+
+static synchronized public boolean
+remove(Entry entry)
 {
     boolean rval = true;
 
-    List<Entry> list = (principal==ANY_PRINCIPAL ? getAllRows()
-                                                 : rows.get(principal));
+    List<Entry> list = (principal==ANY_PRINCIPAL?getAllRows():rows.get(principal));
     if(list == null) rval = false;
     else {
         Entry found = null;
-        for(Entry e: list) {
-            if(host.equals(e.host)
-               && port == e.port
-               && path.equals(path)) {
+        for(Entry e: list)(
+	    if(entry == e
+               || (host.equals(e.host)
+                   && port == e.port
+                   && path.equals(path)
+                   && scheme == e.scheme)) {
                 found = e;
                 break;
             }
@@ -328,93 +396,107 @@ remove(String principal, String host, int port, String path)
 }
 
 /**
- *
- * @throws HTTPException
- */
-synchronized public void
-clear() throws HTTPException
-{
-    rows.clear(); 
-}
-
-public List<Entry>
-getAllRows()
-{
-    List<Entry> elist = new ArrayList<Entry>();
-    for(String key: rows.keySet()) elist.addAll(rows.get(key));
-    return elist;
-}
-
-/**
-Search:
-
-The search pattern is defined by the following sub-patterns:
-1. Principal - This is the most important colum in the key
-   for the rows in the store. It is an abstraction of the username.
-   Comparison is by equal function.
-2. Host - comparison is by equal function; wildcard is specified by ANY_HOST
-3. Port - comparison is by equal function; wildcard is specified by ANY_HOST
-4. path - this represents some prefix of the uri path. This allows specifying
-   authorization on a specific uri substree.
-
-The return list is ordered from most restrictive to least restrictive.
-
+ * @param session
+ * @param principal
+ * @param host
+ * @param port
+ * @param path
+ * @return true if entry existed and was removed
  */
 
-@Urlencoded
-static synchronized public Entry[]
-search(String uri, HTTPAuthScheme scheme)
-    throws HTTPException
-{
-    return search(null,uri,scheme);
-}
-
-@Urlencoded
-static synchronized public Entry[]
-search(String principal, String uri, HTTPAuthScheme scheme)
-    throws HTTPException
-{
-    try {
-        URI U = new URI(uri);
-        return search(principal==null?U.getUserInfo():principal,
-		      U.getHost(),
-                      U.getPort(),
-                      U.getPath(),
-                      scheme);
-    } catch (MalformedURIException mue) {
-        throw new HTTPException(mue);
-    }
-}
-
-synchronized public Entry[]
-search(String principal, String host, int port, String path,
+static synchronized public boolean
+remove(HTTPSession session,
+       String principal,
+       String host,
+       int port,
+       String path,
        HTTPAuthScheme scheme)
     throws HTTPException
 {
+    return insert(new Entry(session,principal,host,port,path,scheme));
+}
+
+
+/**
+ *
+ * @param url
+ * @param scheme
+ * @param creds
+ * @return true if entry existed and was removed
+ */
+
+static synchronized public boolean
+remote(HTTPSession session, String pattern, HTTPAuthScheme scheme)
+{
+    return remove(new Entry(session,pattern,scheme));
+}
+
+/**
+ * Remove all auth store entries
+ */
+static synchronized public void
+clear() throws HTTPException
+{
+   rows.clear(); 
+}
+
+/**
+ * Return all entries in the auth store
+ */
+static public List<Entry>
+getAllRows()
+{
+  List<Entry> elist = new ArrayList<Entry>();
+  for(String key: rows.keySet()) elist.addAll(rows.get(key));
+  return elist;
+}
+
+/**
+ * Search:
+ * 
+ * The search pattern is defined by the following sub-patterns:
+ * 1. Session - comparison is by ==; wildcard is specified by ANY_SESSION
+ * 2. Principal - comparison is by equal function; wildcard is specified by ANY_PRINCIPAL
+ * 3. Host - comparison is by equal function; wildcard is specified by ANY_HOST
+ * 4. Port - comparison is by equal function; wildcard is specified by ANY_PORT
+ * 5. Path - this represents some prefix of the url path. This allows specifying
+ *    authorization on a specific url substree.
+ *    Comparison is by lexical order; wildcard is specified by ANY_PATH
+ * 
+ * The return list is ordered from most restrictive to least restrictive.
+ * 
+ * @param entry
+ * @return list of matching entries
+ */
+static synchronized public Entry[]
+search(Entry entry)
+{
     List<Entry> list = null;
 
-    if(principal == null) principal = ANY_PRINCIPAL;
-    if(host == null) host = ANY_HOST;
-    if(port <= 0) port = ANY_PORT;
-    if(realm == null) realm = ANY_REALM;
-    if(scheme == null) scheme = ANY_SCHEME;
-
-    if(principal == ANY_PRINCIPAL) {
-	    list = getAllRows();
+    if(entry.session == ANY_SESSION) {
+        list = getAllRows();
     } else { // singleton
-	    list = rows.get(principal);
+	list = rows.get(session);
     }
 
     List<Entry> matches = new ArrayList<Entry>();
     for(Entry e: list) {
-	if(!principal.equals(ANY_PRINCIPAL) && !e.principal.equals(ANY_PRINCIPAL) && !principal.equals(e.principal)) continue;
-	if(!host.equals(ANY_HOST) && !e.host.equals(ANY_HOST) && !host.equals(e.host)) continue;
-	if(port != ANY_PORT && e.port != ANY_PORT && port != e.port) continue;
-	if(!path.equals(ANY_PATH) && !e.path.equals(ANY_PATH)
-           && path.compareTo(e.path) >= 0)
-	    continue;
-	    Entry newe = (Entry)e.duplicate();
-	    matches.add(newe);
+	if(entry.session != ANY_SESSION
+           && e.session != ANY_SESSION
+           && entry.session != e.session) continue;
+	if(!principal.equals(ANY_PRINCIPAL)
+           && !e.principal.equals(ANY_PRINCIPAL)
+           && !principal.equals(e.principal)) continue;
+	if(!host.equals(ANY_HOST)
+           && !e.host.equals(ANY_HOST)
+           && !host.equals(e.host)) continue;
+	if(port != ANY_PORT
+           && e.port != ANY_PORT
+           && port != e.port) continue;
+	if(!path.equals(ANY_PATH)
+           && !e.path.equals(ANY_PATH)
+           && path.compareTo(e.path) >= 0) continue;
+	matches.add(new Entry(e);
     }
     // Sort based on the comparison function below
     Entry[] matchvec = matches.toArray(new Entry[matches.size()]);
@@ -422,27 +504,49 @@ search(String principal, String host, int port, String path,
     return matchvec;
 }
 
+/**
+ * 
+ * @param session
+ * @param principal
+ * @param host
+ * @param port
+ * @param path
+ * @return list of matching entries
+ */
+ 
+static synchronized public Entry[]
+search(HTTPSession session, String principal, String host, int port, String path)
+{
+    return search(new Entry(session,principal,host,port,path,null);
+}
+
+/**
+ * @param session
+ * @param pattern
+ * @return list of matching entries
+ */
+static synchronized public Entry[]
+search(HTTPSession session, String pattern)
+{
+    return search(new Entry(session,pattern,null);
+}
+
 //////////////////////////////////////////////////
 // Misc.
+
 
 static public AuthScope
 getAuthScope(Entry entry)
 {
+    if(entry == null) return null;
     String host = entry.host;
     int port = entry.port;
-    String realm = entry.host;
-    String scheme = null;
+    String realm = entry.path;
+    String scheme = (entry.scheme == null ? null : entry.scheme.getSchemeName());
 
     if(host == ANY_HOST) host = AuthScope.ANY_HOST;
     if(port == ANY_PORT) port = AuthScope.ANY_PORT;
-    if(realm == ANY_REALM) realm = AuthScope.ANY_REALM;
-    if(entry.scheme == ANY_SCHEME)
-        scheme = null;
-    else
-	scheme = entry.scheme.getScheme();
-    default: break;
-    }
-
+    if(realm == ANY_PATH) realm = AuthScope.ANY_REALM;
     AuthScope as = new AuthScope(host,port,realm,scheme);
     return as;
 }
