@@ -33,9 +33,9 @@
 
 package ucar.grib.grib1;
 
-import org.hamcrest.core.Is;
 import ucar.grib.GribResourceReader;
 import ucar.grib.NotSupportedException;
+import ucar.nc2.grib.table.GribTables;
 import ucar.nc2.iosp.grid.GridParameter;
 
 import java.io.*;
@@ -410,18 +410,22 @@ public class GribPDSParamTable {
     if (filename.endsWith(".tab"))
       readParameterTableTab();
     else if (filename.endsWith(".wrf"))
-      readParameterTableWrf("\\|", new int[]{0, 3, 1, 2});
+      readParameterTableSplit("\\|", new int[]{0, 3, 1, 2});
+    else if (filename.endsWith(".dss"))
+      readParameterTableSplit("\t", new int[]{0, -1, 1, 2});
 
     return parameters;
   }
 
   // order: num, name, desc, unit
-  private boolean readParameterTableWrf(String regexp, int[] order) {
+  private boolean readParameterTableSplit(String regexp, int[] order) {
     HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
 
     InputStream is = null;
     try {
       is = GribResourceReader.getInputStream(path);
+      if (is == null) return false;
+
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
       // rdg - added the 0 line length check to cover the case of blank lines at
@@ -433,10 +437,10 @@ public class GribPDSParamTable {
         String[] flds = line.split(regexp);
 
         GridParameter parameter = new GridParameter();
-        parameter.setNumber(Integer.parseInt(flds[order[0]].trim()));
-        parameter.setName(flds[order[1]].trim());
-        parameter.setDescription(flds[order[2]].trim());
-        parameter.setUnit(flds[order[3]].trim());
+        parameter.setNumber(Integer.parseInt(flds[order[0]].trim())); // must have a number
+        if (order[1] >= 0) parameter.setName(flds[order[1]].trim());
+        parameter.setDescription(GribTables.cleanupDescription(flds[order[2]].trim()));
+        if (flds.length > order[3]) parameter.setUnit(flds[order[3]].trim());
         result.put(parameter.getNumber(), parameter);
         if (debug)
           System.out.printf(" %s%n", parameter);

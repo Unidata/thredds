@@ -3,7 +3,8 @@ package ucar.nc2.ui;
 import ucar.grib.GribResourceReader;
 import ucar.grib.NotSupportedException;
 import ucar.grib.grib1.GribPDSParamTable;
-import ucar.nc2.ft.scan.FeatureScan;
+import ucar.nc2.ui.dialog.BufrBCompare;
+import ucar.nc2.ui.dialog.Grib1TableCompareDialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.iosp.grid.*;
@@ -11,7 +12,6 @@ import ucar.nc2.ui.dialog.Grib1TableDialog;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.TableParser;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -22,8 +22,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -45,7 +45,8 @@ public class Grib1TablesViewer extends JPanel {
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 
-  private Grib1TableDialog dialog;
+  private Grib1TableDialog showTableDialog;
+  private Grib1TableCompareDialog compareTableDialog;
 
   public Grib1TablesViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -72,25 +73,17 @@ public class Grib1TablesViewer extends JPanel {
         TableBean bean = (TableBean) codeTable.getSelectedBean();
         if (bean == null) return;
 
-        GribPDSParamTable wmo = null;
-        try {
-          wmo = GribPDSParamTable.getParameterTable( 0, 0, bean.getVersion());
-        } catch (NotSupportedException e1) {
-          infoTA.setText(e1.toString());
-          infoWindow.showIfNotIconified();
-          return;
+         if (compareTableDialog == null) {
+          compareTableDialog = new Grib1TableCompareDialog( (Frame) null);
+          compareTableDialog.pack();
+          compareTableDialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
+             public void propertyChange(PropertyChangeEvent evt) {
+               compareToStandard((Grib1TableCompareDialog.Data) evt.getNewValue());
+             }
+           });
         }
-        if (wmo == null) {
-          infoTA.setText("Cant find WMO version "+bean.getVersion());
-          infoWindow.showIfNotIconified();
-          return;
-        }
-
-        Formatter f = new Formatter();
-        compare(wmo, bean.table, false, f);
-        infoTA.setText(f.toString());
-        infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        compareTableDialog.setTable1(bean);
+        compareTableDialog.setVisible(true);
       }
     });
 
@@ -101,7 +94,7 @@ public class Grib1TablesViewer extends JPanel {
           TableBean bean1 = (TableBean) list.get(0);
           TableBean bean2 = (TableBean) list.get(1);
           Formatter f = new Formatter();
-          compare(bean1.table, bean2.table, true, f);
+          //compare(bean1.table, bean2.table, true, f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.showIfNotIconified();
@@ -130,11 +123,11 @@ public class Grib1TablesViewer extends JPanel {
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Table Used", false);
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if (dialog == null) {
-          dialog = new Grib1TableDialog( (Frame) null);
-          dialog.pack();
+        if (showTableDialog == null) {
+          showTableDialog = new Grib1TableDialog( (Frame) null);
+          showTableDialog.pack();
         }
-        dialog.setVisible(true);
+        showTableDialog.setVisible(true);
       }
     });
     buttPanel.add(infoButton);
@@ -145,7 +138,7 @@ public class Grib1TablesViewer extends JPanel {
       for (GribPDSParamTable t : tables) {
         beans.add(new TableBean(t));
       }
-      Collections.sort(beans);
+      //Collections.sort(beans);
       codeTable.setBeans(beans);
 
     } catch (Exception e) {
@@ -155,9 +148,10 @@ public class Grib1TablesViewer extends JPanel {
   }
 
   private void showFile(TableBean bean) {
+    infoTA.setText("Table:" + bean.getPath() + "\n");
     InputStream is = GribResourceReader.getInputStream(bean.getPath());
     try {
-      infoTA.setText( IO.readContents(is));
+      infoTA.appendLine( IO.readContents(is));
       infoWindow.setVisible(true);
       
     } catch (IOException e) {
@@ -173,13 +167,35 @@ public class Grib1TablesViewer extends JPanel {
 */
   public void setFilename(String filename) throws IOException {
     GribPDSParamTable table = new GribPDSParamTable(filename);
-    codeTable.addBean(new TableBean(table));
+    TableBean bean = new TableBean(table);
+    codeTable.addBean( bean);
+    codeTable.setSelectedBean(bean);
   }
 
-  private boolean skipNames = false;
-  private boolean skipUnits = false;
-  private boolean skipDesc = false;
-  private void compare(GribPDSParamTable t1, GribPDSParamTable t2, boolean showMissing, Formatter out) {
+
+  private void compareToStandard(Grib1TableCompareDialog.Data data) {
+    GribPDSParamTable wmo = null;
+    try {
+      wmo = GribPDSParamTable.getParameterTable(0, 0, data.table1bean.getVersion());
+    } catch (NotSupportedException e1) {
+      infoTA.setText(e1.toString());
+      infoWindow.showIfNotIconified();
+      return;
+    }
+    if (wmo == null) {
+      infoTA.setText("Cant find WMO version "+data.table1bean.getVersion());
+      infoWindow.showIfNotIconified();
+      return;
+    }
+
+    Formatter f = new Formatter();
+    compare(wmo, data.table1bean.table, data, f);
+    infoTA.setText(f.toString());
+    infoTA.gotoTop();
+    infoWindow.showIfNotIconified();
+  }
+
+  private void compare(GribPDSParamTable t1, GribPDSParamTable t2, Grib1TableCompareDialog.Data data, Formatter out) {
 
     out.format("Compare%n %s%n %s%n", t1.toString(), t2.toString());
     Map<Integer, GridParameter> h1 = t1.getParameters();
@@ -191,24 +207,24 @@ public class Grib1TablesViewer extends JPanel {
       GridParameter d1 = h1.get(key);
       GridParameter d2 = h2.get(key);
       if (d2 == null) {
-        if (showMissing) out.format("**No key %s (%s) in second table%n", key, d1);
+        if (data.showMissing) out.format("**No key %s (%s) in second table%n", key, d1);
       } else {
-        if (!skipNames) {
+        if (data.compareNames) {
           if (!equiv(d1.getName(), d2.getName()))
             out.format(" %d name%n   %s%n   %s%n", d1.getNumber(), d1.getName(), d2.getName());
         }
-        if (!skipUnits) {
+        if (data.compareUnits) {
           if (!equiv(d1.getUnit(), d2.getUnit()))
             out.format(" %s units%n   %s%n   %s%n", d1.getNumber(), d1.getUnit(), d2.getUnit());
         }
-        if (!skipDesc) {
+        if (data.compareDesc) {
           if (!equiv(d1.getDescription(), d2.getDescription()))
             out.format(" %s desc%n   %s%n   %s%n", d1.getNumber(), d1.getDescription(), d2.getDescription());
         }
       }
     }
 
-    if (showMissing) {
+    if (data.showMissing) {
       out.format("%n***Check if entries are missing in first table%n");
       keys = new ArrayList<Integer>(h2.keySet());
       Collections.sort(keys);
