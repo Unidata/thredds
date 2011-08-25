@@ -12,6 +12,7 @@
     <content url="file://$MODULE_DIR$/../../ldm" />
     <orderEntry type="jdk" jdkName="1.6" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="cdm" />
     <orderEntry type="library" name="Spring" level="project" />
   </component>
