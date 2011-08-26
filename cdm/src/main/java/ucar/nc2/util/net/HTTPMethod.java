@@ -217,6 +217,8 @@ public int execute() throws HTTPException
         }
         setcontent();
 
+	setAuthentication(session);
+
         try {
             session.sessionClient.executeMethod(method);
         } catch (IllegalArgumentException iae) {
@@ -588,8 +590,84 @@ boolean sessionCompatible(String other)
     return false;
 }
 
+private void
+setAuthentication(HTTPSession session)
+{
+    // Handle authentication
+    String principal = session.getPrincipal();
+    if (principal == null) principal = session.getGlobalPrincipal();
+    if (principal == null) principal = HTTPAuthStore.ANY_PRINCIPAL;
+   
+    String uri = session.getURI();
 
+    // Look for matching items for this session (and principal, if specified); global
+    // entries will be after per-session entries.
+    HTTPAuthStore.Entry[] entries = HTTPAuthStore.search(this, principal, uri);
 
+    // Look for both a proxy entry and a non-proxy entry;
+    // use first found because search will have ordered the list from most
+    // restrictive to least restrictive
+    HTTPAuthStore.Entry proxyentry = null;
+    HTTPAuthStore.Entry authentry = null;
+    for (HTTPAuthStore.Entry entry : entries) {
+        if (entry.scheme == HTTPAuthStore.Scheme.PROXY && proxyentry == null)
+            proxyentry = entry;
+        else if (authentry == null)
+            authentry = entry;
+    }
 
+    HTTPAuthScheme thescheme = null;
+    if (authentry != null) {
+        thescheme = authentry.scheme;
+	switch (thescheme.getScheme()) {
+        case BASIC: case DIGEST:
+            AuthScope as = HTTPAuthStore.getAuthScope(authentry);
+            AuthState astate = method.getHostAuthState();
+            astate.setAuthScheme(thescheme);
+	    break;
+	case KEYSTORE: break;
+	default:
+            throw new HTTPException("HTTPMethod: AuthStore cannot obtain credentials for: "+uriencoded);
+	}
+    }
+
+    if (proxyentry != null) {
+        thescheme = proxyentry.scheme;
+        AuthScope as = HTTPAuthStore.getAuthScope(proxyentry);
+        AuthState astate = method.getProxyAuthState();
+        astate.setAuthScheme(thescheme); // for all proxies
+    }
+
+    if(thescheme != null) {
+        // Depending on the scheme, put the provide in a place where it can be reached when needed
+
+        // Create pseudo CredentialsProvider wrapper
+        HTTPAuthManager provider = new HTTPAuthManager(this,thescheme,principal,authentry,proxyentry);
+
+	switch (thescheme.getScheme()) {
+        case BASIC: case DIGEST: case PROXY:
+	    session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,provider);
+	    break
+	case KEYSTORE:
+	    // Pass down info to the socket factory
+            HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
+            hcp.setParameter(HTTPAuthScheme.SCHEME,thescheme);
+	    break;
+	default:
+	    break; // ignore
+        }
 }
 
+public HTTPSession
+getSession()
+{
+    return this.session;
+}
+
+public HttpMethodBase
+getMethod()
+{
+    return this.method;
+}
+
+}

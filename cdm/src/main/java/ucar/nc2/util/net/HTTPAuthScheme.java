@@ -61,7 +61,7 @@ import static ucar.nc2.util.net.HTTPAuthStore.*;
  * is intended to be broader than that interface.
  */
 
-public class HTTPAuthScheme implements Serializable
+public class HTTPAuthScheme implements Serializable, AuthScheme
 {
 
 //////////////////////////////////////////////////
@@ -106,9 +106,9 @@ static final public Scheme PROXY = Scheme.PROXY;
 static final String PRINCIPAL = "ucar.nc2.principal";
 static final String URI = "ucar.nc2.uri";
 static final String CREDENTIALSPROVIDER = "ucar.nc2.credentialsprovider";
-static final String KEYSTORE = "ucar.nc2.keystore";
+static final String KEYSTOREPATH = "ucar.nc2.keystore";
 static final String KEYSTOREPASSWORD = "ucar.nc2.keystorepassword";
-static final String TRUSTSTORE = "ucar.nc2.truststore";
+static final String TRUSTSTOREPATH = "ucar.nc2.truststore";
 static final String TRUSTSTOREPASSWORD = "ucar.nc2.truststorepassword";
 static final String CREDENTIALS = "ucar.nc2.credentials";
 static final String AUTHSTRING = "ucar.nc2.authstring";
@@ -124,12 +124,12 @@ static public final String PROXY_AUTH_RESP = "Proxy-Authorization"; // from Http
 protected HashMap<String, Object> params;
 protected AuthScheme basescheme;
 protected String schemename;
-protected HTTPAuthStore.Scheme scheme;
+protected HTTPAuthScheme.Scheme scheme;
 
 //////////////////////////////////////////////////
 // Constructor(s)
 
-public HTTPAuthScheme(HTTPAuthStore.Scheme scheme)
+public HTTPAuthScheme(HTTPAuthScheme.Scheme scheme)
 {
     params = new HashMap<String, Object>();
     this.scheme = scheme;
@@ -201,9 +201,9 @@ setKeystore(String keypath, String keypwd)
 public HTTPAuthScheme
 setKeyStore(String keypath, String keypwd, String trustpath, String trustpwd)
 {
-    insert(KEYSTORE, keypath);
+    insert(KEYSTOREPATH, keypath);
     insert(KEYSTOREPASSWORD, keypwd);
-    insert(TRUSTSTORE, trustpath);
+    insert(TRUSTSTOREPATH, trustpath);
     insert(TRUSTSTOREPASSWORD, trustpwd);
     return this;
 }
@@ -274,7 +274,7 @@ private void writeObject(java.io.ObjectOutputStream ostream)
     ostream.writeObject(scheme);
 
     switch (scheme) {
-    case BASIC:
+    case BASIC:  case PROXY:
         CredentialsProvider cp = (CredentialsProvider) get(CREDENTIALSPROVIDER);
         if (cp != null) {
             // This is a bit tricky; if the provider cannot be serialized,
@@ -295,12 +295,12 @@ private void writeObject(java.io.ObjectOutputStream ostream)
         ostream.writeObject(get(PASSWORD));
         break;
     case KEYSTORE:
-        ostream.writeObject(get(KEYSTORE));
+        ostream.writeObject(get(KEYSTOREPATH));
         ostream.writeObject(get(KEYSTOREPASSWORD));
-        ostream.writeObject(get(TRUSTSTORE));
+        ostream.writeObject(get(TRUSTSTOREPATH));
         ostream.writeObject(get(TRUSTSTOREPASSWORD));
         break;
-    default:
+    case NULL:
         throw new NotSerializableException();
     }
 }
@@ -314,7 +314,7 @@ private void readObject(java.io.ObjectInputStream istream)
     if (scheme != null) insert(SCHEME,scheme);
 
     switch (scheme) {
-    case BASIC:
+    case BASIC: case PROXY:
         boolean canserialize = istream.readBoolean();
         CredentialsProvider cp = null;
         if (canserialize) {
@@ -338,12 +338,12 @@ private void readObject(java.io.ObjectInputStream istream)
         String keystorepassword = (String) istream.readObject();
         String truststore = (String) istream.readObject();
         String truststorepassword = (String) istream.readObject();
-        if (keystore != null) insert(KEYSTORE, keystore);
+        if (keystore != null) insert(KEYSTOREPATH, keystore);
         if (keystorepassword != null) insert(KEYSTOREPASSWORD, keystorepassword);
-        if (truststore != null) insert(TRUSTSTORE, truststore);
+        if (truststore != null) insert(TRUSTSTOREPATH, truststore);
         if (truststorepassword != null) insert(TRUSTSTOREPASSWORD, truststorepassword);
         break;
-    default:
+    case NULL:
         throw new NotSerializableException();
     }
 
@@ -430,4 +430,74 @@ authenticate(Credentials credentials, HttpMethod httpMethod) throws Authenticati
 }
 NOT IMPLEMENTED */
 
+//////////////////////////////////////////////////
+// AuthScheme Interface
+
+public void
+processChallenge(String url)
+    throws MalformedChallengeException
+{
+    this.basescheme.processChallenge();
 }
+    
+/**
+ * Subclass must implement
+ */
+
+public String getSchemeName()
+{
+    return this.schemename;
+}
+    
+public String
+getParameter(String key)
+{
+    Object value = params.get(key);
+    if(value == null)
+	value = this.basescheme.getParameter();
+    if(value != null) value = value.toString();
+    return value;
+}
+    
+public String
+getRealm()
+{
+    return this.basescheme.getRealm();
+}
+    
+@Deprecated
+public String
+getID()
+{
+    return this.basescheme.getID();
+}
+    
+public boolean
+isConnectionBased()
+{
+    return this.basescheme.isConnectionBased();
+}
+    
+public boolean
+isComplete()
+{
+    return this.basescheme.isComplete();
+}
+    
+@Deprecated
+public String
+authenticate(Credentials credentials, String url, String url1)
+    throws AuthenticationException
+{
+    return this.basescheme.authenticate(credentials,url,url1);
+}
+    
+public String
+authenticate(Credentials credentials, HttpMethod httpMethod)
+    throws AuthenticationException
+{
+    return this.basescheme.authenticate(credentials,method);
+}
+
+}//HTTPAuthScheme
+

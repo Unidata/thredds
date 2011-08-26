@@ -436,9 +436,9 @@ remove(HTTPSession session,
 
 /**
  *
- * @param url
+ * @param session
+ * @param pattern
  * @param scheme
- * @param creds
  * @return true if entry existed and was removed
  */
 
@@ -491,12 +491,14 @@ search(Entry entry)
 {
     List<Entry> list = null;
 
-    if(entry.session == ANY_SESSION) {
+    // Search will actually look at both per-session and global session entries.
+    // The final result will have all globals after all per-session entries.
+    if(entry.session == ANY_SESSION)
         list = getAllRows();
-    } else { // singleton
+    else {
 	list = rows.get(entry.session);
+	list.addAll(rows.get(ANY_SESSION);
     }
-
     List<Entry> matches = new ArrayList<Entry>();
     for(Entry e: list) {
 	if(entry.session != ANY_SESSION
@@ -545,6 +547,18 @@ search(HTTPSession session, String principal, String host, int port, String path
  */
 static synchronized public Entry[]
 search(HTTPSession session, String pattern)
+    throws HTTPException
+{
+    return search(new Entry(session,pattern,null));
+}
+
+/**
+ * @param session
+ * @param pattern
+ * @return list of matching entries
+ */
+static synchronized public Entry[]
+search(HTTPSession session, String principal, String pattern)
     throws HTTPException
 {
     return search(new Entry(session,pattern,null));

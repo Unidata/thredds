@@ -39,8 +39,9 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.params.*;
 import org.apache.commons.httpclient.protocol.Protocol;
 
-import java.net.Authenticator;
+import java.net.URI;
 import java.net.PasswordAuthentication;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -230,7 +231,7 @@ public class HTTPSession
 	try {
 	    // See if we can extract the global principal
 	    URI uri = new URI(uriencoded);
-	    this.globalPrincipal = url.getUserInfo();
+	    this.globalPrincipal = uri.getUserInfo();
 	    if(this.globalPrincipal != null) {
 		// rebuild the uri without the principal
 		String newuri = removeprincipal(uriencoded);
@@ -408,18 +409,36 @@ public class HTTPSession
 
     static public String
     removeprincipal(String u)
-	throws URISyntaxException
     {
-	String newuri = null;
-        URI uri = new URI(u);
-   	// rebuild the uri without the principal
-   	newuri = new URI(uri.getScheme(),
-                                    null;
+	    String newuri = null;
+        try {
+            URI uri = new URI(u);
+   	    // rebuild the uri without the principal
+   	    newuri = new java.net.URI(uri.getScheme(),
+                                    null,
                                     uri.getHost(),
                                     uri.getPort(),
                                     uri.getPath(),
                                     uri.getQuery(),
-                                    uri.getFragment()).toAsciiString();
+                                    uri.getFragment()).toASCIIString();
+        } catch (URISyntaxException use) {newuri=u;}
+	    return newuri;
+    }
+
+    static public String
+    addprincipal(String u, String principal)
+	throws URISyntaxException
+    {
+	String newuri = null;
+    URI uri = new java.net.URI(u);
+   	// rebuild the uri without the specified principal
+   	newuri = new java.net.URI(uri.getScheme(),
+                                    principal,
+                                    uri.getHost(),
+                                    uri.getPort(),
+                                    uri.getPath(),
+                                    uri.getQuery(),
+                                    uri.getFragment()).toASCIIString();
 	return newuri;
     }
 
@@ -463,8 +482,8 @@ public class HTTPSession
         sessionProvider = provider;
 	// Add entry to AuthStore
 	HTTPAuthScheme scheme =
-	    new HTTPAuthScheme(HTTPAuthStore.BASIC).setCredentialsProvider(provider);
-	AuthStore.insert(this,globalPrincipal,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
+	    new HTTPAuthScheme(HTTPAuthScheme.BASIC).setCredentialsProvider(provider);
+	HTTPAuthStore.insert(this,globalPrincipal,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
     }
 
     static synchronized public void
@@ -473,8 +492,8 @@ public class HTTPSession
         globalProvider = cp;
 	// Add entry to AuthStore
 	HTTPAuthScheme scheme =
-	    new HTTPAuthScheme(HTTPAuthStore.BASIC).setCredentialsProvider(provider);
-	AuthStore.insert(ANY_SESSION,globalPrincipal,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
+	    new HTTPAuthScheme(HTTPAuthScheme.BASIC).setCredentialsProvider(cp);
+	HTTPAuthStore.insert(ANY_SESSION,globalPrincipal,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
     }
 
 /* NOTUSED
