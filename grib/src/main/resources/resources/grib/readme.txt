@@ -30,3 +30,4 @@ GRIB1 CHANGES
   WMO_GRIB1.59-0.2.xml: many extra in ours; units are messed up in about 25 of ours; different 53, 198
   WMO_GRIB1.34-0.3.xml: about 10 extra in ours.
   WMO_GRIB1.7-1.132.xml: udunits differ: 3,103,178,179;
+  WMO_GRIB1.xml against wmo_2_v3.tab: udunits 4 wrong, 3 right;

@@ -32,7 +32,7 @@
  */
 package ucar.nc2.iosp.grid;
 
-import ucar.nc2.grib.table.GribTables;
+import ucar.jpeg.jj2000.j2k.util.StringFormatException;
 
 /**
  * Class which represents a grid parameter.
@@ -46,10 +46,8 @@ public class GridParameter {
   protected String name;
   protected String description;
   protected String unit;
+  protected String cf_name; // CF standard name, if it exists
 
-  /**
-   * constructor.
-   */
   public GridParameter() {
     number = -1;
     name = "undefined";
@@ -57,14 +55,6 @@ public class GridParameter {
     unit = "undefined";
   }
 
-  /**
-   * constructor.
-   *
-   * @param number
-   * @param name
-   * @param description
-   * @param unit        of parameter
-   */
   public GridParameter(int number, String name, String description, String unit) {
     this.number = number;
     this.name = name;
@@ -72,20 +62,18 @@ public class GridParameter {
     this.unit = unit;
   }
 
-  /**
-   * number of parameter.
-   *
-   * @return number
-   */
+  public GridParameter(int number, String name, String description, String unit, String cf_name) {
+    this.number = number;
+    this.name = name;
+    this.description = description;
+    this.unit = unit;
+    this.cf_name = cf_name;
+  }
+
   public final int getNumber() {
     return number;
   }
 
-  /**
-   * name of parameter.
-   *
-   * @return name
-   */
   public final String getName() {
     return name;
   }
@@ -106,6 +94,10 @@ public class GridParameter {
    */
   public final String getUnit() {
     return unit;
+  }
+
+  public String getCFname() {
+    return cf_name;
   }
 
   /**

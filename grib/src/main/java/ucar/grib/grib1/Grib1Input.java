@@ -59,6 +59,7 @@ import java.util.regex.Pattern;
  */
 
 public final class Grib1Input {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Input.class);
 
   /*
   * raf for grib file
@@ -170,6 +171,11 @@ public final class Grib1Input {
           } else {
             dataOffset = raf.getFilePointer();
           }
+
+        } catch (NotSupportedException e) {
+          logger.error("NotSupportedException: " + e.getMessage() + " on file " + raf.getLocation());
+          raf.seek(EOR);
+          continue;
 
         } catch (Exception e) {
           //.println( "Caught Exception scannning record" );

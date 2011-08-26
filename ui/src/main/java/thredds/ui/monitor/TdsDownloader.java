@@ -63,12 +63,11 @@ public class TdsDownloader {
   private JTextArea ta;
   private CancelTask cancel;
 
-  TdsDownloader(JTextArea ta, ManageForm.Data config, Type type, CredentialsProvider provider) throws IOException {
+  TdsDownloader(JTextArea ta, ManageForm.Data config, Type type) throws IOException {
     this.ta = ta;
     this.config = config;
     this.type = type;
 
-    HTTPSession.setGlobalCredentialsProvider(provider);
     HTTPSession.setGlobalUserAgent("TdsMonitor");
 
     localDir = LogLocalManager.getDirectory(config.server, type.toString());

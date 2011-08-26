@@ -36,7 +36,6 @@ package ucar.grib.grib1;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import thredds.cataloggen.config.DatasetSourceStructure;
 import ucar.grib.GribResourceReader;
 import ucar.grib.NotSupportedException;
 import ucar.nc2.grib.table.GribTables;
@@ -68,8 +67,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GribPDSParamTable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribPDSParamTable.class);
 
-  static private final String RESOURCE_PATH = "resources/grib/tables";
-  static private final String TABLE_LIST = "tablelookup.lst";
+  static private final String RESOURCE_PATH = "resources/grib1";
+  static private final String TABLE_LIST = "grib1Tables.txt";
 
   static private final Pattern valid = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\+]*$");
   static private final Pattern numberFirst = Pattern.compile("^[0-9]");
@@ -235,7 +234,6 @@ public class GribPDSParamTable {
     table = readParameterTable(center, subcenter, tableVersion);
 
     if (table == null) {
-      logger.error("GribPDSParamTable: cannot find table for center, subcenter, table " + key);
       throw new NotSupportedException("Could not find a table entry for GRIB file with center: "
               + center + " subCenter: " + subcenter + " number: " + tableVersion);
     }
@@ -287,7 +285,7 @@ public class GribPDSParamTable {
       }
     }
 
-    return defaultTable;
+    return null;
   }
 
   /**
@@ -393,7 +391,7 @@ public class GribPDSParamTable {
     logger.warn("GribPDSParamTable: Could not find parameter " + id + " for center:" + center_id
             + " subcenter:" + subcenter_id + " number:" + version + " table " + filename);
     String unknown = "UnknownParameter_" + Integer.toString(id) + "_table_" + filename;
-    return new GridParameter(id, unknown, unknown, "Unknown");
+    return new GridParameter(id, unknown, unknown, "Unknown", null);
   }
 
   @Override
@@ -419,8 +417,66 @@ public class GribPDSParamTable {
       readParameterTableSplit("\t", new int[]{0, -1, 1, 2});
     else if (filename.endsWith(".xml"))
       readParameterTableXml();
+    else if (filename.endsWith(".htm"))
+      readParameterTableNcepScrape();
 
     return parameters;
+  }
+
+
+  /*
+    <tr>
+      <td>
+      <center>243</center>
+      </td>
+      <td>Deep convective moistening rate</td>
+      <td>kg/kg/s</td>
+      <td>CNVMR</td>
+    </tr>
+   */
+  private boolean readParameterTableNcepScrape() {
+    InputStream is = null;
+    try {
+      is = GribResourceReader.getInputStream(path);
+      if (is == null) return false;
+
+      SAXBuilder builder = new SAXBuilder();
+      org.jdom.Document doc = builder.build(is);
+      Element root = doc.getRootElement();
+
+      HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
+
+      List<Element> params = root.getChildren("tr");
+      for (Element elem1 : params) {
+        List<Element> elems = elem1.getChildren("td");
+        Element e1 = elems.get(0);
+        String codeS = e1.getChildText("center");
+        int code = Integer.parseInt(codeS);
+        String desc = elems.get(1).getText();
+        String units = elems.get(2).getText();
+        String name = elems.get(3).getText();
+
+        GridParameter parameter = new GridParameter(code, name, desc, units);
+        result.put(parameter.getNumber(), parameter);
+        if (debug) System.out.printf(" %s%n", parameter);
+      }
+      parameters = result;
+      return true;
+
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      return false;
+
+
+    } catch (JDOMException e) {
+      e.printStackTrace();
+      return false;
+    } finally {
+      if (is != null) try {
+        is.close();
+      } catch (IOException e) {
+      }
+    }
   }
 
   /* http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.60-1.3.xml
@@ -436,20 +492,21 @@ public class GribPDSParamTable {
       if (is == null) return false;
 
       SAXBuilder builder = new SAXBuilder();
-      org.jdom.Document doc = builder.build(path);
+      org.jdom.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
       HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
 
-      List<Element> disciplines = root.getChildren("parameter");
-      for (Element elem1 : disciplines) {
+      List<Element> params = root.getChildren("parameter");
+      for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));
         String desc = elem1.getChildText("description");
         if (desc == null) continue;
         String units = elem1.getChildText("units");
         if (units == null) units = "";
-        String name = elem1.getChildText("CF");
-        GridParameter parameter = new GridParameter(code, name, desc, units);
+        String name = elem1.getChildText("shortName");
+        String cf = elem1.getChildText("CF");
+        GridParameter parameter = new GridParameter(code, name, desc, units, cf);
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
       }

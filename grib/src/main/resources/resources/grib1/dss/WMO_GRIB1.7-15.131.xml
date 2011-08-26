@@ -1,0 +1,1343 @@
+<?xml version="1.0" ?>
+<parameterMap>
+  <title>NCEP Parameter Code Table 131</title>
+  <parameter code="1">
+    <shortName>PRES</shortName>
+    <description>Pressure</description>
+    <units>Pa</units>
+    <GCMD ifLevelType="1">EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Surface Pressure</GCMD>
+    <GCMD ifLevelType="2">EARTH SCIENCE > Atmosphere > Clouds > Cloud Base Pressure</GCMD>
+    <GCMD ifLevelType="3">EARTH SCIENCE > Atmosphere > Clouds > Cloud Top Pressure</GCMD>
+    <GCMD ifLevelType="7">EARTH SCIENCE > Atmosphere > Altitude > Tropopause</GCMD>
+    <GCMD ifLevelType="102">EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Sea Level Pressure</GCMD>
+    <GCMD ifLevelType="212">EARTH SCIENCE > Atmosphere > Clouds > Cloud Base Pressure</GCMD>
+    <GCMD ifLevelType="213">EARTH SCIENCE > Atmosphere > Clouds > Cloud Top Pressure</GCMD>
+    <GCMD ifLevelType="222">EARTH SCIENCE > Atmosphere > Clouds > Cloud Base Pressure</GCMD>
+    <GCMD ifLevelType="223">EARTH SCIENCE > Atmosphere > Clouds > Cloud Top Pressure</GCMD>
+    <GCMD ifLevelType="232">EARTH SCIENCE > Atmosphere > Clouds > Cloud Base Pressure</GCMD>
+    <GCMD ifLevelType="233">EARTH SCIENCE > Atmosphere > Clouds > Cloud Top Pressure</GCMD>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Hydrostatic Pressure</GCMD>
+  </parameter>
+  <parameter code="2">
+    <shortName>PRMSL</shortName>
+    <description>Pressure reduced to MSL</description>
+    <units>Pa</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Sea Level Pressure</GCMD>
+  </parameter>
+  <parameter code="3">
+    <shortName>PTEND</shortName>
+    <description>Pressure tendency</description>
+    <units>Pa s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Pressure Tendency</GCMD>
+  </parameter>
+  <parameter code="4">
+    <shortName>PVORT</shortName>
+    <description>Pot. vorticity</description>
+    <units>km^2 kg^-1 s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Vorticity</GCMD>
+  </parameter>
+  <parameter code="5">
+    <shortName>ICAHT</shortName>
+    <description>ICAO Standard Atmosphere Reference Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>GP</shortName>
+    <description>Geopotential</description>
+    <units>m^2 s^-2</units>
+    <GCMD ifLevelType="1">EARTH SCIENCE > Land Surface > Topography > Terrain Elevation</GCMD>
+    <GCMD>EARTH SCIENCE > Atmosphere > Altitude > Geopotential Height</GCMD>
+  </parameter>
+  <parameter code="7">
+    <shortName>HGT</shortName>
+    <description>Geopotential height</description>
+    <units>gpm</units>
+    <GCMD ifLevelType="1">EARTH SCIENCE > Land Surface > Topography > Terrain Elevation</GCMD>
+    <GCMD>EARTH SCIENCE > Atmosphere > Altitude > Geopotential Height</GCMD>
+  </parameter>
+  <parameter code="8">
+    <shortName>DIST</shortName>
+    <description>Geometric height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>HSTDV</shortName>
+    <description>Std dev of height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>TOZNE</shortName>
+    <description>Total ozone</description>
+    <units>Dobson</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Air Quality > Tropospheric Ozone</GCMD>
+  </parameter>
+  <parameter code="11">
+    <shortName>TMP</shortName>
+    <description>Temp.</description>
+    <units>K</units>
+    <GCMD ifLevelType="1">EARTH SCIENCE > Land Surface > Land Temperature > Skin Temperature</GCMD>
+    <GCMD ifLevelType="105">EARTH SCIENCE > Atmosphere > Atmospheric Temperature > Surface Air Temperature</GCMD>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Temperature > Air Temperature</GCMD>
+  </parameter>
+  <parameter code="12">
+    <shortName>VTMP</shortName>
+    <description>Virtual temp.</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Temperature > Virtual Temperature</GCMD>
+  </parameter>
+  <parameter code="13">
+    <shortName>POT</shortName>
+    <description>Potential temp.</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Temperature > Potential Temperature</GCMD>
+  </parameter>
+  <parameter code="14">
+    <shortName>EPOT</shortName>
+    <description>Pseudo-adiabatic pot. temp.</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>TMAX</shortName>
+    <description>Max. temp.</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Temperature > Maximum/Minimum Temperature</GCMD>
+  </parameter>
+  <parameter code="16">
+    <shortName>TMIN</shortName>
+    <description>Min. temp.</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Temperature > Maximum/Minimum Temperature</GCMD>
+  </parameter>
+  <parameter code="17">
+    <shortName>DPT</shortName>
+    <description>Dew point temp.</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Dew Point Temperature</GCMD>
+  </parameter>
+  <parameter code="18">
+    <shortName>DEPR</shortName>
+    <description>Dew point depression</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Dew Point Temperature</GCMD>
+  </parameter>
+  <parameter code="19">
+    <shortName>LAPR</shortName>
+    <description>Lapse rate</description>
+    <units>K m^-1</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>VIS</shortName>
+    <description>Visibility</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>RDSP1</shortName>
+    <description>Radar spectra (1)</description>
+  </parameter>
+  <parameter code="22">
+    <shortName>RDSP2</shortName>
+    <description>Radar spectra (2)</description>
+  </parameter>
+  <parameter code="23">
+    <shortName>RDSP3</shortName>
+    <description>Radar spectra (3)</description>
+  </parameter>
+  <parameter code="24">
+    <shortName>PLI</shortName>
+    <description>Parcel lifted index (to 500 hPa)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>TMPA</shortName>
+    <description>Temp. anomaly</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>PRESA</shortName>
+    <description>Pressure anomaly</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>GPA</shortName>
+    <description>Geopotential height anomaly</description>
+    <units>gpm</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Altitude > Geopotential Height</GCMD>
+  </parameter>
+  <parameter code="28">
+    <shortName>WVSP1</shortName>
+    <description>Wave spectra (1)</description>
+  </parameter>
+  <parameter code="29">
+    <shortName>WVSP2</shortName>
+    <description>Wave spectra (2)</description>
+  </parameter>
+  <parameter code="30">
+    <shortName>WVSP3</shortName>
+    <description>Wave spectra (3)</description>
+  </parameter>
+  <parameter code="31">
+    <shortName>WDIR</shortName>
+    <description>Wind direction</description>
+    <units>deg</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Surface Winds</GCMD>
+  </parameter>
+  <parameter code="32">
+    <shortName>WIND</shortName>
+    <description>Wind speed</description>
+    <units>m s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Surface Winds</GCMD>
+  </parameter>
+  <parameter code="33">
+    <shortName>UGRD</shortName>
+    <description>u wind</description>
+    <units>m s^-1</units>
+    <GCMD ifLevelType="105">EARTH SCIENCE > Atmosphere > Atmospheric Winds > Surface Winds</GCMD>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Upper Level Winds</GCMD>
+  </parameter>
+  <parameter code="34">
+    <shortName>VGRD</shortName>
+    <description>v wind</description>
+    <units>m s^-1</units>
+    <GCMD ifLevelType="105">EARTH SCIENCE > Atmosphere > Atmospheric Winds > Surface Winds</GCMD>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Upper Level Winds</GCMD>
+  </parameter>
+  <parameter code="35">
+    <shortName>STRM</shortName>
+    <description>Stream function</description>
+    <units>m^2 s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Streamfunctions</GCMD>
+  </parameter>
+  <parameter code="36">
+    <shortName>VPOT</shortName>
+    <description>Velocity potential</description>
+    <units>m^2 s^-1</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>MNTSF</shortName>
+    <description>Montgomery stream function</description>
+    <units>m^2 s^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Streamfunctions</GCMD>
+  </parameter>
+  <parameter code="38">
+    <shortName>SGCVV</shortName>
+    <description>Sigma coord. vertical velocity</description>
+    <units> s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Vertical Wind Motion</GCMD>
+  </parameter>
+  <parameter code="39">
+    <shortName>VVEL</shortName>
+    <description>Pressure vertical velocity</description>
+    <units>Pa s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Vertical Wind Motion</GCMD>
+  </parameter>
+  <parameter code="40">
+    <shortName>DZDT</shortName>
+    <description>Geometric vertical velocity</description>
+    <units>m s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Vertical Wind Motion</GCMD>
+  </parameter>
+  <parameter code="41">
+    <shortName>ABSV</shortName>
+    <description>Absolute vorticity</description>
+    <units> s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Vorticity</GCMD>
+  </parameter>
+  <parameter code="42">
+    <shortName>ABSD</shortName>
+    <description>Absolute divergence</description>
+    <units> s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Convergence/Divergence</GCMD>
+  </parameter>
+  <parameter code="43">
+    <shortName>RELV</shortName>
+    <description>Relative vorticity</description>
+    <units> s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Vorticity</GCMD>
+  </parameter>
+  <parameter code="44">
+    <shortName>RELD</shortName>
+    <description>Relative divergence</description>
+    <units> s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Convergence/Divergence</GCMD>
+  </parameter>
+  <parameter code="45">
+    <shortName>VUCSH</shortName>
+    <description>Vertical u shear</description>
+    <units> s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Wind Shear</GCMD>
+  </parameter>
+  <parameter code="46">
+    <shortName>VVCSH</shortName>
+    <description>Vertical v shear</description>
+    <units> s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Wind Shear</GCMD>
+  </parameter>
+  <parameter code="47">
+    <shortName>DIRC</shortName>
+    <description>Direction of current</description>
+    <units>deg</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Circulation > Ocean Currents</GCMD>
+  </parameter>
+  <parameter code="48">
+    <shortName>SPC</shortName>
+    <description>Speed of current</description>
+    <units>m s^-1</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Circulation > Ocean Currents</GCMD>
+  </parameter>
+  <parameter code="49">
+    <shortName>UOGRD</shortName>
+    <description>u of current</description>
+    <units>m s^-1</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Circulation > Ocean Currents</GCMD>
+  </parameter>
+  <parameter code="50">
+    <shortName>VOGRD</shortName>
+    <description>v of current</description>
+    <units>m s^-1</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Circulation > Ocean Currents</GCMD>
+  </parameter>
+  <parameter code="51">
+    <shortName>SPFH</shortName>
+    <description>Specific humidity</description>
+    <units>kg kg^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Humidity</GCMD>
+  </parameter>
+  <parameter code="52">
+    <shortName>RH</shortName>
+    <description>Relative humidity</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Humidity</GCMD>
+  </parameter>
+  <parameter code="53">
+    <shortName>MIXR</shortName>
+    <description>Humidity mixing ratio</description>
+    <units>kg kg^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Humidity</GCMD>
+  </parameter>
+  <parameter code="54">
+    <shortName>PWAT</shortName>
+    <description>Precipitable water</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Precipitable Water</GCMD>
+  </parameter>
+  <parameter code="55">
+    <shortName>VAPP</shortName>
+    <description>Vapor pressure</description>
+    <units>Pa</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Water Vapor</GCMD>
+  </parameter>
+  <parameter code="56">
+    <shortName>SATD</shortName>
+    <description>Saturation deficit</description>
+    <units>Pa</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Water Vapor</GCMD>
+  </parameter>
+  <parameter code="57">
+    <shortName>EVP</shortName>
+    <description>Evaporation</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Evaporation</GCMD>
+  </parameter>
+  <parameter code="58">
+    <shortName>CICE</shortName>
+    <description>Cloud Ice</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Clouds > Cloud Liquid Water/Ice</GCMD>
+  </parameter>
+  <parameter code="59">
+    <shortName>PRATE</shortName>
+    <description>Precipitation rate</description>
+    <units>kg m^-2 s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Rate</GCMD>
+  </parameter>
+  <parameter code="60">
+    <shortName>TSTM</shortName>
+    <description>Thunderstorm probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="61">
+    <shortName>APCP</shortName>
+    <description>Total precipitation</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Amount</GCMD>
+  </parameter>
+  <parameter code="62">
+    <shortName>NCPCP</shortName>
+    <description>Large scale precipitation</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Amount</GCMD>
+  </parameter>
+  <parameter code="63">
+    <shortName>ACPCP</shortName>
+    <description>Convective precipitation</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Amount</GCMD>
+  </parameter>
+  <parameter code="64">
+    <shortName>SRWEQ</shortName>
+    <description>Snowfall rate water equiv.</description>
+    <units>kg m^-2 s^-1</units>
+    <GCMD>EARTH SCIENCE > Hydrosphere > Snow/Ice > Snow Water Equivalent</GCMD>
+  </parameter>
+  <parameter code="65">
+    <shortName>WEASD</shortName>
+    <description>Accum. snow</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Hydrosphere > Snow/Ice > Snow Water Equivalent</GCMD>
+  </parameter>
+  <parameter code="66">
+    <shortName>SNOD</shortName>
+    <description>Snow depth</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Hydrosphere > Snow/Ice > Snow Depth</GCMD>
+  </parameter>
+  <parameter code="67">
+    <shortName>MIXHT</shortName>
+    <description>Mixed layer depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="68">
+    <shortName>TTHDP</shortName>
+    <description>Transient thermocline depth</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Temperature > Thermocline</GCMD>
+  </parameter>
+  <parameter code="69">
+    <shortName>MTHD</shortName>
+    <description>Main thermocline depth</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Temperature > Thermocline</GCMD>
+  </parameter>
+  <parameter code="70">
+    <shortName>MTHA</shortName>
+    <description>Main thermocline anomaly</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Temperature > Thermocline</GCMD>
+  </parameter>
+  <parameter code="71">
+    <shortName>TCDC</shortName>
+    <description>Total cloud cover</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Clouds > Cloud Amount/Frequency</GCMD>
+  </parameter>
+  <parameter code="72">
+    <shortName>CDCON</shortName>
+    <description>Convective cloud cover</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Clouds > Cloud Amount/Frequency</GCMD>
+  </parameter>
+  <parameter code="73">
+    <shortName>LCDC</shortName>
+    <description>Low level cloud cover</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Clouds > Cloud Amount/Frequency</GCMD>
+  </parameter>
+  <parameter code="74">
+    <shortName>MCDC</shortName>
+    <description>Mid level cloud cover</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Clouds > Cloud Amount/Frequency</GCMD>
+  </parameter>
+  <parameter code="75">
+    <shortName>HCDC</shortName>
+    <description>High level cloud cover</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Clouds > Cloud Amount/Frequency</GCMD>
+  </parameter>
+  <parameter code="76">
+    <shortName>CWAT</shortName>
+    <description>Cloud water</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Clouds > Cloud Liquid Water/Ice</GCMD>
+  </parameter>
+  <parameter code="77">
+    <shortName>BLI</shortName>
+    <description>Best lifted index (to 500 hPa)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="78">
+    <shortName>SNOC</shortName>
+    <description>Convective snow</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Snow</GCMD>
+  </parameter>
+  <parameter code="79">
+    <shortName>SNOL</shortName>
+    <description>Large scale snow</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Snow</GCMD>
+  </parameter>
+  <parameter code="80">
+    <shortName>WTMP</shortName>
+    <description>Water temp.</description>
+    <units>K</units>
+    <GCMD ifLevelType="1">EARTH SCIENCE > Oceans > Ocean Temperature > Sea Surface Temperature</GCMD>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Temperature > Water Temperature</GCMD>
+  </parameter>
+  <parameter code="81">
+    <shortName>LAND</shortName>
+    <description>Land-sea coverage (land=1;sea=0)</description>
+    <GCMD>EARTH SCIENCE > Land Surface > Land Use/Land Cover > Land Cover</GCMD>
+  </parameter>
+  <parameter code="82">
+    <shortName>DSLM</shortName>
+    <description>Deviation of sea level from mean</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Oceans > Coastal Processes > Sea Level Rise</GCMD>
+  </parameter>
+  <parameter code="83">
+    <shortName>SFCR</shortName>
+    <description>Surface roughness</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Land Surface > Topography > Surface Roughness</GCMD>
+  </parameter>
+  <parameter code="84">
+    <shortName>ALBDO</shortName>
+    <description>Albedo</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Land Surface > Surface Radiative Properties > Albedo</GCMD>
+  </parameter>
+  <parameter code="85">
+    <shortName>TSOIL</shortName>
+    <description>Soil temp.</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Land Surface > Soils > Soil Temperature</GCMD>
+  </parameter>
+  <parameter code="86">
+    <shortName>SOILM</shortName>
+    <description>Soil moisture content</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Land Surface > Soils > Soil Moisture/Water Content</GCMD>
+  </parameter>
+  <parameter code="87">
+    <shortName>VEG</shortName>
+    <description>Vegetation</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Vegetation Cover</GCMD>
+  </parameter>
+  <parameter code="88">
+    <shortName>SALTY</shortName>
+    <description>Salinity</description>
+    <units>kg kg^-1</units>
+    <GCMD>EARTH SCIENCE > Oceans > Salinity/Density > Salinity</GCMD>
+  </parameter>
+  <parameter code="89">
+    <shortName>DEN</shortName>
+    <description>Density</description>
+    <units>kg m^-3</units>
+  </parameter>
+  <parameter code="90">
+    <shortName>WATR</shortName>
+    <description>Water runoff</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Hydrosphere > Surface Water > Runoff</GCMD>
+  </parameter>
+  <parameter code="91">
+    <shortName>ICEC</shortName>
+    <description>Ice concentration (ice=1;no ice=0)</description>
+    <GCMD>EARTH SCIENCE > Oceans > Sea Ice > Ice Extent</GCMD>
+  </parameter>
+  <parameter code="92">
+    <shortName>ICETK</shortName>
+    <description>Ice thickness</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Oceans > Sea Ice > Ice Depth/Thickness</GCMD>
+  </parameter>
+  <parameter code="93">
+    <shortName>DICED</shortName>
+    <description>Direction of ice drift</description>
+    <units>deg</units>
+    <GCMD>EARTH SCIENCE > Oceans > Sea Ice > Sea Ice Motion</GCMD>
+  </parameter>
+  <parameter code="94">
+    <shortName>SICED</shortName>
+    <description>Speed of ice drift</description>
+    <units>m s^-1</units>
+    <GCMD>EARTH SCIENCE > Oceans > Sea Ice > Sea Ice Motion</GCMD>
+  </parameter>
+  <parameter code="95">
+    <shortName>UICE</shortName>
+    <description>u of ice drift</description>
+    <units>m s^-1</units>
+    <GCMD>EARTH SCIENCE > Oceans > Sea Ice > Sea Ice Motion</GCMD>
+  </parameter>
+  <parameter code="96">
+    <shortName>VICE</shortName>
+    <description>v of ice drift</description>
+    <units>m s^-1</units>
+    <GCMD>EARTH SCIENCE > Oceans > Sea Ice > Sea Ice Motion</GCMD>
+  </parameter>
+  <parameter code="97">
+    <shortName>ICEG</shortName>
+    <description>Ice growth rate</description>
+    <units>m s^-1</units>
+    <GCMD>EARTH SCIENCE > Oceans > Sea Ice > Ice Growth/Melt</GCMD>
+  </parameter>
+  <parameter code="98">
+    <shortName>ICED</shortName>
+    <description>Ice divergence</description>
+    <units> s^-1</units>
+    <GCMD>EARTH SCIENCE > Oceans > Sea Ice > Sea Ice Motion</GCMD>
+  </parameter>
+  <parameter code="99">
+    <shortName>SNOM</shortName>
+    <description>Snow melt</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Hydrosphere > Snow/Ice > Snow Melt</GCMD>
+  </parameter>
+  <parameter code="100">
+    <shortName>HTSGW</shortName>
+    <description>Sig height of wind waves and swell</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Significant Wave Height</GCMD>
+  </parameter>
+  <parameter code="101">
+    <shortName>WVDIR</shortName>
+    <description>Direction of wind waves</description>
+    <units>deg</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Wave Speed/Direction</GCMD>
+  </parameter>
+  <parameter code="102">
+    <shortName>WVHGT</shortName>
+    <description>Sig height of wind waves</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Significant Wave Height</GCMD>
+  </parameter>
+  <parameter code="103">
+    <shortName>WVPER</shortName>
+    <description>Mean period of wind waves</description>
+    <units>s</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Wave Period</GCMD>
+  </parameter>
+  <parameter code="104">
+    <shortName>SWDIR</shortName>
+    <description>Direction of swell waves</description>
+    <units>deg</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Swells</GCMD>
+  </parameter>
+  <parameter code="105">
+    <shortName>SWELL</shortName>
+    <description>Sig height of swell waves</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Swells</GCMD>
+  </parameter>
+  <parameter code="106">
+    <shortName>SWPER</shortName>
+    <description>Mean period of swell waves</description>
+    <units>s</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Swells</GCMD>
+  </parameter>
+  <parameter code="107">
+    <shortName>DIRPW</shortName>
+    <description>Primary wave direction</description>
+    <units>deg</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Wave Speed/Direction</GCMD>
+  </parameter>
+  <parameter code="108">
+    <shortName>PERPW</shortName>
+    <description>Primary wave mean period</description>
+    <units>s</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Wave Period</GCMD>
+  </parameter>
+  <parameter code="109">
+    <shortName>DIRSW</shortName>
+    <description>Secondary wave direction</description>
+    <units>deg</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Wave Speed/Direction</GCMD>
+  </parameter>
+  <parameter code="110">
+    <shortName>PERSW</shortName>
+    <description>Secondary wave mean period</description>
+    <units>s</units>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Waves > Wave Period</GCMD>
+  </parameter>
+  <parameter code="111">
+    <shortName>NSWRS</shortName>
+    <description>Net shortwave (surface)</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Incoming Solar Radiation</GCMD>
+  </parameter>
+  <parameter code="112">
+    <shortName>NLWRS</shortName>
+    <description>Net longwave (surface)</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Outgoing Longwave Radiation</GCMD>
+  </parameter>
+  <parameter code="113">
+    <shortName>NSWRT</shortName>
+    <description>Net shortwave (top)</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Incoming Solar Radiation</GCMD>
+  </parameter>
+  <parameter code="114">
+    <shortName>NLWRT</shortName>
+    <description>Net longwave (top)</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Outgoing Longwave Radiation</GCMD>
+  </parameter>
+  <parameter code="115">
+    <shortName>LWAVR</shortName>
+    <description>Long wave</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Longwave Radiation</GCMD>
+  </parameter>
+  <parameter code="116">
+    <shortName>SWAVR</shortName>
+    <description>Short wave</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Shortwave Radiation</GCMD>
+  </parameter>
+  <parameter code="117">
+    <shortName>GRAD</shortName>
+    <description>Global radiation</description>
+    <units>W m^-2</units>
+  </parameter>
+  <parameter code="118">
+    <shortName>BRTMP</shortName>
+    <description>Brightness temperature</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Spectral/Engineering > Infrared Wavelengths > Brightness Temperature</GCMD>
+  </parameter>
+  <parameter code="119">
+    <shortName>LWRAD</shortName>
+    <description>Radiance with respect to wave no.</description>
+    <units>W m^-1 sr^-1</units>
+  </parameter>
+  <parameter code="120">
+    <shortName>SWRAD</shortName>
+    <description>Radiance with respect ot wave len.</description>
+    <units>W m^-3 sr^-1</units>
+  </parameter>
+  <parameter code="121">
+    <shortName>LHTFL</shortName>
+    <description>Latent heat flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Heat Flux</GCMD>
+  </parameter>
+  <parameter code="122">
+    <shortName>SHTFL</shortName>
+    <description>Sensible heat flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Heat Flux</GCMD>
+  </parameter>
+  <parameter code="123">
+    <shortName>BLYDP</shortName>
+    <description>Boundary layer dissipation</description>
+    <units>W m^-2</units>
+  </parameter>
+  <parameter code="124">
+    <shortName>UFLX</shortName>
+    <description>Zonal momentum flux</description>
+    <units>N m^-2</units>
+  </parameter>
+  <parameter code="125">
+    <shortName>VFLX</shortName>
+    <description>Meridional momentum flux</description>
+    <units>N m^-2</units>
+  </parameter>
+  <parameter code="126">
+    <shortName>WMIXE</shortName>
+    <description>Wind mixing energy</description>
+    <units>J</units>
+  </parameter>
+  <parameter code="127">
+    <shortName>IMGD</shortName>
+    <description>Image data</description>
+  </parameter>
+  <parameter code="128">
+    <shortName>MSLSA</shortName>
+    <description>Mean sea level pressure (Std Atm)</description>
+    <units>Pa</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Sea Level Pressure</GCMD>
+  </parameter>
+  <parameter code="130">
+    <shortName>MSLET</shortName>
+    <description>Mean sea level pressure (ETA model)</description>
+    <units>Pa</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Pressure > Sea Level Pressure</GCMD>
+  </parameter>
+  <parameter code="131">
+    <shortName>LFTX</shortName>
+    <description>Surface lifted index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="132">
+    <shortName>4LFTX</shortName>
+    <description>Best (4-layer) lifted index</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="134">
+    <shortName>PRESN</shortName>
+    <description>Pressure (nearest grid point)</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="135">
+    <shortName>MCONV</shortName>
+    <description>Horizontal moisture divergence</description>
+    <units>kg kg^-1 s^-1</units>
+  </parameter>
+  <parameter code="136">
+    <shortName>VWSH</shortName>
+    <description>Vertical speed shear</description>
+    <units>1 s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Wind Shear</GCMD>
+  </parameter>
+  <parameter code="139">
+    <shortName>PVMW</shortName>
+    <description>Potential vorticity (mass-weighted)</description>
+    <units>1/s m^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Vorticity</GCMD>
+  </parameter>
+  <parameter code="140">
+    <shortName>CRAIN</shortName>
+    <description>Categorical rain (yes=1; no=0)</description>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Rain</GCMD>
+  </parameter>
+  <parameter code="141">
+    <shortName>CFRZR</shortName>
+    <description>Categorical freezing rain (yes=1; no=0)</description>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Freezing Rain</GCMD>
+  </parameter>
+  <parameter code="142">
+    <shortName>CICEP</shortName>
+    <description>Categorical ice pellets (yes=1; no=0)</description>
+  </parameter>
+  <parameter code="143">
+    <shortName>CSNOW</shortName>
+    <description>Categorical snow (yes=1; no=0)</description>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Snow</GCMD>
+  </parameter>
+  <parameter code="144">
+    <shortName>SOILW</shortName>
+    <description>Volumetric soil moisture (frozen + liquid)</description>
+    <GCMD>EARTH SCIENCE > Land Surface > Soils > Soil Moisture/Water Content</GCMD>
+  </parameter>
+  <parameter code="145">
+    <shortName>PEVPR</shortName>
+    <description>Potential evaporation rate</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Evaporation</GCMD>
+  </parameter>
+  <parameter code="146">
+    <shortName>VEGT</shortName>
+    <description>Vegetation canopy temperature</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Canopy Characteristics</GCMD>
+  </parameter>
+  <parameter code="147">
+    <shortName>BARET</shortName>
+    <description>Bare soil surface skin temperature</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Land Surface > Land Temperature > Skin Temperature</GCMD>
+  </parameter>
+  <parameter code="148">
+    <shortName>AVSFT</shortName>
+    <description>Average surface skin temperature</description>
+    <GCMD>EARTH SCIENCE > Land Surface > Land Temperature > Skin Temperature</GCMD>
+    <units>K</units>
+  </parameter>
+  <parameter code="149">
+    <shortName>RADT</shortName>
+    <description>Effective radiative skin temperature</description>
+    <units>K</units>
+    <GCMD>EARTH SCIENCE > Land Surface > Land Temperature > Skin Temperature</GCMD>
+  </parameter>
+  <parameter code="150">
+    <shortName>SSTOR</shortName>
+    <description>Surface water storage</description>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="151">
+    <shortName>LSOIL</shortName>
+    <description>Liquid soil moisture content (non-frozen)</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Land Surface > Soils > Soil Moisture/Water Content</GCMD>
+  </parameter>
+  <parameter code="152">
+    <shortName>EWATR</shortName>
+    <description>Open water evaporation (standing water)</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Evaporation</GCMD>
+  </parameter>
+  <parameter code="153">
+    <shortName>CLWMR</shortName>
+    <description>Cloud water</description>
+    <units>kg kg^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Clouds > Cloud Liquid Water/Ice</GCMD>
+  </parameter>
+  <parameter code="155">
+    <shortName>GFLUX</shortName>
+    <description>Ground Heat Flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Heat Flux</GCMD>
+  </parameter>
+  <parameter code="156">
+    <shortName>CIN</shortName>
+    <description>Convective inhibition</description>
+    <units>J kg^-1</units>
+  </parameter>
+  <parameter code="157">
+    <shortName>CAPE</shortName>
+    <description>Convective available potential energy</description>
+    <units>J kg^-1</units>
+  </parameter>
+  <parameter code="158">
+    <shortName>TKE</shortName>
+    <description>Turbulent Kinetic Energy</description>
+    <units>J kg^-1</units>
+  </parameter>
+  <parameter code="159">
+    <shortName>MXSALB</shortName>
+    <description>Maximum snow albedo</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Hydrosphere > Snow/Ice > Albedo</GCMD>
+  </parameter>
+  <parameter code="160">
+    <shortName>SOILL</shortName>
+    <description>Liquid volumetric soil moisture (non-frozen)</description>
+    <GCMD>EARTH SCIENCE > Land Surface > Soils > Soil Moisture/Water Content</GCMD>
+  </parameter>
+  <parameter code="161">
+    <shortName>ASNOW</shortName>
+    <description>Frozen precipitation (e.g. snowfall)</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Snow</GCMD>
+  </parameter>
+  <parameter code="162">
+    <shortName>ARAIN</shortName>
+    <description>Liquid precipitation (rainfall)</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Rain</GCMD>
+  </parameter>
+  <parameter code="163">
+    <shortName>GWREC</shortName>
+    <description>Groundwater recharge</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Hydrosphere > Surface Water > Aquifer Recharge</GCMD>
+  </parameter>
+  <parameter code="164">
+    <shortName>QREC</shortName>
+    <description>Flood plain recharge</description>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="165">
+    <shortName>SNOWT</shortName>
+    <description>Snow temperature, depth-avg</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="166">
+    <shortName>VBDSF</shortName>
+    <description>Visible beam downward solar flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Incoming Solar Radiation</GCMD>
+  </parameter>
+  <parameter code="167">
+    <shortName>VDDSF</shortName>
+    <description>Visible diffuse downward solar flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Incoming Solar Radiation</GCMD>
+  </parameter>
+  <parameter code="168">
+    <shortName>NBDSF</shortName>
+    <description>Near IR beam downward solar flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Incoming Solar Radiation</GCMD>
+  </parameter>
+  <parameter code="169">
+    <shortName>NDDSF</shortName>
+    <description>Near IR diffuse downward solar flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Incoming Solar Radiation</GCMD>
+  </parameter>
+  <parameter code="170">
+    <shortName>SNFALB</shortName>
+    <description>Snow-free albedo</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Albedo</GCMD>
+  </parameter>
+  <parameter code="171">
+    <shortName>RLYRS</shortName>
+    <description>Number of soil layers in root zone</description>
+  </parameter>
+  <parameter code="172">
+    <shortName>FLX</shortName>
+    <description>Momentum flux N/m2</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="173">
+    <shortName>LMH</shortName>
+    <description>Mass point model surface</description>
+  </parameter>
+  <parameter code="174">
+    <shortName>LMV</shortName>
+    <description>Velocity point model surface</description>
+  </parameter>
+  <parameter code="175">
+    <shortName>MLYNO</shortName>
+    <description>Model layer number (from bottom up)</description>
+  </parameter>
+  <parameter code="176">
+    <shortName>NLAT</shortName>
+    <description>Latitude (-90 to +90)</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="177">
+    <shortName>ELON</shortName>
+    <description>East longitude (0-360)</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="178">
+    <shortName>ICMR</shortName>
+    <description>Ice mixing ratio</description>
+    <units>kg kg^-1</units>
+  </parameter>
+  <parameter code="179">
+    <shortName>ACOND</shortName>
+    <description>Aerodynamic conductance</description>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="180">
+    <shortName>SNOAG</shortName>
+    <description>Snow age</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="181">
+    <shortName>CCOND</shortName>
+    <description>Canopy conductance</description>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="182">
+    <shortName>LAI</shortName>
+    <description>Leaf area index (0-9)</description>
+  </parameter>
+  <parameter code="183">
+    <shortName>SFCRH</shortName>
+    <description>Roughness length for heat</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="184">
+    <shortName>SALBD</shortName>
+    <description>Snow albedo (over snow cover area only)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="187">
+    <shortName>NDVI</shortName>
+    <description>Normalized Difference Vegetation Index</description>
+    <units>
+    </units>
+  </parameter>
+  <parameter code="188">
+    <shortName>DRIP</shortName>
+    <description>Rate of water dropping from canopy to gnd</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Canopy Characteristics</GCMD>
+  </parameter>
+  <parameter code="189">
+    <shortName>LANDN</shortName>
+    <description>Land-sea coverage (nearest neighbor)</description>
+  </parameter>
+  <parameter code="190">
+    <shortName>HLCY</shortName>
+    <description>Storm relative helicity</description>
+    <units>m^2 s^-2</units>
+  </parameter>
+  <parameter code="191">
+    <shortName>NLATN</shortName>
+    <description>Latitude (nearest neigbhbor) (-90 to +90)</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>ELONN</shortName>
+    <description>East longitude (nearest neigbhbor) (0-360)</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>CPOFP</shortName>
+    <description>Prob. of frozen precipitation</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>USTM</shortName>
+    <description>u-component of storm motion</description>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>VSTM</shortName>
+    <description>v-component of storm motion</description>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>SBSNO</shortName>
+    <description>Sublimation (evaporation from snow)</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Sublimation</GCMD>
+  </parameter>
+  <parameter code="199">
+    <shortName>EVBS</shortName>
+    <description>Direct evaporation from bare soil</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Evaporation</GCMD>
+  </parameter>
+  <parameter code="200">
+    <shortName>EVCW</shortName>
+    <description>Canopy water evaporation</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Canopy Characteristics</GCMD>
+  </parameter>
+  <parameter code="202">
+    <shortName>APCPN</shortName>
+    <description>Total precipitation (nearest grid point)</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Amount</GCMD>
+  </parameter>
+  <parameter code="203">
+    <shortName>RSMIN</shortName>
+    <description>Minimal stomatal resistance</description>
+    <units>s m^-1</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>DSWRF</shortName>
+    <description>Downward shortwave radiation flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Shortwave Radiation</GCMD>
+  </parameter>
+  <parameter code="205">
+    <shortName>DLWRF</shortName>
+    <description>Downward longwave radiation flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Longwave Radiation</GCMD>
+  </parameter>
+  <parameter code="206">
+    <shortName>ACPCPN</shortName>
+    <description>Convective precipitation (nearest grid point)</description>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="207">
+    <shortName>MSTAV</shortName>
+    <description>Moisture availability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="208">
+    <shortName>SFEXC</shortName>
+    <description>Exchange coefficient</description>
+    <units>(kg m^-3)(m s^-1)</units>
+  </parameter>
+  <parameter code="210">
+    <shortName>TRANS</shortName>
+    <description>Transpiration</description>
+    <units>W m^-2</units>
+  </parameter>
+  <parameter code="211">
+    <shortName>USWRF</shortName>
+    <description>Upward shortwave radiation flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Shortwave Radiation</GCMD>
+  </parameter>
+  <parameter code="212">
+    <shortName>ULWRF</shortName>
+    <description>Upward longwave radiation flux</description>
+    <units>W m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Longwave Radiation</GCMD>
+  </parameter>
+  <parameter code="213">
+    <shortName>CDLYR</shortName>
+    <description>Non-convective cloud</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Clouds > Cloud Amount/Frequency</GCMD>
+  </parameter>
+  <parameter code="214">
+    <shortName>CPRAT</shortName>
+    <description>Convective precip. rate</description>
+    <units>kg m^-2 s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Rate</GCMD>
+  </parameter>
+  <parameter code="216">
+    <shortName>TTRAD</shortName>
+    <description>Temp. tendency by all radiation</description>
+    <units>K s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Temperature > Temperature Tendency</GCMD>
+  </parameter>
+  <parameter code="218">
+    <shortName>HGTN</shortName>
+    <description>Geopotential Height (nearest grid point)</description>
+    <units>gpm</units>
+  </parameter>
+  <parameter code="219">
+    <shortName>WILT</shortName>
+    <description>Wilting point</description>
+  </parameter>
+  <parameter code="220">
+    <shortName>FLDCP</shortName>
+    <description>Field Capacity</description>
+  </parameter>
+  <parameter code="221">
+    <shortName>HPBL</shortName>
+    <description>Planetary boundary layer height</description>
+    <units>m</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Altitude > Planetary Boundary Layer Height</GCMD>
+  </parameter>
+  <parameter code="222">
+    <shortName>SLTYP</shortName>
+    <description>Surface slope type</description>
+  </parameter>
+  <parameter code="223">
+    <shortName>CNWAT</shortName>
+    <description>Plant canopy surface water</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Canopy Characteristics</GCMD>
+  </parameter>
+  <parameter code="224">
+    <shortName>SOTYP</shortName>
+    <description>Soil type</description>
+    <GCMD>EARTH SCIENCE > Agriculture > Soils > Soil Classification</GCMD>
+  </parameter>
+  <parameter code="225">
+    <shortName>VGTYP</shortName>
+    <description>Vegetation type</description>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Vegetation Cover</GCMD>
+  </parameter>
+  <parameter code="226">
+    <shortName>BMIXL</shortName>
+    <description>Blackadar's mixing length scale</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="227">
+    <shortName>AMIXL</shortName>
+    <description>Asymptotic mixing length scale</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="228">
+    <shortName>PEVAP</shortName>
+    <description>Potential evaporation</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Evaporation</GCMD>
+  </parameter>
+  <parameter code="229">
+    <shortName>SNOHF</shortName>
+    <description>Snow phase-change heat flux</description>
+    <units>W m^-2</units>
+  </parameter>
+  <parameter code="230">
+    <shortName>SMREF</shortName>
+    <description>Transpiration stress-onset (soil moisture)</description>
+  </parameter>
+  <parameter code="231">
+    <shortName>SMDRY</shortName>
+    <description>Direct evaporation cease (soil moisture)</description>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Evaporation</GCMD>
+  </parameter>
+  <parameter code="232">
+    <shortName>WVINC</shortName>
+    <description>Water vapor added by precip assimilation</description>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="233">
+    <shortName>WCINC</shortName>
+    <description>Water condensate added by precip assimilaition</description>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="234">
+    <shortName>BGRUN</shortName>
+    <description>Subsurface runoff (baseflow)</description>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="235">
+    <shortName>SSRUN</shortName>
+    <description>Surface runoff (non-infiltrating)</description>
+    <units>kg m^-2</units>
+    <GCMD>EARTH SCIENCE > Hydrosphere > Surface Water > Runoff</GCMD>
+  </parameter>
+  <parameter code="237">
+    <shortName>WVCONV</shortName>
+    <description>Water vapor flux convergence (vertical int)</description>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="238">
+    <shortName>SNOWC</shortName>
+    <description>Snow cover</description>
+    <units>%</units>
+    <GCMD>EARTH SCIENCE > Hydrosphere > Snow/Ice > Snow Cover</GCMD>
+  </parameter>
+  <parameter code="239">
+    <shortName>SNOT</shortName>
+    <description>Snow temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="240">
+    <shortName>POROS</shortName>
+    <description>Soil porosity</description>
+    <GCMD>EARTH SCIENCE > Land Surface > Soils > Soil Porosity</GCMD>
+  </parameter>
+  <parameter code="241">
+    <shortName>WCCONV</shortName>
+    <description>Water condensate flux convergence (vertical int)</description>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="242">
+    <shortName>WVUFLX</shortName>
+    <description>Water vapor zonal flux (vertical int)</description>
+    <units>kg m^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Water Vapor</GCMD>
+  </parameter>
+  <parameter code="243">
+    <shortName>WVVFLX</shortName>
+    <description>Water vapor meridional flux (vertical int)</description>
+    <units>kg m^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Water Vapor > Water Vapor</GCMD>
+  </parameter>
+  <parameter code="244">
+    <shortName>WCUFLX</shortName>
+    <description>Water condensate zonal flux (vertical int)</description>
+    <units>kg m^-1</units>
+  </parameter>
+  <parameter code="245">
+    <shortName>WCVFLX</shortName>
+    <description>Water condensate meridional flux (vertical int)</description>
+    <units>kg m^-1</units>
+  </parameter>
+  <parameter code="246">
+    <shortName>RCS</shortName>
+    <description>Solar parameter in canopy conductance</description>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Canopy Characteristics</GCMD>
+  </parameter>
+  <parameter code="247">
+    <shortName>RCT</shortName>
+    <description>Temperature parameter in canopy conductance</description>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Canopy Characteristics</GCMD>
+  </parameter>
+  <parameter code="248">
+    <shortName>RCQ</shortName>
+    <description>Humidity parameter in canopy conductance</description>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Canopy Characteristics</GCMD>
+  </parameter>
+  <parameter code="249">
+    <shortName>RCSOL</shortName>
+    <description>Soil moisture parameter in canopy conductance</description>
+    <GCMD>EARTH SCIENCE > Biosphere > Vegetation > Canopy Characteristics</GCMD>
+  </parameter>
+  <parameter code="250">
+    <shortName>SWHR</shortName>
+    <description>Solar radiative heating</description>
+    <units>K s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Atmospheric Heating</GCMD>
+  </parameter>
+  <parameter code="251">
+    <shortName>LWHR</shortName>
+    <description>Longwave radiative heating</description>
+    <units>K s^-1</units>
+    <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Radiation > Atmospheric Heating</GCMD>
+  </parameter>
+  <parameter code="252">
+    <shortName>CD</shortName>
+    <description>Surface drag coefficient</description>
+  </parameter>
+  <parameter code="253">
+    <shortName>FRICV</shortName>
+    <description>Surface friction velocity</description>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="254">
+    <shortName>RI</shortName>
+    <description>Richardson number</description>
+  </parameter>
+</parameterMap>

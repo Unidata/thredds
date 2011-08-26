@@ -15,6 +15,7 @@ import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.IO;
 import ucar.nc2.wmo.CommonCodeTable;
+import ucar.units.UnknownUnit;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -292,7 +293,7 @@ public class Grib1TablesViewer extends JPanel {
     Collections.sort(params);
     java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
     for (Integer key : params) {
-      beans.add(new EntryBean(key, map.get(key)));
+      beans.add(new EntryBean( map.get(key)));
     }
     entryTable.setBeans(beans);
   }
@@ -348,23 +349,21 @@ public class Grib1TablesViewer extends JPanel {
 
   public class EntryBean {
     GridParameter param;
-    Integer key;
 
     // no-arg constructor
     public EntryBean() {
     }
 
-    public EntryBean(Integer key, GridParameter param) {
-      this.key = key;
+    public EntryBean(GridParameter param) {
       this.param = param;
-    }
-
-    public int getKey() {
-      return key;
     }
 
     public String getName() {
       return param.getName();
+    }
+
+    public String getCFname() {
+      return param.getCFname();
     }
 
     public String getDescription() {
@@ -383,7 +382,7 @@ public class Grib1TablesViewer extends JPanel {
       String cu =  GribTables.cleanupUnits(param.getUnit());
          try {
            SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu);
-           return su1.toString();
+           return (su1.isUnknownUnit()) ? "UNKNOWN" : su1.toString();
          } catch (Exception e) {
            return "FAIL "+e.getMessage();
          }

@@ -1,0 +1,398 @@
+<?xml version="1.0" ?>
+<parameterMap>
+  <title>ECMWF Parameter Code Table 140</title>
+  <parameter code="1" />
+  <parameter code="2" />
+  <parameter code="3" />
+  <parameter code="4" />
+  <parameter code="5" />
+  <parameter code="6" />
+  <parameter code="7" />
+  <parameter code="8" />
+  <parameter code="9" />
+  <parameter code="10" />
+  <parameter code="11" />
+  <parameter code="12" />
+  <parameter code="13" />
+  <parameter code="14" />
+  <parameter code="15" />
+  <parameter code="16" />
+  <parameter code="17" />
+  <parameter code="18" />
+  <parameter code="19" />
+  <parameter code="20" />
+  <parameter code="21" />
+  <parameter code="22" />
+  <parameter code="23" />
+  <parameter code="24" />
+  <parameter code="25" />
+  <parameter code="26" />
+  <parameter code="27" />
+  <parameter code="28" />
+  <parameter code="29" />
+  <parameter code="30" />
+  <parameter code="31" />
+  <parameter code="32" />
+  <parameter code="33" />
+  <parameter code="34" />
+  <parameter code="35" />
+  <parameter code="36" />
+  <parameter code="37" />
+  <parameter code="38" />
+  <parameter code="39" />
+  <parameter code="40" />
+  <parameter code="41" />
+  <parameter code="42" />
+  <parameter code="43" />
+  <parameter code="44" />
+  <parameter code="45" />
+  <parameter code="46" />
+  <parameter code="47" />
+  <parameter code="48" />
+  <parameter code="49" />
+  <parameter code="50" />
+  <parameter code="51" />
+  <parameter code="52" />
+  <parameter code="53" />
+  <parameter code="54" />
+  <parameter code="55" />
+  <parameter code="56" />
+  <parameter code="57" />
+  <parameter code="58" />
+  <parameter code="59" />
+  <parameter code="60" />
+  <parameter code="61" />
+  <parameter code="62" />
+  <parameter code="63" />
+  <parameter code="64" />
+  <parameter code="65" />
+  <parameter code="66" />
+  <parameter code="67" />
+  <parameter code="68" />
+  <parameter code="69" />
+  <parameter code="70" />
+  <parameter code="71" />
+  <parameter code="72" />
+  <parameter code="73" />
+  <parameter code="74" />
+  <parameter code="75" />
+  <parameter code="76" />
+  <parameter code="77" />
+  <parameter code="78" />
+  <parameter code="79" />
+  <parameter code="80" />
+  <parameter code="81" />
+  <parameter code="82" />
+  <parameter code="83" />
+  <parameter code="84" />
+  <parameter code="85" />
+  <parameter code="86" />
+  <parameter code="87" />
+  <parameter code="88" />
+  <parameter code="89" />
+  <parameter code="90" />
+  <parameter code="91" />
+  <parameter code="92" />
+  <parameter code="93" />
+  <parameter code="94" />
+  <parameter code="95" />
+  <parameter code="96" />
+  <parameter code="97" />
+  <parameter code="98" />
+  <parameter code="99" />
+  <parameter code="100" />
+  <parameter code="101" />
+  <parameter code="102" />
+  <parameter code="103" />
+  <parameter code="104" />
+  <parameter code="105" />
+  <parameter code="106" />
+  <parameter code="107" />
+  <parameter code="108" />
+  <parameter code="109" />
+  <parameter code="110" />
+  <parameter code="111" />
+  <parameter code="112" />
+  <parameter code="113" />
+  <parameter code="114" />
+  <parameter code="115" />
+  <parameter code="116" />
+  <parameter code="117" />
+  <parameter code="118" />
+  <parameter code="119" />
+  <parameter code="120" />
+  <parameter code="121" />
+  <parameter code="122" />
+  <parameter code="123" />
+  <parameter code="124" />
+  <parameter code="125" />
+  <parameter code="126" />
+  <parameter code="127" />
+  <parameter code="128" />
+  <parameter code="129" />
+  <parameter code="130" />
+  <parameter code="131" />
+  <parameter code="132" />
+  <parameter code="133" />
+  <parameter code="134" />
+  <parameter code="135" />
+  <parameter code="136" />
+  <parameter code="137" />
+  <parameter code="138" />
+  <parameter code="139" />
+  <parameter code="140" />
+  <parameter code="141" />
+  <parameter code="142" />
+  <parameter code="143" />
+  <parameter code="144" />
+  <parameter code="145" />
+  <parameter code="146" />
+  <parameter code="147" />
+  <parameter code="148" />
+  <parameter code="149" />
+  <parameter code="150" />
+  <parameter code="151" />
+  <parameter code="152" />
+  <parameter code="153" />
+  <parameter code="154" />
+  <parameter code="155" />
+  <parameter code="156" />
+  <parameter code="157" />
+  <parameter code="158" />
+  <parameter code="159" />
+  <parameter code="160" />
+  <parameter code="161" />
+  <parameter code="162" />
+  <parameter code="163" />
+  <parameter code="164" />
+  <parameter code="165" />
+  <parameter code="166" />
+  <parameter code="167" />
+  <parameter code="168" />
+  <parameter code="169" />
+  <parameter code="170" />
+  <parameter code="171" />
+  <parameter code="172" />
+  <parameter code="173" />
+  <parameter code="174" />
+  <parameter code="175" />
+  <parameter code="176" />
+  <parameter code="177" />
+  <parameter code="178" />
+  <parameter code="179" />
+  <parameter code="180" />
+  <parameter code="181" />
+  <parameter code="182" />
+  <parameter code="183" />
+  <parameter code="184" />
+  <parameter code="185" />
+  <parameter code="186" />
+  <parameter code="187" />
+  <parameter code="188" />
+  <parameter code="189" />
+  <parameter code="190" />
+  <parameter code="191" />
+  <parameter code="192" />
+  <parameter code="193" />
+  <parameter code="194" />
+  <parameter code="195" />
+  <parameter code="196" />
+  <parameter code="197" />
+  <parameter code="198" />
+  <parameter code="199" />
+  <parameter code="200" />
+  <parameter code="201" />
+  <parameter code="202" />
+  <parameter code="203" />
+  <parameter code="204" />
+  <parameter code="205" />
+  <parameter code="206" />
+  <parameter code="207" />
+  <parameter code="208" />
+  <parameter code="209" />
+  <parameter code="210" />
+  <parameter code="211" />
+  <parameter code="212" />
+  <parameter code="213" />
+  <parameter code="214" />
+  <parameter code="215" />
+  <parameter code="216" />
+  <parameter code="217" />
+  <parameter code="218" />
+  <parameter code="219">
+    <shortName>WMB</shortName>
+    <description>Model bathymetry</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="220">
+    <shortName>MP1</shortName>
+    <description>Mean wave period based on first moment</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="221">
+    <shortName>MP2</shortName>
+    <description>Mean wave period based on second moment</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="222">
+    <shortName>WDW</shortName>
+    <description>Wave spectral directional width</description>
+  </parameter>
+  <parameter code="223">
+    <shortName>P1WW</shortName>
+    <description>Mean wave period based on first moment for wind waves</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="224">
+    <shortName>P2WW</shortName>
+    <description>Mean wave period based on second moment for wind waves</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="225">
+    <shortName>DWWW</shortName>
+    <description>Wave spectral directional width for wind waves</description>
+  </parameter>
+  <parameter code="226">
+    <shortName>P1PS</shortName>
+    <description>Mean wave period based on first moment for swell</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="227">
+    <shortName>P2PS</shortName>
+    <description>Mean wave period based on second moment for swell</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="228">
+    <shortName>DWPS</shortName>
+    <description>Wave spectral directional width for swell</description>
+  </parameter>
+  <parameter code="229">
+    <shortName>SWH</shortName>
+    <description>Significant wave height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="230">
+    <shortName>MWD</shortName>
+    <description>Mean wave direction</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="231">
+    <shortName>PP1D</shortName>
+    <description>Peak period of 1D spectra</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="232">
+    <shortName>MWP</shortName>
+    <description>Mean wave period</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="233">
+    <shortName>CDWW</shortName>
+    <description>Coefficient of drag with waves</description>
+  </parameter>
+  <parameter code="234">
+    <shortName>SHWW</shortName>
+    <description>Significant height of wind waves</description>
+    <units>m</units>
+    <CF>significant_height_of_wind_waves</CF>
+  </parameter>
+  <parameter code="235">
+    <shortName>MDWW</shortName>
+    <description>Mean direction of wind waves</description>
+    <units>deg</units>
+    <CF>direction_of_wind_wave_velocity</CF>
+  </parameter>
+  <parameter code="236">
+    <shortName>MPWW</shortName>
+    <description>Mean period of wind waves</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="237">
+    <shortName>SHPS</shortName>
+    <description>Significant height of primary swell</description>
+    <units>m</units>
+    <CF>significant_height_of_swell_waves</CF>
+  </parameter>
+  <parameter code="238">
+    <shortName>MDPS</shortName>
+    <description>Mean direction of primary swell</description>
+    <units>deg</units>
+    <CF>direction_of_swell_wave_velocity</CF>
+  </parameter>
+  <parameter code="239">
+    <shortName>MPPS</shortName>
+    <description>Mean period of primary swell</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="240">
+    <shortName>SDHS</shortName>
+    <description>Standard deviation wave height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="241">
+    <shortName>MU10</shortName>
+    <description>Mean of 10 metre windspeed</description>
+    <units>m s^-1</units>
+    <CF>wind_speed</CF>
+  </parameter>
+  <parameter code="242">
+    <shortName>MDWI</shortName>
+    <description>Mean wind direction</description>
+    <units>deg</units>
+    <CF>wind_from_direction</CF>
+  </parameter>
+  <parameter code="243">
+    <shortName>SDU</shortName>
+    <description>Standard deviation of 10 metre wind speed</description>
+    <units>m s^-1</units>
+    <CF>wind_speed</CF>
+  </parameter>
+  <parameter code="244">
+    <shortName>MSQS</shortName>
+    <description>Mean square slope of waves</description>
+    <units></units>
+  </parameter>
+  <parameter code="245">
+    <shortName>WIND</shortName>
+    <description>10 metre wind speed</description>
+    <units>m s^-1</units>
+    <CF>wind_speed</CF>
+  </parameter>
+  <parameter code="246">
+    <shortName>AWH</shortName>
+    <description>Altimeter wave height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="247">
+    <shortName>ACWH</shortName>
+    <description>Altimeter corrected wave height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="248">
+    <shortName>ARRC</shortName>
+    <description>Altimeter range relative correction</description>
+    <units></units>
+  </parameter>
+  <parameter code="249">
+    <shortName>DWI</shortName>
+    <description>10 metre wind direction</description>
+    <units>deg</units>
+    <CF>wind_from_direction</CF>
+  </parameter>
+  <parameter code="250">
+    <shortName>2DSP</shortName>
+    <description>2D wave spectra (multiple)</description>
+    <units>m^2 s rad^-1</units>
+  </parameter>
+  <parameter code="251">
+    <shortName>2DFD</shortName>
+    <description>2D wave spectra (single)</description>
+    <units>m^2 s rad^-1</units>
+  </parameter>
+  <parameter code="252">
+    <shortName>WSK</shortName>
+    <description>Wave spectral kurtosis</description>
+  </parameter>
+  <parameter code="253" />
+  <parameter code="254" />
+</parameterMap>

@@ -102,7 +102,7 @@ public class GribIndexReader {
    *
    * @param location URL or local filename of Grib Index file
    * @param ios      input stream
-   * @return false if does not match current version; you should regenerate it in that case.
+   * @return GridIndex or null if failure
    * @throws java.io.IOException on read error
    */
   public final GridIndex open(String location, InputStream ios) throws IOException {
@@ -138,6 +138,8 @@ public class GribIndexReader {
         String line = dis.readUTF();
         if (debugParse) System.out.println(line);
         String[] split = line.split("\\s");
+        if (split.length % 2 != 0) return null; // ??
+
         for (int i = 0; i < split.length; i += 2) {
           gridIndex.addGlobalAttribute(split[i], split[i + 1]);
           if (split[i].equals("basetime")) {

@@ -86,7 +86,7 @@ public class TdsMonitor extends JPanel {
   private ManageForm manage;
 
   //private HTTPSession session;
-  private CredentialsProvider provider;
+  // private CredentialsProvider provider;
 
   public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
     this.mainPrefs = prefs;
@@ -112,7 +112,8 @@ public class TdsMonitor extends JPanel {
     setLayout(new BorderLayout());
     add(tabbedPane, BorderLayout.CENTER);
 
-    provider = new UrlAuthenticatorDialog(null);
+    CredentialsProvider provider = new UrlAuthenticatorDialog(null);
+    HTTPSession.setGlobalCredentialsProvider(provider);
   }
 
   public void exit() {
@@ -214,11 +215,11 @@ public class TdsMonitor extends JPanel {
             manage.getStopButton().setCancel(false); // clear the cancel state
 
             if (data.wantAccess) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.access, provider);
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.access);
               logManager.getRemoteFiles(manage.getStopButton());
             }
             if (data.wantServlet) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.thredds, provider);
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.thredds);
               logManager.getRemoteFiles(manage.getStopButton());
             }
 
@@ -228,7 +229,7 @@ public class TdsMonitor extends JPanel {
               localDir.mkdirs();
               File file = new File(localDir, "roots.txt");
               HTTPSession session = new HTTPSession(urls);
-              session.setCredentialsProvider(provider);
+              // session.setCredentialsProvider(provider);
               session.setUserAgent("TdsMonitor");
               HttpClientManager.copyUrlContentsToFile(session, urls, file);
               String roots = IO.readFile(file.getPath());

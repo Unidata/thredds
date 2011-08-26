@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<parameterMap>
+  <title>JMA Parameter Code Table 2</title>
+  <parameter code="80">
+    <shortName>T</shortName>
+    <description>Water temperature</description>
+    <units>deg C</units>
+    <CF>sea_water_temperature</CF>
+    <GCMD ifLevelType="160" ifLevelValue="0">EARTH SCIENCE > Oceans > Ocean Temperature > Sea Surface Temperature</GCMD>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Temperature > Water Temperature</GCMD>
+  </parameter>
+  <parameter code="88">
+    <shortName>SALTY</shortName>
+    <description>Salinity</description>
+    <units>psu</units>
+    <GCMD>EARTH SCIENCE > Oceans > Salinity/Density > Salinity</GCMD>
+  </parameter>
+  <parameter code="128">
+    <shortName>E</shortName>
+    <description>Analysis error of water temperature</description>
+    <units>deg C</units>
+    <CF>sea_water_temperature</CF>
+    <GCMD ifLevelType="160" ifLevelValue="0">EARTH SCIENCE > Oceans > Ocean Temperature > Sea Surface Temperature</GCMD>
+    <GCMD>EARTH SCIENCE > Oceans > Ocean Temperature > Water Temperature</GCMD>
+  </parameter>
+  <parameter code="129">
+    <description>Analysis error of salinity</description>
+    <units>psu</units>
+    <GCMD>EARTH SCIENCE > Oceans > Salinity/Density > Salinity</GCMD>
+  </parameter>
+</parameterMap>

@@ -1,0 +1,217 @@
+<?xml version="1.0" ?>
+<parameterMap>
+  <title>ECMWF Parameter Code Table 1</title>
+  <parameter code="1">
+    <description>Convective inhibition</description>
+    <shortName>CIN</shortName>
+    <units>J kg^-1</units>
+  </parameter>
+  <parameter code="2">
+    <description>Orography</description>
+    <shortName>OROG</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="3">
+    <description>Friction velocity</description>
+    <shortName>ZUST</shortName>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="4">
+    <description>Mean temperature at 2 metres</description>
+    <shortName>MEAN2T</shortName>
+    <units>K</units>
+  </parameter>
+  <parameter code="5">
+    <description>Mean of 10 metre wind speed</description>
+    <shortName>MEAN10WS</shortName>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="6">
+    <description>Mean total cloud cover</description>
+    <shortName>MEANTCC</shortName>
+  </parameter>
+  <parameter code="7">
+    <description>Lake depth</description>
+    <shortName>DL</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="8">
+    <description>Lake mix-layer temperature</description>
+    <shortName>LMLT</shortName>
+    <units>K</units>
+  </parameter>
+  <parameter code="9">
+    <description>Lake mix-layer depth</description>
+    <shortName>LMLD</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="10">
+    <description>Lake bottom temperature</description>
+    <shortName>LBLT</shortName>
+    <units>K</units>
+  </parameter>
+  <parameter code="11">
+    <description>Lake total layer temperature</description>
+    <shortName>LTLT</shortName>
+    <units>K</units>
+  </parameter>
+  <parameter code="12">
+    <description>Lake shape factor</description>
+    <shortName>LSHF</shortName>
+  </parameter>
+  <parameter code="13">
+    <description>Lake ice temperature</description>
+    <shortName>LICT</shortName>
+    <units>K</units>
+  </parameter>
+  <parameter code="14">
+    <description>Lake ice depth</description>
+    <shortName>LICD</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="15">
+    <description>Minimum vertical gradient of refractivity inside trapping layer</description>
+    <shortName>DNDZN</shortName>
+    <units>m^-1</units>
+  </parameter>
+  <parameter code="16">
+    <description>Mean vertical gradient of refractivity inside trapping layer</description>
+    <shortName>DNDZA</shortName>
+    <units>m^-1</units>
+  </parameter>
+  <parameter code="17">
+    <description>Duct base height</description>
+    <shortName>DCTB</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="18">
+    <description>Trapping layer base height</description>
+    <shortName>TPLB</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="19">
+    <description>Trapping layer top height</description>
+    <shortName>TPLT</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="21">
+    <description>Total sky direct solar radiation at surface</description>
+    <shortName>FDIR</shortName>
+    <units>W m^-2 s</units>
+  </parameter>
+  <parameter code="22">
+    <description>Clear-sky direct solar radiation at surface</description>
+    <shortName>CDIR</shortName>
+    <units>W m^-2 s</units>
+  </parameter>
+  <parameter code="23">
+    <description>Cloud base height</description>
+    <shortName>CBH</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="24">
+    <description>Zero degree level</description>
+    <shortName>DEG0L</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="25">
+    <description>Horizontal visibility</description>
+    <shortName>HVIS</shortName>
+    <units>m</units>
+  </parameter>
+  <parameter code="39">
+    <description>Soil Moisture</description>
+    <shortName>SM</shortName>
+    <units>kg m^-3</units>
+  </parameter>
+  <parameter code="89">
+    <description>Total column rain water</description>
+    <shortName>TCRW</shortName>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="90">
+    <description>Total column snow water</description>
+    <shortName>TCSW</shortName>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="131">
+    <description>Neutral wind at 10 m x-component</description>
+    <shortName>U10N</shortName>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="132">
+    <description>Neutral wind at 10 m y-component</description>
+    <shortName>V10N</shortName>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="134">
+    <description>V-tendency from non-orographic wave drag</description>
+    <shortName>VTNOWD</shortName>
+    <units>m s^-2</units>
+  </parameter>
+  <parameter code="136">
+    <description>U-tendency from non-orographic wave drag</description>
+    <shortName>UTNOWD</shortName>
+    <units>m s^-2</units>
+  </parameter>
+  <parameter code="139">
+    <description>Soil Temperature</description>
+    <shortName>ST</shortName>
+    <units>K</units>
+  </parameter>
+  <parameter code="141">
+    <description>Snow Depth water equivalent</description>
+    <shortName>SD</shortName>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="144">
+    <description>Snow Fall water equivalent</description>
+    <shortName>SF</shortName>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="164">
+    <description>Total Cloud Cover</description>
+    <shortName>TCC</shortName>
+    <units>%</units>
+  </parameter>
+  <parameter code="170">
+    <description>Field capacity</description>
+    <shortName>CAP</shortName>
+    <units>kg m^-3</units>
+  </parameter>
+  <parameter code="171">
+    <description>Wilting point</description>
+    <shortName>WILT</shortName>
+    <units>kg m^-3</units>
+  </parameter>
+  <parameter code="228">
+    <description>Total Precipitation</description>
+    <shortName>TP</shortName>
+    <units>kg m^-2</units>
+  </parameter>
+  <parameter code="246">
+    <description>100 metre U wind component</description>
+    <shortName>100U</shortName>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="247">
+    <description>100 metre V wind component</description>
+    <shortName>100V</shortName>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="249">
+    <description>100 metre wind speed</description>
+    <shortName>100SI</shortName>
+    <units>m s^-1</units>
+  </parameter>
+  <parameter code="253">
+    <description>ASCAT first soil moisture CDF matching parameter</description>
+    <shortName>ASCAT_SM_CDFA</shortName>
+    <units>m^3 m^-3</units>
+  </parameter>
+  <parameter code="254">
+    <description>ASCAT second soil moisture CDF matching parameter</description>
+    <shortName>ASCAT_SM_CDFB</shortName>
+    <units>m^3 m^-3</units>
+  </parameter>
+</parameterMap>
