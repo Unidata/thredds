@@ -40,11 +40,11 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.apache.commons.httpclient.auth.MalformedChallengeException;
 
-public class KeyStoreScheme extends AbstractScheme
+public class ProxyScheme extends AbstractScheme
 {
 
 public
-KeyStoreScheme()
+ProxyScheme()
 {
     super();
 }
@@ -52,7 +52,7 @@ KeyStoreScheme()
 public String
 getSchemeName()
 {
-    return "KEYSTORE";
+    return "PROXY";
 }
 
 }

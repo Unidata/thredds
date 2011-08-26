@@ -49,14 +49,8 @@ import java.util.Vector;
 import sun.net.www.http.*;
 import ucar.unidata.util.Urlencoded;
 
+import static ucar.nc2.util.net.HTTPAuthStore.*;
 
-/**
- * wrapper for org.apache.commons.httpclient
- * User: dmh
- * Date:June 15, 2010
- * Time: 4:24 PM
- * container around org.apache.commons.httpclient
- */
 
 public class HTTPSession
 {
@@ -94,10 +88,9 @@ public class HTTPSession
     static int threadcount = DFALTTHREADCOUNT;
     static List<HTTPSession> sessionList; // List of all HTTPSession instances
     static boolean globalauthpreemptive = false;
-    static Authenticator globalAuthenticator = null;
-    static CredentialsProvider globalProvider = null;
-    static String globalPrincipal = null; //==ANY_PRINCIPAL
 
+    static String globalPrincipal = ANY_PRINCIPAL;
+    static CredentialsProvider globalProvider = null;
 
     static {
         //fix: schemes = new SchemeRegistry();
@@ -186,7 +179,7 @@ public class HTTPSession
     boolean closed = false;
     String identifier = "Session";
     String useragent = null;
-    CredentialsProvider  sessionProvider = null;
+    CredentialsProvider sessionProvider = null;
     String uriencoded = null;
 
     /**
@@ -230,9 +223,24 @@ public class HTTPSession
 
     //Shared constructor code
     @Urlencoded
-    protected void construct(String uriencoded) throws ucar.nc2.util.net.HTTPException
+    protected void construct(String uriencoded)
+        throws HTTPException
     {
         this.uriencoded = uriencoded;
+	try {
+	    // See if we can extract the global principal
+	    URI uri = new URI(uriencoded);
+	    this.globalPrincipal = url.getUserInfo();
+	    if(this.globalPrincipal != null) {
+		// rebuild the uri without the principal
+		String newuri = removeprincipal(uriencoded);
+ 	        this.uriencoded = newuri;
+	    } else
+		this.globalPrincipal = ANY_PRINCIPAL;
+        } catch (URISyntaxException use) {
+	    throw new HTTPException(use);
+        }
+
         try {
             sessionClient = new HttpClient(connmgr);
             HttpClientParams clientparams = sessionClient.getParams();
@@ -240,13 +248,6 @@ public class HTTPSession
             // Allow (circular) redirects
             clientparams.setParameter(ALLOW_CIRCULAR_REDIRECTS, true);
             clientparams.setParameter(MAX_REDIRECTS, 100);
-
-            if (globalProvider != null) {
-                clientparams.setParameter(CredentialsProvider.PROVIDER, globalProvider);
-            }
-            if (globalAgent != null) {
-                clientparams.setParameter(USER_AGENT, globalAgent);
-            }
 
             setAuthenticationPreemptive(globalauthpreemptive);
 
@@ -406,6 +407,23 @@ public class HTTPSession
     }
 
     static public String
+    removeprincipal(String u)
+	throws URISyntaxException
+    {
+	String newuri = null;
+        URI uri = new URI(u);
+   	// rebuild the uri without the principal
+   	newuri = new URI(uri.getScheme(),
+                                    null;
+                                    uri.getHost(),
+                                    uri.getPort(),
+                                    uri.getPath(),
+                                    uri.getQuery(),
+                                    uri.getFragment()).toAsciiString();
+	return newuri;
+    }
+
+    static public String
     getUrlAsString(String url) throws HTTPException
     {
         HTTPSession session = new HTTPSession(url);
@@ -433,24 +451,33 @@ public class HTTPSession
     /////////////////////////////////////////////
     // Authorization
 
-    static synchronized public void setGlobalAuthenticationPreemptive(boolean tf)
+    static synchronized
+    public void setGlobalAuthenticationPreemptive(boolean tf)
     {
         globalauthpreemptive = tf;
     }
 
-    public void setCredentialsProvider(CredentialsProvider provider)
+    public void
+    setCredentialsProvider(CredentialsProvider provider)
     {
         sessionProvider = provider;
-        if (sessionClient != null && provider != null)
-            sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
+	// Add entry to AuthStore
+	HTTPAuthScheme scheme =
+	    new HTTPAuthScheme(HTTPAuthStore.BASIC).setCredentialsProvider(provider);
+	AuthStore.insert(this,globalPrincipal,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
     }
 
     static synchronized public void
     setGlobalCredentialsProvider(CredentialsProvider cp)
     {
         globalProvider = cp;
+	// Add entry to AuthStore
+	HTTPAuthScheme scheme =
+	    new HTTPAuthScheme(HTTPAuthStore.BASIC).setCredentialsProvider(provider);
+	AuthStore.insert(ANY_SESSION,globalPrincipal,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
     }
 
+/* NOTUSED
     static synchronized public void setGlobalAuthenticator(String user, String password)
     {
       if (password != null) {
@@ -475,6 +502,7 @@ public class HTTPSession
         Authenticator.setDefault(globalAuthenticator);
       }
     }
+NOTUSED*/
 
     static synchronized public void setGlobalPrincipal(String principal)
     {
@@ -488,7 +516,7 @@ public class HTTPSession
 
     ////////////////////////////////////////////////
     // Combine Session creation with method creation
-/* IGNORED
+/* NOTUSED
     static HTTPMethod sessionPlusMethod(Methods m, String uriencoded)  throws HTTPException
     {
       HTTPSession session = new HTTPSession(uriencoded);
@@ -501,7 +529,7 @@ public class HTTPSession
     static public HTTPMethod Put(String uriencoded)  throws HTTPException {return sessionPlusMethod(Methods.Put, uriencoded);}
     static public HTTPMethod Post(String uriencoded)  throws HTTPException {return sessionPlusMethod(Methods.Post, uriencoded);}
     static public HTTPMethod Options(String uriencoded)  throws HTTPException {return sessionPlusMethod(Methods.Options, uriencoded);}
-IGNORED */
+NOTUSED*/
 
 
 }
