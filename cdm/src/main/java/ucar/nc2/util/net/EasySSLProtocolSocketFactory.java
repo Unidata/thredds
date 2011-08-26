@@ -31,12 +31,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.commons.httpclient.HttpClientError;
+import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
+import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -111,6 +118,33 @@ public EasySSLProtocolSocketFactory()
 
 
 /**
+ * @see SecureProtocolSocketFactory#createSocket(java.net.Socket, java.lang.String, int, boolean)
+ */
+public Socket createSocket(
+        Socket socket,
+        String host,
+        int port,
+        boolean autoClose)
+        throws IOException, UnknownHostException
+{
+
+    return getSSLContext(null,host,port).getSocketFactory().createSocket(
+            socket,
+            host,
+            port,
+            autoClose);
+}
+
+/**
+ * @see SecureProtocolSocketFactory#createSocket(java.lang.String, int)
+ */
+public Socket createSocket(String host, int port)
+        throws IOException, UnknownHostException
+{
+    return getSSLContext(null,host,port).getSocketFactory().createSocket(host, port);
+}
+
+/**
  * @see SecureProtocolSocketFactory#createSocket(java.lang.String, int, java.net.InetAddress, int)
  */
 public Socket createSocket(
@@ -152,90 +186,66 @@ public Socket createSocket(
         final int port,
         final InetAddress localAddress,
         final int localPort,
-        final HttpConnectionParams params
-                          ) throws IOException, UnknownHostException, ConnectTimeoutException
+        final HttpConnectionParams params)
+    throws IOException, UnknownHostException, ConnectTimeoutException
 {
-
     if (params == null) {
         throw new IllegalArgumentException("Parameters may not be null");
     }
     int timeout = params.getConnectionTimeout();
+if(true) {
+        return getSSLContext(params,host,port).getSocketFactory().createSocket(host, port);
+} else {
     if (timeout == 0) {
-        //return createSocket(host, port, localAddress, localPort);
-        return createSocket(host, port);
+        return getSSLContext(params,host,port).getSocketFactory().createSocket(host, port);
     } else {
         // To be eventually deprecated when migrated to Java 1.4 or above
         return ControllerThreadSocketFactory.createSocket(this, host, port, localAddress, localPort, timeout);
     }
 }
 
-/**
- * @see SecureProtocolSocketFactory#createSocket(java.lang.String, int)
- */
-public Socket createSocket(String host, int port)
-        throws IOException, UnknownHostException
-{
-    return getSSLContext().getSocketFactory().createSocket(
-            host,
-            port);
 }
 
-/**
- * @see SecureProtocolSocketFactory#createSocket(java.net.Socket, java.lang.String, int, boolean)
- */
-public Socket createSocket(
-        Socket socket,
-        String host,
-        int port,
-        boolean autoClose)
-        throws IOException, UnknownHostException
+private SSLContext getSSLContext(HttpConnectionParams params, String host, int port) throws HTTPException
 {
-
-       return getSSLContext().getSocketFactory().createSocket(
-            socket,
-            host,
-            port,
-            autoClose);
-}
-
-/**
- * Add code to handle ESG authorization using a keystore
- * H/T to Apache and Philip Kershaw and Jon Blower for this code.
- */
-private static KeyStore createKeyStore(final File keystorefile, final String password)
-        throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException
-{
-    KeyStore keystore = KeyStore.getInstance("jks");
-    InputStream is = null;
-    try {
-        is = new FileInputStream(keystorefile);
-        keystore.load(is, password.toCharArray());
-    } finally {
-        if (is != null) is.close();
+    if (this.sslcontext == null) {
+        this.sslcontext = createSSLContext(params,host,port);
     }
-    return keystore;
+    return this.sslcontext;
 }
 
-private SSLContext createSSLContext()  throws HTTPException
+private SSLContext createSSLContext(HttpConnectionParams params, String host, int port) throws HTTPException
 {
-    try {
-        KeyManager[] keymanagers = null;
-        KeyStore keystore = null;
-        KeyStore truststore = null;
-        TrustManager[] trustmanagers = null;
+    SSLContext sslcontext = null;
+    KeyManager[] keymanagers = null;
+    KeyStore keystore = null;
+    KeyStore truststore = null;
+    TrustManager[] trustmanagers = null;
+    HTTPAuthManager mgr = null;
 
-        String keypassword = getpassword("key");
-        String keypath = getstorepath("key");
-        String trustpassword = getpassword("trust");
-        String trustpath = getstorepath("trust");
+
+    try {
+        // Get the HTTPAuthScheme
+	mgr =  (HTTPAuthManager)params.getParameter(HTTPAuthScheme.CREDENTIALPROVIDER);
+	if(mgr == null) {
+	    sslcontext = SSLContext.getInstance("SSL");
+	    sslcontext.init(null,null,null);
+            return sslcontext;
+	}
+
+        HTTPAuthScheme scheme = mgr.getScheme();
+
+        String keypassword = scheme.get(HTTPAuthScheme.KEYSTOREPASSWORD);
+        String keypath = scheme.get(HTTPAuthScheme.KEYSTOREPATH);
+        String trustpassword = scheme.get(HTTPAuthScheme.TRUSTSTOREPASSWORD);
+        String trustpath = scheme.get(HTTPAuthScheme.TRUSTSTOREPATH);
 
         keystore = buildstore(keypath, keypassword, "key");
-        if(keystore != null) {
+        if (keystore != null) {
             KeyManagerFactory kmfactory = KeyManagerFactory.getInstance("SunX509");
             kmfactory.init(keystore, keypassword.toCharArray());
             keymanagers = kmfactory.getKeyManagers();
         }
-
         truststore = buildstore(trustpath, trustpassword,"trust");
         if(truststore != null) {
             //TrustManagerFactory trfactory = TrustManagerFactory.getInstance("SunX509");
@@ -260,33 +270,16 @@ private SSLContext createSSLContext()  throws HTTPException
         throw new HTTPException("I/O error reading keystore/truststore file: " + e.getMessage());
     }
 }
-    static String
-        getpassword(String prefix)
-        {
-            String password = System.getProperty(prefix + "storepassword");
-            if(password != null) {
-                password = password.trim();
-                if(password.length() == 0) password = null;
-            }
-                 return password;
-        }
 
-    static String
-        getstorepath(String prefix)
-        {
-                String path = System.getProperty(prefix + "store");
-           return path;
-        }
-
-    static KeyStore
-    buildstore(String path, String password, String prefix) throws HTTPException
-    {
-        KeyStore store = null;
-        try {
-            if(path != null && password != null) {
+static KeyStore
+buildstore(String path, String password, String prefix) throws HTTPException
+{
+    KeyStore store = null;
+    try {
+        if (path != null && password != null) {
             File storefile = new File(path);
-            if(!storefile.canRead())
-                throw new HTTPException("Cannot read specified "+prefix+"store:"+storefile.getAbsolutePath());
+            if (!storefile.canRead())
+                throw new HTTPException("Cannot read specified " + prefix + "store:" + storefile.getAbsolutePath());
             store = KeyStore.getInstance("JKS");
             InputStream is = null;
             try {
@@ -295,17 +288,12 @@ private SSLContext createSSLContext()  throws HTTPException
             } finally {
                 if (is != null) is.close();
             }
-            }
-        } catch (Exception e) {throw new HTTPException(e);}
-        return store;
+        }
+    } catch (Exception e) {
+        throw new HTTPException(e);
     }
-
-    private SSLContext getSSLContext() throws HTTPException
-{
-    if (this.sslcontext == null) {
-        this.sslcontext = createSSLContext();
-    }
-    return this.sslcontext;
+    return store;
 }
+
 
 }
