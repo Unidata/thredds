@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Set;
 
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.auth.*;
 
 import static ucar.nc2.util.net.HTTPAuthStore.*;
@@ -60,7 +61,7 @@ import static ucar.nc2.util.net.HTTPAuthStore.*;
  * is intended to be broader than that interface.
  */
 
-public class HTTPAuthScheme implements Serializable, AuthScheme
+public class HTTPAuthScheme implements Serializable
 {
 
 //////////////////////////////////////////////////
@@ -93,7 +94,7 @@ protected HTTPAuthStore.Scheme scheme;
 // Constructor(s)
 
 public HTTPAuthScheme(HTTPAuthStore.Scheme scheme)
-    throws HTTPException
+        throws HTTPException
 {
     params = new HashMap<String, Object>();
     this.scheme = scheme;
@@ -110,30 +111,47 @@ public HTTPAuthScheme(HTTPAuthStore.Scheme scheme)
     default:
 	throw new HTTPException("Illegal HTTPAuthStore.Scheme: "+schemename);
     }
-    insert((SCHEME, this.scheme);
+    insert(SCHEME, this.scheme);
 }
 
 
 public HTTPAuthScheme(HTTPAuthStore.Scheme scheme, CredentialsProvider cp)
-    throws HTTPException
+        throws HTTPException
 {
     this(scheme);
     setCredentialsProvider(cp);
 }
 
 public HTTPAuthScheme(HTTPAuthStore.Scheme scheme, String user, String pwd)
-    throws HTTPException
+        throws HTTPException
 {
     this(scheme);
     setUserPassword(user,pwd);
+}
+
+public HTTPAuthScheme(HTTPAuthScheme other)
+        throws HTTPException
+{
+    Set<String> keys = other.getContents().keySet();
+    for(String key: keys) {
+        Object value = other.get(key);
+        insert(key,value);
+    }
+}
+
+//////////////////////////////////////////////////
+
+public String getSchemeName()
+{
+    return (scheme == null?null:scheme.schemeName());
 }
 
 public HTTPAuthScheme
 setCredentialsProvider(CredentialsProvider cp)
 {
     if(cp != null) {
-        insert((SCHEME, this.scheme);
-        insert((CREDENTIALSPROVIDER, cp);
+        insert(SCHEME, this.scheme);
+        insert(CREDENTIALSPROVIDER, cp);
     }
     return this;
 }
@@ -141,8 +159,8 @@ setCredentialsProvider(CredentialsProvider cp)
 public HTTPAuthScheme
 setUserPassword(String user, String pwd)
 {
-    insert((PASSWORD, pwd);
-    insert((USER, user);
+    insert(PASSWORD, pwd);
+    insert(USER, user);
     return this;
 }
 
@@ -152,13 +170,13 @@ setKeystore(String keypath, String keypwd)
     return setKeyStore(keypath, keypwd, null, null);
 }
 
-static public HTTPAuthScheme
+public HTTPAuthScheme
 setKeyStore(String keypath, String keypwd, String trustpath, String trustpwd)
 {
-    insert((KEYSTORE, keypath);
-    insert((KEYSTOREPASSWORD, keypwd);
-    insert((TRUSTSTORE, trustpath);
-    insert((TRUSTSTOREPASSWORD, trustpwd);
+    insert(KEYSTORE, keypath);
+    insert(KEYSTOREPASSWORD, keypwd);
+    insert(TRUSTSTORE, trustpath);
+    insert(TRUSTSTOREPASSWORD, trustpwd);
     return this;
 }
 
@@ -193,19 +211,6 @@ getContents()
     return params;
 }
 
-//////////////////////////////////////////////////
-// Shallow Clone-like Interface, but never fails
-
-public HTTPAuthScheme duplicate()
-{
-    HTTPAuthScheme clone = new HTTPAuthScheme();
-    Set<String> keys = params.keySet();
-    for(String key: keys) {
-        Object value = params.get(key);
-        clone.insert(key,value);
-    }
-    return clone;
-}
 
 ///////////////////////////////////////////////////
 // toString
@@ -267,9 +272,6 @@ private void writeObject(java.io.ObjectOutputStream ostream)
         ostream.writeObject(get(TRUSTSTORE));
         ostream.writeObject(get(TRUSTSTOREPASSWORD));
         break;
-    case OTHER:
-        ostream.writeObject(get(AUTHSTRING));
-        break;
     default:
         throw new NotSerializableException();
     }
@@ -312,10 +314,6 @@ private void readObject(java.io.ObjectInputStream istream)
         if (keystorepassword != null) insert(KEYSTOREPASSWORD, keystorepassword);
         if (truststore != null) insert(TRUSTSTORE, truststore);
         if (truststorepassword != null) insert(TRUSTSTOREPASSWORD, truststorepassword);
-        break;
-    case OTHER:
-        String authstring = (String) istream.readObject();
-        if (authstring != null) insert(AUTHSTRING, authstring);
         break;
     default:
         throw new NotSerializableException();
