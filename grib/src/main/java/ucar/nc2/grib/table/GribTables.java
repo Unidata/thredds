@@ -197,9 +197,12 @@ public class GribTables {
     else {
       if (unit.startsWith("/")) unit = "1" + unit;
       unit = unit.trim();
-      unit = StringUtil2.remove(unit, "^");
-      unit = StringUtil2.replace(unit, ' ', ".");
-      unit = StringUtil2.replace(unit, '*', ".");
+      unit = StringUtil2.remove(unit, "**");
+      StringBuilder sb = new StringBuilder(unit);
+      StringUtil2.remove(sb, "^[]");
+      StringUtil2.replace(sb, ' ', ".");
+      StringUtil2.replace(sb, '*', ".");
+      unit = sb.toString();
     }
     return unit;
   }

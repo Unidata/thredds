@@ -33,6 +33,10 @@
 
 package ucar.grib.grib1;
 
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import thredds.cataloggen.config.DatasetSourceStructure;
 import ucar.grib.GribResourceReader;
 import ucar.grib.NotSupportedException;
 import ucar.nc2.grib.table.GribTables;
@@ -413,8 +417,59 @@ public class GribPDSParamTable {
       readParameterTableSplit("\\|", new int[]{0, 3, 1, 2});
     else if (filename.endsWith(".dss"))
       readParameterTableSplit("\t", new int[]{0, -1, 1, 2});
+    else if (filename.endsWith(".xml"))
+      readParameterTableXml();
 
     return parameters;
+  }
+
+  /* http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.60-1.3.xml
+   <parameter code="5">
+  <description>ICAO Standard Atmosphere reference height</description>
+  <units>m</units>
+  </parameter>
+  */
+  private boolean readParameterTableXml() {
+    InputStream is = null;
+    try {
+      is = GribResourceReader.getInputStream(path);
+      if (is == null) return false;
+
+      SAXBuilder builder = new SAXBuilder();
+      org.jdom.Document doc = builder.build(path);
+      Element root = doc.getRootElement();
+
+      HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
+
+      List<Element> disciplines = root.getChildren("parameter");
+      for (Element elem1 : disciplines) {
+        int code = Integer.parseInt(elem1.getAttributeValue("code"));
+        String desc = elem1.getChildText("description");
+        if (desc == null) continue;
+        String units = elem1.getChildText("units");
+        if (units == null) units = "";
+        String name = elem1.getChildText("CF");
+        GridParameter parameter = new GridParameter(code, name, desc, units);
+        result.put(parameter.getNumber(), parameter);
+        if (debug) System.out.printf(" %s%n", parameter);
+      }
+      parameters = result;
+      return true;
+
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      return false;
+
+
+    } catch (JDOMException e) {
+      e.printStackTrace();
+      return false;
+    } finally {
+      if (is != null) try {
+        is.close();
+      } catch (IOException e) {
+      }
+    }
   }
 
   // order: num, name, desc, unit
@@ -442,8 +497,7 @@ public class GribPDSParamTable {
         parameter.setDescription(GribTables.cleanupDescription(flds[order[2]].trim()));
         if (flds.length > order[3]) parameter.setUnit(flds[order[3]].trim());
         result.put(parameter.getNumber(), parameter);
-        if (debug)
-          System.out.printf(" %s%n", parameter);
+        if (debug) System.out.printf(" %s%n", parameter);
       }
 
       parameters = result;

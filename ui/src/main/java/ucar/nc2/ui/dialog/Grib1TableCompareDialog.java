@@ -51,15 +51,22 @@ import javax.swing.border.*;
  */
 public class Grib1TableCompareDialog extends JDialog {
   Grib1TablesViewer.TableBean table1bean;
+  Grib1TablesViewer.TableBean table2bean;
 
   public class Data {
     public Grib1TablesViewer.TableBean table1bean;
-    public boolean compareNames, compareUnits, compareDesc, showMissing;
+    public Grib1TablesViewer.TableBean table2bean;
+    public boolean compareNames, compareUnits, compareDesc, showMissing, cleanUnits, udunits;
 
-    private Data(Grib1TablesViewer.TableBean table1bean, boolean compareNames, boolean compareUnits, boolean compareDesc, boolean showMissing) {
+    private Data(Grib1TablesViewer.TableBean table1bean, Grib1TablesViewer.TableBean table2bean,
+                 boolean compareNames, boolean compareUnits, boolean cleanUnits, boolean udunits,
+                 boolean compareDesc, boolean showMissing) {
       this.table1bean = table1bean;
+      this.table2bean = table2bean;
       this.compareNames = compareNames;
       this.compareUnits = compareUnits;
+      this.cleanUnits = cleanUnits;
+      this.udunits = udunits;
       this.compareDesc = compareDesc;
       this.showMissing = showMissing;
     }
@@ -80,6 +87,11 @@ public class Grib1TableCompareDialog extends JDialog {
     table1.setText(bean.getPath());
   }
 
+  public void setTable2(Grib1TablesViewer.TableBean bean) {
+    this.table2bean = bean;
+    table2.setText(bean.getPath());
+  }
+
   private void fileBrowserActionPerformed(ActionEvent e) {
     // TODO add your code here
   }
@@ -89,7 +101,9 @@ public class Grib1TableCompareDialog extends JDialog {
   }
 
   private void okButtonActionPerformed(ActionEvent e) {
-    Data data =  new Data(table1bean, compareNames.isSelected(), compareUnits.isSelected(), compareDesc.isSelected(), showMissing.isSelected() );
+    Data data =  new Data(table1bean, table2bean,
+            compareNames.isSelected(), compareUnits.isSelected(), cleanUnits.isSelected(), udUnits.isSelected(),
+            compareDesc.isSelected(), showMissing.isSelected() );
     firePropertyChange("OK", null, data);
     setVisible(false);
   }
@@ -108,6 +122,10 @@ public class Grib1TableCompareDialog extends JDialog {
     okButton = new JButton();
     table1 = new JTextField();
     showMissing = new JCheckBox();
+    table2 = new JTextField();
+    label2 = new JLabel();
+    cleanUnits = new JCheckBox();
+    udUnits = new JCheckBox();
 
     //======== this ========
     setTitle("Compare Grib1 tables");
@@ -123,7 +141,7 @@ public class Grib1TableCompareDialog extends JDialog {
       {
 
         //---- label1 ----
-        label1.setText("table:");
+        label1.setText("table1:");
         label1.setFont(new Font("Dialog", Font.BOLD, 12));
 
         //======== buttonBar ========
@@ -136,13 +154,14 @@ public class Grib1TableCompareDialog extends JDialog {
 
         //---- compareDesc ----
         compareDesc.setText("compare Desc");
+        compareDesc.setSelected(true);
 
         //---- compareUnits ----
         compareUnits.setText("compareUnits");
+        compareUnits.setSelected(true);
 
         //---- compareNames ----
         compareNames.setText("compareNames");
-        compareNames.setSelected(true);
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
@@ -168,6 +187,21 @@ public class Grib1TableCompareDialog extends JDialog {
         //---- showMissing ----
         showMissing.setText("showMissing");
 
+        //---- table2 ----
+        table2.setEditable(false);
+
+        //---- label2 ----
+        label2.setText("table2:");
+        label2.setFont(new Font("Dialog", Font.BOLD, 12));
+
+        //---- cleanUnits ----
+        cleanUnits.setText("cleanUnits");
+        cleanUnits.setSelected(true);
+
+        //---- udUnits ----
+        udUnits.setText("udUnits");
+        udUnits.setSelected(true);
+
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
         contentPanelLayout.setHorizontalGroup(
@@ -176,24 +210,35 @@ public class Grib1TableCompareDialog extends JDialog {
               .addContainerGap()
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                 .addGroup(contentPanelLayout.createSequentialGroup()
-                  .addComponent(label1)
+                  .addGroup(contentPanelLayout.createParallelGroup()
+                    .addComponent(label2)
+                    .addComponent(label1))
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                   .addGroup(contentPanelLayout.createParallelGroup()
                     .addGroup(contentPanelLayout.createSequentialGroup()
-                      .addComponent(compareNames)
-                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                      .addComponent(compareUnits)
-                      .addGap(18, 18, 18)
-                      .addComponent(compareDesc)
-                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                      .addComponent(showMissing))
-                    .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                      .addGroup(contentPanelLayout.createSequentialGroup()
-                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE))
-                      .addComponent(table1, GroupLayout.PREFERRED_SIZE, 611, GroupLayout.PREFERRED_SIZE)))
-                  .addGap(111, 111, 111))
+                      .addGroup(contentPanelLayout.createParallelGroup()
+                        .addGroup(contentPanelLayout.createSequentialGroup()
+                          .addGroup(contentPanelLayout.createParallelGroup()
+                            .addComponent(compareUnits)
+                            .addComponent(compareDesc))
+                          .addGap(26, 26, 26)
+                          .addGroup(contentPanelLayout.createParallelGroup()
+                            .addComponent(showMissing)
+                            .addComponent(cleanUnits))
+                          .addGroup(contentPanelLayout.createParallelGroup()
+                            .addGroup(contentPanelLayout.createSequentialGroup()
+                              .addGap(15, 15, 15)
+                              .addComponent(udUnits)
+                              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                              .addComponent(okButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
+                              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE))
+                            .addGroup(contentPanelLayout.createSequentialGroup()
+                              .addGap(18, 18, 18)
+                              .addComponent(compareNames))))
+                        .addComponent(table1, GroupLayout.PREFERRED_SIZE, 611, GroupLayout.PREFERRED_SIZE))
+                      .addGap(111, 111, 111))
+                    .addComponent(table2, GroupLayout.PREFERRED_SIZE, 611, GroupLayout.PREFERRED_SIZE)))
                 .addComponent(buttonBar, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 779, GroupLayout.PREFERRED_SIZE))
               .addContainerGap())
         );
@@ -202,19 +247,30 @@ public class Grib1TableCompareDialog extends JDialog {
             .addGroup(contentPanelLayout.createSequentialGroup()
               .addGap(11, 11, 11)
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label1)
-                .addComponent(table1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-              .addGap(46, 46, 46)
+                .addComponent(table1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(label1))
+              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(compareNames)
-                .addComponent(compareUnits)
+                .addComponent(label2)
+                .addComponent(table2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+              .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(compareDesc)
-                .addComponent(showMissing))
-              .addGap(22, 22, 22)
-              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(cancelButton)
-                .addComponent(okButton))
-              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addComponent(showMissing)
+                .addComponent(compareNames))
+              .addGroup(contentPanelLayout.createParallelGroup()
+                .addGroup(contentPanelLayout.createSequentialGroup()
+                  .addGap(22, 22, 22)
+                  .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(cancelButton)
+                    .addComponent(okButton)))
+                .addGroup(contentPanelLayout.createSequentialGroup()
+                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                  .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(compareUnits)
+                    .addComponent(cleanUnits)
+                    .addComponent(udUnits))))
+              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
               .addComponent(buttonBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
               .addContainerGap())
         );
@@ -240,5 +296,9 @@ public class Grib1TableCompareDialog extends JDialog {
   private JButton okButton;
   private JTextField table1;
   private JCheckBox showMissing;
+  private JTextField table2;
+  private JLabel label2;
+  private JCheckBox cleanUnits;
+  private JCheckBox udUnits;
   // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

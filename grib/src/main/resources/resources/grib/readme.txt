@@ -24,3 +24,9 @@ GRIB1 CHANGES
 
  8/25/2011 Some differences between wmo-grib1.dss and ncep tables (nceptab_3.tab). compare to dss ncep tables when those are fixed.
     at this point, id say all grib2 tables are suspect.
+
+ 8/25/2011 spot check our grib1 tables against http://dss.ucar.edu/metadata/ParameterTables/
+  WMO_GRIB1.98-0.128.xml: minor changes in desc; units 57, 58, 212; 15 missing in our table
+  WMO_GRIB1.59-0.2.xml: many extra in ours; units are messed up in about 25 of ours; different 53, 198
+  WMO_GRIB1.34-0.3.xml: about 10 extra in ours.
+  WMO_GRIB1.7-1.132.xml: udunits differ: 3,103,178,179;
