@@ -65,6 +65,42 @@ public class HTTPAuthScheme implements Serializable
 {
 
 //////////////////////////////////////////////////
+// Scheme enumeration
+
+static public enum Scheme {
+    NULL(null),
+    BASIC("BASIC"),
+    DIGEST("DIGEST"),
+    KEYSTORE("KEYSTORE"),
+    PROXY("PROXY");
+
+    // Define the associated standard name
+    private final String name;
+    Scheme(String name) {
+        this.name = name;
+    }
+    public String schemeName()   { return name; }
+ 
+    static public Scheme schemeForName(String name)
+    {
+	if(name != null) {
+  	    for(Scheme s: Scheme.values()) {
+  	        if(name.equals(s.name())) return s;
+	    }
+	}
+	return null;
+    }
+
+}
+
+// Convenience
+static final public Scheme NULL = Scheme.NULL;
+static final public Scheme BASIC = Scheme.BASIC;
+static final public Scheme DIGEST = Scheme.DIGEST;
+static final public Scheme KEYSTORE = Scheme.KEYSTORE;
+static final public Scheme PROXY = Scheme.PROXY;
+
+//////////////////////////////////////////////////
 // Predefined keys (Used local to the package)
 
 static final String PRINCIPAL = "ucar.nc2.principal";
@@ -94,12 +130,11 @@ protected HTTPAuthStore.Scheme scheme;
 // Constructor(s)
 
 public HTTPAuthScheme(HTTPAuthStore.Scheme scheme)
-        throws HTTPException
 {
     params = new HashMap<String, Object>();
     this.scheme = scheme;
     switch (scheme) {
-    case BASIC:
+    case BASIC: case NULL:
 	basescheme = new BasicScheme();
 	break;
     case DIGEST:
@@ -108,38 +143,31 @@ public HTTPAuthScheme(HTTPAuthStore.Scheme scheme)
     case KEYSTORE:
 	basescheme = new ucar.nc2.util.net.KeyStoreScheme();
 	break;
-    default:
-	throw new HTTPException("Illegal HTTPAuthStore.Scheme: "+schemename);
+    case PROXY:
+	basescheme = new ProxyScheme();
+	break;
     }
     insert(SCHEME, this.scheme);
 }
 
-
-public HTTPAuthScheme(HTTPAuthStore.Scheme scheme, CredentialsProvider cp)
-        throws HTTPException
-{
-    this(scheme);
-    setCredentialsProvider(cp);
-}
-
-public HTTPAuthScheme(HTTPAuthStore.Scheme scheme, String user, String pwd)
-        throws HTTPException
-{
-    this(scheme);
-    setUserPassword(user,pwd);
-}
-
 public HTTPAuthScheme(HTTPAuthScheme other)
-        throws HTTPException
 {
-    Set<String> keys = other.getContents().keySet();
-    for(String key: keys) {
-        Object value = other.get(key);
-        insert(key,value);
+    this(other==null?null:other.getScheme());
+    if(other != null) {
+        Set<String> keys = other.getContents().keySet();
+        for(String key: keys) {
+            Object value = other.get(key);
+            insert(key,value);
+        }
     }
 }
 
 //////////////////////////////////////////////////
+
+public Scheme getScheme()
+{
+    return scheme;
+}
 
 public String getSchemeName()
 {

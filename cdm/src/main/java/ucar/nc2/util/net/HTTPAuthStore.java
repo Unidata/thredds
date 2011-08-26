@@ -61,32 +61,6 @@ and
 public class HTTPAuthStore implements Serializable
 {
 
-static public enum Scheme {
-    NULL(null),
-    ANY("_"),
-    BASIC("BASIC"),
-    DIGEST("DIGEST"),
-    KEYSTORE("KEYSTORE"),
-    PROXY("PROXY");
-
-    // Define the associated standard name
-    private final String name;
-    Scheme(String name) {
-        this.name = name;
-    }
-    public String schemeName()   { return name; }
- 
-    static public Scheme schemeForName(String name)
-    {
-	if(name != null) {
-  	    for(Scheme s: Scheme.values()) {
-  	        if(name.equals(s.name())) return s;
-	    }
-	}
-	return null;
-    }
-
-}
 
 //////////////////////////////////////////////////
 /**
@@ -314,20 +288,22 @@ static {
     Hashtable<HTTPSession, List<Entry>> rows = new Hashtable<HTTPSession,List<Entry>>();
     // For back compatibility, check some system properties
     String kpath = System.getProperty("keystore");
-    String tpath = System.getProperty("truststore");
-    String kpwd = System.getProperty("keystorepassword");
-    String tpwd = System.getProperty("truststorepassword");
-    if(kpath != null) kpath = kpath.trim();
-    if(tpath != null) tpath = tpath.trim();
-    if(kpwd != null) kpwd = kpwd.trim();
-    if(tpwd != null) tpwd = tpwd.trim();
-    if(kpath.length() == 0) kpath = null;
-    if(tpath.length() == 0) tpath = null;
-    if(kpwd.length() == 0) kpwd = null;
-    if(tpwd.length() == 0) tpwd = null;
-    HTTPAuthScheme scheme = new HTTPAuthScheme(Scheme.KEYSTORE);
-    scheme.setKeyStore(kpath,kpwd,tpath,tpwd);
-    insert(ANY_SESSION,ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
+    if(kpath != null) {
+        String tpath = System.getProperty("truststore");
+        String kpwd = System.getProperty("keystorepassword");
+        String tpwd = System.getProperty("truststorepassword");
+        kpath = kpath.trim();
+        if(tpath != null) tpath = tpath.trim();
+        if(kpwd != null) kpwd = kpwd.trim();
+        if(tpwd != null) tpwd = tpwd.trim();
+        if(kpath.length() == 0) kpath = null;
+        if(tpath.length() == 0) tpath = null;
+        if(kpwd.length() == 0) kpwd = null;
+        if(tpwd.length() == 0) tpwd = null;
+            HTTPAuthScheme scheme = new HTTPAuthScheme(Scheme.KEYSTORE);
+            scheme.setKeyStore(kpath,kpwd,tpath,tpwd);
+            insert(ANY_SESSION,ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
+    }
 }
 
 //////////////////////////////////////////////////

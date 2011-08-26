@@ -40,19 +40,76 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.apache.commons.httpclient.auth.MalformedChallengeException;
 
-public class KeyStoreScheme extends AbstractScheme
+/**
+ * Provide a default implementation for a Scheme
+ * when it is only serving as a placeholder.
+ */
+
+abstract public class AbstractScheme implements AuthScheme
 {
 
 public
-KeyStoreScheme()
+AbstractScheme()
 {
-    super();
 }
 
-public String
-getSchemeName()
+
+public void
+processChallenge(String url)
+    throws MalformedChallengeException
 {
-    return "KEYSTORE";
+}
+    
+/**
+ * Subclass must implement
+ */
+
+abstract public String getSchemeName();
+    
+public String
+getParameter(String key)
+{
+    return null;
+}
+    
+public String
+getRealm()
+{
+    return AuthScope.ANY_REALM;
+}
+    
+@Deprecated
+public String
+getID()
+{
+    return null;
+}
+    
+public boolean
+isConnectionBased()
+{
+    return false;
+}
+    
+public boolean
+isComplete()
+{
+    return true;
+}
+    
+@Deprecated
+public String
+authenticate(Credentials credentials, String url, String url1)
+    throws AuthenticationException
+{
+    return null;
+}
+    
+public String
+authenticate(Credentials credentials, HttpMethod httpMethod)
+    throws AuthenticationException
+{
+    return null;
 }
 
 }
