@@ -26,8 +26,18 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../wmoTables/src/main/resources" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module" module-name="bufr" exported="" />
     <orderEntry type="module" module-name="cdm" exported="" />
+    <orderEntry type="module" module-name="common" exported="" />
     <orderEntry type="module" module-name="grib" exported="" />
     <orderEntry type="library" name="Spring-Web" level="project" />
     <orderEntry type="library" exported="" name="Logging" level="project" />

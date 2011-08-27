@@ -242,7 +242,8 @@ public class HTTPSession
             clientparams.setParameter(MAX_REDIRECTS, 100);
 
             if (globalProvider != null) {
-                clientparams.setParameter(CredentialsProvider.PROVIDER, globalProvider);
+		HTTPWrap wrap = new HTTPWrap(globalProvider);
+                clientparams.setParameter(CredentialsProvider.PROVIDER, wrap);
             }
             if (globalAgent != null) {
                 clientparams.setParameter(USER_AGENT, globalAgent);
@@ -441,8 +442,10 @@ public class HTTPSession
     public void setCredentialsProvider(CredentialsProvider provider)
     {
         sessionProvider = provider;
-        if (sessionClient != null && provider != null)
-            sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
+        if (sessionClient != null && provider != null){
+	    HTTPWrap wrap = new HTTPWrap(provider);
+            sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, wrap);
+        }
     }
 
     static synchronized public void
