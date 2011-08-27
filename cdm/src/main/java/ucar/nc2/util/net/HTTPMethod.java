@@ -596,7 +596,7 @@ setAuthentication(HTTPSession session)
     // Handle authentication
     String principal = session.getPrincipal();
     if (principal == null) principal = HTTPAuthStore.ANY_PRINCIPAL;
-   
+
     String uri = session.getURI();
 
     try {

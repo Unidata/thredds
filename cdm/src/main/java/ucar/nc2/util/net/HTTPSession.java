@@ -225,7 +225,6 @@ public class HTTPSession
 
     protected HTTPSession() {}
 
-    //Shared constructor code
     @Urlencoded
     protected void construct(String uriencoded)
         throws HTTPException

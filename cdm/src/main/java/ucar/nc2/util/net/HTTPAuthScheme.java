@@ -445,10 +445,6 @@ processChallenge(String url)
     this.basescheme.processChallenge(url);
 }
     
-/**
- * Subclass must implement
- */
-
 public String
 getParameter(String key)
 {
