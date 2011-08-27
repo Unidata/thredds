@@ -661,6 +661,14 @@ setAuthentication(HTTPSession session)
     } catch(HTTPException he) {
         // do nothing
     }
+
+
+    /*
+client.getState().setCredentials(
+62 	new AuthScope("www.verisign.com", 443, "realm"),
+63 	new UsernamePasswordCredentials("username", "password")
+64 	);
+     */
 }
 
 public HTTPSession
