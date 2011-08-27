@@ -105,44 +105,40 @@ public Credentials getCredentials(AuthScheme authscheme,
     CredentialsProvider cp = null;
 
     // Set up an entry and search for authstore matches
-    HTTPAuthStore.Entry pattern = new HTTPAuthStore.Entry();
-    pattern.principal = this.principal;
-    pattern.host = (host == null || host.length()==0?ANY_HOST:host);
-    pattern.port = port;
-    pattern.path = ANY_PATH;
-    String realm = authscheme.getRealm();
-    pattern.realm = (realm == null || realm.length()==0?ANY_REALM:realm);
-
-    if(!(authscheme instanceof BasicScheme || authscheme instanceof DigestScheme))
-        throw new CredentialsNotAvailableException("GetCredentials: non (BASIC|DIGEST) scheme");
-
+    HTTPAuthStore.Entry pattern = new HTTPAuthStore.Entry(
+                                      session,
+                                      this.principal,
+                                      host,
+                                      port,
+                                      ANY_PATH,
+                                      null) ;
+    
     if(!proxy && authentry == null)
         throw new CredentialsNotAvailableException("GetCredentials: No credentials available");
     else if(proxy && proxyentry == null)
         throw new CredentialsNotAvailableException("GetCredentials: No proxy credentials available");
 
     if(!proxy) { // => authentry
-	boolean isbasic = (authscheme instanceof BasicScheme);
-        // See if we already have proper credentials
-        creds = (Credentials)authentry.credentials.get(HTTPCreds.CREDENTIALS);
+	boolean isbasic = scheme.getScheme() == HTTPAuthScheme.BASIC;
+        creds = (Credentials)authentry.scheme.get(HTTPAuthScheme.CREDENTIALS);
         if(creds == null) {
             // invoke the (real) credentials provider
-            cp = (CredentialsProvider) authentry.credentials.get(HTTPCreds.CREDENTIALSPROVIDER);
+            cp = (CredentialsProvider) authentry.scheme.get(HTTPAuthScheme.CREDENTIALSPROVIDER);
             if(cp == null)
                 throw new CredentialsNotAvailableException("GetCredentials: AuthStore does not specify credentials or credentials provider");
-            creds = cp.getCredentials(authentry.getAuthScheme(),host,port,false);
-            authentry.credentials.insert(HTTPCreds.CREDENTIALS,creds);
+            creds = cp.getCredentials(authentry.scheme,host,port,false);
+            authentry.scheme.insert(HTTPAuthScheme.CREDENTIALS,creds);
 	}
     } else { // Establish proxy credentials
         // See if we already have proper credentials
-        creds = (Credentials)proxyentry.credentials.get(HTTPCreds.CREDENTIALS);
+        creds = (Credentials)proxyentry.scheme.get(HTTPAuthScheme.CREDENTIALS);
         if(creds == null) {
             // invoke the (real) credentials provider
-           cp = (CredentialsProvider)proxyentry.credentials.get(HTTPCreds.CREDENTIALSPROVIDER);
+           cp = (CredentialsProvider)proxyentry.scheme.get(HTTPAuthScheme.CREDENTIALSPROVIDER);
            if(cp == null)
                throw new CredentialsNotAvailableException("GetCredentials: AuthStore does not specify proxy credentials or credentials provider");
-           creds = cp.getCredentials(proxyentry.getAuthScheme(),host,port,false);
-           proxyentry.credentials.insert(HTTPCreds.CREDENTIALS,creds);
+           creds = cp.getCredentials(proxyentry.scheme,host,port,false);
+           proxyentry.scheme.insert(HTTPAuthScheme.CREDENTIALS,creds);
         }
     }
     if(creds == null)

@@ -226,7 +226,7 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
 
     try {
         // Get the HTTPAuthScheme
-	mgr =  (HTTPAuthManager)params.getParameter(HTTPAuthScheme.CREDENTIALPROVIDER);
+	mgr =  (HTTPAuthManager)params.getParameter(HTTPAuthScheme.CREDENTIALSPROVIDER);
 	if(mgr == null) {
 	    sslcontext = SSLContext.getInstance("SSL");
 	    sslcontext.init(null,null,null);
@@ -235,10 +235,10 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
 
         HTTPAuthScheme scheme = mgr.getScheme();
 
-        String keypassword = scheme.get(HTTPAuthScheme.KEYSTOREPASSWORD);
-        String keypath = scheme.get(HTTPAuthScheme.KEYSTOREPATH);
-        String trustpassword = scheme.get(HTTPAuthScheme.TRUSTSTOREPASSWORD);
-        String trustpath = scheme.get(HTTPAuthScheme.TRUSTSTOREPATH);
+        String keypassword = (String)scheme.get(HTTPAuthScheme.KEYSTOREPASSWORD);
+        String keypath = (String)scheme.get(HTTPAuthScheme.KEYSTOREPATH);
+        String trustpassword = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPASSWORD);
+        String trustpath = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPATH);
 
         keystore = buildstore(keypath, keypassword, "key");
         if (keystore != null) {
@@ -255,7 +255,7 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
         }  else  {
             trustmanagers = new TrustManager[] {new EasyX509TrustManager(null)};
         }
-        SSLContext sslcontext = SSLContext.getInstance("SSL");
+        sslcontext = SSLContext.getInstance("SSL");
         sslcontext.init(keymanagers, trustmanagers, null);
 
         return sslcontext;

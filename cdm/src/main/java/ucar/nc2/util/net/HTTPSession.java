@@ -182,6 +182,7 @@ public class HTTPSession
     String useragent = null;
     CredentialsProvider sessionProvider = null;
     String uriencoded = null;
+    String principal = null;
 
     /**
      * A session is encapsulated in an instance of the class HTTPSession.
@@ -222,6 +223,8 @@ public class HTTPSession
         construct(uri);
     }
 
+    protected HTTPSession() {}
+
     //Shared constructor code
     @Urlencoded
     protected void construct(String uriencoded)
@@ -231,13 +234,13 @@ public class HTTPSession
 	try {
 	    // See if we can extract the global principal
 	    URI uri = new URI(uriencoded);
-	    this.globalPrincipal = uri.getUserInfo();
-	    if(this.globalPrincipal != null) {
+	    this.principal = uri.getUserInfo();
+	    if(this.principal != null) {
 		// rebuild the uri without the principal
 		String newuri = removeprincipal(uriencoded);
  	        this.uriencoded = newuri;
 	    } else
-		this.globalPrincipal = ANY_PRINCIPAL;
+		this.principal = ANY_PRINCIPAL;
         } catch (URISyntaxException use) {
 	    throw new HTTPException(use);
         }
@@ -523,9 +526,24 @@ public class HTTPSession
     }
 NOTUSED*/
 
+    static public String getGlobalPrincipal()
+    {
+        return globalPrincipal;
+    }
+
     static synchronized public void setGlobalPrincipal(String principal)
     {
         globalPrincipal = principal;
+    }
+
+    public String getPrincipal()
+    {
+        return (principal==null?globalPrincipal:principal);
+    }
+
+    public void setPrincipal(String principal)
+    {
+        this.principal = principal;
     }
 
     // Note that session level principal is disabled because it does not appear

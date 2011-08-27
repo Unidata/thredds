@@ -41,6 +41,7 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.auth.*;
 
 import static ucar.nc2.util.net.HTTPAuthStore.*;
@@ -132,9 +133,10 @@ protected HTTPAuthScheme.Scheme scheme;
 public HTTPAuthScheme(HTTPAuthScheme.Scheme scheme)
 {
     params = new HashMap<String, Object>();
+    if(scheme == null) scheme = HTTPAuthScheme.NULL;
     this.scheme = scheme;
     switch (scheme) {
-    case BASIC: case NULL:
+    case BASIC:
 	basescheme = new BasicScheme();
 	break;
     case DIGEST:
@@ -145,6 +147,9 @@ public HTTPAuthScheme(HTTPAuthScheme.Scheme scheme)
 	break;
     case PROXY:
 	basescheme = new ProxyScheme();
+	break;
+    case NULL:
+	basescheme = new NullScheme();
 	break;
     }
     insert(SCHEME, this.scheme);
@@ -171,7 +176,7 @@ public Scheme getScheme()
 
 public String getSchemeName()
 {
-    return (scheme == null?null:scheme.schemeName());
+    return this.schemename;
 }
 
 public HTTPAuthScheme
@@ -437,26 +442,20 @@ public void
 processChallenge(String url)
     throws MalformedChallengeException
 {
-    this.basescheme.processChallenge();
+    this.basescheme.processChallenge(url);
 }
     
 /**
  * Subclass must implement
  */
 
-public String getSchemeName()
-{
-    return this.schemename;
-}
-    
 public String
 getParameter(String key)
 {
     Object value = params.get(key);
     if(value == null)
-	value = this.basescheme.getParameter();
-    if(value != null) value = value.toString();
-    return value;
+	value = this.basescheme.getParameter(key);
+    return value == null ? null : value.toString();
 }
     
 public String
@@ -496,7 +495,7 @@ public String
 authenticate(Credentials credentials, HttpMethod httpMethod)
     throws AuthenticationException
 {
-    return this.basescheme.authenticate(credentials,method);
+    return this.basescheme.authenticate(credentials,httpMethod);
 }
 
 }//HTTPAuthScheme

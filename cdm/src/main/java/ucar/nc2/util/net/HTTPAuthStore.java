@@ -40,6 +40,7 @@ import java.net.URL;
 import java.util.*;
 import java.io.*;
 
+import com.sun.org.apache.xerces.internal.parsers.CachingParserPool;
 import org.apache.commons.httpclient.auth.*;
 import javax.crypto.*;
 import javax.crypto.spec.*;
@@ -74,7 +75,7 @@ The scheme specifies the kind of authorization
 
 static public class Entry implements Serializable, Comparable
 {
-    public HTTPSession session;
+    private HTTPSession session;
     public String principal;
     public String host;
     public int port;
@@ -83,7 +84,7 @@ static public class Entry implements Serializable, Comparable
 
     public Entry()
     {
-	this(null,ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,null);
+	this(ANY_SESSION,ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,null);
     }
 
     /**
@@ -162,7 +163,8 @@ static public class Entry implements Serializable, Comparable
 	if(host == null) host = ANY_HOST;
 	if(port <= 0) port = ANY_PORT;
 	if(path == null) path = ANY_PATH;
-	scheme = new HTTPAuthScheme(scheme);
+	if(scheme != null)
+            scheme = new HTTPAuthScheme(scheme);
 	this.session = session;
         this.principal = principal;
 	this.host = host;
@@ -272,20 +274,20 @@ static public class Entry implements Serializable, Comparable
 
 //////////////////////////////////////////////////
 
-static public final HTTPSession     ANY_SESSION = null;
+static public final HTTPSession     ANY_SESSION = new HTTPSession();
 static public final HTTPSession     GLOBAL_SESSION = ANY_SESSION; // alias
 static public final String         ANY_PRINCIPAL = "";
 static public final String         ANY_HOST = "";
 static public final int            ANY_PORT = -1;
 static public final String         ANY_PATH = "";
-static public final HTTPAuthScheme ANY_SCHEME = null;
+//static public final HTTPAuthScheme ANY_SCHEME = new HTTPAuthScheme(HTTPAuthScheme.NULL);
 
 static public final String PLACEHOLDER = "_";
 
 static private Hashtable<HTTPSession, List<Entry>> rows;
 
 static {
-    Hashtable<HTTPSession, List<Entry>> rows = new Hashtable<HTTPSession,List<Entry>>();
+    rows = new Hashtable<HTTPSession,List<Entry>>();
     // For back compatibility, check some system properties
     String kpath = System.getProperty("keystore");
     if(kpath != null) {
@@ -493,30 +495,36 @@ search(Entry entry)
 
     // Search will actually look at both per-session and global session entries.
     // The final result will have all globals after all per-session entries.
+    assert(entry.session != null);
     if(entry.session == ANY_SESSION)
         list = getAllRows();
     else {
 	list = rows.get(entry.session);
-	list.addAll(rows.get(ANY_SESSION);
+	if(list != null)
+            list.addAll(rows.get(ANY_SESSION));
+        else
+            list = rows.get(ANY_SESSION);
     }
     List<Entry> matches = new ArrayList<Entry>();
-    for(Entry e: list) {
-	if(entry.session != ANY_SESSION
-           && e.session != ANY_SESSION
-           && entry.session != e.session) continue;
-	if(!entry.principal.equals(ANY_PRINCIPAL)
-           && !e.principal.equals(ANY_PRINCIPAL)
-           && !entry.principal.equals(e.principal)) continue;
-	if(!entry.host.equals(ANY_HOST)
-           && !e.host.equals(ANY_HOST)
-           && !entry.host.equals(e.host)) continue;
-	if(entry.port != ANY_PORT
-           && e.port != ANY_PORT
-           && entry.port != e.port) continue;
-	if(!entry.path.equals(ANY_PATH)
-           && !e.path.equals(ANY_PATH)
-           && entry.path.compareTo(e.path) >= 0) continue;
-	matches.add(new Entry(e));
+    if(list != null) {
+        for(Entry e: list) {
+            if(entry.session != ANY_SESSION
+               && e.session != ANY_SESSION
+               && entry.session != e.session) continue;
+            if(!entry.principal.equals(ANY_PRINCIPAL)
+               && !e.principal.equals(ANY_PRINCIPAL)
+               && !entry.principal.equals(e.principal)) continue;
+            if(!entry.host.equals(ANY_HOST)
+               && !e.host.equals(ANY_HOST)
+               && !entry.host.equals(e.host)) continue;
+            if(entry.port != ANY_PORT
+               && e.port != ANY_PORT
+               && entry.port != e.port) continue;
+            if(!entry.path.equals(ANY_PATH)
+               && !e.path.equals(ANY_PATH)
+               && entry.path.compareTo(e.path) >= 0) continue;
+            matches.add(new Entry(e));
+        }
     }
     // Sort based on the comparison function below
     Entry[] matchvec = matches.toArray(new Entry[matches.size()]);

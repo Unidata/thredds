@@ -595,14 +595,15 @@ setAuthentication(HTTPSession session)
 {
     // Handle authentication
     String principal = session.getPrincipal();
-    if (principal == null) principal = session.getGlobalPrincipal();
     if (principal == null) principal = HTTPAuthStore.ANY_PRINCIPAL;
    
     String uri = session.getURI();
 
+    try {
+
     // Look for matching items for this session (and principal, if specified); global
     // entries will be after per-session entries.
-    HTTPAuthStore.Entry[] entries = HTTPAuthStore.search(this, principal, uri);
+    HTTPAuthStore.Entry[] entries = HTTPAuthStore.search(this.session, principal, uri);
 
     // Look for both a proxy entry and a non-proxy entry;
     // use first found because search will have ordered the list from most
@@ -610,7 +611,7 @@ setAuthentication(HTTPSession session)
     HTTPAuthStore.Entry proxyentry = null;
     HTTPAuthStore.Entry authentry = null;
     for (HTTPAuthStore.Entry entry : entries) {
-        if (entry.scheme == HTTPAuthStore.Scheme.PROXY && proxyentry == null)
+        if (entry.scheme.getScheme() == HTTPAuthScheme.PROXY && proxyentry == null)
             proxyentry = entry;
         else if (authentry == null)
             authentry = entry;
@@ -647,7 +648,7 @@ setAuthentication(HTTPSession session)
 	switch (thescheme.getScheme()) {
         case BASIC: case DIGEST: case PROXY:
 	    session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,provider);
-	    break
+	    break;
 	case KEYSTORE:
 	    // Pass down info to the socket factory
             HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
@@ -656,6 +657,10 @@ setAuthentication(HTTPSession session)
 	default:
 	    break; // ignore
         }
+    }
+    } catch(HTTPException he) {
+        // do nothing
+    }
 }
 
 public HTTPSession
