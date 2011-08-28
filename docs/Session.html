@@ -28,20 +28,15 @@ semantics for Java network access. The notion of session
 is only loosely tied to the HTTP notion of session.
 <p>
 A session is encapsulated in an instance of the class <i>HTTPSession</i>.
-The encapsulation is with respect to a specific uri and (optionally) principal.
+The encapsulation is with respect to a specific url.
 This means that once a session is specified, it is tied permanently
-to that url and principal.
-Note that the term "principal" is another name for user id.
-If no principal is ever set, the the session assumes a special principal called
-<i>ANY_PRINCIPAL</i>.
+to that url.
 <p>
-Currently principals are ignored, but will become important
-when new authorization mechanisms are put in place.
-Also, per-instance setting of principals is disabled because
-the Apache httpclient-3 library cannot utilize them.
-They will be activated when the httpclient-4 library replaces
-the httpclient-3 library.
-
+As a special case for backward compatibility,
+an <i>HTTPSession</i> constructor with no arguments is provided.
+If used, then (1) the session is tied to no specific url,
+and (2) method creation must specify a url
+(see <a href="#HTTPMethod">HTTPMethod</a>).
 <p>
 It is important to note that Session objects do NOT
 correspond with the HttpClient objects of the Apache
@@ -68,6 +63,13 @@ for example, one would invoke this operation
 HTTPMethod m = HTTPMethod.Get(session);
 </pre>
 where "session" is a previously created session object.
+<p>
+Alternately, one can create a method
+and specify a url.
+<pre>
+HTTPMethod m = HTTPMethod.Get(session,url);
+</pre>
+See the section on <a href="#HTTPMethod.URL">specifying a url when creating an HTTPMethod instance</a> for more information.
 
 <h3><a name="HTTPMethodStream">HTTPMethodStream</a></h3>
 The purpose of this class is to allow
@@ -193,6 +195,11 @@ the <i>HTTPSession</i> url, as a string, must be a prefix
 of the url given to <i>HTTPMethod.Get</i>.
 This maintains the semantics of the Session but allows flexibility in accessing
 data from the server.
+<p>
+The following exception exists for backward compatibility.
+If the session was created without specifying a url,
+then methods must be created by specifying a url,
+and any such url is considered compatible.
 
 <h2><a name="Appendices"><u>Appendices: Session APIs</u></a></h2>
 Note: the following set may lag the actual API, so the JavaDoc or code
@@ -247,6 +254,11 @@ should be referenced to see any modifications.
      <ul>
      <li> Creates a session object with the specified
           session defining url.
+     </ul>
+<li>HTTPSession()
+     <ul>
+     <li> Creates a session object compatible
+          with any url.
      </ul>
 </ul>
 

@@ -84,7 +84,7 @@ static public class Entry implements Serializable, Comparable
 
     public Entry()
     {
-	this(ANY_SESSION,ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,null);
+	this(ANY_ENTRY);
     }
 
     /**
@@ -106,7 +106,8 @@ static public class Entry implements Serializable, Comparable
 
     public Entry(Entry entry)
     {
-	this(entry.session,
+	if(entry == null) entry = ANY_ENTRY;
+	constructor(entry.session,
 	     entry.principal,
 	     entry.host,
 	     entry.port,
@@ -124,6 +125,8 @@ static public class Entry implements Serializable, Comparable
         throws HTTPException
     {
         URI uri = null;
+	if(pattern == null) pattern = ANY_PATTERN;
+
         try {
             uri = new URI(pattern);
         } catch (URISyntaxException mue) {
@@ -244,7 +247,7 @@ static public class Entry implements Serializable, Comparable
     }
 
     static protected int compare(Entry e1, Entry e2)
-  {
+    {
       if(e1.session != e2.session) {
           if(e1.session == ANY_SESSION) return 1;
           if(e2.session == ANY_SESSION) return -1;
@@ -274,17 +277,27 @@ static public class Entry implements Serializable, Comparable
 
 //////////////////////////////////////////////////
 
-static public final HTTPSession     ANY_SESSION = new HTTPSession();
-static public final HTTPSession     GLOBAL_SESSION = ANY_SESSION; // alias
-static public final String         ANY_PRINCIPAL = "";
-static public final String         ANY_HOST = "";
-static public final int            ANY_PORT = -1;
-static public final String         ANY_PATH = "";
-//static public final HTTPAuthScheme ANY_SCHEME = new HTTPAuthScheme(HTTPAuthScheme.NULL);
+static public final HTTPSession      ANY_SESSION = new HTTPSession();
+static public final HTTPSession      GLOBAL_SESSION = ANY_SESSION; // alias
+static public final String           ANY_PRINCIPAL = "";
+static public final String           ANY_HOST = "";
+static public final int              ANY_PORT = -1;
+static public final String           ANY_PATH = "";
+
+static final public Entry            ANY_ENTRY =
+					    new Entry(ANY_SESSION,
+				            ANY_PRINCIPAL,
+                                            ANY_HOST,
+                                            ANY_PORT,
+                                            ANY_PATH,
+                                            null);
+
+static final public String           ANY_PATTERN = "pattern://_@_:_/_";
 
 static public final String PLACEHOLDER = "_";
 
 static private Hashtable<HTTPSession, List<Entry>> rows;
+
 
 static {
     rows = new Hashtable<HTTPSession,List<Entry>>();
@@ -306,7 +319,9 @@ static {
         if(tpwd.length() == 0) tpwd = null;
             HTTPAuthScheme scheme = new HTTPAuthScheme(Scheme.KEYSTORE);
             scheme.setKeyStore(kpath,kpwd,tpath,tpwd);
-            insert(ANY_SESSION,ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
+            try {
+                insert(ANY_SESSION,ANY_PATTERN,scheme);
+            } catch (HTTPException he) {}
     }
 /*
     // 2. Proxy support
@@ -345,6 +360,7 @@ static synchronized public boolean
 insert(Entry entry)
 {
     boolean rval = false;
+    if(entry == null) return false;
 
     List<Entry> list = rows.get(entry.principal);
     if(list == null) {
@@ -468,10 +484,10 @@ remove(HTTPSession session,
  */
 
 static synchronized public boolean
-remote(HTTPSession session, String pattern, HTTPAuthScheme scheme)
+remove(HTTPSession session, String pattern)
     throws HTTPException
 {
-    return remove(new Entry(session,pattern,scheme));
+    return remove(new Entry(session,pattern,null));
 }
 
 /**
@@ -578,9 +594,12 @@ search(HTTPSession session, String principal, String host, int port, String path
  */
 static synchronized public Entry[]
 search(HTTPSession session, String pattern)
-    throws HTTPException
 {
-    return search(new Entry(session,pattern,null));
+    try {
+        return search(new Entry(session,pattern,null));
+    } catch(HTTPException he) {
+        return new Entry[0];
+    }
 }
 
 /**
@@ -590,9 +609,12 @@ search(HTTPSession session, String pattern)
  */
 static synchronized public Entry[]
 search(HTTPSession session, String principal, String pattern)
-    throws HTTPException
 {
-    return search(new Entry(session,pattern,null));
+    try {
+        return search(new Entry(session,pattern,null));
+    } catch(HTTPException he) {
+        return new Entry[0];
+    }
 }
 
 //////////////////////////////////////////////////

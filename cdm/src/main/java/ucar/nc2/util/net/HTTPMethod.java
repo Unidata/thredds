@@ -133,7 +133,9 @@ public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String uriencoded)
         throw new HTTPException("HTTPMethod: no session object specified");
     this.session = session;
     if(uriencoded == null) uriencoded = session.getURI();
-    if(uriencoded != null) uriencoded = HTTPSession.removeprincipal(uriencoded);
+    if(uriencoded == null)
+        throw new HTTPException("HTTPMethod: no url specified");
+    uriencoded = HTTPSession.removeprincipal(uriencoded);
     this.uriencoded = uriencoded;
     if(!sessionCompatible(uriencoded))
         throw new HTTPException("HTTPMethod: session incompatible uriencoded");
@@ -585,8 +587,10 @@ boolean sessionCompatible(String other)
 {
     // Remove any trailing constraint
     String sessionuri = HTTPSession.getCanonicalURI(this.session.getURI());
+    if(sessionuri == null) return true; // always compatible
     other = HTTPSession.getCanonicalURI(other);
-    if(sessionuri.startsWith(other) || other.startsWith(sessionuri)) return true;
+    if(sessionuri.startsWith(other)
+       || other.startsWith(sessionuri)) return true;
     return false;
 }
 
@@ -598,6 +602,7 @@ setAuthentication(HTTPSession session)
     if (principal == null) principal = HTTPAuthStore.ANY_PRINCIPAL;
 
     String uri = session.getURI();
+    if(uri == null) uri = HTTPAuthStore.ANY_PATTERN;
 
     try {
 

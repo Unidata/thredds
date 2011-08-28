@@ -214,6 +214,9 @@ public class HTTPSession
      * The term "compatible" basically means that the HTTPSession url, as a string, must be a prefix
      * of the url given to HTTPMethod.Get. This maintains the semantics of the Session but allows flexibility
      * in accessing data from the server.
+     *
+     * Note that if the session was created with no url,
+     * then all method constructions must specify a url.
      */
 
     @Urlencoded  // Note: this a user-defined annotation for tracking which url parameters
@@ -223,14 +226,20 @@ public class HTTPSession
         construct(uri);
     }
 
-    protected HTTPSession() {}
+    public HTTPSession()
+            throws HTTPException
+    {
+	construct(null);
+    }
 
     @Urlencoded
     protected void construct(String uriencoded)
         throws HTTPException
     {
         this.uriencoded = uriencoded;
-	try {
+	if(uriencoded == null) {
+	    this.principal = ANY_PRINCIPAL;
+	} else try {
 	    // See if we can extract the global principal
 	    URI uri = new URI(uriencoded);
 	    this.principal = uri.getUserInfo();
@@ -385,6 +394,7 @@ public class HTTPSession
 
     static public String getCanonicalURI(String urlencoded)
     {
+	if(urlencoded == null) return null;
         int index = urlencoded.indexOf('?');
         if(index >= 0) urlencoded = urlencoded.substring(0,index);
         // remove any trailing extension
