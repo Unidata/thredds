@@ -363,22 +363,21 @@ public class HTTPSession
 
         String host = System.getProperty("http.proxyHost");
         String port = System.getProperty("http.proxyPort");
-
-        if (host != null) {
+        if(host != null && port != null) {
             host = host.trim();
-            if (host.length() == 0) {
-                host = null;
+            if(host.length() == 0) host = null;
+            int portno = 0;
+            if(port != null) {
+                port = port.trim();
+                if(port.length() > 0) {
+   	            try {
+                        portno = Integer.parseInt(port);
+                    } catch (NumberFormatException nfe) {portno = 0;}
+	        }
             }
-        }
-        int portno = 0;
-        if (port != null) {
-            port = port.trim();
-            if (port.length() > 0) {
-                portno = Integer.parseInt(port);
+            if(host != null && portno > 0) {
+                sessionClient.getHostConfiguration().setProxy(host, portno);
             }
-        }
-        if (host != null && portno > 0) {
-            sessionClient.getHostConfiguration().setProxy(host, portno);
         }
     }
 

@@ -98,6 +98,27 @@ import javax.net.ssl.*;
 public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory
 {
 
+//////////////////////////////////////////////////
+// Decide if using AuthStore or not
+
+/**
+ * If not using HTTPAuthStore, then use the
+ * code to handle ESG authorization using keystore code
+ * provided by Apache and Philip Kershaw and Jon Blower.
+ */
+
+static private boolean UseAuthStore;
+
+{
+    String authstore = System.getenv("AUTHSTORE");
+    UseAuthStore = (authstore != null);
+}
+
+//////////////////////////////////////////////////
+
+
+
+
 /**
  * Log object for this class.
  */
@@ -221,25 +242,39 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
     KeyStore keystore = null;
     KeyStore truststore = null;
     TrustManager[] trustmanagers = null;
-    HTTPAuthManager mgr = null;
+    HTTPAuthCredentials mgr = null;
 
+    String keypassword = null;
+    String keypath = null;
+    String trustpassword = null;
+    String trustpath = null;
 
     try {
+
+if(UseAuthStore) {
         // Get the HTTPAuthScheme
-	mgr =  (HTTPAuthManager)params.getParameter(HTTPAuthScheme.CREDENTIALSPROVIDER);
+	mgr =  (HTTPAuthCredentials)params.getParameter(HTTPAuthScheme.CREDENTIALSPROVIDER);
 	if(mgr == null) {
 	    sslcontext = SSLContext.getInstance("SSL");
 	    sslcontext.init(null,null,null);
             return sslcontext;
 	}
 
-        HTTPAuthScheme scheme = mgr.getScheme();
+        HTTPAuthScheme scheme = mgr.getAuthScheme();
 
-        String keypassword = (String)scheme.get(HTTPAuthScheme.KEYSTOREPASSWORD);
-        String keypath = (String)scheme.get(HTTPAuthScheme.KEYSTOREPATH);
-        String trustpassword = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPASSWORD);
-        String trustpath = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPATH);
+        keypassword = (String)scheme.get(HTTPAuthScheme.KEYSTOREPASSWORD);
+        keypath = (String)scheme.get(HTTPAuthScheme.KEYSTOREPATH);
+        trustpassword = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPASSWORD);
+        trustpath = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPATH);
 
+} else {//!UseAuthStore
+
+        keypassword = getpassword("key");
+        keypath = getstorepath("key");
+        trustpassword = getpassword("trust");
+        trustpath = getstorepath("trust");
+
+}
         keystore = buildstore(keypath, keypassword, "key");
         if (keystore != null) {
             KeyManagerFactory kmfactory = KeyManagerFactory.getInstance("SunX509");
@@ -255,6 +290,7 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
         }  else  {
             trustmanagers = new TrustManager[] {new EasyX509TrustManager(null)};
         }
+
         sslcontext = SSLContext.getInstance("SSL");
         sslcontext.init(keymanagers, trustmanagers, null);
 
@@ -295,5 +331,26 @@ buildstore(String path, String password, String prefix) throws HTTPException
     return store;
 }
 
+static String
+getpassword(String prefix)
+{
+    String password = System.getProperty(prefix + "storepassword");
+    if(password != null) {
+        password = password.trim();
+        if(password.length() == 0) password = null;
+    }
+    return password;
+}
+
+static String
+getstorepath(String prefix)
+{
+    String path = System.getProperty(prefix + "store");
+    if(path != null) {
+        path = path.trim();
+        if(path.length() == 0) path = null;
+    }
+    return path;
+}
 
 }

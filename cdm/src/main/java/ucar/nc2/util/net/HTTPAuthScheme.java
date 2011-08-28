@@ -213,6 +213,13 @@ setKeyStore(String keypath, String keypwd, String trustpath, String trustpwd)
     return this;
 }
 
+public HTTPAuthScheme
+setProxy(String pwd)
+{
+    insert(PASSWORD, pwd);
+    return this;
+}
+
 //////////////////////////////////////////////////
 // Internal API: package access only
 

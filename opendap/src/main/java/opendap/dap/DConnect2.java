@@ -558,7 +558,7 @@ public DDS getDDS() throws IOException, ParseException, DAP2Exception {
  */
 public DDS getDDS(String CE) throws IOException, ParseException, DAP2Exception {
   DDSCommand command = new DDSCommand();
-  command.setURL(urlString+"?"+CE);
+  command.setURL(CE == null || CE.length() == 0 ? urlString : urlString+"?"+CE);
   if (filePath != null) {
     command.process(new FileInputStream(filePath + ".dds"));
   } else if (stream != null) {

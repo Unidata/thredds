@@ -617,58 +617,44 @@ setAuthentication(HTTPSession session)
             authentry = entry;
     }
 
-    HTTPAuthScheme thescheme = null;
+    if(authentry == null && proxyentry == null)
+	return; // no authentication available
+
+    HTTPAuthCredentials creds = null;
+
     if (authentry != null) {
-        thescheme = authentry.scheme;
-	switch (thescheme.getScheme()) {
+        HTTPAuthScheme scheme = authentry.scheme;
+	switch (scheme.getScheme()) {
         case BASIC: case DIGEST:
-            AuthScope as = HTTPAuthStore.getAuthScope(authentry);
-            AuthState astate = method.getHostAuthState();
-            astate.setAuthScheme(thescheme);
+            // Provide a credentials (provider) wrapper
+	    creds = new HTTPAuthCredentials(this,principal,authentry,proxyentry);
 	    break;
-	case KEYSTORE: break;
+	case KEYSTORE:
+	    // Pass down info to the socket factory
+            HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
+            hcp.setParameter(HTTPAuthScheme.SCHEME,scheme);
+	    break;
 	default:
             throw new HTTPException("HTTPMethod: AuthStore cannot obtain credentials for: "+uriencoded);
 	}
     }
 
     if (proxyentry != null) {
-        thescheme = proxyentry.scheme;
-        AuthScope as = HTTPAuthStore.getAuthScope(proxyentry);
-        AuthState astate = method.getProxyAuthState();
-        astate.setAuthScheme(thescheme); // for all proxies
+        HTTPAuthScheme scheme = proxyentry.scheme;
+        // Provide a credentials (provider) wrapper
+        creds = new HTTPAuthCredentials(this,principal,authentry,proxyentry);
+        //AuthScope as = HTTPAuthStore.getAuthScope(proxyentry);
+        //AuthState astate = method.getProxyAuthState();
+        //astate.setAuthScheme(thescheme); // for all proxies
     }
 
-    if(thescheme != null) {
-        // Depending on the scheme, put the provide in a place where it can be reached when needed
+    if(creds != null)
+        session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,creds);
 
-        // Create pseudo CredentialsProvider wrapper
-        HTTPAuthManager provider = new HTTPAuthManager(this,thescheme,principal,authentry,proxyentry);
-
-	switch (thescheme.getScheme()) {
-        case BASIC: case DIGEST: case PROXY:
-	    session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,provider);
-	    break;
-	case KEYSTORE:
-	    // Pass down info to the socket factory
-            HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
-            hcp.setParameter(HTTPAuthScheme.SCHEME,thescheme);
-	    break;
-	default:
-	    break; // ignore
-        }
-    }
     } catch(HTTPException he) {
         // do nothing
     }
 
-
-    /*
-client.getState().setCredentials(
-62 	new AuthScope("www.verisign.com", 443, "realm"),
-63 	new UsernamePasswordCredentials("username", "password")
-64 	);
-     */
 }
 
 public HTTPSession

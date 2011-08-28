@@ -289,6 +289,8 @@ static private Hashtable<HTTPSession, List<Entry>> rows;
 static {
     rows = new Hashtable<HTTPSession,List<Entry>>();
     // For back compatibility, check some system properties
+    // and add appropriate entries
+    // 1. ESG keystore support
     String kpath = System.getProperty("keystore");
     if(kpath != null) {
         String tpath = System.getProperty("truststore");
@@ -306,6 +308,27 @@ static {
             scheme.setKeyStore(kpath,kpwd,tpath,tpwd);
             insert(ANY_SESSION,ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
     }
+/*
+    // 2. Proxy support
+    String host = System.getProperty("http.proxyHost");
+    String port = System.getProperty("http.proxyPort");
+    try {
+        if(host != null && port != null) {
+            host = host.trim();
+            if(host.length() == 0) host = null;
+            int portno = 0;
+            if(port != null) {
+                port = port.trim();
+                if(port.length() > 0)
+                    portno = Integer.parseInt(port);
+            }
+            HTTPAuthScheme scheme = new HTTPAuthScheme(Scheme.KEYSTORE);
+            scheme.setProxy(
+                insert(ANY_SESSION,ANY_PRINCIPAL,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
+
+        }
+    } catch (NumberFormatException nfe) {}
+*/
 }
 
 //////////////////////////////////////////////////
@@ -523,7 +546,7 @@ search(Entry entry)
             if(!entry.path.equals(ANY_PATH)
                && !e.path.equals(ANY_PATH)
                && entry.path.compareTo(e.path) >= 0) continue;
-            matches.add(new Entry(e));
+            matches.add(e);
         }
     }
     // Sort based on the comparison function below

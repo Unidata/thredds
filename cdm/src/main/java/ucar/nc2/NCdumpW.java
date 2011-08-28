@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.Indent;
@@ -125,7 +126,8 @@ public class NCdumpW {
 
     NetcdfFile nc = null;
     try {
-      nc = NetcdfFile.open(filename, ct);
+        //nc = NetcdfFile.open(filename, ct);
+        nc = NetcdfDataset.openFile(filename, ct);
 
       // the rest of the command
       int pos = command.indexOf(filename);
