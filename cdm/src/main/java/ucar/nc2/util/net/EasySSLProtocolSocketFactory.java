@@ -39,6 +39,7 @@ import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 import javax.net.ssl.*;
 
@@ -234,7 +235,7 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
     KeyStore keystore = null;
     KeyStore truststore = null;
     TrustManager[] trustmanagers = null;
-    HTTPAuthCredentials mgr = null;
+    HTTPCredentialsEnvelope envelope = null;
 
     String keypassword = null;
     String keypath = null;
@@ -244,20 +245,22 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
     try {
 
 if(UseAuthStore) {
-        // Get the HTTPAuthCreds
-	mgr =  (HTTPAuthCredentials)params.getParameter(HTTPAuthCreds.CREDENTIALSPROVIDER);
-	if(mgr == null) {
+        // Get the envelope
+	envelope =  (HTTPCredentialsEnvelope)params.getParameter(CredentialsProvider.PROVIDER);
+	if(envelope == null) {
 	    sslcontext = SSLContext.getInstance("SSL");
 	    sslcontext.init(null,null,null);
             return sslcontext;
 	}
 
-        HTTPAuthCreds scheme = mgr.getAuthScheme();
+	HTTPAuthCreds authcreds = new HTTPAuthCreds(HTTPAuthScheme.KEYSTORE);
+	if(authcreds == null)
+	    throw new HTTPException("Cannot locate keystore authorization information");
 
-        keypassword = (String)scheme.get(HTTPAuthCreds.KEYSTOREPASSWORD);
-        keypath = (String)scheme.get(HTTPAuthCreds.KEYSTOREPATH);
-        trustpassword = (String)scheme.get(HTTPAuthCreds.TRUSTSTOREPASSWORD);
-        trustpath = (String)scheme.get(HTTPAuthCreds.TRUSTSTOREPATH);
+        keypassword = (String)authcreds.get(HTTPAuthCreds.KEYSTOREPASSWORD);
+        keypath = (String)authcreds.get(HTTPAuthCreds.KEYSTOREPATH);
+        trustpassword = (String)authcreds.get(HTTPAuthCreds.TRUSTSTOREPASSWORD);
+        trustpath = (String)authcreds.get(HTTPAuthCreds.TRUSTSTOREPATH);
 
 } else {//!UseAuthStore
 

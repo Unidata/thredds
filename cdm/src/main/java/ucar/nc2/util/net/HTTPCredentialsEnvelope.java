@@ -33,30 +33,50 @@
 
 package ucar.nc2.util.net;
 
-import java.io.IOException;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.auth.*;
+
 
 /**
- * Created by IntelliJ IDEA.
- * User: dmh
- * Date: May 20, 2010
- * Time: 12:04:39 PM
- * To change this template use File | Settings | File Templates.
+ * Provide a way for a Credentials object
+ * to act as a CredentialsProvider
  */
-public class HTTPException extends IOException {
 
-    public HTTPException() {
-        super();
+public class HTTPCredentialsEnvelope implements CredentialsProvider
+{
+    Credentials creds = null;
+    String uri = null;
+
+    public HTTPCredentialsEnvelope(Credentials creds)
+    {
+	this.creds = creds;
+    }     
+
+    //Package local only
+    HTTPCredentialsEnvelope(String uri)
+    {
+	this.uri = uri;
+    }     
+
+    // Credentials Provider Interface
+
+    public Credentials getCredentials(AuthScheme scheme,
+                                      String host,
+                                      int port,
+                                      boolean proxy)
+	throws CredentialsNotAvailableException
+    {
+	if(creds == null) {
+	   HTTPAuthScheme thescheme =
+	        (proxy ? HTTPAuthScheme.PROXY
+                      : HTTPAuthScheme.schemeForName(scheme.getSchemeName()));
+	   HTTPAuthCreds authcreds = HTTPAuthCreds.findAuthCreds(thescheme,uri);
+	   creds = authcreds.getCredentials(thescheme,scheme,host,port);
+	}
+	if(creds == null)
+	    throw new CredentialsNotAvailableException();
+	return creds;
     }
 
-    public HTTPException(java.lang.String message) {
-        super(message);
-    }
 
-    public HTTPException(java.lang.String message, java.lang.Throwable cause) {
-        super(message, cause);
-    }
-
-    public HTTPException(java.lang.Throwable cause) {
-        super(cause);
-    }
 }

@@ -33,30 +33,47 @@
 
 package ucar.nc2.util.net;
 
-import java.io.IOException;
+
 
 /**
- * Created by IntelliJ IDEA.
- * User: dmh
- * Date: May 20, 2010
- * Time: 12:04:39 PM
- * To change this template use File | Settings | File Templates.
+ * HttpAuthScheme defines an enum about the currently supported schemes.
  */
-public class HTTPException extends IOException {
 
-    public HTTPException() {
-        super();
+
+// For some reason, I cannot declare the enum public
+ enum HTTPAuthScheme
+{
+    NULL(null),
+    BASIC("Basic"),
+    DIGEST("Digest"),
+    KEYSTORE("Keystore"),
+    PROXY("Proxy");
+
+    // Define the associated standard name
+    private final String name;
+
+    HTTPAuthScheme(String name)
+    {
+        this.name = name;
     }
 
-    public HTTPException(java.lang.String message) {
-        super(message);
+    public String getSchemeName()   { return name; }
+ 
+    static public HTTPAuthScheme schemeForName(String name)
+    {
+	if(name != null) {
+  	    for(HTTPAuthScheme s: HTTPAuthScheme.values()) {
+  	        if(name.equals(s.name())) return s;
+	    }
+	}
+	return null;
     }
 
-    public HTTPException(java.lang.String message, java.lang.Throwable cause) {
-        super(message, cause);
-    }
-
-    public HTTPException(java.lang.Throwable cause) {
-        super(cause);
+    static public HTTPAuthScheme fromAuthScope(String scheme)
+    {
+	if(scheme == null) return null;
+	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.BASIC)) return BASIC;
+	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.DIGEST)) return DIGEST;
+	return null;
     }
 }

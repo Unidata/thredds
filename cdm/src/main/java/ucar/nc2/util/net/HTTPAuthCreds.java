@@ -59,51 +59,9 @@ import org.apache.commons.httpclient.auth.*;
  * is intended to be broader than that interface.
  */
 
-public class HTTPAuthCreds implements Serializable, AuthScheme
+//Package local scope
+class HTTPAuthCreds implements Serializable
 {
-
-//////////////////////////////////////////////////
-// Scheme enumeration
-
-static public enum Scheme {
-    NULL(null),
-    BASIC("Basic"),
-    DIGEST("Digest"),
-    KEYSTORE("Keystore"),
-    PROXY("Proxy");
-
-    // Define the associated standard name
-    private final String name;
-    Scheme(String name) {
-        this.name = name;
-    }
-    public String schemeName()   { return name; }
- 
-    static public Scheme schemeForName(String name)
-    {
-	if(name != null) {
-  	    for(Scheme s: Scheme.values()) {
-  	        if(name.equals(s.name())) return s;
-	    }
-	}
-	return null;
-    }
-
-    static public Scheme fromAuthScope(String scheme)
-    {
-	if(scheme == null) return null;
-	if(scheme.equals(AuthPolicy.BASIC)) return BASIC;
-	if(scheme.equals(AuthPolicy.DIGEST)) return DIGEST;
-	return null;
-    }
-}
-
-// Convenience
-static final public Scheme NULL = Scheme.NULL;
-static final public Scheme BASIC = Scheme.BASIC;
-static final public Scheme DIGEST = Scheme.DIGEST;
-static final public Scheme KEYSTORE = Scheme.KEYSTORE;
-static final public Scheme PROXY = Scheme.PROXY;
 
 //////////////////////////////////////////////////
 // Predefined keys (Used local to the package)
@@ -129,15 +87,15 @@ static public final String PROXY_AUTH_RESP = "Proxy-Authorization"; // from Http
 protected HashMap<String, Object> params;
 protected AuthScheme basescheme;
 protected String schemename;
-protected HTTPAuthCreds.Scheme scheme;
+protected HTTPAuthScheme scheme;
 
 //////////////////////////////////////////////////
 // Constructor(s)
 
-public HTTPAuthCreds(HTTPAuthCreds.Scheme scheme)
+public HTTPAuthCreds(HTTPAuthScheme scheme)
 {
     params = new HashMap<String, Object>();
-    if(scheme == null) scheme = HTTPAuthCreds.NULL;
+    if(scheme == null) scheme = HTTPAuthScheme.NULL;
     this.scheme = scheme;
     switch (scheme) {
     case BASIC:
@@ -173,7 +131,7 @@ public HTTPAuthCreds(HTTPAuthCreds other)
 
 //////////////////////////////////////////////////
 
-public Scheme getScheme()
+public HTTPAuthScheme getScheme()
 {
     return scheme;
 }
@@ -286,7 +244,7 @@ toString()
 private void writeObject(java.io.ObjectOutputStream ostream)
         throws IOException
 {
-    Scheme scheme = (Scheme) get(SCHEME);
+    HTTPAuthScheme scheme = (HTTPAuthScheme) get(SCHEME);
     ostream.writeObject(scheme);
 
     switch (scheme) {
@@ -326,7 +284,7 @@ private void readObject(java.io.ObjectInputStream istream)
 {
     if (params == null) params = new HashMap<String, Object>();
 
-    Scheme scheme = (Scheme) istream.readObject();
+    HTTPAuthScheme scheme = (HTTPAuthScheme) istream.readObject();
     if (scheme != null) insert(SCHEME,scheme);
 
     switch (scheme) {
@@ -366,143 +324,52 @@ private void readObject(java.io.ObjectInputStream istream)
 }
 
 //////////////////////////////////////////////////
-// AuthScheme Interface
 
-/* NOT IMPLEMENTED
+// Package local scope
 
-public void
-processChallenge(String s) throws MalformedChallengeException
+static HTTPAuthCreds
+findAuthCreds(HTTPAuthScheme scheme,String uri)
+    throws CredentialsNotAvailableException
 {
-    if(basescheme != null)
-	return basescheme.processChallenge(s);
-}
-    
-public String
-getSchemeName()
-{
-    if(basescheme != null)
-	return basescheme.getSchemeName(s);
-    if(schemeName != null)
-	return schemeName;
-    return null;
-}
-    
-public String
-getParameter(String s)
-{
-    if(basescheme != null)
-	return basescheme.getParameter(s);
-    return null;
-}
-    
-public String
-getRealm()
-{
-    if(basescheme != null)
-	return basescheme.getRealm();
-    return null;
-}
-    
-public boolean
-isConnectionBased()
-{
-    if(basescheme != null)
-	return basescheme.isConnectionBased();
-    return false;
-}
-    
-public boolean
-isComplete()
-{
-    if(basescheme != null)
-	return basescheme.isComplete();
-    return false;
-}
-    
-@Deprecated
-public String
-getID()
-{
-    if(basescheme != null)
-	return basescheme.getID();
-    return null;
-}
-    
-@deprecated
-public String
-authenticate(Credentials credentials, String s, String s1) throws AuthenticationException
-{
-    if(basescheme != null)
-	return basescheme.authenticate(credentials,s,s1);
-    return null;
-}
-    
-public String
-authenticate(Credentials credentials, HttpMethod httpMethod) throws AuthenticationException
-{
-    if(basescheme != null)
-	return basescheme.authenticate(credentials,httpMethod);
-    return null;
-}
-NOT IMPLEMENTED */
+    if(scheme == null)
+	throw new CredentialsNotAvailableException("HTTPAuthCreds: no support for scheme named: "+scheme.getSchemeName());
 
-//////////////////////////////////////////////////
-// AuthScheme Interface
+    // Look for matching items for this scheme and uri
+    HTTPAuthStore.Entry[] entries;
+        entries = HTTPAuthStore.search(new HTTPAuthStore.Entry(scheme,uri,null));
+    // use first found because search will have ordered the list from most
+    // restrictive to least restrictive
 
-public void
-processChallenge(String url)
-    throws MalformedChallengeException
-{
-    this.basescheme.processChallenge(url);
-}
+    HTTPAuthStore.Entry entry = null;
+    if(entries != null && entries.length > 0)
+	entry = entries[0];
     
-public String
-getParameter(String key)
-{
-    Object value = params.get(key);
-    if(value == null)
-	value = this.basescheme.getParameter(key);
-    return value == null ? null : value.toString();
+    if(entry == null)
+	throw new CredentialsNotAvailableException("HTTPAuthCreds: no defined authorization scheme for scheme named: "+scheme.getSchemeName());
+
+    return entry.creds;
 }
-    
-public String
-getRealm()
+   
+Credentials
+getCredentials(HTTPAuthScheme scheme,
+	       AuthScheme authscheme,
+               String host,
+               int port)
+    throws CredentialsNotAvailableException
 {
-    return this.basescheme.getRealm();
-}
-    
-@Deprecated
-public String
-getID()
-{
-    return this.basescheme.getID();
-}
-    
-public boolean
-isConnectionBased()
-{
-    return this.basescheme.isConnectionBased();
-}
-    
-public boolean
-isComplete()
-{
-    return this.basescheme.isComplete();
-}
-    
-@Deprecated
-public String
-authenticate(Credentials credentials, String url, String url1)
-    throws AuthenticationException
-{
-    return this.basescheme.authenticate(credentials,url,url1);
-}
-    
-public String
-authenticate(Credentials credentials, HttpMethod httpMethod)
-    throws AuthenticationException
-{
-    return this.basescheme.authenticate(credentials,httpMethod);
+    Credentials credentials = (Credentials)this.get(HTTPAuthCreds.CREDENTIALS);
+    if(credentials == null) {
+        // invoke the (real) credentials provider
+        CredentialsProvider cp = (CredentialsProvider)this.get(HTTPAuthCreds.CREDENTIALSPROVIDER);
+        if(cp == null)
+            throw new CredentialsNotAvailableException("GetCredentials: AuthStore does not specify credentials or credentials provider");
+        // Use the incoming parameters
+        credentials = cp.getCredentials(authscheme,host,port,(scheme == HTTPAuthScheme.PROXY));
+        this.insert(HTTPAuthCreds.CREDENTIALS,credentials); // cache
+    }
+    if(credentials == null)
+        throw new CredentialsNotAvailableException("GetCredentials: cannot obtain credentials");
+    return credentials;
 }
 
 }//HTTPAuthCreds

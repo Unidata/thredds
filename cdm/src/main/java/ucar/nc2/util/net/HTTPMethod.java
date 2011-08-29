@@ -219,7 +219,7 @@ public int execute() throws HTTPException
         }
         setcontent();
 
-	setAuthentication(session);
+	    setAuthentication(session,this);
 
         try {
             session.sessionClient.executeMethod(method);
@@ -574,93 +574,6 @@ public String getResponseCharSet()
     return "UTF-8";
 }
 
-/**
- * Test that the given url is "compatible" with the
- * session specified dataset. Compatible means:
- * 1. remove any query
- * 2. one path must be prefix of the other
- *
- *  * @param url  to test for compatibility
- * @return
- */
-boolean sessionCompatible(String other)
-{
-    // Remove any trailing constraint
-    String sessionuri = HTTPSession.getCanonicalURI(this.session.getURI());
-    if(sessionuri == null) return true; // always compatible
-    other = HTTPSession.getCanonicalURI(other);
-    if(sessionuri.startsWith(other)
-       || other.startsWith(sessionuri)) return true;
-    return false;
-}
-
-private void
-setAuthentication(HTTPSession session)
-{
-    // Handle authentication
-    String principal = session.getPrincipal();
-    if (principal == null) principal = HTTPAuthStore.ANY_PRINCIPAL;
-
-    String uri = session.getURI();
-    if(uri == null) uri = HTTPAuthStore.ANY_PATTERN;
-
-    try {
-
-    // Look for matching items for this session (and principal, if specified); global
-    // entries will be after per-session entries.
-    HTTPAuthStore.Entry[] entries = HTTPAuthStore.search(this.session, principal, uri);
-
-    // Look for both a proxy entry and a non-proxy entry;
-    // use first found because search will have ordered the list from most
-    // restrictive to least restrictive
-    HTTPAuthStore.Entry proxyentry = null;
-    HTTPAuthStore.Entry authentry = null;
-    for (HTTPAuthStore.Entry entry : entries) {
-        if (entry.scheme.getScheme() == HTTPAuthCreds.PROXY && proxyentry == null)
-            proxyentry = entry;
-        else if (authentry == null)
-            authentry = entry;
-    }
-
-    if(authentry == null && proxyentry == null)
-	return; // no authentication available
-
-    HTTPAuthCredentials creds = null;
-
-    if (authentry != null) {
-        HTTPAuthCreds scheme = authentry.scheme;
-	switch (scheme.getScheme()) {
-        case BASIC: case DIGEST:
-            // Provide a credentials (provider) wrapper
-	    creds = new HTTPAuthCredentials(this,principal,authentry,proxyentry);
-	    break;
-	case KEYSTORE:
-	    // Pass down info to the socket factory
-            HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
-            hcp.setParameter(HTTPAuthCreds.SCHEME,scheme);
-	    break;
-	default:
-            throw new HTTPException("HTTPMethod: AuthStore cannot obtain credentials for: "+uriencoded);
-	}
-    }
-
-    if (proxyentry != null) {
-        HTTPAuthCreds scheme = proxyentry.scheme;
-        // Provide a credentials (provider) wrapper
-        creds = new HTTPAuthCredentials(this,principal,authentry,proxyentry);
-        //AuthScope as = HTTPAuthStore.getAuthScope(proxyentry);
-        //AuthState astate = method.getProxyAuthState();
-        //astate.setAuthScheme(thescheme); // for all proxies
-    }
-
-    if(creds != null)
-        session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,creds);
-
-    } catch(HTTPException he) {
-        // do nothing
-    }
-
-}
 
 public HTTPSession
 getSession()
@@ -672,6 +585,50 @@ public HttpMethodBase
 getMethod()
 {
     return this.method;
+}
+
+/**
+ * Test that the given url is "compatible" with the
+ * session specified dataset. Compatible means:
+ * 1. remove any query
+ * 2. HTTPAuthStore.compatibleURI must return true;
+ *
+ *  * @param url  to test for compatibility
+ * @return
+ */
+boolean sessionCompatible(String other)
+{
+    // Remove any trailing constraint
+    String sessionuri = HTTPSession.getCanonicalURI(this.session.getURI());
+    if(sessionuri == null) return true; // always compatible
+    other = HTTPSession.getCanonicalURI(other);
+    return HTTPAuthStore.compatibleURI(sessionuri,other);
+}
+
+/**
+ * Handle authentication.
+ * We do not know, necessarily,
+ * which scheme(s) will be
+ * encountered, so most testing
+ * occurs in HTTPAuthCreds.
+*/
+
+static synchronized private void
+setAuthentication(HTTPSession session, HTTPMethod method)
+{
+    String uri = session.getURI();
+    if(uri == null) uri = HTTPAuthStore.ANY_URL;
+
+        // Provide a credentials (provider) wrapper
+	CredentialsProvider cp  = new HTTPCredentialsEnvelope(uri);
+
+	// Since we not know where this will get called, do everywhere
+        session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,cp);
+
+        // Pass down info to the socket factory
+        HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
+        hcp.setParameter(CredentialsProvider.PROVIDER,cp);
+
 }
 
 }

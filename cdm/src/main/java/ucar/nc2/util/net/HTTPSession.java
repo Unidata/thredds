@@ -34,10 +34,10 @@
 package ucar.nc2.util.net;
 
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.params.*;
 import org.apache.commons.httpclient.protocol.Protocol;
+import ucar.unidata.util.Urlencoded;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,472 +45,462 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import ucar.unidata.util.Urlencoded;
-
-import static ucar.nc2.util.net.HTTPAuthStore.*;
 
 
 public class HTTPSession
 {
-    static int DFALTTHREADCOUNT = 50;
-    static public int SC_NOT_FOUND = HttpStatus.SC_NOT_FOUND;
-    static public int SC_UNAUTHORIZED = HttpStatus.SC_UNAUTHORIZED;
-    static public int SC_OK = HttpStatus.SC_OK;
-    static public String CONNECTION_TIMEOUT = HttpConnectionParams.CONNECTION_TIMEOUT;
-    static public String SO_TIMEOUT = HttpMethodParams.SO_TIMEOUT;
+// Convenience
+static final public HTTPAuthScheme NULL = HTTPAuthScheme.NULL;
+static final public HTTPAuthScheme BASIC = HTTPAuthScheme.BASIC;
+static final public HTTPAuthScheme DIGEST = HTTPAuthScheme.DIGEST;
+static final public HTTPAuthScheme KEYSTORE = HTTPAuthScheme.KEYSTORE;
+static final public HTTPAuthScheme PROXY = HTTPAuthScheme.PROXY;
 
-    static public String ALLOW_CIRCULAR_REDIRECTS = HttpClientParams.ALLOW_CIRCULAR_REDIRECTS;
-    static public String MAX_REDIRECTS = HttpClientParams.MAX_REDIRECTS;
-    static public String USER_AGENT = HttpMethodParams.USER_AGENT;
-    static public String PROTOCOL_VERSION = HttpMethodParams.PROTOCOL_VERSION;
-    static public String VIRTUAL_HOST = HttpMethodParams.VIRTUAL_HOST;
-    static public String USE_EXPECT_CONTINUE = HttpMethodParams.USE_EXPECT_CONTINUE;
-    static public String STRICT_TRANSFER_ENCODING = HttpMethodParams.STRICT_TRANSFER_ENCODING;
-    static public String HTTP_ELEMENT_CHARSET = HttpMethodParams.HTTP_ELEMENT_CHARSET;
-    static public String HTTP_CONTENT_CHARSET = HttpMethodParams.HTTP_CONTENT_CHARSET;
+static int DFALTTHREADCOUNT = 50;
+static public int SC_NOT_FOUND = HttpStatus.SC_NOT_FOUND;
+static public int SC_UNAUTHORIZED = HttpStatus.SC_UNAUTHORIZED;
+static public int SC_OK = HttpStatus.SC_OK;
+static public String CONNECTION_TIMEOUT = HttpConnectionParams.CONNECTION_TIMEOUT;
+static public String SO_TIMEOUT = HttpMethodParams.SO_TIMEOUT;
 
-    /*fix:*/
-    static public String HTTP_CONNECTION = "<undefined>";
-    static public String HTTP_PROXY_HOST = "<undefined>";
-    static public String HTTP_REQ_SENT = "<undefined>";
-    static public String HTTP_REQUEST = "<undefined>";
-    static public String HTTP_RESPONSE = "<undefined>";
-    static public String HTTP_TARGET_HOST = "<undefined>";
-    static public String ORIGIN_SERVER = "<undefined>";
-    static public String WAIT_FOR_CONTINUE = "<undefined>";
+static public String ALLOW_CIRCULAR_REDIRECTS = HttpClientParams.ALLOW_CIRCULAR_REDIRECTS;
+static public String MAX_REDIRECTS = HttpClientParams.MAX_REDIRECTS;
+static public String USER_AGENT = HttpMethodParams.USER_AGENT;
+static public String PROTOCOL_VERSION = HttpMethodParams.PROTOCOL_VERSION;
+static public String VIRTUAL_HOST = HttpMethodParams.VIRTUAL_HOST;
+static public String USE_EXPECT_CONTINUE = HttpMethodParams.USE_EXPECT_CONTINUE;
+static public String STRICT_TRANSFER_ENCODING = HttpMethodParams.STRICT_TRANSFER_ENCODING;
+static public String HTTP_ELEMENT_CHARSET = HttpMethodParams.HTTP_ELEMENT_CHARSET;
+static public String HTTP_CONTENT_CHARSET = HttpMethodParams.HTTP_CONTENT_CHARSET;
+
+/*fix:*/
+static public String HTTP_CONNECTION = "<undefined>";
+static public String HTTP_PROXY_HOST = "<undefined>";
+static public String HTTP_REQ_SENT = "<undefined>";
+static public String HTTP_REQUEST = "<undefined>";
+static public String HTTP_RESPONSE = "<undefined>";
+static public String HTTP_TARGET_HOST = "<undefined>";
+static public String ORIGIN_SERVER = "<undefined>";
+static public String WAIT_FOR_CONTINUE = "<undefined>";
 
 
-    static MultiThreadedHttpConnectionManager connmgr;
-    //fix: protected static SchemeRegistry schemes;
-    static String globalAgent = "/NetcdfJava/HttpClient3";
-    static int threadcount = DFALTTHREADCOUNT;
-    static List<HTTPSession> sessionList; // List of all HTTPSession instances
-    static boolean globalauthpreemptive = false;
-    static CredentialsProvider globalProvider = null;
+static MultiThreadedHttpConnectionManager connmgr;
+//fix: protected static SchemeRegistry schemes;
+static String globalAgent = "/NetcdfJava/HttpClient3";
+static int threadcount = DFALTTHREADCOUNT;
+static List<HTTPSession> sessionList; // List of all HTTPSession instances
+static boolean globalauthpreemptive = false;
+static CredentialsProvider globalProvider = null;
 
-    static {
-        //fix: schemes = new SchemeRegistry();
-        //fix: schemes.register(new Scheme("http", PlainSocketFactory.getSocketFactory(),80));
-        connmgr = new MultiThreadedHttpConnectionManager();
-        setGlobalThreadCount(DFALTTHREADCOUNT);
-        // Fill in the scheme registry for at least http and https
-        // allow self-signed certificates
-        Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
-        sessionList = new ArrayList<HTTPSession>(); // see kill function
-    }
+static {
+    //fix: schemes = new SchemeRegistry();
+    //fix: schemes.register(new Scheme("http", PlainSocketFactory.getSocketFactory(),80));
+    connmgr = new MultiThreadedHttpConnectionManager();
+    setGlobalThreadCount(DFALTTHREADCOUNT);
+    // Fill in the scheme registry for at least http and https
+    // allow self-signed certificates
+    Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
+    sessionList = new ArrayList<HTTPSession>(); // see kill function
+}
 
-    // ////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////
 
-    static enum Methods
+static enum Methods
+{
+    Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
+    private final String name;
+
+    Methods(String name)
     {
-        Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
-        private final String name;
-
-        Methods(String name)
-        {
-            this.name = name;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
+        this.name = name;
     }
 
-    static synchronized public void setGlobalUserAgent(String _userAgent)
+    public String getName()
     {
-        globalAgent = _userAgent;
+        return name;
     }
+}
 
-    static public String getGlobalUserAgent()
-    {
-        return globalAgent;
+static synchronized public void setGlobalUserAgent(String _userAgent)
+{
+    globalAgent = _userAgent;
+}
+
+static public String getGlobalUserAgent()
+{
+    return globalAgent;
+}
+
+static public void setGlobalThreadCount(int nthreads)
+{
+    connmgr.getParams().setMaxTotalConnections(nthreads);
+    connmgr.getParams().setDefaultMaxConnectionsPerHost(nthreads);
+}
+
+// Alias
+static public void setGlobalMaxConnections(int nthreads)
+{
+    setGlobalThreadCount(nthreads);
+}
+
+static public int getGlobalThreadCount()
+{
+    return connmgr.getParams().getMaxTotalConnections();
+}
+
+
+static public Cookie[] getGlobalCookies()
+{
+    HttpClient client = new HttpClient(connmgr);
+    Cookie[] cookies = client.getState().getCookies();
+    return cookies;
+}
+
+// Provide a way to kill everything at the end of a Test
+
+static private synchronized void kill()
+{
+    for (HTTPSession session : sessionList) {
+        session.close();
     }
+    sessionList.clear();
+    // Rebuild the connection manager
+    connmgr.shutdown();
+    connmgr = new MultiThreadedHttpConnectionManager();
+    setGlobalThreadCount(DFALTTHREADCOUNT);
 
-    static public void setGlobalThreadCount(int nthreads)
-    {
-        connmgr.getParams().setMaxTotalConnections(nthreads);
-        connmgr.getParams().setDefaultMaxConnectionsPerHost(nthreads);
-    }
+}
 
-    // Alias
-    static public void setGlobalMaxConnections(int nthreads)
-    {
-	setGlobalThreadCount(nthreads);
-    }
+////////////////////////////////////////////////////////////////////////
 
-    static public int getGlobalThreadCount()
-    {
-        return connmgr.getParams().getMaxTotalConnections();
-    }
+HttpClient sessionClient = null;
+List<ucar.nc2.util.net.HTTPMethod> methodList = new Vector<HTTPMethod>();
+HttpState context = null;
+boolean closed = false;
+String identifier = "Session";
+String useragent = null;
+CredentialsProvider sessionProvider = null;
+String uriencoded = null;
 
+/**
+ * A session is encapsulated in an instance of the class HTTPSession.
+ * The encapsulation is with respect to a specific uri and (optionally) principal.
+ * This means that once a session is specified, it is tied permanently to that url and principal.
+ * Note that the term "principal" is another name for user id.
+ * If no principal is ever set, the the session assumes a special principal called ANY_PRINCIPAL.
+ * Currently principals are ignored, but will become important when new authorization mechanisms are put in place.
+ * Also, per-instance setting of principals is disabled because the Apache httpclient-3 library cannot
+ * utilize them. They will be activated when the httpclient-4 library replaces the httpclient-3 library.
+ * It is important to note that Session objects do NOT correspond with the HttpClient objects
+ * of the Apache httpclient library.
+ * A Session encapulates an instance of an Apache HttpClient,
+ * but Sessions also wrap and control httpclient library methods such as GetMethod via the class HTTPMethod.
+ * This is so it can ensure that the Session - url correspondence is not violated.
+ *
+ * It is possible to specify a url when invoking, for example, HTTPMethod.Get.
+ * This is because the url argument to the HTTPSession constructor actually serves two purposes.
+ * First, if the method is created without specifying a url, then the session url is used to specify
+ * the data to be retrieved by the method invocation.
+ * Second, if the method is created and specifies a url, for example,
+ *        HTTPMethod m = HTTPMethod.Get(session,url2);
+ * this second url is used to specify the data to be retrieved by the method invocation.
+ * This might (and does) occur if, for example, the url given to HTTPSession represented
+ * some general url such as http://motherlode.ucar.edu/path/file.nc and the url given to
+ * HTTPMethod.Get was for something more specific such as http://motherlode.ucar.edu/path/file.nc.dds.
+ *
+ * The important point is that this second, method, url must be "compatible" with the session url.
+ * The term "compatible" basically means that the HTTPSession url, as a string, must be a prefix
+ * of the url given to HTTPMethod.Get. This maintains the semantics of the Session but allows flexibility
+ * in accessing data from the server.
+ *
+ * Note that if the session was created with no url,
+ * then all method constructions must specify a url.
+ */
 
-    static public Cookie[] getGlobalCookies()
-    {
-        HttpClient client = new HttpClient(connmgr);
-        Cookie[] cookies = client.getState().getCookies();
-        return cookies;
-    }
+@Urlencoded  // Note: this a user-defined annotation for tracking which url parameters
+             // are expected to be encoded.
+public HTTPSession(String uri) throws ucar.nc2.util.net.HTTPException
+{
+    construct(uri);
+}
 
-    // Provide a way to kill everything at the end of a Test
-
-    static private synchronized void kill()
-    {
-        for (HTTPSession session : sessionList) {
-            session.close();
-        }
-        sessionList.clear();
-        // Rebuild the connection manager
-        connmgr.shutdown();
-        connmgr = new MultiThreadedHttpConnectionManager();
-        setGlobalThreadCount(DFALTTHREADCOUNT);
-
-    }
-
-    ////////////////////////////////////////////////////////////////////////
-
-    HttpClient sessionClient = null;
-    List<ucar.nc2.util.net.HTTPMethod> methodList = new Vector<HTTPMethod>();
-    HttpState context = null;
-    boolean closed = false;
-    String identifier = "Session";
-    String useragent = null;
-    CredentialsProvider sessionProvider = null;
-    String uriencoded = null;
-
-    /**
-     * A session is encapsulated in an instance of the class HTTPSession.
-     * The encapsulation is with respect to a specific uri and (optionally) principal.
-     * This means that once a session is specified, it is tied permanently to that url and principal.
-     * Note that the term "principal" is another name for user id.
-     * If no principal is ever set, the the session assumes a special principal called ANY_PRINCIPAL.
-     * Currently principals are ignored, but will become important when new authorization mechanisms are put in place.
-     * Also, per-instance setting of principals is disabled because the Apache httpclient-3 library cannot
-     * utilize them. They will be activated when the httpclient-4 library replaces the httpclient-3 library.
-     * It is important to note that Session objects do NOT correspond with the HttpClient objects
-     * of the Apache httpclient library.
-     * A Session encapulates an instance of an Apache HttpClient,
-     * but Sessions also wrap and control httpclient library methods such as GetMethod via the class HTTPMethod.
-     * This is so it can ensure that the Session - url correspondence is not violated.
-     *
-     * It is possible to specify a url when invoking, for example, HTTPMethod.Get.
-     * This is because the url argument to the HTTPSession constructor actually serves two purposes.
-     * First, if the method is created without specifying a url, then the session url is used to specify
-     * the data to be retrieved by the method invocation.
-     * Second, if the method is created and specifies a url, for example,
-     *        HTTPMethod m = HTTPMethod.Get(session,url2);
-     * this second url is used to specify the data to be retrieved by the method invocation.
-     * This might (and does) occur if, for example, the url given to HTTPSession represented
-     * some general url such as http://motherlode.ucar.edu/path/file.nc and the url given to
-     * HTTPMethod.Get was for something more specific such as http://motherlode.ucar.edu/path/file.nc.dds.
-     *
-     * The important point is that this second, method, url must be "compatible" with the session url.
-     * The term "compatible" basically means that the HTTPSession url, as a string, must be a prefix
-     * of the url given to HTTPMethod.Get. This maintains the semantics of the Session but allows flexibility
-     * in accessing data from the server.
-     *
-     * Note that if the session was created with no url,
-     * then all method constructions must specify a url.
-     */
-
-    @Urlencoded  // Note: this a user-defined annotation for tracking which url parameters
-                 // are expected to be encoded.
-    public HTTPSession(String uri) throws ucar.nc2.util.net.HTTPException
-    {
-        construct(uri);
-    }
-
-    public HTTPSession()
-            throws HTTPException
-    {
-	construct(null);
-    }
-
-    @Urlencoded
-    protected void construct(String uriencoded)
+public HTTPSession()
         throws HTTPException
-    {
-        this.uriencoded = uriencoded;
-	if(uriencoded == null) {
-	    this.principal = ANY_PRINCIPAL;
-	} else try {
-	    // See if we can extract the global principal
-	    URI uri = new URI(uriencoded);
-	    this.principal = uri.getUserInfo();
-	    if(this.principal != null) {
-		// rebuild the uri without the principal
-		String newuri = removeprincipal(uriencoded);
- 	        this.uriencoded = newuri;
-	    } else
-		this.principal = ANY_PRINCIPAL;
-        } catch (URISyntaxException use) {
-	    throw new HTTPException(use);
-        }
+{
+    construct(null);
+}
 
-        try {
-            sessionClient = new HttpClient(connmgr);
-            HttpClientParams clientparams = sessionClient.getParams();
+@Urlencoded
+protected void construct(String uriencoded)
+    throws HTTPException
+{
 
-            // Allow (circular) redirects
-            clientparams.setParameter(ALLOW_CIRCULAR_REDIRECTS, true);
-            clientparams.setParameter(MAX_REDIRECTS, 100);
-
-            setAuthenticationPreemptive(globalauthpreemptive);
-
-            // H/T: nick.bower@metoceanengineers.com
-            setProxy();
-
-            sessionList.add(this);
-
-        } catch (Exception e) {
-            throw new HTTPException(e);
-        }
-    }
-
-    public String getURI()
-    {
-        return this.uriencoded;
-    }
-
-    public void setUserAgent(String agent)
-    {
-        useragent = agent;
-        if (useragent != null && sessionClient != null)
-            sessionClient.getParams().setParameter(USER_AGENT, useragent);
-    }
-
-    public void setAuthenticationPreemptive(boolean tf)
-    {
-        if (sessionClient != null)
-            sessionClient.getParams().setAuthenticationPreemptive(tf);
-    }
-
-    public void setConnectionManagerTimeout(long timeout)
-    {
-        connmgr.getParams().setConnectionTimeout((int) timeout);
-
-    }
-
-    public void setSoTimeout(int timeout)
-    {
-        sessionClient.getParams().setSoTimeout(timeout);
-
-    }
-
-
-    //fix: public void setStateX(HttpState cxt) {sessionState = cxt;}
-
-    synchronized public void close()
-    {
-        closed = true;
-        if (methodList != null)
-            for (HTTPMethod m : methodList) {
-                m.close();
-                removeMethod(m);
-            }
-    }
-
-    public String getCookiePolicy()
-    {
-        return sessionClient == null ? null : sessionClient.getParams().getCookiePolicy();
-    }
-
-    public Cookie[] getCookies()
-    {
-        if (sessionClient == null)
-            return null;
-        Cookie[] cookies = sessionClient.getState().getCookies();
-        return cookies;
-    }
-
-    protected synchronized void addMethod(HTTPMethod m)
-    {
-        if (!methodList.contains(m))
-            methodList.add(m);
-    }
-
-    protected synchronized void removeMethod(HTTPMethod m)
-    {
-        if (!closed)
-            methodList.remove(m);
-    }
-
-    public void setMaxRedirects(int n)
-    {
+    try {
+        sessionClient = new HttpClient(connmgr);
         HttpClientParams clientparams = sessionClient.getParams();
-        clientparams.setParameter(MAX_REDIRECTS, n);
+
+        // Allow (circular) redirects
+        clientparams.setParameter(ALLOW_CIRCULAR_REDIRECTS, true);
+        clientparams.setParameter(MAX_REDIRECTS, 100);
+
+        setAuthenticationPreemptive(globalauthpreemptive);
+
+        // H/T: nick.bower@metoceanengineers.com
+        setProxy();
+
+        sessionList.add(this);
+
+    } catch (Exception e) {
+        throw new HTTPException(e);
     }
+}
 
-    public void setContext(HttpState cxt)
-    {
-        context = cxt;
-    }
+public String getURI()
+{
+    return this.uriencoded;
+}
 
-    public HttpState getContext()
-    {
-        return context;
-    }
+public void setUserAgent(String agent)
+{
+    useragent = agent;
+    if (useragent != null && sessionClient != null)
+        sessionClient.getParams().setParameter(USER_AGENT, useragent);
+}
+
+public void setAuthenticationPreemptive(boolean tf)
+{
+    if (sessionClient != null)
+        sessionClient.getParams().setAuthenticationPreemptive(tf);
+}
+
+public void setConnectionManagerTimeout(long timeout)
+{
+    connmgr.getParams().setConnectionTimeout((int) timeout);
+
+}
+
+public void setSoTimeout(int timeout)
+{
+    sessionClient.getParams().setSoTimeout(timeout);
+
+}
 
 
-    public void clearState()
-    {
-        sessionClient.getState().clearCookies();
-        sessionClient.getState().clearCredentials();
-    }
+//fix: public void setStateX(HttpState cxt) {sessionState = cxt;}
 
-    // H/T: nick.bower@metoceanengineers.com
+synchronized public void close()
+{
+    closed = true;
+    if (methodList != null)
+        for (HTTPMethod m : methodList) {
+            m.close();
+            removeMethod(m);
+        }
+}
 
-    public void setProxy()
-    {
-        if (sessionClient == null) return;
+public String getCookiePolicy()
+{
+    return sessionClient == null ? null : sessionClient.getParams().getCookiePolicy();
+}
 
-        String host = System.getProperty("http.proxyHost");
-        String port = System.getProperty("http.proxyPort");
-        if(host != null && port != null) {
-            host = host.trim();
-            if(host.length() == 0) host = null;
-            int portno = 0;
-            if(port != null) {
-                port = port.trim();
-                if(port.length() > 0) {
-   	            try {
-                        portno = Integer.parseInt(port);
-                    } catch (NumberFormatException nfe) {portno = 0;}
-	        }
-            }
-            if(host != null && portno > 0) {
-                sessionClient.getHostConfiguration().setProxy(host, portno);
+public Cookie[] getCookies()
+{
+    if (sessionClient == null)
+        return null;
+    Cookie[] cookies = sessionClient.getState().getCookies();
+    return cookies;
+}
+
+protected synchronized void addMethod(HTTPMethod m)
+{
+    if (!methodList.contains(m))
+        methodList.add(m);
+}
+
+protected synchronized void removeMethod(HTTPMethod m)
+{
+    if (!closed)
+        methodList.remove(m);
+}
+
+public void setMaxRedirects(int n)
+{
+    HttpClientParams clientparams = sessionClient.getParams();
+    clientparams.setParameter(MAX_REDIRECTS, n);
+}
+
+public void setContext(HttpState cxt)
+{
+    context = cxt;
+}
+
+public HttpState getContext()
+{
+    return context;
+}
+
+
+public void clearState()
+{
+    sessionClient.getState().clearCookies();
+    sessionClient.getState().clearCredentials();
+}
+
+// H/T: nick.bower@metoceanengineers.com
+
+public void setProxy()
+{
+    if (sessionClient == null) return;
+
+    String host = System.getProperty("http.proxyHost");
+    String port = System.getProperty("http.proxyPort");
+    if(host != null && port != null) {
+        host = host.trim();
+        if(host.length() == 0) host = null;
+        int portno = 0;
+        if(port != null) {
+            port = port.trim();
+            if(port.length() > 0) {
+                try {
+                    portno = Integer.parseInt(port);
+                } catch (NumberFormatException nfe) {portno = 0;}
             }
         }
-    }
-
-    // Define some utility functions
-
-    static public String getCanonicalURI(String urlencoded)
-    {
-	if(urlencoded == null) return null;
-        int index = urlencoded.indexOf('?');
-        if(index >= 0) urlencoded = urlencoded.substring(0,index);
-        // remove any trailing extension
-        //index = urlencoded.lastIndexOf('.');
-        //if(index >= 0) urlencoded = urlencoded.substring(0,index);
-        return canonicalpath(urlencoded);
-    }
-    /**
-     * Convert path to use '/' consistently and
-     * to remove any trailing '/'
-     *
-     * @param path
-     * @return
-     */
-    static public String canonicalpath(String path)
-    {
-        if(path == null) return null;
-        path = path.replace('\\','/');
-        if(path.endsWith("/"))
-            path = path.substring(0,path.length()-1);
-        return path;
-    }
-
-    static public String
-    removeprincipal(String u)
-    {
-	    String newuri = null;
-        try {
-            URI uri = new URI(u);
-   	    // rebuild the uri without the principal
-   	    newuri = new java.net.URI(uri.getScheme(),
-                                    null,
-                                    uri.getHost(),
-                                    uri.getPort(),
-                                    uri.getPath(),
-                                    uri.getQuery(),
-                                    uri.getFragment()).toASCIIString();
-        } catch (URISyntaxException use) {newuri=u;}
-	    return newuri;
-    }
-
-    static public String
-    addprincipal(String u, String principal)
-	throws URISyntaxException
-    {
-	String newuri = null;
-    URI uri = new java.net.URI(u);
-   	// rebuild the uri without the specified principal
-   	newuri = new java.net.URI(uri.getScheme(),
-                                    principal,
-                                    uri.getHost(),
-                                    uri.getPort(),
-                                    uri.getPath(),
-                                    uri.getQuery(),
-                                    uri.getFragment()).toASCIIString();
-	return newuri;
-    }
-
-    static public String
-    getUrlAsString(String url) throws HTTPException
-    {
-        HTTPSession session = new HTTPSession(url);
-        HTTPMethod m = HTTPMethod.Get(session);
-        int status = m.execute();
-        String content = null;
-        if (status == 200) {
-            content = m.getResponseAsString();
+        if(host != null && portno > 0) {
+            sessionClient.getHostConfiguration().setProxy(host, portno);
         }
-        m.close();
-        return content;
     }
+}
 
-    static public int
-    putUrlAsString(String content, String url) throws HTTPException
-    {
-        HTTPSession session = new HTTPSession(url);
-        HTTPMethod m = HTTPMethod.Put(session);
-        m.setRequestContentAsString(content);
-        int status = m.execute();
-        m.close();
-        return status;
+// Define some utility functions
+
+static public String getCanonicalURI(String urlencoded)
+{
+    if(urlencoded == null) return null;
+    int index = urlencoded.indexOf('?');
+    if(index >= 0) urlencoded = urlencoded.substring(0,index);
+    // remove any trailing extension
+    //index = urlencoded.lastIndexOf('.');
+    //if(index >= 0) urlencoded = urlencoded.substring(0,index);
+    return canonicalpath(urlencoded);
+}
+/**
+ * Convert path to use '/' consistently and
+ * to remove any trailing '/'
+ *
+ * @param path
+ * @return
+ */
+static public String canonicalpath(String path)
+{
+    if(path == null) return null;
+    path = path.replace('\\','/');
+    if(path.endsWith("/"))
+        path = path.substring(0,path.length()-1);
+    return path;
+}
+
+static public String
+removeprincipal(String u)
+{
+        String newuri = null;
+    try {
+        URI uri = new URI(u);
+        // rebuild the uri without the principal
+        newuri = new java.net.URI(uri.getScheme(),
+                                null,
+                                uri.getHost(),
+                                uri.getPort(),
+                                uri.getPath(),
+                                uri.getQuery(),
+                                uri.getFragment()).toASCIIString();
+    } catch (URISyntaxException use) {newuri=u;}
+        return newuri;
+}
+
+static public String
+addprincipal(String u, String principal)
+    throws URISyntaxException
+{
+    String newuri = null;
+URI uri = new java.net.URI(u);
+    // rebuild the uri without the specified principal
+    newuri = new java.net.URI(uri.getScheme(),
+                                principal,
+                                uri.getHost(),
+                                uri.getPort(),
+                                uri.getPath(),
+                                uri.getQuery(),
+                                uri.getFragment()).toASCIIString();
+    return newuri;
+}
+
+static public String
+getUrlAsString(String url) throws HTTPException
+{
+    HTTPSession session = new HTTPSession(url);
+    HTTPMethod m = HTTPMethod.Get(session);
+    int status = m.execute();
+    String content = null;
+    if (status == 200) {
+        content = m.getResponseAsString();
     }
+    m.close();
+    return content;
+}
 
-    /////////////////////////////////////////////
-    // Authorization
+static public int
+putUrlAsString(String content, String url) throws HTTPException
+{
+    HTTPSession session = new HTTPSession(url);
+    HTTPMethod m = HTTPMethod.Put(session);
+    m.setRequestContentAsString(content);
+    int status = m.execute();
+    m.close();
+    return status;
+}
 
-    static synchronized
-    public void setGlobalAuthenticationPreemptive(boolean tf)
-    {
-        globalauthpreemptive = tf;
+/////////////////////////////////////////////
+// Authorization
+
+static synchronized
+public void setGlobalAuthenticationPreemptive(boolean tf)
+{
+    globalauthpreemptive = tf;
+}
+
+public void
+setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
+{
+    sessionProvider = provider;
+    // Add entry to AuthStore
+    HTTPAuthCreds creds =
+        new HTTPAuthCreds(scheme).setCredentialsProvider(provider);
+    try {
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(scheme,url,creds));
+    } catch (HTTPException he) {
+        System.err.println("HTTPSession.setCredentialsProvider failed");
     }
+}
 
-    public void
-    setCredentialsProvider(String url, CredentialsProvider provider)
-    {
-        sessionProvider = provider;
-	// Add entry to AuthStore
-	HTTPAuthCreds scheme =
-	    new HTTPAuthCreds(HTTPAuthCreds.BASIC).setCredentialsProvider(provider);
-	HTTPAuthStore.insert(ISLOCAL,uri,scheme);
-    }
+public void
+setCredentialsProvider(CredentialsProvider provider)
+{
+    setCredentialsProvider(HTTPAuthScheme.BASIC,uriencoded,provider);
+}
 
-    public void
-    setCredentialsProvider(CredentialsProvider provider)
-    {
-	setCredentialsProvider(uriencoded,provider);
+static synchronized public void
+setGlobalCredentialsProvider(CredentialsProvider cp)
+{
+    globalProvider = cp;
+    // Add entry to AuthStore
+    HTTPAuthCreds creds =
+        new HTTPAuthCreds(HTTPAuthScheme.BASIC).setCredentialsProvider(cp);
+    try {
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(HTTPAuthScheme.BASIC,HTTPAuthStore.ANY_URL,creds));
+    }   catch (HTTPException he) {
+        System.err.println("HTTPSession.setGlobalCredentialsProvider failed");
     }
-
-    static synchronized public void
-    setGlobalCredentialsProvider(String uri, CredentialsProvider cp)
-    {
-        globalProvider = cp;
-	// Add entry to AuthStore
-	HTTPAuthCreds scheme =
-	    new HTTPAuthCreds(HTTPAuthCreds.BASIC).setCredentialsProvider(cp);
-	HTTPAuthStore.insert(ISGLOBAL,uri,cp);
-    }
-
-    static public void
-    setGlobalCredentialsProvider(CredentialsProvider provider)
-    {
-	setGlobalCredentialsProvider(ANY_URI,provider);
-    }
+}
 
 }

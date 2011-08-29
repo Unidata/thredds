@@ -56,7 +56,8 @@ and
 
  */
 
-public class HTTPAuthStore implements Serializable
+//Package local scope
+class HTTPAuthStore implements Serializable
 {
 
 
@@ -64,20 +65,21 @@ public class HTTPAuthStore implements Serializable
 /**
 
 The auth store is (conceptually) a set of tuples (rows) of the form
-HTTPAuthCreds.Scheme(scheme) X String(url) X HTTPAuthCreds(creds)
-the creds column specifies the kind of authorization
+HTTPAuthScheme(scheme) X String(url) X HTTPAuthCreds(creds).
+The creds column specifies the kind of authorization
 (e.g. basic, keystore, etc) and the info to support it.
+The functional relationship is (scheme,url)=>creds.
 */
 
 static public class Entry implements Serializable, Comparable
 {
-    public boolean isGlobal;
+    public HTTPAuthScheme scheme;
     public String uri;
-    public HTTPAuthCreds scheme;
+    public HTTPAuthCreds creds;
 
     public Entry()
     {
-	this(ANY_ENTRY);
+	    this(ANY_ENTRY);
     }
 
     /**
@@ -87,79 +89,80 @@ static public class Entry implements Serializable, Comparable
     public Entry(Entry entry)
     {
 	if(entry == null) entry = ANY_ENTRY;
-	constructor(entry.isGlobal,entry.url,entry.scheme);
+	constructor(entry.scheme,entry.uri,entry.creds);
     }
 
     /**
-     * @param url
      * @param scheme
+     * @param uri
+     * @param creds
      */
 
-    public Entry(boolean isGlobal, String uri, HTTPAuthCreds scheme)
-        throws HTTPException
+    public Entry(HTTPAuthScheme scheme, String uri, HTTPAuthCreds creds)
     {
-        URI u = null;
-	if(uri == null) uri = ANY_URI;
-	constructor(isGlobal, uri,scheme);
+	constructor(scheme, uri, creds);
     }
 
     /**
      * Shared constructor code
-     * @param isGlobal
-     * @param uri
      * @param scheme
+     * @param uri
+     * @param creds
      */
 
-    protected void constructor(boolean isGlobal, String uri, HTTPAuthCreds scheme)
+    protected void constructor(HTTPAuthScheme scheme, String uri, HTTPAuthCreds creds)
     {
-	if(uri == null) uri = ANY_URI;
-	if(scheme != null)
-            scheme = new HTTPAuthCreds(scheme);
-	this.isGlobal = isGlobal;
-	this.uri = uri;
+	if(uri == null) uri = ANY_URL;
+	if(creds != null)
+            creds = new HTTPAuthCreds(creds);
 	this.scheme = scheme;
+	this.uri = uri;
+	this.creds = creds;
+    }
+
+    public boolean valid()
+    {
+	return (scheme != null && uri != null);
     }
 
     public String toString()
     {
-	String scheme = (this.scheme == null ? "null" : this.scheme.toString());
+	String creds = (this.creds == null ? "null" : this.creds.toString());
         return String.format("%s:%s{%s}",
-		(isGlobal?"global":"local"),uri,scheme);
+		scheme.toString(),uri,creds);
     }
 
     private void writeObject(java.io.ObjectOutputStream oos)
         throws IOException
     {
-        oos.writeObject(this.isGlobal);
-        oos.writeObject(this.uri);
         oos.writeObject(this.scheme);
+        oos.writeObject(this.uri);
+        oos.writeObject(this.creds);
     }
 
     private void readObject(java.io.ObjectInputStream ois)
             throws IOException, ClassNotFoundException
     {
-        this.isGlobal = (boolean)ois.readObject();
+        this.scheme = (HTTPAuthScheme)ois.readObject();
         this.uri = (String)ois.readObject();
-        this.scheme = (HTTPAuthCreds)ois.readObject();
+        this.creds = (HTTPAuthCreds)ois.readObject();
     }
 
     /**
       * return 0 if e1 == e2, 1 if e1 > e2
       * and -1 if e1 < e2 using the following tests
-      * - for a given field, all ANY_XXX should
-      *   follow all fields with specific values.
-      * - fields both with defined values, but different
-      *   are considered equally restrictive
-      * - for path/path, longer matches should precede
-      *   shorter matches.
-      * - the fields are considered in this order:
-      * 	principal,host,port,path,scheme
+      * null, => 0
+      * !null,null => -1
+      * null,!null => +1
+      * e1.scheme :: e2.scheme
+      * compareURI(e1.url,e2.url) => e2.url.compare(e1.url) (note reverse order)
+      *
+      * Assume that the first argument comes from the pattern
+      * and the second comes from the AuthStore
       */
 
-    public boolean equals(Entry e)
-    {
-        return compareTo(e) == 0);
-    }
+    //////////////////////////////////////////////////
+    // Comparable interface
 
     public int compareTo(Object e1)
     {
@@ -169,75 +172,49 @@ static public class Entry implements Serializable, Comparable
         return +1;
     }
 
+    //////////////////////////////////////////////////
+    // Comparator interface
+
+    public boolean equals(Entry e)
+    {
+        return compare(this,e) == 0;
+    }
+
     static protected int compare(Entry e1, Entry e2)
     {
 	if(e1 == null && e2 == null) return 0;
 	if(e1 != null && e2 == null) return +1;
 	if(e1 == null && e2 != null) return -1;
 
-        if(e1.isGlobal && !e2.isGlobal) return -1;
-        if(!e1.isGlobal && e2.isGlobal) return +1;
+    int cmp = e1.scheme.compareTo(e2.scheme);
+    if(cmp != 0) return cmp;
 
-	if(compareURI(e1.uri,e2.uri)) return 0l
-        return e1.uri.compare(e2.uri);
+	if(compatibleURI(e1.uri,e2.uri))
+            return e2.uri.compareTo(e1.uri);
+        
+        return e1.uri.compareTo(e2.uri);
     }
 
-    /**
-     * Define URI compatibility.
-     */
-    static protected boolean compatibleURI(String u1, String u2)
-    {   
-	if(u1 == u2) return true;
-	if(u1 == null) return false;
-	if(u2 == null) return false;
-
-	if(u1.equals(u2)
-	   || u1.startsWith(u2)
-	   || u2.startsWith(u1)) return true;
-
-        // See if u1 or u2 has a principal.
-	URI ur1;
-	URI ur2;
-        try {
-	    uu1 = new URI(u1);
-	} catch (URISyntaxException use) {
-	    return false;
-	}
-        try {
-	    uu2 = new URI(u2);
-	} catch (URISyntaxException use) {
-	    return false;
-	}
-
-        if(!testStringEq(uu1.getProtocol(),uu2.getProtocol()))
-	    return false;
-        if(!testStringEq(uu1.getUserInfo(),uu2.getUserInfo()))
-	    return false;
-        if(!testStringEq(uu1.getHost(),uu2.getHost()))
-	    return false;
-        if(!testIntEq(uu1.getPort(),uu2.getPort()))
-	    return false;
-        if(!testInt(uu1.getPort(),uu2.getPort()))
-	    return false;
-        if(!testStringLex(uu1.getRawPath(),uu2.getRawPath()))
-	    return false;
-	return true;
-    }
 }
 
 //////////////////////////////////////////////////
 
-static public final boolean          ISGLOBAL = true;
+static public final boolean          SCHEME = true;
 static public final boolean          ISLOCAL = false;
 static public final String           ANY_URL = "";
 
-static final public Entry            ANY_ENTRY = new Entry(ISGLOBAL,ANY_URL,null);
+static final public Entry            ANY_ENTRY = new Entry(null,ANY_URL,null);
 
-static private Hashtable<HTTPSession, List<Entry>> rows;
+static private Hashtable<HTTPAuthScheme, List<Entry>> rows;
 
 
 static {
-    rows = new Hashtable<HTTPSession,List<Entry>>();
+    rows = new Hashtable<HTTPAuthScheme,List<Entry>>();
+
+    // Insert empty lists for all known schemes
+    for(HTTPAuthScheme s: HTTPAuthScheme.values())
+        rows.put(s,new ArrayList<Entry>());
+
     // For back compatibility, check some system properties
     // and add appropriate entries
     // 1. ESG keystore support
@@ -255,11 +232,74 @@ static {
         if(kpwd.length() == 0) kpwd = null;
         if(tpwd.length() == 0) tpwd = null;
 
-        HTTPAuthCreds scheme = new HTTPAuthCreds(Scheme.KEYSTORE);
-        scheme.setKeyStore(kpath,kpwd,tpath,tpwd);
-        insert(ANY_URL,scheme);
+        HTTPAuthCreds creds = new HTTPAuthCreds(HTTPAuthScheme.KEYSTORE);
+        creds.setKeyStore(kpath,kpwd,tpath,tpwd);
+        try {
+            insert(new Entry(HTTPAuthScheme.KEYSTORE,ANY_URL,creds));
+        }   catch (HTTPException he) {
+            System.err.println("HTTPAuthStore: could not insert default KEYSTORE data");
+        }
      }
 
+}
+
+/**
+ * Define URI compatibility.
+ */
+static protected boolean compatibleURI(String u1, String u2)
+{   
+    if(u1 == u2) return true;
+    if(u1 == null) return false;
+    if(u2 == null) return false;
+
+    if(u1.equals(u2)
+       || u1.startsWith(u2)
+       || u2.startsWith(u1)) return true;
+
+    // Check piece by piece
+    URI uu1;
+    URI uu2;
+    try {
+        uu1 = new URI(u1);
+    } catch (URISyntaxException use) {
+        return false;
+    }
+    try {
+        uu2 = new URI(u2);
+    } catch (URISyntaxException use) {
+        return false;
+    }
+
+    // protocols must be same
+    String s1 = uu1.getSchemeSpecificPart();
+    String s2 = uu2.getSchemeSpecificPart();
+    if( ! (s1 != null && s2 != null && s1.equals(s2)))
+        return false;
+
+    // Missing uu1 user info will match defined uu2 user info
+    s1 = uu1.getUserInfo();
+    s2 = uu2.getUserInfo();
+    if( ! (s1 == null || (s1 != null && s2 != null && s1.equals(s2))))
+        return false;
+
+    // hosts must be same
+    s1 = uu1.getHost();
+    s2 = uu2.getHost();
+    if( ! (s1 != null && s2 != null && s1.equals(s2)))
+        return false;
+
+    // ports must be the same
+    if(uu1.getPort() != uu2.getPort())
+        return false;
+
+    // paths must have prefix relationship
+    // and missing is a prefix of anything
+    s1 = uu1.getRawPath();
+    s2 = uu2.getPath();
+    if( ! (s1 == null || s2 == null || (s1.startsWith(s2) || s2.startsWith(s1))))
+        return false;
+
+    return true;
 }
 
 //////////////////////////////////////////////////
@@ -274,12 +314,17 @@ Primary external interface
 
 static synchronized public boolean
 insert(Entry entry)
+    throws HTTPException
 {
     boolean rval = false;
-    if(entry == null) return false;
-
     Entry found = null;
-    for(Entry e: getAllRows()) {
+
+    if(entry == null || !entry.valid())
+	throw new HTTPException("HTTPAuthStore.insert: invalid entry: " + entry);
+
+    List<Entry> entries = rows.get(entry.scheme);
+
+    for(Entry e: entries) {
 	if(compatibleURI(entry.uri,e.uri)) {
 	    found = e;
 	    break;
@@ -287,11 +332,11 @@ insert(Entry entry)
     }
     // If the entry already exists, then overwrite it and return true
     if(found != null) {
-        found.scheme = new HTTPAuthCreds(entry.scheme);
+        found.creds = new HTTPAuthCreds(entry.creds);
 	rval = true;
     } else {
         Entry newentry = new Entry(entry);
-        list.add(newentry);
+        entries.add(newentry);
     }
     return rval;
 }
@@ -303,15 +348,22 @@ insert(Entry entry)
 
 static synchronized public boolean
 remove(Entry entry)
+    throws HTTPException
 {
     Entry found = null;
-    for(Entry e: getAllRows()) {
+
+    if(entry == null || !entry.valid())
+	    throw new HTTPException("HTTPAuthStore.remove: invalid entry: " + entry);
+
+    List<Entry> entries = rows.get(entry.scheme);
+
+    for(Entry e: entries) {
 	if(compatibleURI(entry.uri,e.uri)) {
 	    found = e;
 	    break;
 	}
     }
-    if(found != null) list.remove(found);
+    if(found != null) entries.remove(found);
     return (found != null);
 }
 
@@ -331,7 +383,7 @@ static public List<Entry>
 getAllRows()
 {
   List<Entry> elist = new ArrayList<Entry>();
-  for(HTTPSession key: rows.keySet()) elist.addAll(rows.get(key));
+  for(HTTPAuthScheme key: rows.keySet()) elist.addAll(rows.get(key));
   return elist;
 }
 
@@ -347,34 +399,24 @@ getAllRows()
 static synchronized public Entry[]
 search(Entry entry)
 {
-    List<Entry> list = null;
 
-    list = getAllRows();
+    if(entry == null || !entry.valid())
+        return new Entry[0];
 
+    List<Entry> entries = rows.get(entry.scheme);
     List<Entry> matches = new ArrayList<Entry>();
 
-    if(list != null) {
-        for(Entry e: list) {
-	    if(compare(entry,e) == 0)
-                matches.add(e);
-        }
+
+    for(Entry e: entries) {
+        if(HTTPAuthStore.compatibleURI(entry.uri,e.uri))
+            matches.add(e);
     }
-    // Sort so isGlobal is after !isGlobal
+    // Sort by scheme then by url, where any_url is last
     Entry[] matchvec = matches.toArray(new Entry[matches.size()]);
     Arrays.sort(matchvec);
     return matchvec;
 }
 
-/**
- * 
- * @param session
- * @param principal
- * @param host
- * @param port
- * @param path
- * @return list of matching entries
- */
- 
 //////////////////////////////////////////////////
 // Misc.
 
@@ -388,15 +430,15 @@ getAuthScope(Entry entry)
 	uri = new URI(entry.uri);
     } catch(URISyntaxException use) {return null;}
 
-    String host = entry.host;
-    int port = entry.port;
-    String realm = entry.path;
+    String host = uri.getHost();
+    int port = uri.getPort();
+    String realm = uri.getRawPath();
     String scheme = (entry.scheme == null ? null : entry.scheme.getSchemeName());
 
     if(host == null) host = AuthScope.ANY_HOST;
     if(port <= 0) port = AuthScope.ANY_PORT;
     if(realm == null) realm = AuthScope.ANY_REALM;
-    AuthScope as = new AuthScope(host,port,realm,scheme);
+    AuthScope as = new AuthScope(host,port,realm);
     return as;
 }
 
@@ -476,17 +518,10 @@ print(PrintWriter p)
 
 ///////////////////////////////////////////////////
 // Seriablizable interface
-// Encrypted (De-)Serialize 
+// Encrypted (De-)Serialize
 
 static public void
-serializeAll(OutputStream ostream, String password)
-	throws IOException
-{
-    serialize(ostream,ANY_PRINCIPAL,password);
-}
-
-static public void
-serialize(OutputStream ostream, String principal, String password)
+serialize(OutputStream ostream, String password)
 	throws HTTPException
 {
     try {
@@ -506,20 +541,13 @@ serialize(OutputStream ostream, String principal, String password)
     CipherOutputStream cos = new CipherOutputStream(bos, desCipher);
     ObjectOutputStream oos = new ObjectOutputStream(cos);
 
-    List<Entry> byprincipal = null;
+    oos.writeInt(getAllRows().size());
 
-    if(principal == ANY_PRINCIPAL) {
-        byprincipal = getAllRows();
-    } else {
-        byprincipal = new ArrayList<Entry>();
-       for(Entry e: getAllRows()) {
-	    if(e.principal.equals(principal)) byprincipal.add(e);
+    for(HTTPAuthScheme scheme: HTTPAuthScheme.values()) {
+        List<Entry> entries = rows.get(scheme);
+        for(Entry e: entries) {
+            oos.writeObject(e);
         }
-    }
-    oos.writeBytes(principal==ANY_PRINCIPAL?"":principal);
-    oos.writeInt(byprincipal.size());
-    for(Entry e: byprincipal) {
-        oos.writeObject(e);
     }
 
     oos.flush();
@@ -535,12 +563,7 @@ deserialize(InputStream istream, String password)
 {
     List<Entry> entries = getDeserializedEntries(istream,password);
     for(Entry e: entries) {
-        List<Entry> hashed = (e.session == ANY_SESSION?getAllRows():rows.get(e.session));
-        if(hashed == null) {
-            hashed = new ArrayList<Entry>();
-            rows.put(e.session,hashed);
-        }
-        hashed.add(e);
+        insert(e);
     }
 }
 
@@ -569,7 +592,7 @@ getDeserializedEntries(InputStream istream, String password)
     int count = ois.readInt();
     for(int i=0;i<count;i++) {
         Entry e = (Entry)ois.readObject();
-         entries.add(e);
+        entries.add(e);
     }
     return entries;
     } catch (Exception e) {throw new HTTPException(e);}
