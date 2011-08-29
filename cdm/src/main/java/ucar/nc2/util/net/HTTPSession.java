@@ -89,8 +89,6 @@ public class HTTPSession
     static int threadcount = DFALTTHREADCOUNT;
     static List<HTTPSession> sessionList; // List of all HTTPSession instances
     static boolean globalauthpreemptive = false;
-
-    static String globalPrincipal = ANY_PRINCIPAL;
     static CredentialsProvider globalProvider = null;
 
     static {
@@ -182,7 +180,6 @@ public class HTTPSession
     String useragent = null;
     CredentialsProvider sessionProvider = null;
     String uriencoded = null;
-    String principal = null;
 
     /**
      * A session is encapsulated in an instance of the class HTTPSession.
@@ -488,93 +485,35 @@ public class HTTPSession
     }
 
     public void
-    setCredentialsProvider(CredentialsProvider provider)
+    setCredentialsProvider(String url, CredentialsProvider provider)
     {
         sessionProvider = provider;
 	// Add entry to AuthStore
 	HTTPAuthScheme scheme =
 	    new HTTPAuthScheme(HTTPAuthScheme.BASIC).setCredentialsProvider(provider);
-	HTTPAuthStore.insert(this,globalPrincipal,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
+	HTTPAuthStore.insert(ISLOCAL,uri,scheme);
+    }
+
+    public void
+    setCredentialsProvider(CredentialsProvider provider)
+    {
+	setCredentialsProvider(uriencoded,provider);
     }
 
     static synchronized public void
-    setGlobalCredentialsProvider(CredentialsProvider cp)
+    setGlobalCredentialsProvider(String uri, CredentialsProvider cp)
     {
         globalProvider = cp;
 	// Add entry to AuthStore
 	HTTPAuthScheme scheme =
 	    new HTTPAuthScheme(HTTPAuthScheme.BASIC).setCredentialsProvider(cp);
-	HTTPAuthStore.insert(ANY_SESSION,globalPrincipal,ANY_HOST,ANY_PORT,ANY_PATH,scheme);
+	HTTPAuthStore.insert(ISGLOBAL,uri,cp);
     }
 
-/* NOTUSED
-    static synchronized public void setGlobalAuthenticator(String user, String password)
+    static public void
+    setGlobalCredentialsProvider(CredentialsProvider provider)
     {
-      if (password != null) {
-        password = password.trim();
-        if (password.length() == 0) {
-          password = null;
-        }
-      }
-      if (user != null) {
-        user = user.trim();
-        if (user.length() == 0) {
-          user = null;
-        }
-      }
-      if (user != null && password != null) {
-        final PasswordAuthentication pa = new PasswordAuthentication(user, password.toCharArray());
-        globalAuthenticator = new Authenticator() {
-          public PasswordAuthentication getPasswordAuthentication() {
-            return pa;
-          }
-        };
-        Authenticator.setDefault(globalAuthenticator);
-      }
+	setGlobalCredentialsProvider(ANY_URI,provider);
     }
-NOTUSED*/
-
-    static public String getGlobalPrincipal()
-    {
-        return globalPrincipal;
-    }
-
-    static synchronized public void setGlobalPrincipal(String principal)
-    {
-        globalPrincipal = principal;
-    }
-
-    public String getPrincipal()
-    {
-        return (principal==null?globalPrincipal:principal);
-    }
-
-    public void setPrincipal(String principal)
-    {
-        this.principal = principal;
-    }
-
-    // Note that session level principal is disabled because it does not appear
-    // that it is possible to do per-method execution principals because all
-    // method executions share same session state. HttpContext in httpclient-4
-    // should fix this.
-
-    ////////////////////////////////////////////////
-    // Combine Session creation with method creation
-/* NOTUSED
-    static HTTPMethod sessionPlusMethod(Methods m, String uriencoded)  throws HTTPException
-    {
-      HTTPSession session = new HTTPSession(uriencoded);
-      HTTPMethod method = new HTTPMethod(m,uriencoded,session);
-      return method;
-    }
-
-    static public HTTPMethod Head(String uriencoded)  throws HTTPException {return sessionPlusMethod(Methods.Head, uriencoded);}
-    static public HTTPMethod Get(String uriencoded)  throws HTTPException {return sessionPlusMethod(Methods.Get, uriencoded);}
-    static public HTTPMethod Put(String uriencoded)  throws HTTPException {return sessionPlusMethod(Methods.Put, uriencoded);}
-    static public HTTPMethod Post(String uriencoded)  throws HTTPException {return sessionPlusMethod(Methods.Post, uriencoded);}
-    static public HTTPMethod Options(String uriencoded)  throws HTTPException {return sessionPlusMethod(Methods.Options, uriencoded);}
-NOTUSED*/
-
 
 }
