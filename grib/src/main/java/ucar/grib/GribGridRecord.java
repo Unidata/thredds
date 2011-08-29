@@ -257,12 +257,8 @@ public final class GribGridRecord implements GridRecord {
 
       } else {
         GribPDSParamTable pt = null;
-        try {
           pt = GribPDSParamTable.getParameterTable(center, subCenter, tableVersion);
-        } catch (NotSupportedException e) {
-          logger.error("Failed to get Parameter name for " + this);
-        }
-        p = pt.getParameter( pds.getParameterNumber());
+          p = (pt == null) ? null : pt.getParameter( pds.getParameterNumber());
       }
 
     return p;

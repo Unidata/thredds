@@ -1,0 +1,14 @@
+-1:38:0:2
+0:var0:undefined
+1:PRES:Pressure [Pa]
+2:PRMSL:Pressure reduced to MSL [Pa]
+7:HGT:Geopotential height [gpm]
+11:TMP:Temperature [K]
+33:UGRD:u wind [m/s]
+34:VGRD:v wind [m/s]
+40:DZDT:Geometric vertical velocity [m/s]
+52:RH:Relative humidity [%]
+54:PWAT:Precipitable water [kg/m^2]
+63:ACPCP:Convective precipitation [kg/m^2]
+85:TSOIL:Soil temperature [K]
+144:SOILW:Volumetric soil moisture content [fraction]

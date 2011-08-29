@@ -32,13 +32,22 @@
 
 package ucar.nc2.ui;
 
+import opendap.servlet.Log;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
+import ucar.grib.NoValidGribException;
+import ucar.grib.grib1.Grib1Input;
+import ucar.grib.grib1.Grib1Pds;
+import ucar.grib.grib1.Grib1Record;
+import ucar.grib.grib1.GribPDSParamTable;
+import ucar.grib.grib2.Grib2IndicatorSection;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.table.GribTables;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
+import ucar.unidata.io.KMPMatch;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -61,7 +70,7 @@ import java.util.List;
 public class GribFilesPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted filesTable, collectionTable;
+  private BeanTableSorted grib1Table, grib2Table, collectionTable;
   private JSplitPane split, split2;
 
   private TextHistoryPane infoPopup;
@@ -101,20 +110,21 @@ public class GribFilesPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Open in Grib2n", new AbstractAction() {
+    /* varPopup.addAction("Open in Grib2n", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CollectionBean pb = (CollectionBean) collectionTable.getSelectedBean();
         if (pb == null) return;
         GribFilesPanel.this.firePropertyChange("openGrib2n", null, pb.getSpec());
       }
-    });
+    }); */
 
-    filesTable = new BeanTableSorted(FileBean.class, (PreferencesExt) prefs.node("FileBean"), false);
-    varPopup = new PopupMenu(filesTable.getJTable(), "Options");
+    grib1Table = new BeanTableSorted(Grib1Bean.class, (PreferencesExt) prefs.node("Grib1Bean"), false);
+    grib2Table = new BeanTableSorted(Grib2Bean.class, (PreferencesExt) prefs.node("Grib2Bean"), false);
+    varPopup = new PopupMenu(grib2Table.getJTable(), "Options");
 
     varPopup.addAction("Show complete GridRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FileBean bean = (FileBean) filesTable.getSelectedBean();
+        Grib2Bean bean = (Grib2Bean) grib2Table.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.showComplete(f);
@@ -127,7 +137,7 @@ public class GribFilesPanel extends JPanel {
 
       varPopup.addAction("Open in Grib2n", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FileBean pb = (FileBean) filesTable.getSelectedBean();
+        Grib2Bean pb = (Grib2Bean) grib2Table.getSelectedBean();
         if (pb == null) return;
         GribFilesPanel.this.firePropertyChange("openGrib2n", null, pb.m.getPath());
       }
@@ -141,7 +151,7 @@ public class GribFilesPanel extends JPanel {
 
     setLayout(new BorderLayout());
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, collectionTable, filesTable);
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, collectionTable, grib1Table);
     split2.setDividerLocation(prefs.getInt("splitPos2", 800));
 
     //split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, gds2Table);
@@ -152,7 +162,8 @@ public class GribFilesPanel extends JPanel {
   }
 
   public void save() {
-    filesTable.saveState(false);
+    grib1Table.saveState(false);
+    grib2Table.saveState(false);
     collectionTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
@@ -164,7 +175,7 @@ public class GribFilesPanel extends JPanel {
   }
 
   private void showFilesInCollection(CollectionBean bean, Formatter f) {
-    f.format("Collection= %s (%d) %n", bean.spec);
+    f.format("Collection= %s %n", bean.spec);
     int count = 0;
     for (MFile mfile : bean.fileList) {
       f.format("  %s%n", mfile.getPath());
@@ -174,6 +185,7 @@ public class GribFilesPanel extends JPanel {
   }
 
   ///////////////////////////////////////////////
+  private static final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
 
   private List<CollectionBean> collections = new ArrayList<CollectionBean>();
 
@@ -183,13 +195,71 @@ public class GribFilesPanel extends JPanel {
   }
 
   private void readFiles(List<CollectionBean> beans) {
-    List<FileBean> files = new ArrayList<FileBean>();
+    List<Object> files = new ArrayList<Object>();
     for (CollectionBean bean : beans) {
       for (MFile mfile : bean.fileList) {
-        files.add(new FileBean(mfile));
+        String path = mfile.getPath();
+        if (path.endsWith(".gbx8") || path.endsWith(".gbx9")  || path.endsWith(".ncx") )  continue;
+        Object gbean = getGribBean(mfile);
+        if (gbean != null)
+          files.add( gbean);
       }
     }
-    filesTable.setBeans(files);
+    grib1Table.setBeans(files);
+  }
+
+  public Object getGribBean(MFile ff) {
+    String path = ff.getPath();
+    RandomAccessFile raf = null;
+    try {
+      raf = new ucar.unidata.io.RandomAccessFile(path, "r");
+      raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+      raf.seek(0);
+
+       if (!raf.searchForward(matcher, 8000)) {  // must find "GRIB" in first 8k
+         return null;
+       }
+       raf.skipBytes(4);
+       //  Read Section 0 Indicator Section to get Edition number
+       Grib2IndicatorSection is = new Grib2IndicatorSection(raf);  // section 0
+       int edition = is.getGribEdition();
+
+       if (edition == 1)
+         return getGrib1Bean(ff, raf);
+       //else if (edition == 2)
+       //  setGribFile2(raf);
+
+    } catch (Throwable ioe) {
+      System.out.printf("Failed on %s%n", path);
+      ioe.printStackTrace();
+
+    } finally {
+      if (raf != null) try {
+        raf.close();
+      } catch (IOException e) {
+      }
+    }
+    return null;
+ }
+
+  Object getGrib1Bean(MFile mf, RandomAccessFile raf) throws IOException, NoValidGribException {
+    Grib1Input reader = new Grib1Input(raf);
+    raf.seek(0);
+    reader.scan(false, true);
+    List<Grib1Record> records = reader.getRecords();
+    Grib1Record first = records.get(0);
+    return new Grib1Bean(mf, first);
+  }
+
+  // see ggr.cdmVariableHash() {
+
+  public int makeUniqueId(Grib1Pds pds) {
+    int result = 17;
+    result += result * 37 + pds.getParameterNumber();
+    result *= result * 37 + pds.getLevelType1();
+    if (pds.isEnsemble())
+      result *= result * 37 + 1;
+    return result;
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -232,7 +302,55 @@ public class GribFilesPanel extends JPanel {
 
   }
 
-  public class FileBean {
+  public class Grib1Bean {
+    MFile m;
+    Grib1Record first;
+    String tableName;
+
+    public Grib1Bean() {
+    }
+
+    public Grib1Bean(MFile m, Grib1Record first) {
+      this.m = m;
+      this.first = first;
+    }
+
+    public final String getPath() {
+      return m.getPath();
+    }
+
+    public int getTableVersion() {
+      return first.getPDS().getTableVersion();
+    }
+
+    public int getCenter() {
+      return first.getPDS().getCenter();
+    }
+
+    public String getCenterName() {
+      return first.getPDS().getCenterName();
+    }
+
+    public int getSubCenter() {
+      return first.getPDS().getSubCenter();
+    }
+
+    public String getSubCenterName() {
+      return first.getPDS().getSubCenterName();
+    }
+
+    public String getTable() {
+      if (tableName == null) {
+        GribPDSParamTable table = GribPDSParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
+        tableName = (table == null) ? " missing" : table.getName();
+      }
+      return tableName;
+    }
+
+  }
+
+
+  public class Grib2Bean {
     MFile m;
     GribIndex index;
     int nRecords, localCount = 0, gdsCount = 0;
@@ -240,10 +358,10 @@ public class GribFilesPanel extends JPanel {
     GribTables tables;
     boolean bad = false;
 
-    public FileBean() {
+    public Grib2Bean() {
     }
 
-    public FileBean(MFile m) {
+    public Grib2Bean(MFile m) {
       this.m = m;
 
       try {

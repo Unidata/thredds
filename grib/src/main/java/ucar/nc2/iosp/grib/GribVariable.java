@@ -34,6 +34,7 @@
 package ucar.nc2.iosp.grib;
 
 import ucar.grib.GribGridRecord;
+import ucar.grib.grib1.Grib1Tables;
 import ucar.ma2.Array;
 
 import ucar.nc2.*;
@@ -248,16 +249,18 @@ public class GribVariable extends GridVariable {
       }
 
     } else if (lookup instanceof Grib1GridTableLookup) {
-      Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
-      int[] paramId = g1lookup.getParameterId(firstRecord);
+      //Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
+      //int[] paramId = g1lookup.getParameterId(firstRecord);
+      GribGridRecord ggr = (GribGridRecord) firstRecord;
+
       v.addAttribute(new Attribute("GRIB_param_name", param.getDescription()));
-      v.addAttribute(new Attribute("GRIB_param_short_name", param.getName()));
-      v.addAttribute(new Attribute("GRIB_center_id", new Integer(paramId[1])));
-      v.addAttribute(new Attribute("GRIB_table_id", new Integer(paramId[2])));
-      v.addAttribute(new Attribute("GRIB_param_number", new Integer(paramId[3])));
-      v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
-      v.addAttribute(new Attribute("GRIB_product_definition_type", g1lookup.getProductDefinitionName(firstRecord)));
-      v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
+      if (param.getName() != null) v.addAttribute(new Attribute("GRIB_param_short_name", param.getName()));
+      v.addAttribute(new Attribute("GRIB_center_id", ggr.getCenter()));
+      v.addAttribute(new Attribute("GRIB_table_version", ggr.getTableVersion()));
+      v.addAttribute(new Attribute("GRIB_param_number", ggr.getParameterNumber()));
+      v.addAttribute(new Attribute("GRIB_level_type", firstRecord.getLevelType1()));
+      //v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
+      v.addAttribute(new Attribute("GRIB_time_range_indicator", Grib1Tables.getTimeRangeIndicatorName(ggr.getTimeUnit())));
 
     }
   }

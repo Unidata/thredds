@@ -1324,7 +1324,7 @@ public class GribRawPanel extends JPanel {
     ///////////////
 
     public String getDesc() {
-      return pds.getParameter().getDescription();
+      return pds.getDescription();
     }
 
     public String getCenter() {

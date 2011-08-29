@@ -1,0 +1,71 @@
+-1:69:-1:-1
+2:sslp:Smoothed MSLP
+2:slp:MSLP
+7:ght:Geopotential height
+11:tmk:Temperature [K]
+11:tgk:Ground temperature [K]
+11:T2:N2-metre temperature
+17:td2mk:N2-metre dew point temperature [K]
+17:td2mc:N2-metre dew point temperature
+20:visr:converted to m
+31:wd10:N10m AGL
+31:wdr:Wind Direction
+32:ws10:N10m AGL
+32:wspk:Knots converted to [m/s]
+33:vvv:Wind in v-direction
+33:V10:N10-metre V Component
+34:U10:N10-metre U Component
+34:uuu:Wind in u-direction
+40:www:Vertical wind component [m/s]
+52:RH10:Relative Humidity at 10m AGL
+53:Q2:N2-metre mixing ratio
+53:qvp:Water vapor mixing ratio [g/kg]
+61:xrrb:Total precipitation
+61:rtb:Total precipitation
+61:rrb:Total precipitation
+62:rte:Accumulated non-Convective Precipition [mm]
+62:rre:Non-Convective Precipition [mm]
+63:rtc:Accumulated Convective Precipition [mm]
+63:rrc:Convective Precipition [mm]
+67:pblh:PBL height [m]
+72:pccld1:percentage
+73:plcld:percentage
+74:pmcld:percentage
+75:phcld:percentage
+128:qcw:Cloud mixing ratio [g/kg]
+129:qra:Rain water mixing ratio [g/Kg]
+130:radtnd:Atmospheric radiative tendency [K/day]
+131:prs:Pressure perturbation [Pa]
+132:pstx:SURFACE PRESSURE MINUS PTOP
+133:pstd:SURFACE PRESSURE MINUS PTOP
+135:ter:Terrain Elevation [m]
+136:xmap:MAP SCALE FACTOR []
+137:dmap:MAP SCALE FACTOR []
+138:cor:CORIOLIS PARAMETER [1/s]
+139:RES_TEMP:INFINITE RESERVOIR SLAB TEMPERATURE [K]
+142:xlus:LANDUSE CATEGORY
+143:rdr:Dynamic Rainfall [mm/s]
+143:xrdr:Dynamic Rainfall [mm/s]
+144:rcr:Convective Rainfall [mm/s]
+144:xrcr:Convective Rainfall [mm/s]
+145:swdown:SURFACE DOWNWARD SHORTWAVE RADIATION [W/m^2]
+146:xrds:Dynamic Snow [mm/s]
+146:rds:Dynamic Snow [mm/s]
+147:rcs:Convective Snow [mm/s]
+147:xrcs:Convective Snow [mm/s]
+148:LWOUT:TOP OUTGOING LONGWAVE RADIATION [W/m^2]
+149:soil1:SOIL TEMPERATURE IN LAYER N
+149:soil2:SOIL TEMPERATURE IN LAYER N
+149:soil3:SOIL TEMPERATURE IN LAYER N
+149:soil5:SOIL TEMPERATURE IN LAYER N
+149:soil6:SOIL TEMPERATURE IN LAYER N
+149:soil4:SOIL TEMPERATURE IN LAYER N
+150:rtotsh0:Acc Total Precipition since hour 0 [mm]
+157:sst:Sea surface temperature [K]
+160:qci:Cloud ice mixing ratio [g/kg]
+161:qsn:Snow mixing ratio [g/kg]
+162:regime:PBL REGIME
+163:ust:FRICTIONAL VELOCITY [m/s]
+164:lwdown:SURFACE DOWNWARD LONGWAVE RADIATION [W/m^2]
+165:SWOUT:TOP OUTGOING SHORTWAVE RADIATION [W/m^2]
+191:itt:Total Totals Index

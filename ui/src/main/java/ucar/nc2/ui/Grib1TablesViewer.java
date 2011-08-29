@@ -76,14 +76,7 @@ public class Grib1TablesViewer extends JPanel {
         TableBean bean = (TableBean) codeTable.getSelectedBean();
         if (bean == null) return;
 
-        GribPDSParamTable wmo = null;
-        try {
-          wmo = GribPDSParamTable.getParameterTable(0, 0, bean.getVersion());
-        } catch (NotSupportedException e1) {
-          infoTA.setText(e1.toString());
-          infoWindow.showIfNotIconified();
-          return;
-        }
+        GribPDSParamTable wmo = GribPDSParamTable.getParameterTable(0, 0, bean.getVersion());
         if (wmo == null) {
           infoTA.setText("Cant find WMO version " + bean.getVersion());
           infoWindow.showIfNotIconified();

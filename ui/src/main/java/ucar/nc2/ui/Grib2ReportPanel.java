@@ -23,12 +23,12 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Run through Grib files and make reports
+ * Run through collections of Grib 2 files and make reports
  *
  * @author caron
  * @since Dec 13, 2010
  */
-public class GribReportPanel extends JPanel {
+public class Grib2ReportPanel extends JPanel {
   public static enum Report {
     checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
   }
@@ -36,7 +36,7 @@ public class GribReportPanel extends JPanel {
   private PreferencesExt prefs;
   private TextHistoryPane reportPane;
 
-  public GribReportPanel(PreferencesExt prefs, JPanel buttPanel) {
+  public Grib2ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
     reportPane = new TextHistoryPane();
     setLayout(new BorderLayout());

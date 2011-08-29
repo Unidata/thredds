@@ -96,6 +96,10 @@ public class GribPDSParamTable {
     }
   }
 
+  public static GribPDSParamTable getDefaultTable() {
+    return defaultTable;
+  }
+
   /**
    * read the lookup table
    *
@@ -221,10 +225,9 @@ public class GribPDSParamTable {
    * @param center       - integer from PDS octet 5, representing Center.
    * @param subcenter    - integer from PDS octet 26, representing Subcenter
    * @param tableVersion - integer from PDS octet 4, representing Parameter Table Version
-   * @return GribPDSParamTable matching center, subcenter, and number
-   * @throws NotSupportedException no table found
+   * @return GribPDSParamTable matching center, subcenter, and number, or null if not found
    */
-  public static GribPDSParamTable getParameterTable(int center, int subcenter, int tableVersion) throws NotSupportedException {
+  public static GribPDSParamTable getParameterTable(int center, int subcenter, int tableVersion) {
 
     String key = center + "_" + subcenter + "_" + tableVersion;
     GribPDSParamTable table = tableMap.get(key);
@@ -234,8 +237,10 @@ public class GribPDSParamTable {
     table = readParameterTable(center, subcenter, tableVersion);
 
     if (table == null) {
-      throw new NotSupportedException("Could not find a table entry for GRIB file with center: "
-              + center + " subCenter: " + subcenter + " number: " + tableVersion);
+      //throw new NotSupportedException("Could not find a table entry for GRIB file with center: "
+      //        + center + " subCenter: " + subcenter + " number: " + tableVersion);
+      logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
+      return null;
     }
 
     tableMap.put(key, table);
@@ -358,6 +363,11 @@ public class GribPDSParamTable {
     return version;
   }
 
+  public String getName() {
+    int pos = filename.lastIndexOf("/");
+    return filename.substring(pos+1);
+  }
+
   public String getPath() {
     return path;
   }
@@ -385,13 +395,13 @@ public class GribPDSParamTable {
 
     // get out of the wmo table if possible
     p = defaultTable.parameters.get(id);
-    if (p != null) return p;
+    return p;
 
-    // warning
+    /* warning
     logger.warn("GribPDSParamTable: Could not find parameter " + id + " for center:" + center_id
             + " subcenter:" + subcenter_id + " number:" + version + " table " + filename);
     String unknown = "UnknownParameter_" + Integer.toString(id) + "_table_" + filename;
-    return new GridParameter(id, unknown, unknown, "Unknown", null);
+    return new GridParameter(id, unknown, unknown, "Unknown", null); */
   }
 
   @Override

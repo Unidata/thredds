@@ -1,0 +1,17 @@
+-1:98:0:211
+0:VAR0:undefined
+46:AERPR:Aerosol precursor mixing ratio [kg kg-1]
+47:AERSM:Aerosol small mode mixing ratio [kg kg-1]
+48:AERLG:Aerosol large mode mixing ratio [kg kg-1]
+49:AODPR:Aerosol precursor optical depth []
+50:AODSM:Aerosol small mode optical depth []
+51:AODLG:Aerosol large mode optical depth []
+61:CO2:Carbon Dioxide [kg kg-1]
+62:CH4:Methane [kg kg-1]
+63:N2O:Nitrous oxide [kg kg-1]
+121:NO2:Nitrogen dioxide [kg kg-1]
+122:SO2:Sulphur dioxide [kg kg-1]
+123:CO:Carbon monoxide [kg kg-1]
+124:HCHO:Formaldehyde [kg kg-1]
+203:GO3:GEMS Ozone [kg kg-1]
+255:VAR255:undefined

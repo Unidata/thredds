@@ -130,8 +130,7 @@ public final class Grib1BinaryDataSection {
     // octet 4, 1st half (packing flag)
     int unusedbits = raf.read();
     if ((unusedbits & 192) != 0) {
-      throw new NotSupportedException(
-          "Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing ");
+      throw new NotSupportedException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing ");
     }
 
     // octet 4, 2nd half (number of unused bits at end of this section)

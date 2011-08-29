@@ -1,0 +1,19 @@
+-1:98:0:170
+0:VAR0:undefined
+129:Z:Geopotential [m2 s-2]
+130:T:Temperature [K]
+131:U:U velocity [m s-1]
+132:V:V velocity [m s-1]
+138:VO:Vorticity relative  [s-1]
+140:SWL1:Soil wetness level 1 [m]
+141:SD:Snow depth [m of water equivalent]
+149:TSW:Total soil moisture [m]
+151:MSL:Mean sea level pressure [Pa]
+155:D:Divergence [s-1]
+171:SWL2:Soil wetness level 2 [m]
+179:TTR:Top thermal radiation [W m-2]
+184:SWL3:Soil wetness level 3 [m]
+201:MX2T:Maximum temperature at 2 metres [K]
+202:MN2T:Minimum temperature at 2 metres [K]
+228:TP:Total precipitation [m]
+255:VAR255:undefined
