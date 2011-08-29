@@ -31,19 +31,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.*;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Enumeration;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
-import org.apache.commons.httpclient.HttpClientError;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -252,20 +244,20 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
     try {
 
 if(UseAuthStore) {
-        // Get the HTTPAuthScheme
-	mgr =  (HTTPAuthCredentials)params.getParameter(HTTPAuthScheme.CREDENTIALSPROVIDER);
+        // Get the HTTPAuthCreds
+	mgr =  (HTTPAuthCredentials)params.getParameter(HTTPAuthCreds.CREDENTIALSPROVIDER);
 	if(mgr == null) {
 	    sslcontext = SSLContext.getInstance("SSL");
 	    sslcontext.init(null,null,null);
             return sslcontext;
 	}
 
-        HTTPAuthScheme scheme = mgr.getAuthScheme();
+        HTTPAuthCreds scheme = mgr.getAuthScheme();
 
-        keypassword = (String)scheme.get(HTTPAuthScheme.KEYSTOREPASSWORD);
-        keypath = (String)scheme.get(HTTPAuthScheme.KEYSTOREPATH);
-        trustpassword = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPASSWORD);
-        trustpath = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPATH);
+        keypassword = (String)scheme.get(HTTPAuthCreds.KEYSTOREPASSWORD);
+        keypath = (String)scheme.get(HTTPAuthCreds.KEYSTOREPATH);
+        trustpassword = (String)scheme.get(HTTPAuthCreds.TRUSTSTOREPASSWORD);
+        trustpath = (String)scheme.get(HTTPAuthCreds.TRUSTSTOREPATH);
 
 } else {//!UseAuthStore
 

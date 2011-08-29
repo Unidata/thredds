@@ -616,7 +616,7 @@ setAuthentication(HTTPSession session)
     HTTPAuthStore.Entry proxyentry = null;
     HTTPAuthStore.Entry authentry = null;
     for (HTTPAuthStore.Entry entry : entries) {
-        if (entry.scheme.getScheme() == HTTPAuthScheme.PROXY && proxyentry == null)
+        if (entry.scheme.getScheme() == HTTPAuthCreds.PROXY && proxyentry == null)
             proxyentry = entry;
         else if (authentry == null)
             authentry = entry;
@@ -628,7 +628,7 @@ setAuthentication(HTTPSession session)
     HTTPAuthCredentials creds = null;
 
     if (authentry != null) {
-        HTTPAuthScheme scheme = authentry.scheme;
+        HTTPAuthCreds scheme = authentry.scheme;
 	switch (scheme.getScheme()) {
         case BASIC: case DIGEST:
             // Provide a credentials (provider) wrapper
@@ -637,7 +637,7 @@ setAuthentication(HTTPSession session)
 	case KEYSTORE:
 	    // Pass down info to the socket factory
             HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
-            hcp.setParameter(HTTPAuthScheme.SCHEME,scheme);
+            hcp.setParameter(HTTPAuthCreds.SCHEME,scheme);
 	    break;
 	default:
             throw new HTTPException("HTTPMethod: AuthStore cannot obtain credentials for: "+uriencoded);
@@ -645,7 +645,7 @@ setAuthentication(HTTPSession session)
     }
 
     if (proxyentry != null) {
-        HTTPAuthScheme scheme = proxyentry.scheme;
+        HTTPAuthCreds scheme = proxyentry.scheme;
         // Provide a credentials (provider) wrapper
         creds = new HTTPAuthCredentials(this,principal,authentry,proxyentry);
         //AuthScope as = HTTPAuthStore.getAuthScope(proxyentry);

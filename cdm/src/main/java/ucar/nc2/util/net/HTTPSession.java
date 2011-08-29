@@ -40,14 +40,11 @@ import org.apache.commons.httpclient.params.*;
 import org.apache.commons.httpclient.protocol.Protocol;
 
 import java.net.URI;
-import java.net.PasswordAuthentication;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-import sun.net.www.http.*;
 import ucar.unidata.util.Urlencoded;
 
 import static ucar.nc2.util.net.HTTPAuthStore.*;
@@ -489,8 +486,8 @@ public class HTTPSession
     {
         sessionProvider = provider;
 	// Add entry to AuthStore
-	HTTPAuthScheme scheme =
-	    new HTTPAuthScheme(HTTPAuthScheme.BASIC).setCredentialsProvider(provider);
+	HTTPAuthCreds scheme =
+	    new HTTPAuthCreds(HTTPAuthCreds.BASIC).setCredentialsProvider(provider);
 	HTTPAuthStore.insert(ISLOCAL,uri,scheme);
     }
 
@@ -505,8 +502,8 @@ public class HTTPSession
     {
         globalProvider = cp;
 	// Add entry to AuthStore
-	HTTPAuthScheme scheme =
-	    new HTTPAuthScheme(HTTPAuthScheme.BASIC).setCredentialsProvider(cp);
+	HTTPAuthCreds scheme =
+	    new HTTPAuthCreds(HTTPAuthCreds.BASIC).setCredentialsProvider(cp);
 	HTTPAuthStore.insert(ISGLOBAL,uri,cp);
     }
 

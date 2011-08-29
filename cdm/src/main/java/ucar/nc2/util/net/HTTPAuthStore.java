@@ -33,19 +33,16 @@
 
 package ucar.nc2.util.net;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.*;
 import java.io.*;
 
-import com.sun.org.apache.xerces.internal.parsers.CachingParserPool;
 import org.apache.commons.httpclient.auth.*;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
-import static ucar.nc2.util.net.HTTPAuthScheme.*;
+import static ucar.nc2.util.net.HTTPAuthCreds.*;
 
 /**
 
@@ -67,17 +64,16 @@ public class HTTPAuthStore implements Serializable
 /**
 
 The auth store is (conceptually) a set of tuples (rows) of the form
-String(url) X HTTPAuthScheme
-The scheme specifies the kind of authorization
+HTTPAuthCreds.Scheme(scheme) X String(url) X HTTPAuthCreds(creds)
+the creds column specifies the kind of authorization
 (e.g. basic, keystore, etc) and the info to support it.
 */
-
 
 static public class Entry implements Serializable, Comparable
 {
     public boolean isGlobal;
     public String uri;
-    public HTTPAuthScheme scheme;
+    public HTTPAuthCreds scheme;
 
     public Entry()
     {
@@ -99,7 +95,7 @@ static public class Entry implements Serializable, Comparable
      * @param scheme
      */
 
-    public Entry(boolean isGlobal, String uri, HTTPAuthScheme scheme)
+    public Entry(boolean isGlobal, String uri, HTTPAuthCreds scheme)
         throws HTTPException
     {
         URI u = null;
@@ -114,11 +110,11 @@ static public class Entry implements Serializable, Comparable
      * @param scheme
      */
 
-    protected void constructor(boolean isGlobal, String uri, HTTPAuthScheme scheme)
+    protected void constructor(boolean isGlobal, String uri, HTTPAuthCreds scheme)
     {
 	if(uri == null) uri = ANY_URI;
 	if(scheme != null)
-            scheme = new HTTPAuthScheme(scheme);
+            scheme = new HTTPAuthCreds(scheme);
 	this.isGlobal = isGlobal;
 	this.uri = uri;
 	this.scheme = scheme;
@@ -144,7 +140,7 @@ static public class Entry implements Serializable, Comparable
     {
         this.isGlobal = (boolean)ois.readObject();
         this.uri = (String)ois.readObject();
-        this.scheme = (HTTPAuthScheme)ois.readObject();
+        this.scheme = (HTTPAuthCreds)ois.readObject();
     }
 
     /**
@@ -259,7 +255,7 @@ static {
         if(kpwd.length() == 0) kpwd = null;
         if(tpwd.length() == 0) tpwd = null;
 
-        HTTPAuthScheme scheme = new HTTPAuthScheme(Scheme.KEYSTORE);
+        HTTPAuthCreds scheme = new HTTPAuthCreds(Scheme.KEYSTORE);
         scheme.setKeyStore(kpath,kpwd,tpath,tpwd);
         insert(ANY_URL,scheme);
      }
@@ -291,7 +287,7 @@ insert(Entry entry)
     }
     // If the entry already exists, then overwrite it and return true
     if(found != null) {
-        found.scheme = new HTTPAuthScheme(entry.scheme);
+        found.scheme = new HTTPAuthCreds(entry.scheme);
 	rval = true;
     } else {
         Entry newentry = new Entry(entry);

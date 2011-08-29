@@ -37,32 +37,29 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Set;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.auth.*;
 
-import static ucar.nc2.util.net.HTTPAuthStore.*;
-
 /**
- * HTTPAuthScheme contains the necessary information to support a given
+ * HTTPAuthCreds contains the necessary information to support a given
  * authorization scheme in the context of HTTPSession.
  * <p/>
  * It is intended to be thread safe using, currently,
  * serial (synchronized) access.
  * <p/>
- * The primary component of HTTPAuthScheme is a (key,value) pair
+ * The primary component of HTTPAuthCreds is a (key,value) pair
  * store implementing the HttpParams Interface.  The contents of the pair
  * store depends on the particular auth scheme (HTTP Basic, ESG Keystore,
  * etc.)
  *
- * HTTPAuthScheme implements the AuthScheme interface, but its functionality
+ * HTTPAuthCreds implements the AuthScheme interface, but its functionality
  * is intended to be broader than that interface.
  */
 
-public class HTTPAuthScheme implements Serializable, AuthScheme
+public class HTTPAuthCreds implements Serializable, AuthScheme
 {
 
 //////////////////////////////////////////////////
@@ -70,10 +67,10 @@ public class HTTPAuthScheme implements Serializable, AuthScheme
 
 static public enum Scheme {
     NULL(null),
-    BASIC("BASIC"),
-    DIGEST("DIGEST"),
-    KEYSTORE("KEYSTORE"),
-    PROXY("PROXY");
+    BASIC("Basic"),
+    DIGEST("Digest"),
+    KEYSTORE("Keystore"),
+    PROXY("Proxy");
 
     // Define the associated standard name
     private final String name;
@@ -92,6 +89,13 @@ static public enum Scheme {
 	return null;
     }
 
+    static public Scheme fromAuthScope(String scheme)
+    {
+	if(scheme == null) return null;
+	if(scheme.equals(AuthPolicy.BASIC)) return BASIC;
+	if(scheme.equals(AuthPolicy.DIGEST)) return DIGEST;
+	return null;
+    }
 }
 
 // Convenience
@@ -125,15 +129,15 @@ static public final String PROXY_AUTH_RESP = "Proxy-Authorization"; // from Http
 protected HashMap<String, Object> params;
 protected AuthScheme basescheme;
 protected String schemename;
-protected HTTPAuthScheme.Scheme scheme;
+protected HTTPAuthCreds.Scheme scheme;
 
 //////////////////////////////////////////////////
 // Constructor(s)
 
-public HTTPAuthScheme(HTTPAuthScheme.Scheme scheme)
+public HTTPAuthCreds(HTTPAuthCreds.Scheme scheme)
 {
     params = new HashMap<String, Object>();
-    if(scheme == null) scheme = HTTPAuthScheme.NULL;
+    if(scheme == null) scheme = HTTPAuthCreds.NULL;
     this.scheme = scheme;
     switch (scheme) {
     case BASIC:
@@ -155,7 +159,7 @@ public HTTPAuthScheme(HTTPAuthScheme.Scheme scheme)
     insert(SCHEME, this.scheme);
 }
 
-public HTTPAuthScheme(HTTPAuthScheme other)
+public HTTPAuthCreds(HTTPAuthCreds other)
 {
     this(other==null?null:other.getScheme());
     if(other != null) {
@@ -179,7 +183,7 @@ public String getSchemeName()
     return this.schemename;
 }
 
-public HTTPAuthScheme
+public HTTPAuthCreds
 setCredentialsProvider(CredentialsProvider cp)
 {
     if(cp != null) {
@@ -189,7 +193,7 @@ setCredentialsProvider(CredentialsProvider cp)
     return this;
 }
 
-public HTTPAuthScheme
+public HTTPAuthCreds
 setUserPassword(String user, String pwd)
 {
     insert(PASSWORD, pwd);
@@ -197,13 +201,13 @@ setUserPassword(String user, String pwd)
     return this;
 }
 
-public HTTPAuthScheme
+public HTTPAuthCreds
 setKeystore(String keypath, String keypwd)
 {
     return setKeyStore(keypath, keypwd, null, null);
 }
 
-public HTTPAuthScheme
+public HTTPAuthCreds
 setKeyStore(String keypath, String keypwd, String trustpath, String trustpwd)
 {
     insert(KEYSTOREPATH, keypath);
@@ -213,7 +217,7 @@ setKeyStore(String keypath, String keypwd, String trustpath, String trustpwd)
     return this;
 }
 
-public HTTPAuthScheme
+public HTTPAuthCreds
 setProxy(String pwd)
 {
     insert(PASSWORD, pwd);
@@ -501,5 +505,5 @@ authenticate(Credentials credentials, HttpMethod httpMethod)
     return this.basescheme.authenticate(credentials,httpMethod);
 }
 
-}//HTTPAuthScheme
+}//HTTPAuthCreds
 
