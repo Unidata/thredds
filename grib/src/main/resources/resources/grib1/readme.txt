@@ -35,14 +35,14 @@ Notes for grib-1 tables
   - place in resources/grib1/dss
   - WMO_GRIB1.xml ("WMO GRIB1 Parameter Code Table 3") needed a few corrections, comparing it to
     ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf
-  - Im seeing some missing entries in the dss NCEP tables. NCEP probably using version 2. What is the difference between WMO version 3 and version 2 and 1 ?
+  - Im seeing some missing entries in the dss NCEP tables. NCEP probably using version 2. What is the difference between WMO version 3 and version 2 or 1 ?
   - "i think you are supposed to use 2 or 3 when you dont have any local entries ("international exchange"), and 128-254 is available when you do."
   - move original, unmodified tables to resources/grib1/tablesOld. probably move to sources eventually if not needed in release.
 
  8/26/2011 screen scrape http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html to get WMO version 2 hopefully
    - now in resources/grib1/ncep/table2.htm
    - compare to tablesOld/wmo_2_v2.tab: 11 udunit differences
-   - compare to WMO_GRIB1.xml: param 98 (ice divergence 1/s vs m/s). typo or correction?
+   - compare to WMO_GRIB1.xml: param 98 (ice divergence 1/s vs m/s). typo or correction?  Check with NCEP.
 
  8/28/2011 use afwa.tab for 57-1-2
    - remove all entries in standard section

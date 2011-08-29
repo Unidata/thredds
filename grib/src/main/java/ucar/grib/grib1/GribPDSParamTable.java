@@ -37,7 +37,6 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
-import ucar.grib.NotSupportedException;
 import ucar.nc2.grib.table.GribTables;
 import ucar.nc2.iosp.grid.GridParameter;
 
@@ -69,6 +68,9 @@ public class GribPDSParamTable {
 
   static private final String RESOURCE_PATH = "resources/grib1";
   static private final String TABLE_LIST = "grib1Tables.txt";
+
+  //static private final String RESOURCE_PATH = "resources/grib1/tablesOld";
+  //static private final String TABLE_LIST = "tableLookup.lst";
 
   static private final Pattern valid = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\+]*$");
   static private final Pattern numberFirst = Pattern.compile("^[0-9]");
@@ -234,7 +236,7 @@ public class GribPDSParamTable {
     if (table != null)
       return table;
 
-    table = readParameterTable(center, subcenter, tableVersion);
+    table = findParameterTable(center, subcenter, tableVersion);
 
     if (table == null) {
       //throw new NotSupportedException("Could not find a table entry for GRIB file with center: "
@@ -251,18 +253,15 @@ public class GribPDSParamTable {
 
 
   /**
-   * Looks for the parameter table which matches the center, subcenter
-   * and table version from the tables array.
-   * If this is the first time asking for this table, then the parameters for
-   * this table have not been read in yet, so this is done as well.
+   * Looks in paramTables for the specified table. Read if found.
    *
-   * @param center    - integer from PDS octet 5, representing Center.
-   * @param subcenter - integer from PDS octet 26, representing Subcenter
-   * @param version    - integer from PDS octet 4, representing Parameter Table Version
-   * @return GribPDSParamTable matching center, subcenter, and number
+   * @param center    center id
+   * @param subcenter subcenter id
+   * @param version   table version
+   * @return GribPDSParamTable or null if not found
    */
 
-  private static GribPDSParamTable readParameterTable(int center, int subcenter, int version) {
+  private static GribPDSParamTable findParameterTable(int center, int subcenter, int version) {
 
     List<GribPDSParamTable> localCopy = paramTables; // thread safe
 
@@ -383,13 +382,16 @@ public class GribPDSParamTable {
     return parameters;
   }
 
-    /**
+  /**
    * Get the parameter with id <tt>id</tt>.
    *
    * @param id the parameter id
    * @return the GridParameter
    */
   public GridParameter getParameter(int id) {
+    if (parameters == null)
+      readParameterTable();
+
     GridParameter p = parameters.get(id);
     if (p != null) return p;
 
@@ -402,6 +404,12 @@ public class GribPDSParamTable {
             + " subcenter:" + subcenter_id + " number:" + version + " table " + filename);
     String unknown = "UnknownParameter_" + Integer.toString(id) + "_table_" + filename;
     return new GridParameter(id, unknown, unknown, "Unknown", null); */
+  }
+
+  public GridParameter getLocalParameter(int id) {
+    if (parameters == null)
+      readParameterTable();
+    return parameters.get(id);
   }
 
   @Override

@@ -3101,7 +3101,7 @@ public class ToolsUI extends JPanel {
 
     boolean process(Object command) {
       try {
-        codeTable.setFilename((String) command);
+        codeTable.setTable((String) command);
         return true;
       } catch (IOException e) {
         return false;

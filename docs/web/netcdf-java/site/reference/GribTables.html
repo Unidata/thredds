@@ -4,8 +4,18 @@
 </head>
 
 <body>
+<h1>Writing GRIB files</h1>
+<p>Assuming that you want generic software like the netCDF-Java library to be able to read the GRIB filkes that you write, the following are best practices.</p>
+<p><strong>Encoding the center and subcenter id</strong></p>
+<p>You must encode a center and subcenter id, in order to correctly match the tables used. If there is no subcnter, I would use id =0 (&quot;no subcenter:), but 255 is acceptable (&quot;missing&quot;).</p>
+<p><strong>Encoding the version number</strong></p>
+<p>If you are only using WMO standard tables (all parameter ids &lt; 128) then you should use version = 1, 2, or 3, corresponding to the WMO standard table version. (Im not sure if they are backwards compatible. <a href="ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf">Current version</a> is 3). This is supposed to be the case for  <em>international exchange</em> of GRIB messages.</p>
+<p>If you are using non-standard (aka <em>local</em>) parameters, then you should use a version number 128-254 (see using local tables).</p>
+<p><strong>Using local tables</strong></p>
+<p>If you need to use local parameters, you must carefully manage<br>
+</p>
+<p>&nbsp;</p>
 <h1>Adding/Overwriting GRIB tables/parameters</h1>
-
 <p>
 The Grib1 reader uses a Table based on the site ID, sub-site ID, and version number from the data to read in a particular Table while Grib2 only has one parameter table. 
 Sometimes there is a need to add/overwrite Grib1 tables or to add/overwrite Grib2 parameters for the Grib Library. This process is not difficult.
