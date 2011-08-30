@@ -68,16 +68,16 @@ static public HTTPMethod Post(HTTPSession session) throws HTTPException
 static public HTTPMethod Options(HTTPSession session) throws HTTPException
     {return new HTTPMethod(HTTPSession.Methods.Options,session,null);}
 
-static public HTTPMethod Get(HTTPSession session, String uriencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Get,session,uriencoded);}
-static public HTTPMethod Head(HTTPSession session,String uriencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Head,session,uriencoded);}
-static public HTTPMethod Put(HTTPSession session, String uriencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Put,session,uriencoded);}
-static public HTTPMethod Post(HTTPSession session, String uriencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Post,session,uriencoded);}
-static public HTTPMethod Options(HTTPSession session, String uriencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Options,session,uriencoded);}
+static public HTTPMethod Get(HTTPSession session, String urlencoded) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Get,session,urlencoded);}
+static public HTTPMethod Head(HTTPSession session,String urlencoded) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Head,session,urlencoded);}
+static public HTTPMethod Put(HTTPSession session, String urlencoded) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Put,session,urlencoded);}
+static public HTTPMethod Post(HTTPSession session, String urlencoded) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Post,session,urlencoded);}
+static public HTTPMethod Options(HTTPSession session, String urlencoded) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Options,session,urlencoded);}
 
 //////////////////////////////////////////////////
 // Static fields
@@ -96,7 +96,7 @@ static public synchronized void setGlobalParameter(String name, Object value)
 
 HTTPSession session = null;
 HttpMethodBase method = null; // Current method
-String uriencoded = null;
+String urlencoded = null;
 List<Header> headers = new ArrayList<Header>();
 HashMap<String, Object> params = new HashMap<String, Object>();
 HttpState context = null;
@@ -126,37 +126,37 @@ Part[] multiparts = null;
  */
 
 @Urlencoded
-public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String uriencoded)
+public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String urlencoded)
         throws HTTPException
 {
     if (session == null)
         throw new HTTPException("HTTPMethod: no session object specified");
     this.session = session;
-    if(uriencoded == null) uriencoded = session.getURI();
-    if(uriencoded == null)
+    if(urlencoded == null) urlencoded = session.getURI();
+    if(urlencoded == null)
         throw new HTTPException("HTTPMethod: no url specified");
-    uriencoded = HTTPSession.removeprincipal(uriencoded);
-    this.uriencoded = uriencoded;
-    if(!sessionCompatible(uriencoded))
-        throw new HTTPException("HTTPMethod: session incompatible uriencoded");
+    urlencoded = HTTPSession.removeprincipal(urlencoded);
+    this.urlencoded = urlencoded;
+    if(!sessionCompatible(urlencoded))
+        throw new HTTPException("HTTPMethod: session incompatible urlencoded");
     this.session.addMethod(this);
 
     this.methodclass = m;
     switch (this.methodclass) {
     case Put:
-        this.method = new PutMethod(uriencoded);
+        this.method = new PutMethod(urlencoded);
         break;
     case Post:
-        this.method = new PostMethod(uriencoded);
+        this.method = new PostMethod(urlencoded);
         break;
     case Get:
-          this.method = new GetMethod(uriencoded);
+          this.method = new GetMethod(urlencoded);
         break;
     case Head:
-        this.method = new HeadMethod(uriencoded);
+        this.method = new HeadMethod(urlencoded);
         break;
     case Options:
-        this.method = new OptionsMethod(uriencoded);
+        this.method = new OptionsMethod(urlencoded);
         break;
     default:
         this.method = null;
@@ -196,7 +196,7 @@ public int execute() throws HTTPException
 {
     if (executed)
         throw new HTTPException("Method instance already executed");
-    if (uriencoded == null)
+    if (urlencoded == null)
         throw new HTTPException("No uri specified");
 
     try {

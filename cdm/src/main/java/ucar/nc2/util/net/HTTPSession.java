@@ -180,7 +180,7 @@ boolean closed = false;
 String identifier = "Session";
 String useragent = null;
 CredentialsProvider sessionProvider = null;
-String uriencoded = null;
+String urlencoded = null;
 
 /**
  * A session is encapsulated in an instance of the class HTTPSession.
@@ -231,10 +231,10 @@ public HTTPSession()
 }
 
 @Urlencoded
-protected void construct(String uriencoded)
+protected void construct(String urlencoded)
     throws HTTPException
 {
-
+    this.urlencoded = urlencoded;
     try {
         sessionClient = new HttpClient(connmgr);
         HttpClientParams clientparams = sessionClient.getParams();
@@ -257,7 +257,7 @@ protected void construct(String uriencoded)
 
 public String getURI()
 {
-    return this.uriencoded;
+    return this.urlencoded;
 }
 
 public void setUserAgent(String agent)
@@ -486,7 +486,7 @@ setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider pr
 public void
 setCredentialsProvider(CredentialsProvider provider)
 {
-    setCredentialsProvider(HTTPAuthScheme.BASIC,uriencoded,provider);
+    setCredentialsProvider(HTTPAuthScheme.BASIC,urlencoded,provider);
 }
 
 static synchronized public void

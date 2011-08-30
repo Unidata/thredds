@@ -63,7 +63,7 @@ package ucar.nc2.util.net;
     {
 	if(name != null) {
   	    for(HTTPAuthScheme s: HTTPAuthScheme.values()) {
-  	        if(name.equals(s.name())) return s;
+  	        if(name.equalsIgnoreCase(s.name())) return s;
 	    }
 	}
 	return null;
