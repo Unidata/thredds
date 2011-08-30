@@ -132,7 +132,9 @@ public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String urlencoded)
     if (session == null)
         throw new HTTPException("HTTPMethod: no session object specified");
     this.session = session;
-    if(urlencoded == null) urlencoded = session.getURI();
+
+    if(urlencoded == null)
+        urlencoded = session.getURI();
     if(urlencoded == null)
         throw new HTTPException("HTTPMethod: no url specified");
     urlencoded = HTTPSession.removeprincipal(urlencoded);
@@ -150,7 +152,7 @@ public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String urlencoded)
         this.method = new PostMethod(urlencoded);
         break;
     case Get:
-          this.method = new GetMethod(urlencoded);
+        this.method = new GetMethod(urlencoded);
         break;
     case Head:
         this.method = new HeadMethod(urlencoded);
@@ -242,13 +244,15 @@ public int execute() throws HTTPException
 public void close()
 {
     // try to release underlying resources
-    if (closed)
+    if (closed) {
+        System.err.println("HTTPMethod: attempt to close already closed method.");
         return;
+    }
     if (executed) {
         consumeContent();
-    } else
+    } else if(method != null)
         method.abort();
-    method.releaseConnection();
+    if(method != null) method.releaseConnection();
     closed = true;
     session.removeMethod(this);
 }

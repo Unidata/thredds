@@ -190,6 +190,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     super();
     long start = System.currentTimeMillis();
 
+    if(datasetURL.indexOf("://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1") >= 0) {
+        int x = 0;
+    }
     // canonicalize name
     String urlName = datasetURL; // actual URL uses http:
     this.location = datasetURL; // canonical name uses "dods:"

@@ -39,8 +39,10 @@ import org.apache.commons.httpclient.params.*;
 import org.apache.commons.httpclient.protocol.Protocol;
 import ucar.unidata.util.Urlencoded;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -403,36 +405,40 @@ static public String canonicalpath(String path)
 static public String
 removeprincipal(String u)
 {
-        String newuri = null;
-    try {
-        URI uri = new URI(u);
-        // rebuild the uri without the principal
-        newuri = new java.net.URI(uri.getScheme(),
-                                null,
-                                uri.getHost(),
-                                uri.getPort(),
-                                uri.getPath(),
-                                uri.getQuery(),
-                                uri.getFragment()).toASCIIString();
-    } catch (URISyntaxException use) {newuri=u;}
-        return newuri;
+    return setPrincipal(u,"");
 }
 
 static public String
-addprincipal(String u, String principal)
-    throws URISyntaxException
+setPrincipal(String u, String p)
 {
-    String newuri = null;
-URI uri = new java.net.URI(u);
-    // rebuild the uri without the specified principal
-    newuri = new java.net.URI(uri.getScheme(),
-                                principal,
-                                uri.getHost(),
-                                uri.getPort(),
-                                uri.getPath(),
-                                uri.getQuery(),
-                                uri.getFragment()).toASCIIString();
-    return newuri;
+
+    String newurl = null;
+    try {
+        URL url = new URL(u);
+        String protocol = url.getProtocol();
+        String principal = (p == null ? url.getUserInfo() : p);
+        String host = url.getHost();
+        int port = url.getPort();
+        String path = url.getPath();
+        String query = url.getQuery();
+        String ref = url.getRef();
+        if(principal != null && principal.length() == 0) principal = null;
+        if(path != null && path.length() == 0) path = null;
+        if(query != null && query.length() == 0) query = null;
+        if(ref != null && ref.length() == 0) ref = null;
+
+        protocol = protocol + "://";
+        principal = (principal == null ? "" : (principal + "@"));
+        String sport = (port <= 0 ? "" : (":"+port));
+        path = (path ==  null ? "" : path);
+        query = (query == null ? "" : "?" + query);
+        ref = (ref == null ? "" : "#" + ref);
+
+        // rebuild the uri
+        // (and leaving encoding in place)
+        newurl =   protocol + principal + host + sport + path + query + ref;
+    } catch (MalformedURLException use) {newurl=u;}
+    return newurl;
 }
 
 static public String
