@@ -270,13 +270,13 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine("raw scheme= " + raw.getScheme() + "\n auth= " + raw.getRawAuthority() + "\n path= " + raw.getRawPath() +
            "\n query= " + raw.getRawQuery() + "\n fragment= " + raw.getRawFragment()+"\n");
 
-      URI uri = new URI(raw.getScheme(), raw.getRawAuthority(),
+      URI url = new URI(raw.getScheme(), raw.getRawAuthority(),
               URIUtil.encodePath(raw.getRawPath()),
               URIUtil.encodeQuery(raw.getRawQuery()),
               raw.getRawFragment());
-      appendLine("encoded scheme= " + uri.getScheme() + "\n auth= " + uri.getAuthority() + "\n path= " + uri.getPath() +
-           "\n query= " + uri.getQuery() + "\n fragment= " + uri.getFragment()+"\n");
-      urlString = uri.toString();
+      appendLine("encoded scheme= " + url.getScheme() + "\n auth= " + url.getAuthority() + "\n path= " + url.getPath() +
+           "\n query= " + url.getQuery() + "\n fragment= " + url.getFragment()+"\n");
+      urlString = url.toString();
               */
 
       //urlString = URLnaming.escapeQuery(urlString);

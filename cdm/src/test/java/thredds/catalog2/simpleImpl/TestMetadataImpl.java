@@ -157,7 +157,7 @@ public class TestMetadataImpl extends TestCase
 //
 //    assertFalse( md1.isContainedContent() );
 //    assertTrue( md1.getTitle().equals( this.title ) );
-//    assertTrue( md1.getExternalReference().equals( this.uri ) );
+//    assertTrue( md1.getExternalReference().equals( this.url ) );
 //
 //    assertTrue( md2.isContainedContent() );
 //    assertTrue( md2.getContent().equals( this.content ) );

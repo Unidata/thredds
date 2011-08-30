@@ -579,8 +579,8 @@ public class GridController {
         InvMetadata metadata = (InvMetadata) list.get(0);
         String ncmlUrlName = metadata.getXlinkHref();
         try {
-          java.net.URI uri = ds.getParentCatalog().resolveUri(ncmlUrlName);
-          ncmlUrlName = uri.toString();
+          java.net.URI url = ds.getParentCatalog().resolveUri(ncmlUrlName);
+          ncmlUrlName = url.toString();
           if (debugOpen)
             System.out.println(" got NcML metadata= " + ncmlUrlName);
           ncfile = new NetcdfDataset(ncmlUrlName, urlString);

@@ -74,7 +74,7 @@ public interface ServiceBuilder extends ThreddsBuilder
   public String getPropertyValue( String name );
 
   /**
-   * Add a new Service object with the given name, type, and base uri to this
+   * Add a new Service object with the given name, type, and base url to this
    * Service returning a ServiceBuilder object to allow full construction and
    * modification of the new Service.
    *
@@ -94,7 +94,7 @@ public interface ServiceBuilder extends ThreddsBuilder
   public boolean removeService( ServiceBuilder serviceBuilder );
 
 //  /**
-//   * Add a new Service object with the given name, type, and base uri to this
+//   * Add a new Service object with the given name, type, and base url to this
 //   * Service at the index indicated and return a ServiceBuilder object. The
 //   * Service at the given and higher index (if any) are shifted right (their
 //   * index is increased). The ServiceBuilder object allows further

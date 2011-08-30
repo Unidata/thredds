@@ -76,7 +76,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
       throw new MalformedURLException(e.getMessage());
     }
 
-    // return new URL( uri.getScheme(), uri.getHost(), uri.getPort(), uri.getFile(), h);
+    // return new URL( url.getScheme(), url.getHost(), url.getPort(), url.getFile(), h);
   }
 
   public URLStreamHandler createURLStreamHandler(String protocol) {

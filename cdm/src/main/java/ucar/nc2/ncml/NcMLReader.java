@@ -245,7 +245,7 @@ public class NcMLReader {
       // the ncml probably refers to another dataset, but doesnt have to
       referencedDatasetUri = netcdfElem.getAttributeValue("location");
       if (referencedDatasetUri == null)
-        referencedDatasetUri = netcdfElem.getAttributeValue("uri");
+        referencedDatasetUri = netcdfElem.getAttributeValue("url");
     }
 
     NcMLReader reader = new NcMLReader();
@@ -344,7 +344,7 @@ public class NcMLReader {
     // the ncml probably refers to another dataset, but doesnt have to
     String referencedDatasetUri = netcdfElem.getAttributeValue("location");
     if (referencedDatasetUri == null)
-      referencedDatasetUri = netcdfElem.getAttributeValue("uri");
+      referencedDatasetUri = netcdfElem.getAttributeValue("url");
 
     NcMLReader reader = new NcMLReader();
     return reader.readNcML(ncmlLocation, referencedDatasetUri, netcdfElem, cancelTask);
@@ -1326,7 +1326,7 @@ public class NcMLReader {
     for (Element netcdfElemNested : ncList) {
       String location = netcdfElemNested.getAttributeValue("location");
       if (location == null)
-        location = netcdfElemNested.getAttributeValue("uri");
+        location = netcdfElemNested.getAttributeValue("url");
 
       String id = netcdfElemNested.getAttributeValue("id");
       String ncoords = netcdfElemNested.getAttributeValue("ncoords");

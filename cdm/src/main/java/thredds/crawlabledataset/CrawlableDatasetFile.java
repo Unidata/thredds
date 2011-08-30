@@ -77,16 +77,16 @@ public class CrawlableDatasetFile implements CrawlableDataset
     if ( path.startsWith( "file:" ) ) {
       path = path.substring(5);
     }
-    /*   URI uri;
+    /*   URI url;
       try {
-        uri = new URI( path );
+        url = new URI( path );
       } catch ( URISyntaxException e ) {
         String tmpMsg = "Bad URI syntax for path <" + path + ">: " + e.getMessage();
         log.debug( "CrawlableDatasetFile(): " + tmpMsg );
         throw new IllegalArgumentException( tmpMsg );
       }
       try {
-        this.file = new File( uri );
+        this.file = new File( url );
       } catch ( IllegalArgumentException e ) {
         String tmpMsg = "path= <" + path + ">: " + e.getMessage();
         log.debug( "CrawlableDatasetFile(): " + tmpMsg );

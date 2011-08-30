@@ -673,7 +673,7 @@ public class NCdumpW {
    * @param ncfile     write NcML for this file
    * @param os         write to this Writer. Must be using UTF-8 encoding (where applicable)
    * @param showCoords show coordinate variable values.
-   * @param uri        use this for the uri attribute; if null use getLocation(). // ??
+   * @param uri        use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException on write error
    */
   static public void writeNcML(NetcdfFile ncfile, java.io.Writer os, boolean showCoords, String uri) throws IOException {

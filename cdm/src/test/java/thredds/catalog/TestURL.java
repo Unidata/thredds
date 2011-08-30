@@ -71,7 +71,7 @@ public class TestURL extends TestCase {
   public void doURI(String u) {
     try {
       URI uri = new URI(u);
-      System.out.println("TestURI uri = " + uri.toString());
+      System.out.println("TestURI url = " + uri.toString());
       assert true;
     } catch (Exception e) {
       System.out.println("URI exception = "+e.getMessage());
@@ -83,7 +83,7 @@ public class TestURL extends TestCase {
     try {
       String encoded = URLEncoder.encode(u);
       URI uri = new URI(encoded);
-      System.out.println("TestURI uri encoded = " + uri.toString());
+      System.out.println("TestURI url encoded = " + uri.toString());
       assert true;
     } catch (Exception e) {
       System.out.println("URI exception = "+e.getMessage());
