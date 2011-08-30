@@ -33,47 +33,50 @@
 
 package ucar.nc2.util.net;
 
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.auth.*;
 
 
 /**
- * HttpAuthScheme defines an enum about the currently supported schemes.
+ * Provide a way for a Credentials object
+ * to act as a CredentialsProvider
  */
 
-
-// For some reason, I cannot declare the enum public
- enum HTTPAuthScheme
+public class HTTPCredentialsEnvelope implements CredentialsProvider
 {
-    NULL(null),
-    BASIC("Basic"),
-    DIGEST("Digest"),
-    KEYSTORE("Keystore"),
-    PROXY("Proxy");
+    Credentials creds = null;
+    String uri = null;
 
-    // Define the associated standard name
-    private final String name;
-
-    HTTPAuthScheme(String name)
+    public HTTPCredentialsEnvelope(Credentials creds)
     {
-        this.name = name;
-    }
+	this.creds = creds;
+    }     
 
-    public String getSchemeName()   { return name; }
- 
-    static public HTTPAuthScheme schemeForName(String name)
+    //Package local only
+    HTTPCredentialsEnvelope(String uri)
     {
-	if(name != null) {
-  	    for(HTTPAuthScheme s: HTTPAuthScheme.values()) {
-  	        if(name.equals(s.name())) return s;
-	    }
+	this.uri = uri;
+    }     
+
+    // Credentials Provider Interface
+
+    public Credentials getCredentials(AuthScheme scheme,
+                                      String host,
+                                      int port,
+                                      boolean proxy)
+	throws CredentialsNotAvailableException
+    {
+	if(creds == null) {
+	   HTTPAuthScheme thescheme =
+	        (proxy ? HTTPAuthScheme.PROXY
+                      : HTTPAuthScheme.schemeForName(scheme.getSchemeName()));
+	   HTTPAuthCreds authcreds = HTTPAuthCreds.findAuthCreds(thescheme,uri);
+	   creds = authcreds.getCredentials(thescheme,scheme,host,port);
 	}
-	return null;
+	if(creds == null)
+	    throw new CredentialsNotAvailableException();
+	return creds;
     }
 
-    static public HTTPAuthScheme fromAuthScope(String scheme)
-    {
-	if(scheme == null) return null;
-	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.BASIC)) return BASIC;
-	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.DIGEST)) return DIGEST;
-	return null;
-    }
+
 }

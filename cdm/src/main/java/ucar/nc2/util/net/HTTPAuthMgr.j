@@ -33,19 +33,8 @@
 
 package ucar.nc2.util.net;
 
-import java.io.IOException;
-import java.io.NotSerializableException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.auth.*;
-
-import static ucar.nc2.util.net.HTTPAuthStore.*;
 
 /**
  * HTTPAuthCredentials is an implementation of CredentialsProvider.
@@ -58,8 +47,8 @@ public class HTTPAuthCredentials implements CredentialsProvider
     HTTPSession session = null;
     HTTPMethod method = null;
     String principal = null;
-    HTTPAuthScheme authscheme = null;
-    HTTPAuthScheme proxyscheme = null;
+    HTTPAuthCreds authscheme = null;
+    HTTPAuthCreds proxyscheme = null;
 
 public HTTPAuthCredentials(HTTPMethod method,
 		           String principal,
@@ -76,10 +65,10 @@ public HTTPAuthCredentials(HTTPMethod method,
 
 // Entry points for e.g. EasySSLProtocolSocketFactory
 
-public HTTPAuthScheme
+public HTTPAuthCreds
 getAuthScheme() {return this.authscheme;}
 
-public HTTPAuthScheme
+public HTTPAuthCreds
 getProxyScheme() {return this.proxyscheme;}
 
 public String
@@ -106,29 +95,29 @@ public Credentials getCredentials(AuthScheme scheme,
         throw new CredentialsNotAvailableException("HTTPAuthCredentials.getCredentials: No proxy credentials available");
 
     if(!proxy) { // => authscheme
-	boolean isbasic = authscheme.getScheme() == HTTPAuthScheme.BASIC;
-        creds = (Credentials)authscheme.get(HTTPAuthScheme.CREDENTIALS);
+	boolean isbasic = authscheme.getScheme() == HTTPAuthCreds.BASIC;
+        creds = (Credentials)authscheme.get(HTTPAuthCreds.CREDENTIALS);
         if(creds == null) {
             // invoke the (real) credentials provider to get some credentials
-            cp = (CredentialsProvider) authscheme.get(HTTPAuthScheme.CREDENTIALSPROVIDER);
+            cp = (CredentialsProvider) authscheme.get(HTTPAuthCreds.CREDENTIALSPROVIDER);
             if(cp == null)
                 throw new CredentialsNotAvailableException("HTTPAuthCredentials.getCredentials: AuthStore did not specify credentials or credentials provider");
             // Use the incoming parameters
             creds = cp.getCredentials(scheme,host,port,proxy);
 	    // cache for next time
-            authscheme.insert(HTTPAuthScheme.CREDENTIALS,creds);
+            authscheme.insert(HTTPAuthCreds.CREDENTIALS,creds);
 	}
     } else { // => proxyscheme; Establish proxy credentials
         // See if we already have proper credentials
-        creds = (Credentials)proxyscheme.get(HTTPAuthScheme.CREDENTIALS);
+        creds = (Credentials)proxyscheme.get(HTTPAuthCreds.CREDENTIALS);
         if(creds == null) {
             // invoke the (real) credentials provider
-           cp = (CredentialsProvider)proxyscheme.get(HTTPAuthScheme.CREDENTIALSPROVIDER);
+           cp = (CredentialsProvider)proxyscheme.get(HTTPAuthCreds.CREDENTIALSPROVIDER);
            if(cp == null)
                throw new CredentialsNotAvailableException("HTTPAuthCredentials.getCredentials: AuthStore did not specify proxy credentials or credentials provider");
            creds = cp.getCredentials(scheme,host,port,proxy);
 	   // cache for later
-           proxyscheme.insert(HTTPAuthScheme.CREDENTIALS,creds);
+           proxyscheme.insert(HTTPAuthCreds.CREDENTIALS,creds);
         }
     }
     if(creds == null)

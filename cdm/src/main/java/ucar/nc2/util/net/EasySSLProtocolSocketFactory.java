@@ -31,22 +31,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.*;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Enumeration;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
-import org.apache.commons.httpclient.HttpClientError;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 import javax.net.ssl.*;
 
@@ -242,7 +235,7 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
     KeyStore keystore = null;
     KeyStore truststore = null;
     TrustManager[] trustmanagers = null;
-    HTTPAuthCredentials mgr = null;
+    HTTPCredentialsEnvelope envelope = null;
 
     String keypassword = null;
     String keypath = null;
@@ -252,20 +245,22 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
     try {
 
 if(UseAuthStore) {
-        // Get the HTTPAuthScheme
-	mgr =  (HTTPAuthCredentials)params.getParameter(HTTPAuthScheme.CREDENTIALSPROVIDER);
-	if(mgr == null) {
+        // Get the envelope
+	envelope =  (HTTPCredentialsEnvelope)params.getParameter(CredentialsProvider.PROVIDER);
+	if(envelope == null) {
 	    sslcontext = SSLContext.getInstance("SSL");
 	    sslcontext.init(null,null,null);
             return sslcontext;
 	}
 
-        HTTPAuthScheme scheme = mgr.getAuthScheme();
+	HTTPAuthCreds authcreds = new HTTPAuthCreds(HTTPAuthScheme.KEYSTORE);
+	if(authcreds == null)
+	    throw new HTTPException("Cannot locate keystore authorization information");
 
-        keypassword = (String)scheme.get(HTTPAuthScheme.KEYSTOREPASSWORD);
-        keypath = (String)scheme.get(HTTPAuthScheme.KEYSTOREPATH);
-        trustpassword = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPASSWORD);
-        trustpath = (String)scheme.get(HTTPAuthScheme.TRUSTSTOREPATH);
+        keypassword = (String)authcreds.get(HTTPAuthCreds.KEYSTOREPASSWORD);
+        keypath = (String)authcreds.get(HTTPAuthCreds.KEYSTOREPATH);
+        trustpassword = (String)authcreds.get(HTTPAuthCreds.TRUSTSTOREPASSWORD);
+        trustpath = (String)authcreds.get(HTTPAuthCreds.TRUSTSTOREPATH);
 
 } else {//!UseAuthStore
 
