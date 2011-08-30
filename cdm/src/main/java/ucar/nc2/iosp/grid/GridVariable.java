@@ -36,6 +36,7 @@ package ucar.nc2.iosp.grid;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
+import ucar.nc2.grib.table.GribTables;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -428,7 +429,7 @@ public class GridVariable {
     GridParameter param = lookup.getParameter(firstRecord);
     String unit = param.getUnit();
     if (unit == null) unit = "";
-    v.addAttribute(new Attribute("units", unit));
+    v.addAttribute(new Attribute("units", GribTables.cleanupUnits(unit)));
 
     v.addAttribute(new Attribute("long_name", makeLongName()));
     v.addAttribute(new Attribute("missing_value", new Float(lookup.getFirstMissingValue())));

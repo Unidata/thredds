@@ -10,7 +10,6 @@
       <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/timing/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../../cdm/target" />
     </content>
-    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="">
       <library>
@@ -25,6 +24,7 @@
     <orderEntry type="module" module-name="common" exported="" />
     <orderEntry type="module" module-name="bufr" />
     <orderEntry type="module" module-name="grib" />
+    <orderEntry type="module" module-name="opendap" />
     <orderEntry type="module" module-name="visad" />
     <orderEntry type="module-library" exported="">
       <library>

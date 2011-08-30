@@ -80,11 +80,16 @@ public class GribIndexToNC extends GridIndexToNC {
 
     } else if ( lookup instanceof Grib1GridTableLookup ) {
       Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
+      ncfile.addAttribute(null, new Attribute("Originating_center_id", ((Grib1GridTableLookup) lookup).getFirstCenterId()));
+      ncfile.addAttribute(null, new Attribute("Originating_subcenter_id", ((Grib1GridTableLookup) lookup).getFirstSubcenterId()));
+      ncfile.addAttribute(null, new Attribute("Table_version", ((Grib1GridTableLookup) lookup).getFirstTableVersion()));
+
       center = g1lookup.getFirstCenterName();
       subcenter = g1lookup.getFirstSubcenterName();
       ncfile.addAttribute(null, new Attribute("Originating_center", center));
-      if (subcenter != null)
-      ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
+       if (subcenter != null) {
+        ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
+      }
 
       String model = g1lookup.getModel();
       if (model != null)

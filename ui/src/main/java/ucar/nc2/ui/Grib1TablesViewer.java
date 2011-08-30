@@ -1,5 +1,6 @@
 package ucar.nc2.ui;
 
+import org.springframework.format.FormatterRegistry;
 import ucar.grib.GribResourceReader;
 import ucar.grib.NotSupportedException;
 import ucar.grib.grib1.GribPDSParamTable;
@@ -75,29 +76,13 @@ public class Grib1TablesViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         TableBean bean = (TableBean) codeTable.getSelectedBean();
         if (bean == null) return;
+        initTableDialog();
 
-        GribPDSParamTable wmo = null;
-        try {
-          wmo = GribPDSParamTable.getParameterTable(0, 0, bean.getVersion());
-        } catch (NotSupportedException e1) {
-          infoTA.setText(e1.toString());
-          infoWindow.showIfNotIconified();
-          return;
-        }
+        GribPDSParamTable wmo = GribPDSParamTable.getParameterTable(0, 0, bean.getVersion());
         if (wmo == null) {
           infoTA.setText("Cant find WMO version " + bean.getVersion());
           infoWindow.showIfNotIconified();
           return;
-        }
-
-         if (compareTableDialog == null) {
-          compareTableDialog = new Grib1TableCompareDialog( (Frame) null);
-          compareTableDialog.pack();
-          compareTableDialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
-             public void propertyChange(PropertyChangeEvent evt) {
-               compareTables((Grib1TableCompareDialog.Data) evt.getNewValue());
-             }
-           });
         }
 
         compareTableDialog.setTable1(new TableBean(wmo));
@@ -110,16 +95,7 @@ public class Grib1TablesViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         TableBean bean = (TableBean) codeTable.getSelectedBean();
         if (bean == null) return;
-
-         if (compareTableDialog == null) {
-          compareTableDialog = new Grib1TableCompareDialog( (Frame) null);
-          compareTableDialog.pack();
-          compareTableDialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
-             public void propertyChange(PropertyChangeEvent evt) {
-               compareTables((Grib1TableCompareDialog.Data) evt.getNewValue());
-             }
-           });
-        }
+        initTableDialog();
 
         List list = codeTable.getSelectedBeans();
         if (list.size() == 2) {
@@ -132,12 +108,34 @@ public class Grib1TablesViewer extends JPanel {
       }
     });
 
+    varPopup.addAction("Compare to all tables", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        TableBean bean = (TableBean) codeTable.getSelectedBean();
+        if (bean == null) return;
+        initTableDialog();
+
+        compareTableDialog.setTable1(bean);
+        compareTableDialog.setTable2(null);
+        compareTableDialog.setVisible(true);
+      }
+    });
+
     entryTable = new BeanTableSorted(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
     entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         EntryBean csb = (EntryBean) entryTable.getSelectedBean();
       }
     });
+
+    varPopup = new PopupMenu(entryTable.getJTable(), "Options");
+    varPopup.addAction("Show in all tables", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        EntryBean bean = (EntryBean) entryTable.getSelectedBean();
+        if (bean == null) return;
+        showAll(bean);
+      }
+    });
+
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -154,7 +152,7 @@ public class Grib1TablesViewer extends JPanel {
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (showTableDialog == null) {
-          showTableDialog = new Grib1TableDialog( (Frame) null);
+          showTableDialog = new Grib1TableDialog((Frame) null);
           showTableDialog.pack();
         }
         showTableDialog.setVisible(true);
@@ -177,6 +175,50 @@ public class Grib1TablesViewer extends JPanel {
 
   }
 
+  private void initTableDialog() {
+    if (compareTableDialog == null) {
+      compareTableDialog = new Grib1TableCompareDialog((Frame) null);
+      compareTableDialog.pack();
+      compareTableDialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent evt) {
+          compareTables((Grib1TableCompareDialog.Data) evt.getNewValue());
+        }
+      });
+    }
+  }
+
+  public void save() {
+    codeTable.saveState(false);
+    entryTable.saveState(false);
+    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+    //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
+    prefs.putInt("splitPos", split.getDividerLocation());
+    //prefs.putInt("splitPos2", split2.getDividerLocation());
+    // if (fileChooser != null) fileChooser.save();
+  }
+
+
+  public void setTable(String filename) throws IOException {
+    GribPDSParamTable table = new GribPDSParamTable(filename);
+    TableBean bean = new TableBean(table);
+    codeTable.addBean( bean);
+    codeTable.setSelectedBean(bean);
+  }
+
+  private void setEntries(GribPDSParamTable table) {
+    Map<Integer, GridParameter> map = table.getParameters();
+    ArrayList<Integer> params = new ArrayList<Integer>();
+    params.addAll(map.keySet());
+    Collections.sort(params);
+    java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
+    for (Integer key : params) {
+      beans.add(new EntryBean( map.get(key)));
+    }
+    entryTable.setBeans(beans);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+
   private void showFile(TableBean bean) {
     infoTA.setText("Table:" + bean.getPath() + "\n");
     InputStream is = GribResourceReader.getInputStream(bean.getPath());
@@ -189,23 +231,26 @@ public class Grib1TablesViewer extends JPanel {
     }
   }
 
-/*
-          1         2         3         4         5         6         7         8         9         10        11        12
-0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
-  1 |                                  Pressure |                   Pa  |                 PRES |
-  2  5
-*/
-  public void setFilename(String filename) throws IOException {
-    GribPDSParamTable table = new GribPDSParamTable(filename);
-    TableBean bean = new TableBean(table);
-    codeTable.addBean( bean);
-    codeTable.setSelectedBean(bean);
-  }
+  private void showAll(EntryBean ebean) {
+    Formatter f = new Formatter();
+    infoTA.setText("Entry:" + ebean.getNumber() + "\n");
+    for (Object bean : codeTable.getBeans()) {
+      TableBean tbean = (TableBean) bean;
+      GridParameter p = tbean.table.getLocalParameter(ebean.getNumber());
+      if (p != null) f.format(" %s from %s (%d)%n", p, tbean.table.getName(), tbean.table.getParameters().hashCode());
+    }
 
+    infoTA.appendLine( f.toString());
+    infoWindow.setVisible(true);
+  }
 
   private void compareTables(Grib1TableCompareDialog.Data data) {
     Formatter f = new Formatter();
-    compare(data.table1bean.table, data.table2bean.table, data, f);
+    if ( data.table2bean == null)
+      compareAll(data.table1bean.table, data, f);
+    else
+      compare(data.table1bean.table, data.table2bean.table, data, f);
+
     infoTA.setText(f.toString());
     infoTA.gotoTop();
     infoWindow.showIfNotIconified();
@@ -276,26 +321,43 @@ public class Grib1TablesViewer extends JPanel {
     return org1.equalsIgnoreCase(org2);
   }
 
-  public void save() {
-    codeTable.saveState(false);
-    entryTable.saveState(false);
-    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
-    prefs.putInt("splitPos", split.getDividerLocation());
-    //prefs.putInt("splitPos2", split2.getDividerLocation());
-    // if (fileChooser != null) fileChooser.save();
-  }
+  private void compareAll(GribPDSParamTable t1, Grib1TableCompareDialog.Data data, Formatter out) {
+    out.format("CompareAll %s%n", t1.toString());
+    Map<Integer, GridParameter> h1 = t1.getParameters();
+    List<Integer> keys = new ArrayList<Integer>(h1.keySet());
+    Collections.sort(keys);
 
-  public void setEntries(GribPDSParamTable table) {
-    Map<Integer, GridParameter> map = table.getParameters();
-    ArrayList<Integer> params = new ArrayList<Integer>();
-    params.addAll(map.keySet());
-    Collections.sort(params);
-    java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
-    for (Integer key : params) {
-      beans.add(new EntryBean( map.get(key)));
+    for (Integer key : keys) {
+      GridParameter d1 = h1.get(key);
+      out.format("%n--- %s%n", d1);
+
+      for (Object bean : codeTable.getBeans()) {
+        TableBean tbean = (TableBean) bean;
+        GridParameter d2 = tbean.table.getLocalParameter(d1.getNumber());
+        if (d2 != null) {
+          boolean descDiff = data.compareDesc &&  !equiv(d1.getDescription(), d2.getDescription());
+          boolean namesDiff = data.compareNames &&  !equiv(d1.getName(), d2.getName());
+          boolean unitsDiff = data.compareUnits &&  !equiv(d1.getUnit(), d2.getUnit());
+          boolean cunitsDiff = data.cleanUnits &&  !equiv(GribTables.cleanupUnits(d1.getUnit()), GribTables.cleanupUnits(d2.getUnit()));
+          boolean udunitsDiff = false;
+          if (data.udunits) {
+            String cu1 =  GribTables.cleanupUnits(d1.getUnit());
+            String cu2 =  GribTables.cleanupUnits(d2.getUnit());
+              try {
+                SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
+                udunitsDiff = !su1.isCompatible(cu2);
+              } catch (Exception e) {
+                udunitsDiff = false;
+              }
+          }
+
+          if (descDiff || namesDiff || unitsDiff || cunitsDiff || udunitsDiff ) {
+            out.format("    %s from %s%n", d2, tbean.table.getName());
+          }
+        }
+      }
     }
-    entryTable.setBeans(beans);
+
   }
 
   public class TableBean implements Comparable<TableBean> {

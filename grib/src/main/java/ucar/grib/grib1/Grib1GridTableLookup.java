@@ -119,26 +119,17 @@ public class Grib1GridTableLookup implements GridTableLookup {
    * gets parameter table, then grib1 parameter based on number.
    *
    * @param gr GridRecord
-   * @return Parameter.
+   * @return Parameter, or null if not found
    */
   public final GridParameter getParameter(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    try {
-      GribPDSParamTable pt;
-      pt = GribPDSParamTable.getParameterTable(ggr.getCenter(), ggr.getSubCenter(), ggr.getTableVersion());
-      return pt.getParameter(ggr.getParameterNumber());
-    } catch (NotSupportedException noSupport) {
-      logger.error("Grib1GridTableLookup: Parameter "+ ggr.getParameterNumber() +" not found for center"+
-          ggr.getCenter() +" subcenter "+ ggr.getSubCenter() +" table number "+ ggr.getTableVersion());
-      logger.error("NotSupportedException : " + noSupport);
-      return new GridParameter();
-    }
+    return ggr.getParameter();
   }
 
-  /**
+  /*
    * @param gr GridRecord
    * @return result
-   */
+   *
   public int[] getParameterId(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
     int[] result = new int[4];
@@ -147,18 +138,18 @@ public class Grib1GridTableLookup implements GridTableLookup {
     result[2] = ggr.getTableVersion(); //firstPDS.getTableVersion();
     result[3] = ggr.getParameterNumber();
     return result;
-  }
+  } */
 
-  /**
+  /*
    * gets the ProductDefinitionName.
    *
    * @param gr GridRecord
    * @return ProductDefinitionName
-   */
+   *
   public final String getProductDefinitionName(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
     return Grib1Tables.getTimeRangeIndicatorName( ggr.getTimeUnit()); // pretty bloody wierd
-  }
+  } */
 
   /**
    * gets the Source, type and status unknown for Grib1
@@ -238,6 +229,10 @@ public class Grib1GridTableLookup implements GridTableLookup {
         +" ("+  Integer.toString( firstPDSV.getCenter() ) +")";
   }
 
+  public final int getFirstCenterId() {
+    return firstPDSV.getCenter();
+  }
+
   /**
    * gets the SubcenterId.
    *
@@ -245,6 +240,10 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final int getFirstSubcenterId() {
     return firstPDSV.getSubCenter();
+  }
+
+  public final int getFirstTableVersion() {
+    return firstPDSV.getParameterTableVersion();
   }
 
   /**

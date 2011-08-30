@@ -1,0 +1,22 @@
+#
+# This is the resource for local Grib2 parameters that are grouped by site number.
+# The format of the file is to have site number on one line then the parameters
+# The fields are separated by at least 2 spaces, Name cannot have spaces, use _ . If
+# there no unit associated with parameter, use non-dim. Comments lines start with a #.
+# fields:
+# Center
+# Discipline Category ParameterNumber Name Unit Description
+8
+0   1   192  Weather  non-dim  Weather
+0   0   193  Apparent_Temperature    K   Apparent Temperature
+0  19   194  Slight_risk_convective_outlook  non-dim  Slight risk convective outlook
+0  19   195  Moderate_risk_convective_outlook  non-dim 	Moderate risk convective outlook
+0  19   196  High_risk_convective_outlook  non-dim  High risk convective outlook
+0  19   197  Probability_of_Tornado  non-dim  Probability of Tornado
+0  19   198  Probability_of_Hail  non-dim  Probability of Hail
+0  19   199  Probability_of_Damaging_Winds   non-dim  Probability of Damaging Winds
+0  19   200  Probability_of_Extreme_Tornado  non-dim  Probability of Extreme Tornado
+0  19   201  Probability_of_Extreme_Hail  non-dim  Probability of Extreme Hail
+0  19   202  Probability_of_Extreme_Damaging_Winds  non-dim  Probability of Extreme Damaging Winds
+0  19   203  Total_Probability_of_Severe_Thunderstorms   non-dim  Total Probability of Severe Thunderstorms
+0  19   204  Total_Probability_of_Extreme_Severe_Thunderstorms   non-dim  Total Probability of Extreme Severe Thunderstorms

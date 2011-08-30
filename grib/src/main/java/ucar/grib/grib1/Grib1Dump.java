@@ -497,18 +497,17 @@ public final class Grib1Dump {
     //pds.getReferenceTime() );
     ps.println("            TimeRangeIndicator : " + pdsv.getTimeRangeIndicator());
     ps.println("            Parameter Category : -1 Meteorological Parameters");
-    try {
-      int pn = pdsv.getParameterNumber();
-      GribPDSParamTable parameter_table = GribPDSParamTable.getParameterTable(
-              center, subCenter, pdsv.getParameterTableVersion());
+
+    int pn = pdsv.getParameterNumber();
+    GribPDSParamTable parameter_table = GribPDSParamTable.getParameterTable(center, subCenter, pdsv.getParameterTableVersion());
+    if (parameter_table != null) {
       GridParameter parameter = parameter_table.getParameter(pn);
 
       ps.println("                Parameter Name : "
               + pn + " " + parameter.getName() + " " + parameter.getDescription());
       ps.println("               Parameter Units : " + parameter.getUnit());
-    } catch (NotSupportedException nse) {
-      ps.println("NotSupportedException caught");
     }
+
     //ps.println("                Reference Time : " + dateFormat.format( pds.getBaseTime()));
     long refTime = pdsv.getReferenceTime();
     calendar.setTimeInMillis(refTime);
@@ -549,15 +548,21 @@ public final class Grib1Dump {
     f.format("            Originating Center : (%d) %s%n", center, Grib1Tables.getCenter_idName(center));
     f.format("        Originating Sub-Center : (%d) %s%n", subCenter, Grib1Tables.getSubCenter_idName(center, subCenter));
     f.format("               Parameter_table : center=%d subcenter=%d tableVersion=%d%n", center, subCenter, pdsv.getParameterTableVersion());
-    try {
-      int pn = pdsv.getParameterNumber();
-      GribPDSParamTable parameter_table = GribPDSParamTable.getParameterTable(center, subCenter, pdsv.getParameterTableVersion());
+
+    int pn = pdsv.getParameterNumber();
+    GribPDSParamTable parameter_table = GribPDSParamTable.getParameterTable(center, subCenter, pdsv.getParameterTableVersion());
+    if (parameter_table != null) {
       GridParameter parameter = parameter_table.getParameter(pn);
-      f.format("                Parameter Name : %d %s %s%n", pn, parameter.getName(), parameter.getDescription());
-      f.format("               Parameter Units : %s%n", parameter.getUnit());
-    } catch (NotSupportedException nse) {
+      if (parameter != null) {
+        f.format("                Parameter Name : %d %s %s%n", pn, parameter.getName(), parameter.getDescription());
+        f.format("               Parameter Units : %s%n", parameter.getUnit());
+      } else {
+        f.format("               Parameter %d in table %d %d %d NOT FOUND%n", pn, center, subCenter, pdsv.getParameterTableVersion());
+      }
+    } else {
       f.format("               Parameter_table : %d %d %d NOT FOUND%n", center, subCenter, pdsv.getParameterTableVersion());
     }
+
     f.format("                Reference Time : %s%n", dateFormat.format(pdsv.getReferenceDate()));
     f.format("                    Time Units : %s%n", Grib1Tables.getTimeUnit(pdsv.getTimeUnit(), false));
     f.format("          Time Range Indicator : (%d) %s%n", pdsv.getTimeRangeIndicator(), Grib1Tables.getTimeRange(pdsv.getTimeRangeIndicator()));

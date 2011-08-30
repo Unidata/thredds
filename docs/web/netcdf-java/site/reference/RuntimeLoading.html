@@ -40,11 +40,11 @@ dl {margin: 10px 5px 5px 15px;)
 
 </pre>
 
-<h3>Register a GRIB1 or GRIB2 Table:</h3>
+<h3>Register a GRIB1 or GRIB2 Lookup Table:</h3>
 <pre wrap=""> <strong> ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup</strong>( String filename);
   <strong>ucar.grib.grib2.ParameterTable.addParametersUser</strong>( String filename);</pre>
-<p wrap="">  The 
-table must follow the GRIB1 and GRIB2 <a href="http://www.unidata.ucar.edu/software/decoders/grib/javadoc/Parameters.txt">table formats</a>, respectively.</p>
+<h3>Register a GRIB1  Table (version 4.3):</h3>
+<pre wrap=""> <strong> ucar.grib.grib1.GribPDSParamTable.addParameterTable(int center, int subcenter, int tableVersion, String filename)</strong></pre>
 <h3>Register a BUFR Table lookup:</h3>
 <pre wrap=""> <strong> ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile</strong>( String filename) throws throws FileNotFoundException;</pre>
 <p wrap=""> The 
@@ -57,26 +57,27 @@ table must follow the GRIB1 and GRIB2 <a href="http://www.unidata.ucar.edu/softw
  &lt;nj22Config&gt;
 
 <strong>1)</strong> &lt;<strong>ioServiceProvider</strong>  class="edu.univ.ny.stuff.FooFiles"/&gt;
- 
 <strong>2)</strong> &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;
- 
 <strong>3)</strong> &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type=&quot;vertical&quot; class="my.stuff.atmosSigmaLog"/&gt;
- 
 <strong>4)</strong> &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;
+<strong>5)</strong> &lt;<strong>grib1Table</strong> center="58" subcenter="-1" version="128" filename="C:/grib/tables/ons288.xml"/&gt;
+<strong></strong>
 
-<strong>5)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/&gt;
-
-<strong>6)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters&quot; /&gt;
-<strong>7)</strong> &lt;<strong>bufrtable</strong> filename="C:/my/files/lookup.txt&quot; /&gt;
+<strong>6)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/grib/tables/userlookup.lst"/&gt;
+<strong>7)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/grib/tables/grib2userparameters&quot; /&gt;
+<strong>8)</strong> &lt;<strong>bufrtable</strong> filename="C:/my/files/lookup.txt&quot; /&gt;
+9) &lt;grib1Table strict=&quot;false&quot;/&gt;
 &lt;/nj22Config&gt;</pre>
 <ol>
   <li>Loads an <strong>IOServiceProvider</strong> with the given class name</li>
   <li> Loads a <strong>CoordSysBuilderIF</strong> with the given class name, which looks for the given <strong>Convention</strong> attribute value. </li>
   <li>Loads a <strong>CoordTransBuilderIF</strong> with the given class name, which looks for the given <strong>transformName </strong>in the dataset. The type must be <em>vertical</em> or <em>projection</em>. </li>
   <li>Loads a <strong>TypedDatasetFactoryIF</strong> with the given class name. Currently supported datatypes are <em>Grid, Point, Station, Trajectory </em>and<em> Radial</em>. Others will be added from the enumeration in <strong>thredds.catalog.DataType</strong>.</li>
-  <li>Load a <a href="GribTables.html">GRIB-1 parameter table</a></li>
-  <li>Load a <a href="GribTables.html">GRIB-2 parameter table</a>.</li>
-  <li>Load a <a href="BufrTables.html">BUFR table lookup</a> file </li>
+  <li>Load a <a href="GribTables.html">GRIB-1 parameter  table</a> (as of version 4.3)</li>
+  <li>Load a <a href="GribTables.html">GRIB-1 parameter lookup table</a></li>
+  <li>Load a <a href="GribTables.html">GRIB-2 parameter lookup table</a>.</li>
+  <li>Load a <a href="BufrTables.html">BUFR table lookup</a> file</li>
+  <li>Turn <a href="GribTables.html#strict">strict GRIB1 table handling</a> off. </li>
 </ol>
 <p>There are several ways pass the XML to library. From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
 <pre>  // Example 1: read from file

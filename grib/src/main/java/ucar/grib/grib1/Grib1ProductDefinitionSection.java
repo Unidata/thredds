@@ -45,6 +45,7 @@ package ucar.grib.grib1;
 import ucar.grib.*;
 
 import ucar.nc2.iosp.grid.GridParameter;
+import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -161,11 +162,6 @@ public final class Grib1ProductDefinitionSection {
    * Identification of Generating Process.
    */
   private final int typeGenProcess;
-
-  /**
-   * See GribPDSParamTable class for details.
-   */
-  private final GribPDSParamTable parameter_table;
 
   /**
    * ensemble products have more information.
@@ -405,8 +401,8 @@ public final class Grib1ProductDefinitionSection {
     baseTime = calendar.getTime();
     refTime = calendar.getTimeInMillis();
 
-    parameter_table = GribPDSParamTable.getParameterTable(center_id, subcenter_id, table_version);
-    parameter = parameter_table.getParameter(parameterNumber);
+    GribPDSParamTable table = GribPDSParamTable.getParameterTable(center_id, subcenter_id, table_version);
+    parameter = (table == null) ? null : table.getParameter(parameterNumber);
     Grib1Pds gpv = pdsVars;
     if (false && gpv.isEnsemble()) {
       if ((center_id == 7) && (subcenter_id == 2)) {  // ensemble product
@@ -499,22 +495,6 @@ public final class Grib1ProductDefinitionSection {
    */
   public final int getTypeGenProcess() {
     return typeGenProcess;
-  }
-
-  /**
-   * Generating Type Process Name.
-   * ON388 - TABLE A.
-   * Generating Process or Model.
-   * from Originating Center 7 (USNWS NCEP).
-   * GRIB1 - PDS Octet 6.
-   * Revised 12/15/2005.
-   *
-   * @param typeGenProcess
-   * @return typeGenProcessName
-   * @deprecated
-   */
-  public static final String getTypeGenProcessName(String typeGenProcess) {
-    return getTypeGenProcessName(Integer.parseInt(typeGenProcess));
   }
 
   /**
@@ -830,398 +810,18 @@ public final class Grib1ProductDefinitionSection {
     return grid_id;
   }
 
-  /**
-   * Name of Identification of center .
-   *
-   * @return Center Name as String
-   * @deprecated
-   */
-  public final String getCenter_idName() {
-    return getCenter_idName(center_id);
+  public final String getCenterName() {
+    return CommonCodeTable.getCenterName(center_id, 1);
   }
 
-  /**
-   * _more_
-   *
-   * @param center _more_
-   * @return _more_
-   * @deprecated
-   */
-  private static String getCenter_idName(int center) {
-
-    switch (center) {
-
-      case 0:
-        return "WMO Secretariat";
-
-      case 1:
-      case 2:
-        return "Melbourne";
-
-      case 4:
-      case 5:
-      case 6:
-        return "Moscow";
-
-      case 7:
-        return "US National Weather Service (NCEP)";
-
-      case 8:
-        return "US National Weather Service (NWSTG)";
-
-      case 9:
-        return "US National Weather Service (other)";
-
-      case 10:
-      case 11:
-        return "Cairo (RSMC/RAFC)";
-
-      case 12:
-      case 13:
-        return "Dakar (RSMC/RAFC)";
-
-      case 14:
-      case 15:
-        return "Nairobi (RSMC/RAFC)";
-
-      case 16:
-        return "Atananarivo (RSMC)";
-
-      case 17:
-      case 18:
-      case 19:
-        return "Tunis Casablanca (RSMC)";
-
-      case 20:
-        return "Las Palmas (RAFC)";
-
-      case 21:
-        return "Algiers (RSMC)";
-
-      case 22:
-        return "Lagos (RSMC)";
-
-      case 23:
-        return "Mozambique (NMC)";
-
-      case 24:
-        return "Pretoria (RSMC)";
-
-      case 25:
-        return "La Reunion (RSMC)";
-
-      case 26:
-      case 27:
-        return "Khabarovsk (RSMC)";
-
-      case 28:
-      case 29:
-        return "New Delhi (RSMC/RAFC)";
-
-      case 30:
-      case 31:
-        return "Novosibirsk (RSMC)";
-
-      case 32:
-        return "Tashkent (RSMC)";
-
-      case 33:
-        return "Jeddah (RSMC)";
-
-      case 34:
-      case 35:
-        return "Tokyo (RSMC), Japan Meteorological Agency";
-
-      case 36:
-        return "Bangkok";
-
-      case 37:
-        return "Ulan Bator";
-
-      case 38:
-      case 39:
-        return "Beijing (RSMC)";
-
-      case 40:
-        return "Seoul";
-
-      case 41:
-      case 42:
-        return "Buenos Aires (RSMC/RAFC)";
-
-      case 43:
-      case 44:
-        return "Brasilia (RSMC/RAFC)";
-
-      case 45:
-        return "Santiago";
-
-      case 46:
-        return "Brazilian Space Agency - INPE";
-
-      case 47:
-        return "Columbia (NMC)";
-
-      case 48:
-        return "Ecuador (NMC)";
-
-      case 49:
-        return "Peru (NMC)";
-
-      case 50:
-        return "Venezuela (NMC)";
-
-      case 51:
-        return "Miami (RSMC/RAFC)";
-
-      case 52:
-        return "Miami RSMC, National Hurricane Center";
-
-      case 53:
-      case 54:
-        return "Montreal (RSMC)";
-
-      case 55:
-        return "San Francisco";
-
-      case 56:
-        return "ARINC Center";
-
-      case 57:
-        return "U.S. Air Force - Global Weather Center";
-
-      case 58:
-        return "U.S. Navy Fleet Numerical Meteorology and Oceanography Center";
-
-      case 59:
-        return "The NOAA Forecast Systems Laboratory";
-
-      case 60:
-        return "National Centre for Atmospheric Research (NCAR)";
-
-      case 61:
-        return "Service ARGOS - Landover, MD, USA";
-
-      case 62:
-        return "US Naval Oceanographic Office";
-
-      case 64:
-        return "Honolulu";
-
-      case 65:
-      case 66:
-        return "Darwin (RSMC)";
-
-      case 67:
-        return "Melbourne (RSMC)";
-
-      case 69:
-      case 70:
-        return "Wellington (RSMC/RAFC)";
-
-      case 71:
-        return "Nadi (RSMC)";
-
-      case 72:
-        return "Singapore";
-
-      case 73:
-        return "Malaysia (NMC)";
-
-      case 74:
-      case 75:
-        return "UK Meteorological Office Bracknell (RSMC)";
-
-      case 76:
-        return "Moscow (RSMC/RAFC)";
-
-      case 78:
-      case 79:
-        return "Offenbach (RSMC)";
-
-      case 80:
-      case 81:
-        return "Rome (RSMC)";
-
-      case 82:
-      case 83:
-        return "Norrkoping";
-
-      case 84:
-      case 85:
-        return "French Weather Service - Toulouse (RSMC)";
-
-      case 86:
-        return "Helsinki";
-
-      case 87:
-        return "Belgrade";
-
-      case 88:
-        return "Oslo";
-
-      case 89:
-        return "Prague";
-
-      case 90:
-        return "Episkopi";
-
-      case 91:
-        return "Ankara";
-
-      case 92:
-        return "Frankfurt/Main (RAFC)";
-
-      case 93:
-        return "London (WAFC)";
-
-      case 94:
-        return "Copenhagen";
-
-      case 95:
-        return "Rota";
-
-      case 96:
-        return "Athens";
-
-      case 97:
-        return "European Space Agency (ESA)";
-
-      case 98:
-        return "European Center for Medium-Range Weather Forecasts (RSMC)";
-
-      case 99:
-        return "De Bilt";
-
-      case 100:
-        return "Brazzaville";
-
-      case 101:
-        return "Abidjan";
-
-      case 102:
-        return "Libyan Arab Jamahiriya (NMC)";
-
-      case 103:
-        return "Madagascar (NMC)";
-
-      case 104:
-        return "Mauritius (NMC)";
-
-      case 105:
-        return "Niger (NMC)";
-
-      case 106:
-        return "Seychelles (NMC)";
-
-      case 107:
-        return "Uganda (NMC)";
-
-      case 108:
-        return "Tanzania (NMC)";
-
-      case 109:
-        return "Zimbabwe (NMC)";
-
-      case 110:
-        return "Hong-Kong";
-
-      case 131:
-        return "Sri Lanka (NMC)";
-
-      case 210:
-        return "Frascati (ESA/ESRIN)";
-
-      case 211:
-        return "Lanion";
-
-      case 212:
-        return "Lisboa";
-
-      case 213:
-        return "Reykjavik";
-
-      case 254:
-        return "EUMETSAT Operation Centre";
-
-      default:
-        return "Unknown";
-    }
-
-  }  // end getCenter_idName
-
-  /**
-   * SubCenter as int.
-   *
-   * @return subCenter
-   * @deprecated
-   */
   public final int getSubCenter() {
     return subcenter_id;
   }
 
-  /**
-   * SubCenter as String.
-   *
-   * @param center
-   * @return subCenter
-   * @deprecated
-   */
-  public final String getSubCenter_idName(int center) {
-    if (center_id == 7) {  //NWS
-      switch (center) {
-
-        case 0:
-          return "WMO Secretariat";
-
-        case 1:
-          return "NCEP Re-Analysis Project";
-
-        case 2:
-          return "NCEP Ensemble Products";
-
-        case 3:
-          return "NCEP Central Operations";
-
-        case 4:
-          return "Environmental Modeling Center";
-
-        case 5:
-          return "Hydrometeorological Prediction Center";
-
-        case 6:
-          return "Marine Prediction Center";
-
-        case 7:
-          return "Climate Prediction Center";
-
-        case 8:
-          return "Aviation Weather Center";
-
-        case 9:
-          return "Storm Prediction Center";
-
-        case 10:
-          return "Tropical Prediction Center";
-
-        case 11:
-          return "NWS Techniques Development Laboratory";
-
-        case 12:
-          return "NESDIS Office of Research and Applications";
-
-        case 13:
-          return "FAA";
-
-        case 14:
-          return "NWS Meteorological Development Laboratory";
-
-        case 15:
-          return " The North American Regional Reanalysis (NARR) Project";
-      }
-    }
-    return getCenter_idName(center);
+  public final String getSubCenterName() {
+    return CommonCodeTable.getSubCenterName(center_id, subcenter_id);
   }
+
 
   /**
    * gets the Table version as a int.
@@ -1260,7 +860,7 @@ public final class Grib1ProductDefinitionSection {
    * @deprecated
    */
   public final String getType() {
-    return parameter.getName();
+    return (parameter == null) ? "" : parameter.getName();
   }
 
   /**
@@ -1270,7 +870,7 @@ public final class Grib1ProductDefinitionSection {
    * @deprecated
    */
   public final String getDescription() {
-    return parameter.getDescription();
+    return (parameter == null) ? "" : parameter.getDescription();
   }
 
   /**
@@ -1280,7 +880,7 @@ public final class Grib1ProductDefinitionSection {
    * @deprecated
    */
   public final String getUnit() {
-    return parameter.getUnit();
+    return (parameter == null) ? "" : parameter.getUnit();
   }
 
   /**
@@ -1373,15 +973,15 @@ public final class Grib1ProductDefinitionSection {
     return p2;
   }
 
-  /**
+  /*
    * Get the parameter for this pds.
    *
    * @return parameter
    * @deprecated
-   */
+   *
   public final GridParameter getParameter() {
     return parameter;
-  }
+  } */
 
   /**
    * gets the time unit ie hour.

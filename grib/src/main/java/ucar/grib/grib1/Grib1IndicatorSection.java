@@ -119,9 +119,9 @@ public final class Grib1IndicatorSection {
             // skip the grib2 record
             raf.seek( raf.getFilePointer() + gribLength -4 );
             length = 16;
+
         } else {
-            throw new NotSupportedException("GRIB edition " + edition
-                                            + " is not yet supported");
+            throw new NotSupportedException("GRIB edition " + edition + " is not supported");
         }
     }  // end Grib1IndicatorSection
 

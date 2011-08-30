@@ -249,21 +249,17 @@ public final class GribGridRecord implements GridRecord {
     return paramDesc;
   }
 
-  private GridParameter getParameter() {
+  public GridParameter getParameter() {
     GridParameter p;
-      if (edition == 2) {
-        Grib2Pds pds2 = (Grib2Pds) pds;
-        p = ParameterTable.getParameter(discipline, pds2.getParameterCategory(), pds.getParameterNumber());
+    if (edition == 2) {
+      Grib2Pds pds2 = (Grib2Pds) pds;
+      p = ParameterTable.getParameter(discipline, pds2.getParameterCategory(), pds.getParameterNumber());
 
-      } else {
-        GribPDSParamTable pt = null;
-        try {
-          pt = GribPDSParamTable.getParameterTable(center, subCenter, tableVersion);
-        } catch (NotSupportedException e) {
-          logger.error("Failed to get Parameter name for " + this);
-        }
-        p = pt.getParameter( pds.getParameterNumber());
-      }
+    } else {
+      GribPDSParamTable pt = GribPDSParamTable.getParameterTable(center, subCenter, tableVersion);
+      p = (pt == null) ? null : pt.getParameter( pds.getParameterNumber());
+      if (p == null) p = new GridParameter(center, subCenter, tableVersion, pds.getParameterNumber());  // fake
+    }
 
     return p;
   }

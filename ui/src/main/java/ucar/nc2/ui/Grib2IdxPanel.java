@@ -112,7 +112,7 @@ public class Grib2IdxPanel extends JPanel {
       }
     });
 
-    varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("FileBean"), false);
+    varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false);
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
 
     varPopup.addAction("Show Variable", new AbstractAction() {

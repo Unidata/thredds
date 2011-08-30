@@ -62,6 +62,14 @@ public class GridParameter {
     this.unit = unit;
   }
 
+  // unkown param
+  public GridParameter(int center, int subcenter, int version, int number) {
+    this.number = number;
+    name = "undefined";
+    description = "Unknown-C"+ center + "-S"+ subcenter + "-V"+ version + ":"+number;
+    unit = "undefined";
+  }
+
   public GridParameter(int number, String name, String description, String unit, String cf_name) {
     this.number = number;
     this.name = name;
@@ -151,30 +159,29 @@ public class GridParameter {
             '}';
   }
 
-  /**
-   * Check for equality
-   *
-   * @param o the object in question
-   * @return true if has the same parameters
-   */
+  @Override
   public boolean equals(Object o) {
-    if ((o == null) || !(o instanceof GridParameter)) {
-      return false;
-    }
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
     GridParameter that = (GridParameter) o;
-    return (number == that.number) && name.equals(that.name)
-            && description.equals(that.description)
-            && unit.equals(that.unit);
+
+    if (number != that.number) return false;
+    if (cf_name != null ? !cf_name.equals(that.cf_name) : that.cf_name != null) return false;
+    if (description != null ? !description.equals(that.description) : that.description != null) return false;
+    if (name != null ? !name.equals(that.name) : that.name != null) return false;
+    if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+
+    return true;
   }
 
-  /**
-   * Generate a hash code.
-   *
-   * @return the hash code
-   */
+  @Override
   public int hashCode() {
-    return number + name.hashCode() + description.hashCode() + unit.hashCode();
+    int result = number;
+    result = 31 * result + (name != null ? name.hashCode() : 0);
+    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + (unit != null ? unit.hashCode() : 0);
+    result = 31 * result + (cf_name != null ? cf_name.hashCode() : 0);
+    return result;
   }
-
-
 }

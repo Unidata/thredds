@@ -44,7 +44,7 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Read and process WMO grib code tables, in their standard XML format
+ * Read and process WMO grib-2 code tables, in their standard XML format
  *
  * @author caron
  * @since Jul 31, 2010

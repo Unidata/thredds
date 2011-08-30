@@ -4,6 +4,13 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  2:(2011-xx-xx)
+  grib1 table refactor
+  split common out - will move code to idv
+  calendar dates - pass two
+  bring BUFR, WMO common code tables up to date
+  embedded BUFR tables
+  opendap module refactor - now depends on cdm
+  move to github
   clean up grib build
   split visad dependent code into a seperate module, build visadCdm.jar
   hdf-eos : check if dimension already exists

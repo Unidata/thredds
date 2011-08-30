@@ -130,10 +130,6 @@
              <string>text</string> 
              <string>compareUnits</string> 
             </void> 
-            <void method="setProperty"> 
-             <string>selected</string> 
-             <boolean>true</boolean> 
-            </void> 
             <void property="name"> 
              <string>compareUnits</string> 
             </void> 
@@ -249,10 +245,6 @@
             <void method="setProperty"> 
              <string>text</string> 
              <string>cleanUnits</string> 
-            </void> 
-            <void method="setProperty"> 
-             <string>selected</string> 
-             <boolean>true</boolean> 
             </void> 
             <void property="name"> 
              <string>cleanUnits</string> 

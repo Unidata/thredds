@@ -89,7 +89,7 @@ public class Grib1TableCompareDialog extends JDialog {
 
   public void setTable2(Grib1TablesViewer.TableBean bean) {
     this.table2bean = bean;
-    table2.setText(bean.getPath());
+    table2.setText(bean == null ? " all" : bean.getPath());
   }
 
   private void fileBrowserActionPerformed(ActionEvent e) {
@@ -158,7 +158,6 @@ public class Grib1TableCompareDialog extends JDialog {
 
         //---- compareUnits ----
         compareUnits.setText("compareUnits");
-        compareUnits.setSelected(true);
 
         //---- compareNames ----
         compareNames.setText("compareNames");
@@ -196,7 +195,6 @@ public class Grib1TableCompareDialog extends JDialog {
 
         //---- cleanUnits ----
         cleanUnits.setText("cleanUnits");
-        cleanUnits.setSelected(true);
 
         //---- udUnits ----
         udUnits.setText("udUnits");
