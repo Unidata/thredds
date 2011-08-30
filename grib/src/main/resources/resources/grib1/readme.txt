@@ -46,3 +46,8 @@ Notes for grib-1 tables
 
  8/28/2011 use afwa.tab for 57-1-2
    - remove all entries in standard section
+
+ 8/29/2011
+   - waiting for ncep
+   - Bill Anderson contacted me from fnmoc
+   - put out call for grib1 example files.

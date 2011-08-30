@@ -1,90 +1,67 @@
 <html>
 <head>
-<title>Adding/Overwriting GRIB tables/parameters</title>
+<title>GRIB Tables</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+.style1 {font-weight: bold}
+</style>
 </head>
 
 <body>
-<h1>Writing GRIB files</h1>
-<p>Assuming that you want generic software like the netCDF-Java library to be able to read the GRIB filkes that you write, the following are best practices.</p>
-<p><strong>Encoding the center and subcenter id</strong></p>
-<p>You must encode a center and subcenter id, in order to correctly match the tables used. If there is no subcnter, I would use id =0 (&quot;no subcenter:), but 255 is acceptable (&quot;missing&quot;).</p>
-<p><strong>Encoding the version number</strong></p>
-<p>If you are only using WMO standard tables (all parameter ids &lt; 128) then you should use version = 1, 2, or 3, corresponding to the WMO standard table version. (Im not sure if they are backwards compatible. <a href="ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf">Current version</a> is 3). This is supposed to be the case for  <em>international exchange</em> of GRIB messages.</p>
-<p>If you are using non-standard (aka <em>local</em>) parameters, then you should use a version number 128-254 (see using local tables).</p>
-<p><strong>Using local tables</strong></p>
-<p>If you need to use local parameters, you must carefully manage<br>
-</p>
+<h1> GRIB Tables</h1>
+<p>The following assumes that you want generic software like the netCDF-Java library to be able to correctly read the GRIB files that you write, or need to read.</p>
+<h2>Writing Grib-1</h2>
+<h3><strong>Encoding the center (octet 5) and subcenter id</strong> (octet 26)</h3>
+<p>You must encode a center and subcenter id, in order for software to correctly match the tables used. If there is no subcenter in use,  use id =0 (&quot;no subcenter:), although 255 (&quot;missing&quot;) is acceptable but ambiguous. </p>
+<h3><strong>Encoding the version number (octet 4)</strong></h3>
+<p>If you are only using WMO standard tables (all parameter ids &lt; 128) then you should use version number = 1, 2, or 3, corresponding to the WMO standard table version. (Im not sure if they are backwards compatible) The <a href="ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf">Current WMO GRIB-1 table version</a> is 3. Using only parameters from the standard tables is best practice for the <em>international exchange</em> of GRIB messages.</p>
+<p>If you are using non-standard (aka <em>local</em>) parameters, then you should use a version number in the range 128-254.</p>
+<h3><strong>Using local tables</strong></h3>
+<p>If you  use local parameters, you must do the following:</p>
+<ol>
+  <li>You must own the center id, or own a subcenter id within the center, so that you can version your tables.</li>
+  <li>You must correctly version your local table number. If your local table changes in a way that is not backwards compatible, you must change the version number. </li>
+  <li>You must publish your local tables at some authoritative place, in a machine readable format. You must mantain these indefinitely. </li>
+  <li>You must put the correct center, subcenter and version number into each GRIB message.</li>
+</ol>
+<p>Best practice for local table use includes the following:</p>
+<ol>
+  <li>Use a version number between 128-254.</li>
+  <li>Do not override any entries in the WMO standard tables, ie, with parameter numbers less than 128.</li>
+  <li>There are no standards for publishing your tables, but any fixed column ASCII, CSV, or XML format is ok. Follow the <a href="http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.xml">NCAR DSS format</a> if you like. Do not use HTML, PDF, MS Word etc, since these are not machine readable formats.</li>
+  <li>We need to be able to find your tables. Add enough metadata so that a google search on &quot;&lt;your center name&gt; GRIB tables&quot; finds you within the first 2 pages. Send a link to netcdf-java@unidata.ucar.edu and we will link to you.</li>
+</ol>
 <p>&nbsp;</p>
-<h1>Adding/Overwriting GRIB tables/parameters</h1>
-<p>
-The Grib1 reader uses a Table based on the site ID, sub-site ID, and version number from the data to read in a particular Table while Grib2 only has one parameter table. 
-Sometimes there is a need to add/overwrite Grib1 tables or to add/overwrite Grib2 parameters for the Grib Library. This process is not difficult.
-<h3>Grib 1 Adding/Overwriting GRIB tables</h3>
-<p>
-First one needs to create a file listing the new tables, the file has the following syntax of site ID, sub-site ID, version number, and table name each separated by a :. 
-The -1 is a wild card character and it match any number in the field.  If the table name begins with /, http:, or file: then the table is loaded with the full path name, 
-otherwise the table is assumed to be in the resources/grib/tables directory in the Grib package or jar.
-Here is a sample table file configuration.
-<pre>
-7:	-1:		  0:	nceptab_2.tab
-7:	-1:		  1:	nceptab_1.tab
-7:	-1:		  2:	nceptab_2.tab
-7:	-1:		  3:	nceptab_3.tab
-158:	 0:		  2:	/grib/tables/fnmoc_2.tab
-</pre>
-<p>
-The routine  <b>GribPDSParamTable.addParameterUserLookup(String userGribTabList)</b> reads the above configuration file. 
-<p>
-The newly created tables must be in NCEP format of parameter number, short name, long name and units inside []. The fields are separated by :. Here is a sample Grib1 table, the first line always starts with
--1 : site ID : sub-site ID : version number. The -1 is a wild card character, same as above.
-<pre>
--1:7:-1:2
-0:var0:undefined
-1:PRES:Pressure [Pa]
-2:PRMSL:Pressure reduced to MSL [Pa]
-3:PTEND:Pressure tendency [Pa s-1]
-</pre>
-<p>
-Remember if one is overwritting a table then only the new table parameters will be available.
-
-
-
-<h3>Grib 2 Adding/Overwriting GRIB parameters</h3>
-<p>
-Since there is only one Grib2 table, there is no need for the table configuration file as in Grib1. The only file needed is a  file that contains the parameters that need 
-to be add/overwritten. This file has the following syntax:
-
-<pre>
-# Sample Grib2 table parameters that are read in externally
-# Use static method: ParameterTable.addParametersUser(String UserGribTable)
-# Grib 2 Table: http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-1.shtml
-# The fields are separated by tabs, Name cannot have spaces, use _
-# fields: 
-# Discipline Category ParameterNumber Name Unit Description
-0	1	223	Total_precipitation	kg/m2	Total precipitation in 24 hours
-0	2	1	Wind_speed	knots	Wind speed at 2 meters
-</pre>
-
-The routine  <b>ParameterTable.addParametersUser("C:/data/grib/tables/grib2userparameters.txt" );</b> reads in the above parameters. 
-
-<p>Only the parameters with the
-Discipline Category ParameterNumber are modified, the other parameters remain unchanged.   
-Remember the fields must be separated by tabs and the field definitions can be obtained at:
-<a href="http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-1.shtml">Grib 2 Table Information</a>
-
-
-<h3>Runtime loading of GRIB parameters</h3>
-<p>Parameters can be loaded at runtime by a configuration file described at
-<a href="RuntimeLoading.html">RuntimeLoading</a>
-</p>
-<p>
-<b>
-If there are questions about adding/overwriting tables/parameters, create a support ticket at:
-
-<a href="http://www.unidata.ucar.edu/support/topics.jsp">support netcdf-decoders</a></b>
-</p>
-
-
+<h2>Reading Grib-1 files with the CDM library version 4.3</h2>
+<h3>Standard table mapping</h3>
+<ol>
+  <li>See <em>resources/grib1/grib1Tables.txt </em>in<strong> grib-version.jar</strong> or <em>grib/src/main/resources/resources/grib1/grib1Tables.txt</em> from the source tree.</li>
+  <li>You can view the standard tables in ToolsUI, using the <strong>iosp/GRIBold/GRIB1-TABLES</strong> tab.</li>
+  <li>The table that matches the center-subcenter-version is used. </li>
+  <li>Use a &quot;-1&quot; for the subcenter or version in order to match any. The order of the entries in the <em>grib1Tables.txt</em> file is therefore important.</li>
+  <li>If a table is not matched, the file will fail to open. You can change that in the <a href="RuntimeLoading.html#XML">RunTime configuration file</a> by adding<a name="strict"></a> 
+    <blockquote>
+      <pre>&lt;grib1Table strict=&quot;false&quot;/&gt;</pre>
+    </blockquote>
+  In this case, the default WMO table will be used.</li>
+</ol>
+<h3>Adding to the standard table mapping</h3>
+<ol>
+  <li>You can add your own table within your application, or to applications that support the <a href="RuntimeLoading.html#XML">RunTime configuration file</a>.</li>
+  <li>Tables that are user-added take precedence over the standard tables.</li>
+  <li>Parameters that are not present in your table are taken from the default WMO table, if they exist.</li>
+  <li>Missing parameters are marked &quot;unknown&quot; in the variable name and units.</li>
+</ol>
+<h2>Table Registry</h2>
+<p>In principle, if everything is done right, the reader ends up using the table that the writer used. In practice, there are many ways for that to fail. In order to increase the reliability of table-based file formats, I have <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib">proposed</a> a web registry of tables, which would create a unique id for each registered table. The writer would then embed the id into the GRIB or BUFR message (possibly in the &quot;local use&quot; section of GRIB-2, or  GRIB-1 octets &gt; 41 in PDS), and the reader could use the id to unambiguously retrieve the table from the web registry. Stay tuned for further details and a trial implementation.</p>
+<pre></pre>
+<hr WIDTH="100%">
+<address>
+<img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated August 2011
+</address>
 </body>
 </html>
 

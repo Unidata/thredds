@@ -62,6 +62,14 @@ public class GridParameter {
     this.unit = unit;
   }
 
+  // unkown param
+  public GridParameter(int center, int subcenter, int version, int number) {
+    this.number = number;
+    name = "undefined";
+    description = "Unknown-C"+ center + "-S"+ subcenter + "-V"+ version + ":"+number;
+    unit = "undefined";
+  }
+
   public GridParameter(int number, String name, String description, String unit, String cf_name) {
     this.number = number;
     this.name = name;

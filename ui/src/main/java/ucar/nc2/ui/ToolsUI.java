@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.grib.grib1.GribPDSParamTable;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
@@ -944,6 +945,18 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionPropertiesToggle(a, null, "use missing_value attribute for missing values",
             NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
     BAMutil.addActionToMenu(dsMenu, a);
+
+    ncMenu = new JMenu("GRIB-1");
+    modeMenu.add(ncMenu);
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        GribPDSParamTable.setStrict(state);
+      }
+    };
+    a.putValue(BAMutil.STATE, new Boolean(true));
+    BAMutil.setActionPropertiesToggle(a, null, "strict", true, 'S', -1);
+    BAMutil.addActionToMenu(ncMenu, a);
 
     ncMenu = new JMenu("FMRC");
     modeMenu.add(ncMenu);

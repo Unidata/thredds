@@ -553,8 +553,12 @@ public final class Grib1Dump {
     GribPDSParamTable parameter_table = GribPDSParamTable.getParameterTable(center, subCenter, pdsv.getParameterTableVersion());
     if (parameter_table != null) {
       GridParameter parameter = parameter_table.getParameter(pn);
-      f.format("                Parameter Name : %d %s %s%n", pn, parameter.getName(), parameter.getDescription());
-      f.format("               Parameter Units : %s%n", parameter.getUnit());
+      if (parameter != null) {
+        f.format("                Parameter Name : %d %s %s%n", pn, parameter.getName(), parameter.getDescription());
+        f.format("               Parameter Units : %s%n", parameter.getUnit());
+      } else {
+        f.format("               Parameter %d in table %d %d %d NOT FOUND%n", pn, center, subCenter, pdsv.getParameterTableVersion());
+      }
     } else {
       f.format("               Parameter_table : %d %d %d NOT FOUND%n", center, subCenter, pdsv.getParameterTableVersion());
     }

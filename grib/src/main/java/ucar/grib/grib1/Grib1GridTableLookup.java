@@ -123,16 +123,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final GridParameter getParameter(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    //try {
-      GribPDSParamTable pt;
-      pt = GribPDSParamTable.getParameterTable(ggr.getCenter(), ggr.getSubCenter(), ggr.getTableVersion());
-      return (pt == null) ? null : pt.getParameter(ggr.getParameterNumber());
-    /* } catch (NotSupportedException noSupport) {
-      logger.error("Grib1GridTableLookup: Parameter "+ ggr.getParameterNumber() +" not found for center"+
-          ggr.getCenter() +" subcenter "+ ggr.getSubCenter() +" table number "+ ggr.getTableVersion());
-      logger.error("NotSupportedException : " + noSupport);
-      return new GridParameter();
-    } */
+    return ggr.getParameter();
   }
 
   /*
