@@ -49,5 +49,9 @@ Notes for grib-1 tables
 
  8/29/2011
    - waiting for ncep
-   - Bill Anderson contacted me from fnmoc
+   - Bill Anderson contacted me from fnmoc, with follow up to Mary Clifford, apparently in operations.  They are still not versioning tables.
    - put out call for grib1 example files.
+
+ 8/30/2011
+   - Dave blodgett sends sample file from center 9-157 (North Central River Forecasting Center), params 61 (version 2) and 237 (version 128).
+     Suspicious use of nceptab_3.tab for param 237 . also, reference date changes which we dont handle correctly so time coord is wrong.

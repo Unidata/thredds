@@ -53,11 +53,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GribPDSParamTable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribPDSParamTable.class);
 
-  static private final String RESOURCE_PATH = "resources/grib1";
-  static private final String TABLE_LIST = "grib1Tables.txt";
+  //static private final String RESOURCE_PATH = "resources/grib1";
+  //static private final String TABLE_LIST = "grib1Tables.txt";
 
-  //static private final String RESOURCE_PATH = "resources/grib1/tablesOld";
-  //static private final String TABLE_LIST = "tableLookup.lst";
+  static private final String RESOURCE_PATH = "resources/grib1/tablesOld";
+  static private final String TABLE_LIST = "tableLookup.lst";
 
   static private final Pattern valid = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\+]*$");
   static private final Pattern numberFirst = Pattern.compile("^[0-9]");
