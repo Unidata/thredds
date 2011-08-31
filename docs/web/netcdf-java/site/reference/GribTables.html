@@ -17,7 +17,7 @@ dl {margin: 10px 5px 5px 15px;)
 <h3><strong>Encoding the center (octet 5) and subcenter id</strong> (octet 26)</h3>
 <p>You must encode a center and subcenter id, in order for software to correctly match the tables used. If there is no subcenter in use,  use id =0 (&quot;no subcenter:), although 255 (&quot;missing&quot;) is acceptable but ambiguous. </p>
 <h3><strong>Encoding the version number (octet 4)</strong></h3>
-<p>If you are only using WMO standard tables (all parameter ids &lt; 128) then you should use version number = 1, 2, or 3, corresponding to the WMO standard table version. (Im not sure if they are backwards compatible) The <a href="ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf">Current WMO GRIB-1 table version</a> is 3. Using only parameters from the standard tables is best practice for the <em>international exchange</em> of GRIB messages.</p>
+<p>If you are only using WMO standard tables (all parameter ids &lt; 128) then you should use version number = 1, 2, or 3, corresponding to the WMO standard table version.  The <a href="ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf">Current WMO GRIB-1 table version</a> is 3. Using only parameters from the standard tables is best practice for the <em>international exchange</em> of GRIB messages.</p>
 <p>If you are using non-standard (aka <em>local</em>) parameters, then you should use a version number in the range 128-254.</p>
 <h3><strong>Using local tables</strong></h3>
 <p>If you  use local parameters, you must do the following:</p>
@@ -46,7 +46,7 @@ dl {margin: 10px 5px 5px 15px;)
     <blockquote>
       <pre>&lt;grib1Table strict=&quot;false&quot;/&gt;</pre>
     </blockquote>
-  In this case, the default WMO table will be used.</li>
+  In this case, the default WMO table will be used, but there's no way of knowing if the parameters are correctly named.</li>
 </ol>
 <h3>Adding to the standard table mapping</h3>
 <ol>
@@ -55,23 +55,14 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Parameters that are not present in your table are taken from the default WMO table, if they exist.</li>
   <li>Missing parameters are marked &quot;unknown&quot; in the variable name and units.</li>
 </ol>
+<h2>&nbsp;</h2>
 <h2>Table Registry</h2>
 <p>In principle, if everything is done right, the reader ends up using the table that the writer used. In practice, there are many ways for that to fail. In order to increase the reliability of table-based file formats, I have <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib">proposed</a> a web registry of tables, which would create a unique id for each registered table. The writer would then embed the id into the GRIB or BUFR message (possibly in the &quot;local use&quot; section of GRIB-2, or  GRIB-1 octets &gt; 41 in PDS), and the reader could use the id to unambiguously retrieve the table from the web registry. Stay tuned for further details and a trial implementation.</p>
-<pre></pre>
 <hr WIDTH="100%">
 <address>
 <img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated August 2011
 </address>
 </body>
 </html>
-
-<!--
-Once you've created this file, you would access it by putting
-the grib2lookuptable.lst in your <home>/.metapps/DefaultIdv
-directory.  Alternatively, you could place the grib2lookuptable.lst
-on a local web server and use the IDV's sitepath parameter
-(startup option or user preference) to point to the location
-of the file.
-//-->
 
 

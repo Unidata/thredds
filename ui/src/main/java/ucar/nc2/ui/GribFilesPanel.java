@@ -119,6 +119,15 @@ public class GribFilesPanel extends JPanel {
     }); */
 
     grib1Table = new BeanTableSorted(Grib1Bean.class, (PreferencesExt) prefs.node("Grib1Bean"), false);
+    varPopup = new PopupMenu(grib1Table.getJTable(), "Options");
+    varPopup.addAction("Open in Grib-Raw", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib1Bean pb = (Grib1Bean) grib1Table.getSelectedBean();
+        if (pb == null) return;
+        GribFilesPanel.this.firePropertyChange("openGribRaw", null, pb.m.getPath());
+      }
+    });
+
     grib2Table = new BeanTableSorted(Grib2Bean.class, (PreferencesExt) prefs.node("Grib2Bean"), false);
     varPopup = new PopupMenu(grib2Table.getJTable(), "Options");
 

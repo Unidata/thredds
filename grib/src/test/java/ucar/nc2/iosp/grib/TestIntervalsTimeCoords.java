@@ -78,7 +78,9 @@ public class TestIntervalsTimeCoords extends TestCase {
   static String[] testdata = {
       TestAll.cdmUnitTestDir +"tds/normal/GFS_Puerto_Rico_191km_20100515_0000.grib1", "Total_precipitation", "bounds0",
       TestAll.cdmUnitTestDir +"tds/normal/GFS_CONUS_80km_20100513_0600.grib1", "Total_precipitation", "bounds1",
-      TestAll.cdmUnitTestDir +"tds/normal/NAM_CONUS_12km_20100520_0000.grib2", "Total_precipitation", "bounds2",
+      TestAll.cdmUnitTestDir +"tds/normal/NAM_CONUS_12km_20100913_0000.grib2", "Total_precipitation", "bounds2",
+      TestAll.cdmUnitTestDir +"formats/grib1/QPE.20101005.009.157", "Total_column_ozone_concentration", "boundsQPE",
+      TestAll.cdmUnitTestDir +"formats/grib1/QPE.20101005.009.157", "Total_precipitation", "boundsQPE2",
       // TestAll.testdataDir +"cdmUnitTest/tds/normal/SREF_Alaska_45km_ensprod_20100525_0300.grib2",  "Total_precipitation_probability_above_0p25", "bounds3",
       // TestAll.testdataDir +"cdmUnitTest/tds/normal/RUC2_CONUS_20km_pressure_20100509_1300.grib2", "Convective_precipitation", "bounds4",
       // TestAll.testdataDir +"cdmUnitTest/tds/normal/GFS_Global_2p5deg_20100602_1200.grib2",  "Total_precipitation", "bounds5",
@@ -106,6 +108,17 @@ public class TestIntervalsTimeCoords extends TestCase {
     {75, 78}, {78, 81}, {81, 84}
   };
 
+  static int[][] boundsQPE = {
+    {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}, {9, 10},
+    {10, 11}, {11, 12}, {12, 13}, {13, 14}, {14, 15}, {15, 16}, {16, 17}, {17, 18}, {18, 19}, {19, 20},
+    {20, 21}, {21, 22}, {22, 23}, {23, 24}
+  };
+
+  static int[][] boundsQPE2 = {
+     {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}, {9, 10}, {10, 11},
+    {11, 12}, {12, 13}, {13, 14}, {14, 15}, {15, 16}, {16, 17}, {12, 18}, {17, 18}, {18, 19}, {19, 20}, {20, 21},
+    {21, 22}, {22, 23}, {18, 24}, {23, 24}, {24, 30}, {30, 36}
+  };
 
   static int[][] bounds3 = {
     {3, 6}, {6, 9}, {9, 12}, {12, 15}, {15, 18}, {18, 21}, {21, 24}, {24, 27}, {27, 30},
@@ -191,6 +204,8 @@ public class TestIntervalsTimeCoords extends TestCase {
       put( "bounds4", bounds4 );
       put( "bounds5", bounds5 );
       put( "bounds6", bounds6 );
+      put( "boundsQPE", boundsQPE );
+      put( "boundsQPE2", boundsQPE2 );
     }
   };
 
@@ -203,8 +218,8 @@ public class TestIntervalsTimeCoords extends TestCase {
       String parameter = testdata[ i +1];
       int[][]tb = timeBounds.get( testdata[ i +2] );
 
+      System.out.printf("Open %s (%s)%n", grib, parameter);
       try {
-        System.out.println("Open "+grib);
         NetcdfFile ncf = NetcdfFile.open( grib );
         Variable var = ncf.findVariable( parameter );
         Dimension dim = var.getDimension( 0 );
