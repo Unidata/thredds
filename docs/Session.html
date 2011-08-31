@@ -11,7 +11,7 @@ UCAR/Unidata</h2>
 <h3>Draft 1: July 20, 2011</h3>
 </center>
 
-<h2><a name="HTTPSession"><u>HTTPSession and Session Semantics</u></a></h2>
+<h2><a name="Intro"><u>Introduction</u></a></h2>
 New public classes are introduced to the package ucar.nc2.util.net.
 These are
 <i>HTTPSession.java</i>,
@@ -26,11 +26,12 @@ the Apache httpclient4 library.
 These classes support a form of <i>session</i>
 semantics for Java network access. The notion of session
 is only loosely tied to the HTTP notion of session.
-<p>
+
+<h3><a name="HTTPSession">HTTPSession and Session Semantics</a></h3>
 A session is encapsulated in an instance of the class <i>HTTPSession</i>.
 The encapsulation is with respect to a specific url.
 This means that once a session is specified, it is tied permanently
-to that url.
+to that url and <a href="#HTTPMethod.URL">"compatible"</a> urls.
 <p>
 As a special case for backward compatibility,
 an <i>HTTPSession</i> constructor with no arguments is provided.
@@ -170,7 +171,7 @@ public class Main
 }
 </pre>
 
-<h3><a name="HTTPMethod.URL"><u>Specifying a url when creating an HTTPMethod Instance</u></a></h3>
+<h2><a name="HTTPMethod.URL"><u>Specifying a url when creating an HTTPMethod Instance</u></a></h2>
 It is possible to specify a  url when invoking, for example,
 <i>HTTPMethod.Get</i>.
 This is because the url argument to the <i>HTTPSession</i> constructor actually serves two purposes.
@@ -196,10 +197,34 @@ of the url given to <i>HTTPMethod.Get</i>.
 This maintains the semantics of the Session but allows flexibility in accessing
 data from the server.
 <p>
-The following exception exists for backward compatibility.
-If the session was created without specifying a url,
-then methods must be created by specifying a url,
+There are some exceptions to the prefix rule for compatibility.
+Let
+<i>surl</i>
+be the session url and
+<i>murl</i>
+be the url specified for the method.
+The following rule holds.
+<ul>
+<li>If the <i>surl</i>
+does not have a principal,
+then the <i>murl</i> without its principal is tested
+for compatibility.
+In effect, a missing principal acts like a wildcard.
+<p>
+Similarly, missing ports or paths in the
+<i>surl</i>
+also act like wildcards.
+</ul>
+<p>
+Additionally, and for backward compatibility,
+if <i>surl</i> is null or is the empty string (""), then <i>murl</i> must be specified
 and any such url is considered compatible.
+
+<h2><a name="Credentials"><u>Authorization Credentials</u></a></h2>
+In conjunction with the new credentialing mechanisms,
+<i>HTTPSession</i>
+
+
 
 <h2><a name="Appendices"><u>Appendices: Session APIs</u></a></h2>
 Note: the following set may lag the actual API, so the JavaDoc or code
