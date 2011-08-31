@@ -251,7 +251,7 @@ public class ComboBox extends JComboBox {
       public void actionPerformed(ActionEvent e) {
         System.out.println("**** cb event="+e);
         if (e.getActionCommand().equals("comboBoxChanged")) {
-          System.out.println("cb.getSelectedItem="+cb.getSelectedItem());
+          //System.out.println("cb.getSelectedItem="+cb.getSelectedItem());
           cb.addItem( cb.getSelectedItem());
         }
       }

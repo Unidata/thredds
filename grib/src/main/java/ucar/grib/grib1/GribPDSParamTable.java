@@ -620,7 +620,7 @@ public class GribPDSParamTable {
 
   static public void main(String[] args) throws IOException {
     debug = true;
-    addParameterUserLookup("C:/dev/tds4.2/thredds/grib/resources/resources/grib/tables/zagreb_221_1.tab");
+    addParameterUserLookup("C:/dev/tds4.2/thredds/grib/resources/resources/grib1/tablesOld/zagreb_221_1.tab");
   }
 }
 

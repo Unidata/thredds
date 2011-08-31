@@ -362,7 +362,7 @@ public class NcepLocalTables extends GribTables {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // NCEP local tables taken from degrib code
-  // validated against /resources/grib/tables/grib2StdQuantities.xml
+  // validated against /resources/grib2/tablesOld/grib2StdQuantities.xml
 
     /* from degrib:
 Updated this table last on 12/29/2005
