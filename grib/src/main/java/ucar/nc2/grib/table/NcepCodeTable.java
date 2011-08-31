@@ -55,7 +55,7 @@ public class NcepCodeTable {
     Current;
 
     String getResourceName() {
-      return "/resources/grib/tables/grib2StdQuantities.xml";
+      return "/resources/grib2/tablesOld/grib2StdQuantities.xml";
     }
   }
 

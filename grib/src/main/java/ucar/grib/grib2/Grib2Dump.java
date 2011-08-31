@@ -104,7 +104,6 @@ public final class Grib2Dump {
 
     // Reading of Grib files must be inside a try-catch block
     try {
-      //ParameterTable.addParametersUser("/home/rkambic/code/grib/resources/resources/grib/tables/grib2userparameters" );
       RandomAccessFile raf = null;
       PrintStream ps = System.out;
       if (args.length == 3) {  // input file, output file, get data for dump

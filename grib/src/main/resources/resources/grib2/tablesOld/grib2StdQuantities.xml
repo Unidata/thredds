@@ -325,7 +325,7 @@
                 description="Boundary layer dissipation" />
             <quantity id="Maximum_wind_speed" number="21" unit="m s-1"
                 description="Maximum wind speed" />
-            <quantity id="Wind_speed" number="22" unit="m s-1"
+            <quantity id="Wind_speed_gust" number="22" unit="m s-1"
                 description="Wind speed gust" />
             <quantity id="U-component_of_wind" number="23" unit="m s-1"
                 description="U-component of wind gust" />
@@ -431,7 +431,7 @@
                 description="Pressure altitude" />
             <quantity id="Density_altitude" number="14" unit="m"
                 description="Density altitude" />
-            <quantity id="5-Wave_Geopotential_Height" number="15" unit="gpm"
+            <quantity id="N5-Wave_Geopotential_Height" number="15" unit="gpm"
                 description="5-Wave Geopotential Height" />
             <quantity id="Zonal_Flux_of_Gravity_Wave_Stress" number="16" unit="N m-2"
                 description="Zonal Flux of Gravity Wave Stress" />
@@ -461,7 +461,7 @@
                 description="Meridional Flux of Gravity Wave Stress" />
             <quantity id="Planetary_Boundary_Layer_Height" number="196" unit="m"
                 description="Planetary Boundary Layer Height" />
-            <quantity id="5-Wave_Geopotential_Height_Anomaly" number="197" unit="gpm"
+            <quantity id="N5-Wave_Geopotential_Height_Anomaly" number="197" unit="gpm"
                 description="5-Wave Geopotential Height Anomaly" />
             <quantity id="MSLP_MAPS_System_Reduction" number="198" unit="Pa"
                 description="MSLP MAPS System Reduction" />
@@ -653,8 +653,8 @@
                 description="Ice fraction of total condensate" />
             <quantity id="Convective_cloud_mass_flux" number="200" unit="Pa s-1"
                 description="Convective Cloud Mass Flux" />
-            <quantity id="SunShine_duration" number="201" unit="s"
-                description="SunShine_Duration" />
+            <quantity id="Sunshine_duration" number="201" unit="s"
+                description="Sunshine_Duration" />
             <quantity id="Effective_cloud_amount" number="202" unit="%"
                 description="Effective Cloud Amount" />
             <quantity id="Skin_Temperature" number="203" unit="K"

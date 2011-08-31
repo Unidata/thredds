@@ -3017,7 +3017,6 @@ public class ToolsUI extends JPanel {
       topPanel.add(modes, BorderLayout.CENTER);
       modes.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          System.out.printf("%s%n", e.getActionCommand());
           codeTable.setTable((WmoCodeTable.Version) modes.getSelectedItem());
         }
       });

@@ -51,10 +51,10 @@ import java.util.*;
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
 
   public enum Version {
-    GRIB2_5_2_0, GRIB2_6_0_1;
+    GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0;
 
     String getResourceName() {
-      return "/resources/grib/wmo/" + this.name() + "_template_E.xml";
+      return "/resources/grib2/wmo/" + this.name() + "_Template_E.xml";
     }
 
     String[] getElemNames() {
@@ -63,6 +63,9 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
 
       } else if (this == GRIB2_6_0_1) {
         return new String[]{"Exp_template_E", "Title_E", "Note_E"};
+
+      } else if (this == GRIB2_7_0_0) {
+        return new String[]{"Exp_Temp_E", "Title_E", "Note_E"};
       }
       return null;
     }
@@ -101,6 +104,17 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
    <Note_E>(see Code table 4.4)#GRIB2_6_0_1_codeflag.doc#G2_CF44</Note_E>
    <Status>Operational</Status>
  </Exp_template_E>
+
+ 7.0
+<Exp_Temp_E>
+  <No>15</No>
+  <Title_E>Grid definition template 3.0 - latitude/longitude (or equidistant cylindrical, or Plate Carrée)</Title_E>
+  <OctetNo>56-59</OctetNo>
+  <Contents_E>La2 - latitude of last grid point</Contents_E>
+  <Note_E>(see Note 1)#GRIB2_7_0_0_Temp.doc#G2_Gdt30n</Note_E>
+  <Status>Operational</Status>
+</Exp_Temp_E>
+
   */
 
   static private GribTemplates readXml(Version version) throws IOException {
@@ -326,6 +340,23 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
       }
     }
   }
+
+  /*
+    private String convert(String table, int value) {
+    if (gribCodes == null) {
+      try {
+        gribCodes = GribCodeTableWmo.getWmoStandard().map;
+      } catch (IOException e) {
+        return "Read GridCodes failed";
+      }
+    }
+
+    GribCodeTableWmo gct = gribCodes.get(table);
+    if (gct == null) return table + " not found";
+    GribCodeTableWmo.TableEntry entry = gct.get(value);
+    if (entry != null) return entry.meaning;
+    return "Table " + table + " code " + value + " not found";
+  } */
 
   private String convert(GribTables tables, String table, int value) {
     String result = tables.getTableValue(table, value);

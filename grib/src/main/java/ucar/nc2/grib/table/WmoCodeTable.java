@@ -57,7 +57,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0;
 
     String getResourceName() {
-      return "/resources/grib/wmo/" + this.name() + "_codeflag_E.xml";
+      return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_E.xml";
     }
 
     String[] getElemNames() {
@@ -73,6 +73,43 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       return null;
     }
   }
+
+  /*
+  GRIB2_5_2_0:
+
+  <ForExport_CodeFlag_E>
+   <No>645</No>
+   <TableTitle_E>Code table 4.2 - Parameter number by product discipline and parameter category</TableTitle_E>
+   <TableSubTitle_E>Product discipline 0 - Meteorological products, parameter category 19: physical atmospheric</TableSubTitle_E>
+   <CodeFlag>13</CodeFlag>
+   <Meaning_E>Contrail intensity</Meaning_E>
+   <AsciiUnit_x002F_Description_E>(Code table 4.210)</AsciiUnit_x002F_Description_E>
+   <Status>Operational</Status>
+  </ForExport_CodeFlag_E>
+
+  GRIB2_6_0_1:
+
+  <Exp_codeflag_E>
+   <No>678</No>
+   <Title_E>Code table 4.2 - Parameter number by product discipline and parameter category</Title_E>
+   <SubTitle_E>Product discipline 2 - Land surface products, parameter category 0: vegetation/biomass</SubTitle_E>
+   <CodeFlag>1</CodeFlag>
+   <MeaningParameterDescription_E>Surface roughness</MeaningParameterDescription_E>
+   <AsciiUnitComments_E>m</AsciiUnitComments_E>
+   <Status>Operational</Status>
+  </Exp_codeflag_E>
+
+  7.0:
+  <Exp_CodeFlag_E>
+    <No>609</No>
+    <Title_E>Code table 4.2 - Parameter number by product discipline and parameter category</Title_E>
+    <SubTitle_E>Product discipline 0 - Meteorological products, parameter category 19: physical atmospheric properties</SubTitle_E>
+    <CodeFlag>4</CodeFlag>
+    <MeaningParameterDescription_E>Volcanic ash</MeaningParameterDescription_E>
+    <UnitComments_E>(Code table 4.206)</UnitComments_E>
+    <Status>Operational</Status>
+  </Exp_CodeFlag_E>
+  */
 
   public static TableEntry getParameterEntry(int discipline, int category, int value) {
     return getTableEntry(getId(discipline, category), value);
@@ -137,32 +174,6 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       this.map = map;
     }
   }
-
-  /*
-  GRIB2_5_2_0:
-
-  <ForExport_CodeFlag_E>
-   <No>645</No>
-   <TableTitle_E>Code table 4.2 - Parameter number by product discipline and parameter category</TableTitle_E>
-   <TableSubTitle_E>Product discipline 0 - Meteorological products, parameter category 19: physical atmospheric</TableSubTitle_E>
-   <CodeFlag>13</CodeFlag>
-   <Meaning_E>Contrail intensity</Meaning_E>
-   <AsciiUnit_x002F_Description_E>(Code table 4.210)</AsciiUnit_x002F_Description_E>
-   <Status>Operational</Status>
-  </ForExport_CodeFlag_E>
-
-  GRIB2_6_0_1:
-
-  <Exp_codeflag_E>
-   <No>678</No>
-   <Title_E>Code table 4.2 - Parameter number by product discipline and parameter category</Title_E>
-   <SubTitle_E>Product discipline 2 - Land surface products, parameter category 0: vegetation/biomass</SubTitle_E>
-   <CodeFlag>1</CodeFlag>
-   <MeaningParameterDescription_E>Surface roughness</MeaningParameterDescription_E>
-   <AsciiUnitComments_E>m</AsciiUnitComments_E>
-   <Status>Operational</Status>
-  </Exp_codeflag_E>
-  */
 
   static public WmoTables readGribCodes(Version version) throws IOException {
     InputStream ios = null;
