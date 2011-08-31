@@ -33,6 +33,7 @@
 
 package ucar.nc2.util;
 
+import ucar.nc2.util.net.EscapeStrings;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -550,6 +551,10 @@ public class IO {
     long count;
     URL url;
     java.io.InputStream is = null;
+
+    // url must be encoded
+    urlString = EscapeStrings.escapeURL(urlString);
+
     try {
       url = new URL(urlString);
     } catch (MalformedURLException e) {
@@ -650,6 +655,10 @@ public class IO {
     long count;
     URL url;
     java.io.InputStream is = null;
+
+    // url must be encoded
+    urlString = EscapeStrings.escapeURL(urlString);
+
     try {
       url = new URL(urlString);
     } catch (MalformedURLException e) {
@@ -861,6 +870,9 @@ public class IO {
    * @return a Result object; generally 0 <= code <=400 is ok
    */
   static public HttpResult putToURL(String urlString, String contents) {
+
+    // url must be encoded
+    urlString = EscapeStrings.escapeURL(urlString);
 
     URL url;
     try {

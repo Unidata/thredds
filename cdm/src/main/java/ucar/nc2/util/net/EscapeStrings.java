@@ -124,21 +124,25 @@ public class EscapeStrings {
     public static String asciiNonAlphaNumeric =
             " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" ;
 
-    // Non-alphanumeric (nam) allowed lists
-    private static String _namAllowedInURL = "!#$&'()*+,-./:;=?@_~" ;
-    private static String _namAllowedInURLQuery = "!#$&'()*+,-./:;=?@_~" ;
+    // Non-alphanumeric (nan) allowed lists
+    private static String _nanAllowedInURL = "!#$&'()*+,-./:;=?@_~" ;
+    private static String _nanAllowedInURLQuery = "!#$&'()*+,-./:;=?@_~" ;
+    private static String _nanAllowedInURLPath = "!#$&'()*+,-./:;=?@_~" ;
 
     // Non-alphanumeric disallowed lists
     private static String _disallowedInUrlQuery = " \"<>[\\]^`{|}%";   //Determined by experiment
     private static String _disallowedInUrl      = " \"<>[\\]^`{|}%";   //Determined by experiment
 
-    // This is set of legal non-alphanumerics that can appear unescaped in a url query.
-    public static String _allowableInUrlQuery =   asciiAlphaNumeric +_namAllowedInURLQuery;
+    // This is set of legal characters that can appear unescaped in a url query.
+    public static String _allowableInUrlQuery =   asciiAlphaNumeric +_nanAllowedInURLQuery;
                                                 //+ "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrlQuery
 
-    // This is set of legal characters that can appear unescaped in a url query.
-    public static String _allowableInUrl =   asciiAlphaNumeric + _namAllowedInURL;
-                                            //+ "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrl
+    // This is set of legal characters that can appear unescaped in a url.
+                                        public static String _allowableInUrl =   asciiAlphaNumeric + _nanAllowedInURL;
+                                         //+ "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrl
+
+    // This is set of legal characters that can appear unescaped in a url path
+    public static String _allowableInUrlPath =   asciiAlphaNumeric + _nanAllowedInURLPath;
 
     // This is set of legal characters that can appear unescaped in an OGC query.
     private static String _disallowedInOGC = stringUnion(" ?&=,+", //OGC Web Services Common 2.0.0 section 11.3
@@ -487,24 +491,69 @@ for (int offset = 0; offset < length; ) {
         return s;
      }
 
-    /**
-     *  Decompose a url and piecemeal encode all of its parts, including query and fragment
-     * @param url  the url to encode
-     */
-     public static String escapeURL(String url)
+        /**
+         *  Decompose a url and piecemeal encode all of its parts, including query and fragment
+         * @param url  the url to encode
+         */
+         public static String escapeURLx(String url)
      {
         String newurl = null;
         try {
             URI u = new URI(url);
-            u = new URI(u.getScheme(),u.getUserInfo(),u.getHost(),u.getPort(),
-                        escapeString(u.getPath(),_allowableInUrl,_URIEscape,true),
-                        escapeURLQuery(u.getQuery()),
-                        u.getFragment());
+            u = new URI(u.getScheme(),u.getRawUserInfo(),u.getHost(),u.getPort(),
+                        escapeString(u.getRawPath(),_allowableInUrl,_URIEscape,true),
+                        escapeURLQuery(u.getRawQuery()),
+                        escapeString(u.getRawFragment(),_allowableInUrl,_URIEscape,true));
             newurl = u.toASCIIString();
         } catch (Exception e) {newurl = url;}
         return newurl;
      }
 
+   /**
+     *  Decompose a url and piecemeal encode all of its parts, including query and fragment
+     * @param u  the url to encode
+     */
+     public static String escapeURL(String u)
+     {
+        String newurl = null;
+        try {
+            URL url = new URL(u);  // use instead of uri() because url does no decoding
+            String protocol = url.getProtocol();
+            String principal = url.getUserInfo();
+            String host = url.getHost();
+            int port = url.getPort();
+            String path = url.getPath();
+            String query = url.getQuery();
+            String ref = url.getRef();
+            if(principal != null && principal.length() == 0) principal = null;
+            if(path != null && path.length() == 0) path = null;
+            if(query != null && query.length() == 0) query = null;
+            if(ref != null && ref.length() == 0) ref = null;
+
+
+            // Encode certain fields
+            if(path != null)
+                try {
+                    String tmp = escapeString(path, _allowableInUrlPath, _URIEscape, false);
+                    path = tmp;
+                } catch(Exception e) {}
+;
+            if(query != null) query = urlEncode(query);
+            if(ref != null) ref = urlEncode(ref);
+
+            // add delimiters
+            protocol = protocol + "://";
+            principal = (principal == null ? "" : (principal + "@"));
+            String sport = (port <= 0 ? "" : (":"+port));
+            path = (path ==  null ? "" : path);
+            query = (query == null ? "" : "?" + query);
+            ref = (ref == null ? "" : "#" + ref);
+
+            // rebuild the url
+            newurl =   protocol + principal + host + sport + path + query + ref;
+        } catch (MalformedURLException use) {newurl=u;}
+        return newurl;
+     }
     /**
      *  Decode all of the parts of the url including query and fragment
      * @param url  the url to encode

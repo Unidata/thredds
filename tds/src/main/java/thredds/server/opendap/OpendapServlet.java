@@ -777,10 +777,10 @@ public class OpendapServlet extends AbstractServlet
       // The url and query strings will come to us in encoded form
       // (see HTTPmethod.newMethod())
       String baseurl = request.getRequestURL().toString();
-      baseurl = EscapeStrings.unescapeURL(baseurl) ;
+      //baseurl = EscapeStrings.unescapeURL(baseurl) ;
   
       String query = request.getQueryString();
-      query = EscapeStrings.unescapeURLQuery(query);
+      //query = EscapeStrings.unescapeURLQuery(query);
 
       try {
         rs = new ReqState(request, response, this, getServerName(), baseurl, query);
