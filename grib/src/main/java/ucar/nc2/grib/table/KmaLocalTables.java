@@ -45,7 +45,7 @@ import java.util.*;
  * @since 6/22/11
  */
 public class KmaLocalTables extends LocalTables {
-  private static final String tableName = "resources/grib/local/kma-ver5.txt";
+  private static final String tableName = "resources/grib2/local/kma-ver5.txt";
   private static boolean debug = false;
 
   KmaLocalTables(int center, int subCenter, int masterVersion, int localVersion) {

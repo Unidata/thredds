@@ -31,11 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: ParameterTable.java,v 1.17 2005/12/13 22:58:47 rkambic Exp $
-
-
 package ucar.grib.grib2;
-
 
 import org.w3c.dom.*;
 
@@ -64,7 +60,6 @@ import ucar.nc2.iosp.grid.GridParameter;
  * @author Robb Kambic /10/10/03
  */
 
-
 public final class ParameterTable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ParameterTable.class);
 
@@ -84,8 +79,7 @@ public final class ParameterTable {
     try {
       parser = factory.newDocumentBuilder();
       ClassLoader cl = ParameterTable.class.getClassLoader();
-      URL test = cl.getResource( "resources/grib/tables/grib2StdQuantities.xml");
-      InputStream is = cl.getResourceAsStream( "resources/grib/tables/grib2StdQuantities.xml");
+      InputStream is = cl.getResourceAsStream( "resources/grib2/tablesOld/grib2StdQuantities.xml");
 
       Document doc = parser.parse(is);
       NodeList d = doc.getElementsByTagName("discipline");
@@ -171,7 +165,7 @@ public final class ParameterTable {
         discipline.add(dis);
       }
       is.close();
-      addLocalParameters("resources/grib/tables/grib2local.tab");
+      addLocalParameters("resources/grib2/tablesOld/grib2local.tab"); // LOOK
     } catch (Throwable e) {
       logger.error("grib2 table reading failed", e);
     }

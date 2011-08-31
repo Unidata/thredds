@@ -57,7 +57,12 @@ dl {margin: 10px 5px 5px 15px;)
 </ol>
 <h2>Table Registry</h2>
 <p>In principle, if everything is done right, the reader ends up using the table that the writer used. In practice, there are many ways for that to fail. In order to increase the reliability of table-based file formats, I have <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib">proposed</a> a web registry of tables, which would create a unique id for each registered table. The writer would then embed the id into the GRIB or BUFR message (possibly in the &quot;local use&quot; section of GRIB-2, or  GRIB-1 octets &gt; 41 in PDS), and the reader could use the id to unambiguously retrieve the table from the web registry. Stay tuned for further details and a trial implementation.</p>
-<pre></pre>
+<p>&nbsp;</p>
+<h2>GRIB homogeneity</h2>
+<ul>
+  <li>table version changes</li>
+  <li>reference dates change</li>
+</ul>
 <hr WIDTH="100%">
 <address>
 <img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated August 2011

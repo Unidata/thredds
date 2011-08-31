@@ -141,7 +141,6 @@ public final class Grib1Dump {
         System.exit(0);
       }
       // test for a user defined parameter table read
-      //GribPDSParamTable.addParameterUserLookup( "/local/robb/trunk20081229/grib/resources/resources/grib/tables/userlookup.lst");
       raf.order(RandomAccessFile.BIG_ENDIAN);
       // Create Grib1Input instance
       Grib1Input g1i = new Grib1Input(raf);
