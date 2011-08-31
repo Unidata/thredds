@@ -130,7 +130,7 @@ public class Main
     {
 	String url = argv[0];
 
-        HTTPSession.setGlobalPrincipal(System.getProperty("user.name"));
+        HTTPSession.setGlobalCredentialsProvider(new UserPasswordProvider());
 	HTTPSession.setGlobalUserAgent("netcdf/java");
 	HTTPSession.setMaxConnections(4);
 	HTTPSession.setGlobalAuthenticationPreemptive(true);
@@ -154,7 +154,7 @@ public class Main
 	String url = argv[0];
 
         HTTPSession session = new HTTPSession(url);
-        session.setPrincipal(System.getProperty("user.name"));
+        session.setCredentialsProvider(new UserPasswordProvider());
 	session.setAuthenticationPreemptive(true);
 	session.setUserAgent("agent");
 	session.setConnectionManagerTimeout(475);
@@ -221,10 +221,69 @@ if <i>surl</i> is null or is the empty string (""), then <i>murl</i> must be spe
 and any such url is considered compatible.
 
 <h2><a name="Credentials"><u>Authorization Credentials</u></a></h2>
-In conjunction with the new credentialing mechanisms,
 <i>HTTPSession</i>
-
-
+operates in conjunction with the new credentialing mechanisms
+to support better mechanisms for setting authorization credentials.
+<p>
+The key idea is that a single, global database of credentials
+is maintained.  The key for the database is the combination
+of the authorization scheme plus a url. This key pair maps
+to an instance of CredentialsProvider.
+At the time an HTTP method is executed, the url indicates
+when to apply authorization (if the server requests it).
+The scheme indicates the kind of authorization scheme
+is being used: HTTP Basic or Digest for example.
+The credentials provider is then invoked to compute the set
+of credentials to be sent to the server.
+<p>
+The primary credentialling method in
+<i>HTTPSession</i>
+is as follows.
+<pre>
+public void setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
+</pre>
+<p>
+The set of defined schemes is as follows:
+<ul>
+<li> Basic - the HTTP Basic scheme based on clear-text user name and password.
+<li> Digest - the HTTP digest scheme based on encrypted user name and password.
+<li> Proxy -  a scheme for accessing a proxy server
+based on clear-text user name and password.
+<li> Keystore - a scheme that uses a client-side key to authenticate
+the client to the server. The credentials provider is used
+in a non-standard way and it contains the following information.
+    <ul>
+    <li> The path to the keystore file
+    <li> The password for decrypting the keystore file.
+    <li> The path to a truststore file
+    <li> The password for decrypting the truststore file.
+    </ul>
+The last two items are optional. If missing, then the client will
+accept any certificate sent to it by the server. This includes
+self-signed certificates.
+<p>
+The keystore scheme is usually part of an SSL connection
+where the server authenticates to the client and then the client
+authenticates to the server.
+</ul>
+<p>
+A somewhat simpler method is available that only takes
+a credentials provider as argument.
+<pre>
+public void setCredentialsProvider(CredentialsProvider provider)
+</pre>
+It is defined as:
+<pre>
+    setCredentialsProvider(HTTPAuthScheme.BASIC,url,provider);
+</pre>
+where the url argument is the session's url.
+<p>
+Finally, it is also possible to establish a "global"
+credentials provider that is used for any combination
+of scheme + url as a last resort.
+<pre>
+static synchronized public void setGlobalCredentialsProvider(CredentialsProvider cp)
+</pre>
 
 <h2><a name="Appendices"><u>Appendices: Session APIs</u></a></h2>
 Note: the following set may lag the actual API, so the JavaDoc or code
@@ -233,12 +292,6 @@ should be referenced to see any modifications.
 <h3><a name"HTTPSession.API">HTTPSession API</a></h3>
 <h4>Static Get/Set Methods</h4>
 <ul>
-<li>static synchronized void setGlobalPrincipal(String p)
-     <ul>
-     <li> Set a principal that will be used when establishing
-          any session.
-     </ul>
-<li>static synchronized String getGlobalPrincipal()
 <li>static synchronized void setGlobalUserAgent(String _userAgent)
      <ul>
      <li> Set a user agent that will be used when establishing
@@ -268,8 +321,7 @@ should be referenced to see any modifications.
      </ul>
 <li>void setGlobalCredentialsProvider(CredentialsProvider cp)
      <ul>
-     <li> Specifies that all HTTPSession instances should use the specified
-          CredentialsProvider for authentication.
+     <li> Last resort credentials provider.
      </ul>
 </ul>
 
@@ -302,6 +354,7 @@ should be referenced to see any modifications.
      <li> Set proxy authorization using the two system properties
 		"http.proxyHost" and "http.proxyPort".
     </ul>
+<li>void setCredentialsProvider(CredentialsProvider provider)
 </ul>
 
 <h4>Session Shutdown Methods</h4>
