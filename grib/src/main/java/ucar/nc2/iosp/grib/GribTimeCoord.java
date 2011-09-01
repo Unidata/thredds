@@ -147,7 +147,7 @@ public class GribTimeCoord extends GridTimeCoord {
    */
   @Override
   protected boolean matchTimes(List<GridRecord> records) {
-    if (records.get(0) instanceof GribGridRecord) return false;
+    if (!(records.get(0) instanceof GribGridRecord)) return false;
 
      // check intervals match
     GribGridRecord ggr = (GribGridRecord) records.get(0);
