@@ -466,73 +466,39 @@ public final class Grib1Dump {
     }  // end switch gdtn
   }      // end printGDS
 
-  /*
-  * Prints out a PDS.
-  *
-  * @param pds
-  *
-  */
-
-  /**
-   * _more_
-   *
-   * @param pds _more_
-   * @param ps  _more_
-   */
   private static void printPDS(Grib1ProductDefinitionSection pds, PrintStream ps) {
     Grib1Pds pdsv = pds.getPdsVars();
     int center = pdsv.getCenter();
     int subCenter = pdsv.getSubCenter();
 
-    ps.println("            Originating Center : " + center
-            + " " + Grib1Tables.getCenter_idName(center));
+    ps.println("            Originating Center : " + center + " " + Grib1Tables.getCenter_idName(center));
     String sc = Grib1Tables.getSubCenter_idName(center, subCenter);
     ps.print("        Originating Sub-Center : " + subCenter);
     if (sc == null)
       ps.println();
     else
       ps.println(" " + sc);
-    //ps.println("                Reference Time : " +
-    //pds.getReferenceTime() );
     ps.println("            TimeRangeIndicator : " + pdsv.getTimeRangeIndicator());
     ps.println("            Parameter Category : -1 Meteorological Parameters");
 
     int pn = pdsv.getParameterNumber();
-    GribPDSParamTable parameter_table = GribPDSParamTable.getParameterTable(center, subCenter, pdsv.getParameterTableVersion());
-    if (parameter_table != null) {
-      GridParameter parameter = parameter_table.getParameter(pn);
-
-      ps.println("                Parameter Name : "
-              + pn + " " + parameter.getName() + " " + parameter.getDescription());
+    GridParameter parameter = GribPDSParamTable.getParameter(center, subCenter, pdsv.getParameterTableVersion(), pn);
+    if (parameter != null) {
+      ps.println("                Parameter Name : " + pn + " " + parameter.getName() + " " + parameter.getDescription());
       ps.println("               Parameter Units : " + parameter.getUnit());
     }
 
-    //ps.println("                Reference Time : " + dateFormat.format( pds.getBaseTime()));
     long refTime = pdsv.getReferenceTime();
     calendar.setTimeInMillis(refTime);
     ps.println("                Reference Time : " + dateFormat.format(calendar.getTime()));
-    //ps.println("                    Time Units : " + pds.getTimeUnit());
     ps.println("                    Time Units : " + Grib1Tables.getTimeUnit(pdsv.getTimeUnit(), false));
-    //ps.println("          Time Range Indicator : "
-    //           + pds.getTimeRangeString());
-    ps.println("          Time Range Indicator : "
-            + Grib1Tables.getTimeRange(pdsv.getTimeRangeIndicator()));
+    ps.println("          Time Range Indicator : " + Grib1Tables.getTimeRange(pdsv.getTimeRangeIndicator()));
     ps.println("                   Time 1 (P1) : " + pdsv.getP1());
     ps.println("                   Time 2 (P2) : " + pdsv.getP2());
-    //String tgp = Integer.toString(pds.getTypeGenProcess());
     int tgp = pdsv.getGenProcessId();
     ps.println("       Generating Process Type : " + tgp + " "
             + Grib1Tables.getTypeGenProcessName(center, tgp));
-    //ps.println("                  ForecastTime : " +
-    //pds.getForecastTime1());
-    ps.println("                    Level Type : " + pds.getLevelType()
-            + " " + pds.getLevelName());
-    //ps.println("                    Level Type : " + pdsv.getTypeFirstFixedSurface()
-    //           + " " + Grib1Tables.getLevelName(pdsv.getTypeFirstFixedSurface()));
-//        ps.println("                 Level Value 1 : "
-//                   + pds.getLevelValue1());
-//        ps.println("                 Level Value 2 : "
-//                   + pds.getLevelValue2());
+    ps.println("                    Level Type : " + pds.getLevelType() + " " + pds.getLevelName());
 
     ps.println("                 Level Value 1 : " + pdsv.getLevelValue1());
     ps.println("                 Level Value 2 : " + pdsv.getLevelValue2());

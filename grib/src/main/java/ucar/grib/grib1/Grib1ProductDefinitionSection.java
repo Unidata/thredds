@@ -400,9 +400,8 @@ public final class Grib1ProductDefinitionSection {
 
     baseTime = calendar.getTime();
     refTime = calendar.getTimeInMillis();
+    parameter = GribPDSParamTable.getParameter(center_id, subcenter_id, table_version, parameterNumber);
 
-    GribPDSParamTable table = GribPDSParamTable.getParameterTable(center_id, subcenter_id, table_version);
-    parameter = (table == null) ? null : table.getParameter(parameterNumber);
     Grib1Pds gpv = pdsVars;
     if (false && gpv.isEnsemble()) {
       if ((center_id == 7) && (subcenter_id == 2)) {  // ensemble product

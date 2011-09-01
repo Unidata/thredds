@@ -84,9 +84,9 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
   public static final float tenToNegThree = (float) (1 / 1000.0);
   public static final float tenToThree = (float) 1000.0;
 
- /**
-  * Pattern to extract header.
-  */
+  /**
+   * Pattern to extract header.
+   */
   private static final Pattern productID =
           Pattern.compile("(\\w{6} \\w{4} \\d{6})");
 
@@ -108,7 +108,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
     if (home.exists()) {
       args[0] = home.getPath();
       doAll(args);
-    } else if ( false && work.exists()) {
+    } else if (false && work.exists()) {
       args[0] = work.getPath();
       doAll(args);
     } else {
@@ -141,13 +141,13 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           //child.contains("GFS_Global_0p5deg") ||
           //child.contains("GFS_Global_1p0deg_Ensemble") ||
           //child.contains("GFS_Global_1p0deg_Ensemble") ||
-          child.contains("rotatedlatlon.grb") ||
-          child.endsWith(GribIndexName.oldSuffix) ||
-          child.endsWith(GribIndexName.currentSuffix) ||
-          child.endsWith("xml") ||
-          child.endsWith("txt") ||
-          child.endsWith("tmp") || //index in creation process
-          child.length() == 0) { // zero length file, ugh...
+                child.contains("rotatedlatlon.grb") ||
+                        child.endsWith(GribIndexName.oldSuffix) ||
+                        child.endsWith(GribIndexName.currentSuffix) ||
+                        child.endsWith("xml") ||
+                        child.endsWith("txt") ||
+                        child.endsWith("tmp") || //index in creation process
+                        child.length() == 0) { // zero length file, ugh...
         } else {
           System.out.println("\n\nFile " + child);
           if (child.endsWith("grib1") || child.endsWith("grb")) {
@@ -287,7 +287,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           assert (gds.grid_units.equals(gpv.getGridUnits()));
           assert (gds.scanMode == gpv.getScanMode());
           assert (gds.angle == gpv.getAngle());
-          
+
           //  1, 2, and 3 needs checked
           if (gdtn == 1) {         //Rotated Latitude/longitude
             assert (gds.spLat == gpv.getSpLat());
@@ -547,79 +547,79 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
 
           break;
 
-          /*
-          case 100 :  // Triangular grid based on an icosahedron
+        /*
+        case 100 :  // Triangular grid based on an icosahedron
 
-              n2          = raf.read();
-              checkSum = 7 * checkSum + n2;
-              n3          = raf.read();
-              checkSum = 7 * checkSum + n3;
-              ni          = GribNumbers.int2(raf);
-              checkSum = 7 * checkSum + ni;
-              nd          = raf.read();
-              checkSum = 7 * checkSum + nd;
-              poleLat     = GribNumbers.int4(raf) / tenToSix;
-              checkSum = 7 * checkSum + poleLat;
-              poleLon     = GribNumbers.int4(raf) / tenToSix;
-              checkSum = 7 * checkSum + poleLon;
-              lonofcenter = GribNumbers.int4(raf);
-              position    = raf.read();
-              order       = raf.read();
-              scanMode    = raf.read();
-              n           = GribNumbers.int4(raf);
-              grid_units = "";
-              break;
+            n2          = raf.read();
+            checkSum = 7 * checkSum + n2;
+            n3          = raf.read();
+            checkSum = 7 * checkSum + n3;
+            ni          = GribNumbers.int2(raf);
+            checkSum = 7 * checkSum + ni;
+            nd          = raf.read();
+            checkSum = 7 * checkSum + nd;
+            poleLat     = GribNumbers.int4(raf) / tenToSix;
+            checkSum = 7 * checkSum + poleLat;
+            poleLon     = GribNumbers.int4(raf) / tenToSix;
+            checkSum = 7 * checkSum + poleLon;
+            lonofcenter = GribNumbers.int4(raf);
+            position    = raf.read();
+            order       = raf.read();
+            scanMode    = raf.read();
+            n           = GribNumbers.int4(raf);
+            grid_units = "";
+            break;
 
-          case 110 :  // Equatorial azimuthal equidistant projection
-              shape = raf.read();
-              //System.out.println( "shape=" + shape );
-              scalefactorradius = raf.read();
-              scaledvalueradius = GribNumbers.int4(raf);
-              scalefactormajor  = raf.read();
-              scaledvaluemajor  = GribNumbers.int4(raf);
-              scalefactorminor  = raf.read();
-              scaledvalueminor  = GribNumbers.int4(raf);
-              nx                = GribNumbers.int4(raf);
-              //System.out.println( "nx=" + nx);
-              ny = GribNumbers.int4(raf);
-              //System.out.println( "ny=" + ny);
-              la1              = GribNumbers.int4(raf) / tenToSix;
-              checkSum = 7 * checkSum + la1;
-              lo1              = GribNumbers.int4(raf) / tenToSix;
-              checkSum = 7 * checkSum + lo1;
-              resolution       = raf.read();
-              dx = (float) (GribNumbers.int4(raf) / tenToThree);
-              //checkSum = 7 * checkSum + dx;
-              dy = (float) (GribNumbers.int4(raf) / tenToThree);
-              //checkSum = 7 * checkSum + dy;
-              grid_units = "";
-              projectionCenter = raf.read();
-              scanMode         = raf.read();
+        case 110 :  // Equatorial azimuthal equidistant projection
+            shape = raf.read();
+            //System.out.println( "shape=" + shape );
+            scalefactorradius = raf.read();
+            scaledvalueradius = GribNumbers.int4(raf);
+            scalefactormajor  = raf.read();
+            scaledvaluemajor  = GribNumbers.int4(raf);
+            scalefactorminor  = raf.read();
+            scaledvalueminor  = GribNumbers.int4(raf);
+            nx                = GribNumbers.int4(raf);
+            //System.out.println( "nx=" + nx);
+            ny = GribNumbers.int4(raf);
+            //System.out.println( "ny=" + ny);
+            la1              = GribNumbers.int4(raf) / tenToSix;
+            checkSum = 7 * checkSum + la1;
+            lo1              = GribNumbers.int4(raf) / tenToSix;
+            checkSum = 7 * checkSum + lo1;
+            resolution       = raf.read();
+            dx = (float) (GribNumbers.int4(raf) / tenToThree);
+            //checkSum = 7 * checkSum + dx;
+            dy = (float) (GribNumbers.int4(raf) / tenToThree);
+            //checkSum = 7 * checkSum + dy;
+            grid_units = "";
+            projectionCenter = raf.read();
+            scanMode         = raf.read();
 
-              break;
+            break;
 
-          case 120 :  // Azimuth-range Projection
-              nb       = GribNumbers.int4(raf);
-              checkSum = 7 * checkSum + nb;
-              nr       = GribNumbers.int4(raf);
-              checkSum = 7 * checkSum + nr;
-              la1      = GribNumbers.int4(raf);
-              checkSum = 7 * checkSum + la1;
-              lo1      = GribNumbers.int4(raf);
-              checkSum = 7 * checkSum + lo1;
-              dx       = GribNumbers.int4(raf);
-              //checkSum = 7 * checkSum + dx;
-              grid_units = "";
-              dstart   = raf.readFloat();
-              scanMode = raf.read();
-              for (int i = 0; i < nr; i++) {
-                  // get azi (33+4(Nr-1))-(34+4(Nr-1))
-                  // get adelta (35+4(Nr-1))-(36+4(Nr-1))
-              }
-              System.out.println("need code to get azi and adelta");
+        case 120 :  // Azimuth-range Projection
+            nb       = GribNumbers.int4(raf);
+            checkSum = 7 * checkSum + nb;
+            nr       = GribNumbers.int4(raf);
+            checkSum = 7 * checkSum + nr;
+            la1      = GribNumbers.int4(raf);
+            checkSum = 7 * checkSum + la1;
+            lo1      = GribNumbers.int4(raf);
+            checkSum = 7 * checkSum + lo1;
+            dx       = GribNumbers.int4(raf);
+            //checkSum = 7 * checkSum + dx;
+            grid_units = "";
+            dstart   = raf.readFloat();
+            scanMode = raf.read();
+            for (int i = 0; i < nr; i++) {
+                // get azi (33+4(Nr-1))-(34+4(Nr-1))
+                // get adelta (35+4(Nr-1))-(36+4(Nr-1))
+            }
+            System.out.println("need code to get azi and adelta");
 
-              break;
-          */
+            break;
+        */
         case 204:  // Curvilinear orthographic
           assert (gds.shape == gpv.getShape());
           //System.out.println( "shape=" + shape );
@@ -636,7 +636,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
 
         default:
           System.out.println("Unknown Grid Type "
-              + Integer.toString(gdtn));
+                  + Integer.toString(gdtn));
       }  // end switch
 
       // calculate earth radius
@@ -716,10 +716,10 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     System.out.println("Comparing PDSs");
     try {
-       Input1 g1i = new  Input1(raf);
+      Input1 g1i = new Input1(raf);
       // params getProducts (implies  unique GDSs too), oneRecord
       g1i.scan(true, false);
-      ArrayList  products =  g1i.getProducts();
+      ArrayList products = g1i.getProducts();
       boolean passOne = true;
       for (int i = 0; i < products.size(); i++) {
         Grib1Product product = (Grib1Product) products.get(i);
@@ -754,18 +754,18 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         assert (pds.forecastTime == gpv.getForecastTime());
 
 
-        if ( ! verbose )
+        if (!verbose)
           return;
 
         if (passOne) {
           System.out.println(" Center =" + pds.center_id + " Sub Center =" + pds.subcenter_id
-              + " table_version =" + pds.table_version);
+                  + " table_version =" + pds.table_version);
           passOne = false;
         }
         if (gpv.isEnsemble() && pds.center_id == 98) {
           System.out.println("Class =" + gpv.getType() + " Type =" + gpv.getID()
-              + " Stream =" + gpv.getStream() + " Labeling =" + gpv.getOctet(50)
-              + " NumberOfForecast =" + gpv.getOctet(51));
+                  + " Stream =" + gpv.getStream() + " Labeling =" + gpv.getOctet(50)
+                  + " NumberOfForecast =" + gpv.getOctet(51));
         } else if (gpv.getLength() > 40) {
           // TODO: fix for NCEP ensembles
           //System.out.println("Type =" + gpv.getType() + " ID =" + gpv.getID()
@@ -773,18 +773,18 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           System.out.println("Number of members =" + gpv.getNumberForecasts());
         } else if (gpv.getProbabilityProduct() != GribNumbers.UNDEFINED) {
           System.out.println("Probability Product =" + gpv.getProbabilityProduct()
-              + " Probability Type =" + gpv.getProbabilityType()
-              + "Lower Limit =" + gpv.getValueLowerLimit() + " Upper Limit =" + gpv.getValueUpperLimit());
+                  + " Probability Type =" + gpv.getProbabilityType()
+                  + "Lower Limit =" + gpv.getValueLowerLimit() + " Upper Limit =" + gpv.getValueUpperLimit());
           //System.out.println("Number of members =" + gpv.getNumberForecasts());
 
         } else if (gpv.getSizeClusters() != GribNumbers.UNDEFINED) {
           System.out.println("Cluster size =" + gpv.getSizeClusters()
-              + " Number of Clusters =" + gpv.getNumberClusters()
-              + " Cluster method =" + gpv.getMethod()
-              + " Northern latitude =" + gpv.getNorthLatitude()
-              + " Southern latitude =" + gpv.getSouthLatitude()
-              + " Easthern longitude =" + gpv.getEastLongitude()
-              + " Westhern longitude =" + gpv.getWestLongitude());
+                  + " Number of Clusters =" + gpv.getNumberClusters()
+                  + " Cluster method =" + gpv.getMethod()
+                  + " Northern latitude =" + gpv.getNorthLatitude()
+                  + " Southern latitude =" + gpv.getSouthLatitude()
+                  + " Easthern longitude =" + gpv.getEastLongitude()
+                  + " Westhern longitude =" + gpv.getWestLongitude());
         }
         pds = null;
       }
@@ -801,7 +801,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
     System.out.println("Comparing GDSs");
     try {
 
-      Grib1Input g1i = new  Grib1Input(raf);
+      Grib1Input g1i = new Grib1Input(raf);
       // params getProducts (implies  unique GDSs too), oneRecord
       g1i.scan(true, false);
       List<Grib1Product> products = g1i.getProducts();
@@ -826,9 +826,9 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         assert (2 == gpv.getSection());
         assert (gds.NV == gpv.getNV());
         //System.out.println( "GDS NV = " + NV );
-        if( gpv.hasVerticalPressureLevels() ) {
-          System.out.println( "Vertical Pressure Levels" );
-          double[] plevels = gpv.getVerticalPressureLevels( g1pdsv.getLevelValue1() );
+        if (gpv.hasVerticalPressureLevels()) {
+          System.out.println("Vertical Pressure Levels");
+          double[] plevels = gpv.getVerticalPressureLevels(g1pdsv.getLevelValue1());
         }
         assert (gds.P_VorL == gpv.getPVorPL());
         //System.out.println( "GDS PL = " + P_VorL );
@@ -991,14 +991,14 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           default:
             System.out.println("Unknown Grid Type : " + gds.type);
             throw new NoValidGribException("GDS: Unknown Grid Type : " + gds.type
-                + ") is not supported.");
+                    + ") is not supported.");
         }             // end switch grid_type
         assert (gds.gdskey == gpv.getGdsKey());
 
         //System.out.println( "scan=" + scan );
         if ((gds.scan & 63) != 0) {
           throw new NoValidGribException("GDS: This scanning mode (" +
-              gds.scan + ") is not supported.");
+                  gds.scan + ") is not supported.");
         }
         gds = null;
       }
@@ -1016,6 +1016,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
   }
 
   /////////////////////////////////////////////////////////////////////////////
+
   /**
    * class to have a direct read on a Grib2 PDS section
    */
@@ -1139,6 +1140,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
     public final Grib2Pds pdsVars;
 
     // *** constructors *******************************************************
+
     /**
      * Constructs a Grib2ProductDefinitionSection  object from a raf.
      *
@@ -1224,10 +1226,10 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           int valueFirstFixedSurface = GribNumbers.int4(raf);
           //System.out.println( "PDS valueFirstFixedSurface=" + valueFirstFixedSurface );
           FirstFixedSurfaceValue = (float) (((scaleFirstFixedSurface
-              == 0) || (valueFirstFixedSurface == 0))
-              ? valueFirstFixedSurface
-              : valueFirstFixedSurface
-              * Math.pow(10, -scaleFirstFixedSurface));
+                  == 0) || (valueFirstFixedSurface == 0))
+                  ? valueFirstFixedSurface
+                  : valueFirstFixedSurface
+                  * Math.pow(10, -scaleFirstFixedSurface));
           //System.out.println( "PDS FirstFixedSurfaceValue ="+ FirstFixedSurfaceValue );
           // octet 29
           typeSecondFixedSurface = raf.read();
@@ -1239,10 +1241,10 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           int valueSecondFixedSurface = GribNumbers.int4(raf);
           //System.out.println( "PDS valueSecondFixedSurface=" + valueSecondFixedSurface );
           SecondFixedSurfaceValue = (float) (((scaleSecondFixedSurface
-              == 0) || (valueSecondFixedSurface == 0))
-              ? valueSecondFixedSurface
-              : valueSecondFixedSurface
-              * Math.pow(10, -scaleSecondFixedSurface));
+                  == 0) || (valueSecondFixedSurface == 0))
+                  ? valueSecondFixedSurface
+                  : valueSecondFixedSurface
+                  * Math.pow(10, -scaleSecondFixedSurface));
 
           try {  // catches NotSupportedExceptions
 
@@ -1344,15 +1346,15 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
               // 39-42
               int scaleValueLL = GribNumbers.int4(raf);
               lowerLimit = (float) (((scaleFactorLL == 0) || (scaleValueLL == 0))
-                  ? scaleValueLL
-                  : scaleValueLL * Math.pow(10, -scaleFactorLL));
+                      ? scaleValueLL
+                      : scaleValueLL * Math.pow(10, -scaleFactorLL));
               // 43
               int scaleFactorUL = raf.read();
               // 44-47
               int scaleValueUL = GribNumbers.int4(raf);
               upperLimit = (float) (((scaleFactorUL == 0) || (scaleValueUL == 0))
-                  ? scaleValueUL
-                  : scaleValueUL * Math.pow(10, -scaleFactorUL));
+                      ? scaleValueUL
+                      : scaleValueUL * Math.pow(10, -scaleFactorUL));
 
               //System.out.print("PDS productDefinition == 5 PN="+probabilityNumber +" TP="+totalProbabilities +" PT="+probabilityType);
               //System.out.println( " LL="+lowerLimit +" UL="+upperLimit);
@@ -1439,15 +1441,15 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
               // 39-42
               int scaleValueLL = GribNumbers.int4(raf);
               lowerLimit = (float) (((scaleFactorLL == 0) || (scaleValueLL == 0))
-                  ? scaleValueLL
-                  : scaleValueLL * Math.pow(10, -scaleFactorLL));
+                      ? scaleValueLL
+                      : scaleValueLL * Math.pow(10, -scaleFactorLL));
               // 43
               int scaleFactorUL = raf.read();
               // 44-47
               int scaleValueUL = GribNumbers.int4(raf);
               upperLimit = (float) (((scaleFactorUL == 0) || (scaleValueUL == 0))
-                  ? scaleValueUL
-                  : scaleValueUL * Math.pow(10, -scaleFactorUL));
+                      ? scaleValueUL
+                      : scaleValueUL * Math.pow(10, -scaleFactorUL));
               // 48-49
               int year = GribNumbers.int2(raf);
               // 50
@@ -1618,7 +1620,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      *
      * @param tui    time unit indicator,
      * @param length of interval
-     * @return  increment as int
+     * @return increment as int
      */
     private int calculateIncrement(int tui, int length) {
       switch (tui) {
@@ -1996,6 +1998,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      */
     public final Grib2GDSVariables gdsVars;
     // *** constructors *******************************************************
+
     /**
      * Constructs a <tt>Grib2GridDefinitionSection</tt> object from a raf.
      *
@@ -2004,7 +2007,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * @throws IOException if raf contains no valid GRIB product
      */
     public GdsReader2(RandomAccessFile raf, boolean doCheckSum)
-        throws IOException {
+            throws IOException {
 
       double checkSum;
       int scalefactorradius = 0;
@@ -2209,10 +2212,10 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           //System.out.println( "lo1=" + lo1);
           resolution = raf.read();
           lad = (float) (GribNumbers.int4(raf)
-              / tenToSix);
+                  / tenToSix);
           //checkSum = 7 * checkSum + lad;
           lov = (float) (GribNumbers.int4(raf)
-              / tenToSix);
+                  / tenToSix);
           //checkSum = 7 * checkSum + lov;
           dx = (float) (GribNumbers.int4(raf) / tenToThree);
           dy = (float) (GribNumbers.int4(raf) / tenToThree);
@@ -2221,10 +2224,10 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           projectionCenter = raf.read();
           scanMode = raf.read();
           latin1 = (float) (GribNumbers.int4(raf)
-              / tenToSix);
+                  / tenToSix);
           //checkSum = 7 * checkSum + latin1;
           latin2 = (float) (GribNumbers.int4(raf)
-              / tenToSix);
+                  / tenToSix);
           //checkSum = 7 * checkSum + latin2;
           //System.out.println( "latin1=" + latin1);
           //System.out.println( "latin2=" + latin2);
@@ -2570,7 +2573,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           break;
         default:
           System.out.println("Unknown Grid Type "
-              + Integer.toString(gdtn));
+                  + Integer.toString(gdtn));
 
       }  // end switch
 
@@ -2654,6 +2657,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
 
 
   ///////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * A class representing the product definition section (PDS) of a GRIB record.
    */
@@ -2762,11 +2766,6 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * Identification of Generating Process.
      */
     public final int typeGenProcess;
-
-    /**
-     * See GribPDSParamTable class for details.
-     */
-    public final GribPDSParamTable parameter_table;
 
     /**
      * PDS length not equal to number bytes read.
@@ -2894,7 +2893,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
 
         default:
           System.err.println("PDS: Time Unit " + fUnit
-              + " is not yet supported");
+                  + " is not yet supported");
       }
 
       // octet 19 & 20 used to create Forecast time
@@ -2924,19 +2923,19 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
 
         case 3:
           timeRange =
-              "product is an average between (RT + P1) to (RT + P2)";
+                  "product is an average between (RT + P1) to (RT + P2)";
           forecastTime = p2;
           break;
 
         case 4:
           timeRange =
-              "product is an accumulation between (RT + P1) to (RT + P2)";
+                  "product is an accumulation between (RT + P1) to (RT + P2)";
           forecastTime = p2;
           break;
 
         case 5:
           timeRange =
-              "product is the difference (RT + P2) - (RT + P1)";
+                  "product is the difference (RT + P2) - (RT + P1)";
           forecastTime = p2;
           break;
 
@@ -2969,7 +2968,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
 
         default:
           System.err.println("PDS: Time Range Indicator "
-              + timeRangeValue + " is not yet supported");
+                  + timeRangeValue + " is not yet supported");
       }
 
       // octet 22 & 23
@@ -2997,18 +2996,16 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
       baseTime = calendar.getTime();
       refTime = calendar.getTimeInMillis();
 
-      parameter_table = GribPDSParamTable.getParameterTable(center_id,
-          subcenter_id, table_version);
-      parameter = parameter_table.getParameter(parameterNumber);
+      parameter = GribPDSParamTable.getParameter(center_id, subcenter_id, table_version, parameterNumber);
 
       Grib1Pds gpv = pdsVars;
-        if (  gpv.isEnsemble() ) {
-          System.out.println("Parm ="+ parameterNumber
-                  +" Extension ="+ gpv.getExtension()
-                  +" Type ="+ gpv.getType()
-                  +" ID ="+ gpv.getID()
-                  +" ProductID ="+ gpv.getProductID()
-                  +" SpatialorProbability ="+ gpv.getSpatialorProbability() );
+      if (gpv.isEnsemble()) {
+        System.out.println("Parm =" + parameterNumber
+                + " Extension =" + gpv.getExtension()
+                + " Type =" + gpv.getType()
+                + " ID =" + gpv.getID()
+                + " ProductID =" + gpv.getProductID()
+                + " SpatialorProbability =" + gpv.getSpatialorProbability());
       } else if (length != 28) {                      // check if all bytes read in section
         //lengthErr = true;
         int extra;
@@ -3197,6 +3194,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
     public final Grib1GDSVariables gdsVars;
 
     // *** constructors *******************************************************
+
     /**
      * constructor
      */
@@ -3212,7 +3210,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * @throws NoValidGribException if raf contains no valid GRIB info
      */
     public GdsReader1(RandomAccessFile raf, boolean doCheckSum)
-        throws IOException, NoValidGribException {
+            throws IOException, NoValidGribException {
 
       double checkSum;
       int reserved;  // used to read empty space
@@ -3256,15 +3254,15 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         // octets 7-8 (Nx - number of points along x-axis)
         nx = raf.readShort();
         nx = (nx == -1)
-            ? 1
-            : nx;
+                ? 1
+                : nx;
         //checkSum = 7 * checkSum + nx;
 
         // octets 9-10 (Ny - number of points along y-axis)
         ny = raf.readShort();
         ny = (ny == -1)
-            ? 1
-            : ny;
+                ? 1
+                : ny;
         //checkSum = 7 * checkSum + ny;
 
         // octets 11-13 (La1 - latitude of first grid point)
@@ -3305,7 +3303,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           //dx = raf.readShort() / tenToThree;
           dx = smartRead(raf, 16, 1000);
           if (dx == -1 || dx == GribNumbers.UNDEFINED) {
-          //return calculateDx();
+            //return calculateDx();
             int add = 0;
             if (lon2 < lon1)
               add = 360;
@@ -3480,7 +3478,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         default:
           System.out.println("Unknown Grid Type : " + type);
           throw new NoValidGribException("GDS: Unknown Grid Type : " + type
-              + ") is not supported.");
+                  + ") is not supported.");
 
       }             // end switch grid_type
       //gdskey = Double.toString(checkSum).hashCode();
@@ -3490,7 +3488,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
       //System.out.println( "scan=" + scan );
       if ((scan & 63) != 0) {
         throw new NoValidGribException("GDS: This scanning mode (" + scan
-            + ") is not supported.");
+                + ") is not supported.");
       }
 
       // seek to end of section no matter what
@@ -3580,8 +3578,8 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * @throws IOException _more_
      */
     private void getPV(int NV, RandomAccessFile raf) throws IOException {
-       if ( 0 < 1 )  // don't have pds.getPdsVars().getValueFirstFixedSurface() so can't do calculation
-           return;
+      if (0 < 1)  // don't have pds.getPdsVars().getValueFirstFixedSurface() so can't do calculation
+        return;
       // Documentation for the conversion process is at:
       // http://www.ecmwf.int/research/ifsdocs/DYNAMICS/Chap2_Discretization4.html
       // read data
@@ -3613,14 +3611,18 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * raf for grib file
      */
 
-    /** _more_          */
+    /**
+     * _more_
+     */
     private ucar.unidata.io.RandomAccessFile raf = null;
 
     /*
      * the header of Grib record
      */
 
-    /** _more_          */
+    /**
+     * _more_
+     */
     private String header = "GRIB1";
 
 
@@ -3629,7 +3631,9 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * there are 5 sections to a Grib1 record.
      */
 
-    /** _more_          */
+    /**
+     * _more_
+     */
     private final ArrayList<Grib1Record> records = new ArrayList<Grib1Record>();
 
     /*
@@ -3638,16 +3642,20 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * records.
      */
 
-    /** _more_          */
+    /**
+     * _more_
+     */
     private final ArrayList<Grib1Product> products = new ArrayList<Grib1Product>();
 
     /*
      * stores GDS of Grib1 file, there is possibility of more than 1
      */
 
-    /** _more_          */
-    private final HashMap<String,Grib1GridDefinitionSection> gdsHM =
-        new HashMap<String,Grib1GridDefinitionSection>();
+    /**
+     * _more_
+     */
+    private final HashMap<String, Grib1GridDefinitionSection> gdsHM =
+            new HashMap<String, Grib1GridDefinitionSection>();
 
     // *** constructors *******************************************************
 
@@ -3655,10 +3663,9 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * Constructs a <tt>Grib1Input</tt> object from a raf.
      *
      * @param raf with GRIB content
-     *
      */
-    public  Input1(RandomAccessFile raf) {
-        this.raf = raf;
+    public Input1(RandomAccessFile raf) {
+      this.raf = raf;
     }
 
     /**
@@ -3666,254 +3673,252 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * create an index or dump the metadata contents.
      *
      * @param getProducts products have enough information for data extractions
-     * @param oneRecord returns after processing one record in the Grib file
-     * @throws NoValidGribException _more_
+     * @param oneRecord   returns after processing one record in the Grib file
+     * @throws NoValidGribException  _more_
      * @throws NotSupportedException
-     * @throws IOException   if raf does not contain a valid GRIB record
+     * @throws IOException           if raf does not contain a valid GRIB record
      */
     public final void scan(boolean getProducts, boolean oneRecord)
             throws NotSupportedException, NoValidGribException, IOException {
-        long start = System.currentTimeMillis();
-        // stores the number of times a particular GDS is used
-        HashMap<String,String> gdsCounter = new HashMap<String,String>();
-        Grib1ProductDefinitionSection pds        = null;
-        Grib1GridDefinitionSection    gds        = null;
-        long pdsOffset = 0;
-        long gdsOffset = 0;
+      long start = System.currentTimeMillis();
+      // stores the number of times a particular GDS is used
+      HashMap<String, String> gdsCounter = new HashMap<String, String>();
+      Grib1ProductDefinitionSection pds = null;
+      Grib1GridDefinitionSection gds = null;
+      long pdsOffset = 0;
+      long gdsOffset = 0;
 
-        //System.out.println("file position =" + raf.getFilePointer());
-        while (raf.getFilePointer() < raf.length()) {
-            if (seekHeader(raf, raf.length())) {
-                // Read Section 0 Indicator Section
-                Grib1IndicatorSection is = new Grib1IndicatorSection(raf);
-                //System.out.println( "Grib record length=" + is.getGribLength());
-                // EOR (EndOfRecord) calculated so skipping data sections is faster
-                long EOR = raf.getFilePointer() + is.getGribLength()
-                           - is.getLength();
+      //System.out.println("file position =" + raf.getFilePointer());
+      while (raf.getFilePointer() < raf.length()) {
+        if (seekHeader(raf, raf.length())) {
+          // Read Section 0 Indicator Section
+          Grib1IndicatorSection is = new Grib1IndicatorSection(raf);
+          //System.out.println( "Grib record length=" + is.getGribLength());
+          // EOR (EndOfRecord) calculated so skipping data sections is faster
+          long EOR = raf.getFilePointer() + is.getGribLength()
+                  - is.getLength();
 
-                // skip Grib 2 records in a Grib 1 file
-                if( is.getGribEdition() == 2 ) {
-                    //System.out.println( "Error Grib 2 record in Grib1 file" ) ;
-                    raf.seek(EOR);
-                    continue;
-                }
+          // skip Grib 2 records in a Grib 1 file
+          if (is.getGribEdition() == 2) {
+            //System.out.println( "Error Grib 2 record in Grib1 file" ) ;
+            raf.seek(EOR);
+            continue;
+          }
 
-                long dataOffset = 0;
-                try { // catch all exceptions and seek to EOR
+          long dataOffset = 0;
+          try { // catch all exceptions and seek to EOR
 
-                    // Read Section 1 Product Definition Section PDS
-                    pdsOffset = raf.getFilePointer();
-                    pds = new Grib1ProductDefinitionSection(raf);
+            // Read Section 1 Product Definition Section PDS
+            pdsOffset = raf.getFilePointer();
+            pds = new Grib1ProductDefinitionSection(raf);
 
-                    if (pds.getPdsVars().gdsExists()) {
-                        // Read Section 2 Grid Definition Section GDS
-                        gdsOffset = raf.getFilePointer();
-                        gds = new Grib1GridDefinitionSection(raf);
+            if (pds.getPdsVars().gdsExists()) {
+              // Read Section 2 Grid Definition Section GDS
+              gdsOffset = raf.getFilePointer();
+              gds = new Grib1GridDefinitionSection(raf);
 
-                    } else {  // GDS doesn't exist so make one
-                        //System.out.println("GribRecord: No GDS included.");
-                        //System.out.println("Process ID:" + pds.getProcess_Id() );
-                        //System.out.println("Grid ID:" + pds.getGrid_Id() );
-                        gdsOffset = -1;
-                        gds = (Grib1GridDefinitionSection) new Grib1Grid(pds);
-                    }
-                    // obtain BMS or BDS offset in the file for this product
-                    if (pds.getPdsVars().getCenter() == 98) {  // check for ecmwf offset by 1 bug
-                        int length = GribNumbers.uint3(raf);  // should be length of BMS
-                        if ((length + raf.getFilePointer()) < EOR) {
-                            dataOffset = raf.getFilePointer() - 3;  // ok
-                        } else {
-                            //System.out.println("ECMWF off by 1 bug" );
-                            dataOffset = raf.getFilePointer() - 2;
-                        }
-                    } else {
-                        dataOffset = raf.getFilePointer();
-                    }
+            } else {  // GDS doesn't exist so make one
+              //System.out.println("GribRecord: No GDS included.");
+              //System.out.println("Process ID:" + pds.getProcess_Id() );
+              //System.out.println("Grid ID:" + pds.getGrid_Id() );
+              gdsOffset = -1;
+              gds = (Grib1GridDefinitionSection) new Grib1Grid(pds);
+            }
+            // obtain BMS or BDS offset in the file for this product
+            if (pds.getPdsVars().getCenter() == 98) {  // check for ecmwf offset by 1 bug
+              int length = GribNumbers.uint3(raf);  // should be length of BMS
+              if ((length + raf.getFilePointer()) < EOR) {
+                dataOffset = raf.getFilePointer() - 3;  // ok
+              } else {
+                //System.out.println("ECMWF off by 1 bug" );
+                dataOffset = raf.getFilePointer() - 2;
+              }
+            } else {
+              dataOffset = raf.getFilePointer();
+            }
 
-                } catch( Exception e ) {
-                    //.println( "Caught Exception scannning record" );
-                    e.printStackTrace();
-                    raf.seek(EOR);
-                    continue;
-                }
+          } catch (Exception e) {
+            //.println( "Caught Exception scannning record" );
+            e.printStackTrace();
+            raf.seek(EOR);
+            continue;
+          }
 
-                // position filePointer to EndOfRecord
-                raf.seek(EOR);
-                //System.out.println("file offset = " + raf.getFilePointer());
+          // position filePointer to EndOfRecord
+          raf.seek(EOR);
+          //System.out.println("file offset = " + raf.getFilePointer());
 
-                // assume scan ok
-                if (getProducts) {
-                    Grib1Product gp = new Grib1Product(header, pds,
-                                          getGDSkey(gds, gdsCounter), gds.getGdsKey(),
-                                          pdsOffset, gdsOffset );
-                    products.add(gp);
-                } else {
-                    Grib1Record gr = new Grib1Record(header, is, pds, gds,
-                                         dataOffset, raf.getFilePointer());
-                    records.add(gr);
-                }
-                if (oneRecord) {
-                    return;
-                }
+          // assume scan ok
+          if (getProducts) {
+            Grib1Product gp = new Grib1Product(header, pds,
+                    getGDSkey(gds, gdsCounter), gds.getGdsKey(),
+                    pdsOffset, gdsOffset);
+            products.add(gp);
+          } else {
+            Grib1Record gr = new Grib1Record(header, is, pds, gds,
+                    dataOffset, raf.getFilePointer());
+            records.add(gr);
+          }
+          if (oneRecord) {
+            return;
+          }
 
-                // early return because ending "7777" missing
-                if (raf.getFilePointer() > raf.length()) {
-                    raf.seek(0);
-                    System.err.println(
-                        "Grib1Input: possible file corruption");
-                    // TODO: if this needed
-                    //checkGDSkeys(gds, gdsCounter);
-                    return;
-                }
+          // early return because ending "7777" missing
+          if (raf.getFilePointer() > raf.length()) {
+            raf.seek(0);
+            System.err.println(
+                    "Grib1Input: possible file corruption");
+            // TODO: if this needed
+            //checkGDSkeys(gds, gdsCounter);
+            return;
+          }
 
-            }  // end if seekHeader
-            //System.out.println( "raf.getFilePointer()=" + raf.getFilePointer());
-            //System.out.println( "raf.length()=" + raf.length() );
-        }  // end while raf.getFilePointer() < raf.length()
-        //System.out.println("GribInput: processed in " +
-        //   (System.currentTimeMillis()- start) + " milliseconds");
-        // TODO: if this needed
-        //checkGDSkeys(gds, gdsCounter);
-        return;
+        }  // end if seekHeader
+        //System.out.println( "raf.getFilePointer()=" + raf.getFilePointer());
+        //System.out.println( "raf.length()=" + raf.length() );
+      }  // end while raf.getFilePointer() < raf.length()
+      //System.out.println("GribInput: processed in " +
+      //   (System.currentTimeMillis()- start) + " milliseconds");
+      // TODO: if this needed
+      //checkGDSkeys(gds, gdsCounter);
+      return;
     }  // end scan
 
     /**
      * Grib edition number 1, 2 or 0 not a Grib file.
+     *
+     * @return int 0 not a Grib file, 1 Grib1, 2 Grib2
      * @throws NotSupportedException
      * @throws IOException
-     * @return int 0 not a Grib file, 1 Grib1, 2 Grib2
      */
     public final int getEdition() throws IOException, NotSupportedException {
-        int  check  = 0;  // Not a valid Grib file
-        long length = (raf.length() < 25000L)
-                      ? raf.length()
-                      : 25000L;
-        if ( !seekHeader(raf, length)) {
-            return 0;  // not valid Grib file
-        }
-        //  Read Section 0 Indicator Section to get Edition number
-        Grib1IndicatorSection is = new Grib1IndicatorSection(raf);  // section 0
-        return is.getGribEdition();
+      int check = 0;  // Not a valid Grib file
+      long length = (raf.length() < 25000L)
+              ? raf.length()
+              : 25000L;
+      if (!seekHeader(raf, length)) {
+        return 0;  // not valid Grib file
+      }
+      //  Read Section 0 Indicator Section to get Edition number
+      Grib1IndicatorSection is = new Grib1IndicatorSection(raf);  // section 0
+      return is.getGribEdition();
     }  // end getEdition
 
     /**
      * _more_
      *
-     * @param raf _more_
+     * @param raf  _more_
      * @param stop _more_
-     *
      * @return _more_
-     *
      * @throws IOException _more_
      */
     private boolean seekHeader(RandomAccessFile raf, long stop)
             throws IOException {
-        // seek header
-        StringBuffer hdr   = new StringBuffer();
-        int          match = 0;
+      // seek header
+      StringBuffer hdr = new StringBuffer();
+      int match = 0;
 
-        while (raf.getFilePointer() < stop) {
-            // code must be "G" "R" "I" "B"
-            char c = (char) raf.read();
+      while (raf.getFilePointer() < stop) {
+        // code must be "G" "R" "I" "B"
+        char c = (char) raf.read();
 
-            hdr.append((char) c);
-            if (c == 'G') {
-                match = 1;
-            } else if ((c == 'R') && (match == 1)) {
-                match = 2;
-            } else if ((c == 'I') && (match == 2)) {
-                match = 3;
-            } else if ((c == 'B') && (match == 3)) {
-                match = 4;
+        hdr.append((char) c);
+        if (c == 'G') {
+          match = 1;
+        } else if ((c == 'R') && (match == 1)) {
+          match = 2;
+        } else if ((c == 'I') && (match == 2)) {
+          match = 3;
+        } else if ((c == 'B') && (match == 3)) {
+          match = 4;
 
-                Matcher m = productID.matcher(hdr.toString());
-                if (m.find()) {
-                    header = m.group(1);
-                } else {
-                    //header = hdr.toString();
-                    header = "GRIB1";
-                }
-                //System.out.println( "header =" + header.toString() );
-                return true;
-            } else {
-                match = 0;  /* Needed to protect against "GaRaIaB" case. */
-            }
+          Matcher m = productID.matcher(hdr.toString());
+          if (m.find()) {
+            header = m.group(1);
+          } else {
+            //header = hdr.toString();
+            header = "GRIB1";
+          }
+          //System.out.println( "header =" + header.toString() );
+          return true;
+        } else {
+          match = 0;  /* Needed to protect against "GaRaIaB" case. */
         }
-        return false;
+      }
+      return false;
     }  // end seekHeader
 
     /**
      * _more_
      *
-     * @param gds _more_
+     * @param gds        _more_
      * @param gdsCounter _more_
-     *
      * @return _more_
      */
     private String getGDSkey(Grib1GridDefinitionSection gds,
-                             HashMap<String,String> gdsCounter) {
+                             HashMap<String, String> gdsCounter) {
 
-        //String key = gds.getCheckSum();
-        String key = Integer.toString(gds.getGdsKey());
-        // only Lat/Lon grids can have > 1 GDSs
-        /*
-        if ((gds.getGridType() == 0) || (gds.getGridType() == 4)) {
-            if ( !gdsHM.containsKey(key)) {     // check if gds is already saved
-                gdsHM.put(key, gds);
-            }
-        } else
-        */
+      //String key = gds.getCheckSum();
+      String key = Integer.toString(gds.getGdsKey());
+      // only Lat/Lon grids can have > 1 GDSs
+      /*
+      if ((gds.getGridType() == 0) || (gds.getGridType() == 4)) {
+          if ( !gdsHM.containsKey(key)) {     // check if gds is already saved
+              gdsHM.put(key, gds);
+          }
+      } else
+      */
 
-        if ( !gdsHM.containsKey(key)) {  // check if gds is already saved
-            gdsHM.put(key, gds);
-            gdsCounter.put(key, "1");
-        } else {
-            // increment the counter for this GDS
-            int count = Integer.parseInt((String) gdsCounter.get(key));
-            gdsCounter.put(key, Integer.toString(++count));
-        }
-        return key;
+      if (!gdsHM.containsKey(key)) {  // check if gds is already saved
+        gdsHM.put(key, gds);
+        gdsCounter.put(key, "1");
+      } else {
+        // increment the counter for this GDS
+        int count = Integer.parseInt((String) gdsCounter.get(key));
+        gdsCounter.put(key, Integer.toString(++count));
+      }
+      return key;
     }  // end getGDSkey
 
     /**
      * _more_
      *
-     * @param gds _more_
+     * @param gds        _more_
      * @param gdsCounter _more_
      */
     private void checkGDSkeys(Grib1GridDefinitionSection gds,
                               HashMap gdsCounter) {
-        /*
-        // lat/lon grids can have > 1 GDSs
-        if ((gds == null) || (gds.getGridType() == 0) || (gds.getGridType() == 4)) {
-            return;
-        }
-        String bestKey = "";
-        int    count   = 0;
-        // find bestKey with the most counts
-        for (Iterator it = gdsCounter.keySet().iterator(); it.hasNext(); ) {
-            String key      = (String) it.next();
-            int    gdsCount = Integer.parseInt((String) gdsCounter.get(key));
-            if (gdsCount > count) {
-                count   = gdsCount;
-                bestKey = key;
-            }
-        }
-        // remove best key from gdsCounter, others will be removed from gdsHM
-        gdsCounter.remove(bestKey);
-        // remove all GDSs using the gdsCounter
-        for (Iterator it = gdsCounter.keySet().iterator(); it.hasNext(); ) {
-            String key = (String) it.next();
-            gdsHM.remove(key);
-        }
-        // reset GDS keys in products too
-        for (int i = 0; i < products.size(); i++) {
-            Grib1Product g1p = (Grib1Product) products.get(i);
-            g1p.setGDSkey(bestKey);
-            // TODO: if used set both gdskeys
-        }
-        return;
-        */
+      /*
+      // lat/lon grids can have > 1 GDSs
+      if ((gds == null) || (gds.getGridType() == 0) || (gds.getGridType() == 4)) {
+          return;
+      }
+      String bestKey = "";
+      int    count   = 0;
+      // find bestKey with the most counts
+      for (Iterator it = gdsCounter.keySet().iterator(); it.hasNext(); ) {
+          String key      = (String) it.next();
+          int    gdsCount = Integer.parseInt((String) gdsCounter.get(key));
+          if (gdsCount > count) {
+              count   = gdsCount;
+              bestKey = key;
+          }
+      }
+      // remove best key from gdsCounter, others will be removed from gdsHM
+      gdsCounter.remove(bestKey);
+      // remove all GDSs using the gdsCounter
+      for (Iterator it = gdsCounter.keySet().iterator(); it.hasNext(); ) {
+          String key = (String) it.next();
+          gdsHM.remove(key);
+      }
+      // reset GDS keys in products too
+      for (int i = 0; i < products.size(); i++) {
+          Grib1Product g1p = (Grib1Product) products.get(i);
+          g1p.setGDSkey(bestKey);
+          // TODO: if used set both gdskeys
+      }
+      return;
+      */
     }  // end checkGDSkeys
 
     /**
@@ -3922,7 +3927,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * @return products
      */
     public final ArrayList getProducts() {
-        return products;
+      return products;
     }
 
     /**
@@ -3931,7 +3936,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * @return records
      */
     public final ArrayList getRecords() {
-        return records;
+      return records;
     }
 
     /**
@@ -3940,7 +3945,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * @return gdsHM
      */
     public final HashMap getGDSs() {
-        return gdsHM;
+      return gdsHM;
     }
 
 
