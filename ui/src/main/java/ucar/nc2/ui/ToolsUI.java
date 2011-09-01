@@ -5831,7 +5831,7 @@ public class ToolsUI extends JPanel {
     if (cache != null)
       cache.clearCache(true);
     NetcdfDataset.shutdown(); // shutdown threads
-    cacheManager.close(); // shutdown ehcache
+    if (cacheManager != null) cacheManager.close(); // shutdown ehcache
     MetadataManager.closeAll(); // shutdown bdb
 
     System.exit(0);
