@@ -1088,6 +1088,14 @@ public class ToolsUI extends JPanel {
     griboTabPane.setSelectedComponent(gribFilesPanel);
   }
 
+  private void openGribRaw(String filename) {
+    makeComponent(griboTabPane, "GRIB-RAW");
+    gribRawPanel.process(filename);
+    tabbedPane.setSelectedComponent(iospTabPane);
+    iospTabPane.setSelectedComponent(griboTabPane);
+    griboTabPane.setSelectedComponent(gribRawPanel);
+  }
+
   private void openGridDataset(String datasetName) {
     makeComponent(ftTabPane, "Grids");
     gridPanel.doit(datasetName);
@@ -2469,6 +2477,10 @@ public class ToolsUI extends JPanel {
           if (e.getPropertyName().equals("openGrib2o")) {
             String collectionName = (String) e.getNewValue();
             openGrib2o(collectionName);
+
+          } else  if (e.getPropertyName().equals("openGribRaw")) {
+            String filename = (String) e.getNewValue();
+            openGribRaw(filename);
           }
         }
       });
@@ -5819,7 +5831,7 @@ public class ToolsUI extends JPanel {
     if (cache != null)
       cache.clearCache(true);
     NetcdfDataset.shutdown(); // shutdown threads
-    cacheManager.close(); // shutdown ehcache
+    if (cacheManager != null) cacheManager.close(); // shutdown ehcache
     MetadataManager.closeAll(); // shutdown bdb
 
     System.exit(0);
@@ -5969,8 +5981,8 @@ public class ToolsUI extends JPanel {
 
     // filesystem caching
     DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
-    cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
-    DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
+    //cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
+    //DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
     thredds.inventory.CollectionManagerAbstract.enableMetadataManager();    // bdb for metadata
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days

@@ -400,6 +400,7 @@ public final class Grib1Pds extends GribPds {
     return interval;
   }
 
+  // LOOK! fake conversion !!
   public int[] getForecastTimeInterval(int wantTimeUnit) {
     return getForecastTimeInterval();
   }

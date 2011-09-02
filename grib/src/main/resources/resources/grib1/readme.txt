@@ -27,8 +27,7 @@ Notes for grib-1 tables
   at this point, id say all grib2 tables are suspect.
 
  8/25/2011 spot check our grib1 tables against http://dss.ucar.edu/metadata/ParameterTables/
-  WMO_GRIB1.98-0.128.xml: minor changes in desc; units 57, 58, 212; 15 missing in our table
-  WMO_GRIB1.59-0.2.xml: many extra in ours; units are messed up in about 25 of ours; different 53, 198
+    WMO_GRIB1.59-0.2.xml: many extra in ours; units are messed up in about 25 of ours; different 53, 198
   WMO_GRIB1.34-0.3.xml: about 10 extra in ours.
   WMO_GRIB1.7-1.132.xml: udunits differ: 3,103,178,179;
   WMO_GRIB1.xml against wmo_2_v3.tab: udunits 4 wrong, 3 right;
@@ -51,9 +50,28 @@ Notes for grib-1 tables
 
  8/29/2011
    - waiting for ncep
-   - Bill Anderson contacted me from fnmoc, with follow up to Mary Clifford, apparently in operations.  They are still not versioning tables.
+   - Bill Anderson contacted me from fnmoc, with follow up to Mary Clifford (in operations?).  They are apparently still not versioning tables.
    - put out call for grib1 example files.
 
  8/30/2011
    - Dave blodgett sends sample file from center 9-157 (North Central River Forecasting Center), params 61 (version 2) and 237 (version 128).
-     Suspicious use of nceptab_3.tab for param 237 . also, reference date changes which we dont handle correctly so time coord is wrong.
+     Suspicious use of nceptab_3.tab for param 237. also, reference date changes which we dont handle correctly so time coord is wrong.
+     claim is that the inclusion of parameter 237 is inadvertant, and should be ignored.
+
+ 9/1/2011 waiting for ncep response. previous email with Jeff Ator:
+   Q: "We are reviewing our use of NCEP local tables for grib and bufr, looking for errors.
+   I thought it would be worth checking to see if there are any official "machine readable" version of the tables? Also, when im examining the tables at
+   http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml, should i assume that these are only for center 7, or also for centers 8 and 9?
+   should I assume that these are for all subcenters of center 7? there seem to be about 15 subcenters.
+   another way to ask this question: what do we know for sure about which centers/subcenters these tables apply to?"
+   A: "All of our local tables are for originating center 7.  I'm not aware of any products we generate which use 8 or 9."
+   which i guess means: dont use ncep tables for anything other than center 7. which we do. a lot.
+
+ 9/1/2011 use old tables as backup
+   - need a judgement on what is right. remove wildcards -1 -1 (match all for center), as thats too optimistic.
+   - should we ignore stuff thats in WMO part of table. I know ecmwf does override.
+
+ 9/1/2011 ecmwf
+   - download "grib_api" software from http://www.ecmwf.int/products/data/software/download/grib_api.html
+   - extract grib_api-1.9.9/definitions/grib1/*.table to resources/grib1/ecmwf/
+   - these appear to include wmo standard tables and ecmwf local tables

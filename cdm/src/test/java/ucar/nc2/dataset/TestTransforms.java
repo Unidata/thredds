@@ -249,6 +249,8 @@ public class TestTransforms extends TestCase {
         Section cSection = new Section(coordVals.getShape());
         System.out.printf("%s: varSection shape = %s %n", v.getFullName(), varSection);
         System.out.printf("%s: coordVal shape = %s %n", v.getFullName(), cSection);
+        if (varSection.computeSize() != cSection.computeSize())
+          System.out.println("HEY");
         assert varSection.computeSize() == cSection.computeSize();
       }
     }

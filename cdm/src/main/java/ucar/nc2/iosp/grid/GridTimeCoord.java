@@ -49,14 +49,14 @@ import java.util.*;
 public class GridTimeCoord implements Comparable<GridTimeCoord> {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridTimeCoord.class);
 
-  //private GridTableLookup lookup;
   protected int seq = 0; // for getting a unique name
   protected String timeUdunit;
   protected int timeUnit;
 
-  protected Date baseDate;
+  protected Date baseDate; // earliest base date
+  protected boolean refDateDiffers = false;
   protected List<Date> times;
-  protected List<TimeCoordWithInterval> timeIntvs;
+  protected List<TimeCoordWithInterval> timeIntvs; // only if interval coord
   protected int constantInterval = -1;
   protected int[] coordData;
 
@@ -74,13 +74,18 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
         this.baseDate = record.getReferenceTime();
         this.timeUdunit = record.getTimeUdunitName();
         this.timeUnit = record.getTimeUnit();
-        //System.out.printf("%s%n", record.getParameterDescription());
       }
 
-      // use earlier reference date LOOK WHY?
       Date ref = record.getReferenceTime();
-      if (ref.before(this.baseDate))
-        this.baseDate = ref;
+      if (!baseDate.equals(ref)) {
+        refDateDiffers = true;
+        if (ref.before(this.baseDate)) // use earlier reference date
+          this.baseDate = ref;
+      }
+
+      if (record.getTimeUnit() != this.timeUnit) {
+        throw new IllegalStateException("time units must match");
+      }
     }
 
      // non - interval case
@@ -149,7 +154,6 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    * @param g      the group in the file
    */
   void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
-    //Collections.sort(times);
     ncfile.addDimension(g, new Dimension(getName(), getNTimes(), true));
   }
 
@@ -162,10 +166,6 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
   void addToNetcdfFile(NetcdfFile ncfile, Group g) {
     Variable v = new Variable(ncfile, g, null, getName());
     v.setDataType(DataType.INT);
-
-    //Date baseTime = lookup.getFirstBaseTime();
-    //String timeUnit = lookup.getFirstTimeRangeUnitName();
-    // String timeUnit = lookup.getTimeRangeUnitName(this.timeUnit);
 
     DateFormatter formatter = new DateFormatter();
     String refDate = formatter.toDateTimeStringISO(baseDate);
@@ -231,18 +231,6 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       vb.setCachedData(boundsArray, false);
       ncfile.addVariable(g, vb);
     }
-
-    /* Date d = lookup.getFirstBaseTime();
-    if (lookup instanceof Grib2GridTableLookup) {
-      Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
-      v.addAttribute(new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO(d)));
-      v.addAttribute(new Attribute("GRIB2_significanceOfRTName", g2lookup.getFirstSignificanceOfRTName()));
-    } else if (lookup instanceof Grib1GridTableLookup) {
-      Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
-      v.addAttribute(new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO(d)));
-      v.addAttribute(new Attribute("GRIB2_significanceOfRTName", g1lookup.getFirstSignificanceOfRTName()));
-    }
-    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));  */
 
     ncfile.addVariable(g, v);
   }

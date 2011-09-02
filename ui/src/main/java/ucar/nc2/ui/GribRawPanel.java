@@ -1281,6 +1281,22 @@ public class GribRawPanel extends JPanel {
       return Long.toBinaryString(gds.getResolution());
     }
 
+    public double getDx() {
+      return gds.getDx();
+    }
+
+    public double getDy() {
+      return gds.getDy();
+    }
+
+    public int getNx() {
+      return gds.getNx();
+    }
+
+    public int getNy() {
+      return gds.getNy();
+    }
+
   }
 
   public class Grib1ParameterBean {
