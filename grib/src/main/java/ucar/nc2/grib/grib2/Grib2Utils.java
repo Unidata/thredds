@@ -68,7 +68,7 @@ public class Grib2Utils {
   }
 
   /* Grib1
-    Code table 4 – Unit of time
+    Code table 4 - Unit of time
     Code figure Meaning
     0 Minute
     1 Hour
@@ -78,13 +78,13 @@ public class Grib2Utils {
     5 Decade (10 years)
     6 Normal (30 years)
     7 Century (100 years)
-    8–9 Reserved
+    8-9 Reserved
     10 3 hours
     11 6 hours
     12 12 hours
     13 Quarter of an hour
     14 Half an hour
-    15–253 Reserved
+    15-253 Reserved
    */
 
   static public CalendarPeriod getCalendarPeriod(int timeUnit) {

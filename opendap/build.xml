@@ -130,9 +130,14 @@
   <property name="build.doc" location="${build.dir}/doc"/>
   <property name="build.lib" location="${build.dir}/lib"/>
 
-  <property name="war.dir" location="${build.dir}/dts"/>
+  <property name="war.name" location="dts"/>
+  <property name="war.dir" location="${build.dir}/${war.name}"/>
   <property name="webapp.dir" location="src/test/resources"/>
-  <property name="warfile" value="dts-${VERSION}.war"/>
+  <property name="warfile" value="${war.name}-${VERSION}.war"/>
+
+  <!-- tomcat directory properties -->  
+  <property name="tomcat.dir" location="t:/tomcat6"/>
+  <property name="tomcat.webapps.dir" location="${tomcat.dir}/webapps"/>
 
 
   <!-- Where to put test case output -->
@@ -337,6 +342,15 @@
   - OPeNDAP dts War file
   -
   -->
+
+   <target name="war-clean">
+	<delete dir="${tomcat.webapps.dir}/${war.name}"/>
+	<delete file="${tomcat.webapps.dir}/${warfile}"/>
+   </target>
+
+   <target name="war-install" depends="war-clean">
+	<copy file="${build.dir}/${warfile}" todir="${tomcat.webapps.dir}"/>
+   </target>
 
   <!--	    depends="opendap-lib" -->
   <target name="war"

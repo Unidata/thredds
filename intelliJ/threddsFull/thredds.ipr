@@ -142,6 +142,8 @@
             <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../grib/src/main/resources" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../bufr/src/main/resources" />
+            <element id="module-output" name="visad" />
+            <element id="module-test-output" name="opendap" />
             <element id="module-output" name="opendap" />
           </element>
           <element id="directory" name="lib">
@@ -155,6 +157,10 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/easymock-2.5.2.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/je-4.0.71.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.6.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/joda-time-2.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.4.0a.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-1.7.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/visad.jar" />
           </element>
           <element id="directory" name="resources">
             <element id="directory" name="testdatasets">
@@ -162,7 +168,7 @@
             </element>
           </element>
         </element>
-        <element id="javaee-facet-resources" facet="opendap/web/Web" />
+        <element id="javaee-facet-resources" facet="opendap/web/dts" />
       </root>
     </artifact>
   </component>
