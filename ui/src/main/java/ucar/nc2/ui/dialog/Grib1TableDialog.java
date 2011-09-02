@@ -206,7 +206,7 @@ public class Grib1TableDialog extends JDialog {
         if (t == null)
           result.setText("NOT FOUND");
         else
-          result.setText(t.getCenter_id()+" "+t.getSubcenter_id()+" "+t.getVersion()+": "+t.getFilename());
+          result.setText(t.getCenter_id()+" "+t.getSubcenter_id()+" "+t.getVersion()+": "+t.getPath());
 
       } catch (Exception ee) {
 

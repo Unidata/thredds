@@ -1,0 +1,198 @@
+ECMWF local table 2: Version Number 180 (ECSN - HIRETYCS).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+129
+Z
+Geopotential
+m**2 s**-2
+At the surface=orography
+......................
+130
+T
+Temperature
+K
+-
+......................
+131
+U
+U velocity
+m s**-1
+-
+......................
+132
+V
+V velocity
+m s**-1
+-
+......................
+133
+Q
+Specific humidity
+kg kg**-1
+-
+......................
+134
+SP
+Surface pressure
+Pa
+-
+......................
+137
+TCWV
+Total column water vapour
+kg m**-2
+-
+......................
+138
+VO
+Vorticity (relative)
+s**-1
+-
+......................
+141
+SD
+Snow depth
+m of water equivalent
+-
+......................
+142
+LSP
+Large-scale precipitation
+m
+-
+......................
+143
+CP
+Convective precipitation
+m
+-
+......................
+144
+SF
+Snowfall
+m of water equivalent
+-
+......................
+146
+SSHF
+Surface sensible heat flux
+W m**-2 s
+-
+......................
+147
+SLHF
+Surface latent heat flux
+W m**-2 s
+-
+......................
+149
+TSW
+Total soil wetness
+m
+-
+......................
+151
+MSL
+Mean sea level pressure
+Pa
+-
+......................
+155
+D
+Divergence
+s**-1
+-
+......................
+164
+TCC
+Total cloud cover
+(0 - 1)
+-
+......................
+165
+10U
+10 metre U wind component
+m s**-1
+-
+......................
+166
+10V
+10 metre V wind component
+m s**-1
+-
+......................
+167
+2T
+2 metre temperature
+K
+-
+......................
+168
+2D
+2 metre dewpoint temperature
+K
+-
+......................
+172
+LSM
+Land-sea mask
+(0 - 1)
+-
+......................
+176
+SSR
+Surface solar radiation
+J m**-2 s
+Net
+......................
+177
+STR
+Surface thermal radiation
+J m**-2 s
+Net
+......................
+178
+TSR
+Top solar radiation
+J m**-2 s
+Net
+......................
+179
+TTR
+Top thermal radiation
+J m**-2 s
+Net
+......................
+180
+EWSS
+East-West surface stress
+N m**-2 s
+-
+......................
+181
+NSSS
+North-South surface stress
+N m**-2 s
+-
+......................
+182
+E
+Evaporation
+m of water
+Surface
+......................
+205
+RO
+Runoff
+m
+Total
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

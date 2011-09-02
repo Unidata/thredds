@@ -1,0 +1,468 @@
+ECMWF local table 2: Version Number 162 (ECMWF re-analysis, ERA40).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+051
+-
+Surface geopotential
+m**2 s**-2
+-
+......................
+052
+-
+Surface pressure
+Pa
+-
+......................
+053
+-
+Vertical integral of mass of atmosphere
+kg m**-2
+-
+......................
+054
+-
+Vertical integral of temperature
+K kg m**-2
+-
+......................
+055
+-
+Vertical integral of total column water vapour
+kg m**-2
+-
+......................
+056
+-
+Vertical integral of total column liquid cloud water
+kg m**-2
+-
+......................
+057
+-
+Vertical integral of total column frozen cloud water
+kg m**-2
+-
+......................
+058
+-
+Vertical integral of total column ozone
+kg m**-2
+-
+......................
+059
+-
+Vertical integral of kinetic energy
+J m**-2
+-
+......................
+060
+-
+Vertical integral of thermal energy
+J m**-2
+-
+......................
+061
+-
+Vertical integral of dry static energy
+J m**-2
+-
+......................
+062
+-
+Vertical integral of moist static energy
+J m**-2
+-
+......................
+063
+-
+Vertical integral of total energy
+J m**-2
+-
+......................
+064
+-
+Vertical integral of energy conversion
+W m**-2
+-
+......................
+065
+-
+Vertical integral of eastward mass flux
+kg m**-1 s**-1
+-
+......................
+066
+-
+Vertical integral of northward mass flux
+kg m**-1 s**-1
+-
+......................
+067
+-
+Vertical integral of eastward kinetic energy flux
+W m**-2
+-
+......................
+068
+-
+Vertical integral of northward kinetic energy flux
+W m**-2
+-
+......................
+069
+-
+Vertical integral of eastward heat flux
+W m**-2
+-
+......................
+070
+-
+Vertical integral of northward heat flux
+W m**-2
+-
+......................
+071
+-
+Vertical integral of eastward water vapour flux
+kg m**-1 s**-1
+-
+......................
+072
+-
+Vertical integral of northward water vapour flux
+kg m**-1 s**-1
+-
+......................
+073
+-
+Vertical integral of eastward geopotential flux
+W m**-2
+-
+......................
+074
+-
+Vertical integral of northward geopotential flux
+W m**-2
+-
+......................
+075
+-
+Vertical integral of eastward total energy flux
+W m**-2
+-
+......................
+076
+-
+Vertical integral of northward total energy flux
+W m**-2
+-
+......................
+077
+-
+Vertical integral of eastward ozone flux
+kg m**-1 s**-1
+-
+......................
+078
+-
+Vertical integral of northward ozone flux
+kg m**-1 s**-1
+-
+......................
+081
+-
+Vertical integral of divergence of mass flux
+kg m**-2 s**-1
+-
+......................
+082
+-
+Vertical integral of divergence of kinetic energy flux
+W m**-2
+-
+......................
+083
+-
+Vertical integral of divergence of thermal energy flux
+W m**-2
+-
+......................
+084
+-
+Vertical integral of divergence of moisture flux
+kg m**-2 s**-1
+-
+......................
+085
+-
+Vertical integral of divergence of geopotential flux
+W m**-2
+-
+......................
+086
+-
+Vertical integral of divergence of total energy flux
+W m**-2
+-
+......................
+087
+-
+Vertical integral of divergence of ozone flux
+kg m**-2 s**-1
+-
+......................
+100
+-
+Tendency of short wave radiation
+K
+-
+......................
+101
+-
+Tendency of long wave radiation
+K
+-
+......................
+102
+-
+Tendency of clear sky short wave radiation
+K
+-
+......................
+103
+-
+Tendency of clear sky long wave radiation
+K
+-
+......................
+104
+-
+Updraught mass flux
+kg m**-2
+Model half levels
+......................
+105
+-
+Downdraught mass flux
+kg m**-2
+Model half levels
+......................
+106
+-
+Updraught detrainment rate
+kg m**-3
+Model half levels
+......................
+107
+-
+Downdraught detrainment rate
+kg m**-3
+Model half levels
+......................
+108
+-
+Total precipitation flux
+kg m**-2
+Model half levels
+......................
+109
+-
+Turbulent diffusion coefficient for heat
+m**2
+Model half levels
+......................
+110
+-
+Tendency of temperature due to physics
+K
+-
+......................
+111
+-
+Tendency of specific humidity due to physics
+kg kg**-1
+-
+......................
+112
+-
+Tendency of u component due to physics
+m s**-1
+-
+......................
+113
+-
+Tendency of v component due to physics
+m s**-1
+-
+......................
+206
+-
+Variance of geopotential
+m**4 s**-4
+-
+......................
+207
+-
+Covariance of geopotential/temperature
+m**2 K s**-2
+-
+......................
+208
+-
+Variance of temperature
+K**2
+-
+......................
+209
+-
+Covariance of geopotential/specific humidity
+m**2 s**-2
+-
+......................
+210
+-
+Covariance of temperature/specific humidity
+K
+-
+......................
+211
+-
+Variance of specific humidity
+-
+-
+......................
+212
+-
+Covariance of u component/geopotential
+M**3 s**-3
+-
+......................
+213
+-
+Covariance of u component/temperature
+m s**-1 K
+-
+......................
+214
+-
+Covariance of u component/specific humidity
+m s**-1
+-
+......................
+215
+-
+Variance of u component
+m**2 s**-2
+-
+......................
+216
+-
+Covariance of v component/geopotential
+M**3 s**-3
+-
+......................
+217
+-
+Covariance of v component/temperaure
+m s**-1 K
+-
+......................
+218
+-
+Covariance of v component/specific humidity
+m s**-1
+-
+......................
+219
+-
+Covariance of v component/u component
+m**2 s**-2
+-
+......................
+220
+-
+Variance of v component
+m**2 s**-2
+-
+......................
+221
+-
+Covariance of omega/geopotential
+m**2 Pa s**-3
+-
+......................
+222
+-
+Covariance of omega/temperature
+Pa s**-1 K
+-
+......................
+223
+-
+Covariance of omega/specific humidity
+Pa s**-1
+-
+......................
+224
+-
+Covariance of omega/u component
+m Pa s**-2
+-
+......................
+225
+-
+Covariance of omega/v component
+m Pa s**-2
+-
+......................
+226
+-
+Variance of omega
+Pa**2 s**-2
+-
+......................
+227
+-
+Variance of surface pressure
+Pa**2
+-
+......................
+229
+-
+Variance of relative humidity
+dimensionless
+-
+......................
+230
+-
+Covariance of u component/ozone
+m s**-1
+-
+......................
+231
+-
+Covariance of v component/ozone
+m s**-1
+-
+......................
+232
+-
+Covariance of omega/ozone
+Pa s**-1
+-
+......................
+233
+-
+Variance of ozone
+dimensionless
+-
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

@@ -1,0 +1,1110 @@
+ECMWF local table 2: Version Number 171 (Anomalies).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+001
+STRFA
+Stream function anomaly
+m**2 s**-1
+-
+......................
+002
+VPOTA
+Velocity potential anomaly
+m**2 s**-1
+-
+......................
+003
+-
+Potential temperature
+K
+-
+......................
+004
+-
+Equivalent potential temperature
+K
+-
+......................
+005
+-
+Saturated equivalent potential temperature
+K
+-
+......................
+011
+-
+U component of divergent wind
+m s**-1
+-
+......................
+012
+-
+V component of divergent wind
+m s**-1
+-
+......................
+013
+-
+U component of rotational wind
+m s**-1
+-
+......................
+014
+-
+V component of rotational wind
+m s**-1
+-
+......................
+021
+-
+Unbalanced component of temperature
+K
+-
+......................
+022
+-
+Unbalanced component of logarithm of surface pressure
+-
+-
+......................
+023
+-
+Unbalanced component of divergence
+s**-1
+-
+......................
+026
+-
+Lake cover
+(0 - 1)
+-
+......................
+027
+-
+Low vegetation cover
+(0 - 1)
+-
+......................
+028
+-
+High vegetation cover
+(0 - 1)
+-
+......................
+029
+-
+Type of low vegetation
+-
+Table index
+......................
+030
+-
+Type of high vegetation
+-
+Table index
+......................
+031
+-
+Sea-ice cover
+(0 - 1)
+-
+......................
+032
+-
+Snow albedo
+(0 - 1)
+-
+......................
+033
+-
+Snow density
+kg m**-3
+-
+......................
+034
+-
+Sea surface temperature
+K
+-
+......................
+035
+-
+Ice surface temperature layer 1
+K
+-
+......................
+036
+-
+Ice surface temperature layer 2
+K
+-
+......................
+037
+-
+Ice surface temperature layer 3
+K
+-
+......................
+038
+-
+Ice surface temperature layer 4
+K
+-
+......................
+039
+-
+Volumetric soil water layer 1
+m**3 m**-3
+-
+......................
+040
+-
+Volumetric soil water layer 2
+m**3 m**-3
+-
+......................
+041
+-
+Volumetric soil water layer 3
+m**3 m**-3
+-
+......................
+042
+-
+Volumetric soil water layer 4
+m**3 m**-3
+-
+......................
+043
+-
+Soil type
+-
+-
+......................
+044
+-
+Snow evaporation
+m of water
+Accumulated field
+......................
+045
+-
+Snowmelt
+m of water
+Accumulated field
+......................
+046
+-
+Solar duration
+s
+-
+......................
+047
+-
+Direct solar radiation
+w m**-2
+Incident on a plane perpendicular to the Sun's direction
+......................
+048
+-
+Magnitude of surface stress
+N m**-2 s
+Accumulated field
+......................
+049
+-
+10 metre wind gust
+m s**-1
+-
+......................
+050
+-
+Large-scale precipitation fraction
+s
+Accumulated field
+......................
+051
+-
+Maximum 2 metre temperature
+K
+During previous 24 hours
+......................
+052
+-
+Minimum 2 metre temperature
+K
+During previous 24 hours
+......................
+053
+-
+Montgomery potential
+m**2 s**-2
+-
+......................
+054
+-
+Pressure
+Pa
+-
+......................
+055
+-
+Mean 2 metre temperature in past 24 hours
+K
+6-hourly intervals
+......................
+056
+-
+Mean 2 metre dewpoint temperature in past 24 hours
+K
+6-hourly intervals
+......................
+057
+-
+Downward UV radiation at the surface
+w m**-2
+Ultra-violet band B
+......................
+058
+-
+Photosynthetically active radiation at the surface
+w m**-2
+-
+......................
+059
+-
+Convective available potential energy
+J kg**-1
+-
+......................
+060
+-
+Potential vorticity
+K m**2 kg**-1 s**-1
+-
+......................
+061
+-
+Total precipitation from observations
+Millimetres*100 + number of stations
+-
+......................
+062
+-
+Observation count
+-
+Count of observations used in calculating value at a gridpoint
+......................
+063
+-
+Start time for skin temperature difference
+s
+Seconds from reference time
+......................
+064
+-
+Finish time for skin temperature difference
+s
+Seconds from reference time
+......................
+065
+-
+Skin temperature difference
+K
+-
+......................
+078
+TCLWA
+Total column liquid water anomaly
+kg m**-2
+-
+......................
+079
+TCIWA
+Total column ice water anomaly
+kg m**-2
+-
+......................
+125
+-
+Vertically integrated total energy
+J m**-2
+Integrated over a number of model levels
+......................
+126
+-
+Generic parameter for sensitive area prediction
+Various
+Originating centre dependent
+......................
+127
+-
+Atmospheric tide
+-
+Not GRIB data
+......................
+128
+-
+Budget values
+-
+Not GRIB data
+......................
+129
+ZA
+Geopotential anomaly
+m**2 s**-2
+At the surface: orography
+......................
+130
+TA
+Temperature anomaly
+K
+-
+......................
+131
+UA
+U velocity anomaly
+m s**-1
+-
+......................
+132
+VA
+V velocity anomaly
+m s**-1
+-
+......................
+133
+-
+Specific humidity
+kg kg**-1
+-
+......................
+134
+-
+Surface pressure
+Pa
+-
+......................
+135
+-
+Vertical velocity
+Pa s**-1
+-
+......................
+136
+-
+Total column water
+kg m**-2
+Liquid + ice + vapour
+......................
+137
+-
+Total column water vapour
+kg m**-2
+-
+......................
+138
+-
+Vorticity (relative)
+s**-1
+-
+......................
+139
+-
+Soil temperature level 1
+K
+-
+......................
+140
+-
+Soil wetness level 1
+m of water
+-
+......................
+141
+-
+Snow depth
+m of water equivalent
+-
+......................
+142
+-
+Stratiform precipitation (Large-scale precipitation)
+m
+Accumulated field
+......................
+143
+-
+Convective precipitation
+m
+Accumulated field
+......................
+144
+-
+Snowfall (convective + stratiform)
+m of water equivalent
+Accumulated field
+......................
+145
+-
+Boundary layer dissipation
+W m**-2 s
+Accumulated field
+......................
+146
+-
+Surface sensible heat flux
+W m**-2 s
+Accumulated field
+......................
+147
+-
+Surface latent heat flux
+W m**-2 s
+Accumulated field
+......................
+148
+-
+Charnock
+-
+-
+......................
+149
+-
+Surface net radiation
+W m**-2 s
+Accumulated field
+......................
+150
+-
+Top net radiation
+-
+-
+......................
+151
+MSLA
+Mean sea level pressure anomaly
+Pa
+-
+......................
+152
+-
+Logarithm of surface pressure
+-
+-
+......................
+153
+-
+Short-wave heating rate
+K
+Accumulated field
+......................
+154
+-
+Long-wave heating rate
+K
+Accumulated field
+......................
+155
+-
+Divergence
+s**-1
+-
+......................
+156
+-
+Height
+m
+Geopotential height
+......................
+157
+-
+Relative humidity
+%
+-
+......................
+158
+-
+Tendency of surface pressure
+Pa s**-1
+-
+......................
+159
+-
+Boundary layer height
+m
+-
+......................
+160
+-
+Standard deviation of orography
+-
+-
+......................
+161
+-
+Anisotropy of sub-gridscale orography
+-
+-
+......................
+162
+-
+Angle of sub-gridscale orography
+rad
+-
+......................
+163
+-
+Slope of sub-gridscale orography
+-
+-
+......................
+164
+TCCA
+Total cloud cover anomaly
+(0 - 1)
+-
+......................
+165
+10UA
+10 metre U wind component anomaly
+m s**-1
+-
+......................
+166
+10VA
+10 metre V wind component anomaly
+m s**-1
+-
+......................
+167
+2TA
+2 metre temperature anomaly
+K
+-
+......................
+168
+-
+2 metre dewpoint temperature
+K
+-
+......................
+169
+-
+Surface solar radiation downwards
+W m**-2 s
+Accumulated field
+......................
+170
+-
+Soil temperature level 2
+K
+-
+......................
+171
+-
+Soil wetness level 2
+m of water
+Scaled: depth surf water layer 7cm deep
+......................
+172
+-
+Land-sea mask
+(0 - 1)
+-
+......................
+173
+-
+Surface roughness
+m
+-
+......................
+174
+-
+Albedo
+(0 - 1)
+-
+......................
+175
+-
+Surface thermal radiation downwards
+W m**-2 s
+Accumulated field
+......................
+176
+-
+Surface solar radiation
+W m**-2 s
+Accumulated field
+......................
+177
+-
+Surface thermal radiation
+W m**-2 s
+Accumulated field
+......................
+178
+-
+Top solar radiation
+W m**-2 s
+Accumulated field
+......................
+179
+-
+Top thermal radiation
+W m**-2 s
+Accumulated field
+......................
+180
+-
+East-West surface stress
+N m**-2 s
+Accumulated field
+......................
+181
+-
+North-South surface stress
+N m**-2 s
+Accumulated field
+......................
+182
+-
+Evaporation
+m of water
+Accumulated field
+......................
+183
+-
+Soil temperature level 3
+K
+-
+......................
+184
+-
+Soil wetness level 3
+m of water
+Scaled depth surf water 7cm deep
+......................
+185
+-
+Convective cloud cover
+(0 - 1)
+-
+......................
+186
+-
+Low cloud cover
+(0 - 1)
+-
+......................
+187
+-
+Medium cloud cover
+(0 - 1)
+-
+......................
+188
+-
+High cloud cover
+(0 - 1)
+-
+......................
+189
+SUNDA
+Sunshine duration anomaly
+s
+Accumulated field
+......................
+190
+-
+East-West component of sub-gridscale orographic variance
+m**2
+-
+......................
+191
+-
+North-South component of sub-gridscale orographic variance
+m**2
+-
+......................
+192
+-
+North-West/South-East component of sub-gridscale orographic variance
+m**2
+-
+......................
+193
+-
+North-East/South-West component of sub-gridscale orographic variance
+m**2
+-
+......................
+194
+-
+Brightness temperature
+K
+-
+......................
+195
+-
+Latitudinal component of gravity wave stress
+N m**-2 s
+Accumulated field
+......................
+196
+-
+Meridional component of gravity wave stress
+N m**-2 s
+Accumulated field
+......................
+197
+-
+Gravity wave dissipation
+W m**-2 s
+Accumulated field
+......................
+198
+-
+Skin reservoir content
+m of water
+-
+......................
+199
+-
+Vegetation fraction
+(0 - 1)
+-
+......................
+200
+-
+Variance of sub-gridscale orography
+m**2
+-
+......................
+201
+MX2TA
+Maximum temperature at 2 metres anomaly
+K
+Since previous post-processing
+......................
+202
+MN2TA
+Minimum temperature at 2 metres anomaly
+K
+Since previous post-processing
+......................
+203
+-
+Ozone mass mixing ratio
+kg kg**-1
+-
+......................
+204
+-
+Precipitation analysis weights
+-
+-
+......................
+205
+-
+Runoff
+m
+Accumulated field
+......................
+206
+-
+Total column ozone
+kg m**-2
+-
+......................
+207
+-
+10 metre wind speed
+m s**-1
+-
+......................
+208
+-
+Top net solar radiation, clear sky
+W m**-2 s
+Accumulated field
+......................
+209
+-
+Top net thermal radiation, clear sky
+W m**-2 s
+Accumulated field
+......................
+210
+-
+Surface net solar radiation, clear sky
+W m**-2 s
+Accumulated field
+......................
+211
+-
+Surface net thermal radiation, clear sky
+W m**-2 s
+Accumulated field
+......................
+212
+-
+Solar insolation
+W m**-2
+Accumulated field
+......................
+214
+-
+Diabatic heating by radiation
+K
+-
+......................
+215
+-
+Diabatic heating by vertical diffusion
+K
+-
+......................
+216
+-
+Diabatic heating by cumulus convection
+K
+-
+......................
+217
+-
+Diabatic heating by large-scale condensation
+K
+-
+......................
+218
+-
+Vertical diffusion of zonal wind
+m s**-1
+-
+......................
+219
+-
+Vertical diffusion of meridional wind
+m s**-1
+-
+......................
+220
+-
+East-West gravity wave drag tendency
+m s**-1
+-
+......................
+221
+-
+North-South gravity wave drag tendency
+m s**-1
+-
+......................
+222
+-
+Convective tendency of zonal wind
+m s**-1
+-
+......................
+223
+-
+Convective tendency of meridional wind
+m s**-1
+-
+......................
+224
+-
+Vertical diffusion of humidity
+kg kg**-1
+-
+......................
+225
+-
+Humidity tendency by cumulus convection
+kg kg**-1
+-
+......................
+226
+-
+Humidity tendency by large-scale condensation
+kg kg**-1
+-
+......................
+227
+-
+Change from removal of negative humidity
+kg kg**-1
+-
+......................
+228
+TPA
+Total precipitation anomaly
+m
+-
+......................
+229
+-
+Instantaneous X surface stress
+N m**-2
+-
+......................
+230
+-
+Instantaneous Y surface stress
+N m**-2
+-
+......................
+231
+-
+Instantaneous surface heat flux
+W m**-2
+-
+......................
+232
+-
+Instantaneous moisture flux
+kg m**-2 s
+Evaporation
+......................
+233
+-
+Apparent surface humidity
+kg kg**-1
+-
+......................
+234
+-
+Logarithm of surface roughness length for heat
+-
+-
+......................
+235
+-
+Skin temperature
+K
+-
+......................
+236
+-
+Soil temperature level 4
+K
+-
+......................
+237
+-
+Soil wetness level 4
+m
+Scaled to depth of surface water layer 7cm deep
+......................
+238
+-
+Temperature of snow layer
+K
+-
+......................
+239
+-
+Convective snowfall
+m of water equivalent
+Accumulated field
+......................
+240
+-
+Large-scale snowfall
+m of water equivalent
+Accumulated field
+......................
+241
+-
+Accumulated cloud fraction tendency
+(-1 to 1)
+-
+......................
+242
+-
+Accumulated liquid water tendency
+(-1 to 1)
+-
+......................
+243
+-
+Forecast albedo
+(0 - 1)
+-
+......................
+244
+-
+Forecast surface roughness
+m
+-
+......................
+245
+-
+Forecast logarithm of surface roughness for heat
+-
+-
+......................
+246
+-
+Cloud liquid water content
+kg kg**-1
+-
+......................
+247
+-
+Cloud ice water content
+kg kg**-1
+-
+......................
+248
+-
+Cloud cover
+(0 - 1)
+-
+......................
+249
+-
+Accumulated ice water tendency
+(-1 to 1)
+-
+......................
+250
+-
+Ice age
+(0 - 1)
+0 first-year, 1 multi-year
+......................
+251
+-
+Adiabatic tendency of temperature
+K
+-
+......................
+252
+-
+Adiabatic tendency of humidity
+kg kg**-1
+-
+......................
+253
+-
+Adiabatic tendency of zonal wind
+m s**-1
+-
+......................
+254
+-
+Adiabatic tendency of meridional wind
+m s**-1
+-
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

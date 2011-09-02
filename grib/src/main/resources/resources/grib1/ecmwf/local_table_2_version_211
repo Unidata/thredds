@@ -1,0 +1,90 @@
+ECMWF local table 2: Version Number 211 (GEMS Differences between first guess and analysis).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+046
+AERPR
+Aerosol precursor mixing ratio
+kg kg**-1
+diagnostic 2D
+......................
+047
+AERSM
+Aerosol small mode mixing ratio
+kg kg**-1
+diagnostic 2D
+......................
+048
+AERLG
+Aerosol large mode mixing ratio
+kg kg**-1
+diagnostic 2D
+......................
+049
+AODPR
+Aerosol precursor optical depth
+dimensionless
+diagnostic 2D
+......................
+050
+AODSM
+Aerosol small mode optical depth
+dimensionless
+diagnostic 2D
+......................
+051
+AODLG
+Aerosol large mode optical depth
+dimensionless
+diagnostic 2D
+......................
+061
+CO2
+Carbon Dioxide
+kg kg**-1
+prognostic 3D
+......................
+062
+CH4
+Methane
+kg kg**-1
+prognostic 3D
+......................
+063
+N2O
+Nitrous oxide
+kg kg**-1
+prognostic 3D
+......................
+121
+NO2
+Nitrogen dioxide
+kg kg**-1
+prognostic 3D
+......................
+122
+SO2
+Sulphur dioxide
+kg kg**-1
+prognostic 3D
+......................
+123
+CO
+Carbon monoxide
+kg kg**-1
+prognostic 3D
+......................
+124
+HCHO
+Formaldehyde
+kg kg**-1
+prognostic 3D
+......................
+203
+GO3
+GEMS Ozone
+kg kg**-1
+prognostic 3D
+......................
+999
+.
+.

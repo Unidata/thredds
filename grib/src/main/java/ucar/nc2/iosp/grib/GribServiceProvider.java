@@ -80,6 +80,7 @@ public class GribServiceProvider extends GridServiceProvider {
   private Grib1Data dataReaderGrib1;
   private Grib2Data dataReaderGrib2;
   private GridIndex gridIndexSave = null;
+  private String lookupTable = null;
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) {
@@ -111,11 +112,17 @@ public class GribServiceProvider extends GridServiceProvider {
           } catch (IOException e) {
             return null;
           }
+      } else if (s.startsWith("GribLookupTable")) {
+        int pos = s.indexOf("=");
+        if (pos > 0) {
+          this.lookupTable = s.substring(pos+1).trim();
+          System.out.printf("GRIB got IOSP message=%s%n",this.lookupTable);
+        }
+        return null;
       }
     }
     return super.sendIospMessage(special);
   }
-
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {

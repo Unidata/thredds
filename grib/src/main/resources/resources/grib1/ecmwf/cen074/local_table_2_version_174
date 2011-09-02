@@ -1,0 +1,180 @@
+Non-ECMWF seasonal forecast model local table 2: Version Number 175 - anomalies.
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+006
+-
+Total soil moisture
+m
+The depth over which it is integrated varies depending on soil type
+......................
+031
+-
+Fraction of sea-ice in sea
+0 - 1
+0 - 1
+......................
+034
+-
+Open-sea surface temperature
+K     
+K
+......................
+039
+-
+Volumetric soil water layer 1
+m**3 m**-3 
+0 - 10cm
+......................
+040
+-
+Volumetric soil water layer 2
+m**3 m**-3 
+10 - 35cm
+......................
+041
+-
+Volumetric soil water layer 3
+m**3 m**-3 
+35 - 100cm
+......................
+042
+-
+Volumetric soil water layer 4
+m**3 m**-3 
+100 - 300cm
+......................
+049
+-
+0m wind gust over last 24 hours
+m s**-1 
+m s**-1
+......................
+055
+-
+1.5m temperature - mean over last 24 hours
+K
+K
+......................
+83
+-
+Net primary productivity
+kg C m**-2 s**-1
+kg C m**-2 s**-1
+......................
+85
+-
+10m U wind over land
+m s**-1
+m s**-1
+......................
+86
+-
+10m V wind over land
+m s**-1
+m s**-1
+......................
+87
+-
+1.5m temperature over land
+K
+K
+......................
+88
+-
+1.5m dewpoint temperature over land
+K
+K
+......................
+89
+-
+Top incoming solar radiation
+W m**-2 s
+Accumulated
+......................
+90
+-
+Top outgoing solar radiation
+W m**-2 s
+Accumulated
+......................
+110
+-
+Ocean ice concentration
+0 - 1
+0 - 1
+......................
+111
+-
+Ocean mean ice depth
+m
+m
+......................
+139
+-
+Soil temperature layer 1
+K
+0 - 10cm
+......................
+164
+-
+Average potential temperature in upper 293.4m
+degrees C
+degrees C
+......................
+167
+-
+1.5m temperature
+K
+K
+......................
+168
+-
+1.5m dewpoint temperature
+K
+K
+......................
+170
+-
+Soil temperature layer 2
+K
+10 - 35cm
+......................
+172
+-
+Fractional land mask
+0 - 1
+0 - 1
+......................
+175
+-
+Average salinity in upper 293.4m
+psu
+psu
+......................
+183
+-
+Soil temperature layer 3
+K
+35 - 100cm
+......................
+201
+-
+1.5m temperature - maximum over last 24 hours
+K
+K
+......................
+202
+-
+1.5m temperature - minimum over last 24 hours
+K
+K
+......................
+236
+-
+Soil temperature layer 4                          
+K
+K
+......................
+999
+.
+.

@@ -1,0 +1,198 @@
+ECMWF local table 2: Version Number 150 (Ocean - preliminary version).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+129
+-
+Ocean potential temperature
+deg C
+-
+......................
+130
+-
+Ocean salinity
+psu
+-
+......................
+131
+-
+Ocean potential density
+kg m**-3 -1000
+Reference = surface
+......................
+133
+-
+Ocean U velocity
+m s**-1
+-
+......................
+134
+-
+Ocean V velocity
+m s**-1
+-
+......................
+135
+-
+Ocean W velocity
+m s**-1
+-
+......................
+137
+-
+Richardson number
+-
+-
+......................
+139
+-
+U*V product
+m s**-2
+-
+......................
+140
+-
+U*T product
+m s**-1 deg C
+-
+......................
+141
+-
+V*T product
+m s**-1 deg C
+-
+......................
+142
+-
+U*U product
+m s**-2
+-
+......................
+143
+-
+V*V product
+m s**-2
+-
+......................
+144
+-
+UV - U~V~
+m s**-2
+u~ is time-mean of u
+......................
+145
+-
+UT - U~T~
+m s**-1 deg C
+-
+......................
+146
+-
+VT - V~T~
+m s**-1 deg C
+-
+......................
+147
+-
+UU - U~U~
+m s**-2
+-
+......................
+148
+-
+VV - V~V~
+m s**-2
+-
+......................
+152
+-
+Sea level
+m
+Departure from geoid, tides removed
+......................
+153
+-
+Barotropic stream function
+-
+-
+......................
+154
+-
+Mixed layer depth
+m
+Tcr=0.5 C for HOPE model
+......................
+155
+-
+Depth
+m
+Eg of isothermal surface
+......................
+168
+-
+U stress
+Pa
+-
+......................
+169
+-
+V stress
+Pa
+-
+......................
+170
+-
+Turbulent kinetic energy input
+-
+-
+......................
+171
+-
+Net surface heat flux
+-
++ve = down
+......................
+172
+-
+Surface solar radiation
+-
+-
+......................
+173
+-
+P-E
+-
+-
+......................
+180
+-
+Diagnosed sea surface temperature error
+deg C
+-
+......................
+181
+-
+Heat flux correction
+W m**-2
+-
+......................
+182
+-
+Observed sea surface temperature
+deg C
+-
+......................
+183
+-
+Observed heat flux
+W m**-2
+-
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

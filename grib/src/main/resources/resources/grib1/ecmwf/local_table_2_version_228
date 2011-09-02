@@ -1,0 +1,84 @@
+ECMWF local table 2: Version Number 228 (Standard 2).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+001
+CIN
+Convective inhibition
+J kg**-1
+-
+......................
+002
+OROG
+Orography
+m
+-
+......................
+003
+ZUST
+Friction velocity
+m s**-1
+-
+......................
+039
+SM
+Soil Moisture
+kg m**-3
+-
+......................
+131
+U10N
+Neutral wind at 10 m x-component
+m s**-1
+Neutral wind at 10 m x-component
+......................
+132
+V10N
+Neutral wind at 10 m y-component
+m s**-1
+-
+......................
+139
+ST
+Soil Temperature
+K
+-
+......................
+141
+SD
+Snow Depth water equivalent
+m
+-
+......................
+144
+SF
+Snow Fall water equivalent
+kg m**-2
+Accumulated field
+......................
+164
+TCC
+Total Cloud Cover
+%
+-
+......................
+170
+CAP
+Field capacity
+kg m**-3
+-
+......................
+171
+WILT
+Wilting point
+kg m**-3
+-
+......................
+228
+TP
+Total Precipitation
+kg m**-2
+Accumulated field
+......................
+999
+.
+.

@@ -1,0 +1,225 @@
+Table 2 locale a Meteo France: Version Number 128 (+1,2,3... pour entrees < 128)
+Codes et unites en phase avec FM 92-X Ext.GRIB.
+......................
+008
+ALTITUDE
+Altitude (geometrique)
+m
+m
+......................
+062
+PRLGE
+Precipitations liquides de grande echelle
+kg m**-2
+kg m**-2
+......................
+063
+PRLCV
+Precipitations liquides convectives
+kg m**-2
+kg m**-2
+......................
+128
+EAZSOL 
+Ecart-type d'erreur d'analyse du ZSOL
+kg m**-1 s**-2
+kg m**-1 s**-2
+......................
+129
+EPZSOL
+Ecart-type d'erreur de prevision du ZSOL
+kg m**-1 s**-2
+kg m**-1 s**-2
+......................
+130
+USTR
+Premiere composante tension sol integree
+W m**-2
+W m**-2
+......................
+131
+VSTR
+Seconde composante tension sol integree
+W m**-2
+W m**-2
+......................
+132
+TPWCLS
+Pseudo-adiabtemp in surface boundarylayer
+K
+K
+......................
+133
+FLP
+Pression en niveau de vol
+Ft
+Ft
+......................
+134
+CAT
+Turbulence en air clair
+kg m**-1 s**-3
+kg m**-1 s**-3
+......................
+135
+AIR_CS
+Concentration dans l'air polluant cesium
+unite_de_polluant m**-3
+unite_de_polluant m**-3
+......................
+136
+SOL_CS
+Depot au sol de polluant cesium
+unite_de_polluant m**-2
+unite_de_polluant m**-2
+......................
+137
+AIR_IO
+Concentration dans l'air de polluant iode
+unite_de_polluant m**-3
+unite_de_polluant m**-3
+......................
+138
+SOL_IO
+Depot au sol de polluant iode
+unite_de_polluant m**-2
+unite_de_polluant m**-2
+......................
+139
+AIR_RAD
+Concentration ds air polluant radioactif
+unite_de_polluant m**-3
+unite_de_polluant m**-3
+......................
+140
+SOL_RAD
+Depot au sol de polluant radioactif
+unite_de_polluant m**-2
+unite_de_polluant m**-2
+......................
+141
+AIR_CHIM
+Concentration dans air polluant chimique
+unite_de_polluant m**-3
+unite_de_polluant m**-3
+......................
+142
+SOL_CHIM
+Depot au sol de polluant chimique
+unite_de_polluant m**-2
+unite_de_polluant m**-2
+......................
+143
+AIR_PASS
+Concentration dans l'air traceur passif
+unite_de_polluant m**-3
+unite_de_polluant m**-3
+......................
+144
+AIR_VOLCAN
+Concentration dans l'air polluant volcan
+unite_de_polluant m**-3
+unite_de_polluant m**-3
+......................
+145
+SOL_VOLCAN
+Depot au sol de polluant type volcanique
+unite_de_polluant m**-2
+unite_de_polluant m**-2
+......................
+149
+TP
+Tourbillon potentiel
+K m**2 kg**-1 s**-1
+K m**2 kg**-1 s**-1
+......................
+150
+EAU
+Precipitations liquides totales
+kg m**-2
+kg m**-2
+......................
+151
+BILANHY
+Bilan hydrique
+kg m**-2
+kg m**-2
+......................
+152
+RESERV_GLAC
+Contenu (reservoir) en glace
+kg m**-2
+kg m**-2
+......................
+153
+RESERV_LIQU
+Contenu (reservoir) en eau
+kg m**-2
+kg m**-2
+......................
+154
+GIVRAGE
+Indice de risque de givrage
+g Kg**-1
+g Kg**-1
+......................
+155
+GIVRAGE_VV
+Ind. risque givrage selon vitesse vertic.
+g Kg**-1
+g Kg**-1
+......................
+156
+PREC_CONVEC
+Precipitations convectives totales
+kg m**-2
+kg m**-2
+......................
+157
+PREC_GDE_ECH
+Precipitations de grande echelle totales
+kg m**-2
+kg m**-2
+......................
+158
+FLLUNAIRE_D
+Flux de rayonnement lunaire descendant
+kg m**-1 s**-3
+kg m**-1 s**-3
+......................
+200
+MWD
+Direction moyenne des vagues
+degre
+degre
+......................
+201
+MWP
+Periode moyenne des vagues
+s
+s
+......................
+202
+SHPS
+Hauteur significative dela houle primaire
+m
+m
+......................
+203
+SHSS
+Hauteur significative de la houle 2ndaire
+m
+m
+......................
+204
+PP1D
+Periode corr.pic d'energie spectre vagues
+s
+s
+......................
+255
+-
+Indique une valeur manquante
+-
+-
+......................

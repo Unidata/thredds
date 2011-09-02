@@ -1,0 +1,771 @@
+Table 2 standard OMM: Version Numero 3.
+Codes et unites en phase avec FM 92-X Ext.GRIB.
+......................
+001
+P 
+Pression
+Pa
+Pa
+......................
+002
+PMER
+Pression reduite au niveau moyen dela mer
+Pa
+Pa
+......................
+003
+TDPS
+Tendance barometrique
+Pa s**-1
+Pa s**-1
+......................
+004
+TP 
+Tourbillon potentiel
+K m**2 kg**-1 s**-1
+K m**2 kg**-1 s**-1
+......................
+005
+HZ 
+Altitude en Atmosphere Standard OACI
+m
+m
+......................
+006
+Z
+Geopotentiel
+m**2 s**-2
+m**2 s**-2
+......................
+007
+H
+Hauteur geopotentielle
+gpm
+gpm
+......................
+008
+ALTITUDE
+Altitude (geometrique)
+m
+m
+......................
+009
+None
+Standard deviation of height
+m
+m
+......................
+010
+TCO3
+Total (column) ozone
+Dobson (kg m**-2)
+Dobson (kg m**-2)
+......................
+011
+T
+Temperature
+K
+K
+......................
+012
+None
+Virtual temperature
+K
+K
+......................
+013
+THETA
+Temperature potentielle
+K
+K
+......................
+014
+TPW
+Temperature potentielle pseudoadiabatique
+K
+K
+......................
+015
+TMAX
+Temperature maximale
+K
+K
+......................
+016
+TMIN
+Temperature minimale
+K
+K
+......................
+017
+TD
+Temperature du point de rosee
+K
+K
+......................
+018
+None
+Dew-point depression (or deficit)
+K
+K
+......................
+019
+None
+Lapse rate
+K s**-1
+K s**-1
+......................
+020
+None
+Visibility
+m
+m
+......................
+021
+None
+Radar spectra (1)
+-
+-
+......................
+022
+None
+Radar spectra (2)
+-
+-
+......................
+023
+None
+Radar spectra (3)
+-
+-
+......................
+024
+None
+Parcel lifted index (to 500 hPa)
+K
+K
+......................
+025
+None
+Temperature anomaly
+K
+K
+......................
+026
+None
+Pressure anomaly
+Pa
+Pa
+......................
+027
+None
+Geopotential height anomaly
+gpm
+gpm
+......................
+028
+None
+Wave spectra (1)
+-
+-
+......................
+029
+None
+Wave spectra (2)
+-
+-
+......................
+030
+None
+Wave spectra (3)
+-
+-
+......................
+031
+DD
+Direction du vent horizontal
+Degre
+Degre
+......................
+032
+FF
+Vitesse du vent horizontal
+m s**-1
+m s**-1
+......................
+033
+U
+Premiere composante (zonale) du vent
+m s**-1
+m s**-1
+......................
+034
+V
+Seconde composante (meridienne) du vent
+m s**-1
+m s**-1
+......................
+035
+None
+Stream Function
+m**2 s**-1
+m**2 s**-1
+......................
+036
+None
+Velocity Potential
+m**2 s**-1
+m**2 s**-1
+......................
+037
+None
+Montgomery stream Function
+m**2 s**-1
+m**2 s**-1
+......................
+038
+None
+Sigma coordinate vertical velocity
+s**-1
+s**-1
+......................
+039
+VV
+Vitesse verticale
+Pa s**-1
+Pa s**-1
+......................
+040
+None
+Vertical velocity
+m s**-1
+m s**-1
+......................
+041
+TA
+Tourbillon absolu
+s**-1
+s**-1
+......................
+042
+None
+Absolute divergence
+s**-1
+s**-1
+......................
+043
+TB
+Tourbillon relatif
+s**-1
+s**-1
+......................
+044
+DI
+Divergence relative
+s**-1
+s**-1
+......................
+045
+None
+Vertical u-component shear
+s**-1
+s**-1
+......................
+046
+None
+Vertical v-component shear
+s**-1
+s**-1
+......................
+047
+None
+Direction of current
+Degree true
+Degree true
+......................
+048
+None
+Speed of current
+m s**-1
+m s**-1
+......................
+049
+None
+U-component of current
+m s**-1
+m s**-1
+......................
+050
+None
+V-component of current
+m s**-1
+m s**-1
+......................
+051
+Q
+Humidite specifique
+kg kg**-1
+kg kg**-1
+......................
+052
+HU
+Humidite relative
+%
+%
+......................
+053
+R
+Rapport de melange de l'air humide
+kg m**-2
+kg m**-2
+......................
+054
+None
+Precipitable water
+kg m**-2
+kg m**-2
+......................
+055
+None 
+Vapour pressure
+Pa
+Pa
+......................
+056
+None 
+Saturation deficit
+Pa
+Pa
+......................
+057
+FLEVAP 
+Flux d'evaporation
+kg m**-2
+kg m**-2
+......................
+058
+CIWC
+Cloud ice
+kg m**-2
+kg m**-2
+......................
+059
+None
+Precipitation rate
+kg m**-2 s**-1
+kg m**-2 s**-1
+......................
+060
+None
+Thunderstorm probability
+%
+%
+......................
+061
+PRECIP
+Precipitation totales (toutes formes)
+kg m**-2
+kg m**-2
+......................
+062
+PRLGE
+Precipitations liquides de grande echelle
+kg m**-2
+kg m**-2
+......................
+063
+PRLCV
+Precipitations liquides convectives
+kg m**-2
+kg m**-2
+......................
+064
+INTENNEIGE
+Equivalent en eau des chutes de neige
+kg m**-2 s**-1
+kg m**-2 s**-1
+......................
+065
+SF
+Water equivalentof accumulated snow depth
+kg m**-2
+kg m**-2
+......................
+066
+HTEURNEIGE
+Epaisseur de neige en equivalent eau
+m (of water equivalent)
+m (of water equivalent)
+......................
+067
+None
+Mixed layer depth
+m
+m
+......................
+068
+None
+Transient thermocline depth
+m
+m
+......................
+069
+None
+Main thermocline depth
+m
+m
+......................
+070
+None
+Main thermocline anomaly
+m
+m
+......................
+071
+NEBUL
+Nebulosite totale
+%
+%
+......................
+072
+NEBCON
+Nebulosite due a la convection
+%
+%
+......................
+073
+NEBBAS
+Nebulosite de l'etage inferieur
+%
+%
+......................
+074
+NEBMOY
+Nebulosite de l'etage moyen
+%
+%
+......................
+075
+NEBHAU
+Nebulosite de l'etage superieur
+%
+%
+......................
+076
+CLWC
+Cloud liquid water content
+kg kg**-1
+kg kg**-1
+......................
+077
+None
+Best lifted index (to 500 hPa)
+K
+K
+......................
+078
+PRNCV
+Precipitations neigeuses convectives
+kg m**-2
+kg m**-2
+......................
+079
+PRNGE
+Precipitations neigeuses de grandeechelle
+kg m**-2
+kg m**-2
+......................
+080
+None
+Water temperature
+K
+K
+......................
+081
+TERRE_MER
+Indicateur terre/mer (1=terre, 0=mer)
+(0 - 1)
+(0 - 1)
+......................
+082
+None
+Deviation of sea-level from mean
+m
+m
+......................
+083
+RUGOSITE
+Rugosite du sol
+m
+m
+......................
+084
+ALBEDO
+Albedo
+-
+-
+......................
+085
+ST
+Surface temperature of soil
+K
+K
+......................
+086
+RESERVE_EAU
+Contenu en eau
+kg m**-2
+kg m**-2
+......................
+087
+VEGETATION
+Vegetation (pourcentage)
+%
+%
+......................
+088
+None
+Salinity
+kg kg**-1
+kg kg**-1
+......................
+089
+None
+Density
+kg m**-3
+kg kg**-1
+......................
+090
+RO
+Water run-off
+kg m**-2
+kg m**-2
+......................
+091
+None
+Ice cover (1=land, 0=sea)
+(0 - 1)
+(0 - 1)
+......................
+092
+None
+Ice thickness
+m
+m
+......................
+093
+None
+Direction of ice drift
+Degree true
+Degree true
+......................
+094
+None
+Speed of ice drift
+m s*-1
+m s*-1
+......................
+095
+None
+U-component of ice drift
+m s**-1
+m s**-1
+......................
+096
+None
+V-component of ice drift
+m s**-1
+m s**-1
+......................
+097
+None
+Ice growth rate
+m s**-1
+m s**-1
+......................
+098
+None
+Ice divergence
+s**-1
+s**-1
+......................
+099
+NEIGE
+Precipitations neigeuses totales
+kg m**-2
+kg m**-2
+......................
+100
+SWH
+Hauteur significative vagues_mer+houle 
+m
+m
+......................
+101
+MDWW
+Direction moy. des vagues de la merduvent
+Degre
+Degre
+......................
+102
+SHWW
+Hauteur signif.des vagues de la merduvent
+m
+m
+......................
+103
+MPWW
+Periode moy. des vagues de la mer du vent
+s
+s
+......................
+104
+MDS
+Direction des vagues de la houle
+Degre
+Degre
+......................
+105
+SHS
+Hauteur signific. des vagues de la houle
+m
+m
+......................
+106
+MPS
+Periode moyenne des vagues de la houle
+s
+s
+......................
+107
+MDPS
+Direction moyenne de la houle primaire
+Degre
+Degre
+......................
+108
+MPPS
+Periode moyenne de la houle primaire
+s
+s
+......................
+109
+MDSS
+Direction moyenne de la houle secondaire
+Degre
+Degre
+......................
+110
+MPSS
+Periode moyenne de la houle secondaire
+s
+s
+......................
+111
+FLSOLAIRE
+Bilan ray. courtes long. d'ondes (au sol)
+W m**-2
+W m**-2
+......................
+112
+FLTHERM
+Bilan ray. grandes long. d'ondes (au sol)
+W m**-2
+W m**-2
+......................
+113
+FLSOLAIRE
+Bilan ray. courtes long. d'ondes (sommet)
+W m**-2
+W m**-2
+......................
+114
+FLTHERM
+Bilan ray. grandes long. d'ondes (sommet)
+W m**-2
+W m**-2
+......................
+115
+None
+Long-wave radiation flux
+W m**-2
+W m**-2
+......................
+116
+None
+Short-wave radiation flux
+W m**-2
+W m**-2
+......................
+117
+None
+Global radiation flux
+W m**-2
+W m**-2
+......................
+118
+None
+Brightness temperature
+K
+K
+......................
+119
+None
+Radiance (with respect to wave number)
+W m**-1 sr**-1
+W m**-1 sr**-1
+......................
+120
+None
+Radiance (with respect to wave length)
+W m**-1 sr**-1
+W m**-3 sr**-1
+......................
+121
+FLLAT
+Flux de chaleur latente
+W m**-2
+W m**-2
+......................
+122
+FLSEN
+Flux de chaleur sensible
+W m**-2
+W m**-2
+......................
+123
+BLD
+Boundary layer dissipation
+W m**-2
+W m**-2
+......................
+124
+None
+Momentum flux, u-component
+N m**-2
+N m**-2
+......................
+125
+None
+Momentum flux, v-component
+N m**-2
+N m**-2
+......................
+126
+None
+Wind mixing energy
+J
+J
+......................
+127
+None
+Image data
+-
+-
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................

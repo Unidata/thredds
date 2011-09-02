@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.grid;
 
 import ucar.jpeg.jj2000.j2k.util.StringFormatException;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Class which represents a grid parameter.
@@ -58,8 +59,8 @@ public class GridParameter {
   public GridParameter(int number, String name, String description, String unit) {
     this.number = number;
     this.name = name;
-    this.description = description;
-    this.unit = unit;
+    setDescription(description);
+    setUnit(unit);
   }
 
   // unkown param
@@ -73,8 +74,8 @@ public class GridParameter {
   public GridParameter(int number, String name, String description, String unit, String cf_name) {
     this.number = number;
     this.name = name;
-    this.description = description;
-    this.unit = unit;
+    setDescription(description);
+    setUnit(unit);
     this.cf_name = cf_name;
   }
 
@@ -132,7 +133,9 @@ public class GridParameter {
    * @param description of parameter
    */
   public final void setDescription(String description) {
-    this.description = description;
+    StringBuilder sb = new StringBuilder(description.trim());
+    StringUtil2.remove(sb, ".;,=[]()/");
+    this.description =  sb.toString();
   }
 
   /**

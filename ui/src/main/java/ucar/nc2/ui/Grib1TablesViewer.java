@@ -207,6 +207,12 @@ public class Grib1TablesViewer extends JPanel {
 
   private void setEntries(GribPDSParamTable table) {
     Map<Integer, GridParameter> map = table.getParameters();
+    if (map == null) {
+      System.out.println("HEY");
+      map = table.getParameters();
+    }
+
+
     ArrayList<Integer> params = new ArrayList<Integer>();
     params.addAll(map.keySet());
     Collections.sort(params);
@@ -240,7 +246,7 @@ public class Grib1TablesViewer extends JPanel {
       if (p != null) f.format(" %s from %s (%d)%n", p, tbean.table.getName(), tbean.table.getParameters().hashCode());
     }
 
-    infoTA.appendLine( f.toString());
+    infoTA.appendLine(f.toString());
     infoWindow.setVisible(true);
   }
 
@@ -396,6 +402,14 @@ public class Grib1TablesViewer extends JPanel {
 
     public String getPath() {
       return table.getPath();
+    }
+
+    public String getName() {
+      return table.getName();
+    }
+
+    public int getKey() {
+      return table.getKey();
     }
 
     @Override

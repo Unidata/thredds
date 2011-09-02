@@ -1,0 +1,198 @@
+ECMWF local table 2: Version Number 190 (Seasonal to interannual ensemble forecasts).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+129
+Z
+Geopotential
+m**2 s**-2
+Instantaneous.Not geopotential height. At surface=orography(?).
+......................
+130
+T
+Temperature
+K
+Instantaneous
+......................
+131
+U
+U velocity
+m s**-1
+Instantaneous
+......................
+132
+V
+V velocity
+m s**-1
+Instantaneous
+......................
+133
+Q
+Specific humidity
+kg kg**-1
+Instantaneous
+......................
+139
+STL1
+Soil temperature level 1
+K
+Surface temperature over continents and Sea Surface Temperature over the oceans
+......................
+141
+SD
+Snow depth
+m of water
+Instantaneous
+......................
+146
+SSHF
+Surface sensible heat flux
+W m**-2 s
+Daily accumulation. Converted to flux in monthly means (units: W m**-2)
+......................
+147
+SLHF
+Surface latent heat flux
+W m**-2 s
+Daily accumulation. Converted to flux in monthly means (units: W m**-2)
+......................
+151
+MSL
+Mean sea level pressure
+Pa
+Instantaneous
+......................
+164
+TCC
+Total cloud cover
+(0 - 1)
+Instantaneous
+......................
+165
+10U
+10 metre U wind component
+m s**-1
+Instantaneous
+......................
+166
+10V
+10 metre V wind component
+m s**-1
+Instantaneous
+......................
+167
+2T
+2 metre temperature
+K
+Instantaneous
+......................
+168
+2D
+2 metre dewpoint temperature
+K
+Instantaneous
+......................
+169
+SSRD
+Downward surface solar radiation
+W m**-2 s (W m**-2 for monthly means)
+Daily accumulation. Converted to flux in monthly means (units: W m**-2)
+......................
+170
+CAP
+Field capacity
+(0 - 1)
+-
+......................
+171
+WILT
+Wilting point
+(0 - 1)
+-
+......................
+172
+LSM
+Land-sea mask
+(0 - 1)
+-
+......................
+173
+SR
+Roughness length
+(0 - 1)
+-
+......................
+174
+AL
+Albedo
+(0 - 1)
+-
+......................
+175
+STRD
+Downward surface long wave radiation
+W m**-2 s (W m**-2 for monthly means)
+Daily accumulation. Converted to flux in monthly means (units: W m**-2)
+......................
+176
+SSR
+Surface net solar radiation
+W m**-2 s (W m**-2 for monthly means)
+Daily accumulation. Converted to flux in monthly means (units: W m**-2)
+......................
+177
+STR
+Surface net long wave radiation
+W m**-2 s (W m**-2 for monthly means)
+Daily accumulation. Converted to flux in monthly means (units: W m**-2)
+......................
+178
+TSR
+Top net solar radiation
+W m**-2 s (W m**-2 for monthly means)
+Daily accumulation. Converted to flux in monthly means (units: W m**-2)
+......................
+179
+TTR
+Top net long wave radiation
+W m**-2 s (W m**-2 for monthly means)
+Daily accumulation. Converted to flux in monthly means (units: W m**-2)
+......................
+182
+E
+Evaporation
+m (m s**-1 for monthly means)
+Daily accumulation. Converted to flux in monthly means with units: m s**-1
+......................
+201
+MX2T
+Maximum 2 metre temperature
+K
+Over a 24 hour period computed using instantaneous values at 06, 12, 18 and 24 GMT
+......................
+202
+MN2T
+Minimum 2 metre temperature
+K
+Over a 24 hour period computed using instantaneous values at  06, 12, 18 and 24 GMT
+......................
+228
+TP
+Total precipitation
+m (m s**-1 for monthly means)
+Daily accumulation. Converted to flux in monthly means with units: m s**-1
+......................
+229
+TSM
+Total soil moisture
+m**3 m**-3
+The depth over which it is integrated varies depending on the atmospheric model
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

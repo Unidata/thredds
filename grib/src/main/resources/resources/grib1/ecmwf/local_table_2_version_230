@@ -1,0 +1,192 @@
+ECMWF local table 2: Version Number 230 (Parameters on coarse grid for variable resolution systems).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+044
+ESVAR
+Snow evaporation (variable resolution)
+m of water
+Accumulated field Interpolated from previous leg
+......................
+045
+SMLTVAR
+Snowmelt (variable resolution)
+m of water
+Accumulated field Interpolated from previous leg
+......................
+046
+SDURVAR
+Solar duration (variable resolution)
+s
+ Interpolated from previous leg
+......................
+057
+UVBVAR
+Downward UV radiation at the surface (variable resolution)
+w m**-2 s
+Ultra-violet band B. Accumulated field. Interpolated from previous leg
+......................
+058
+PARVAR
+Photosynthetically active radiation at the surface (variable resolution)
+w m**-2 s
+Accumulated field. Interpolated from previous leg
+......................
+142
+LSPVAR
+Stratiform precipitation (Large-scale precipitation) (variable resolution)
+m
+Accumulated field Interpolated from previous leg
+......................
+143
+CPVAR
+Convective precipitation (variable resolution)
+m
+Accumulated field Interpolated from previous leg
+......................
+144
+SFVAR
+Snowfall (convective + stratiform) (variable resolution)
+m of water equivalent
+Accumulated field Interpolated from previous leg
+......................
+145
+BLDVAR
+Boundary layer dissipation (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+146
+SSHFVAR
+Surface sensible heat flux (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+147
+SLHFVAR
+Surface latent heat flux (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+169
+SSRDVAR
+Surface solar radiation downwards (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+175
+STRDVAR
+Surface thermal radiation downwards (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+176
+SSRVAR
+Surface solar radiation (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+177
+STRVAR
+Surface thermal radiation (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+178
+TSRVAR
+Top solar radiation (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+179
+TTRVAR
+Top thermal radiation (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+180
+EWSSVAR
+East-West surface stress (variable resolution)
+N m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+181
+NSSSVAR
+North-South surface stress (variable resolution)
+N m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+182
+EVAR
+Evaporation (variable resolution)
+m of water
+Accumulated field Interpolated from previous leg
+......................
+189
+SUNDVAR
+Sunshine duration (variable resolution)
+s
+Accumulated field Interpolated from previous leg
+......................
+195
+LGWSVAR
+Latitudinal component of gravity wave stress (variable resolution)
+N m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+196
+MGWSVAR
+Meridional component of gravity wave stress (variable resolution)
+N m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+197
+GWDVAR
+Gravity wave dissipation (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+198
+SRCVAR
+Skin reservoir content (variable resolution)
+m of water
+ Interpolated from previous leg
+......................
+205
+ROVAR
+Runoff (variable resolution)
+m
+Accumulated field Interpolated from previous leg
+......................
+208
+TSRCVAR
+Top net solar radiation, clear sky (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+209
+TTRCVAR
+Top net thermal radiation, clear sky (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+210
+SSRCVAR
+Surface net solar radiation, clear sky (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+211
+STRCVAR
+Surface net thermal radiation, clear sky (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+212
+TISRVAR
+TOA incident solar radiation (variable resolution)
+W m**-2 s
+Accumulated field Interpolated from previous leg
+......................
+999
+.
+.
