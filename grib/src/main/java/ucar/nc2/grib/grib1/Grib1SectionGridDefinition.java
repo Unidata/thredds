@@ -141,9 +141,5 @@ public class Grib1SectionGridDefinition {
     return gds;
   }
 
-  static class Grib1Gds { // fake
-
-  }
-
 }
 
