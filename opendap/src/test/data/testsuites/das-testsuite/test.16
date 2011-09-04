@@ -1,0 +1,13 @@
+
+# Test variable redefinition error
+
+Attributes {
+    var1 {
+        Int32 i 1;
+	Float64 i 10.8; # this is an error since `i' is already an Int32
+	Float64 j 100.98;
+    }
+    var2 {
+	 Float64 i 1.8; # not an error; different variable
+    }
+}

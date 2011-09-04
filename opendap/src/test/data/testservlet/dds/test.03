@@ -1,0 +1,13 @@
+Dataset {
+    Byte	b[2][3][4];
+    Byte	b2[2][3];
+    int32	i32[2][3][4];
+    uint32	ui32[2][3][4][3][2];
+    int16	i16[2][2][2];
+    uint16	ui16[2][2][2];
+    float32	f32[2][2][2];
+    float64	f64[2][2][2];
+    string	s0[4][5][6];
+    string	s1[10][10][10];
+    URL		u[10][10][10];
+} MultiDimensionalSimpleArrays;

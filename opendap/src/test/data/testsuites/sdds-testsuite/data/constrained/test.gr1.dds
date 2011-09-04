@@ -1,0 +1,4 @@
+Dataset {
+    Int32 GR_DFNT_INT32[GR_DFNT_INT32__Y = 2][GR_DFNT_INT32__X = 2];
+    Float64 GR_DFNT_FLOAT64[GR_DFNT_FLOAT64__Y = 2][GR_DFNT_FLOAT64__X = 2];
+} testgr1.hdf;

@@ -1,0 +1,11 @@
+The data:
+List Byte b = { 0, 1, 2};
+List Int32 i32 = { 0, 2048, 4096};
+List UInt32 ui32 = { 0, 4096, 8192};
+List Int16 i16 = { 0, 255, 510};
+List UInt16 ui16 = { 0, 1024, 2048};
+List Float32 f32 = { 0, 0.00999983, 0.0199987};
+List Float64 f64 = { 1, 0.999950000416665, 0.999800006666578};
+List String s = { "This is a data test string (pass 0).", "This is a data test string (pass 1).", "This is a data test string (pass 2)."};
+List Url u = { "http://www.dods.org", "http://www.dods.org", "http://www.dods.org"};
+

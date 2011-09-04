@@ -1,0 +1,15 @@
+dataset {
+    Structure {
+        Byte	b;
+        int32	i32;
+        uint32	ui32;
+        int16	i16;
+        Structure {
+                uint16  ui16[10];
+                float32 f32;
+                float64 f64;
+                string  s;
+                URL     u[5];
+	} ss;
+    } types[10];
+} WackyArray02;

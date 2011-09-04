@@ -1,0 +1,24 @@
+dataset {
+    List Int32 i[10][20];
+    Sequence {
+	String name;
+	Int32 age;
+    } person;
+    Structure {
+	Int32 j;
+	Int32 i;
+	Structure {
+	    int32 i;
+	    float64 f[10];
+	} data;
+	List String folks;
+    } exp;
+    Grid {
+      Array:
+	float64 g[10][10][10];
+      Maps:
+	float64 lat[10];
+	float64 lon[10];
+	float64 weirdness[10];
+    } strange;
+} data6;

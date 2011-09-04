@@ -1,0 +1,21 @@
+#
+# Test dots (.) in variable names.
+
+Dataset {
+    Int32 i.x[10];
+    Int32 j.x[20];
+    Byte b.x;
+    String name.x;
+    Structure {
+        Float64 f;
+	Float64 g;
+	Float64 h.x;
+    } x;
+    Grid {
+      Array:
+        Byte temp[100][7];
+      Maps:
+        Float64 steps[100];
+	String colors[7];
+    } oddTemp.y;
+} data2;

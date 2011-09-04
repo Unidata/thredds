@@ -1,0 +1,12 @@
+# -*- C++ -*-
+
+#  Test missing type specifier.
+
+Attributes {
+    aa {
+	int32 i 10;
+	float64 f 12.9;
+	string test test;
+	test2 my_test;
+    }
+}

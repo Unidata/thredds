@@ -1,0 +1,80 @@
+# expect/tcl code to test the dds parser and scanner
+# jhrg
+#
+# $Log: test.11.exp,v $
+# Revision 1.1  2003/08/11 20:50:10  ndp
+# Initial revision
+#
+# Revision 1.2  2002/05/23 01:43:33  jimg
+# Added/Updated using stuff from C++.
+#
+# Revision 1.4  2000/10/03 22:18:04  jimg
+# Fixes to the tests to accomodate debugging fixes in DDS.cc
+#
+# Revision 1.3  2000/06/16 18:15:01  jimg
+# Merged with 3.1.7
+#
+# Revision 1.2.38.1  2000/06/15 02:24:57  jimg
+# Fixed the tests: problems with PATH, etc. broke the tests on my new machine
+#
+# Revision 1.2  1996/05/14 15:41:34  jimg
+# These changes have already been checked in once before. However, I
+# corrupted the source repository and restored it from a 5/9/96 backup
+# tape. The previous version's log entry should cover the changes.
+#
+# Revision 1.1  1994/12/21  17:01:27  jimg
+# Added these to the testsuite.
+#
+
+global comp_output		# contains output from dds-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+
+# The variable `test_name' is the name of the das input file for this test.
+
+set test_name test.11
+
+# The variable `test_out' is a string that contains the text that should be
+# stored in comp_output by das-test_start. The two strings should match
+# exactly.
+
+set test_out "DDS past semantic check
+DDS past full semantic check
+Dataset {
+    Structure {
+        Int32 long_one;
+        Int32 long_two;
+        Int32 long_three;
+        Int32 long_four;
+        Int32 long_five;
+        Int32 long_six;
+        Float64 long_one_float;
+        Float64 long_two_float;
+        Float64 long_three_float;
+    } long_names_one;
+    Structure {
+        Int32 long_one_float1;
+        Int32 long_two_float1;
+        Int32 long_three_float3;
+        Int32 long_four;
+        Int32 long_five;
+        Int32 long_six;
+        Float64 long_one_float;
+        Float64 long_two_float;
+        Float64 long_three_float;
+    } long_names_one_and_a_half;
+    Structure {
+        Int32 a_very_long_name_given_what_it_accomplishes;
+        Int32 another_name_nearly_as_pointless;
+    } long_names_two;
+} long_identifier_test_data_set;"
+
+dds-test_start p $srcdir/$test_name
+
+if ![string compare $test_out $comp_output] { # check comp_output
+    pass "$test_name"
+} else {
+    fail "$test_name"
+}
+
+

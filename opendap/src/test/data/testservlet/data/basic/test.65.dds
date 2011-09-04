@@ -1,0 +1,39 @@
+Dataset {
+    Structure {
+        Int32 i;
+        Int32 j;
+    } test;
+    Sequence {
+        Int32 i;
+        Int32 j[10];
+    } test2;
+    Grid {
+     ARRAY:
+        Float64 f[10][10];
+     MAPS:
+        Int32 g[10];
+        Int32 h[10];
+    } test4;
+    List Int32 i[10][20];
+    Sequence {
+        String name;
+        Int32 age;
+    } person;
+    Structure {
+        Int32 j;
+        Int32 i;
+        Structure {
+            Int32 i;
+            Float64 f[10];
+        } data;
+        List String folks;
+    } exp;
+    Grid {
+     ARRAY:
+        Float64 g[10][10][10];
+     MAPS:
+        Float64 lat[10];
+        Float64 lon[10];
+        Float64 weirdness[10];
+    } strange;
+} KitchenSink01;

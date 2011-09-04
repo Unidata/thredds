@@ -1,0 +1,74 @@
+#
+# expect/tcl code to test the dds parser and scanner
+# jhrg
+#
+# $Id: test.17.exp 15901 2007-02-28 23:57:28Z jimg $
+
+global comp_output		# contains output from dds-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+
+# The variable `test_name' is the name of the das input file for this test.
+
+set test_name test.17
+
+# The variable `test_out' is a string that contains the text that should be
+# stored in comp_output by das-test_start. The two strings should match
+# exactly.
+
+set test_out "Error parsing the text on line 8 at or near: Map
+In the dataset descriptor object: Expected a variable declaration
+(e.g., Int32 i;).
+"
+
+dds-test_start p $srcdir/$test_name
+
+if ![string compare $test_out $comp_output] { # check comp_output
+    pass "$test_name"
+} else {
+    xfail "$test_name"
+}
+
+# $Log: test.17.exp,v $
+# Revision 1.1  2003/08/11 20:50:10  ndp
+# Initial revision
+#
+# Revision 1.1  2002/05/23 01:43:33  jimg
+# Added/Updated using stuff from C++.
+#
+# Revision 1.5  2002/05/23 01:29:05  jimg
+# Updated using code from C++.
+#
+# Revision 1.3.4.2  2001/11/01 00:43:52  jimg
+# Fixes to the scanners and parsers so that dataset variable names may
+# start with digits. I've expanded the set of characters that may appear
+# in a variable name and made it so that all except `#' may appear at
+# the start. Some characters are not allowed in variables that appear in
+# a DDS or CE while they are allowed in the DAS. This makes it possible
+# to define containers with names like `COARDS:long_name.' Putting a colon
+# in a variable name makes the CE parser much more complex. Since the set
+# of characters that people want seems pretty limited (compared to the
+# complete ASCII set) I think this is an OK approach. If we have to open
+# up the expr.lex scanner completely, then we can but not without adding
+# lots of action clauses to teh parser. Note that colon is just an example,
+# there's a host of characters that are used in CEs that are not allowed
+# in IDs.
+#
+# Revision 1.4  2001/08/24 17:46:24  jimg
+# Resolved conflicts from the merge of release 3.2.6
+#
+# Revision 1.3.4.1  2001/06/23 00:52:32  jimg
+# Added tests for `#' in IDs.
+#
+# Revision 1.3  2000/10/03 22:18:04  jimg
+# Fixes to the tests to accomodate debugging fixes in DDS.cc
+#
+# Revision 1.2  2000/09/22 02:52:59  jimg
+# Fixes to the tests to recognize some of the new error messages. Also,
+# the test drivers were modified to catch the exceptions now thrown by
+# some of the parsers.
+#
+# Revision 1.1  2000/08/16 18:30:22  jimg
+# Added tests for dots in variable names and fancier error messages
+#
+

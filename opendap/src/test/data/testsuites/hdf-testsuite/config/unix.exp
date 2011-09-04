@@ -1,0 +1,108 @@
+
+# Tcl/Expect code for the geturl test. This really is designed to test the
+# various servers (hdf, dsp, netcdf, matlab, ...) on serveral different
+# platforms. 
+# 
+# $Id: unix.exp 15901 2007-02-28 23:57:28Z jimg $
+
+# Make sure the global var GETURL is set correctly.
+
+global GETURL
+if ![info exists GETURL] then {
+    set GETURL "java dods.client.Geturl"
+}
+
+# Compare $expected to the global $comp_output. Run `pass' if they match,
+# `fail' otherwise unless `xfailp' is true in which case run `xfail' if they
+# do not match. $msg is the name of the test to print when calling pass, fail
+# or xfail.
+# 
+# NB: $expected may be either a string or a file name. If it is the latter,
+# read the file and compare its contents to $comp_output.
+
+proc compare_stdout {expected msg {xfailp 0}} {
+    global comp_output
+    global verbose
+
+    # If $expected is the name of a file, read that file's contents and store
+    # in $expected, then procede to compare $expected to $comp_output.
+
+    if {[file exists $expected] && [file isfile $expected]} {
+	if {$verbose >= 1} {
+	    send_user "PWD: [pwd]\n"
+	    send_user "Reading file: $expected\n"
+	}
+	set fd [open $expected r]
+	set expected [read $fd]
+	close $fd
+    }
+
+    # Trim is used here to remove trailing `\n's from files of data.
+    set expected [string trim $expected]
+    set comp_output [string trim $comp_output]
+
+    if ![string compare $expected $comp_output] {
+	pass "$msg"
+	send_user "PASS: $msg\n"
+    } elseif {$xfailp == 1} {
+	xfail "$msg"
+	send_user "XFAIL: $msg\n"
+    } else {
+	fail "$msg"
+    }
+
+    if {$verbose >= 1} {
+	send_user "Comp output:$comp_output\n"
+	send_user "Expected output:$expected\n"
+    }
+}
+
+# The four `required' procs are _start, _load, _exit and _version.
+
+proc geturl_start { {switches ""} {urls ""} {file ""}} {
+    global verbose
+    global GETURL
+    global comp_output
+    global spawn_id
+
+    if ![string compare $file ""] {
+	if {$verbose >= 1} {
+	    send_user "Testing geturl $switches $urls ...\n"
+	    exp_internal 1
+	}
+	catch "exec $GETURL $switches {$urls}" comp_output
+    } else {
+	if {$verbose >= 1} {
+	    send_user "Testing geturl $switches $urls >& $file ...\n"
+	    exp_internal 1
+	}
+	catch "exec $GETURL $switches {$urls} > $file" comp_output
+    }
+}
+
+proc geturl_load {} {
+}
+
+proc geturl_exit {} {
+    send -raw ""
+}
+
+proc geturl_version {} {
+    send_user "geturl test suite 1.0\n"
+}
+
+proc geturl_all {path dataset {constraint ""}} {
+    geturl_start "-a" "${path}/${dataset}.hdf"
+    compare_stdout "hdf-testsuite/${dataset}.das" "${dataset} DAS"
+    
+    geturl_start "-d" "${path}/${dataset}.hdf"
+    compare_stdout "hdf-testsuite/${dataset}.dds" "${dataset} DDS"
+    
+    geturl_start "-D" "${path}/${dataset}.hdf?${constraint}"
+    compare_stdout "hdf-testsuite/${dataset}.data" "${dataset} Data"
+}
+
+proc geturl_subset {path dataset constraint {num "1"}} {
+    geturl_start "-D" "${path}/${dataset}.hdf?${constraint}"
+    compare_stdout "hdf-testsuite/${dataset}.data${num}" "${dataset} Subset"
+}

@@ -1,0 +1,12 @@
+Error {
+    code = 3;
+    message = "
+Parse Error on token: "null"
+In the dataset descriptor object:
+Expected a variable declaration
+(e.g., Int32 i;). Make sure that the
+variable name is not a reserved word
+(Byte, Int32, Float64, String, Url
+Structure, Sequence or Grid - all
+forms, byte, Byte and BYTE, are the same)";
+};

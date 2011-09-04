@@ -1,0 +1,11 @@
+dataset {
+
+    Sequence {
+	int32 age;
+	Sequence {
+		int16 foo;
+	} stuff;
+    } person1;
+
+
+} NestedSequences;

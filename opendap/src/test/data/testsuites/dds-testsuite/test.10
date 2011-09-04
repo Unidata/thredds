@@ -1,0 +1,48 @@
+# -*- C++ -*-
+
+dataset {
+    structure {
+	Int32 i;
+	int32 j;
+    } test;
+
+    sequence {
+	int32 i;
+	int32 j[10];
+    } test2;
+
+    grid {
+      array:
+	float64 f[10][10];
+      maps:
+	int32 g[10];
+	int32 h[10];
+    } test4;
+
+    List Int32 i[10][20];
+
+    Sequence {
+	String name;
+	Int32 age;
+    } person;
+
+    Structure {
+	Int32 j;
+	Int32 i;
+	Structure {
+	    int32 i;
+	    float64 f[10];
+	} data;
+	List String folks;
+    } exp;
+
+    Grid {
+      Array:
+	float64 g[10][10][10];
+      Maps:
+	float64 lat[10];
+	float64 lon[10];
+	float64 weirdness[10];
+    } strange;
+
+} data6;

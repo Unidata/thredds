@@ -1,0 +1,11 @@
+Dataset {
+    List Byte b;
+    List Int32 i32;
+    List UInt32 ui32;
+    List Int16 i16;
+    List UInt16 ui16;
+    List Float32 f32;
+    List Float64 f64;
+    List String s;
+    List Url u;
+} SimpleLists;

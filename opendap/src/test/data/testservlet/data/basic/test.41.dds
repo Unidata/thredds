@@ -1,0 +1,11 @@
+Dataset {
+    List Byte b[5];
+    List Int32 i32[10][5];
+    List UInt32 ui32[5];
+    List Int16 i16[10];
+    List UInt16 ui16[12];
+    List Float32 f32[17];
+    List Float64 f64[21];
+    List String s[5];
+    List Url u[2];
+} ListsOfArrays;

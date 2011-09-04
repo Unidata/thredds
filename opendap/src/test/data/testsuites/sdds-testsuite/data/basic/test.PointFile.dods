@@ -1,0 +1,39 @@
+The data:
+Structure {
+    Sequence {
+        Structure {
+            Byte LevelWritten__0;
+        } LevelWritten;
+    } LevelWritten;
+    Structure {
+        Sequence {
+            Structure {
+                Float64 Time__0;
+            } Time;
+            Structure {
+                Float64 Concentration__0;
+                Float64 Concentration__1;
+                Float64 Concentration__2;
+                Float64 Concentration__3;
+            } Concentration;
+            Structure {
+                String Species__0;
+            } Species;
+        } Sensor;
+    } Data%20Vgroup;
+} Simple%20Point = { { { { 0 } }, { { 1 } }, { { 2 } }, { { 3 } }, { { 4 } } }, { { { { 1000 }, { 999.950000416665, 999.800006666578, 999.550033748988, 999.200106660978 }, { "This is a data test string (pass 0)." } }, { { 998.750260394966 }, { 998.200539935204, 997.55100025328, 996.801706302619, 995.952733011994 }, { "This is a data test string (pass 1)." } }, { { 995.004165278026 }, { 993.956097956697, 992.808635853866, 991.561893714788, 990.215996212637 }, { "This is a data test string (pass 2)." } }, { { 988.771077936042 }, { 987.227283375627, 985.584766909561, 983.843692788121, 982.00423511727 }, { "This is a data test string (pass 3)." } }, { { 980.066577841242 }, { 978.030914724148, 975.897449330605, 973.666395005375, 971.33797485203 }, { "This is a data test string (pass 4)." } } } } };
+Structure {
+    Sequence {
+        Structure {
+            Byte LevelWritten__0;
+        } LevelWritten;
+    } LevelWritten;
+} FixedBuoy%20Point = { { { { 5 } }, { { 6 } }, { { 7 } }, { { 8 } }, { { 9 } } } };
+Structure {
+    Sequence {
+        Structure {
+            Byte LevelWritten__0;
+        } LevelWritten;
+    } LevelWritten;
+} FloatBuoy%20Point = { { { { 10 } }, { { 11 } }, { { 12 } }, { { 13 } }, { { 14 } } } };
+

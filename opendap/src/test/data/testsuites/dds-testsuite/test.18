@@ -1,0 +1,12 @@
+#
+# Test dataset filenames that are numbers.
+
+Dataset {
+    Grid {
+      Array:
+        Byte temp[100][7];
+      Maps:
+        Float64 steps[100];
+	String colors[7];
+    } oddTemp;
+} 123;

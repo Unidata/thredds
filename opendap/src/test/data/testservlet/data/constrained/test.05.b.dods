@@ -1,0 +1,7 @@
+The data:
+Structure {
+    Structure {
+        String s;
+    } strings;
+} types = { { "This is a data test string (pass 0)." } };
+

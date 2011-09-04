@@ -1,0 +1,13 @@
+
+
+geturl -D -c "Sat_Images.Image_Name&Sat_Images.Year<1983" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Sat_Images.Image&Sat_Images.Year<1983" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Julian_Date" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Year" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Sat_Images.Year" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Date_Sampled" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Instrument" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Instrument_ID,Instrument_Type,Sensor_Platform_ID" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Drifters" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Drifters.Instrument_ID" http://carbon:8080/dods/servlet/sqldods/EOSDB
+geturl -D -c "Drifters" http://carbon:8080/dods/servlet/sqldods/EOSDB
