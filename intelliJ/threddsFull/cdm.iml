@@ -23,10 +23,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="library" exported="" name="ehcache" level="project" />
     <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="module" module-name="bufr" />
-    <orderEntry type="module" module-name="grib" />
-    <orderEntry type="module" module-name="opendap" />
-    <orderEntry type="module" module-name="visad" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
