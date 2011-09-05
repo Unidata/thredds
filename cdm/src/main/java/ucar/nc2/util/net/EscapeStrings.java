@@ -517,7 +517,7 @@ for (int offset = 0; offset < length; ) {
      {
         String newurl = null;
         try {
-            URL url = new URL(u);  // use instead of uri() because url does no decoding
+            URL url = new URL(u);  // use instead of url() because url does no decoding
             String protocol = url.getProtocol();
             String principal = url.getUserInfo();
             String host = url.getHost();

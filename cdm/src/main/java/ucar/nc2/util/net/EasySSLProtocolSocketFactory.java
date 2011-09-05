@@ -35,6 +35,7 @@ import java.net.UnknownHostException;
 import java.security.*;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
@@ -235,7 +236,6 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
     KeyStore keystore = null;
     KeyStore truststore = null;
     TrustManager[] trustmanagers = null;
-    HTTPCredentialsEnvelope envelope = null;
 
     String keypassword = null;
     String keypath = null;
@@ -245,22 +245,25 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
     try {
 
 if(UseAuthStore) {
-        // Get the envelope
-	envelope =  (HTTPCredentialsEnvelope)params.getParameter(CredentialsProvider.PROVIDER);
-	if(envelope == null) {
+        // Get the HTTPAuthProvider
+        HTTPAuthProvider provider;
+	provider =  (HTTPAuthProvider)params.getParameter(CredentialsProvider.PROVIDER);
+	if(provider == null) {
+            // Do no authentication
 	    sslcontext = SSLContext.getInstance("SSL");
 	    sslcontext.init(null,null,null);
             return sslcontext;
 	}
+   
+        // Abuse the getCredentials() api
+	Credentials creds = provider.getCredentials(HTTPSSLScheme.Default,
+						    null,0,false);
+	HTTPSSLProvider sslprovider = (HTTPSSLProvider)creds;
 
-	HTTPAuthCreds authcreds = new HTTPAuthCreds(HTTPAuthScheme.KEYSTORE);
-	if(authcreds == null)
-	    throw new HTTPException("Cannot locate keystore authorization information");
-
-        keypassword = (String)authcreds.get(HTTPAuthCreds.KEYSTOREPASSWORD);
-        keypath = (String)authcreds.get(HTTPAuthCreds.KEYSTOREPATH);
-        trustpassword = (String)authcreds.get(HTTPAuthCreds.TRUSTSTOREPASSWORD);
-        trustpath = (String)authcreds.get(HTTPAuthCreds.TRUSTSTOREPATH);
+        keypassword = (String)sslprovider.getKeystore();
+        keypath = (String)sslprovider.getKeypassword();
+        trustpassword = (String)sslprovider.getTruststore();
+        trustpath = (String)sslprovider.getTrustpassword();
 
 } else {//!UseAuthStore
 

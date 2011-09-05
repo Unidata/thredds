@@ -140,8 +140,8 @@ public class TestAuth extends TestCase
 
 
         HTTPSession session = new HTTPSession(url);
-        HTTPMethod method = HTTPMethod.Get();
-        CredentialsProvider provider = new
+        HTTPMethod method = HTTPMethod.Get(session);
+        CredentialsProvider provider = new HTTPSSLProvider(keystore,password,truststore,password);
         int status = method.execute();
         System.out.printf("Execute: status code = %d\n", status);
         pass = (status == 200);
@@ -154,41 +154,35 @@ public class TestAuth extends TestCase
         System.out.println("*** Testing: HTTPAuthStore (de-)serialization");
 
         boolean ok = true;
-        HTTPCreds creds1 = new HTTPCreds();
-        HTTPCreds creds2 = new HTTPCreds();
-        HTTPCreds creds3 = new HTTPCreds();
-
-        creds1.schemeHttpBasic(new BasicProviderTest("p1","pwd"));
-        creds2.schemeKeystore("keystore","keystorepwd");
-        creds3.schemeOther("p3@pwd");
+        CredentialsProvider creds1 = new HTTPBasicProvider("p1","pwd");
+        CredentialsProvider creds2 = new HTTPSSLProvider("keystore","keystorepwd");
+        CredentialsProvider creds3 = new HTTPBasicProvider("p3","pwd3");
 
         // Add some entries to HTTPAuthStore
         HTTPAuthStore.clear();
-        HTTPAuthStore.insert(
-                "pr1",
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(
+                HTTPAuthScheme.BASIC,
                 "http://ceda.ac.uk/dap/neodc/casix/seawifs_plankton/data/monthly/PSC_monthly_1998.nc.dds",
-                HTTPAuthStore.Scheme.BASIC,
-                creds1
+                creds1)
         );
-        HTTPAuthStore.insert(
-                "pr2",
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(
+                HTTPAuthScheme.SSL,
                 "http://ceda.ac.uk",
-                HTTPAuthStore.Scheme.OTHER,
-                creds2
+                creds2)
         );
-        HTTPAuthStore.insert(
-                "pr3",
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(
+                HTTPAuthScheme.BASIC,
                 "http://ceda.ac.uk",
-                HTTPAuthStore.Scheme.KEYSTORE,
-                creds3
+                creds3)
         );
+
         // Remove any old file
         File target1 = new File("./serial1");
         target1.delete();
 
         // serialize out
         OutputStream ostream = new FileOutputStream(target1);
-        HTTPAuthStore.serializeAll(ostream, "password1");
+        HTTPAuthStore.serialize(ostream, "password1");
         // Read in
         InputStream istream = new FileInputStream(target1);
         List<HTTPAuthStore.Entry> entries = HTTPAuthStore.getDeserializedEntries(istream, "password1");
@@ -199,10 +193,8 @@ public class TestAuth extends TestCase
             HTTPAuthStore.Entry match = null;
             for (HTTPAuthStore.Entry e : entries) {
 block:          {
-                if (!row.host.equals(e.host)) break block;
-                else if(row.port != e.port) break block;
-                //else if(!row.path.equals(e.path)) break block;
-                else if(row.scheme != e.scheme) break block;
+                if (!row.scheme.equals(e.scheme)) break block;
+                else if(row.url != e.url) break block;
                 if(match == null)
                     match = e;
                 else {System.out.println("ambigous match");  ok=false;}

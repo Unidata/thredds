@@ -34,49 +34,53 @@
 package ucar.nc2.util.net;
 
 import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.auth.*;
-
+import org.apache.commons.httpclient.auth.AuthScheme;
+import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 /**
- * Provide a way for a Credentials object
- * to act as a CredentialsProvider
+ * Provide an HTTP SSL CredentialsProvider
+ * The getCredentials method is used in a
+ * non-standard way
  */
 
-public class HTTPCredentialsEnvelope implements CredentialsProvider
+public class HTTPSSLProvider implements CredentialsProvider, Credentials
 {
-    Credentials creds = null;
-    String uri = null;
+    String keystore = null;
+    String keypass = null;
+    String truststore = null;
+    String trustpass = null;
 
-    public HTTPCredentialsEnvelope(Credentials creds)
+    public HTTPSSLProvider(String keystore,String keypass,
+                           String truststore,String trustpass)
     {
-	this.creds = creds;
+	this.keystore = keystore;
+	this.keypass = keypass;
+	this.truststore = truststore;
+	this.trustpass = trustpass;
     }     
 
-    //Package local only
-    HTTPCredentialsEnvelope(String uri)
+    public HTTPSSLProvider(String keystore, String keypass)
     {
-	this.uri = uri;
+	this(keystore,keypass,null,null);
     }     
 
-    // Credentials Provider Interface
 
-    public Credentials getCredentials(AuthScheme scheme,
-                                      String host,
-                                      int port,
-                                      boolean proxy)
-	throws CredentialsNotAvailableException
+    // Provide accessors
+    public String getKeystore() {return keystore;}
+    public String getKeypassword() {return keypass;}
+    public String getTruststore() {return truststore;}
+    public String getTrustpassword() {return trustpass;}
+
+    // Credentials Provider Interface is abused
+
+    public Credentials
+    getCredentials(AuthScheme authscheme,
+                   String host,
+                   int port,
+	           boolean isproxy)
+        throws CredentialsNotAvailableException
     {
-	if(creds == null) {
-	   HTTPAuthScheme thescheme =
-	        (proxy ? HTTPAuthScheme.PROXY
-                      : HTTPAuthScheme.schemeForName(scheme.getSchemeName()));
-	   HTTPAuthCreds authcreds = HTTPAuthCreds.findAuthCreds(thescheme,uri);
-	   creds = authcreds.getCredentials(thescheme,scheme,host,port);
-	}
-	if(creds == null)
-	    throw new CredentialsNotAvailableException();
-	return creds;
+	return (Credentials) this;
     }
-
-
 }

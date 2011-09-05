@@ -33,21 +33,17 @@
 
 package ucar.nc2.util.net;
 
-
-
 /**
- * HttpAuthScheme defines an enum about the currently supported schemes.
+ * HTTPAuthScheme defines an enum about the currently supported schemes.
  */
 
-
-// For some reason, I cannot declare the enum public
- enum HTTPAuthScheme
+public enum HTTPAuthScheme
 {
-    NULL(null),
-    BASIC("Basic"),
-    DIGEST("Digest"),
-    KEYSTORE("Keystore"),
-    PROXY("Proxy");
+    BASIC("BASIC"),
+    DIGEST("DIGEST"),
+    SSL("SSL"),
+    PROXY("PROXY"),
+    ANY("ANY");
 
     // Define the associated standard name
     private final String name;

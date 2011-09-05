@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -34,82 +33,37 @@
 package ucar.nc2.util.net;
 
 import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.auth.AuthenticationException;
-import org.apache.commons.httpclient.auth.MalformedChallengeException;
+import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 /**
- * Provide a default implementation for a Scheme
- * when it is only serving as a placeholder.
+ * Provide a simpl HTTP Basic scheme CredentialsProvider
  */
 
-abstract public class AbstractScheme implements AuthScheme
+public class HTTPBasicProvider implements CredentialsProvider, Credentials
 {
+    String username = null;
+    String password = null;
 
-public
-AbstractScheme()
-{
-}
+    public HTTPBasicProvider(String username, String password)
+    {
+	this.username = username;
+	this.password = password;
+    }     
 
+    // Provide accessors
+    public String getUsername() {return username;}
+    public String getPassword() {return password;}
 
-public void
-processChallenge(String url)
-    throws MalformedChallengeException
-{
-}
-    
-/**
- * Subclass must implement
- */
-
-abstract public String getSchemeName();
-    
-public String
-getParameter(String key)
-{
-    return null;
-}
-    
-public String
-getRealm()
-{
-    return AuthScope.ANY_REALM;
-}
-    
-@Deprecated
-public String
-getID()
-{
-    return null;
-}
-    
-public boolean
-isConnectionBased()
-{
-    return false;
-}
-    
-public boolean
-isComplete()
-{
-    return true;
-}
-    
-@Deprecated
-public String
-authenticate(Credentials credentials, String url, String url1)
-    throws AuthenticationException
-{
-    return null;
-}
-    
-public String
-authenticate(Credentials credentials, HttpMethod httpMethod)
-    throws AuthenticationException
-{
-    return null;
-}
-
+    public Credentials
+    getCredentials(AuthScheme authscheme,
+                   String host,
+                   int port,
+	           boolean isproxy)
+        throws CredentialsNotAvailableException
+    {
+	return new UsernamePasswordCredentials(username,password);
+    }
 }

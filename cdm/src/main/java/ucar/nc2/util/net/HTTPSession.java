@@ -33,6 +33,7 @@
 
 package ucar.nc2.util.net;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.params.*;
@@ -48,14 +49,13 @@ import java.util.List;
 import java.util.Vector;
 
 
-
+@NotThreadSafe
 public class HTTPSession
 {
 // Convenience
-static final public HTTPAuthScheme NULL = HTTPAuthScheme.NULL;
 static final public HTTPAuthScheme BASIC = HTTPAuthScheme.BASIC;
 static final public HTTPAuthScheme DIGEST = HTTPAuthScheme.DIGEST;
-static final public HTTPAuthScheme KEYSTORE = HTTPAuthScheme.KEYSTORE;
+static final public HTTPAuthScheme SSL = HTTPAuthScheme.SSL;
 static final public HTTPAuthScheme PROXY = HTTPAuthScheme.PROXY;
 
 static int DFALTTHREADCOUNT = 50;
@@ -186,7 +186,7 @@ String urlencoded = null;
 
 /**
  * A session is encapsulated in an instance of the class HTTPSession.
- * The encapsulation is with respect to a specific uri and (optionally) principal.
+ * The encapsulation is with respect to a specific url and (optionally) principal.
  * This means that once a session is specified, it is tied permanently to that url and principal.
  * Note that the term "principal" is another name for user id.
  * If no principal is ever set, the the session assumes a special principal called ANY_PRINCIPAL.
@@ -434,7 +434,7 @@ setPrincipal(String u, String p)
         query = (query == null ? "" : "?" + query);
         ref = (ref == null ? "" : "#" + ref);
 
-        // rebuild the uri
+        // rebuild the url
         // (and leaving encoding in place)
         newurl =   protocol + principal + host + sport + path + query + ref;
     } catch (MalformedURLException use) {newurl=u;}
@@ -480,10 +480,8 @@ setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider pr
 {
     sessionProvider = provider;
     // Add entry to AuthStore
-    HTTPAuthCreds creds =
-        new HTTPAuthCreds(scheme).setCredentialsProvider(provider);
     try {
-        HTTPAuthStore.insert(new HTTPAuthStore.Entry(scheme,url,creds));
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(scheme,url,provider));
     } catch (HTTPException he) {
         System.err.println("HTTPSession.setCredentialsProvider failed");
     }
@@ -492,7 +490,7 @@ setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider pr
 public void
 setCredentialsProvider(CredentialsProvider provider)
 {
-    setCredentialsProvider(HTTPAuthScheme.BASIC,urlencoded,provider);
+    setCredentialsProvider(HTTPAuthScheme.ANY,urlencoded,provider);
 }
 
 static synchronized public void
@@ -500,10 +498,8 @@ setGlobalCredentialsProvider(CredentialsProvider cp)
 {
     globalProvider = cp;
     // Add entry to AuthStore
-    HTTPAuthCreds creds =
-        new HTTPAuthCreds(HTTPAuthScheme.BASIC).setCredentialsProvider(cp);
     try {
-        HTTPAuthStore.insert(new HTTPAuthStore.Entry(HTTPAuthScheme.BASIC,HTTPAuthStore.ANY_URL,creds));
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(HTTPAuthScheme.ANY,HTTPAuthStore.ANY_URL,cp));
     }   catch (HTTPException he) {
         System.err.println("HTTPSession.setGlobalCredentialsProvider failed");
     }

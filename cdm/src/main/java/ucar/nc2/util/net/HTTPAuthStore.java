@@ -42,7 +42,6 @@ import org.apache.commons.httpclient.auth.*;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
-import static ucar.nc2.util.net.HTTPAuthCreds.*;
 
 /**
 
@@ -65,7 +64,7 @@ class HTTPAuthStore implements Serializable
 /**
 
 The auth store is (conceptually) a set of tuples (rows) of the form
-HTTPAuthScheme(scheme) X String(url) X HTTPAuthCreds(creds).
+HTTPAuthScheme(scheme) X String(url) X CredentialsProvider(creds).
 The creds column specifies the kind of authorization
 (e.g. basic, keystore, etc) and the info to support it.
 The functional relationship is (scheme,url)=>creds.
@@ -74,8 +73,8 @@ The functional relationship is (scheme,url)=>creds.
 static public class Entry implements Serializable, Comparable
 {
     public HTTPAuthScheme scheme;
-    public String uri;
-    public HTTPAuthCreds creds;
+    public String url;
+    public CredentialsProvider creds;
 
     public Entry()
     {
@@ -89,7 +88,7 @@ static public class Entry implements Serializable, Comparable
     public Entry(Entry entry)
     {
 	if(entry == null) entry = ANY_ENTRY;
-	constructor(entry.scheme,entry.uri,entry.creds);
+	constructor(entry.scheme,entry.url,entry.creds);
     }
 
     /**
@@ -98,7 +97,7 @@ static public class Entry implements Serializable, Comparable
      * @param creds
      */
 
-    public Entry(HTTPAuthScheme scheme, String uri, HTTPAuthCreds creds)
+    public Entry(HTTPAuthScheme scheme, String uri, CredentialsProvider creds)
     {
 	constructor(scheme, uri, creds);
     }
@@ -110,33 +109,32 @@ static public class Entry implements Serializable, Comparable
      * @param creds
      */
 
-    protected void constructor(HTTPAuthScheme scheme, String uri, HTTPAuthCreds creds)
+    protected void constructor(HTTPAuthScheme scheme, String uri, CredentialsProvider creds)
     {
 	if(uri == null) uri = ANY_URL;
-	if(creds != null)
-            creds = new HTTPAuthCreds(creds);
+	if(creds != null) return;
 	this.scheme = scheme;
-	this.uri = uri;
+	this.url = uri;
 	this.creds = creds;
     }
 
     public boolean valid()
     {
-	return (scheme != null && uri != null);
+	return (scheme != null && url != null);
     }
 
     public String toString()
     {
 	String creds = (this.creds == null ? "null" : this.creds.toString());
         return String.format("%s:%s{%s}",
-		scheme.toString(),uri,creds);
+		scheme.toString(), url,creds);
     }
 
     private void writeObject(java.io.ObjectOutputStream oos)
         throws IOException
     {
         oos.writeObject(this.scheme);
-        oos.writeObject(this.uri);
+        oos.writeObject(this.url);
         oos.writeObject(this.creds);
     }
 
@@ -144,8 +142,8 @@ static public class Entry implements Serializable, Comparable
             throws IOException, ClassNotFoundException
     {
         this.scheme = (HTTPAuthScheme)ois.readObject();
-        this.uri = (String)ois.readObject();
-        this.creds = (HTTPAuthCreds)ois.readObject();
+        this.url = (String)ois.readObject();
+        this.creds = (CredentialsProvider)ois.readObject();
     }
 
     /**
@@ -186,13 +184,13 @@ static public class Entry implements Serializable, Comparable
 	if(e1 != null && e2 == null) return +1;
 	if(e1 == null && e2 != null) return -1;
 
-    int cmp = e1.scheme.compareTo(e2.scheme);
-    if(cmp != 0) return cmp;
+        int cmp = e1.scheme.compareTo(e2.scheme);
+        if(cmp != 0) return cmp;
 
-	if(compatibleURI(e1.uri,e2.uri))
-            return e2.uri.compareTo(e1.uri);
+	if(compatibleURI(e1.url,e2.url))
+            return e2.url.compareTo(e1.url);
         
-        return e1.uri.compareTo(e2.uri);
+        return e1.url.compareTo(e2.url);
     }
 
 }
@@ -200,10 +198,10 @@ static public class Entry implements Serializable, Comparable
 //////////////////////////////////////////////////
 
 static public final boolean          SCHEME = true;
-static public final boolean          ISLOCAL = false;
 static public final String           ANY_URL = "";
+static public final HTTPAuthScheme   ANY_SCHEME = HTTPAuthScheme.ANY;
 
-static final public Entry            ANY_ENTRY = new Entry(null,ANY_URL,null);
+static final public Entry            ANY_ENTRY = new Entry(ANY_SCHEME,ANY_URL,null);
 
 static private Hashtable<HTTPAuthScheme, List<Entry>> rows;
 
@@ -232,12 +230,11 @@ static {
         if(kpwd.length() == 0) kpwd = null;
         if(tpwd.length() == 0) tpwd = null;
 
-        HTTPAuthCreds creds = new HTTPAuthCreds(HTTPAuthScheme.KEYSTORE);
-        creds.setKeyStore(kpath,kpwd,tpath,tpwd);
+        CredentialsProvider creds = new HTTPSSLProvider(kpath,kpwd,tpath,tpwd);
         try {
-            insert(new Entry(HTTPAuthScheme.KEYSTORE,ANY_URL,creds));
+            insert(new Entry(HTTPAuthScheme.SSL,ANY_URL,creds));
         }   catch (HTTPException he) {
-            System.err.println("HTTPAuthStore: could not insert default KEYSTORE data");
+            System.err.println("HTTPAuthStore: could not insert default SSL data");
         }
      }
 
@@ -325,14 +322,14 @@ insert(Entry entry)
     List<Entry> entries = rows.get(entry.scheme);
 
     for(Entry e: entries) {
-	if(compatibleURI(entry.uri,e.uri)) {
+	if(compatibleURI(entry.url,e.url)) {
 	    found = e;
 	    break;
 	}
     }
     // If the entry already exists, then overwrite it and return true
     if(found != null) {
-        found.creds = new HTTPAuthCreds(entry.creds);
+        found.creds = entry.creds;
 	rval = true;
     } else {
         Entry newentry = new Entry(entry);
@@ -358,7 +355,7 @@ remove(Entry entry)
     List<Entry> entries = rows.get(entry.scheme);
 
     for(Entry e: entries) {
-	if(compatibleURI(entry.uri,e.uri)) {
+	if(compatibleURI(entry.url,e.url)) {
 	    found = e;
 	    break;
 	}
@@ -403,12 +400,16 @@ search(Entry entry)
     if(entry == null || !entry.valid())
         return new Entry[0];
 
-    List<Entry> entries = rows.get(entry.scheme);
+    List<Entry> entries;
+    if(entry.scheme == ANY_SCHEME)
+        entries = getAllRows();
+    else
+        entries = rows.get(entry.scheme);
     List<Entry> matches = new ArrayList<Entry>();
 
 
     for(Entry e: entries) {
-        if(HTTPAuthStore.compatibleURI(entry.uri,e.uri))
+        if(HTTPAuthStore.compatibleURI(entry.url,e.url))
             matches.add(e);
     }
     // Sort by scheme then by url, where any_url is last
@@ -427,7 +428,7 @@ getAuthScope(Entry entry)
     if(entry == null) return null;
     URI uri;
     try {
-	uri = new URI(entry.uri);
+	uri = new URI(entry.url);
     } catch(URISyntaxException use) {return null;}
 
     String host = uri.getHost();

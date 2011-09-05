@@ -199,7 +199,7 @@ public int execute() throws HTTPException
     if (executed)
         throw new HTTPException("Method instance already executed");
     if (urlencoded == null)
-        throw new HTTPException("No uri specified");
+        throw new HTTPException("No url specified");
 
     try {
         if (headers.size() > 0) {
@@ -221,7 +221,7 @@ public int execute() throws HTTPException
         }
         setcontent();
 
-	    setAuthentication(session,this);
+        setAuthentication(session,this);
 
         try {
             session.sessionClient.executeMethod(method);
@@ -623,15 +623,15 @@ setAuthentication(HTTPSession session, HTTPMethod method)
     String uri = session.getURI();
     if(uri == null) uri = HTTPAuthStore.ANY_URL;
 
-        // Provide a credentials (provider) wrapper
-	CredentialsProvider cp  = new HTTPCredentialsEnvelope(uri);
+    // Provide a credentials (provider) to enact the process
+    CredentialsProvider cp  = new HTTPAuthProvider(uri);
 
-	// Since we not know where this will get called, do everywhere
-        session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,cp);
+    // Since we not know where this will get called, do everywhere
+    session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,cp);
 
-        // Pass down info to the socket factory
-        HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
-        hcp.setParameter(CredentialsProvider.PROVIDER,cp);
+    // Pass down info to the socket factory
+    HttpConnectionManagerParams hcp = session.sessionClient.getHttpConnectionManager().getParams();
+    hcp.setParameter(CredentialsProvider.PROVIDER,cp);
 
 }
 
