@@ -1,4 +1,4 @@
-package ucar.nc2.util.net.test;
+package ucar.nc2.util.net;
 
 import junit.framework.TestCase;
 import opendap.dap.*;
@@ -140,7 +140,8 @@ public class TestAuth extends TestCase
 
 
         HTTPSession session = new HTTPSession(url);
-        HTTPMethod method = session.newMethodGet(url);
+        HTTPMethod method = HTTPMethod.Get();
+        CredentialsProvider provider = new
         int status = method.execute();
         System.out.printf("Execute: status code = %d\n", status);
         pass = (status == 200);
