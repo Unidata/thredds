@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Description
+ * A Grib1 message.
  *
  * @author John
  * @since 9/3/11
@@ -47,9 +47,10 @@ import java.util.Formatter;
 public class Grib1Record {
   
   private final Grib1SectionIndicator is;
-  private Grib1SectionGridDefinition gdss;
-  private Grib1SectionProductDefinition pdss;
-  private Grib1SectionBinaryData dataSection;
+  private final Grib1SectionGridDefinition gdss;
+  private final Grib1SectionProductDefinition pdss;
+  private final Grib1SectionBitMap bitmap;
+  private final Grib1SectionBinaryData dataSection;
 
   private final byte[] header; // anything in between the records - eg idd header
   private int file; // for multiple files in same dataset
@@ -61,17 +62,20 @@ public class Grib1Record {
    * @param is          Grib1IndicatorSection
    * @param gdss        Grib1GridDefinitionSection
    * @param pdss        Grib1ProductDefinitionSection
+   * @param bitmap      Grib1SectionBitMap
    * @param dataSection Grib1SectionData
    */
   public Grib1Record(byte[] header, Grib1SectionIndicator is,
                      Grib1SectionGridDefinition gdss,
                      Grib1SectionProductDefinition pdss,
+                     Grib1SectionBitMap bitmap,
                      Grib1SectionBinaryData dataSection) {
 
     this.header = header;
     this.is = is;
     this.gdss = gdss;
     this.pdss = pdss;
+    this.bitmap = bitmap;
     this.dataSection = dataSection;
   }
 
@@ -81,6 +85,7 @@ public class Grib1Record {
     this.is = from.is;
     this.gdss = from.gdss;
     this.pdss = from.pdss;
+    this.bitmap = from.bitmap;
     this.dataSection = from.dataSection;
   }
 
@@ -100,6 +105,10 @@ public class Grib1Record {
     return pdss;
   }
 
+  public Grib1SectionBitMap getBitMapSection() {
+    return bitmap;
+  }
+
   public Grib1SectionBinaryData getDataSection() {
     return dataSection;
   }
@@ -113,7 +122,7 @@ public class Grib1Record {
   }
 
   //////////////////////////////////////////
-  // setters used by repeating records
+  /* setters used by repeating records
 
 
   public void setGdss(Grib1SectionGridDefinition gdss) {

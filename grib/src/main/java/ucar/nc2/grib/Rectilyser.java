@@ -33,7 +33,7 @@
 package ucar.nc2.grib;
 
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.table.GribTables;
+import ucar.nc2.grib.grib2.table.GribTables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 

@@ -1,9 +1,9 @@
-package gribIndex;
+package grib2Index;
 
-// Grib Index version 9 (gbx9)
+// Grib2 Index version 9 (gbx9)
 
 option java_package = "ucar.nc2.grib.grib2";
-option java_outer_classname = "GribIndexProto";
+option java_outer_classname = "Grib2IndexProto";
 
 message GribIdSection {
   required uint32 center_id = 1;
@@ -55,5 +55,5 @@ message Grib2Index {
 }
 
 //  cd c:/dev/tds4.2/grib/src/main/java
-//  protoc --proto_path=. --java_out=. ucar/nc2/grib/grib2/gribIndex.proto
+//  protoc --proto_path=. --java_out=. ucar/nc2/grib/grib2/grib2Index.proto
 

@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib2;
 import ucar.grib.GribNumbers;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -52,43 +53,6 @@ import java.util.Formatter;
  */
 public abstract class Grib2Gds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
-
-  public static class GdsHorizCoordSys {
-    public ucar.unidata.geoloc.ProjectionImpl proj;
-    public double startx, dx; // km
-    public double starty, dy; // km
-    public int nx, ny;
-    public Array gaussLats;
-    public Array gaussw; // ??
-
-    public GdsHorizCoordSys(ProjectionImpl proj, double startx, double dx, double starty, double dy, int nx, int ny) {
-      this.proj = proj;
-      this.startx = startx;
-      this.dx = dx;
-      this.starty = starty;
-      this.dy = dy;
-      this.nx = nx;
-      this.ny = ny;
-    }
-
-    public double getStartX() {
-      return startx;
-    }
-
-    public double getStartY() {
-      if (gaussLats != null)  return gaussLats.getDouble(0);
-      return starty;
-    }
-
-    public double getEndX() {
-      return startx + dx * nx;
-    }
-
-    public double getEndY() {
-      if (gaussLats != null)  return gaussLats.getDouble((int) gaussLats.getSize()-1);
-      return starty + dy * ny;
-    }
-  }
 
   public static Grib2Gds factory(int template, byte[] data) {
     switch (template) {

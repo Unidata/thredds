@@ -1,6 +1,6 @@
 package ucar.nc2.ui;
 
-import ucar.nc2.grib.table.WmoTemplateTable;
+import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.IndependentWindow;

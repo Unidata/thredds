@@ -32,8 +32,8 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.grib.table.GribTables;
-import ucar.nc2.grib.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.GribTables;
+import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.ui.dialog.Grib1TableDialog;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;

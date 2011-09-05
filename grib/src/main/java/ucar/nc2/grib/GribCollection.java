@@ -39,7 +39,8 @@ import thredds.inventory.DatasetCollectionMFiles;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.table.GribTables;
+import ucar.nc2.grib.grib2.table.GribTables;
+import ucar.nc2.grib.grib2.Grib2SectionGridDefinition;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -151,6 +152,34 @@ public class GribCollection {
     return params;
   }
 
+  public int getCenter() {
+    return center;
+  }
+
+  public int getSubcenter() {
+    return subcenter;
+  }
+
+  public int getMaster() {
+    return master;
+  }
+
+  public int getLocal() {
+    return local;
+  }
+
+  public int getGenProcessType() {
+    return genProcessType;
+  }
+
+  public int getGenProcessId() {
+    return genProcessId;
+  }
+
+  public int getBackProcessId() {
+    return backProcessId;
+  }
+
   GribCollection(String name, File directory) {
     this.name = name;
     this.directory = directory;
@@ -164,7 +193,7 @@ public class GribCollection {
     if (want == null) return null;
 
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
-      Iosp iosp = new Iosp(want);
+      Grib2Iosp iosp = new Grib2Iosp(want);
       NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
       return new NetcdfDataset(ncfile);
 
@@ -175,7 +204,7 @@ public class GribCollection {
           Formatter f = new Formatter();
           GribCollection gc = GribCollectionBuilder.createFromSingleFile(new File(file), f);  // LOOK thread-safety : creating ncx
 
-          Iosp iosp = new Iosp(gc);
+          Grib2Iosp iosp = new Grib2Iosp(gc);
           NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
           return new NetcdfDataset(ncfile);
         }
@@ -189,7 +218,7 @@ public class GribCollection {
     if (want == null) return null;
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf
-      Iosp iosp = new Iosp(want);
+      Grib2Iosp iosp = new Grib2Iosp(want);
       NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
@@ -200,7 +229,7 @@ public class GribCollection {
           Formatter f = new Formatter();
           GribCollection gc = GribCollectionBuilder.createFromSingleFile(new File(file), f);  // LOOK thread-safety : creating ncx
 
-          Iosp iosp = new Iosp(gc);
+          Grib2Iosp iosp = new Grib2Iosp(gc);
           NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
           NetcdfDataset ncd = new NetcdfDataset(ncfile);
           return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
@@ -345,9 +374,9 @@ public class GribCollection {
     public ThreddsMetadata.Variables getVariables() {
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("GRIB-2");
       for (VariableIndex vi : varIndex) {
-        String name = Iosp.makeVariableName(GribCollection.this, vi);
-        String desc = Iosp.makeVariableLongName(tables, vi);
-        String units = Iosp.makeVariableUnits(tables, vi);
+        String name = Grib2Iosp.makeVariableName(GribCollection.this, vi);
+        String desc = Grib2Iosp.makeVariableLongName(tables, vi);
+        String units = Grib2Iosp.makeVariableUnits(tables, vi);
         vars.addVariable(new ThreddsMetadata.Variable(name, desc, name, units, null));
       }
       return vars;
@@ -500,7 +529,7 @@ public class GribCollection {
     }
 
     // LOOK : use ehcache here ??
-    void readRecords() throws IOException {
+    public void readRecords() throws IOException {
       if (records != null) return;
       byte[] b = new byte[recordsLen];
 

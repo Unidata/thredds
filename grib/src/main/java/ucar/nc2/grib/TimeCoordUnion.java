@@ -207,6 +207,22 @@ public class TimeCoordUnion  extends TimeCoord {
       this.index = index;
     }
 
+    public Tinv getTinv() {
+      return tinv;
+    }
+
+    public CalendarDate getVal() {
+      return val;
+    }
+
+    public int getPartition() {
+      return partition;
+    }
+
+    public int getIndex() {
+      return index;
+    }
+
     @Override
     public int compareTo(Val o) {
       if (val != null)

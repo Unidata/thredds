@@ -86,6 +86,14 @@ public class Grib1SectionGridDefinition {
     this.startingPosition = -1;
   }
 
+  public Grib1SectionGridDefinition(Grib1SectionProductDefinition pds) throws IOException {
+    startingPosition = -1;
+    gridTemplate = 1000 * pds.getGridDefinition(); // LOOK
+    rawData = null;
+    gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(pds.getCenter(), pds.getGridDefinition());
+  }
+
+
   /**
    * get the raw bytes of the GDS
    *
@@ -102,9 +110,13 @@ public class Grib1SectionGridDefinition {
    */
   public long calcCRC() {
     if (crc == 0) {
-      CRC32 crc32 = new CRC32();
-      crc32.update(rawData);
-      crc = crc32.getValue();
+      if (rawData == null)
+        crc = hashCode();
+      else {
+        CRC32 crc32 = new CRC32();
+        crc32.update(rawData);
+        crc = crc32.getValue();
+      }
     }
     return crc;
   }
@@ -112,7 +124,7 @@ public class Grib1SectionGridDefinition {
   private long crc = 0;
 
   public int getLength() {
-    return rawData.length;
+    return (rawData == null) ? 0 : rawData.length;
   }
 
   public long getOffset() {
@@ -136,8 +148,8 @@ public class Grib1SectionGridDefinition {
   private Grib1Gds gds = null;
 
   public Grib1Gds getGDS() {
-    //if (gds == null)
-    //  gds = Grib2Gds.factory(templateNumber, rawData);
+    if (gds == null)
+      gds = Grib1Gds.factory(gridTemplate, rawData);
     return gds;
   }
 

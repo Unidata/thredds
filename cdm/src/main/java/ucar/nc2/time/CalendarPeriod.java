@@ -151,4 +151,8 @@ public class CalendarPeriod {
      else throw new IllegalStateException();
    }
 
- }
+  @Override
+  public String toString() {
+    return value + " " + field;
+  }
+}

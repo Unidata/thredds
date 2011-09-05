@@ -30,52 +30,52 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.table;
+package ucar.nc2.grib;
 
-import java.util.*;
+import ucar.ma2.Array;
+import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
- * superlass for local table implementations
+ * Description
  *
  * @author John
- * @since 6/22/11
+ * @since 9/5/11
  */
-public abstract class LocalTables extends GribTables {
-  protected final Map<Integer, TableEntry> local = new HashMap<Integer, TableEntry>(100);
+public class GdsHorizCoordSys {
+  public ucar.unidata.geoloc.ProjectionImpl proj;
+  public double startx, dx; // km
+  public double starty, dy; // km
+  public int nx, ny;
+  public Array gaussLats;
+  public Array gaussw; // ??
 
-  LocalTables(int center, int subCenter, int masterVersion, int localVersion) {
-    super(center, subCenter, masterVersion, localVersion);
-    initLocalTable();
+  public GdsHorizCoordSys(ProjectionImpl proj, double startx, double dx, double starty, double dy, int nx, int ny) {
+    this.proj = proj;
+    this.startx = startx;
+    this.dx = dx;
+    this.starty = starty;
+    this.dy = dy;
+    this.nx = nx;
+    this.ny = ny;
   }
 
-  protected abstract void initLocalTable();
-
-
-  @Override
-  public List getParameters() {
-    List<TableEntry> result = new ArrayList<TableEntry>();
-    for (TableEntry p : local.values()) result.add(p);
-    Collections.sort(result);
-    return result;
+  public double getStartX() {
+    return startx;
   }
 
-  @Override
-  public String getVariableName(int discipline, int category, int parameter) {
-    if ((category <= 191) && (parameter <= 191))
-      return super.getVariableName(discipline, category, parameter);
-
-    GribTables.Parameter te = getParameter(discipline, category, parameter);
-    if (te == null)
-      return super.getVariableName(discipline, category, parameter);
-    else
-      return te.getName();
+  public double getStartY() {
+    if (gaussLats != null) return gaussLats.getDouble(0);
+    return starty;
   }
 
-  @Override
-  public GribTables.Parameter getParameter(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191))
-      return WmoCodeTable.getParameterEntry(discipline, category, number);
-    return local.get(makeHash(discipline, category, number));
+  public double getEndX() {
+    return startx + dx * nx;
   }
 
+  public double getEndY() {
+    if (gaussLats != null) return gaussLats.getDouble((int) gaussLats.getSize() - 1);
+    return starty + dy * ny;
+  }
 }
+
+

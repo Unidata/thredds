@@ -45,56 +45,29 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib1SectionBinaryData {
+  private final int length;
   private final long startingPosition;
-  private final int dataPoints;
-  private final int dataTemplate;
 
   public Grib1SectionBinaryData(RandomAccessFile raf) throws IOException {
     startingPosition = raf.getFilePointer();
 
-    // octets 1-4 (Length of DRS)
-    int length = GribNumbers.int4(raf);
-
-    // octet 5
-    int section = raf.read();
-    if (section != 5)
-      throw new IllegalArgumentException("Not a GRIB-2 Data representation section");
-
-    // octets 6-9 number of datapoints
-    dataPoints = GribNumbers.int4(raf);
-
-    // octet 10
-    int dt = GribNumbers.uint2(raf);
-    dataTemplate = (dt == 40000) ? 40 : dt; // ?? NCEP bug ??
+    // octets 1-3 (Length of section)
+    length = GribNumbers.int3(raf);
 
     raf.seek(startingPosition + length);
   }
 
-  public Grib1SectionBinaryData(long startingPosition, int dataPoints, int dataTemplate) {
+  public Grib1SectionBinaryData(long startingPosition, int length) {
     this.startingPosition = startingPosition;
-    this.dataPoints = dataPoints;
-    this.dataTemplate = dataTemplate;
-  }
-
-  public int getDataPoints() {
-    return dataPoints;
-  }
-
-  public int getDataTemplate() {
-    return dataTemplate;
+    this.length = length;
   }
 
   public long getStartingPosition() {
     return startingPosition;
   }
 
-  public Grib1Drs getDrs(RandomAccessFile raf) throws IOException {
-    //raf.seek(startingPosition+11);
-    //return Grib1Drs.factory(dataTemplate, raf);
-    return null;
+  public int getLength() {
+    return length;
   }
 
-  static class Grib1Drs { // fake
-
-  }
 }

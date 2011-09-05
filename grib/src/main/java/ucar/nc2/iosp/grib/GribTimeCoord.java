@@ -37,6 +37,7 @@ import ucar.grib.GribGridRecord;
 import ucar.grib.GribPds;
 
 import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Utils;
 import ucar.nc2.iosp.grid.GridRecord;
 import ucar.nc2.iosp.grid.GridTimeCoord;
@@ -133,11 +134,10 @@ public class GribTimeCoord extends GridTimeCoord {
 
     // taken from Rectilyser
     TimeCoord.Tinv org = new TimeCoord.Tinv(timeInv[0], timeInv[1]);
-    CalendarPeriod fromUnit = Grib1Utils.getCalendarPeriod(pds.getTimeUnit());
-    CalendarPeriod toUnit = Grib1Utils.getCalendarPeriod(this.timeUnit);
+    CalendarPeriod fromUnit = Grib1ParamTime.getCalendarPeriod(pds.getTimeUnit());
+    CalendarPeriod toUnit = Grib1ParamTime.getCalendarPeriod(this.timeUnit);
     return org.convertReferenceDate(CalendarDate.of(pds.getReferenceDate()), fromUnit, CalendarDate.of(baseDate), toUnit);
   }
-
 
   /**
    * match time values - can this list of GridRecords use this coordinate?

@@ -36,7 +36,7 @@ import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.TimePartitionCollection;
-import ucar.nc2.grib.grib2.GribIndex;
+import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -123,7 +123,7 @@ public class TimePartitionBuilder extends GribCollectionBuilder {
   }
 
   private boolean needsUpdate(long collectionLastModified, Formatter f) throws IOException {
-    CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
+    CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
     for (CollectionManager dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
       File idxFile = new File(dcm.getRoot(), dcm.getCollectionName() + GribCollection.IDX_EXT);
       if (!idxFile.exists()) return true;

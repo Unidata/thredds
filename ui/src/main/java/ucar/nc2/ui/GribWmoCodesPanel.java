@@ -1,6 +1,6 @@
 package ucar.nc2.ui;
 
-import ucar.nc2.grib.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.ui.widget.*;
 import ucar.grib.grib2.ParameterTable;

@@ -10,7 +10,7 @@ import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribCollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
-import ucar.nc2.grib.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
@@ -212,7 +212,7 @@ public class Grib2ReportPanel extends JPanel {
     f.format("File = %s%n", mf);
 
     String path = mf.getPath();
-    GribIndex index = new GribIndex();
+    Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, mf.getLastModified()))
       index.makeIndex(path, f);
 
@@ -245,7 +245,7 @@ public class Grib2ReportPanel extends JPanel {
 
   private void doUniqueGds(MFile mf, Map<Integer, GdsList> gdsSet, Formatter f) throws IOException {
     String path = mf.getPath();
-    GribIndex index = new GribIndex();
+    Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, mf.getLastModified()))
       index.makeIndex(path, f);
 
@@ -399,7 +399,7 @@ public class Grib2ReportPanel extends JPanel {
     String path = ff.getPath();
 
     //make sure indexes exist
-    GribIndex index = new GribIndex();
+    Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, ff.getLastModified()))
       index.makeIndex(path, fm);
     GribCollection gc = GribCollectionBuilder.createFromSingleFile(new File(path), fm);
@@ -450,7 +450,7 @@ public class Grib2ReportPanel extends JPanel {
   private void doPdsSummary(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter statTypeSet, Counter NTimeIntervals,
                             Counter processId) throws IOException {
     String path = mf.getPath();
-    GribIndex index = new GribIndex();
+    Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, mf.getLastModified()))
       index.makeIndex(path, f);
 
@@ -501,7 +501,7 @@ public class Grib2ReportPanel extends JPanel {
                             Counter disciplineSet, Counter masterTable, Counter localTable, Counter centerId,
                             Counter subcenterId, Counter genProcessC, Counter backProcessC) throws IOException {
     String path = mf.getPath();
-    GribIndex index = new GribIndex();
+    Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, mf.getLastModified()))
       index.makeIndex(path, f);
 
@@ -599,7 +599,7 @@ public class Grib2ReportPanel extends JPanel {
 
   private void doDrsSummary(Formatter f, MFile mf, boolean useIndex, Counter templateC, Counter probC) throws IOException {
     String path = mf.getPath();
-    GribIndex index = new GribIndex();
+    Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, mf.getLastModified()))
       index.makeIndex(path, f);
     RandomAccessFile raf = new RandomAccessFile(path, "r");
@@ -641,7 +641,7 @@ public class Grib2ReportPanel extends JPanel {
 
   private void doGdsTemplate(Formatter f, MFile mf, Map<Integer, Integer> gdsSet) throws IOException {
     String path = mf.getPath();
-    GribIndex index = new GribIndex();
+    Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, mf.getLastModified()))
       index.makeIndex(path, f);
 

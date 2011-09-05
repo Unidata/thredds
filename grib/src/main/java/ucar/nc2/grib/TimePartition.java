@@ -35,6 +35,7 @@ package ucar.nc2.grib;
 import thredds.inventory.CollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.grib.grib2.Grib2Iosp;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -253,7 +254,7 @@ public class TimePartition extends GribCollection {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 
-    Iosp iosp = new Iosp(want);
+    Grib2Iosp iosp = new Grib2Iosp(want);
     NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     return new NetcdfDataset(ncfile);
   }
@@ -262,7 +263,7 @@ public class TimePartition extends GribCollection {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 
-    Iosp iosp = new Iosp(want);
+    Grib2Iosp iosp = new Grib2Iosp(want);
     NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??

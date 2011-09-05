@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.grib.table;
+package ucar.nc2.grib.grib2.table;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;

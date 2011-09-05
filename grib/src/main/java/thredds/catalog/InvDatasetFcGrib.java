@@ -41,9 +41,9 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2Gds;
-import ucar.nc2.grib.grib2.GribIndex;
-import ucar.nc2.grib.table.GribTables;
+import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.nc2.grib.grib2.Grib2Iosp;
+import ucar.nc2.grib.grib2.table.GribTables;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.StringUtil2;
@@ -94,7 +94,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       this.dcm = TimePartitionCollection.factory(config, errlog);
     } else {
       this.dcm = new DatasetCollectionMFiles(config, errlog);
-      this.dcm.setChangeChecker( GribIndex.getChangeChecker());  // the underlying files are GRIB2
+      this.dcm.setChangeChecker( Grib2Index.getChangeChecker());  // the underlying files are GRIB2
     }
 
     String errs = errlog.toString();
@@ -301,9 +301,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         VertCoord vc = (vindex.vertIdx < 0) ? null : group.vertCoords.get(vindex.vertIdx);
         GribTables tables = group.getGribCollection().getTables();
 
-        tv.setName( Iosp.makeVariableName(gribCollection, vindex));
-        tv.setDescription( Iosp.makeVariableLongName(tables, vindex));
-        tv.setUnits( Iosp.makeVariableUnits(tables, vindex));
+        tv.setName( Grib2Iosp.makeVariableName(gribCollection, vindex));
+        tv.setDescription( Grib2Iosp.makeVariableLongName(tables, vindex));
+        tv.setUnits( Grib2Iosp.makeVariableUnits(tables, vindex));
 
         tv.setVocabularyId( "2-"+vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
 
@@ -321,7 +321,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupHcs group) {
-    Grib2Gds.GdsHorizCoordSys gdsCoordSys = group.hcs.gds.makeHorizCoordSys();
+    GdsHorizCoordSys gdsCoordSys = group.hcs.gds.makeHorizCoordSys();
     LatLonRect llbb = GridCoordSys.getLatLonBoundingBox(gdsCoordSys.proj, gdsCoordSys.getStartX(), gdsCoordSys.getStartY(),
             gdsCoordSys.getEndX(), gdsCoordSys.getEndY());
 

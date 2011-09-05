@@ -37,9 +37,12 @@ package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
 import ucar.grib.GribNumbers;
+import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * The Product Definition Section for GRIB-1 files
@@ -113,10 +116,11 @@ public final class Grib1SectionProductDefinition {
 
   /**
    * Grid Definition (octet 7).
-   *
-   * @return Grid Definition
+   * "Number of grid used – from catalogue defined by originating centre".
+   * So this is center dependent.
+   * @return Grid Definition.
    */
-  public final int getGridTemplate() {
+  public final int getGridDefinition() {
     return getOctet(7);
   }
 
@@ -148,12 +152,21 @@ public final class Grib1SectionProductDefinition {
   }
 
   /**
-   * Level value (octet 11-12).
+   * Level value1 (octet 11).
    *
-   * @return level value
+   * @return level value1
    */
-  public final int getLevelValue() {
-    return GribNumbers.int2(getOctet(11), getOctet(12));
+  public final int getLevelValue1() {
+    return getOctet(11);
+  }
+
+  /**
+   * Level value2 (octet 12).
+   *
+   * @return level value2
+   */
+  public final int getLevelValue2() {
+    return getOctet(12);
   }
 
   /**
@@ -208,7 +221,7 @@ public final class Grib1SectionProductDefinition {
     *
     * @return Time range indicator
     */
-   public final int getTimeRange() {
+   public final int getTimeType() {
      return getOctet(21);
    }
 
@@ -263,7 +276,6 @@ public final class Grib1SectionProductDefinition {
    * Check if GDS exists from the flag.
    *
    * @return true, if GDS exists
-   * @deprecated
    */
   public final boolean gdsExists() {
     return (getFlag() & 128) == 128;
@@ -290,16 +302,103 @@ public final class Grib1SectionProductDefinition {
     return rawData[index - 1] & 0xff;
   }
 
-  /**
+ /**
   * Get the time of the forecast.
   *
   * @return date and time
-  * @deprecated
-  */
- public final int[] getForecastTime() {
-   return null;
+  *
+  public final int[] getForecastTime() {
+    return new int[] {getTimeValue1(), getTimeValue2()};
+  } */
+
+ public Grib1ParamLevel getParamLevel() {
+   return new Grib1ParamLevel(this);
  }
 
+  public Grib1ParamTime getParamTime() {
+    return new Grib1ParamTime(this);
+  }
+
+  public void showPds(Formatter f) {
+
+    f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
+    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), CommonCodeTable.getSubCenterName(getCenter(), getSubCenter()));
+    Grib1ParamTable ptable = Grib1ParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
+
+    f.format("               Parameter_table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(),
+            (ptable == null) ? "MISSING" : ptable.getName());
+
+    if (ptable != null) {
+      GridParameter parameter = ptable.getParameter(getParameterNumber());
+      if (parameter != null) {
+        f.format("                Parameter Name : (%d) %s%n", getParameterNumber(), parameter.getName());
+        f.format("                Parameter Desc : %s%n", parameter.getDescription());
+        f.format("               Parameter Units : %s%n", parameter.getUnit());
+      } else {
+        f.format("               Parameter %d not found%n", getParameterNumber());
+      }
+
+      f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), Grib1Utils.getTypeGenProcessName(getCenter(), getGenProcess()));
+
+      f.format("                Reference Time : %s%n", getReferenceDate());
+      f.format("                    Time Units : (%d) %s%n", getTimeUnit(), Grib1ParamTime.getCalendarPeriod(getTimeUnit()));
+      Grib1ParamTime ptime = getParamTime();
+      f.format("          Time Range Indicator : (%d) %s%n", getTimeType(), ptime.getTimeTypeName());
+      f.format("                   Time 1 (P1) : %d%n", getTimeValue1());
+      f.format("                   Time 2 (P2) : %d%n", getTimeValue2());
+      f.format("                   Time  coord : %s%n", ptime.getTimeCoord());
+      Grib1ParamLevel plevel = getParamLevel();
+      f.format("                    Level Type : (%d) %s%n", getLevelType(), plevel.getName());
+      f.format("             Level Description : %s%n", plevel.getLevelDescription());
+      f.format("                 Level Value 1 : %f%n", plevel.getValue1());
+      f.format("                 Level Value 2 : %f%n", plevel.getValue2());
+      f.format("                    GDS Exists : %s%n", gdsExists());
+      f.format("                    BMS Exists : %s%n", bmsExists());
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // LOOK - from old
+ /*
+   * NCEP Appendix C Manual 388
+   * http://www.nco.ncep.noaa.gov/pmb/docs/on388/appendixc.html
+   * states that if the PDS is > 28 bytes and octet 41 == 1
+   * then it's an ensemble an product.
+   *
+   * @return true if this is an ensemble
+  public final boolean isEnsemble() {
+    if ((getCenter() == 7) && (length >= 44 && getOctet(41) == 1 && getOctet(42) < 4 )) return true;
+    if ((getCenter() == 98) && (length > 40 && getOctet(41) != 0)) return true; // LOOK ecmwf reference ??
+    return false;
+  }
+
+  public final int getPerturbationType() {
+    if (!isEnsemble()) return GribNumbers.UNDEFINED;
+    if (getCenter() == 7) return getOctet(42);
+    if (getCenter() == 98) return getOctet(43);
+    return GribNumbers.UNDEFINED;
+  }
+
+  public final int getPerturbationNumber() {
+    if (!isEnsemble()) return GribNumbers.UNDEFINED;
+
+    /*
+    0 = Unperturbed control forecast
+    1-5 = Individual negatively perturbed forecast
+    6-10 = Individual positively perturbed forecast
+     *
+    if (getCenter() == 7) {
+      int type =  getOctet(42);
+      int id =  getOctet(43);
+      if (type == 1) return 0;
+      if (type == 2) return id;
+      if (type == 3) return 5 + id;
+    }
+    if (getCenter() == 98) return getOctet(43);
+    return GribNumbers.UNDEFINED;
+  }
+
+  */
 }
 
 

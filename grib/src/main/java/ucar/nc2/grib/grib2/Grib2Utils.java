@@ -33,7 +33,7 @@
 package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 

@@ -34,7 +34,6 @@ package ucar.nc2.grib;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.grib.table.WmoCodeTable;
 
 import java.util.*;
 
@@ -170,6 +169,14 @@ public class VertCoord { // implements Comparable<VertCoord> {
     Level(double value1, double value2) {
       this.value1 = value1;
       this.value2 = value2;
+    }
+
+    public double getValue1() {
+      return value1;
+    }
+
+    public double getValue2() {
+      return value2;
     }
 
     @Override

@@ -32,7 +32,6 @@
 
 package ucar.nc2.grib.grib1;
 
-import ucar.grib.GribNumbers;
 import ucar.nc2.time.CalendarPeriod;
 
 /**
@@ -63,129 +62,16 @@ public class Grib1Utils {
     15-253 Reserved
    */
 
-  static public CalendarPeriod getCalendarPeriod(int timeUnit) {
-
-    switch (timeUnit) { // code table 4.4
-      case 0:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Minute);
-      case 1:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
-      case 2:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Day);
-      case 3:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Month);
-      case 4:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Year);
-      case 5:
-        return CalendarPeriod.of(10, CalendarPeriod.Field.Year);
-      case 6:
-        return CalendarPeriod.of(30, CalendarPeriod.Field.Year);
-      case 7:
-        return CalendarPeriod.of(100, CalendarPeriod.Field.Year);
-      case 10:
-        return CalendarPeriod.of(3, CalendarPeriod.Field.Hour);
-      case 11:
-        return CalendarPeriod.of(6, CalendarPeriod.Field.Hour);
-      case 12:
-        return CalendarPeriod.of(12, CalendarPeriod.Field.Hour);
-      case 13:
-        return CalendarPeriod.of(15, CalendarPeriod.Field.Minute);
-      case 14:
-        return CalendarPeriod.of(30, CalendarPeriod.Field.Minute);
-      default:
-        throw new UnsupportedOperationException("Unknown time unit = "+timeUnit);
-    }
-  }
-
-  static public String getTimeUnitName(int timeRangeValue, int p1, int p2) {
-    String timeRange = null;
-    int forecastTime;
-
-    switch (timeRangeValue) {
-
-      case 0:
-        timeRange = "product valid at RT + P1";
-        forecastTime = p1;
-        break;
-
-      case 1:
-        timeRange = "product valid for RT, P1=0";
-        forecastTime = 0;
-        break;
-
-      case 2:
-        timeRange = "product valid from (RT + P1) to (RT + P2)";
-        forecastTime = p2;
-        break;
-
-      case 3:
-        timeRange = "product is an average between (RT + P1) to (RT + P2)";
-        forecastTime = p2;
-        break;
-
-      case 4:
-        timeRange = "product is an accumulation between (RT + P1) to (RT + P2)";
-        forecastTime = p2;
-        break;
-
-      case 5:
-        timeRange = "product is the difference (RT + P2) - (RT + P1)";
-        forecastTime = p2;
-        break;
-
-      case 6:
-        timeRange = "product is an average from (RT - P1) to (RT - P2)";
-        forecastTime = -p2;
-        break;
-
-      case 7:
-        timeRange = "product is an average from (RT - P1) to (RT + P2)";
-        forecastTime = p2;
-        break;
-
-      case 10:
-        timeRange = "product valid at RT + P1";
-        // p1 really consists of 2 bytes p1 and p2
-        forecastTime = p1 = GribNumbers.int2(p1, p2);
-        p2 = 0;
-        break;
-
-      case 51:
-        timeRange = "mean value from RT to (RT + P2)";
-        forecastTime = p2;
-        break;
-
-      case 113:
-        timeRange = "Average of N forecasts, forecast period of P1, reference intervals of P2";
-        forecastTime = p1;
-        break;
-
-      case 123:
-        timeRange = "Average of N uninitialized analyses, starting at the reference time, at intervals of P2";
-        forecastTime = 0;
-        break;
-
-      case 124:
-        timeRange = "Accumulation of N uninitialized analyses, starting at the reference time, at intervals of P2";
-        forecastTime = 0;
-        break;
-
-      default:
-        System.err.println("PDS: Time Range Indicator " + timeRangeValue + " is not yet supported");
-    }
-    return timeRange;
-  }
-
-
   /**
-   * LOOK - this is NCEP !
-   * @param typeGenProcess
-   * @return
-   * @deprecated
+   * Currently only defined for center 7 NCEP
+   * @param center center id
+   * @param genProcess generating process id (pds octet 6)
+   * @return generating process name, or null if unknown
    */
-  public static final String getTypeGenProcessName(int typeGenProcess) {
+  public static final String getTypeGenProcessName(int center, int genProcess) {
+    if( center != 7 ) return null;
 
-    switch (typeGenProcess) {
+    switch (genProcess) {
 
       case 2:
         return "Ultra Violet Index Model";
@@ -199,8 +85,17 @@ public class Grib1Utils {
       case 5:
         return "Satellite Derived Precipitation and temperatures, from IR";
 
+      case 6:
+        return "NCEP/ARL Dust Model";
+
       case 10:
         return "Global Wind-Wave Forecast Model";
+
+      case 11:
+        return "Global Multi-Grid Wave Model";
+
+      case 12:
+        return "Probabilistic Storm Surge";
 
       case 19:
         return "Limited-area Fine Mesh (LFM) analysis";
@@ -221,7 +116,7 @@ public class Grib1Utils {
         return "Global Optimum Interpolation Analysis (GOI) from GFS model";
 
       case 43:
-        return "Global Optimum Interpolation Analysis (GOI) from  Final run";
+        return "Global Optimum Interpolation Analysis (GOI) from Final run";
 
       case 44:
         return "Sea Surface Temperature Analysis";
@@ -284,13 +179,13 @@ public class Grib1Utils {
         return "62 wave triangular, 28 layer Spectral model from Medium Range Forecast run";
 
       case 81:
-        return "Spectral Statistical Interpolation (SSI) analysis from  GFS model";
+        return "Analysis from GFS";
 
       case 82:
-        return "Spectral Statistical Interpolation (SSI) analysis from Final run.";
+        return "Analysis from Global Data Assimilation System";
 
       case 84:
-        return "MESO ETA Model";
+        return "MESO NAM Model";
 
       case 86:
         return "RUC Model, from Forecast Systems Lab (isentropic; scale: 60km at 40N)";
@@ -340,6 +235,9 @@ public class Grib1Utils {
       case 105:
         return "RUC Model from FSL (isentropic; scale: 20km at 40N)";
 
+      case 107:
+        return "Global Ensemble Forecast System";
+
       case 108:
         return "LAMP";
 
@@ -347,10 +245,10 @@ public class Grib1Utils {
         return "RTMA (Real Time Mesoscale Analysis)";
 
       case 110:
-        return "ETA Model - 15km version";
+        return "NAM Model - 15km version";
 
       case 111:
-        return "Eta model, generic resolution (Used in SREF processing)";
+        return "NAM model, generic resolution (Used in SREF processing)";
 
       case 112:
         return "WRF-NMM model, generic resolution NMM=Nondydrostatic Mesoscale Model (NCEP)";
@@ -358,8 +256,11 @@ public class Grib1Utils {
       case 113:
         return "Products from NCEP SREF processing";
 
+      case 114:
+        return "NAEFS Products from joined NCEP, CMC global ensembles";
+
       case 115:
-        return "Downscaled GFS from Eta eXtension";
+        return "Downscaled GFS from NAM eXtension";
 
       case 116:
         return "WRF-EM model, generic resolution EM - Eulerian Mass-core (NCAR - aka Advanced Research WRF)";
@@ -395,7 +296,7 @@ public class Grib1Utils {
         return "Global Ocean Data Analysis System (GODAS)";
 
       case 130:
-        return "Merge of fields from the RUC, Eta, and Spectral Model";
+        return "Merge of fields from the RUC, NAM, and Spectral Model";
 
       case 131:
         return "Great Lakes Wave Model";
@@ -430,11 +331,14 @@ public class Grib1Utils {
       case 183:
         return "NDFD product generated by NCEP/HPC";
 
+      case 184:
+        return "Climatological Calibrated Precipitation Analysis - CCPA";
+
       case 190:
         return "National Convective Weather Diagnostic generated by NCEP/AWC";
 
       case 191:
-        return "Current Icing Potential automated product genterated by NCEP/AWC";
+        return "Current Icing Potential automated product generated by NCEP/AWC";
 
       case 192:
         return "Analysis product from NCEP/AWC";
@@ -454,6 +358,9 @@ public class Grib1Utils {
       case 198:
         return "Climate Data Assimilation System (CDAS) - used for regeneration runs";
 
+      case 199:
+        return "Climate Forecast System Reanalysis (CFSR)";
+
       case 200:
         return "CPC Manual Forecast Product";
 
@@ -461,10 +368,10 @@ public class Grib1Utils {
         return "CPC Automated Product";
 
       case 210:
-        return "EPA Air Quality Forecast";
+        return "EPA Air Quality Forecast - Currently North East US domain";
 
       case 211:
-        return "EPA Air Quality Forecast";
+        return "EPA Air Quality Forecast - Currently Eastern US domain";
 
       case 215:
         return "SPC Manual Forecast Product";
@@ -475,97 +382,11 @@ public class Grib1Utils {
       case 255:
         return "Missing";
 
-      default:
-        return "Unknown";
-    }
+        default:
+        //return "Unknown "+ Integer.toString( model );
+        return null;
+      }
 
   }
 
-   /**
-   * ProductDefinition name.
-   *
-   * @param type
-   * @return name of ProductDefinition
-   * @deprecated
-   */
-  public static String getProductDefinitionName(int type) {
-    switch (type) {
-
-      case 0:
-        return "Forecast/Uninitialized Analysis/Image Product";
-
-      case 1:
-        return "Initialized analysis product";
-
-      case 2:
-        return "Product with a valid time between P1 and P2";
-
-      case 3:
-      case 6:
-      case 7:
-        return "Average";
-
-      case 4:
-        return "Accumulation";
-
-      case 5:
-        return "Difference";
-
-      case 10:
-        return "product valid at reference time P1";
-
-      case 51:
-        return "Climatological Mean Value";
-
-      case 113:
-      case 115:
-      case 117:
-        return "Average of N forecasts";
-
-      case 114:
-      case 116:
-        return "Accumulation of N forecasts";
-
-      case 118:
-        return "Temporal variance";
-
-      case 119:
-      case 125:
-        return "Standard deviation of N forecasts";
-
-      case 123:
-        return "Average of N uninitialized analyses";
-
-      case 124:
-        return "Accumulation of N uninitialized analyses";
-
-      case 128:
-        return "Average of daily forecast accumulations";
-
-      case 129:
-        return "Average of successive forecast accumulations";
-
-      case 130:
-        return "Average of daily forecast averages";
-
-      case 131:
-        return "Average of successive forecast averages";
-
-      case 132:
-        return "Climatological Average of N analyses";
-
-      case 133:
-        return "Climatological Average of N forecasts";
-
-      case 134:
-        return "Climatological Root Mean Square difference between N forecasts and their verifying analyses";
-
-      case 135:
-        return "Climatological Standard Deviation of N forecasts from the mean of the same N forecasts";
-
-      case 136:
-        return "Climatological Standard Deviation of N analyses from the mean of the same N analyses";
-    }
-    return "Unknown";
-  }
 }

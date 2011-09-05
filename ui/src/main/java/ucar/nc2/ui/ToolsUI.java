@@ -39,11 +39,10 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.util.net.HTTPSession;
-import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.time.CalendarDate;
@@ -144,6 +143,7 @@ public class ToolsUI extends JPanel {
   private GribNewPanel gribNewPanel;
   private Grib2IdxPanel gribIdxPanel;
   private GribRawPanel gribRawPanel;
+  private Grib1RawPanel grib1RawPanel;
   private GribIndexPanel gribIndexPanel;
   private Grib1ReportPanel grib1ReportPanel;
   private Grib2ReportPanel grib2ReportPanel;
@@ -297,6 +297,7 @@ public class ToolsUI extends JPanel {
     gribnTabPane.addTab("GRIB2n", new JLabel("GRIB2n"));
     gribnTabPane.addTab("GRIB2idx", new JLabel("GRIB2idx"));
     gribnTabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
+    gribnTabPane.addTab("GRIB1-RAW", new JLabel("GRIB1-RAW"));
     gribnTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
     gribnTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
     gribnTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
@@ -487,6 +488,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("GRIB-RAW")) {
       gribRawPanel = new GribRawPanel((PreferencesExt) mainPrefs.node("grib"));
       c = gribRawPanel;
+
+    } else if (title.equals("GRIB1-RAW")) {
+      grib1RawPanel = new Grib1RawPanel((PreferencesExt) mainPrefs.node("grib1raw"));
+      c = grib1RawPanel;
 
     } else if (title.equals("GRIB-FILES")) {
       gribFilesPanel = new GribFilesPanel((PreferencesExt) mainPrefs.node("gribFiles"));
@@ -1004,6 +1009,7 @@ public class ToolsUI extends JPanel {
     if (gribNewPanel != null) gribNewPanel.save();
     if (gribIdxPanel != null) gribIdxPanel.save();
     if (gribRawPanel != null) gribRawPanel.save();
+    if (grib1RawPanel != null) grib1RawPanel.save();
     if (gribIndexPanel != null) gribIndexPanel.save();
     if (grib1ReportPanel != null) grib1ReportPanel.save();
     if (grib2ReportPanel != null) grib2ReportPanel.save();
@@ -2717,7 +2723,7 @@ public class ToolsUI extends JPanel {
   // raw grib access - dont go through the IOSP
   private class GribRawPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
-    ucar.nc2.ui.GribRawPanel gribTable;
+    GribOldRawPanel gribTable;
 
     void closeOpenFiles() throws IOException {
       if (raf != null) raf.close();
@@ -2726,7 +2732,7 @@ public class ToolsUI extends JPanel {
 
     GribRawPanel(PreferencesExt p) {
       super(p, "file:", true, false);
-      gribTable = new ucar.nc2.ui.GribRawPanel(prefs);
+      gribTable = new GribOldRawPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       AbstractButton grib2dump = BAMutil.makeButtcon("alien", "Grib2 dump", false);
@@ -2761,6 +2767,68 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(infoButton);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        if (raf != null)
+          raf.close();
+        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+        raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+        gribTable.setGribFile(raf);
+        cb.addItem(command);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      gribTable.save();
+      super.save();
+    }
+
+  }  /////////////////////////////////////////////////////////////////////
+  // raw grib access - dont go through the IOSP
+  private class Grib1RawPanel extends OpPanel {
+    ucar.unidata.io.RandomAccessFile raf = null;
+    ucar.nc2.ui.Grib1RawPanel gribTable;
+
+    void closeOpenFiles() throws IOException {
+      if (raf != null) raf.close();
+      raf = null;
+    }
+
+    Grib1RawPanel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      gribTable = new ucar.nc2.ui.Grib1RawPanel(prefs);
+      add(gribTable, BorderLayout.CENTER);
+
+      /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          gribTable.checkProblems(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton); */
     }
 
     boolean process(Object o) {

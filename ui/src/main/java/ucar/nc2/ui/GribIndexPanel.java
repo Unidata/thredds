@@ -41,7 +41,7 @@ import ucar.grib.grib2.Grib2Data;
 import ucar.grib.grib2.Grib2GridDefinitionSection;
 import ucar.grib.grib2.Grib2Pds;
 import ucar.grib.grib2.Grib2Tables;
-import ucar.nc2.grib.table.WmoTemplateTable;
+import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.iosp.grib.GribVariable;
 import ucar.nc2.iosp.grid.*;
@@ -356,7 +356,7 @@ public class GribIndexPanel extends JPanel {
       return;
     }
 
-    GribRawPanel.compare(data1, data2, f);
+    GribOldRawPanel.compare(data1, data2, f);
   }
 
   void showData(GribGridRecordBean bean, Formatter f) {
@@ -497,7 +497,7 @@ public class GribIndexPanel extends JPanel {
     f.format("Compare PDS bytes %n");
     byte[] raw1 = ggr1.getPds().getPDSBytes();
     byte[] raw2 = ggr2.getPds().getPDSBytes();
-    GribRawPanel.compare(raw1, raw2, f);
+    GribOldRawPanel.compare(raw1, raw2, f);
     return;
   }
 

@@ -35,10 +35,10 @@ package ucar.nc2.ui;
 
 import ucar.grib.GribPds;
 import ucar.grib.NoValidGribException;
-import ucar.nc2.grib.table.GribTables;
+import ucar.nc2.grib.grib2.table.GribTables;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.ma2.DataType;
-import ucar.nc2.grib.table.WmoTemplateTable;
+import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.DateFormatter;
@@ -71,7 +71,7 @@ import java.util.List;
  * @author caron
  * @since Aug 15, 2008
  */
-public class GribRawPanel extends JPanel {
+public class GribOldRawPanel extends JPanel {
   private static final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
 
   private PreferencesExt prefs;
@@ -89,7 +89,7 @@ public class GribRawPanel extends JPanel {
 
   private DateFormatter df = new DateFormatter();
 
-  public GribRawPanel(PreferencesExt prefs) {
+  public GribOldRawPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     PopupMenu varPopup;
@@ -499,10 +499,10 @@ public class GribRawPanel extends JPanel {
       }
       fos.close();
 
-      JOptionPane.showMessageDialog(GribRawPanel.this, filename + " successfully written");
+      JOptionPane.showMessageDialog(GribOldRawPanel.this, filename + " successfully written");
 
     } catch (Exception ex) {
-      JOptionPane.showMessageDialog(GribRawPanel.this, "ERROR: " + ex.getMessage());
+      JOptionPane.showMessageDialog(GribOldRawPanel.this, "ERROR: " + ex.getMessage());
       ex.printStackTrace();
     }
   }

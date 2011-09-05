@@ -40,8 +40,8 @@ import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribCollectionBuilder;
 import ucar.nc2.grib.Rectilyser;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.table.GribTables;
-import ucar.nc2.grib.table.WmoTemplateTable;
+import ucar.nc2.grib.grib2.table.GribTables;
+import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.*;
@@ -455,7 +455,7 @@ public class GribNewPanel extends JPanel {
                                Map<Integer, Grib2SectionGridDefinition> gdsSet,
                                List<Grib2ParameterBean> params, Formatter f) throws IOException {
 
-    GribIndex index = new GribIndex();
+    Grib2Index index = new Grib2Index();
     if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
       index.makeIndex(mfile.getPath(), f);
     }
@@ -510,7 +510,7 @@ public class GribNewPanel extends JPanel {
       f.format("%3d: %s%n", fileno, mfile.getPath());
       filenames.add(mfile.getPath());
 
-      GribIndex index = new GribIndex();
+      Grib2Index index = new Grib2Index();
       if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
         index.makeIndex(mfile.getPath(), f);
       }

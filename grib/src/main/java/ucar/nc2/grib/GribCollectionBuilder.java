@@ -38,7 +38,7 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.table.GribTables;
+import ucar.nc2.grib.grib2.table.GribTables;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -149,7 +149,7 @@ public class GribCollectionBuilder {
   }
 
   private boolean needsUpdate(long idxLastModified) {
-    CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
+    CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
     for (CollectionManager dcm : collections) {
       for (MFile mfile : dcm.getFiles()) {
         if (cc.hasChangedSince(mfile, idxLastModified)) return true;
@@ -406,16 +406,16 @@ public class GribCollectionBuilder {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
         filenames.add(mfile.getPath());
 
-        GribIndex index = new GribIndex();
+        Grib2Index index = new Grib2Index();
         try {
           if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked against the data file
             index.makeIndex(mfile.getPath(), f);
-            f.format("  Index written: %s == %d records %n", mfile.getName() + GribIndex.IDX_EXT, index.getRecords().size());
+            f.format("  Index written: %s == %d records %n", mfile.getName() + Grib2Index.IDX_EXT, index.getRecords().size());
           } else if (debug) {
-            f.format("  Index read: %s == %d records %n", mfile.getName() + GribIndex.IDX_EXT, index.getRecords().size());
+            f.format("  Index read: %s == %d records %n", mfile.getName() + Grib2Index.IDX_EXT, index.getRecords().size());
           }
         } catch (IOException ioe) {
-          f.format("GribCollectionBuilder: reading/Creating gbx9 index failed err=%s%n  skipping %s%n", ioe.getMessage(), mfile.getPath() + GribIndex.IDX_EXT);
+          f.format("GribCollectionBuilder: reading/Creating gbx9 index failed err=%s%n  skipping %s%n", ioe.getMessage(), mfile.getPath() + Grib2Index.IDX_EXT);
           continue;
         }
 

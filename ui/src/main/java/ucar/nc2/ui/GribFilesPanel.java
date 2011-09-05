@@ -32,7 +32,6 @@
 
 package ucar.nc2.ui;
 
-import opendap.servlet.Log;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import ucar.grib.NoValidGribException;
@@ -42,7 +41,7 @@ import ucar.grib.grib1.Grib1Record;
 import ucar.grib.grib1.GribPDSParamTable;
 import ucar.grib.grib2.Grib2IndicatorSection;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.table.GribTables;
+import ucar.nc2.grib.grib2.table.GribTables;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -348,6 +347,10 @@ public class GribFilesPanel extends JPanel {
       return first.getPDS().getSubCenterName();
     }
 
+    public int getTimeUnit() {
+      return first.getPDS().getTimeRange();
+    }
+
     public String getTable() {
       if (table == null)
         table = GribPDSParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
@@ -365,7 +368,7 @@ public class GribFilesPanel extends JPanel {
 
   public class Grib2Bean {
     MFile m;
-    GribIndex index;
+    Grib2Index index;
     int nRecords, localCount = 0, gdsCount = 0;
     Grib2Record first;
     GribTables tables;
@@ -378,7 +381,7 @@ public class GribFilesPanel extends JPanel {
       this.m = m;
 
       try {
-        index = new GribIndex();
+        index = new Grib2Index();
         if (!index.readIndex(m.getPath(), m.getLastModified())) {
           index.makeIndex(m.getPath(), new Formatter());
         }

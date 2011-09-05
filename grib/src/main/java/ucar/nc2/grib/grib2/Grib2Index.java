@@ -33,7 +33,6 @@
 package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
-import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.stream.NcStream;
@@ -80,8 +79,8 @@ import java.util.*;
  * @author caron
  * @since 4/1/11
  */
-public class GribIndex {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribIndex.class);
+public class Grib2Index {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Index.class);
 
   public static final String IDX_EXT = ".gbx9";
   private static final String MAGIC_START = "Grib2Index";
@@ -146,19 +145,19 @@ public class GribIndex {
       byte[] m = new byte[size];
       NcStream.readFully(fin, m);
 
-      GribIndexProto.Grib2Index proto = GribIndexProto.Grib2Index.parseFrom(m);
+      Grib2IndexProto.Grib2Index proto = Grib2IndexProto.Grib2Index.parseFrom(m);
       String fname = proto.getFilename();
       if (debug) System.out.printf("%s for %s%n", fname, filename);
 
       gdsList = new ArrayList<Grib2SectionGridDefinition>(proto.getGdsListCount());
-      for (GribIndexProto.GribGdsSection pgds : proto.getGdsListList()) {
+      for (Grib2IndexProto.GribGdsSection pgds : proto.getGdsListList()) {
         Grib2SectionGridDefinition gds = readGds(pgds);
         gdsList.add(gds);
       }
       if (debug) System.out.printf(" read %d gds%n", gdsList.size());
 
       records = new ArrayList<Grib2Record>(proto.getRecordsCount());
-      for (GribIndexProto.Grib2Record precord : proto.getRecordsList()) {
+      for (Grib2IndexProto.Grib2Record precord : proto.getRecordsList()) {
         records.add(readRecord(precord));
       }
       if (debug) System.out.printf(" read %d records%n", records.size());
@@ -191,7 +190,7 @@ message Grib2Record {
  required uint64 bmsPos = 8;
  required uint64 dataPos = 9;
   */
-  private Grib2Record readRecord(GribIndexProto.Grib2Record p) {
+  private Grib2Record readRecord(Grib2IndexProto.Grib2Record p) {
     Grib2SectionIndicator is = new Grib2SectionIndicator(p.getGribMessageStart(), p.getGribMessageLength(), p.getDiscipline());
 
     Grib2SectionIdentification ids = readIdMessage(p.getIds());
@@ -211,7 +210,7 @@ message Grib2Record {
     return new Grib2Record(p.getHeader().toByteArray(), is, ids, lus, gds, pds, drs, bms, data);
   }
 
-  private Grib2SectionIdentification readIdMessage(GribIndexProto.GribIdSection p) {
+  private Grib2SectionIdentification readIdMessage(Grib2IndexProto.GribIdSection p) {
     // Grib2SectionIdentification(int center_id, int subcenter_id, int master_table_version,
     // int local_table_version, int significanceOfRT, int year, int month, int day, int hour, int minute, int second, int productionStatus, int processedDataType) {
     return new Grib2SectionIdentification(p.getCenterId(), p.getSubcenterId(),
@@ -220,7 +219,7 @@ message Grib2Record {
             p.getProductionStatus(), p.getProcessedDataType());
   }
 
-  private Grib2SectionGridDefinition readGds(GribIndexProto.GribGdsSection proto) {
+  private Grib2SectionGridDefinition readGds(Grib2IndexProto.GribGdsSection proto) {
     ByteString bytes = proto.getGds();
     return new Grib2SectionGridDefinition(bytes.toByteArray());
   }
@@ -241,7 +240,7 @@ message Grib2Record {
       gdsList = new ArrayList<Grib2SectionGridDefinition>();
       records = new ArrayList<Grib2Record>(200);
 
-      GribIndexProto.Grib2Index.Builder rootBuilder = GribIndexProto.Grib2Index.newBuilder();
+      Grib2IndexProto.Grib2Index.Builder rootBuilder = Grib2IndexProto.Grib2Index.newBuilder();
       rootBuilder.setFilename(filename);
 
       raf = new RandomAccessFile(filename, "r");
@@ -262,7 +261,7 @@ message Grib2Record {
         rootBuilder.addRecords(makeRecordProto(r, index));
       }
 
-      ucar.nc2.grib.grib2.GribIndexProto.Grib2Index index = rootBuilder.build();
+      Grib2IndexProto.Grib2Index index = rootBuilder.build();
       byte[] b = index.toByteArray();
       NcStream.writeVInt(fout, b.length); // message size
       fout.write(b);  // message  - all in one gulp
@@ -274,8 +273,8 @@ message Grib2Record {
     }
   }
 
-  private ucar.nc2.grib.grib2.GribIndexProto.Grib2Record makeRecordProto(Grib2Record r, int gdsIndex) throws IOException {
-    GribIndexProto.Grib2Record.Builder b = GribIndexProto.Grib2Record.newBuilder();
+  private Grib2IndexProto.Grib2Record makeRecordProto(Grib2Record r, int gdsIndex) throws IOException {
+    Grib2IndexProto.Grib2Record.Builder b = Grib2IndexProto.Grib2Record.newBuilder();
 
     b.setHeader(ByteString.copyFrom(r.getHeader()));
 
@@ -311,8 +310,8 @@ message Grib2Record {
     return b.build();
   }
 
-  private GribIndexProto.GribGdsSection makeGdsProto(Grib2SectionGridDefinition gds) throws IOException {
-    GribIndexProto.GribGdsSection.Builder b = GribIndexProto.GribGdsSection.newBuilder();
+  private Grib2IndexProto.GribGdsSection makeGdsProto(Grib2SectionGridDefinition gds) throws IOException {
+    Grib2IndexProto.GribGdsSection.Builder b = Grib2IndexProto.GribGdsSection.newBuilder();
     b.setGds(ByteString.copyFrom(gds.getRawBytes()));
     return b.build();
   }
@@ -329,8 +328,8 @@ message Grib2Record {
   required uint32 processedDataType = 8;
 }
    */
-  private ucar.nc2.grib.grib2.GribIndexProto.GribIdSection makeIdProto(Grib2SectionIdentification id) throws IOException {
-    GribIndexProto.GribIdSection.Builder b = GribIndexProto.GribIdSection.newBuilder();
+  private Grib2IndexProto.GribIdSection makeIdProto(Grib2SectionIdentification id) throws IOException {
+    Grib2IndexProto.GribIdSection.Builder b = Grib2IndexProto.GribIdSection.newBuilder();
 
     b.setCenterId(id.getCenter_id());
     b.setSubcenterId(id.getSubcenter_id());
@@ -352,7 +351,7 @@ message Grib2Record {
   static public void main(String args[]) throws IOException {
     String filename = "G:/tigge/uv/z_tigge_c_kwbc_20110605120000_glob_prod_cf_HGHT_0000_000_10_uv.grib";
     //String filename = "G:/mlode/ndfdProb/extract.grib2";
-    new GribIndex().makeIndex(filename, new Formatter(System.out));
+    new Grib2Index().makeIndex(filename, new Formatter(System.out));
   }
 
 }

@@ -66,9 +66,9 @@ public class Grib1SectionIndicator {
       if (b[i] != MAGIC[i])
         throw new IllegalArgumentException("Not a GRIB record");
 
-    messageLength = GribNumbers.int4(raf);
+    messageLength = GribNumbers.int3(raf);
     int edition = raf.read();
-    if (edition != 2)
+    if (edition != 1)
       throw new IllegalArgumentException("Not a GRIB-1 record");
   }
 

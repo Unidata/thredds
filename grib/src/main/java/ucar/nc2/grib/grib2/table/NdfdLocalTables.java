@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.table;
+package ucar.nc2.grib.grib2.table;
 
 import java.util.*;
 

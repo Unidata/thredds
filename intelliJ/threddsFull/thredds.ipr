@@ -197,6 +197,7 @@
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/CatalogSearcher.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/CatalogIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/ldm/BerkeleyDBIndexer.java" />
+      <file url="file://$PROJECT_DIR$/../../grib/src/main/java/ucar/nc2/grib/grib1/Grib1Iosp.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />

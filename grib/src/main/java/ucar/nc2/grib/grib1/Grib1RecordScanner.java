@@ -42,16 +42,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Description
+ * Scan files and extract Grib1Records.
  *
  * @author John
  * @since 9/3/11
  */
 public class Grib1RecordScanner {
-    static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
   static private final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
   static private final boolean debug = false;
-  static private final boolean debugRepeat = false;
+  static private final boolean debugGds = true;
 
   private Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<Long, Grib1SectionGridDefinition>();
   private ucar.unidata.io.RandomAccessFile raf = null;
@@ -70,8 +70,6 @@ public class Grib1RecordScanner {
     raf.seek(startPos);
     raf.order(RandomAccessFile.BIG_ENDIAN);
     lastPos = startPos;
-
-    if (debugRepeat) System.out.printf(" Grib1RecordScanner %s%n", raf.getLocation());
   }
 
   public boolean hasNext() throws IOException {
@@ -87,15 +85,15 @@ public class Grib1RecordScanner {
     raf.seek(lastPos);
     boolean more = raf.searchForward(matcher, -1); // will scan to end for another GRIB header
     if (more) {
-      long stop = raf.getFilePointer();
-      int sizeHeader = (int) (stop - lastPos);
+      long foundAt = raf.getFilePointer();
+      int sizeHeader = (int) (foundAt - lastPos);
       //if (sizeHeader > 30) sizeHeader = 30;
       header = new byte[sizeHeader];
-      startPos = stop-sizeHeader;
+      startPos = foundAt-sizeHeader;
       raf.seek(startPos);
       raf.read(header);
+      if (debug) System.out.println(" 'GRIB' found at "+foundAt+" starting from lastPos "+ lastPos);
     }
-    if (debug) System.out.println(" more "+more+" at "+startPos+" lastPos "+ lastPos);
     return more;
   }
 
@@ -107,57 +105,64 @@ public class Grib1RecordScanner {
     Grib1SectionIndicator is = null;
     try {
       is = new Grib1SectionIndicator(raf);
-      Grib1SectionGridDefinition gds = new Grib1SectionGridDefinition(raf);
       Grib1SectionProductDefinition pds = new Grib1SectionProductDefinition(raf);
+      Grib1SectionGridDefinition gds = pds.gdsExists() ? new Grib1SectionGridDefinition(raf) : new Grib1SectionGridDefinition(pds);
+      if (!pds.gdsExists() && debugGds)
+        System.out.printf(" NO GDS: center = %d, GridDefinition=%d file=%s%n", pds.getCenter(), pds.getGridDefinition(), raf.getLocation());
+
+      Grib1SectionBitMap bitmap = pds.bmsExists() ? new Grib1SectionBitMap(raf) : null;
       Grib1SectionBinaryData dataSection = new Grib1SectionBinaryData(raf);
-      //if (dataSection.getDataLength() > is.getMessageLength()) { // presumably corrupt
-      //  raf.seek(drs.getStartingPosition()); // go back to before the dataSection
-      //  throw new IllegalStateException("Illegal Grib1SectionData Message Length");
-      //}
+      if (dataSection.getStartingPosition() + dataSection.getLength() > is.getEndPos()) { // presumably corrupt
+        raf.seek(dataSection.getStartingPosition()); // go back to start of the dataSection, in hopes of salvaging
+        log.warn("BAD GRIB-2 data message at " + dataSection.getStartingPosition() + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
+        throw new IllegalStateException("Illegal Grib1SectionBinaryData Message Length");
+      }
+
+      /* from old code
+          // obtain BMS or BDS offset in the file for this product
+          if (pds.getPdsVars().getCenter() == 98) {  // check for ecmwf offset by 1 bug
+            int length = GribNumbers.uint3(raf);  // should be length of BMS
+            if ((length + raf.getFilePointer()) < EOR) {
+              dataOffset = raf.getFilePointer() - 3;  // ok
+            } else {
+              //System.out.println("ECMWF off by 1 bug" );
+              dataOffset = raf.getFilePointer() - 2;
+            }
+          } else {
+            dataOffset = raf.getFilePointer();
+          }
+       */
 
       // look for duplicate gds
-      long crc = gds.calcCRC();
+      long crc = gds.calcCRC(); // LOOK switch to hashCode ??
       Grib1SectionGridDefinition gdsCached = gdsMap.get(crc);
       if (gdsCached != null)
         gds = gdsCached;
       else
         gdsMap.put(crc, gds);
 
-      // look for duplicate pds
-      /* crc = pds.calcCRC();
-      Grib1SectionProductDefinition pdsCached = pdsMap.get(crc);
-      if (pdsCached != null)
-        pds = pdsCached;
-      else
-        pdsMap.put(crc, pds); */
-
-      // check to see if we have a repeating record
-      long pos = raf.getFilePointer();
       long ending = is.getEndPos();
-      if (pos+34 < ending) { // give it 30 bytes of slop
-        if (debugRepeat) System.out.printf(" REPEAT AT %d != %d%n", pos+4, ending);
-        repeatPos = pos;
-        repeatRecord = new Grib1Record(header, is, gds, pds, dataSection); // this assumes immutable sections
-        return new Grib1Record(repeatRecord); // GribRecord isnt immutable; still may not be necessary
-      }
-
-      if (debug) System.out.printf(" read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
 
       // check that end section is correct
+      boolean foundEnding = true;
       raf.seek(ending-4);
       for (int i = 0; i < 4; i++) {
         if (raf.read() != 55) {
-          log.warn("Missing End of GRIB message at pos=" + ending + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
+          foundEnding = false;
+          log.debug("Missing End of GRIB message at pos=" + ending + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
           break;
         }
       }
-      lastPos = raf.getFilePointer();
+      if (debug) System.out.printf(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
+              raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
+      lastPos = foundEnding ? raf.getFilePointer() : is.getEndPos();
 
-      return new Grib1Record(header, is, gds, pds, dataSection);
+      return new Grib1Record(header, is, gds, pds, bitmap, dataSection);
 
     } catch (Throwable t) {
       long pos = (is == null) ? -1 : is.getStartPos();
       log.warn("Bad Grib1 record in file {}, skipping pos={}", raf.getLocation(), pos);
+      t.printStackTrace();
       lastPos = raf.getFilePointer();
       if (hasNext()) // skip forward
         return next();
@@ -166,84 +171,8 @@ public class Grib1RecordScanner {
     return null; // last record was incomplete
   }
 
-  // return true if got another repeat out of this record
-  /* side effect is that the new record is in repeatRecord
-  private boolean nextRepeating() throws IOException {
-    raf.seek(repeatPos);
-
-    // octets 1-4 (Length of GDS)
-    int length = GribNumbers.int4(raf);
-    int section = raf.read();
-    raf.seek(repeatPos);
-
-    if (section == 2) {
-      repeatRecord.setLus(new Grib1SectionLocalUse(raf));
-      repeatRecord.setGdss(new Grib1SectionGridDefinition(raf));
-      repeatRecord.setPdss(new Grib1SectionProductDefinition(raf));
-      repeatRecord.setDrs(new Grib1SectionDataRepresentation(raf));
-      repeatRecord.setBms(new Grib1SectionBitMap(raf));
-      repeatRecord.setDataSection(new Grib1SectionData(raf));
-
-    } else if (section == 3) {
-      repeatRecord.setGdss(new Grib1SectionGridDefinition(raf));
-      repeatRecord.setPdss(new Grib1SectionProductDefinition(raf));
-      repeatRecord.setDrs(new Grib1SectionDataRepresentation(raf));
-      repeatRecord.setBms(new Grib1SectionBitMap(raf));
-      repeatRecord.setDataSection(new Grib1SectionData(raf));
-
-    } else if (section == 4) {
-      repeatRecord.setPdss(new Grib1SectionProductDefinition(raf));
-      repeatRecord.setDrs(new Grib1SectionDataRepresentation(raf));
-      repeatRecord.setBms(new Grib1SectionBitMap(raf));
-      repeatRecord.setDataSection(new Grib1SectionData(raf));
-
-    } else {
-      if (debugRepeat) System.out.printf(" REPEAT Terminate %d%n", section);
-      repeatPos = -1;
-      repeatRecord = null;
-      return false;
-    }
-
-    if ((section == 2) || (section == 3)) {
-      // look for duplicate gds
-      Grib1SectionGridDefinition gds = repeatRecord.getGDSsection();
-      long crc = gds.calcCRC();
-      Grib1SectionGridDefinition gdsCached = gdsMap.get(crc);
-      if (gdsCached != null)
-        repeatRecord.setGdss(gdsCached);
-      else
-        gdsMap.put(crc, gds);
-    }
-
-   // check to see if we are at the end
-    long pos = raf.getFilePointer();
-    long ending = repeatRecord.getIs().getEndPos();
-    if (pos+34 < ending) { // give it 30 bytes of slop
-      if (debugRepeat) System.out.printf(" REPEAT AGAIN %d != %d%n", pos+4, ending);
-      repeatPos = pos;
-      return true;
-    }
-
-    if (debug) System.out.printf(" REPEAT read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
-
-    // check that end section is correct
-    raf.seek(ending-4);
-    for (int i = 0; i < 4; i++) {
-      if (raf.read() != 55) {
-        log.warn("  REPEAT Missing End of GRIB message at pos=" + ending + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
-        break;
-      }
-    }
-    lastPos = raf.getFilePointer();
-
-    if (debugRepeat) System.out.printf(" REPEAT DONE%n");
-    repeatPos = -1; // no more repeats in this record
-    return true;
-  }
-
-
-  /**
-   * tricky bit of business. recapture the entire record based on drs position.
+  /*
+   * tricky bit of business. recapture the entire record based on drs position - for extracting a message
    * for validation.
    * @param raf             from this RandomAccessFile
    * @param drsPos          Grib1SectionDataRepresentation starts here
@@ -265,10 +194,14 @@ public class Grib1RecordScanner {
   }  */
 
   public static void main(String[] args) throws IOException {
-    RandomAccessFile raf = new RandomAccessFile("Q:/cdmUnitTest/formats/Grib1/sfc_d01_20080430_1200_f00000.grb2", "r");
+    int count = 0;
+    RandomAccessFile raf = new RandomAccessFile("F:/data/cdmUnitTest/formats/grib1/RUC.wmo", "r");
     Grib1RecordScanner scan = new Grib1RecordScanner(raf);
-    while (scan.hasNext())
+    while (scan.hasNext()) {
       scan.next();
+      count++;
+    }
     raf.close();
+    System.out.printf("count=%d%n",count);
   }
 }

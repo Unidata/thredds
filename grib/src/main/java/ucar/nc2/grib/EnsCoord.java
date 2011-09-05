@@ -33,7 +33,6 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.Immutable;
-import ucar.nc2.grib.table.WmoCodeTable;
 
 import java.util.Formatter;
 import java.util.List;
@@ -110,6 +109,14 @@ public class EnsCoord  {
     Coord(int code, int ensMember) {
       this.code = code;
       this.ensMember = ensMember;
+    }
+
+    public int getCode() {
+      return code;
+    }
+
+    public int getEnsMember() {
+      return ensMember;
     }
 
     @Override

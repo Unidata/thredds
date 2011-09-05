@@ -30,15 +30,15 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib;
+package ucar.nc2.grib.grib2;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.table.GribTables;
+import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib2.table.GribTables;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -56,8 +56,8 @@ import java.util.*;
  * @author caron
  * @since 4/6/11
  */
-public class Iosp extends AbstractIOServiceProvider {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Iosp.class);
+public class Grib2Iosp extends AbstractIOServiceProvider {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
   static private final boolean debugTime = false, debugRead = false;
 
   static public String makeVariableName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
@@ -68,9 +68,9 @@ public class Iosp extends AbstractIOServiceProvider {
     // if this uses any local tables, then we have to add the center id
     if ((vindex.category > 191) || (vindex.parameter > 191) || (vindex.levelType > 191) || (vindex.intvType > 191)
             || (vindex.ensDerivedType > 191) || (vindex.probType > 191)) {
-      f.format("_C%d", gribCollection.center);
-      if (gribCollection.subcenter > 0)
-        f.format("-%d", gribCollection.subcenter);
+      f.format("_C%d", gribCollection.getCenter());
+      if (gribCollection.getSubcenter() > 0)
+        f.format("-%d", gribCollection.getSubcenter());
     }
 
     if (vindex.levelType != Grib2Pds.MISSING) { // satellite data doesnt have a level
@@ -188,15 +188,15 @@ public class Iosp extends AbstractIOServiceProvider {
   }
 
   // public no-arg constructor for reflection
-  public Iosp() {
+  public Grib2Iosp() {
   }
 
-  Iosp(GribCollection.GroupHcs gHcs) {
+  public Grib2Iosp(GribCollection.GroupHcs gHcs) {
     this.gHcs = gHcs;
     this.owned = true;
   }
 
-  Iosp(GribCollection gc) {
+  public Grib2Iosp(GribCollection gc) {
     this.gribCollection = gc;
   }
 
@@ -210,7 +210,7 @@ public class Iosp extends AbstractIOServiceProvider {
         isTimePartitioned = true;
         timePartition = (TimePartition) gribCollection;
       }
-      tables = GribTables.factory(gribCollection.center, gribCollection.subcenter, gribCollection.master, gribCollection.local);
+      tables = GribTables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
       addGroup(ncfile, gHcs, false);
 
     } else if (gribCollection != null) { // use the gribCollection set in the constructor
@@ -218,7 +218,7 @@ public class Iosp extends AbstractIOServiceProvider {
         isTimePartitioned = true;
         timePartition = (TimePartition) gribCollection;
       }
-      tables = GribTables.factory(gribCollection.center, gribCollection.subcenter, gribCollection.master, gribCollection.local);
+      tables = GribTables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
       boolean useGroups = gribCollection.getGroups().size() > 1;
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
         addGroup(ncfile, g, useGroups);
@@ -251,19 +251,19 @@ public class Iosp extends AbstractIOServiceProvider {
         addGroup(ncfile, g, useGroups);
     }
 
-    String val = CommonCodeTable.getCenterName(gribCollection.center, 2);
-    ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.center) : val));
-    val = CommonCodeTable.getSubCenterName(gribCollection.center, gribCollection.subcenter);
-    ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.subcenter) : val));
-    ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.master + "/" + gribCollection.local));
+    String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
+    ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
+    val = CommonCodeTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
+    ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
+    ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.getMaster() + "/" + gribCollection.getLocal()));
 
-    val = tables.getTableValue("4.3", gribCollection.genProcessType);
+    val = tables.getTableValue("4.3", gribCollection.getGenProcessType());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Type of generating process", val));
-    val = tables.getTableValue("ProcessId", gribCollection.genProcessId);
+    val = tables.getTableValue("ProcessId", gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Analysis or forecast generating process identifier (defined by originating centre)", val));
-    val = tables.getTableValue("ProcessId", gribCollection.backProcessId);
+    val = tables.getTableValue("ProcessId", gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Background generating process identifier (defined by originating centre)", val));
 
@@ -292,13 +292,13 @@ public class Iosp extends AbstractIOServiceProvider {
     }
 
     String horizDims;
-    Grib2Gds.GdsHorizCoordSys horizCoordSys = hcs.gds.makeHorizCoordSys();
+    GdsHorizCoordSys horizCoordSys = hcs.gds.makeHorizCoordSys();
     if (horizCoordSys == null) {
-      logger.error("No GdsHorizCoordSys for gds template {} center {}", gHcs.hcs.template, gribCollection.center);
+      logger.error("No GdsHorizCoordSys for gds template {} center {}", gHcs.hcs.template, gribCollection.getCenter());
       throw new IllegalStateException();
     }
 
-    boolean is2D = Grib2Utils.isLatLon2D(gHcs.hcs.template, gribCollection.center);
+    boolean is2D = Grib2Utils.isLatLon2D(gHcs.hcs.template, gribCollection.getCenter());
     if (is2D) {
       horizDims = "lat lon";  // LOOK: orthogonal curvilinear
 
@@ -306,7 +306,7 @@ public class Iosp extends AbstractIOServiceProvider {
       ncfile.addDimension(g, new Dimension("lon", hcs.nx));
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
 
-    } else if (Grib2Utils.isLatLon(gHcs.hcs.template, gribCollection.center)) {
+    } else if (Grib2Utils.isLatLon(gHcs.hcs.template, gribCollection.getCenter())) {
       horizDims = "lat lon";
       ncfile.addDimension(g, new Dimension("lon", hcs.nx));
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
@@ -367,7 +367,7 @@ public class Iosp extends AbstractIOServiceProvider {
         float[] data = new float[n];
         int count = 0;
         for (VertCoord.Level val : vc.getCoords())
-          data[count++] = (float) (val.value1 + val.value2) / 2;
+          data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
         v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
 
         Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName + "_bounds", DataType.FLOAT, vcName + " 2"));
@@ -378,8 +378,8 @@ public class Iosp extends AbstractIOServiceProvider {
         data = new float[2 * n];
         count = 0;
         for (VertCoord.Level level : vc.getCoords()) {
-          data[count++] = (float) level.value1;
-          data[count++] = (float) level.value2;
+          data[count++] = (float) level.getValue1();
+          data[count++] = (float) level.getValue2();
         }
         bounds.setCachedData(Array.factory(DataType.FLOAT, new int[]{n, 2}, data));
 
@@ -387,7 +387,7 @@ public class Iosp extends AbstractIOServiceProvider {
         float[] data = new float[n];
         int count = 0;
         for (VertCoord.Level val : vc.getCoords())
-          data[count++] = (float) val.value1;
+          data[count++] = (float) val.getValue1();
         v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
       }
     }
@@ -439,7 +439,7 @@ public class Iosp extends AbstractIOServiceProvider {
       int[] data = new int[n];
       int count = 0;
       for (EnsCoord.Coord ecc : ec.getCoords())
-        data[count++] = ecc.ensMember;
+        data[count++] = ecc.getEnsMember();
       v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
     }
 
@@ -638,7 +638,7 @@ public class Iosp extends AbstractIOServiceProvider {
     for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
 
       TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
-      GribCollection.VariableIndex vindex = vindexP.getVindex(val.partition);
+      GribCollection.VariableIndex vindex = vindexP.getVindex(val.getPartition());
 
       for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
         for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
@@ -648,12 +648,12 @@ public class Iosp extends AbstractIOServiceProvider {
                   ensRange.length(), levRange.length());
 
           // get the record from the partition
-          int recordIndex = GribCollection.calcIndex(val.index, ensIdx, levelIdx, vindex.nens, vindex.nverts);
+          int recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
           // System.out.printf(" GribCollection.Record == %d (%d, %d, %d) %n", recordIndex, timeIdx, ensIdx, levIdx);
           GribCollection.Record record = vindex.records[recordIndex];
 
           // add this record to be read
-          dataReader.addRecord(vindex, val.partition, record.fileno, record.drsPos, resultIndex);
+          dataReader.addRecord(vindex, val.getPartition(), record.fileno, record.drsPos, resultIndex);
         }
       }
     }

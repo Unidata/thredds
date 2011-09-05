@@ -36,9 +36,11 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import ucar.grib.grib1.*;
+import ucar.grib.grib1.Grib1Record;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.grib1.*;
 import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
@@ -59,186 +61,189 @@ import java.util.*;
  * @since 8/28/11
  */
 public class Grib1ReportPanel extends JPanel {
-    public static enum Report {
-      checkTables, checkLocalParams// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
+  public static enum Report {
+    checkTables, checkLocalParams, scanNew// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
+  }
+
+  private PreferencesExt prefs;
+  private TextHistoryPane reportPane;
+
+  public Grib1ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
+    this.prefs = prefs;
+    reportPane = new TextHistoryPane();
+    setLayout(new BorderLayout());
+    add(reportPane, BorderLayout.CENTER);
+  }
+
+  public void save() {
+  }
+
+  public void showInfo(Formatter f) {
+  }
+
+  public boolean setCollection(String spec) {
+    Formatter f = new Formatter();
+    f.format("collection = %s%n", spec);
+    boolean hasFiles = false;
+
+    CollectionManager dcm = getCollection(spec, f);
+    if (dcm == null) {
+      return false;
     }
 
-    private PreferencesExt prefs;
-    private TextHistoryPane reportPane;
-
-    public Grib1ReportPanel(PreferencesExt prefs, JPanel buttPanel) {
-      this.prefs = prefs;
-      reportPane = new TextHistoryPane();
-      setLayout(new BorderLayout());
-      add(reportPane, BorderLayout.CENTER);
+    for (MFile mfile : dcm.getFiles()) {
+      f.format(" %s%n", mfile.getPath());
+      hasFiles = true;
     }
 
-    public void save() {
+    reportPane.setText(f.toString());
+    reportPane.gotoTop();
+    return hasFiles;
+  }
+
+  private CollectionManager getCollection(String spec, Formatter f) {
+    CollectionManager dc = null;
+    try {
+      dc = DatasetCollectionMFiles.open(spec, null, f);
+      dc.scan();
+
+    } catch (Exception e) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      e.printStackTrace(new PrintStream(bos));
+      reportPane.setText(bos.toString());
+      return null;
     }
 
-    public void showInfo(Formatter f) {
+    return dc;
+  }
+
+  public void doReport(String spec, boolean useIndex, Report which) throws IOException {
+    Formatter f = new Formatter();
+    f.format("%s %s %s%n", spec, useIndex, which);
+
+    CollectionManager dcm = getCollection(spec, f);
+    if (dcm == null) {
+      return;
     }
 
-    public boolean setCollection(String spec) {
-      Formatter f = new Formatter();
-      f.format("collection = %s%n", spec);
-      boolean hasFiles = false;
+    // CollectionSpecParser parser = dcm.getCollectionSpecParser();
 
-      CollectionManager dcm = getCollection(spec, f);
-      if (dcm == null) {
-        return false;
+    f.format("top dir = %s%n", dcm.getRoot());
+    //f.format("filter = %s%n", parser.getFilter());
+    reportPane.setText(f.toString());
+
+    File top = new File(dcm.getRoot());
+    if (!top.exists()) {
+      f.format("top dir = %s does not exist%n", dcm.getRoot());
+    } else {
+
+      switch (which) {
+        case checkTables:
+          doCheckTables(f, dcm, useIndex);
+          break;
+        case checkLocalParams:
+          doCheckLocalParams(f, dcm, useIndex);
+          break;
+        case scanNew:
+          doScanNew(f, dcm, useIndex);
+          break;
+        /* case localUseSection:
+      doLocalUseSection(f, dcm, useIndex);
+      break;
+    case uniqueGds:
+      doUniqueGds(f, dcm, useIndex);
+      break;
+    case duplicatePds:
+      doDuplicatePds(f, dcm, useIndex);
+      break;
+    case drsSummary:
+      doDrsSummary(f, dcm, useIndex);
+      break;
+    case gdsTemplate:
+      doGdsTemplate(f, dcm, useIndex);
+      break;
+    case pdsSummary:
+      doPdsSummary(f, dcm, useIndex);
+      break;
+    case idProblems:
+      doIdProblems(f, dcm, useIndex);
+      break;  */
       }
-
-      for (MFile mfile : dcm.getFiles()) {
-        f.format(" %s%n", mfile.getPath());
-        hasFiles = true;
-      }
-
-      reportPane.setText(f.toString());
-      reportPane.gotoTop();
-      return hasFiles;
     }
 
-    private CollectionManager getCollection(String spec, Formatter f) {
-      CollectionManager dc = null;
-      try {
-        dc = DatasetCollectionMFiles.open(spec, null, f);
-        dc.scan();
+    reportPane.setText(f.toString());
+    reportPane.gotoTop();
+  }
 
-      } catch (Exception e) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        e.printStackTrace(new PrintStream(bos));
-        reportPane.setText(bos.toString());
-        return null;
-      }
+  ///////////////////////////////////////////////
 
-      return dc;
+  private void doCheckLocalParams(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+    f.format("Check Grib-2 Parameter Tables%n");
+    int[] accum = new int[4];
+
+    for (MFile mfile : dcm.getFiles()) {
+      String path = mfile.getPath();
+      if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
+      f.format("%n %s%n", path);
+      doCheckLocalParams(mfile, f, accum);
     }
 
-    public void doReport(String spec, boolean useIndex, Report which) throws IOException {
-      Formatter f = new Formatter();
-      f.format("%s %s %s%n", spec, useIndex, which);
+    f.format("%nGrand total=%d not operational = %d local = %d missing = %d%n", accum[0], accum[1], accum[2], accum[3]);
+  }
 
-      CollectionManager dcm = getCollection(spec, f);
-      if (dcm == null) {
+  private void doCheckLocalParams(MFile ff, Formatter fm, int[] accum) throws IOException {
+    int local = 0;
+    int miss = 0;
+    int nonop = 0;
+    int total = 0;
+
+    GridDataset ncfile = null;
+    try {
+      ncfile = GridDataset.open(ff.getPath());
+      Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("Originating_center_id");
+      Integer center_id = (Integer) gatt.getNumericValue();
+      gatt = ncfile.findGlobalAttributeIgnoreCase("Originating_subcenter_id");
+      Integer subcenter_id = (gatt == null) ? -1 : (Integer) gatt.getNumericValue();
+      gatt = ncfile.findGlobalAttributeIgnoreCase("Table_version");
+      Integer version = (gatt == null) ? -1 : (Integer) gatt.getNumericValue();
+      GribPDSParamTable table = GribPDSParamTable.getParameterTable(center_id, subcenter_id, version);
+      if (table == null) {
+        fm.format("  Missing table = %d %d %d%n", center_id, subcenter_id, version);
         return;
       }
 
-      // CollectionSpecParser parser = dcm.getCollectionSpecParser();
+      for (GridDatatype dt : ncfile.getGrids()) {
+        String currName = dt.getName();
+        total++;
 
-      f.format("top dir = %s%n", dcm.getRoot());
-      //f.format("filter = %s%n", parser.getFilter());
-      reportPane.setText(f.toString());
-
-      File top = new File(dcm.getRoot());
-      if (!top.exists()) {
-        f.format("top dir = %s does not exist%n", dcm.getRoot());
-      } else {
-
-        switch (which) {
-          case checkTables:
-             doCheckTables(f, dcm, useIndex);
-             break;
-          case checkLocalParams:
-             doCheckLocalParams(f, dcm, useIndex);
-             break;
-            /* case localUseSection:
-            doLocalUseSection(f, dcm, useIndex);
-            break;
-          case uniqueGds:
-            doUniqueGds(f, dcm, useIndex);
-            break;
-          case duplicatePds:
-            doDuplicatePds(f, dcm, useIndex);
-            break;
-          case drsSummary:
-            doDrsSummary(f, dcm, useIndex);
-            break;
-          case gdsTemplate:
-            doGdsTemplate(f, dcm, useIndex);
-            break;
-          case pdsSummary:
-            doPdsSummary(f, dcm, useIndex);
-            break;
-          case idProblems:
-            doIdProblems(f, dcm, useIndex);
-            break;  */
-        }
-      }
-
-      reportPane.setText(f.toString());
-      reportPane.gotoTop();
-    }
-
-    ///////////////////////////////////////////////
-
-    private void doCheckLocalParams(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-      f.format("Check Grib-2 Parameter Tables%n");
-      int[] accum = new int[4];
-
-      for (MFile mfile : dcm.getFiles()) {
-        String path = mfile.getPath();
-        if (path.endsWith(".gbx8") || path.endsWith(".gbx9")  || path.endsWith(".ncx") )  continue;
-        f.format("%n %s%n", path);
-        doCheckLocalParams(mfile, f, accum);
-      }
-
-      f.format("%nGrand total=%d not operational = %d local = %d missing = %d%n", accum[0], accum[1], accum[2], accum[3]);
-    }
-
-    private void doCheckLocalParams(MFile ff, Formatter fm, int[] accum) throws IOException {
-      int local = 0;
-      int miss = 0;
-      int nonop = 0;
-      int total = 0;
-
-      GridDataset ncfile = null;
-      try {
-        ncfile = GridDataset.open(ff.getPath());
-        Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("Originating_center_id");
-        Integer center_id = (Integer) gatt.getNumericValue();
-        gatt = ncfile.findGlobalAttributeIgnoreCase("Originating_subcenter_id");
-        Integer subcenter_id = (gatt == null) ? -1 : (Integer) gatt.getNumericValue();
-        gatt = ncfile.findGlobalAttributeIgnoreCase("Table_version");
-        Integer version = (gatt == null) ? -1 : (Integer) gatt.getNumericValue();
-        GribPDSParamTable table = GribPDSParamTable.getParameterTable(center_id,  subcenter_id, version);
-        if (table == null) {
-          fm.format("  Missing table = %d %d %d%n", center_id,  subcenter_id, version);
-          return;
+        Attribute att = dt.findAttributeIgnoreCase("GRIB_param_id");
+        int discipline = (Integer) att.getValue(1); // LOOK wrong
+        int category = (Integer) att.getValue(2);
+        int number = (Integer) att.getValue(3);
+        if (number >= 192) {
+          fm.format("  local parameter = %s (%d %d %d) units=%s %n", currName, discipline, category, number, dt.getUnitsString());
+          local++;
+          continue;
         }
 
-        for (GridDatatype dt : ncfile.getGrids()) {
-          String currName = dt.getName();
-          total++;
 
-          Attribute att = dt.findAttributeIgnoreCase("GRIB_param_id");
-          int discipline = (Integer) att.getValue(1); // LOOK wrong
-          int category = (Integer) att.getValue(2);
-          int number = (Integer) att.getValue(3);
-          if (number >= 192) {
-            fm.format("  local parameter = %s (%d %d %d) units=%s %n", currName, discipline, category, number, dt.getUnitsString());
-            local++;
-            continue;
-          }
-
-
-          GridParameter param = table.getParameter(number);
-          if (param == null) {
-            fm.format("  Missing parameter = %s (%d) %n", currName, number);
-            miss++;
-            continue;
-          }
-
+        GridParameter param = table.getParameter(number);
+        if (param == null) {
+          fm.format("  Missing parameter = %s (%d) %n", currName, number);
+          miss++;
+          continue;
         }
-      } finally {
-        if (ncfile != null) ncfile.close();
+
       }
-      fm.format("total=%d not operational = %d local = %d missing = %d%n", total, nonop, local, miss);
-      accum[0] += total;
-      accum[1] += nonop;
-      accum[2] += local;
-      accum[3] += miss;
+    } finally {
+      if (ncfile != null) ncfile.close();
     }
+    fm.format("total=%d not operational = %d local = %d missing = %d%n", total, nonop, local, miss);
+    accum[0] += total;
+    accum[1] += nonop;
+    accum[2] += local;
+    accum[3] += miss;
+  }
 
   private class Counter {
     Map<Integer, Integer> set = new HashMap<Integer, Integer>();
@@ -300,20 +305,21 @@ public class Grib1ReportPanel extends JPanel {
   /////////////////////////////////////////////////////////////////
 
   private void doCheckTables(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-      CounterS tableSet = new CounterS("table");
-      CounterS local = new CounterS("local");
-      CounterS missing = new CounterS("missing");
+    CounterS tableSet = new CounterS("table");
+    CounterS local = new CounterS("local");
+    CounterS missing = new CounterS("missing");
 
-      for (MFile mfile : dcm.getFiles()) {
-        String path = mfile.getPath();
-        if (path.endsWith(".gbx8") || path.endsWith(".gbx9")  || path.endsWith(".ncx") )  continue;
-        f.format(" %s%n", path);
-        doCheckTables(f, mfile, useIndex, tableSet, local, missing);
-      }
+    for (MFile mfile : dcm.getFiles()) {
+      String path = mfile.getPath();
+      if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
+      f.format(" %s%n", path);
+      doCheckTables(f, mfile, useIndex, tableSet, local, missing);
+    }
 
-      tableSet.show(f);
-      local.show(f);
-      missing.show(f);
+    f.format("CHECK TABLES%n");
+    tableSet.show(f);
+    local.show(f);
+    missing.show(f);
   }
 
   private void doCheckTables(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, CounterS local, CounterS missing) throws IOException {
@@ -336,6 +342,63 @@ public class Grib1ReportPanel extends JPanel {
           local.count(key);
 
         GribPDSParamTable table = GribPDSParamTable.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getParameterTableVersion());
+        if (table == null && useIndex) table = GribPDSParamTable.getDefaultTable();
+        if (table == null || null == table.getParameter(pds.getParameterNumber()))
+          missing.count(key);
+      }
+
+    } catch (Throwable ioe) {
+      fm.format("Failed on %s == %s%n", path, ioe.getMessage());
+      System.out.printf("Failed on %s%n", path);
+      ioe.printStackTrace();
+
+    } finally {
+      if (raf != null) raf.close();
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////
+
+  private void doScanNew(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+    CounterS tableSet = new CounterS("table");
+    CounterS local = new CounterS("local");
+    CounterS missing = new CounterS("missing");
+    Counter timeUnit = new Counter("timeUnit");
+
+    for (MFile mfile : dcm.getFiles()) {
+      String path = mfile.getPath();
+      if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
+      f.format(" %s%n", path);
+      doScanNew(f, mfile, useIndex, tableSet, local, missing, timeUnit);
+    }
+
+    f.format("SCAN NEW%n");
+    tableSet.show(f);
+    local.show(f);
+    missing.show(f);
+    timeUnit.show(f);
+  }
+
+  private void doScanNew(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, CounterS local, CounterS missing, Counter timeUnit) throws IOException {
+    String path = ff.getPath();
+    RandomAccessFile raf = null;
+    try {
+      raf = new ucar.unidata.io.RandomAccessFile(path, "r");
+      raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+      raf.seek(0);
+
+      Grib1RecordScanner reader = new Grib1RecordScanner(raf);
+      while (reader.hasNext()) {
+        ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+        Grib1SectionProductDefinition pds = gr.getPDSsection();
+        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
+        tableSet.count(key);
+        timeUnit.count(pds.getTimeType());
+
+        if (pds.getParameterNumber() > 127)
+          local.count(key);
+
+        GribPDSParamTable table = GribPDSParamTable.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
         if (table == null && useIndex) table = GribPDSParamTable.getDefaultTable();
         if (table == null || null == table.getParameter(pds.getParameterNumber()))
           missing.count(key);
@@ -811,5 +874,5 @@ public class Grib1ReportPanel extends JPanel {
       }
     }   */
 
-  }
+}
 

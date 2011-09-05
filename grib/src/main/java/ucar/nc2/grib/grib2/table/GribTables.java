@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.table;
+package ucar.nc2.grib.grib2.table;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.constants.CF;
@@ -53,7 +53,7 @@ import java.util.List;
  * @since 4/3/11
  */
 @Immutable
-public class GribTables {
+public class GribTables implements ucar.nc2.grib.GribTables {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
   static private GribTables wmoTables, ncepTables, ndfdTables, kmaTables;
 
@@ -89,32 +89,7 @@ public class GribTables {
     }
   }
 
-  // debugging
-  static public List<GribTableId> getLocalTableIds() {
-    List<GribTableId> result = new ArrayList<GribTableId>();
-    result.add(new GribTableId("NCEP",7,-1,-1,-1));
-    result.add(new GribTableId("NDFD",8,0,-1,-1));
-    result.add(new GribTableId("KMA",40,-1,-1,-1));
-    return result;
-  }
-
-  public static interface Parameter {
-    public int getDiscipline();
-
-    public int getCategory();
-
-    public int getNumber();
-
-    public String getName();
-
-    public String getUnit();
-
-    public String getAbbrev();
-
-    public String getId();
-  }
-
-  public static class TableEntry implements Parameter, Comparable<TableEntry> {
+   public static class TableEntry implements GribTables.Parameter, Comparable<ucar.nc2.grib.grib2.table.GribTables.TableEntry> {
     public int discipline, category, number;
     public String name, unit, abbrev;
 
@@ -132,7 +107,7 @@ public class GribTables {
     }
 
     @Override
-    public int compareTo(TableEntry o) {
+    public int compareTo(GribTables.TableEntry o) {
       int c = discipline - o.discipline;
       if (c != 0) return c;
       c = category - o.category;
@@ -180,6 +155,15 @@ public class GribTables {
               ", abbrev='" + abbrev + '\'' +
               '}';
     }
+  }
+
+  // debugging
+  static public List<GribTableId> getLocalTableIds() {
+    List<GribTableId> result = new ArrayList<GribTableId>();
+    result.add(new GribTableId("NCEP",7,-1,-1,-1));
+    result.add(new GribTableId("NDFD",8,0,-1,-1));
+    result.add(new GribTableId("KMA",40,-1,-1,-1));
+    return result;
   }
 
 
