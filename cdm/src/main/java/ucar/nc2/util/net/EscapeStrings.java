@@ -126,7 +126,7 @@ public class EscapeStrings {
 
     // Non-alphanumeric (nan) allowed lists
     private static String _nanAllowedInURL = "!#$&'()*+,-./:;=?@_~" ;
-    private static String _nanAllowedInURLQuery = "!#$&'()*+,-./:;=?@_~" ;
+    private static String _nanAllowedInURLQuery = "!#$&'()*+,-./:;=?@_~[]" ;
     private static String _nanAllowedInURLPath = "!#$&'()*+,-./:;=?@_~" ;
 
     // Non-alphanumeric disallowed lists
@@ -489,24 +489,6 @@ for (int offset = 0; offset < length; ) {
             s = URLDecoder.decode(s,"UTF-8");
         } catch(Exception e) {s = null;}
         return s;
-     }
-
-        /**
-         *  Decompose a url and piecemeal encode all of its parts, including query and fragment
-         * @param url  the url to encode
-         */
-         public static String escapeURLx(String url)
-     {
-        String newurl = null;
-        try {
-            URI u = new URI(url);
-            u = new URI(u.getScheme(),u.getRawUserInfo(),u.getHost(),u.getPort(),
-                        escapeString(u.getRawPath(),_allowableInUrl,_URIEscape,true),
-                        escapeURLQuery(u.getRawQuery()),
-                        escapeString(u.getRawFragment(),_allowableInUrl,_URIEscape,true));
-            newurl = u.toASCIIString();
-        } catch (Exception e) {newurl = url;}
-        return newurl;
      }
 
    /**

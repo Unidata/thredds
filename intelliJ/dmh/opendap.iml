@@ -4,10 +4,10 @@
     <facet type="web" name="dts">
       <configuration>
         <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../opendap/src/test/resources/webapp/WEB-INF/web.xml" />
+          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../opendap/src/test/resources/dts/WEB-INF/web.xml" />
         </descriptors>
         <webroots>
-          <root url="file://$MODULE_DIR$/../../opendap/src/test/resources/webapp" relative="/" />
+          <root url="file://$MODULE_DIR$/../../opendap/src/test/resources/dts" relative="/" />
         </webroots>
         <sourceRoots>
           <root url="file://$MODULE_DIR$/../../opendap/src/main/java" />

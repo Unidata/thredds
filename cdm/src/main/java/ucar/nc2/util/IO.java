@@ -870,10 +870,6 @@ public class IO {
    * @return a Result object; generally 0 <= code <=400 is ok
    */
   static public HttpResult putToURL(String urlString, String contents) {
-
-    // url must be encoded
-    urlString = EscapeStrings.escapeURL(urlString);
-
     URL url;
     try {
       url = new URL(urlString);

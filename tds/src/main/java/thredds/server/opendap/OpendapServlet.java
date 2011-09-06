@@ -780,7 +780,7 @@ public class OpendapServlet extends AbstractServlet
       //baseurl = EscapeStrings.unescapeURL(baseurl) ;
   
       String query = request.getQueryString();
-      //query = EscapeStrings.unescapeURLQuery(query);
+      query = EscapeStrings.unescapeURLQuery(query);
 
       try {
         rs = new ReqState(request, response, this, getServerName(), baseurl, query);

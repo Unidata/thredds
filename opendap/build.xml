@@ -130,13 +130,13 @@
   <property name="build.doc" location="${build.dir}/doc"/>
   <property name="build.lib" location="${build.dir}/lib"/>
 
-  <property name="war.name" location="dts"/>
+  <property name="war.name" value="dts"/>
   <property name="war.dir" location="${build.dir}/${war.name}"/>
-  <property name="webapp.dir" location="src/test/resources"/>
-  <property name="warfile" value="${war.name}-${VERSION}.war"/>
+  <property name="webapp.dir" value="src/test/resources"/>
+  <property name="warfile" value="${war.name}.war"/>
 
   <!-- tomcat directory properties -->  
-  <property name="tomcat.dir" location="t:/tomcat6"/>
+  <property name="tomcat.dir" location="c:/tools/tomcat6"/>
   <property name="tomcat.webapps.dir" location="${tomcat.dir}/webapps"/>
 
 
