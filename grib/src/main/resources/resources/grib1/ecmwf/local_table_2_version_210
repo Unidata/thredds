@@ -1,0 +1,672 @@
+ECMWF local table 2: Version Number 210 (GEMS).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+001
+AERMR01
+Aerosol type 1 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+002
+AERMR02
+Aerosol type 2 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+003
+AERMR03
+Aerosol type 3 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+004
+AERMR04
+Aerosol type 4 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+005
+AERMR05
+Aerosol type 5 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+006
+AERMR06
+Aerosol type 6 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+007
+AERMR07
+Aerosol type 7 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+008
+AERMR08
+Aerosol type 8 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+009
+AERMR09
+Aerosol type 9 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+010
+AERMR10
+Aerosol type 10 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+011
+AERMR11
+Aerosol type 11 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+012
+AERMR12
+Aerosol type 12 mixing ratio
+kg kg**-1
+prognostic 3D
+......................
+016
+AERGN01
+Aerosol type 1 source/gain accumulated
+kg m**-2
+diagnostic 2D
+......................
+017
+AERGN02
+Aerosol type 2 source/gain accumulated
+kg m**-2
+diagnostic 2D
+......................
+018
+AERGN03
+Aerosol type 3 source/gain accumulated
+kg m**-2
+diagnostic 3D
+......................
+019
+AERGN04
+Aerosol type 4 source/gain accumulated
+kg m**-2
+diagnostic 3D
+......................
+020
+AERGN05
+Aerosol type 5 source/gain accumulated
+kg m**-2
+diagnostic 3D
+......................
+021
+AERGN06
+Aerosol type 6 source/gain accumulated
+kg m**-2
+diagnostic 3D
+......................
+022
+AERGN07
+Aerosol type 7 source/gain accumulated
+kg m**-2
+diagnostic 3D
+......................
+023
+AERGN08
+Aerosol type 8 source/gain accumulated
+kg m**-2
+diagnostic 3D
+......................
+024
+AERGN09
+Aerosol type 9 source/gain accumulated
+kg m**-2
+diagnostic 3D
+......................
+025
+AERGN10
+Aerosol type 10 source/gain accumulated
+kg m**-2
+diagnostic 3D
+......................
+026
+AERGN11
+Aerosol type 11 source/gain accumulated
+kg m**-2
+diagnostic 3D
+......................
+027
+AERGN12
+Aerosol type 12 source/gain accumulated
+kg m**-2
+diagnostic 2D
+......................
+031
+AERLS01
+Aerosol type 1 sink/loss accumulated
+kg m**-2
+diagnostic 2D
+......................
+032
+AERLS02
+Aerosol type 2 sink/loss accumulated
+kg m**-2
+diagnostic 2D
+......................
+033
+AERLS03
+Aerosol type 3 sink/loss accumulated
+kg m**-2
+diagnostic 3D
+......................
+034
+AERLS04
+Aerosol type 4 sink/loss accumulated
+kg m**-2
+diagnostic 3D
+......................
+035
+AERLS05
+Aerosol type 5 sink/loss accumulated
+kg m**-2
+diagnostic 3D
+......................
+036
+AERLS06
+Aerosol type 6 sink/loss accumulated
+kg m**-2
+diagnostic 3D
+......................
+037
+AERLS07
+Aerosol type 7 sink/loss accumulated
+kg m**-2
+diagnostic 3D
+......................
+038
+AERLS08
+Aerosol type 8 sink/loss accumulated
+kg m**-2
+diagnostic 3D
+......................
+039
+AERLS09
+Aerosol type 9 sink/loss accumulated
+kg m**-2
+diagnostic 3D
+......................
+040
+AERLS10
+Aerosol type 10 sink/loss accumulated
+kg m**-2
+diagnostic 3D
+......................
+041
+AERLS11
+Aerosol type 11 sink/loss accumulated
+kg m**-2
+diagnostic 3D
+......................
+042
+AERLS12
+Aerosol type 12 sink/loss accumulated
+kg m**-2
+diagnostic 2D
+......................
+046
+AERPR
+Aerosol precursor mixing ratio
+kg kg**-1
+diagnostic 2D
+......................
+047
+AERSM
+Aerosol small mode mixing ratio
+kg kg**-1
+diagnostic 2D
+......................
+048
+AERLG
+Aerosol large mode mixing ratio
+kg kg**-1
+diagnostic 2D
+......................
+049
+AODPR
+Aerosol precursor optical depth
+dimensionless
+diagnostic 2D
+......................
+050
+AODSM
+Aerosol small mode optical depth
+dimensionless
+diagnostic 2D
+......................
+051
+AODLG
+Aerosol large mode optical depth
+dimensionless
+diagnostic 2D
+......................
+052
+AERDEP
+Dust emission potential
+kg s**2 m**-5
+climate field 2D
+......................
+053
+AERLTS
+Lifting threshold speed
+m s**-1
+climate field 2D
+......................
+054
+AERSCC
+Soil clay content
+%
+climate field 2D
+......................
+061
+CO2
+Carbon Dioxide
+kg kg**-1
+prognostic 3D
+......................
+062
+CH4
+Methane
+kg kg**-1
+prognostic 3D
+......................
+063
+N2O
+Nitrous oxide
+kg kg**-1
+prognostic 3D
+......................
+064
+TCCO2
+Total column Carbon Dioxide
+kg m**-2
+diagnostic 2D
+......................
+065
+TCCH4
+Total column Methane
+kg m**-2
+diagnostic 2D
+......................
+066
+TCN2O
+Total column Nitrous oxide
+kg m**-2
+diagnostic 2D
+......................
+067
+CO2OF
+Ocean flux of Carbon Dioxide
+kg m**-2 s**-1
+climate field 2D
+......................
+068
+CO2NBF
+Natural biosphere flux of Carbon Dioxide
+kg m**-2 s**-1
+climate field 2D
+......................
+069
+CO2APF
+Anthropogenic emissions of Carbon Dioxide
+kg m**-2 s**-1
+climate field 2D
+......................
+070
+CH4F
+Methane Surface Fluxes
+kg m**-2 s**-1
+-
+......................
+071
+kCH4
+Methane loss rate due to radical hydroxyl (OH)
+s**-1
+-
+......................
+080
+CO2FIRE
+Wildfire flux of Carbon Dioxide
+kg m**-2 s**-1
+-
+......................
+081
+COFIRE
+Wildfire flux of Carbon Monoxide
+kg m**-2 s**-1
+-
+......................
+082
+CH4FIRE
+Wildfire flux of Methane
+kg m**-2 s**-1
+-
+......................
+083
+NMHCFIRE
+Wildfire flux of Non-Methane Hydro-Carbons
+kg m**-2 s**-1
+-
+......................
+084
+H2FIRE
+Wildfire flux of Hydrogen
+kg m**-2 s**-1
+-
+......................
+085
+NOXFIRE
+Wildfire flux of Nitrogen Oxides NOx
+kg m**-2 s**-1
+-
+......................
+086
+N2OFIRE
+Wildfire flux of Nitrous Oxide
+kg m**-2 s**-1
+-
+......................
+087
+PM2P5FIRE
+Wildfire flux of Particulate Matter PM2.5
+kg m**-2 s**-1
+-
+......................
+088
+TPMFIRE
+Wildfire flux of Total Particulate Matter
+kg m**-2 s**-1
+-
+......................
+089
+TCFIRE
+Wildfire flux of Total Carbon in Aerosols
+kg m**-2 s**-1
+-
+......................
+090
+OCFIRE
+Wildfire flux of Organic Carbon
+kg m**-2 s**-1
+-
+......................
+091
+BCFIRE
+Wildfire flux of Black Carbon
+kg m**-2 s**-1
+-
+......................
+092
+CFIRE
+Wildfire overall flux of burnt Carbon
+kg m**-2 s**-1
+-
+......................
+093
+C4FFIRE
+Wildfire fraction of C4 plants
+dimensionless
+-
+......................
+094
+VEGFIRE
+Wildfire vegetation map index
+dimensionless
+-
+......................
+095
+CCFIRE
+Wildfire Combustion Completeness
+dimensionless
+-
+......................
+096
+FLFIRE
+Wildfire Fuel Load: Carbon per unit area
+kg m**-2
+-
+......................
+097
+BFFIRE
+Wildfire fraction of area burnt
+dimensionless
+-
+......................
+121
+NO2
+Nitrogen dioxide
+kg kg**-1
+prognostic 3D
+......................
+122
+SO2
+Sulphur dioxide
+kg kg**-1
+prognostic 3D
+......................
+123
+CO
+Carbon monoxide
+kg kg**-1
+prognostic 3D
+......................
+124
+HCHO
+Formaldehyde
+kg kg**-1
+prognostic 3D
+......................
+125
+TCNO2
+Total column Nitrogen dioxide
+kg m**-2
+diagnostic 2D
+......................
+126
+TCSO2
+Total column Sulphur dioxide
+kg m**-2
+diagnostic 2D
+......................
+127
+TCCO
+Total column Carbon monoxide
+kg m**-2
+diagnostic 2D
+......................
+128
+TCHCHO
+Total column Formaldehyde
+kg m**-2
+diagnostic 2D
+......................
+129
+NOX
+Nitrogen Oxides
+kg kg**-1
+-
+......................
+130
+TCNOX
+Total Column Nitrogen Oxides
+kg m**-2
+-
+......................
+131
+GRG1
+Reactive tracer 1 mass mixing ratio
+kg kg**-1
+-
+......................
+132
+TCGRG1
+Total column GRG tracer 1
+kg m**-2
+-
+......................
+133
+GRG2
+Reactive tracer 2 mass mixing ratio
+kg kg**-1
+-
+......................
+134
+TCGRG2
+Total column GRG tracer 2
+kg m**-2
+-
+......................
+135
+GRG3
+Reactive tracer 3 mass mixing ratio
+kg kg**-1
+-
+......................
+136
+TCGRG3
+Total column GRG tracer 3
+kg m**-2
+-
+......................
+137
+GRG4
+Reactive tracer 4 mass mixing ratio
+kg kg**-1
+-
+......................
+138
+TCGRG4
+Total column GRG tracer 4
+kg m**-2
+-
+......................
+139
+GRG5
+Reactive tracer 5 mass mixing ratio
+kg kg**-1
+-
+......................
+140
+TCGRG5
+Total column GRG tracer 5
+kg m**-2
+-
+......................
+141
+GRG6
+Reactive tracer 6 mass mixing ratio
+kg kg**-1
+-
+......................
+142
+TCGRG6
+Total column GRG tracer 6
+kg m**-2
+-
+......................
+143
+GRG7
+Reactive tracer 7 mass mixing ratio
+kg kg**-1
+-
+......................
+144
+TCGRG7
+Total column GRG tracer 7
+kg m**-2
+-
+......................
+145
+GRG8
+Reactive tracer 8 mass mixing ratio
+kg kg**-1
+-
+......................
+146
+TCGRG8
+Total column GRG tracer 8
+kg m**-2
+-
+......................
+147
+GRG9
+Reactive tracer 9 mass mixing ratio
+kg kg**-1
+-
+......................
+148
+TCGRG9
+Total column GRG tracer 9
+kg m**-2
+-
+......................
+149
+GRG10
+Reactive tracer 10 mass mixing ratio
+kg kg**-1
+-
+......................
+150
+TCGRG10
+Total column GRG tracer 10
+kg m**-2
+-
+......................
+181
+Ra
+Radon
+kg kg**-1
+prognostic 3D
+......................
+182
+SF6
+Sulphur Hexafluoride
+kg kg**-1
+prognostic 3D
+......................
+183
+TCRa
+Total column Radon
+kg m**-2
+diagnostic 2D
+......................
+184
+TCSF6
+Total column Sulphur Hexafluoride
+kg m**-2
+diagnostic 2D
+......................
+185
+SF6APF
+Anthropogenic Emissions of Sulphur Hexafluoride
+kg m**-2 s**-1
+-
+......................
+203
+GO3
+GEMS Ozone
+kg kg**-1
+prognostic 3D
+......................
+206
+GTCO3
+GEMS Total column ozone
+kg m**-2
+diagnostic 2D
+......................
+999
+.
+.

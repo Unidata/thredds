@@ -1,0 +1,558 @@
+ECMWF local table 2: Version Number 133 (SREPS).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+001
+2TPLM10
+2m temperature probability less than -10 C
+%
+-
+......................
+002
+2TPLM5
+2m temperature probability less than -5 C
+%
+-
+......................
+003
+2TPL0
+2m temperature probability less than 0 C
+%
+-
+......................
+004
+2TPL5
+2m temperature probability less than 5 C
+%
+-
+......................
+005
+2TPL10
+2m temperature probability less than 10 C
+%
+-
+......................
+006
+2TPG25
+2m temperature probability greater than 25 C
+%
+-
+......................
+007
+2TPG30
+2m temperature probability greater than 30 C
+%
+-
+......................
+008
+2TPG35
+2m temperature probability greater than 35 C
+%
+-
+......................
+009
+2TPG40
+2m temperature probability greater than 40 C
+%
+-
+......................
+010
+2TPG45
+2m temperature probability greater than 45 C
+%
+-
+......................
+011
+MN2TPLM10
+Minimum 2 metre temperature probability less than -10 C
+%
+-
+......................
+012
+MN2TPLM5
+Minimum 2 metre temperature probability less than -5 C
+%
+-
+......................
+013
+MN2TPL0
+Minimum 2 metre temperature probability less than 0 C
+%
+-
+......................
+014
+MN2TPL5
+Minimum 2 metre temperature probability less than 5 C
+%
+-
+......................
+015
+MN2TPL10
+Minimum 2 metre temperature probability less than 10 C
+%
+-
+......................
+016
+MX2TPG25
+Maximum 2 metre temperature probability greater than 25 C
+%
+-
+......................
+017
+MX2TPG30
+Maximum 2 metre temperature probability greater than 30 C
+%
+-
+......................
+018
+MX2TPG35
+Maximum 2 metre temperature probability greater than 35 C
+%
+-
+......................
+019
+MX2TPG40
+Maximum 2 metre temperature probability greater than 40 C
+%
+-
+......................
+020
+MX2TPG45
+Maximum 2 metre temperature probability greater than 45 C
+%
+-
+......................
+021
+10SPG10
+10 metre wind speed probability of at least 10 m/s
+%
+-
+......................
+022
+10SPG15
+10 metre wind speed probability of at least 15 m/s
+%
+-
+......................
+023
+10SPG20
+10 metre wind speed probability of at least 20 m/s
+%
+-
+......................
+024
+10SPG35
+10 metre wind speed probability of at least 35 m/s
+%
+-
+......................
+025
+10SPG50
+10 metre wind speed probability of at least 50 m/s
+%
+-
+......................
+026
+10GPG20
+10 metre wind gust probability of at least 20 m/s
+%
+-
+......................
+027
+10GPG35
+10 metre wind gust probability of at least 35 m/s
+%
+-
+......................
+028
+10GPG50
+10 metre wind gust probability of at least 50 m/s
+%
+-
+......................
+029
+10GPG75
+10 metre wind gust probability of at least 75 m/s
+%
+-
+......................
+030
+10GPG100
+10 metre wind gust probability of at least 100 m/s
+%
+-
+......................
+031
+TPPG1
+Total precipitation probability of at least 1 mm
+%
+-
+......................
+032
+TPPG5
+Total precipitation probability of at least 5 mm
+%
+-
+......................
+033
+TPPG10
+Total precipitation probability of at least 10 mm
+%
+-
+......................
+034
+TPPG20
+Total precipitation probability of at least 20 mm
+%
+-
+......................
+035
+TPPG40
+Total precipitation probability of at least 40 mm
+%
+-
+......................
+036
+TPPG60
+Total precipitation probability of at least 60 mm
+%
+-
+......................
+037
+TPPG80
+Total precipitation probability of at least 80 mm
+%
+-
+......................
+038
+TPPG100
+Total precipitation probability of at least 100 mm
+%
+-
+......................
+039
+TPPG150
+Total precipitation probability of at least 150 mm
+%
+-
+......................
+040
+TPPG200
+Total precipitation probability of at least 200 mm
+%
+-
+......................
+041
+TPPG300
+Total precipitation probability of at least 300 mm
+%
+-
+......................
+042
+SFPG1
+Snowfall probability of at least 1 mm
+%
+-
+......................
+043
+SFPG5
+Snowfall probability of at least 5 mm
+%
+-
+......................
+044
+SFPG10
+Snowfall probability of at least 10 mm
+%
+-
+......................
+045
+SFPG20
+Snowfall probability of at least 20 mm
+%
+-
+......................
+046
+SFPG40
+Snowfall probability of at least 40 mm
+%
+-
+......................
+047
+SFPG60
+Snowfall probability of at least 60 mm
+%
+-
+......................
+048
+SFPG80
+Snowfall probability of at least 80 mm
+%
+-
+......................
+049
+SFPG100
+Snowfall probability of at least 100 mm
+%
+-
+......................
+050
+SFPG150
+Snowfall probability of at least 150 mm
+%
+-
+......................
+051
+SFPG200
+Snowfall probability of at least 200 mm
+%
+-
+......................
+052
+SFPG300
+Snowfall probability of at least 300 mm
+%
+-
+......................
+053
+TCCPG10
+Total Cloud Cover probability greater than 10%
+%
+-
+......................
+054
+TCCPG20
+Total Cloud Cover probability greater than 20%
+%
+-
+......................
+055
+TCCPG30
+Total Cloud Cover probability greater than 30%
+%
+-
+......................
+056
+TCCPG40
+Total Cloud Cover probability greater than 40%
+%
+-
+......................
+057
+TCCPG50
+Total Cloud Cover probability greater than 50%
+%
+-
+......................
+058
+TCCPG60
+Total Cloud Cover probability greater than 60%
+%
+-
+......................
+059
+TCCPG70
+Total Cloud Cover probability greater than 70%
+%
+-
+......................
+060
+TCCPG80
+Total Cloud Cover probability greater than 80%
+%
+-
+......................
+061
+TCCPG90
+Total Cloud Cover probability greater than 90%
+%
+-
+......................
+062
+TCCPG99
+Total Cloud Cover probability greater than 99%
+%
+-
+......................
+063
+HCCPG10
+High Cloud Cover probability greater than 10%
+%
+-
+......................
+064
+HCCPG20
+High Cloud Cover probability greater than 20%
+%
+-
+......................
+065
+HCCPG30
+High Cloud Cover probability greater than 30%
+%
+-
+......................
+066
+HCCPG40
+High Cloud Cover probability greater than 40%
+%
+-
+......................
+067
+HCCPG50
+High Cloud Cover probability greater than 50%
+%
+-
+......................
+068
+HCCPG60
+High Cloud Cover probability greater than 60%
+%
+-
+......................
+069
+HCCPG70
+High Cloud Cover probability greater than 70%
+%
+-
+......................
+070
+HCCPG80
+High Cloud Cover probability greater than 80%
+%
+-
+......................
+071
+HCCPG90
+High Cloud Cover probability greater than 90%
+%
+-
+......................
+072
+HCCPG99
+High Cloud Cover probability greater than 99%
+%
+-
+......................
+073
+MCCPG10
+Medium Cloud Cover probability greater than 10%
+%
+-
+......................
+074
+MCCPG20
+Medium Cloud Cover probability greater than 20%
+%
+-
+......................
+075
+MCCPG30
+Medium Cloud Cover probability greater than 30%
+%
+-
+......................
+076
+MCCPG40
+Medium Cloud Cover probability greater than 40%
+%
+-
+......................
+077
+MCCPG50
+Medium Cloud Cover probability greater than 50%
+%
+-
+......................
+078
+MCCPG60
+Medium Cloud Cover probability greater than 60%
+%
+-
+......................
+079
+MCCPG70
+Medium Cloud Cover probability greater than 70%
+%
+-
+......................
+080
+MCCPG80
+Medium Cloud Cover probability greater than 80%
+%
+-
+......................
+081
+MCCPG90
+Medium Cloud Cover probability greater than 90%
+%
+-
+......................
+082
+MCCPG99
+Medium Cloud Cover probability greater than 99%
+%
+-
+......................
+083
+LCCPG10
+Low Cloud Cover probability greater than 10%
+%
+-
+......................
+084
+LCCPG20
+Low Cloud Cover probability greater than 20%
+%
+-
+......................
+085
+LCCPG30
+Low Cloud Cover probability greater than 30%
+%
+-
+......................
+086
+LCCPG40
+Low Cloud Cover probability greater than 40%
+%
+-
+......................
+087
+LCCPG50
+Low Cloud Cover probability greater than 50%
+%
+-
+......................
+088
+LCCPG60
+Low Cloud Cover probability greater than 60%
+%
+-
+......................
+089
+LCCPG70
+Low Cloud Cover probability greater than 70%
+%
+-
+......................
+090
+LCCPG80
+Low Cloud Cover probability greater than 80%
+%
+-
+......................
+091
+LCCPG90
+Low Cloud Cover probability greater than 90%
+%
+-
+......................
+092
+LCCPG99
+Low Cloud Cover probability greater than 99%
+%
+-
+......................
+999
+.
+.

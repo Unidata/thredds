@@ -1,0 +1,225 @@
+Meteo France local table 2: Version Number 128 (+1,2,3... for entries below 128)
+Codes and data units for FM 92-X Ext.GRIB.
+......................
+008
+ALTITUDE
+Geometrical height
+m
+m
+......................
+062
+PRLGE
+Large scale precipitation (water)
+kg m**-2
+kg m**-2
+......................
+063
+PRLCV
+Convective precipitation (water)
+kg m**-2
+kg m**-2
+......................
+128
+EAZSOL 
+Anal. error std dev for Z at soil level
+kg m**-1 s**-2
+kg m**-1 s**-2
+......................
+129
+EPZSOL
+Guess error std dev for Z at soil level
+kg m**-1 s**-2
+kg m**-1 s**-2
+......................
+130
+USTR
+U-component of time-integrated stress
+W m**-2
+W m**-2
+......................
+131
+VSTR
+V-component of time-integrated stress
+W m**-2
+W m**-2
+......................
+132
+TPWCLS
+Pseudo-adiabtemp in surface boundarylayer
+K
+K
+......................
+133
+FLP
+Flight-level using ICAO standard pressure
+Ft
+Ft
+......................
+134
+CAT
+Clear air turbulence
+kg m**-1 s**-3
+kg m**-1 s**-3
+......................
+135
+AIR_CS
+Caesium pollutant concentration in air
+pollutant_unit m**-3
+pollutant_unit m**-3
+......................
+136
+SOL_CS
+Caesium pollutant soil deposit
+pollutant_unit m**-2
+pollutant_unit m**-2
+......................
+137
+AIR_IO
+Iode pollutant concentration in air
+pollutant_unit m**-3
+pollutant_unit m**-3
+......................
+138
+SOL_IO
+Iode pollutant soil deposit
+pollutant_unit m**-2
+pollutant_unit m**-2
+......................
+139
+AIR_RAD
+Radiative pollutant concentration in air
+pollutant_unit m**-3
+pollutant_unit m**-3
+......................
+140
+SOL_RAD
+Radiative pollutant soil deposit
+pollutant_unit m**-2
+pollutant_unit m**-2
+......................
+141
+AIR_CHIM
+Chemical pollutant concentration in air
+pollutant_unit m**-3
+pollutant_unit m**-3
+......................
+142
+SOL_CHIM
+Chemical pollutant soil deposit
+pollutant_unit m**-2
+pollutant_unit m**-2
+......................
+143
+AIR_PASS
+Passive tracer concentration in air
+pollutant_unit m**-3
+pollutant_unit m**-3
+......................
+144
+AIR_VOLCAN
+Volcanic pollutant concentration in air
+pollutant_unit m**-3
+pollutant_unit m**-3
+......................
+145
+SOL_VOLCAN
+Volcanic pollutant soil deposit
+pollutant_unit m**-2
+pollutant_unit m**-2
+......................
+149
+TP
+Potential vorticity
+K m**2 kg**-1 s**-1
+K m**2 kg**-1 s**-1
+......................
+150
+EAU
+Total water-type precipitation
+kg m**-2
+kg m**-2
+......................
+151
+BILANHY
+Hydric balance
+kg m**-2
+kg m**-2
+......................
+152
+RESERV_GLAC
+Ice content
+kg m**-2
+kg m**-2
+......................
+153
+RESERV_LIQU
+Water content
+kg m**-2
+kg m**-2
+......................
+154
+GIVRAGE
+Freezing risk index
+g Kg**-1
+g Kg**-1
+......................
+155
+GIVRAGE_VV
+Freezing risk index as regards vert.veloc
+g Kg**-1
+g Kg**-1
+......................
+156
+PREC_CONVEC
+Convective precipitation (all types)
+kg m**-2
+kg m**-2
+......................
+157
+PREC_GDE_ECH
+Large-scale precipitation (all types)
+kg m**-2
+kg m**-2
+......................
+158
+FLLUNAIRE_D
+Downwards lunar radiation flux (surface)
+kg m**-1 s**-3
+kg m**-1 s**-3
+......................
+200
+MWD
+Mean wave direction
+degrees
+degrees
+......................
+201
+MWP
+Mean wave period
+s
+s
+......................
+202
+SHPS
+Significant height of primary swell
+m
+m
+......................
+203
+SHSS
+Significant height of secondary swell
+m
+m
+......................
+204
+PP1D
+Peak period of 1-dimensional wave spectra
+s
+s
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................

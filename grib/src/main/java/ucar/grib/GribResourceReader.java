@@ -157,5 +157,17 @@ public abstract class GribResourceReader {
   }
 
 
+  public static String getFilename(String f) {
+    int idx = f.lastIndexOf("/");
+    if (idx < 0) {
+      idx = f.lastIndexOf(File.separator);
+    }
+    if (idx < 0) {
+      return f;
+    }
+    return f.substring(idx+1);
+  }
+
+
 }
 

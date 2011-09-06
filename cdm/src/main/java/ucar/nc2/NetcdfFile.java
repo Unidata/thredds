@@ -1381,7 +1381,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     Class iospClass = getClass().getClassLoader().loadClass(iospClassName);
     spi = (IOServiceProvider) iospClass.newInstance();
     if (debugSPI) System.out.println("NetcdfFile uses iosp = " + spi.getClass().getName());
-    spi.sendIospMessage(iospParam);
+    if (iospParam != null) spi.sendIospMessage(iospParam);
 
     this.location = location;
     ucar.unidata.io.RandomAccessFile raf = getRaf(location, buffer_size);

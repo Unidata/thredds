@@ -2774,6 +2774,7 @@ public class ToolsUI extends JPanel {
         raf = new ucar.unidata.io.RandomAccessFile(command, "r");
         raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
         gribTable.setGribFile(raf);
+        cb.addItem(command);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());

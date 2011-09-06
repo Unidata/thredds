@@ -1,0 +1,480 @@
+ECMWF local table 2: Version Number 151 (Ocean - operational version).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+129
+OCPT
+Ocean potential temperature
+deg C
+-
+......................
+130
+S
+Salinity
+psu
+-
+......................
+131
+U
+U velocity
+m s**-1
+-
+......................
+132
+V
+V velocity
+m s**-1
+-
+......................
+133
+WV
+W velocity
+m s**-1
+-
+......................
+134
+MST
+Modulus of strain rate tensor
+s**-1
+-
+......................
+135
+VVS
+Vertical viscosity
+m**2 s**-1
+-
+......................
+136
+VDF
+Vertical diffusivity
+m**2 s**-1
+-
+......................
+137
+DEP
+Depth
+m
+-
+......................
+138
+STH
+Sigma-theta
+kg m**-3
+-
+......................
+139
+RN
+Richardson number
+-
+-
+......................
+140
+UV
+UV product
+m**2 s**-2
+-
+......................
+141
+UT
+UT product
+m s**-1 degC
+-
+......................
+142
+VT
+VT product
+m s**-1 deg C
+-
+......................
+143
+UU
+UU product
+m**2 s**-2
+-
+......................
+144
+VV
+VV product
+m**2 s**-2
+-
+......................
+145
+SL
+Sea level
+m
+Tides removed
+......................
+146
+SL_1
+Sea level previous timestep
+m
+-
+......................
+147
+BSF
+Barotropic stream function
+m**3 s**-1
+-
+......................
+148
+MLD
+Mixed layer depth
+m
+-
+......................
+149
+BTP
+Bottom Pressure (equivalent height)
+m
+-
+......................
+150
+SH
+Steric height
+m
+-
+......................
+151
+CRL
+Curl of Wind Stress
+N m**-3
+-
+......................
+152
+-
+Divergence of wind stress
+Nm**-3
+-
+......................
+153
+TAX
+U stress
+N m**-2
+-
+......................
+154
+TAY
+V stress
+N m**-2
+-
+......................
+155
+TKI
+Turbulent kinetic energy input
+W m**-2
+-
+......................
+156
+NSF
+Net surface heat flux
+W m**-2
+-
+......................
+157
+ASR
+Absorbed solar radiation
+W m**-2
+-
+......................
+158
+PME
+Precipitation - evaporation
+m s**-1
+-
+......................
+159
+SST
+Specified sea surface temperature
+deg C
+-
+......................
+160
+SHF
+Specified surface heat flux
+W m**-2
+-
+......................
+161
+DTE
+Diagnosed sea surface temperature error
+deg C
+-
+......................
+162
+HFC
+Heat flux correction
+W m**-2
+-
+......................
+163
+20D
+20 degrees isotherm depth
+m
+-
+......................
+164
+TAV300
+Average potential temperature in the upper 300m
+degrees C
+-
+......................
+165
+UBA1
+Vertically integrated zonal velocity (previous time step)
+m**2 s**-1
+-
+......................
+166
+VBA1
+Vertically Integrated meridional velocity (previous time step)
+m**2 s**-1
+-
+......................
+167
+ZTR
+Vertically integrated zonal volume transport
+m**2 s**-1
+-
+......................
+168
+MTR
+Vertically integrated meridional volume transport
+m**2 s**-1
+-
+......................
+169
+ZHT
+Vertically integrated zonal heat transport
+J m**-1 s**-1
+-
+......................
+170
+MHT
+Vertically integrated meridional heat transport
+J m**-1 s**-1
+-
+......................
+171
+UMAX
+U velocity maximum
+m s**-1
+-
+......................
+172
+DUMAX
+Depth of the velocity maximum
+m
+-
+......................
+173
+SMAX
+Salinity maximum
+psu
+-
+......................
+174
+DSMAX
+Depth of salinity maximum
+m
+-
+......................
+175
+SAV300
+Average salinity in the upper 300m
+psu
+-
+......................
+176
+LDP
+Layer depth at scalar points
+m
+-
+......................
+177
+LDU
+Layer depth at vector points
+m
+-
+......................
+178
+PTI
+Potential temperature increment
+deg C
+-
+......................
+179
+PTAE
+Potential temperature analysis error
+deg C
+-
+......................
+180
+BPT
+Background potential temperature
+deg C
+-
+......................
+181
+APT
+Analysed potential temperature
+deg C
+-
+......................
+182
+PTBE
+Potential temperature background error
+deg C
+-
+......................
+183
+AS
+Analysed salinity
+psu
+-
+......................
+184
+SALI
+Salinity increment
+psu
+-
+......................
+185
+EBT
+Estimated Bias in Temperature
+deg C
+-
+......................
+186
+EBS
+Estimated Bias in Salinity
+psu
+-
+......................
+187
+UVI
+Zonal Velocity increment (from balance operator)
+m/s per time step
+-
+......................
+188
+VVI
+Meridional Velocity increment (from balance operator)
+-
+-
+......................
+190
+SUBI
+Salinity increment (from salinity data)
+psu per time step
+-
+......................
+191
+SALE
+Salinity analysis error
+psu
+-
+......................
+192
+BSAL
+Background Salinity
+psu
+-
+......................
+194
+SALBE
+Salinity background error
+psu
+-
+......................
+199
+EBTA
+Estimated temperature bias from assimilation
+deg C
+-
+......................
+200
+EBSA
+Estimated salinity bias from assimilation
+psu
+-
+......................
+201
+LTI
+Temperature increment from relaxation term
+deg C per time step
+-
+......................
+202
+LSI
+Salinity increment from relaxation term
+-
+-
+......................
+203
+BZPGA
+Bias in the zonal pressure gradient (applied)
+Pa**m-1
+-
+......................
+204
+BMPGA
+Bias in the meridional pressure gradient (applied)
+Pa**m-1
+-
+......................
+205
+EBTL
+Estimated temperature bias from relaxation
+deg C
+-
+......................
+206
+EBSL
+Estimated salinity bias from relaxation
+psu
+-
+......................
+207
+FGBT
+First guess bias in temperature
+deg C
+-
+......................
+208
+FGBS
+First guess bias in salinity
+psu
+-
+......................
+209
+BPA
+Applied bias in pressure
+Pa
+-
+......................
+210
+FGBP
+FG bias in pressure
+Pa
+-
+......................
+211
+PTA
+Bias in temperature(applied)
+deg C
+-
+......................
+212
+PSA
+Bias in salinity (applied)
+psu
+-
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

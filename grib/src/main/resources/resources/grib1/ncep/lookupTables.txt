@@ -1,0 +1,7 @@
+# resources\grib1\ncep\lookupTables.txt
+ 7:     -1:       128:    nceptab_128.tab
+ 7:     -1:       129:    nceptab_129.tab
+ 7:     -1:       130:    nceptab_130.tab
+ 7:     -1:       131:    nceptab_131.tab
+ 7:     -1:       132:    reanal_nceptab.tab
+ 7:     -1:       140:    nceptab_140.tab

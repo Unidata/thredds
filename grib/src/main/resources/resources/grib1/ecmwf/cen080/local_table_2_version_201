@@ -1,0 +1,796 @@
+......................
+001
+None
+downward shortwave radiant flux density
+W m**-2
+W m**-2
+......................
+002
+None
+upward shortwave radiant flux density
+W m**-2
+W m**-2
+......................
+003
+None
+downward longwave radiant flux density
+W m**-2
+W m**-2
+......................
+004
+None
+upward longwave radiant flux density
+W m**-2
+W m**-2
+......................
+005
+APAB_S
+downwd photosynthetic active radiant flux density
+W m**-2
+W m**-2
+......................
+006
+None
+net shortwave flux
+W m**-2
+W m**-2
+......................
+007
+None
+net longwave flux
+W m**-2
+W m**-2
+......................
+008
+None
+total net radiative flux density
+W m**-2
+W m**-2
+......................
+009
+None
+downw shortw radiant flux density, cloudfree part
+W m**-2
+W m**-2
+......................
+010
+None
+upw shortw radiant flux density, cloudy part
+W m**-2
+W m**-2
+......................
+011
+None
+downw longw radiant flux density, cloudfree part
+W m**-2
+W m**-2
+......................
+012
+None
+upw longw radiant flux density, cloudy part
+W m**-2
+W m**-2
+......................
+013
+SOHR_RAD
+shortwave radiative heating rate
+K s**-1
+K s**-1
+......................
+014
+THHR_RAD
+longwave radiative heating rate
+K s**-1
+K s**-1
+......................
+015
+None
+total radiative heating rate
+W m**-2
+W m**-2
+......................
+016
+None
+soil heat flux, surface
+W m**-2
+W m**-2
+......................
+017
+None
+soil heat flux, bottom of layer
+W m**-2
+W m**-2
+......................
+018
+None
+undefined
+-
+-
+......................
+019
+None
+undefined
+-
+-
+......................
+020
+None
+undefined
+-
+-
+......................
+021
+None
+undefined
+-
+-
+......................
+022
+None
+undefined
+-
+-
+......................
+023
+None
+undefined
+-
+-
+......................
+024
+None
+undefined
+-
+-
+......................
+025
+None
+undefined
+-
+-
+......................
+026
+None
+undefined
+-
+-
+......................
+027
+None
+undefined
+-
+-
+......................
+028
+None
+undefined
+-
+-
+......................
+029
+CLC
+fractional cloud cover
+(0-1)
+(0-1)
+......................
+030
+None
+cloud cover, grid scale
+(0-1)
+(0-1)
+......................
+031
+QC
+specific cloud water content
+kg kg**-1
+kg kg**-1
+......................
+032
+None
+cloud water content, grid scale, vert integrated
+kg m**-2
+kg m**-2
+......................
+033
+QI
+specific cloud ice content, grid scale
+kg kg**-1
+kg kg**-1
+......................
+034
+None
+cloud ice content, grid scale, vert integrated
+kg m**-2     
+kg m**-2     
+......................
+035
+None
+specific rainwater content, grid scale
+kg kg**-1     
+kg kg**-1     
+......................
+036
+None
+specific snow content, grid scale
+kg kg**-1     
+kg kg**-1     
+......................
+037
+None
+specific rainwater content, gs, vert. integrated
+kg m**-2
+kg m**-2
+......................
+038
+None
+specific snow content, gs, vert. integrated
+kg m**-2     
+kg m**-2     
+......................
+039
+None
+undefined
+-
+-
+......................
+040
+None
+undefined
+-
+-
+......................
+041
+TWATER
+total column water
+kg m**-2
+kg m**-2
+......................
+042
+None
+vert. integral of divergence of tot. water content
+kg m**-2
+kg m**-2
+......................
+043
+None
+undefined
+-
+-
+......................
+044
+None
+undefined
+-
+-
+......................
+045
+None
+undefined
+-
+-
+......................
+046
+None
+undefined
+-
+-
+......................
+047
+None
+undefined
+-
+-
+......................
+048
+None
+undefined
+-
+-
+......................
+049
+None
+undefined
+-
+-
+......................
+050
+CH_CM_CL
+cloud covers CH_CM_CL (000...888)
+(0-1)
+(0-1)
+......................
+051
+None
+cloud cover CH (0..8)
+(0-1)
+(0-1)
+......................
+052
+None
+cloud cover CM (0..8)
+(0-1)
+(0-1)
+......................
+053
+None
+cloud cover CL (0..8)
+(0-1)
+(0-1)
+......................
+054
+None
+total cloud cover (0..8)
+(0-1)
+(0-1)
+......................
+055
+None
+fog (0..8)
+(0-1)
+(0-1)
+......................
+056
+None
+fog
+(0-1)
+(0-1)
+......................
+057
+None
+undefined
+-
+-
+......................
+058
+None
+undefined
+-
+-
+......................
+059
+None
+undefined
+-
+-
+......................
+060
+None
+cloud cover, convective cirrus
+(0-1)
+(0-1)
+......................
+061
+None
+specific cloud water content, convective clouds
+kg kg**-1
+kg kg**-1
+......................
+062
+None
+cloud water content, conv clouds, vert integrated
+kg m**-2
+kg m**-2
+......................
+063
+None
+specific cloud ice content, convective clouds
+kg kg**-1
+kg kg**-1     
+......................
+064
+None
+cloud ice content, conv clouds, vert integrated
+kg m**-2
+kg m**-2
+......................
+065
+None
+convective mass flux
+kg s**-1 m**-2
+kg s**-1 m**-2
+......................
+066
+None
+updraft velocity, convection
+m s**-1
+m s**-1
+......................
+067
+None
+entrainment parameter, convection
+m**-1
+m**-1
+......................
+068
+HBAS_CON
+cloud base, convective clouds (above msl)
+m
+m
+......................
+069
+HTOP_CON
+cloud top, convective clouds (above msl)
+m
+m
+......................
+070
+None
+convective layers (00...77)  (BKE)
+(0-1)
+(0-1)
+......................
+071
+None
+KO-index
+(1)
+(1)
+......................
+072
+BAS_CON
+convection base index
+(1)
+(1)
+......................
+073
+TOP_CON
+convection top index
+(1)
+(1)
+......................
+074
+DT_CON
+convective temperature tendency
+K s**-1
+K s**-1
+......................
+075
+DQV_CON
+convective tendency of specific humidity
+s**-1
+s**-1
+......................
+076
+None
+convective tendency of total heat
+J kg**-1 s**-1
+J kg**-1 s**-1
+......................
+077
+None
+convective tendency of total water
+s**-1
+s**-1
+......................
+078
+DU_CON
+convective momentum tendency (X-component)
+m s**-2
+m s**-2
+......................
+079
+DV_CON
+convective momentum tendency (Y-component)
+m s**-2
+m s**-2
+......................
+080
+None
+convective vorticity tendency
+s**-2
+s**-2
+......................
+081
+None
+convective divergence tendency
+s**-2
+s**-2
+......................
+082
+HTOP_DC
+top of dry convection (above msl)
+m
+m
+......................
+083
+None
+dry convection top index
+(1)
+(1)
+......................
+084
+HZEROCL
+height of 0 degree Celsius isotherm above msl
+m
+m
+......................
+085
+SNOWLMT
+height of snow-fall limit
+m
+m
+......................
+086
+None
+undefined
+-
+-
+......................
+087
+None
+undefined
+-
+-
+......................
+088
+None
+undefined
+-
+-
+......................
+089
+None
+undefined
+-
+-
+......................
+090
+None
+undefined
+-
+-
+......................
+091
+None
+undefined
+-
+-
+......................
+092
+None
+undefined
+-
+-
+......................
+093
+None
+undefined
+-
+-
+......................
+094
+None
+undefined
+-
+-
+......................
+095
+None
+undefined
+-
+-
+......................
+096
+None
+undefined
+-
+-
+......................
+097
+None
+undefined
+-
+-
+......................
+098
+None
+undefined
+-
+-
+......................
+099
+QRS_GSP
+spec. content of precip. particles
+kg kg**-1
+kg kg**-1
+......................
+100
+PRR_GSP
+surface precipitation rate, rain, grid scale
+kg s**-1 m**-2
+kg s**-1 m**-2
+......................
+101
+PRS_GSP
+surface precipitation rate, snow, grid scale
+kg s**-1 m**-2
+kg s**-1 m**-2
+......................
+102
+RAIN_GSP
+surface precipitation amount, rain, grid scale
+kg m**-2
+kg m**-2
+......................
+111
+PRR_CON
+surface precipitation rate, rain, convective
+kg s**-1 m**-2
+kg s**-1 m**-2
+......................
+112
+PRS_CON
+surface precipitation rate, snow, convective
+kg s**-1 m**-2
+kg s**-1 m**-2
+......................
+113
+RAIN_CON
+surface precipitation amount, rain, convective
+kg m**-2
+kg m**-2
+......................
+130
+None
+undefined
+-
+-
+......................
+131
+None
+undefined
+-
+-
+......................
+132
+None
+undefined
+-
+-
+......................
+133
+None
+undefined
+-
+-
+......................
+134
+None
+undefined
+-
+-
+......................
+135
+None
+undefined
+-
+-
+......................
+136
+None
+undefined
+-
+-
+......................
+137
+None
+undefined
+-
+-
+......................
+138
+None
+undefined
+-
+-
+......................
+139
+PP
+deviation of pressure from reference value
+Pa
+Pa
+......................
+140
+None
+undefined
+-
+-
+......................
+141
+None
+undefined
+-
+-
+......................
+142
+None
+undefined
+-
+-
+......................
+143
+None
+undefined
+-
+-
+......................
+144
+None
+undefined
+-
+-
+......................
+145
+None
+undefined
+-
+-
+......................
+146
+None
+undefined
+-
+-
+......................
+147
+None
+undefined
+-
+-
+......................
+148
+None
+undefined
+-
+-
+......................
+149
+None
+undefined
+-
+-
+......................
+150
+None
+coefficient of horizontal diffusion
+m**2 s**-1
+m**2 s**-1
+......................
+187
+VMAX_10M
+maximum wind velocity
+m s**-1
+m s**-1
+......................
+200
+W_I
+water content of interception store
+kg m**-2
+kg m**-2
+......................
+203
+T_SNOW
+snow temperature
+K
+K
+......................
+215
+T_ICE
+ice surface temperature
+K
+K
+......................
+241
+CAPE_CON
+convective available potential energy
+J kg**-1
+J kg**-1
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

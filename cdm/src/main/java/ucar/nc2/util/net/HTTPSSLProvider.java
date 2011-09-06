@@ -38,18 +38,26 @@ import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 
+import java.io.IOException;
+import java.io.Serializable;
+
 /**
  * Provide an HTTP SSL CredentialsProvider
  * The getCredentials method is used in a
  * non-standard way
  */
 
-public class HTTPSSLProvider implements CredentialsProvider, Credentials
+public class HTTPSSLProvider implements CredentialsProvider, Credentials, Serializable
 {
     String keystore = null;
     String keypass = null;
     String truststore = null;
     String trustpass = null;
+
+    public HTTPSSLProvider()
+    {
+        this(null,"",null,"");
+    }
 
     public HTTPSSLProvider(String keystore,String keypass,
                            String truststore,String trustpass)
@@ -83,4 +91,27 @@ public class HTTPSSLProvider implements CredentialsProvider, Credentials
     {
 	return (Credentials) this;
     }
+
+
+    // Serializable Interface
+    private void writeObject(java.io.ObjectOutputStream oos)
+        throws IOException
+    {
+        oos.writeObject(this.keystore);
+        oos.writeObject(this.keypass);
+        oos.writeObject(this.truststore);
+        oos.writeObject(this.trustpass);
+    }
+
+    private void readObject(java.io.ObjectInputStream ois)
+            throws IOException, ClassNotFoundException
+    {
+        this.keystore = (String)ois.readObject();
+        this.keypass = (String)ois.readObject();
+        this.truststore = (String)ois.readObject();
+        this.trustpass = (String)ois.readObject();
+    }
+
+
+
 }

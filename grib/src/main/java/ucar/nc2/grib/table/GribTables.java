@@ -37,9 +37,9 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
+import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -124,7 +124,7 @@ public class GribTables {
       this.number = number;
       this.name = name.trim(); // StringUtil.toLowerCaseExceptFirstCharUpper(name.toLowerCase());
       this.abbrev = abbrev;
-      this.unit = cleanupUnits(unit);
+      this.unit = GridParameter.cleanupUnits(unit);
     }
 
     public String getId() {
@@ -189,29 +189,6 @@ public class GribTables {
 
   static public boolean isLocal(Parameter p) {
     return ((p.getCategory() > 191) || (p.getNumber() > 191));
-  }
-
-  static public String cleanupUnits(String unit) {
-    if (unit == null) return null;
-    if (unit.equalsIgnoreCase("-")) unit = "";
-    else {
-      if (unit.startsWith("/")) unit = "1" + unit;
-      unit = unit.trim();
-      unit = StringUtil2.remove(unit, "**");
-      StringBuilder sb = new StringBuilder(unit);
-      StringUtil2.remove(sb, "^[]");
-      StringUtil2.replace(sb, ' ', ".");
-      StringUtil2.replace(sb, '*', ".");
-      unit = sb.toString();
-    }
-    return unit;
-  }
-
-  static public String cleanupDescription(String desc) {
-    if (desc == null) return null;
-    int pos = desc.indexOf("(see");
-    if (pos > 0) return desc.substring(0,pos).trim();
-    return desc.trim();
   }
 
   ///////////////////////////////////////////////////////////////

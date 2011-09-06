@@ -112,7 +112,7 @@ static public class Entry implements Serializable, Comparable
     protected void constructor(HTTPAuthScheme scheme, String uri, CredentialsProvider creds)
     {
 	if(uri == null) uri = ANY_URL;
-	if(creds != null) return;
+        if(scheme == null) scheme = ANY_SCHEME;
 	this.scheme = scheme;
 	this.url = uri;
 	this.creds = creds;
@@ -126,8 +126,7 @@ static public class Entry implements Serializable, Comparable
     public String toString()
     {
 	String creds = (this.creds == null ? "null" : this.creds.toString());
-        return String.format("%s:%s{%s}",
-		scheme.toString(), url,creds);
+        return String.format("%s:%s{%s}",scheme, url,creds);
     }
 
     private void writeObject(java.io.ObjectOutputStream oos)
@@ -135,7 +134,15 @@ static public class Entry implements Serializable, Comparable
     {
         oos.writeObject(this.scheme);
         oos.writeObject(this.url);
-        oos.writeObject(this.creds);
+        // serializing the credentials provider is a bit tricky
+        // since it might not support the serializable interface.
+        boolean isser = (this.creds instanceof Serializable);
+        oos.writeObject(isser);
+        if(isser)
+            oos.writeObject(this.creds);
+        else {
+            oos.writeObject(this.creds.getClass());
+        }
     }
 
     private void readObject(java.io.ObjectInputStream ois)
@@ -143,7 +150,19 @@ static public class Entry implements Serializable, Comparable
     {
         this.scheme = (HTTPAuthScheme)ois.readObject();
         this.url = (String)ois.readObject();
-        this.creds = (CredentialsProvider)ois.readObject();
+        // serializing the credentials provider is a bit tricky
+        // since it might not support the serializable interface.
+        boolean isser = (Boolean)ois.readObject();
+        Object o = ois.readObject();
+        if(isser)
+            this.creds = (CredentialsProvider)o;
+        else {
+            try {
+                this.creds = (CredentialsProvider)((Class)o).newInstance();
+            } catch (Exception e) {
+                throw new ClassNotFoundException("Cannot create CredentialsProvider instance",e);
+            }
+        }
     }
 
     /**
@@ -162,12 +181,19 @@ static public class Entry implements Serializable, Comparable
     //////////////////////////////////////////////////
     // Comparable interface
 
-    public int compareTo(Object e1)
+    public int compareTo(Object o1)
     {
-        if(e1 instanceof Entry) {
-            return compare(this,(Entry)e1);
-	}
-        return +1;
+        if(!(o1 instanceof Entry)) return +1;
+        Entry e1 = this;
+        Entry e2 = (Entry)o1;
+        if(e1 == null && e2 == null) return 0;
+        if(e1 != null && e2 == null) return +1;
+        if(e1 == null && e2 != null) return -1;
+        int cmp = e1.scheme.compareTo(e2.scheme);
+        if(cmp != 0) return cmp;
+        if(compatibleURI(e1.url,e2.url))
+            return e2.url.compareTo(e1.url);
+        return e1.url.compareTo(e2.url);
     }
 
     //////////////////////////////////////////////////
@@ -175,23 +201,35 @@ static public class Entry implements Serializable, Comparable
 
     public boolean equals(Entry e)
     {
-        return compare(this,e) == 0;
+        return this.compareTo(e) == 0;
     }
 
-    static protected int compare(Entry e1, Entry e2)
+    //////////////////////////////////////////////////
+    // Additional comparison functions
+
+    // Used in search
+    static protected boolean matches(Entry e1, Entry e2)
     {
-	if(e1 == null && e2 == null) return 0;
-	if(e1 != null && e2 == null) return +1;
-	if(e1 == null && e2 != null) return -1;
+	if(e1 == null && e2 == null) return true;
+	if(e1 != null && e2 == null) return false;
+	if(e1 == null && e2 != null) return false;
 
-        int cmp = e1.scheme.compareTo(e2.scheme);
-        if(cmp != 0) return cmp;
+        if(e1.scheme != ANY_SCHEME && e2.scheme != ANY_SCHEME
+           && e1.scheme != e2.scheme)
+            return false;
 
-	if(compatibleURI(e1.url,e2.url))
-            return e2.url.compareTo(e1.url);
+	if(!compatibleURI(e1.url,e2.url))
+            return false;
         
-        return e1.url.compareTo(e2.url);
+        return true;
     }
+
+    // Uses in insert and remove
+    static public boolean identical(Entry e1, Entry e2)
+    {
+        return (e1.scheme == e2.scheme &&  e1.url.equals(e2.url));
+    }
+
 
 }
 
@@ -203,15 +241,11 @@ static public final HTTPAuthScheme   ANY_SCHEME = HTTPAuthScheme.ANY;
 
 static final public Entry            ANY_ENTRY = new Entry(ANY_SCHEME,ANY_URL,null);
 
-static private Hashtable<HTTPAuthScheme, List<Entry>> rows;
+static private List<Entry> rows;
 
 
 static {
-    rows = new Hashtable<HTTPAuthScheme,List<Entry>>();
-
-    // Insert empty lists for all known schemes
-    for(HTTPAuthScheme s: HTTPAuthScheme.values())
-        rows.put(s,new ArrayList<Entry>());
+     rows = new ArrayList<Entry>();
 
     // For back compatibility, check some system properties
     // and add appropriate entries
@@ -319,10 +353,8 @@ insert(Entry entry)
     if(entry == null || !entry.valid())
 	throw new HTTPException("HTTPAuthStore.insert: invalid entry: " + entry);
 
-    List<Entry> entries = rows.get(entry.scheme);
-
-    for(Entry e: entries) {
-	if(compatibleURI(entry.url,e.url)) {
+    for(Entry e: rows) {
+        if(Entry.identical(e,entry)) {
 	    found = e;
 	    break;
 	}
@@ -333,7 +365,7 @@ insert(Entry entry)
 	rval = true;
     } else {
         Entry newentry = new Entry(entry);
-        entries.add(newentry);
+        rows.add(newentry);
     }
     return rval;
 }
@@ -352,15 +384,13 @@ remove(Entry entry)
     if(entry == null || !entry.valid())
 	    throw new HTTPException("HTTPAuthStore.remove: invalid entry: " + entry);
 
-    List<Entry> entries = rows.get(entry.scheme);
-
-    for(Entry e: entries) {
-	if(compatibleURI(entry.url,e.url)) {
+    for(Entry e: rows) {
+	if(Entry.identical(e,entry)) {
 	    found = e;
 	    break;
 	}
     }
-    if(found != null) entries.remove(found);
+    if(found != null) rows.remove(found);
     return (found != null);
 }
 
@@ -370,7 +400,7 @@ remove(Entry entry)
 static synchronized public void
 clear() throws HTTPException
 {
-   rows.clear(); 
+   rows.clear();
 }
 
 /**
@@ -379,9 +409,7 @@ clear() throws HTTPException
 static public List<Entry>
 getAllRows()
 {
-  List<Entry> elist = new ArrayList<Entry>();
-  for(HTTPAuthScheme key: rows.keySet()) elist.addAll(rows.get(key));
-  return elist;
+  return rows;
 }
 
 /**
@@ -397,20 +425,16 @@ static synchronized public Entry[]
 search(Entry entry)
 {
 
-    if(entry == null || !entry.valid())
+    if(entry == null || !entry.valid() || rows.size() == 0)
         return new Entry[0];
 
-    List<Entry> entries;
-    if(entry.scheme == ANY_SCHEME)
-        entries = getAllRows();
-    else
-        entries = rows.get(entry.scheme);
     List<Entry> matches = new ArrayList<Entry>();
 
-
-    for(Entry e: entries) {
-        if(HTTPAuthStore.compatibleURI(entry.url,e.url))
+    for(Entry e: rows) {
+        Entry e1 = e;
+        if(Entry.matches(entry,e1)) {
             matches.add(e);
+        }
     }
     // Sort by scheme then by url, where any_url is last
     Entry[] matchvec = matches.toArray(new Entry[matches.size()]);
@@ -544,11 +568,8 @@ serialize(OutputStream ostream, String password)
 
     oos.writeInt(getAllRows().size());
 
-    for(HTTPAuthScheme scheme: HTTPAuthScheme.values()) {
-        List<Entry> entries = rows.get(scheme);
-        for(Entry e: entries) {
-            oos.writeObject(e);
-        }
+    for(Entry e: rows) {
+        oos.writeObject(e);
     }
 
     oos.flush();

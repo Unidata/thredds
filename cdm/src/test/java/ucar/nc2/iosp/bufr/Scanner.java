@@ -34,6 +34,7 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.iosp.bufr.Message;
 
 import java.io.*;
 import java.util.*;

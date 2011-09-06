@@ -1,0 +1,384 @@
+ECMWF local table 2: Version Number 131 (Probability forecasts).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+001
+2TAG2
+2m temperature anomaly of at least +2K
+%
+Original units: K
+......................
+002
+2TAG1
+2m temperature anomaly of at least +1K
+%
+Original units: K
+......................
+003
+2TAG0
+2m temperature anomaly of at least 0K
+%
+Original units: K
+......................
+004
+2TALM1
+2m temperature anomaly of at most -1K
+%
+Original units: K
+......................
+005
+2TALM2
+2m temperature anomaly of at most -2K
+%
+Original units: K
+......................
+006
+TPAG20
+Total precipitation anomaly of at least 20 mm
+%
+Original units: m
+......................
+007
+TPAG10
+Total precipitation anomaly of at least 10 mm
+%
+Original units: m
+......................
+008
+TPAG0
+Total precipitation anomaly of at least 0 mm
+%
+Original units: m
+......................
+009
+STAG0
+Surface temperature anomaly of at least 0K
+%
+Original units: K
+......................
+010
+MSLAG0
+Mean sea level pressure anomaly of at least 0 Pa
+%
+Original units: Pa
+......................
+015
+H0DIP
+Heigth of 0 degree isotherm probability
+percentage
+Original units: m
+......................
+016
+HSLP
+Heigth of snowfall limit probability
+percentage
+Original units: m
+......................
+017
+SAIP
+Showalter index probability
+percentage
+Original units: K
+......................
+018
+WHIP
+Whiting index probability
+percentage
+Original units: K
+......................
+020
+TALM2
+Temperature anomaly less than -2 K
+%
+-
+......................
+021
+TAG2
+Temperature anomaly of at least +2 K
+%
+-
+......................
+022
+TALM8
+Temperature anomaly less than -8 K
+%
+-
+......................
+023
+TALM4
+Temperature anomaly less than -4 K
+%
+-
+......................
+024
+TAG4
+Temperature anomaly greater than +4 K
+%
+-
+......................
+025
+TAG8
+Temperature anomaly greater than +8 K
+%
+-
+......................
+049
+10GP
+10 metre wind gust probability
+percentage
+Original units: m s**-1
+......................
+059
+CAPEP
+Convective available potential energy probability
+percentage
+Original units: J kg**-1
+......................
+060
+TPG1
+Total precipitation of at least 1 mm
+%
+-
+......................
+061
+TPG5
+Total precipitation of at least 5 mm
+%
+-
+......................
+062
+TPG10
+Total precipitation of at least 10 mm
+%
+-
+......................
+063
+TPG20
+Total precipitation of at least 20 mm
+%
+-
+......................
+064
+TPL01
+Total precipitation less than 0.1 mm
+%
+no rain event
+......................
+065
+TPRL1
+Total precipitation rate less than 1 mm/day
+%
+-
+......................
+066
+TPRG3
+Total precipitation rate of at least 3 mm/day
+%
+-
+......................
+067
+TPRG5
+Total precipitation rate of at least 5 mm/day
+%
+-
+......................
+068
+10SPG10
+10 metre Wind speed of at least 10 m/s
+%
+-
+......................
+069
+10SPG15
+10 metre Wind speed of at least 15 m/s
+%
+-
+......................
+070
+10FGG15
+10 metre Wind gust of at least 15 m/s
+%
+-
+......................
+071
+10FGG20
+10 metre Wind gust of at least 20 m/s
+%
+-
+......................
+072
+10FGG25
+10 metre Wind gust of at least 25 m/s
+%
+-
+......................
+073
+2TL273
+2 metre temperature less than 273.15 K
+%
+-
+......................
+074
+SWHG2
+Significant wave height of at least 2 m
+%
+-
+......................
+075
+SWHG4
+Significant wave height of at least 4 m
+%
+-
+......................
+076
+SWHG6
+Significant wave height of at least 6 m
+%
+-
+......................
+077
+SWHG8
+Significant wave height of at least 8 m
+%
+-
+......................
+078
+MWPG8
+Mean wave period of at least 8 s
+%
+-
+......................
+079
+MWPG10
+Mean wave period of at least 10 s
+%
+-
+......................
+080
+MWPG12
+Mean wave period of at least 12 s
+%
+-
+......................
+081
+MWPG15
+Mean wave period of at least 15 s
+%
+-
+......................
+082
+TPG40
+Total precipitation of at least 40 mm
+%
+-
+......................
+083
+TPG60
+Total precipitation of at least 60 mm
+%
+-
+......................
+084
+TPG80
+Total precipitation of at least 80 mm
+%
+-
+......................
+085
+TPG100
+Total precipitation of at least 100 mm
+%
+-
+......................
+086
+TPG150
+Total precipitation of at least 150 mm
+%
+-
+......................
+087
+TPG200
+Total precipitation of at least 200 mm
+%
+-
+......................
+088
+TPG300
+Total precipitation of at least 300 mm
+%
+-
+......................
+129
+ZP
+Geopotential probability
+%
+-
+......................
+130
+TAP
+Temperature anomaly probability
+percentage
+Original units: K
+......................
+144
+SFP
+Snowfall (convective + stratiform) probability
+percentage
+Original units: m of water equivalent
+......................
+164
+TCCP
+Total cloud cover probability
+percentage
+Original units: (0 - 1)
+......................
+165
+10SP
+10 metre speed probability
+percentage
+Original units: m s**-1
+......................
+167
+2TP
+2 metre temperature probability
+percentage
+Original units: K
+......................
+201
+MX2TP
+Maximum 2 metre temperature probability
+percentage
+Original units: K
+......................
+202
+MN2TP
+Minimum 2 metre temperature probability
+percentage
+Original units: K
+......................
+228
+TPP
+Total precipitation probability
+percentage
+Original units: m
+......................
+229
+SWHP
+Significant wave height probability
+percentage
+Original units: m
+......................
+232
+MWPP
+Mean wave period probability
+percentage
+Original units: s
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

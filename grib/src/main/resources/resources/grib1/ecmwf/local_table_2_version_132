@@ -1,0 +1,60 @@
+ECMWF local table 2: Version Number 132 (Extreme forecast index).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+049
+10FGI
+10 metre wind gust index
+(-1 to 1)
+Original units: m s**-1
+......................
+144
+SFI
+Snowfall index
+(-1 to 1)
+-
+......................
+165
+10WSI
+10 metre speed index
+(-1 to 1)
+Original units: m s**-1
+......................
+167
+2TI
+2 metre temperature index
+(-1 to 1)
+Original units: K
+......................
+200
+MAXSWHI
+Maximum of significant wave height index
+(-1 to 1)
+-
+......................
+201
+MX2TI
+Maximum temperature at 2 metres index
+(-1 to 1)
+-
+......................
+202
+MN2TI
+Minimum temperature at 2 metres index
+(-1 to 1)
+-
+......................
+228
+TPI
+Total precipitation index
+(-1 to 1)
+Original units: m
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

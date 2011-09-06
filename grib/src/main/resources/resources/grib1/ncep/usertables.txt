@@ -1,0 +1,81 @@
+                       User Tables               Wesley Ebisuzaki
+                       ---- ------
+
+GRIB files describe the contents (example, zonal wind, temperature) by 
+a parameter table and parameter number.  Since the size of the parameter
+table is limited to 255 entries, groups are finding (1) that they want
+to use their own parameter table and (2) large groups are finding that 
+they have to use multiple parameter tables.  
+
+The parameter table used by wgrib is determined by (v1.5.0 and later)
+
+  use built-in tables
+  use user-defined table if available
+  use built-in NCEP-2 table (warning under certain conditions)
+
+Alternatively, if wgrib is compiled with the "-D P_TABLE_FIRST" 
+option, then the search order is,
+
+  use user-defined table if available
+  use built-in tables
+  use built-in NCEP-2 table (warning under certain conditions)
+
+[This is the preferred search order for foreign-language parameter tables.]
+
+
+The name of the user-defined table is searched for in 
+
+  1) the environment variable "GRIBTAB"
+  2) the environment variable "gribtab"
+  3) the file gribtab
+
+Defining an environment variable depends on the operating system
+and on the shell.
+
+  example
+      export GRIBTAB=~/data/gribtab                   (bash)
+      setenv GRIBTAB ~/data/gribtab                   (csh)
+      GRIBTAB=$HOME/data/gribtab ; export GRIBTAB     (sh)
+
+      set GRIBTAB=c:\gribtab                          (windows)
+
+
+The format of the GRIBTAB file is
+
+-----------------------------------------------------------------------
+-1:CENTER:SUBCENTER:PARAMETER_TABLE
+0:name:comment
+1:name:comment
+...
+255:name:comment
+
+-1:CENTER:SUBCENTER:PARAMETER_TABLE
+0:name:comment
+1:name:comment
+...
+255:name:comment
+
+  (etc.)
+-----------------------------------------------------------------------
+
+"CENTER" is number between 0 and 255 with -1 being a wildcard.
+"SUBCENTER" is number between 0 and 255 with -1 being a wildcard.
+"PARAMETER_TABLE" is number between 0 and 255 with -1 being a wildcard.
+"name" is a string with the variable name "TMP".  
+"comment" is a string such describing the variable such as "temperature [K]"
+Any missing parameter lines will be given a generic name and comment.
+
+Each GRIB record contains the center (PDS octet 5), subcenter (PDS octet 26)
+and parameter_table (PDS octet 4).  The names and comments from the
+first section to match the center-subcenter-parameter_name in the PDS
+are used.  Currently the subcenter are not used in matching the
+built-in tables.  This will probably change when sub-centers start using
+their own parameter tables.
+
+                                Policy
+
+The wgrib code is easily modified to add new built-in parameter tables.
+New tables will be added under the following conditions: a reasonable
+number of users, I don't have to type it in and the table is reasonably 
+stable.  (Rules subject to change.)
+

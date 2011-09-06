@@ -1,11 +1,7 @@
 package ucar.nc2.ui;
 
-import org.springframework.format.FormatterRegistry;
 import ucar.grib.GribResourceReader;
-import ucar.grib.NotSupportedException;
 import ucar.grib.grib1.GribPDSParamTable;
-import ucar.nc2.grib.table.GribTables;
-import ucar.nc2.ui.dialog.BufrBCompare;
 import ucar.nc2.ui.dialog.Grib1TableCompareDialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -16,7 +12,6 @@ import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.IO;
 import ucar.nc2.wmo.CommonCodeTable;
-import ucar.units.UnknownUnit;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -207,6 +202,11 @@ public class Grib1TablesViewer extends JPanel {
 
   private void setEntries(GribPDSParamTable table) {
     Map<Integer, GridParameter> map = table.getParameters();
+    if (map == null) {
+      System.out.println("HEY");
+      map = table.getParameters();
+    }
+
     ArrayList<Integer> params = new ArrayList<Integer>();
     params.addAll(map.keySet());
     Collections.sort(params);
@@ -240,7 +240,7 @@ public class Grib1TablesViewer extends JPanel {
       if (p != null) f.format(" %s from %s (%d)%n", p, tbean.table.getName(), tbean.table.getParameters().hashCode());
     }
 
-    infoTA.appendLine( f.toString());
+    infoTA.appendLine(f.toString());
     infoWindow.setVisible(true);
   }
 
@@ -282,13 +282,13 @@ public class Grib1TablesViewer extends JPanel {
             out.format(" %s units%n   %s%n   %s%n", d1.getNumber(), d1.getUnit(), d2.getUnit());
         }
         if (data.cleanUnits) {
-          String cu1 =  GribTables.cleanupUnits(d1.getUnit());
-          String cu2 =  GribTables.cleanupUnits(d2.getUnit());
+          String cu1 =  GridParameter.cleanupUnits(d1.getUnit());
+          String cu2 =  GridParameter.cleanupUnits(d2.getUnit());
           if (!equiv(cu1, cu2)) out.format(" %s cleanUnits%n   %s%n   %s%n", d1.getNumber(), cu1, cu2);
         }
         if (data.udunits) {
-          String cu1 =  GribTables.cleanupUnits(d1.getUnit());
-          String cu2 =  GribTables.cleanupUnits(d2.getUnit());
+          String cu1 =  GridParameter.cleanupUnits(d1.getUnit());
+          String cu2 =  GridParameter.cleanupUnits(d2.getUnit());
             try {
               SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
               if (!su1.isCompatible(cu2))
@@ -338,11 +338,11 @@ public class Grib1TablesViewer extends JPanel {
           boolean descDiff = data.compareDesc &&  !equiv(d1.getDescription(), d2.getDescription());
           boolean namesDiff = data.compareNames &&  !equiv(d1.getName(), d2.getName());
           boolean unitsDiff = data.compareUnits &&  !equiv(d1.getUnit(), d2.getUnit());
-          boolean cunitsDiff = data.cleanUnits &&  !equiv(GribTables.cleanupUnits(d1.getUnit()), GribTables.cleanupUnits(d2.getUnit()));
+          boolean cunitsDiff = data.cleanUnits &&  !equiv(GridParameter.cleanupUnits(d1.getUnit()), GridParameter.cleanupUnits(d2.getUnit()));
           boolean udunitsDiff = false;
           if (data.udunits) {
-            String cu1 =  GribTables.cleanupUnits(d1.getUnit());
-            String cu2 =  GribTables.cleanupUnits(d2.getUnit());
+            String cu1 =  GridParameter.cleanupUnits(d1.getUnit());
+            String cu2 =  GridParameter.cleanupUnits(d2.getUnit());
               try {
                 SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
                 udunitsDiff = !su1.isCompatible(cu2);
@@ -398,6 +398,14 @@ public class Grib1TablesViewer extends JPanel {
       return table.getPath();
     }
 
+    public String getName() {
+      return table.getName();
+    }
+
+    public int getKey() {
+      return table.getKey();
+    }
+
     @Override
     public int compareTo(TableBean o) {
       int ret = getCenter_id() - o.getCenter_id();
@@ -437,11 +445,11 @@ public class Grib1TablesViewer extends JPanel {
     }
 
     public String getCleanUnit() {
-      return GribTables.cleanupUnits(param.getUnit());
+      return GridParameter.cleanupUnits(param.getUnit());
     }
 
     public String getUdunit() {
-      String cu =  GribTables.cleanupUnits(param.getUnit());
+      String cu =  GridParameter.cleanupUnits(param.getUnit());
          try {
            SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu);
            return (su1.isUnknownUnit()) ? "UNKNOWN" : su1.toString();

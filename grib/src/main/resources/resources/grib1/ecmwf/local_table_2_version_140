@@ -1,0 +1,246 @@
+ECMWF local table 2: Version Number 140 (Wave).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+200
+MAXSWH
+Maximum of significant wave height
+m
+-
+......................
+217
+TMAX
+Period corresponding to maximum individual wave height
+s
+-
+......................
+218
+HMAX
+Maximum individual wave height
+m
+-
+......................
+219
+WMB
+Model bathymetry
+m
+Ocean depth limited to 999 metres
+......................
+220
+MP1
+Mean wave period based on first moment
+s
+-
+......................
+221
+MP2
+Mean wave period based on second moment
+s
+-
+......................
+222
+WDW
+Wave spectral directional width
+-
+-
+......................
+223
+P1WW
+Mean wave period based on first moment for wind waves
+s
+-
+......................
+224
+P2WW
+Mean wave period based on second moment for wind waves
+s
+-
+......................
+225
+DWWW
+Wave spectral directional width for wind waves
+-
+-
+......................
+226
+P1PS
+Mean wave period based on first moment for swell
+s
+-
+......................
+227
+P2PS
+Mean wave period based on second moment for swell
+s
+-
+......................
+228
+DWPS
+Wave spectral directional width for swell
+-
+-
+......................
+229
+SWH
+Significant wave height
+m
+-
+......................
+230
+MWD
+Mean wave direction
+degrees
+-
+......................
+231
+PP1D
+Peak period of 1D spectra
+s
+-
+......................
+232
+MWP
+Mean wave period
+s
+-
+......................
+233
+CDWW
+Coefficient of drag with waves
+-
+-
+......................
+234
+SHWW
+Significant height of wind waves
+m
+-
+......................
+235
+MDWW
+Mean direction of wind waves
+degrees
+-
+......................
+236
+MPWW
+Mean period of wind waves
+s
+-
+......................
+237
+SHTS
+Significant height of total swell
+m
+-
+......................
+238
+MDTS
+Mean direction of total swell
+degrees
+-
+......................
+239
+MPTS
+Mean period of total swell
+s
+-
+......................
+240
+SDHS
+Standard deviation wave height
+m
+-
+......................
+241
+MU10
+Mean of 10 metre wind speed
+m s**-1
+-
+......................
+242
+MDWI
+Mean wind direction
+degrees
+-
+......................
+243
+SDU
+Standard deviation of 10 metre wind speed
+m s**-1
+-
+......................
+244
+MSQS
+Mean square slope of waves
+dimensionless
+-
+......................
+245
+WIND
+10 metre wind speed
+m s**-1
+Modified by wave model analysis
+......................
+246
+AWH
+Altimeter wave height
+m
+-
+......................
+247
+ACWH
+Altimeter corrected wave height
+m
+-
+......................
+248
+ARRC
+Altimeter range relative correction
+-
+-
+......................
+249
+DWI
+10 metre wind direction
+degrees
+-
+......................
+250
+2DSP
+2D wave spectra (multiple)
+m**2 s radian**-1
+Logarithm 10 based, modified by constant
+......................
+251
+2DFD
+2D wave spectra (single)
+m**2 s radian**-1
+One direction/one frequency; log 10 based, modified by constant
+......................
+252
+WSK
+Wave spectral kurtosis
+-
+-
+......................
+253
+BFI
+Benjamin-Feir index
+-
+-
+......................
+254
+WSP
+Wave spectral peakedness
+s**-1
+-
+......................
+255
+-
+Indicates a missing value
+-
+-
+......................
+999
+.
+.

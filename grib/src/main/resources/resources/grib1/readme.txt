@@ -1,4 +1,4 @@
-Notes for grib-1 tables
+Notes for grib-1 tables (global)
 
  8/24/2011
  - starting from robb kambic's work in earlier version. He processed all tables into a uniform format. No documentation
@@ -75,3 +75,73 @@ Notes for grib-1 tables
    - download "grib_api" software from http://www.ecmwf.int/products/data/software/download/grib_api.html
    - extract grib_api-1.9.9/definitions/grib1/*.table to resources/grib1/ecmwf/
    - these appear to include wmo standard tables and ecmwf local tables
+   - no delimiter between name and units - cant parse unsupervised
+
+ 9/2/2011 ecmwf
+   - download "gribex" software from http://www.ecmwf.int/products/data/software/grib.html
+   - extract gribex_000370/gribtables/* to resources/grib1/ecmwf/
+   - these appear to include wmo standard tables and local tables for center 98 (ecmwf), 74 (ukmet RFSC), 80 (rome NMC), 85 (toulouse RMSC)
+   - wmo versions 1,2,3 all agree with each other
+   - udunit differences with dss wmo version 3:
+       10 udunits
+         Dobson
+         Dobson.(kg.m-2)
+       19 udunits
+         K.m-1
+         K.s-1
+       37 udunits
+         m2.s-2
+         m2.s-1
+       53 udunits
+         kg.kg-1
+         kg.m-2
+       76 udunits
+         kg.m-2
+         kg.kg-1
+       94 udunits
+         m.s-1
+         m.s.-1
+       120 udunits
+         W.m-3.sr-1
+         W.m-1.sr-1
+  - comparision of random table (98-0-140) with dss: missing 5 params in DSS
+   **No key 200 (GridParameter{number=200, name='MAXSWH', description='Maximum of significant wave height', unit='m'}) in first table
+   **No key 217 (GridParameter{number=217, name='TMAX', description='Period corresponding to maximum individual wave height', unit='s'}) in first table
+   **No key 218 (GridParameter{number=218, name='HMAX', description='Maximum individual wave height', unit='m'}) in first table
+   **No key 253 (GridParameter{number=253, name='BFI', description='Benjamin-Feir index', unit='-'}) in first table
+   **No key 254 (GridParameter{number=254, name='WSP', description='Wave spectral peakedness', unit='s**-1'}) in first table
+
+9/2/2011
+ - download tables from ftp.cpc.ncep.noaa.gov/wd51we/wgrib/
+ - copy into resources/grib1/ncep, and append .tab to filenames
+ - turns out this is the format that robb used
+ - gribtab file has -1:7:-1:2, indicating its should be used for all center 7 version 2 tables
+ - compare to dss standard: many differences
+ - reanal_grib also has -1:7:-1:2 (!). robb assigns to version 132, must double check
+ - with cleanup, ncep/reanal_grib.tab matches tablesOld/ncep_reanal_132.tab (i did not do  units cleanup)
+
+9/2/2011 use of tablesOld
+ - too many problems, remove use and add individuals back into local
+ - examine files in cdmUnitTest/formats/grib1 to see what not covered
+ - for 57:-1:2: compare tableOld/afwa.tab against WMO standard. all ok except:
+     4 udunits
+       K.m2.kg-1.s-1
+       km2/kg/s
+     58 udunits
+       kg.m-2
+       kg/kg
+     76 udunits
+       kg.m-2
+       kg/kg
+   did they really modify the units but keep the same desc? assume not. delete all entries < 128
+
+ - for 58:42:2: compare tableOld/af_2.tab against WMO standard. all ok except:
+      118 desc
+        Brightness temperature
+        max wave height
+      118 udunits
+        K
+        m
+    assume they really overrided this entry. delete all ebtries < 128 except 118.
+
+

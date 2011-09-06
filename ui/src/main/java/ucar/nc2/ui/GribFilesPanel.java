@@ -314,7 +314,7 @@ public class GribFilesPanel extends JPanel {
   public class Grib1Bean {
     MFile m;
     Grib1Record first;
-    String tableName;
+    GribPDSParamTable table;
 
     public Grib1Bean() {
     }
@@ -349,11 +349,15 @@ public class GribFilesPanel extends JPanel {
     }
 
     public String getTable() {
-      if (tableName == null) {
-        GribPDSParamTable table = GribPDSParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
-        tableName = (table == null) ? " missing" : table.getName();
-      }
-      return tableName;
+      if (table == null)
+        table = GribPDSParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
+      return (table == null) ? " missing" : table.getName();
+    }
+
+    public int getTableKey() {
+      if (table == null)
+        table = GribPDSParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
+      return (table == null) ? -1 : table.getKey();
     }
 
   }

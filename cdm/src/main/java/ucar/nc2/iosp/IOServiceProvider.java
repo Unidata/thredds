@@ -155,7 +155,7 @@ public interface IOServiceProvider {
 
   /**
    * A way to communicate arbitrary information to an iosp.
-   * @param message opaque message.
+   * @param message opaque message sent to the IOSP object when its opened (not when isValidFile() is called)
    * @return opaque return, may be null.
    */
   public Object sendIospMessage( Object message);

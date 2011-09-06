@@ -1,0 +1,30 @@
+ECMWF local table 2: Version Number 234 (Significance).
+Codes and data units for FM 92-VIII Ext.GRIB.
+......................
+139
+STS
+Surface temperature significance
+percentage
+-
+......................
+151
+MSLS
+Mean sea level pressure significance
+percentage
+-
+......................
+167
+2TS
+2 metre temperature significance
+percentage
+-
+......................
+228
+TPS
+Total precipitation significance
+percentage
+-
+......................
+999
+.
+.

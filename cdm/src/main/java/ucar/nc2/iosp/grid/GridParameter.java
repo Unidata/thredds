@@ -32,7 +32,7 @@
  */
 package ucar.nc2.iosp.grid;
 
-import ucar.jpeg.jj2000.j2k.util.StringFormatException;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Class which represents a grid parameter.
@@ -42,6 +42,33 @@ import ucar.jpeg.jj2000.j2k.util.StringFormatException;
  */
 
 public class GridParameter {
+
+  static public String cleanupUnits(String unit) {
+    if (unit == null) return null;
+    if (unit.equalsIgnoreCase("-")) unit = "";
+    else {
+      if (unit.startsWith("/")) unit = "1" + unit;
+      unit = unit.trim();
+      unit = StringUtil2.remove(unit, "**");
+      StringBuilder sb = new StringBuilder(unit);
+      StringUtil2.remove(sb, "^[]");
+      StringUtil2.replace(sb, ' ', ".");
+      StringUtil2.replace(sb, '*', ".");
+      unit = sb.toString();
+    }
+    return unit;
+  }
+
+  static public String cleanupDescription(String desc) {
+    if (desc == null) return null;
+    int pos = desc.indexOf("(see");
+    if (pos > 0) desc = desc.substring(0,pos);
+
+    StringBuilder sb = new StringBuilder(desc.trim());
+    StringUtil2.remove(sb, ".;,=[]()/");
+    return sb.toString().trim();
+  }
+
   protected int number;
   protected String name;
   protected String description;
@@ -58,8 +85,8 @@ public class GridParameter {
   public GridParameter(int number, String name, String description, String unit) {
     this.number = number;
     this.name = name;
-    this.description = description;
-    this.unit = unit;
+    setDescription(description);
+    setUnit(unit);
   }
 
   // unkown param
@@ -73,8 +100,8 @@ public class GridParameter {
   public GridParameter(int number, String name, String description, String unit, String cf_name) {
     this.number = number;
     this.name = name;
-    this.description = description;
-    this.unit = unit;
+    setDescription(description);
+    setUnit(unit);
     this.cf_name = cf_name;
   }
 
@@ -132,7 +159,7 @@ public class GridParameter {
    * @param description of parameter
    */
   public final void setDescription(String description) {
-    this.description = description;
+    this.description = cleanupDescription(description);
   }
 
   /**
@@ -141,7 +168,7 @@ public class GridParameter {
    * @param unit of parameter
    */
   public final void setUnit(String unit) {
-    this.unit = unit;
+    this.unit = cleanupUnits(unit);
   }
 
   /**

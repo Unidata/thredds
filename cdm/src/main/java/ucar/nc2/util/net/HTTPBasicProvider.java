@@ -38,15 +38,22 @@ import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 
+import java.io.IOException;
+import java.io.Serializable;
+
 /**
  * Provide a simpl HTTP Basic scheme CredentialsProvider
  */
 
-public class HTTPBasicProvider implements CredentialsProvider, Credentials
+public class HTTPBasicProvider implements CredentialsProvider, Credentials, Serializable
 {
     String username = null;
     String password = null;
 
+    public HTTPBasicProvider()
+    {
+        this("","");
+    }
     public HTTPBasicProvider(String username, String password)
     {
 	this.username = username;
@@ -66,4 +73,21 @@ public class HTTPBasicProvider implements CredentialsProvider, Credentials
     {
 	return new UsernamePasswordCredentials(username,password);
     }
+
+
+    // Serializable Interface
+    private void writeObject(java.io.ObjectOutputStream oos)
+        throws IOException
+    {
+        oos.writeObject(this.username);
+        oos.writeObject(this.password);
+    }
+
+    private void readObject(java.io.ObjectInputStream ois)
+            throws IOException, ClassNotFoundException
+    {
+        this.username = (String)ois.readObject();
+        this.password = (String)ois.readObject();
+    }
+
 }

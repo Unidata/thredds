@@ -37,14 +37,12 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
-import ucar.nc2.grib.table.GribTables;
 import ucar.nc2.iosp.grid.GridParameter;
 
 import java.io.*;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,9 +54,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GribPDSParamTable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribPDSParamTable.class);
 
-  static private final String RESOURCE_PATH = "resources/grib1/grib1Tables.txt";
-  static private final String RESOURCE_PATH_OLD = "resources/grib1/tablesOld/tableLookup.lst";
-
   static private final Pattern valid = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\+]*$");
   static private final Pattern numberFirst = Pattern.compile("^[0-9]");
 
@@ -69,7 +64,7 @@ public class GribPDSParamTable {
   static private GribPDSParamTable defaultTable;
 
   // This is a mapping from (center,subcenter,version)-> Param table for any data that has been loaded LOOK: could use int not string as key
-  static private Map<String, GribPDSParamTable> tableMap = new ConcurrentHashMap<String, GribPDSParamTable>();
+  static private Map<Integer, GribPDSParamTable> tableMap = new ConcurrentHashMap<Integer, GribPDSParamTable>();
 
   // a list of all the tables
   static private List<GribPDSParamTable> paramTables;
@@ -78,8 +73,11 @@ public class GribPDSParamTable {
     try {
       List<GribPDSParamTable> tables = new CopyOnWriteArrayList<GribPDSParamTable>();
       LookupTable lookup = new LookupTable();
-      lookup.readLookupTable(RESOURCE_PATH, tables);
-      lookup.readLookupTable(RESOURCE_PATH_OLD, tables);
+      lookup.readLookupTable("resources/grib1/lookupTables.txt", tables);
+      lookup.readLookupTable("resources/grib1/dss/lookupTables.txt", tables);
+      lookup.readLookupTable("resources/grib1/ecmwf/lookupTables.txt", tables);
+      lookup.readLookupTable("resources/grib1/ncep/lookupTables.txt", tables);
+      // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt", tables);  too many problems -must check every one !
       paramTables = new CopyOnWriteArrayList<GribPDSParamTable>(tables); // in case user adds tables
       defaultTable = getParameterTable(0, -1, -1);
 
@@ -122,7 +120,7 @@ public class GribPDSParamTable {
    */
   public static GribPDSParamTable getParameterTable(int center, int subcenter, int tableVersion) {
     // look in hash table
-    String key = center + "_" + subcenter + "_" + tableVersion;
+    int key = makeKey(center, subcenter, tableVersion);
     GribPDSParamTable table = tableMap.get(key);
     if (table != null)
       return table;
@@ -200,16 +198,10 @@ public class GribPDSParamTable {
    * @param center center id
    * @param subcenter  subcenter id, or -1 for all
    * @param tableVersion table verssion, or -1 for all
-   * @param filename file to read from
+   * @param path file to read from
    */
-  public static void addParameterTable(int center, int subcenter, int tableVersion, String filename) {
-    GribPDSParamTable table = new GribPDSParamTable();
-    table.center_id = center;
-    table.subcenter_id = subcenter;
-    table.version = tableVersion;
-    table.filename = filename;
-    table.path = table.filename;
-
+  public static void addParameterTable(int center, int subcenter, int tableVersion, String path) {
+    GribPDSParamTable table = new GribPDSParamTable(center, subcenter, tableVersion, path);
     synchronized (lock) {
       paramTables.add(standardTablesStart, table);
       standardTablesStart++;
@@ -240,12 +232,12 @@ public class GribPDSParamTable {
      * read the lookup table from input stream
      *
      * @param is       The input stream
-     * @param filename The name of the lookup table file
+     * @param lookupFile   full pathname of lookup file
      * @param result   The list to add the tables into
      * @return true if successful
      * @throws IOException On badness
      */
-    private boolean readLookupTable(InputStream is, String filename, List<GribPDSParamTable> result) throws IOException {
+    private boolean readLookupTable(InputStream is, String lookupFile, List<GribPDSParamTable> result) throws IOException {
       if (is == null)
         return false;
 
@@ -258,32 +250,32 @@ public class GribPDSParamTable {
         if ((line.length() == 0) || line.startsWith("#")) {
           continue;
         }
-        GribPDSParamTable table = new GribPDSParamTable();
         String[] tableDefArr = line.split(":");
 
-        table.center_id = Integer.parseInt(tableDefArr[0].trim());
-        table.subcenter_id = Integer.parseInt(tableDefArr[1].trim());
-        table.version = Integer.parseInt(tableDefArr[2].trim());
-        table.filename = tableDefArr[3].trim();
-        if (table.filename.startsWith("/") || table.filename.startsWith("\\")
-                || table.filename.startsWith("file:") || table.filename.startsWith("http://")) {
-          table.path = table.filename;
-
-        } else if (filename != null) {
-          table.path = GribResourceReader.getFileRoot(filename);
-          if (table.path.equals(filename)) {
-            table.path = table.filename;
-          } else {
-            table.path = table.path + "/" + table.filename;
-          }
-          table.path = table.path.replace('\\', '/');
+        int center = Integer.parseInt(tableDefArr[0].trim());
+        int subcenter = Integer.parseInt(tableDefArr[1].trim());
+        int version = Integer.parseInt(tableDefArr[2].trim());
+        String filename = tableDefArr[3].trim();
+        String path;
+        if (filename.startsWith("/") || filename.startsWith("\\") || filename.startsWith("file:") || filename.startsWith("http://")) {
+          path = filename;
+        } else {
+          path = GribResourceReader.getFileRoot(lookupFile) + "/" + filename;
         }
+
+        GribPDSParamTable table = new GribPDSParamTable(center, subcenter, version, path);
         result.add(table);
       }
       is.close();
       return true;
     }
+  }
 
+  private static int makeKey(int center, int subcenter, int version) {
+    if (center < 0) center = 255;
+    if (subcenter < 0) subcenter = 255;
+    if (version < 0) version = 255;
+    return center * 1000 * 1000 + subcenter * 1000 + version;
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -291,17 +283,22 @@ public class GribPDSParamTable {
   private int center_id;
   private int subcenter_id;
   private int version;
-  private String filename;  // file containing this table
+  private String name;  // name of the table
   private String path; // path of filename containing this table
   private Map<Integer, GridParameter> parameters; // param number -> param
 
-  public GribPDSParamTable(String filename) throws IOException {
-    this.filename = filename;
-    this.path = filename;
+  public GribPDSParamTable(String path) throws IOException {
+    this.path = path;
+    this.name = GribResourceReader.getFilename(path);
     this.parameters = readParameterTable();
   }
 
-  private GribPDSParamTable() {
+  public GribPDSParamTable(int center_id, int subcenter_id, int version, String path) {
+    this.center_id = center_id;
+    this.subcenter_id = subcenter_id;
+    this.version = version;
+    this.path = path;
+    this.name = GribResourceReader.getFilename(path);
   }
 
   public int getCenter_id() {
@@ -317,16 +314,15 @@ public class GribPDSParamTable {
   }
 
   public String getName() {
-    int pos = filename.lastIndexOf("/");
-    return filename.substring(pos + 1);
+    return name;
+  }
+
+  public int getKey() {
+    return makeKey(center_id,  subcenter_id, version);
   }
 
   public String getPath() {
     return path;
-  }
-
-  public String getFilename() {
-    return filename;
   }
 
   // debugging
@@ -378,7 +374,7 @@ public class GribPDSParamTable {
             "center_id=" + center_id +
             ", subcenter_id=" + subcenter_id +
             ", version=" + version +
-            ", filename='" + filename + '\'' +
+            ", name='" + name + '\'' +
             ", path='" + path + '\'' +
             '}';
   }
@@ -387,33 +383,58 @@ public class GribPDSParamTable {
   // reading
 
   private Map<Integer, GridParameter> readParameterTable() {
-    if (filename.endsWith(".tab"))
-      readParameterTableTab();                               // robb's format
-    else if (filename.endsWith(".wrf"))
+    if (name.endsWith(".tab"))
+      readParameterTableTab();                               // wgrib format
+    else if (name.endsWith(".wrf"))
       readParameterTableSplit("\\|", new int[]{0, 3, 1, 2}); // WRF AMPS
-    else if (filename.endsWith(".dss"))
+    else if (name.endsWith(".dss"))
       readParameterTableSplit("\t", new int[]{0, -1, 1, 2}); // NCAR DSS
-    else if (filename.endsWith(".xml"))
+    else if (name.endsWith(".xml"))
       readParameterTableXml();                               // NCAR DSS format
-    else if (filename.endsWith(".htm"))
+    else if (name.endsWith(".htm"))
       readParameterTableNcepScrape();                        // NCEP screen scrape
-    else if (filename.endsWith(".table"))
+    else if (name.startsWith("table_2_") || name.startsWith("local_table_2_"))
       readParameterTableEcmwf(); // ecmwf
-
+    else
+      logger.warn("Dont know how to read " +name +" file="+path);
     return parameters;
   }
 
   /*
-1 p P Pressure Pa
-2 msl MSL Mean sea level pressure Pa
-3 3 None Pressure tendency Pa s**-1
-4 pv PV Potential vorticity K m**2 kg**-1 s**-1
-5 5 None ICAO Standard Atmosphere reference height m
-6 z Z Geopotential m**2 s**-2
-7 gh GH Geopotential height gpm
+  WMO standard table 2: Version Number 3.
+  Codes and data units for FM 92-X Ext.GRIB.
+  ......................
+  001
+  P
+  Pressure
+  Pa
+  Pa
+  ......................
+  002
+  MSL
+  Mean sea level pressure
+  Pa
+  Pa
+  ......................
+  003
+  None
+  Pressure tendency
+  Pa s**-1
+  Pa s**-1
+  ......................
+  004
+  PV
+  Potential vorticity
+  K m**2 kg**-1 s**-1
+  K m**2 kg**-1 s**-1
+  ......................
+  005
+  None
+  ICAO Standard Atmosphere reference height
+  m
+  m
    */
 
-  private static Pattern ecmwfTable = Pattern.compile("([^\\s]*) ([^\\s]*) ([^\\s]*) (.*)");
   private boolean readParameterTableEcmwf() {
     HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
 
@@ -423,32 +444,41 @@ public class GribPDSParamTable {
       if (is == null) return false;
 
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      String line = br.readLine();
+      if (!line.startsWith("...")) name = line; // maybe ??
+      while (!line.startsWith("..."))
+        line = br.readLine(); // skip
 
-      // rdg - added the 0 line length check to cover the case of blank lines at
-      //       the end of the parameter table file.
       while (true) {
-        String line = br.readLine();
-        if (line == null) break;
+        line = br.readLine();
+        if (line == null) break; // done with the file
         if ((line.length() == 0) || line.startsWith("#")) continue;
-        Matcher m = ecmwfTable.matcher(line);
-        if (!m.matches()) {
-          System.out.printf("Failed on %s%n", line);
-          continue;
+        if (line.startsWith("...")) { // ...  may have already been read
+          line = br.readLine();
+          if (line == null) break;
         }
+        String num = line.trim();
+        line = br.readLine();
+        String name = (line != null) ? line.trim() : null;
+        line = br.readLine();
+        String desc = (line != null) ? line.trim() : null;
+        line = br.readLine();
+        String units1 = (line != null) ? line.trim() : null;
+
+        // optional notes
+        line = br.readLine();
+        String notes = (line == null || line.startsWith("...")) ? null : line.trim();
 
         GridParameter parameter = new GridParameter();
-        int p1 = Integer.parseInt(m.group(1));
         try {
-          int p2 = Integer.parseInt(m.group(2));
-          if (p1 != p2) System.out.printf("**WTF %s%n", line);
-        } catch (NumberFormatException e) {
-          // fuggetaboutit
+          int p1 = Integer.parseInt(num);
+          parameter.setNumber(p1);
+        } catch (Exception e) {
+          logger.warn("Cant parse "+num+ " in file "+path);
         }
-
-        parameter.setNumber(p1);
-        parameter.setName(m.group(3));
-        parameter.setDescription(GribTables.cleanupDescription(m.group(4).trim()));
-        parameter.setUnit("");
+        parameter.setName(name);
+        parameter.setDescription(GridParameter.cleanupDescription(desc));
+        parameter.setUnit(units1);
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
       }
@@ -458,7 +488,7 @@ public class GribPDSParamTable {
 
     } catch (IOException ioError) {
       logger.warn("An error occurred in GribPDSParamTable while trying to open the parameter table "
-              + filename + " : " + ioError);
+              + path + " : " + ioError);
       return false;
 
     } finally {
@@ -598,7 +628,7 @@ public class GribPDSParamTable {
         GridParameter parameter = new GridParameter();
         parameter.setNumber(Integer.parseInt(flds[order[0]].trim())); // must have a number
         if (order[1] >= 0) parameter.setName(flds[order[1]].trim());
-        parameter.setDescription(GribTables.cleanupDescription(flds[order[2]].trim()));
+        parameter.setDescription(GridParameter.cleanupDescription(flds[order[2]].trim()));
         if (flds.length > order[3]) parameter.setUnit(flds[order[3]].trim());
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
@@ -609,7 +639,7 @@ public class GribPDSParamTable {
 
     } catch (IOException ioError) {
       logger.warn("An error occurred in GribPDSParamTable while trying to open the parameter table "
-              + filename + " : " + ioError);
+              + path + " : " + ioError);
       return false;
 
     } finally {
@@ -637,7 +667,7 @@ public class GribPDSParamTable {
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
       br.readLine(); // skip a line
 
-      HashMap<Integer, GridParameter> tmpParameters = new HashMap<Integer, GridParameter>(); // thread safe - temp hash
+      HashMap<Integer, GridParameter> params = new HashMap<Integer, GridParameter>(); // thread safe - local var
       while (true) {
         String line = br.readLine();
         if (line == null) break;
@@ -657,16 +687,17 @@ public class GribPDSParamTable {
           parameter.setDescription(arr2[0].trim());
           parameter.setUnit(arr2[1].substring(0, arr2[1].lastIndexOf(']')).trim());
         }
-        tmpParameters.put(parameter.getNumber(), parameter);
+        if (!parameter.getDescription().equalsIgnoreCase("undefined"))
+          params.put(parameter.getNumber(), parameter);
         if (debug)
           System.out.println(parameter.getNumber() + " " + parameter.getDescription() + " " + parameter.getUnit());
       }
 
-      this.parameters = tmpParameters; // thread safe
+      this.parameters = params; // thread safe
       return true;
 
     } catch (IOException ioError) {
-      logger.warn("An error occurred in GribPDSParamTable while trying to open the parameter table " + filename + " : " + ioError);
+      logger.warn("An error occurred in GribPDSParamTable while trying to open the parameter table " + path + " : " + ioError);
       return false;
 
     } finally {
@@ -676,22 +707,6 @@ public class GribPDSParamTable {
       }
     }
 
-  }
-
-  /**
-   * Munge a description to make it suitable as variable name
-   *
-   * @param description start with this
-   * @return Valid Description
-   */
-  private String makeValidDesc(String description) {
-    description = description.replaceAll("\\s+", "_");
-    if (valid.matcher(description).find())
-      return description;
-    // else check for special characters
-    if (numberFirst.matcher(description).find())
-      description = "N" + description;
-    return description.replaceAll("\\)|\\(|=|,|;|\\[|\\]", "");
   }
 
   static public void main(String[] args) throws IOException {

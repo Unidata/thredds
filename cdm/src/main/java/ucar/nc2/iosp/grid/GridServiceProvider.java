@@ -216,11 +216,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     return ""; // parseInfo.toString();
   }
 
-  /**
-   * Send an IOSP message
-   *
-   * @param special isn't that special?
-   */
   @Override
   public Object sendIospMessage(Object special) {
     if (special instanceof FmrcCoordSys) {

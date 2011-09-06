@@ -10,7 +10,6 @@
       <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/timing/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../../cdm/target" />
     </content>
-    <orderEntry type="jdk" jdkName="1.6" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="">
       <library>
@@ -21,12 +20,9 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="library" exported="" name="ehcache" level="project" />
     <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="module" module-name="bufr" />
-    <orderEntry type="module" module-name="grib" />
-    <orderEntry type="module" module-name="opendap" />
-    <orderEntry type="module" module-name="visad" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -135,7 +131,8 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="opendap" />
+    <orderEntry type="module" module-name="bufr" />
+    <orderEntry type="module" module-name="grib" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
