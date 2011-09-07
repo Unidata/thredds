@@ -22,7 +22,7 @@
 
   <servlet>
     <servlet-name>dts</servlet-name>
-    <servlet-class>dts</servlet-class>
+    <servlet-class>opendap.test.dts.TestServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
