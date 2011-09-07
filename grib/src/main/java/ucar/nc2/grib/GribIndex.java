@@ -32,9 +32,14 @@
 
 package ucar.nc2.grib;
 
-import ucar.ma2.Array;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.projection.LatLonProjection;
+import thredds.inventory.CollectionManager;
+import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.unidata.io.RandomAccessFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * Description
@@ -42,52 +47,35 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
  * @author John
  * @since 9/5/11
  */
-public class GdsHorizCoordSys {
-  private String name;
-  public int template, nPoints, scanMode; // LOOK
-  public ucar.unidata.geoloc.ProjectionImpl proj;
-  public double startx, dx; // km
-  public double starty, dy; // km
-  public int nx, ny;
-  public Array gaussLats;
-  public Array gaussw; // ??
+public abstract class GribIndex {
+  public static final String IDX_EXT = ".gbx9";
+  public static final boolean debug = true;
 
-  public GdsHorizCoordSys(String name, ProjectionImpl proj, double startx, double dx, double starty, double dy, int nx, int ny) {
-    this.name = name;
-    this.proj = proj;
-    this.startx = startx;
-    this.dx = dx;
-    this.starty = starty;
-    this.dy = dy;
-    this.nx = nx;
-    this.ny = ny;
-  }
+  public GribCollection makeCollection(RandomAccessFile raf, CollectionManager.Force force, Formatter f) throws IOException {
+    boolean write = false, rewrite = false;
 
-    public String getName() {
-      return name + "-" + ny + "X" + nx;
+    String filename = raf.getLocation();
+    File dataFile = new File(filename);
+    boolean readOk;
+    try {
+      readOk = readIndex(filename, dataFile.lastModified(), force); // heres where the index date is checked against the data file
+    } catch (IOException ioe) {
+      readOk = false;
+    }
+    // make or remake the index
+    if (!readOk) {
+      makeIndex(filename, f);
+      f.format("  Index written: %s%n", filename + Grib2Index.IDX_EXT);
+    } else if (debug) {
+      f.format("  Index read: %s%n", filename + Grib2Index.IDX_EXT);
     }
 
-  public double getStartX() {
-    return startx;
+    return Grib2CollectionBuilder.createFromSingleFile(dataFile, f);
   }
 
-  public double getStartY() {
-    if (gaussLats != null) return gaussLats.getDouble(0);
-    return starty;
-  }
+  public abstract boolean readIndex(String location, long dataModified, CollectionManager.Force force) throws IOException;
 
-  public double getEndX() {
-    return startx + dx * nx;
-  }
+  public abstract boolean makeIndex(String location, Formatter f) throws IOException;
 
-  public double getEndY() {
-    if (gaussLats != null) return gaussLats.getDouble((int) gaussLats.getSize() - 1);
-    return starty + dy * ny;
-  }
 
-  public boolean isLatLon() {
-    return proj instanceof LatLonProjection;
-  }
 }
-
-

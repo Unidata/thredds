@@ -20,7 +20,7 @@ message Grib1Record {
   required uint32 gdsIdx = 6;  // index into gdsList
   required bytes pds = 7;
 
-  required uint64 bmsPos = 11;
+  optional uint64 bmsPos = 11;
 
   required uint64 dataPos = 13;
   required uint32 dataLen = 14;

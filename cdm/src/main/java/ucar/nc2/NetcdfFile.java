@@ -109,7 +109,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      registerIOProvider("ucar.nc2.grib.grib2.Iosp");
+      registerIOProvider("ucar.nc2.grib.grib2.Grib2Iosp");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
+      registerIOProvider("ucar.nc2.grib.grib1.Grib1Iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }

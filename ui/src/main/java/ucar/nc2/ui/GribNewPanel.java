@@ -37,10 +37,10 @@ import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.GribCollectionBuilder;
-import ucar.nc2.grib.Rectilyser;
+import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.GribTables;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.FileManager;
@@ -377,7 +377,7 @@ public class GribNewPanel extends JPanel {
   private String spec;
   private DatasetCollectionMFiles dcm;
   private List<MFile> fileList;
-  private GribTables tables;
+  private Grib2Tables tables;
 
   /* public void setCollection(String filename) throws IOException {
     if (filename.endsWith(GribCollection.IDX_EXT)) {
@@ -471,7 +471,7 @@ public class GribNewPanel extends JPanel {
 
       if (tables == null) {
         Grib2SectionIdentification ids = gr.getId();
-        tables = GribTables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+        tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
       }
 
       int id = gr.cdmVariableHash(0);
@@ -522,8 +522,8 @@ public class GribNewPanel extends JPanel {
       fileno++;
     }
 
-    Rectilyser agg = new Rectilyser(records, 0);
-    agg.make(f, new Rectilyser.Counter());
+    Grib2Rectilyser agg = new Grib2Rectilyser(records, 0);
+    agg.make(f, new Grib2Rectilyser.Counter());
     agg.dump(f, tables);
 
     f.format("total records= %d%n", records.size());
@@ -558,7 +558,7 @@ public class GribNewPanel extends JPanel {
       filename += GribCollection.IDX_EXT;
     File idxFile = new File(filename);
 
-    GribCollectionBuilder.writeIndexFile(idxFile, dcm, f);
+    Grib2CollectionBuilder.writeIndexFile(idxFile, dcm, f);
     return true;
   }
 
@@ -1078,7 +1078,7 @@ public class GribNewPanel extends JPanel {
     }
 
     public String getUnits() {
-      GribTables.Parameter p = tables.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+      Grib2Tables.Parameter p = tables.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
       return (p == null) ? "?" : p.getUnit();
     }
 
@@ -1127,7 +1127,7 @@ public class GribNewPanel extends JPanel {
     }
   }
 
-  static public void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, GribTables tables) throws IOException {
+  static public void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Tables tables) throws IOException {
     f.format("File=%d %s %n", gr.getFile(), path);
     f.format("Header=\"");
     showBytes(f, gr.getHeader());
@@ -1195,20 +1195,20 @@ public class GribNewPanel extends JPanel {
     f.format("  Data Length        = %d%n", ds.getMsgLength());
   }
 
-  static private void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, GribTables tables) {
+  static private void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, Grib2Tables tables) {
     int template = gds.getGDSTemplateNumber();
     byte[] raw = gds.getRawBytes();
     showRawWithTemplate("3." + template, raw, f, tables);
   }
 
-  static private void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, GribTables tables) {
+  static private void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, Grib2Tables tables) {
     int template = pdss.getPDSTemplateNumber();
     byte[] raw = pdss.getRawBytes();
     showRawWithTemplate("4." + template, raw, f, tables);
   }
 
 
-  static private void showRawWithTemplate(String key, byte[] raw, Formatter f, GribTables tables) {
+  static private void showRawWithTemplate(String key, byte[] raw, Formatter f, Grib2Tables tables) {
     if (gribTemplates == null)
       try {
         gribTemplates = WmoTemplateTable.getWmoStandard().map;
@@ -1230,7 +1230,7 @@ public class GribNewPanel extends JPanel {
     f.format(" Product Template = %3d %s%n", template, tables.getTableValue("4.0", template));
     f.format(" Parameter Category = %3d %s%n", pds.getParameterCategory(), tables.getTableValue("4.0" + discipline,
             pds.getParameterCategory()));
-    GribTables.Parameter entry = tables.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+    Grib2Tables.Parameter entry = tables.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
     f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(), entry.getName());
     f.format(" Parameter Units    = %s %n", entry.getUnit());
 

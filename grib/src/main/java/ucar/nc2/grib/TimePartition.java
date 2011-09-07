@@ -35,7 +35,9 @@ package ucar.nc2.grib;
 import thredds.inventory.CollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.grib.grib2.Grib2Collection;
 import ucar.nc2.grib.grib2.Grib2Iosp;
+import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -50,7 +52,7 @@ import java.util.*;
  * @author caron
  * @since 4/17/11
  */
-public class TimePartition extends GribCollection {
+public class TimePartition extends Grib2Collection {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
   public static final String MAGIC_STARTP = "Grib2CollectionIndexTimePartitioned";
 
@@ -62,6 +64,7 @@ public class TimePartition extends GribCollection {
     protected CollectionManager dcm;
     private GribCollection gribCollection;
     private String name, filename;
+    private RandomAccessFile raf;
 
     // constructor from ncx
     public Partition(String name, String filename) {
@@ -95,13 +98,13 @@ public class TimePartition extends GribCollection {
 
     public GribCollection getGribCollection(Formatter f) throws IOException {
       if (gribCollection == null) {
-        GribCollection gc = null;
+        GribCollection gc;
         if (dcm != null) {
-          gc = GribCollectionBuilder.factory(dcm, CollectionManager.Force.test, f);
+          gc = Grib2CollectionBuilder.factory(dcm, CollectionManager.Force.test, f);
         } else {
           raf = new RandomAccessFile(filename, "r");
           rafLocation = filename;
-          gc = GribCollectionBuilder.createFromIndex(name, null, raf); // LOOK
+          gc = Grib2CollectionBuilder.createFromIndex(name, null, raf); // LOOK
         }
 
         gribCollection = gc; // dont set until init() works
@@ -125,10 +128,10 @@ public class TimePartition extends GribCollection {
     }
   }
 
-  public class VariableIndexPartitioned extends VariableIndex {
+  public class VariableIndexPartitioned extends GribCollection.VariableIndex {
     int[] groupno, varno;
 
-    public VariableIndexPartitioned(GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
+    public VariableIndexPartitioned(GribCollection.GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
                           int intvType, int ensDerivedType, int probType, String probabilityName,
                           int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
@@ -147,7 +150,7 @@ public class TimePartition extends GribCollection {
       GribCollection gc = p.getGribCollection(); // ensure that its read in
 
       // the group and varible index may vary across partitions
-      GroupHcs g = gc.groups.get(groupno[partno]);
+      GribCollection.GroupHcs g = gc.groups.get(groupno[partno]);
       GribCollection.VariableIndex vindex = g.varIndex.get(varno[partno]);
       vindex.readRecords();
       return vindex;
@@ -162,7 +165,7 @@ public class TimePartition extends GribCollection {
   }
 
   @Override
-  protected String getMagicBytes() {
+  public String getMagicBytes() {
     return MAGIC_STARTP;
   }
 
@@ -248,6 +251,10 @@ public class TimePartition extends GribCollection {
 
   public void checkNeeded(boolean force) {
   }
+
+  // public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException;
+  // public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException;
+
 
   // LOOK - needs time partition collection iosp or something
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName) throws IOException {

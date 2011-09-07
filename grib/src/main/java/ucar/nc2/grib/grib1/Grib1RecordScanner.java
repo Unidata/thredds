@@ -53,6 +53,22 @@ public class Grib1RecordScanner {
   static private final boolean debug = false;
   static private final boolean debugGds = true;
 
+  static public boolean isValidFile(RandomAccessFile raf) {
+    try {
+      raf.seek(0);
+      boolean found = raf.searchForward(matcher, 16 * 1000); // look in first 16K
+      if (!found) return false;
+      raf.skipBytes(7); // will be positioned on byte 0 of indicator section
+      int edition = raf.read(); // read at byte 8
+      return (edition == 1);
+
+    } catch (IOException e) {
+     return false;
+    }
+  }
+
+  ////////////////////////////////////////////////////////////
+
   private Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<Long, Grib1SectionGridDefinition>();
   private ucar.unidata.io.RandomAccessFile raf = null;
 
@@ -176,7 +192,7 @@ public class Grib1RecordScanner {
    * for validation.
    * @param raf             from this RandomAccessFile
    * @param drsPos          Grib1SectionDataRepresentation starts here
-   *
+   */
   static public Grib1Record findRecordByDrspos(RandomAccessFile raf, long drsPos) throws IOException {
     Grib1Record result = null;
     Grib1RecordScanner scanner = new Grib1RecordScanner(raf);
@@ -184,14 +200,14 @@ public class Grib1RecordScanner {
     raf.seek(pos);
     while (scanner.hasNext()) {  // find GRIB header
       result = scanner.next();
-      if (result.getDataRepresentationSection().getStartingPosition() == drsPos)
+      if (result.getDataSection().getStartingPosition() == drsPos)
         return result;
       if (raf.getFilePointer() > drsPos)
         break;
     }
     return null;
 
-  }  */
+  }
 
   public static void main(String[] args) throws IOException {
     int count = 0;

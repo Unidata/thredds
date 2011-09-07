@@ -38,7 +38,7 @@ import java.util.*;
  * Ndfd local tables
  */
 
-public class NdfdLocalTables extends GribTables {
+public class NdfdLocalTables extends Grib2Tables {
   private final Map<Integer, TableEntry> local = new HashMap<Integer, TableEntry>(100);
 
   NdfdLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
@@ -59,12 +59,12 @@ public class NdfdLocalTables extends GribTables {
     if ((category <= 191) && (parameter <= 191))
       return super.getVariableName(discipline, category, parameter);
 
-    GribTables.Parameter p = getParameter(discipline, category, parameter);
+    Grib2Tables.Parameter p = getParameter(discipline, category, parameter);
     return (p == null) ? null : p.getName();
   }
 
   @Override
-  public GribTables.Parameter getParameter(int discipline, int category, int number) {
+  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191))
       return WmoCodeTable.getParameterEntry(discipline, category, number);
 

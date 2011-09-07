@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib1;
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
+import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -80,10 +81,9 @@ import java.util.*;
  * @author John
  * @since 9/5/11
  */
-public class Grib1Index {
+public class Grib1Index extends GribIndex {
     static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
 
-    public static final String IDX_EXT = ".gbx9";
     private static final String MAGIC_START = "Grib1Index";
     private static final int version = 5;
     private static final boolean debug = false;
@@ -143,6 +143,9 @@ public class Grib1Index {
         }
 
         int size = NcStream.readVInt(fin);
+        if (size < 0 || size > 10 * 1000) // ??
+          throw new IOException("Grib1Index bad for " +filename);
+
         byte[] m = new byte[size];
         NcStream.readFully(fin, m);
 
@@ -197,7 +200,10 @@ public class Grib1Index {
       int gdsIndex = p.getGdsIdx();
       Grib1SectionGridDefinition gds = gdsList.get(gdsIndex);
       Grib1SectionProductDefinition pds = new Grib1SectionProductDefinition(p.getPds().toByteArray());
-      Grib1SectionBitMap bms = new Grib1SectionBitMap(p.getBmsPos());
+      Grib1SectionBitMap bms = null;
+      if (pds.bmsExists()) {
+        bms = new Grib1SectionBitMap(p.getBmsPos());
+      }
       Grib1SectionBinaryData dataSection = new Grib1SectionBinaryData(p.getDataPos(), p.getDataLen());
 
       return new Grib1Record(p.getHeader().toByteArray(), is, gds, pds, bms, dataSection);
@@ -211,7 +217,7 @@ public class Grib1Index {
     ////////////////////////////////////////////////////////////////////////////////
 
     // LOOK what about extending an index ??
-    public void makeIndex(String filename, Formatter f) throws IOException {
+    public boolean makeIndex(String filename, Formatter f) throws IOException {
 
       FileOutputStream fout = new FileOutputStream(filename + IDX_EXT); // LOOK need DiskCache for non-writeable directories
       RandomAccessFile raf = null;
@@ -250,6 +256,7 @@ public class Grib1Index {
         NcStream.writeVInt(fout, b.length); // message size
         fout.write(b);  // message  - all in one gulp
         f.format("  made gbx9 index for %s size=%d%n", filename, b.length);
+        return true;
 
       } finally {
         fout.close();
@@ -266,10 +273,13 @@ public class Grib1Index {
       b.setGribMessageLength(r.getIs().getMessageLength());
 
       b.setGdsIdx(gdsIndex);
-      b.setPds(ByteString.copyFrom(r.getPDSsection().getRawBytes()));
+      Grib1SectionProductDefinition pds = r.getPDSsection();
+      b.setPds(ByteString.copyFrom(pds.getRawBytes()));
 
-      Grib1SectionBitMap bms = r.getBitMapSection();
-      b.setBmsPos(bms.getStartingPosition());
+      if (pds.bmsExists()) {
+        Grib1SectionBitMap bms = r.getBitMapSection();
+        b.setBmsPos(bms.getStartingPosition());
+      }
 
       Grib1SectionBinaryData ds = r.getDataSection();
       b.setDataPos(ds.getStartingPosition());

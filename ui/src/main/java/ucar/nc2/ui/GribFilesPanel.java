@@ -41,7 +41,7 @@ import ucar.grib.grib1.Grib1Record;
 import ucar.grib.grib1.GribPDSParamTable;
 import ucar.grib.grib2.Grib2IndicatorSection;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.GribTables;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -371,7 +371,7 @@ public class GribFilesPanel extends JPanel {
     Grib2Index index;
     int nRecords, localCount = 0, gdsCount = 0;
     Grib2Record first;
-    GribTables tables;
+    Grib2Tables tables;
     boolean bad = false;
 
     public Grib2Bean() {
@@ -398,7 +398,7 @@ public class GribFilesPanel extends JPanel {
           if (first == null) first = gr;
           if (tables == null) {
             Grib2SectionIdentification ids = gr.getId();
-            tables = GribTables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+            tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
           }
           Grib2Pds pds = gr.getPDSsection().getPDS();
           if ((pds.getParameterCategory() > 191) || (pds.getParameterNumber() > 191))

@@ -33,14 +33,8 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
-import thredds.catalog.ThreddsMetadata;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.DatasetCollectionMFiles;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.GribTables;
-import ucar.nc2.grib.grib2.Grib2SectionGridDefinition;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -55,14 +49,14 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Manage a collection of grib2 files. Rectilyse and manage grib collection index.
+ * Manage a collection of grib files. Rectilyse and manage grib collection index.
  * Covers GribCollectionProto.
  *
  * @author caron
  * @since 4/6/11
  */
 @ThreadSafe
-public class GribCollection {
+public abstract class GribCollection {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   public static final String IDX_EXT = ".ncx";
   public static final String MAGIC_START = "Grib2CollectionIndex";
@@ -104,20 +98,20 @@ public class GribCollection {
 
   ////////////////////////////////////////////////////////////////
 
-  protected final String name;
-  protected final File directory;
+  public final String name;
+  public final File directory;
 
   // set by the builder
-  protected int center, subcenter, master, local;
-  protected int genProcessType, genProcessId, backProcessId;
-  protected List<String> filenames;
-  protected List<GroupHcs> groups;
-  protected List<Parameter> params;
-  protected GribTables tables;
+  public int center, subcenter, master, local;
+  public int genProcessType, genProcessId, backProcessId;
+  public List<String> filenames;
+  public List<GroupHcs> groups;
+  public List<Parameter> params;
+  public GribTables tables;
 
   // need thread safety
-  protected RandomAccessFile raf; // this is the raf of the index file
-  protected String rafLocation;   // this is the raf of the index file
+  public RandomAccessFile raf; // this is the raf of the index file
+  public String rafLocation;   // this is the raf of the index file
 
   public String getName() {
     return name;
@@ -129,10 +123,6 @@ public class GribCollection {
 
   public List<String> getFilenames() {
     return filenames;
-  }
-
-  public GribTables getTables() {
-    return tables;
   }
 
   private File indexFile;
@@ -180,64 +170,16 @@ public class GribCollection {
     return backProcessId;
   }
 
-  GribCollection(String name, File directory) {
+  protected GribCollection(String name, File directory) {
     this.name = name;
     this.directory = directory;
   }
 
   /////////////////////////////////////////////
+
   // stuff for InvDatasetFcGrib
-
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException {
-    GroupHcs want = findGroup(groupName);
-    if (want == null) return null;
-
-    if (filename == null) {  // LOOK thread-safety : sharing this, raf
-      Grib2Iosp iosp = new Grib2Iosp(want);
-      NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-      return new NetcdfDataset(ncfile);
-
-    } else {
-
-      for (String file : filenames) { // LOOK linear lookup
-        if (file.endsWith(filename)) {
-          Formatter f = new Formatter();
-          GribCollection gc = GribCollectionBuilder.createFromSingleFile(new File(file), f);  // LOOK thread-safety : creating ncx
-
-          Grib2Iosp iosp = new Grib2Iosp(gc);
-          NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-          return new NetcdfDataset(ncfile);
-        }
-      }
-      return null;
-    }
-  }
-
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException {
-    GroupHcs want = findGroup(groupName);
-    if (want == null) return null;
-
-    if (filename == null) { // LOOK thread-safety : sharing this, raf
-      Grib2Iosp iosp = new Grib2Iosp(want);
-      NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-      NetcdfDataset ncd = new NetcdfDataset(ncfile);
-      return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
-
-    } else {
-      for (String file : filenames) {  // LOOK linear lookup
-        if (file.endsWith(filename)) {
-          Formatter f = new Formatter();
-          GribCollection gc = GribCollectionBuilder.createFromSingleFile(new File(file), f);  // LOOK thread-safety : creating ncx
-
-          Grib2Iosp iosp = new Grib2Iosp(gc);
-          NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-          NetcdfDataset ncd = new NetcdfDataset(ncfile);
-          return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
-        }
-      }
-      return null;
-    }
-  }
+  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException;
+  public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException;
 
   public GroupHcs getGroup(int index) {
     return groups.get(index);
@@ -260,7 +202,7 @@ public class GribCollection {
   }
 
   static protected class MyNetcdfFile extends NetcdfFile {
-    MyNetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
+    public MyNetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
       super(spi, raf, location, cancelTask);
     }
   }
@@ -294,7 +236,7 @@ public class GribCollection {
   // these objects are created from the index.
 
   public class GroupHcs implements Comparable<GroupHcs> {
-    public HorizCoordSys hcs;
+    public GdsHorizCoordSys hcs;
     public List<VariableIndex> varIndex;
     public List<TimeCoord> timeCoords;
     public List<VertCoord> vertCoords;
@@ -302,8 +244,8 @@ public class GribCollection {
     public int[] filenose;
     public List<TimeCoordUnion> timeCoordPartitions; // used only for time partitions - DO NOT USE
 
-    void setHorizCoordSystem(Grib2SectionGridDefinition gdss) {
-      this.hcs = new HorizCoordSys(gdss);
+    public void setHorizCoordSystem(GdsHorizCoordSys hcs) {
+      this.hcs = hcs;
     }
 
     public GribCollection getGribCollection() {
@@ -327,7 +269,7 @@ public class GribCollection {
       return result;
     }
 
-    void assignVertNames() {
+    public void assignVertNames() {
       List<VertCoord> temp = new ArrayList<VertCoord>(vertCoords); // dont change order of original !!!!!
 
       // assign name
@@ -359,19 +301,19 @@ public class GribCollection {
       }
     }
 
-    GribCollection.VariableIndex findAnyVariableWithTime( int usesTimeIndex) {
+    public GribCollection.VariableIndex findAnyVariableWithTime( int usesTimeIndex) {
       for (VariableIndex vi : varIndex)
         if (vi.timeIdx == usesTimeIndex) return vi;
       return null;
     }
 
-    GribCollection.VariableIndex findVariableByHash( int cdmHash) {
+    public GribCollection.VariableIndex findVariableByHash( int cdmHash) {
       for (VariableIndex vi : varIndex)
         if (vi.cdmHash == cdmHash) return vi;
       return null;
     }
 
-    public ThreddsMetadata.Variables getVariables() {
+    /* public ThreddsMetadata.Variables getVariables() {
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("GRIB-2");
       for (VariableIndex vi : varIndex) {
         String name = Grib2Iosp.makeVariableName(GribCollection.this, vi);
@@ -380,7 +322,7 @@ public class GribCollection {
         vars.addVariable(new ThreddsMetadata.Variable(name, desc, name, units, null));
       }
       return vars;
-    }
+    } */
 
     public CalendarDateRange getTimeCoverage() {
       TimeCoord useTc = null;
@@ -393,7 +335,7 @@ public class GribCollection {
 
   }
 
-  public class HorizCoordSys {
+  /* public class HorizCoordSys {
     public Grib2Gds gds;
     public int template; // GDS Template number (code table 3.1)
     public int nx, ny, nPoints, scanMode;
@@ -423,10 +365,10 @@ public class GribCollection {
     /* public ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
       ThreddsMetadata.Range eastwest = new ThreddsMetadata.Range(start, size, )
       return new ThreddsMetadata.GeospatialCoverage();
-    } */
-  }
+    }
+  }   */
 
-  GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
+  public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
                          int intvType, int ensDerivedType, int probType, String probabilityName,
                          int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
@@ -533,8 +475,6 @@ public class GribCollection {
       if (records != null) return;
       byte[] b = new byte[recordsLen];
 
-      if (raf == null) raf = new RandomAccessFile(rafLocation, "r");
-
       // synchronize to protect the raf, and records[]
       synchronized (raf) {
         raf.seek(recordsPos);
@@ -572,7 +512,7 @@ public class GribCollection {
     }
   }
 
-  public class Record {
+  public static class Record {
     public int fileno;
     public long drsPos;
 
@@ -603,50 +543,12 @@ public class GribCollection {
     }
   }
 
-  protected GribCollection.GroupHcs makeGroup() {
+  public GribCollection.GroupHcs makeGroup() {
     return new GribCollection.GroupHcs();
   }
 
-  protected String getMagicBytes() {
+  public String getMagicBytes() {
     return MAGIC_START;
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////
-
-  static public void make(String name, String spec) throws IOException {
-    long start = System.currentTimeMillis();
-    Formatter f = new Formatter();
-    CollectionManager dcm = new DatasetCollectionMFiles(name, spec, f);
-    File idxFile = new File( dcm.getRoot(), name);
-    boolean ok = GribCollectionBuilder.writeIndexFile(idxFile, dcm, f);
-    System.out.printf("GribCollectionBuilder.writeIndexFile ok = %s%n", ok);
-
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("%s%n", f);
-    System.out.printf("That took %d msecs%n", took);
-  }
-
-  public static void main(String[] args) throws IOException {
-    for (int i=0; i<args.length; i++) {
-      String arg = args[i];
-      if (arg.equalsIgnoreCase("-help")) {
-        System.out.printf("usage: ucar.nc2.grib.GribCollection [-make name collSpec] [-read filename]%n");
-        break;
-      }
-      if (arg.equalsIgnoreCase("-make")) {
-        make(args[i+1], args[i+2]);
-        break;
-
-      } else if (arg.equalsIgnoreCase("-read")) {
-        File f = new File(args[i+1]);
-        RandomAccessFile raf = new RandomAccessFile(f.getPath(), "r");
-        GribCollection gc = GribCollectionBuilder.createFromIndex(f.getName(), f.getParentFile(), raf);
-        gc.showIndex(new Formatter(System.out));
-        break;
-      }
-    }
-    // "G:/nomads/timeseries/200808/.*grb2$"
-    // readIndex2("G:/nomads/timeseries/200808/GaussLatLon-576X1152.ncx");
   }
 
 }

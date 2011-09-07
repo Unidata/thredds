@@ -40,7 +40,7 @@ import java.util.*;
  * @author John
  * @since 6/22/11
  */
-public abstract class LocalTables extends GribTables {
+public abstract class LocalTables extends Grib2Tables {
   protected final Map<Integer, TableEntry> local = new HashMap<Integer, TableEntry>(100);
 
   LocalTables(int center, int subCenter, int masterVersion, int localVersion) {
@@ -64,7 +64,7 @@ public abstract class LocalTables extends GribTables {
     if ((category <= 191) && (parameter <= 191))
       return super.getVariableName(discipline, category, parameter);
 
-    GribTables.Parameter te = getParameter(discipline, category, parameter);
+    Grib2Tables.Parameter te = getParameter(discipline, category, parameter);
     if (te == null)
       return super.getVariableName(discipline, category, parameter);
     else
@@ -72,7 +72,7 @@ public abstract class LocalTables extends GribTables {
   }
 
   @Override
-  public GribTables.Parameter getParameter(int discipline, int category, int number) {
+  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191))
       return WmoCodeTable.getParameterEntry(discipline, category, number);
     return local.get(makeHash(discipline, category, number));

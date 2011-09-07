@@ -7,7 +7,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.GribCollectionBuilder;
+import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
@@ -402,7 +402,7 @@ public class Grib2ReportPanel extends JPanel {
     Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, ff.getLastModified()))
       index.makeIndex(path, fm);
-    GribCollection gc = GribCollectionBuilder.createFromSingleFile(new File(path), fm);
+    GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(path), fm);
     gc.close();
 
     GridDataset ncfile = null;

@@ -359,6 +359,18 @@ public final class Grib1SectionProductDefinition {
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // LOOK - from old
+
+  public boolean isEnsemble() {
+    return false;
+  }
+
+  public final int getPerturbationType() {
+    return 0;
+  }
+
+  public final int getPerturbationNumber() {
+    return 0;
+  }
  /*
    * NCEP Appendix C Manual 388
    * http://www.nco.ncep.noaa.gov/pmb/docs/on388/appendixc.html

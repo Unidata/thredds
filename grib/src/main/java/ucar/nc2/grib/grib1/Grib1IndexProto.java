@@ -380,7 +380,7 @@ public final class Grib1IndexProto {
     boolean hasPds();
     com.google.protobuf.ByteString getPds();
     
-    // required uint64 bmsPos = 11;
+    // optional uint64 bmsPos = 11;
     boolean hasBmsPos();
     long getBmsPos();
     
@@ -471,7 +471,7 @@ public final class Grib1IndexProto {
       return pds_;
     }
     
-    // required uint64 bmsPos = 11;
+    // optional uint64 bmsPos = 11;
     public static final int BMSPOS_FIELD_NUMBER = 11;
     private long bmsPos_;
     public boolean hasBmsPos() {
@@ -529,10 +529,6 @@ public final class Grib1IndexProto {
         return false;
       }
       if (!hasPds()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasBmsPos()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -887,10 +883,6 @@ public final class Grib1IndexProto {
           
           return false;
         }
-        if (!hasBmsPos()) {
-          
-          return false;
-        }
         if (!hasDataPos()) {
           
           return false;
@@ -1082,7 +1074,7 @@ public final class Grib1IndexProto {
         return this;
       }
       
-      // required uint64 bmsPos = 11;
+      // optional uint64 bmsPos = 11;
       private long bmsPos_ ;
       public boolean hasBmsPos() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
@@ -2138,7 +2130,7 @@ public final class Grib1IndexProto {
       "(\014\"\241\001\n\013Grib1Record\022\016\n\006header\030\001 \002(\014\022\030\n\020gr" +
       "ibMessageStart\030\017 \001(\004\022\031\n\021gribMessageLengt" +
       "h\030\002 \002(\004\022\016\n\006gdsIdx\030\006 \002(\r\022\013\n\003pds\030\007 \002(\014\022\016\n\006" +
-      "bmsPos\030\013 \002(\004\022\017\n\007dataPos\030\r \002(\004\022\017\n\007dataLen" +
+      "bmsPos\030\013 \001(\004\022\017\n\007dataPos\030\r \002(\004\022\017\n\007dataLen" +
       "\030\016 \002(\r\"v\n\nGrib1Index\022\020\n\010filename\030\001 \002(\t\022," +
       "\n\007gdsList\030\002 \003(\0132\033.grib1Index.Grib1GdsSec" +
       "tion\022(\n\007records\030\003 \003(\0132\027.grib1Index.Grib1" +

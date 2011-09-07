@@ -38,6 +38,8 @@
 package ucar.nc2.grib.grib1;
 
 
+import ucar.nc2.grib.VertCoord;
+
 /**
  * Process level information from GRIB-1 Table 3: "TYPE AND VALUE OF LEVEL"
  */
@@ -515,13 +517,13 @@ public final class Grib1ParamLevel {
     return "";
   }
 
-    /**
+ /**
    * is this a VerticalCoordinate.
    *
    * @param levelType table 3 code
    * @return isVerticalCoordinate
    */
-  public final boolean isVerticalCoordinate(int levelType) {
+  public static boolean isVerticalCoordinate(int levelType) {
 
     if (levelType == 20) {
       return true;
@@ -544,13 +546,40 @@ public final class Grib1ParamLevel {
     return false;
   }
 
+  static public String getDatum(int levelType) {
+
+     switch (levelType) {
+
+       case 103:
+         return "mean sea level";
+
+       case 105:
+       case 106:
+       case 111:
+       case 112:
+       case 115:
+       case 116:
+       case 125:
+         return "ground";
+
+       case 160:
+         return "sea level";
+
+
+       default:
+         return null;
+     }
+  }
+
+
+
   /**
    * is this a PositiveUp VerticalCoordinate.
    *
    * @param levelType table 3 code
    * @return isPositiveUp
    */
-  public final boolean isPositiveUp(int levelType) {
+  public static boolean isPositiveUp(int levelType) {
 
     if (levelType == 103) {
       return true;
@@ -582,7 +611,7 @@ public final class Grib1ParamLevel {
    * @param levelType table 3 code
    * @return true if a layer
    */
-  public final boolean isLayer(int levelType) {
+  public static boolean isLayer(int levelType) {
     if (levelType == 101) return true;
     if (levelType == 104) return true;
     if (levelType == 106) return true;
@@ -596,6 +625,19 @@ public final class Grib1ParamLevel {
     if (levelType == 128) return true;
     if (levelType == 141) return true;
     return false;
+  }
+
+   /**
+   * Unit of vertical coordinate.
+   * from Grib2 code table 4.5.
+   * LOOK need scientific vetting, need center specific override- move to GribTables
+   *
+   * @param code code from table 4.5
+   * @return level unit, default is empty unit string
+   */
+  static public VertCoord.VertUnit getLevelUnit(int code) {
+    //     public VertUnit(int code, String units, String datum, boolean isPositiveUp)
+    return new VertCoord.VertUnit(code, getUnits(code), getDatum(code), isPositiveUp(code));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

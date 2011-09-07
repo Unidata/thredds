@@ -66,7 +66,7 @@ public class NcepCodeTable {
                 description="Temperature" />
    */
 
-  static private Map<String, GribTables.TableEntry> readParameters(Version version) throws IOException {
+  static private Map<String, Grib2Tables.TableEntry> readParameters(Version version) throws IOException {
     InputStream ios = null;
     try {
       Class c = NcepCodeTable.class;
@@ -85,7 +85,7 @@ public class NcepCodeTable {
       }
       Element root = doc.getRootElement();
 
-      Map<String, GribTables.TableEntry> map = new HashMap<String, GribTables.TableEntry>();
+      Map<String, Grib2Tables.TableEntry> map = new HashMap<String, Grib2Tables.TableEntry>();
 
       List<Element> disciplines = root.getChildren("discipline");
       for (Element elem1 : disciplines) {
@@ -100,7 +100,7 @@ public class NcepCodeTable {
             String name = elem3.getAttributeValue("id");
             String unit = elem3.getAttributeValue("unit");
             String id = makeId(discipline, category, number);
-            map.put(id, new GribTables.TableEntry(discipline, category, number, name, unit, null));
+            map.put(id, new Grib2Tables.TableEntry(discipline, category, number, name, unit, null));
           }
         }
       }
@@ -117,10 +117,10 @@ public class NcepCodeTable {
 
   /////////////////////////////////////////////
   private Version version;
-  private Map<String, GribTables.TableEntry> paramMap;
+  private Map<String, Grib2Tables.TableEntry> paramMap;
   private Map<String, String> codeMap;
 
-  public NcepCodeTable(Version version, Map<String, GribTables.TableEntry> paramMap, Map<String, String> codeMap) {
+  public NcepCodeTable(Version version, Map<String, Grib2Tables.TableEntry> paramMap, Map<String, String> codeMap) {
     this.version = version;
     this.paramMap = paramMap;
     this.codeMap = codeMap;
@@ -130,7 +130,7 @@ public class NcepCodeTable {
     return codeMap.get(tableName + "." + code);
   }
 
-  public GribTables.TableEntry getParameter(int discipline, int category, int number) {
+  public Grib2Tables.TableEntry getParameter(int discipline, int category, int number) {
     return paramMap.get(makeId(discipline, category, number));
   }
 
@@ -140,14 +140,14 @@ public class NcepCodeTable {
 
   private static NcepCodeTable currentTable;
 
-  static Map<String, GribTables.TableEntry> getParamMap() { return currentTable.paramMap; }
+  static Map<String, Grib2Tables.TableEntry> getParamMap() { return currentTable.paramMap; }
 
   public static String getTableValueFromCurrent(String tableName, int code) {
     init();
     return currentTable.getTableValue(tableName, code);
   }
 
-  public static GribTables.TableEntry getParameterFromCurrent(int discipline, int category, int number) {
+  public static Grib2Tables.TableEntry getParameterFromCurrent(int discipline, int category, int number) {
     init();
     return currentTable.getParameter(discipline, category, number);
   }
@@ -155,7 +155,7 @@ public class NcepCodeTable {
   static void init(){
     if (currentTable == null)
       try {
-        Map<String, GribTables.TableEntry> paramMap = readParameters(Version.Current);
+        Map<String, Grib2Tables.TableEntry> paramMap = readParameters(Version.Current);
         Map<String, String> codeMap = readCodes(Version.Current);
         currentTable = new NcepCodeTable(Version.Current, paramMap, codeMap);
       } catch (IOException e) {

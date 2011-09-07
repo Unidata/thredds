@@ -44,7 +44,7 @@ import java.util.*;
  * @author caron
  * @since 4/3/11
  */
-public class NcepLocalTables extends GribTables {
+public class NcepLocalTables extends Grib2Tables {
 
   NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
@@ -65,7 +65,7 @@ public class NcepLocalTables extends GribTables {
     if ((category <= 191) && (parameter <= 191))
       return super.getVariableName(discipline, category, parameter);
 
-    GribTables.Parameter te = getParameter(discipline, category, parameter);
+    Grib2Tables.Parameter te = getParameter(discipline, category, parameter);
     if (te == null)
       return super.getVariableName(discipline, category, parameter);
     else
@@ -73,7 +73,7 @@ public class NcepLocalTables extends GribTables {
   }
 
   @Override
-  public GribTables.Parameter getParameter(int discipline, int category, int number) {
+  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191))
       return WmoCodeTable.getParameterEntry(discipline, category, number);
 
@@ -839,8 +839,8 @@ Updated again on 3/26/2008
 
   private static class CompTable {
     int key;
-    GribTables.Parameter local;
-    GribTables.Parameter org;
+    Grib2Tables.Parameter local;
+    Grib2Tables.Parameter org;
 
     private CompTable(int key, Parameter local, Parameter org) {
       this.key = key;
@@ -855,7 +855,7 @@ Updated again on 3/26/2008
     NcepLocalTables tables = new NcepLocalTables(0, 0, 0, 0);
     tables.initLocalTable();
     for (int key : tables.local.keySet()) {
-      GribTables.Parameter p = tables.local.get(key);
+      Grib2Tables.Parameter p = tables.local.get(key);
       map.put(key, new CompTable(key, p, null));
     }
 

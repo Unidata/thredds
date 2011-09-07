@@ -34,6 +34,9 @@ package ucar.nc2.grib.grib2.table;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.constants.CF;
+import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
@@ -53,11 +56,11 @@ import java.util.List;
  * @since 4/3/11
  */
 @Immutable
-public class GribTables implements ucar.nc2.grib.GribTables {
+public class Grib2Tables implements ucar.nc2.grib.GribTables {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
-  static private GribTables wmoTables, ncepTables, ndfdTables, kmaTables;
+  static private Grib2Tables wmoTables, ncepTables, ndfdTables, kmaTables;
 
-  static public GribTables factory(int center, int subCenter, int masterVersion, int localVersion) {
+  static public Grib2Tables factory(int center, int subCenter, int masterVersion, int localVersion) {
     if ((center == 7) || (center == 9)) { // just guessing (!)
       if (ncepTables == null ) ncepTables = new NcepLocalTables(center, subCenter, masterVersion, localVersion);
       return ncepTables;
@@ -71,7 +74,7 @@ public class GribTables implements ucar.nc2.grib.GribTables {
       return kmaTables;
 
     } else {
-      if (wmoTables == null ) wmoTables = new GribTables(center, subCenter, masterVersion, localVersion);
+      if (wmoTables == null ) wmoTables = new Grib2Tables(center, subCenter, masterVersion, localVersion);
       return wmoTables;
     }
   }
@@ -89,7 +92,7 @@ public class GribTables implements ucar.nc2.grib.GribTables {
     }
   }
 
-   public static class TableEntry implements GribTables.Parameter, Comparable<ucar.nc2.grib.grib2.table.GribTables.TableEntry> {
+   public static class TableEntry implements Grib2Tables.Parameter, Comparable<Grib2Tables.TableEntry> {
     public int discipline, category, number;
     public String name, unit, abbrev;
 
@@ -107,7 +110,7 @@ public class GribTables implements ucar.nc2.grib.GribTables {
     }
 
     @Override
-    public int compareTo(GribTables.TableEntry o) {
+    public int compareTo(Grib2Tables.TableEntry o) {
       int c = discipline - o.discipline;
       if (c != 0) return c;
       c = category - o.category;
@@ -178,7 +181,7 @@ public class GribTables implements ucar.nc2.grib.GribTables {
   ///////////////////////////////////////////////////////////////
   protected final int center, subCenter, masterVersion, localVersion;
 
-  protected GribTables(int center, int subCenter, int masterVersion, int localVersion) {
+  protected Grib2Tables(int center, int subCenter, int masterVersion, int localVersion) {
     this.center = center;
     this.subCenter = subCenter;
     this.masterVersion = masterVersion;
@@ -200,7 +203,7 @@ public class GribTables implements ucar.nc2.grib.GribTables {
     return WmoCodeTable.getTableValue(tableName, code);
   }
 
-  public GribTables.Parameter getParameter(int discipline, int category, int number) {
+  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
     return WmoCodeTable.getParameterEntry(discipline, category, number);
   }
 

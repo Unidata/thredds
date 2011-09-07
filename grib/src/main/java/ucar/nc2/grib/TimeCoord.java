@@ -69,7 +69,7 @@ public class TimeCoord {
   private String units;
   private int code = -1;
 
-  TimeCoord(int code, String units, List coords) {
+  public TimeCoord(int code, String units, List coords) {
     this.code = code;
     this.units = units;
 
@@ -88,7 +88,7 @@ public class TimeCoord {
     }
   }
 
-  TimeCoord(CalendarDate runDate, CalendarPeriod timeUnit, List coords) {
+  public TimeCoord(CalendarDate runDate, CalendarPeriod timeUnit, List coords) {
     this.runDate = runDate;
     this.timeUnit = timeUnit;
 

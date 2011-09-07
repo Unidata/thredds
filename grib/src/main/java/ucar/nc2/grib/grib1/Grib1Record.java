@@ -135,7 +135,7 @@ public class Grib1Record {
 
   public void setDataSection(Grib1SectionBinaryData dataSection) {
     this.dataSection = dataSection;
-  }
+  } */
 
   /**
    * A hash code to group records into a CDM variable
@@ -143,7 +143,7 @@ public class Grib1Record {
    * Read it and weep.
    * @param gdsHash can override the gdsHash
    * @return this records hash code, to group like records into a variable
-   *
+   */
   public int cdmVariableHash(int gdsHash) {
     if (hashcode == 0 || gdsHash != 0) {
       int result = 17;
@@ -153,19 +153,19 @@ public class Grib1Record {
       else
         result += result * 37 + gdsHash;
 
-      result += result * 37 + getDiscipline();
+      Grib1SectionProductDefinition pds = getPDSsection();
+      Grib1ParamLevel plevel = pds.getParamLevel();
+      Grib1ParamTime ptime = pds.getParamTime();
+
       result += result * 37 + pdss.getLevelType();
-      if (Grib1Utils.isLayer(this)) result += result * 37 + 1;
-
-      result += result * 37 + pdss.getParameterNumber();
-      result += result * 37 + pdss.getTemplateNumber();
-
-      if (pdss.isInterval())  // an interval must have a statProcessType
-        result += result * 37 + pdss.getStatisticalProcessType();
+      if (plevel.isLayer()) result += result * 37 + 1;
 
       result += result * 37 + pdss.getParameterNumber();
 
-      int ensDerivedType = -1;
+      if (ptime.isInterval())  // an interval must have a statProcessType
+        result += result * 37 + ptime.getStatType().ordinal();
+
+      /* int ensDerivedType = -1;
       if (pdss.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
         Grib1Pds.PdsEnsembleDerived pdsDerived = (Grib1Pds.PdsEnsembleDerived) pdss;
         ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
@@ -173,29 +173,27 @@ public class Grib1Record {
 
       } else if (pdss.isEnsemble()) {
         result += result * 37 + 1;
-      }
+      } */
 
-      // each probability interval generates a separate variable; could be a dimension instead
+      /* each probability interval generates a separate variable; could be a dimension instead
       int probType = -1;
       if (pdss.isProbability()) {
         Grib1Pds.PdsProbability pdsProb = (Grib1Pds.PdsProbability) pdss;
         probType = pdsProb.getProbabilityType();
         result += result * 37 + pdsProb.getProbabilityHashcode();
-      }
+      } */
 
       // if this uses any local tables, then we have to add the center id, and subcenter if present
-      if ((pdss.getParameterCategory() > 191) || (pdss.getParameterNumber() > 191) || (pdss.getLevelType1() > 191)
-              || (pdss.isInterval() && pdss.getStatisticalProcessType() > 191)
-              || (ensDerivedType > 191) || (probType > 191)) {
-        result += result * 37 + getId().getCenter_id();
-        if (getId().getSubcenter_id() > 0)
-          result += result * 37 + getId().getSubcenter_id();
+      if (pdss.getParameterNumber() > 127) {
+        result += result * 37 + pds.getCenter();
+        if (pds.getSubCenter() > 0)
+          result += result * 37 + pds.getSubCenter();
       }
 
       hashcode = result;
     }
     return hashcode;
-  } */
+  }
 
   private int hashcode = 0;
 

@@ -46,7 +46,7 @@ import java.util.List;
 public class EnsCoord  {
   private final List<Coord> coords;
 
-  EnsCoord(List<Coord> coords) {
+  public EnsCoord(List<Coord> coords) {
     this.coords = coords;
   }
 
@@ -106,7 +106,7 @@ public class EnsCoord  {
     final int code;
     final int ensMember;
 
-    Coord(int code, int ensMember) {
+    public Coord(int code, int ensMember) {
       this.code = code;
       this.ensMember = ensMember;
     }

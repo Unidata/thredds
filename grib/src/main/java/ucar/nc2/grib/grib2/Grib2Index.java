@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib2;
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
+import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -79,10 +80,9 @@ import java.util.*;
  * @author caron
  * @since 4/1/11
  */
-public class Grib2Index {
+public class Grib2Index extends GribIndex {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Index.class);
 
-  public static final String IDX_EXT = ".gbx9";
   private static final String MAGIC_START = "Grib2Index";
   private static final int version = 5;
   private static final boolean debug = false;
@@ -167,7 +167,7 @@ public class Grib2Index {
       return false;
 
     } finally {
-      fin.close();
+      if (fin != null) fin.close();
     }
 
     return true;
@@ -227,7 +227,7 @@ message Grib2Record {
   ////////////////////////////////////////////////////////////////////////////////
 
   // LOOK what about extending an index ??
-  public void makeIndex(String filename, Formatter f) throws IOException {
+  public boolean makeIndex(String filename, Formatter f) throws IOException {
 
     FileOutputStream fout = new FileOutputStream(filename + IDX_EXT); // LOOK need DiskCache for non-writeable directories
     RandomAccessFile raf = null;
@@ -266,6 +266,7 @@ message Grib2Record {
       NcStream.writeVInt(fout, b.length); // message size
       fout.write(b);  // message  - all in one gulp
       f.format("  made gbx9 index for %s size=%d%n", filename, b.length);
+      return true;
 
     } finally {
       fout.close();

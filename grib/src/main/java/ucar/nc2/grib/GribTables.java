@@ -32,7 +32,10 @@
 
 package ucar.nc2.grib;
 
-import ucar.nc2.iosp.grid.GridParameter;
+import ucar.nc2.constants.CF;
+import ucar.nc2.grib.grib1.Grib1Record;
+import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.time.CalendarDate;
 
 /**
  * Description
@@ -41,8 +44,40 @@ import ucar.nc2.iosp.grid.GridParameter;
  * @since 9/5/11
  */
 public interface GribTables {
+  public static final int MISSING = -9999;   // LOOK ?? from Grib2PDS
+  public static final double MISSINGD = -9999.0;
 
   String getLevelNameShort(int code);
+
+  /* Parameter getParameter(int discipline, int category, int parameter);
+
+  String getIntervalNameShort(int intvType);
+
+  String getProbabilityNameShort(int ensDerivedType);
+
+  String getTableValue(String s, int intvType);
+
+  CF.CellMethods convertTable4_10(int intvType);
+
+  String getVariableName(Grib2Record gr);
+  String getVariableName(Grib1Record gr);
+  String getVariableName(int discipline, int category, int parameter);
+
+  CalendarDate getForecastDate(Grib2Record gr);
+  CalendarDate getForecastDate(Grib1Record gr);
+
+  int[] getForecastTimeInterval(Grib2Record gr);
+  int[] getForecastTimeInterval(Grib1Record gr);
+
+  boolean isLatLon2D(int template, int center);
+
+  boolean isLatLon(int template, int center);
+
+  VertCoord.VertUnit getLevelUnit(int code);
+
+  LatLonCoordType getLatLon2DcoordType(String desc);
+
+  public enum LatLonCoordType {U, V, P}  */
 
   public static interface Parameter {
     public int getDiscipline();

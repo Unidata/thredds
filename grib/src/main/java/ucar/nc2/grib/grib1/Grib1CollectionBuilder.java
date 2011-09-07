@@ -30,15 +30,13 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib;
+package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
-//import thredds.inventory.DatasetCollectionManager;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
-import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.GribTables;
+import ucar.nc2.grib.*;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -54,7 +52,7 @@ import java.util.*;
  * @author caron
  * @since 4/6/11
  */
-public class GribCollectionBuilder {
+public class Grib1CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
 
   protected static final int version = 4;
@@ -62,21 +60,21 @@ public class GribCollectionBuilder {
 
   // from a single file, read in the index, create if it doesnt exist
   static public GribCollection createFromSingleFile(File file, Formatter f) throws IOException {
-    GribCollectionBuilder builder = new GribCollectionBuilder(file, f);
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(file, f);
     builder.init(CollectionManager.Force.nocheck, f);
     return builder.gc;
   }
 
   // from a collection, read in the index, create if it doesnt exist or is out of date
   static public GribCollection factory(CollectionManager dcm, CollectionManager.Force force, Formatter f) throws IOException {
-    GribCollectionBuilder builder = new GribCollectionBuilder(dcm);
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm);
     builder.init(force, f);
     return builder.gc;
   }
 
   // read in the index, index raf already open
   static public GribCollection createFromIndex(String name, File directory, RandomAccessFile raf) throws IOException {
-    GribCollectionBuilder builder = new GribCollectionBuilder(name, directory);
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(name, directory);
     if (builder.readIndex(raf))
       return builder.gc;
     throw new IOException("Reading index failed");
@@ -84,7 +82,7 @@ public class GribCollectionBuilder {
 
   // this writes the index always
   static public boolean writeIndexFile(File indexFile, CollectionManager dcm, Formatter f) throws IOException {
-    GribCollectionBuilder builder = new GribCollectionBuilder(dcm);
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm);
     return builder.createIndex(indexFile, CollectionManager.Force.always, f);
   }
 
@@ -94,12 +92,12 @@ public class GribCollectionBuilder {
   protected GribCollection gc;
 
   // single file
-  private GribCollectionBuilder(File file, Formatter f) throws IOException {
+  private Grib1CollectionBuilder(File file, Formatter f) throws IOException {
     try {
       String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
       CollectionManager dcm = DatasetCollectionMFiles.open(spec, null, f);
       this.collections.add(dcm);
-      this.gc = new GribCollection(file.getName(), new File(dcm.getRoot()));
+      this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()));
 
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -109,16 +107,16 @@ public class GribCollectionBuilder {
     }
   }
 
-  private GribCollectionBuilder(CollectionManager dcm) {
+  private Grib1CollectionBuilder(CollectionManager dcm) {
     this.collections.add(dcm);
-    this.gc = new GribCollection(dcm.getCollectionName(), new File(dcm.getRoot()));
+    this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()));
   }
 
-  private GribCollectionBuilder(String name, File directory) {
-    this.gc = new GribCollection(name, directory);
+  private Grib1CollectionBuilder(String name, File directory) {
+    this.gc = new Grib1Collection(name, directory);
   }
 
-  protected GribCollectionBuilder() {
+  protected Grib1CollectionBuilder() {
     this.gc = null;
   }
 
@@ -149,7 +147,7 @@ public class GribCollectionBuilder {
   }
 
   private boolean needsUpdate(long idxLastModified) {
-    CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
+    CollectionManager.ChangeChecker cc = Grib1Index.getChangeChecker();
     for (CollectionManager dcm : collections) {
       for (MFile mfile : dcm.getFiles()) {
         if (cc.hasChangedSince(mfile, idxLastModified)) return true;
@@ -161,11 +159,11 @@ public class GribCollectionBuilder {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // reading
 
-  boolean readIndex(String filename) throws IOException {
+  public boolean readIndex(String filename) throws IOException {
     return readIndex( new RandomAccessFile(filename, "r") );
   }
 
-  boolean readIndex(RandomAccessFile raf) throws IOException {
+  public boolean readIndex(RandomAccessFile raf) throws IOException {
     gc.raf = raf; // LOOK leaving the raf open in the GribCollection
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -206,14 +204,14 @@ public class GribCollectionBuilder {
       gc.genProcessId = proto.getGenProcessId();
       gc.backProcessId = proto.getBackProcessId();
       gc.local = proto.getLocal();
-      gc.tables = GribTables.factory(gc.center, gc.subcenter, gc.master, gc.local);
+      gc.tables = Grib1ParamTable.getParameterTable(gc.getCenter(), gc.getSubcenter(), gc.getMaster());
 
       gc.filenames = new ArrayList<String>(proto.getFilesCount());
       for (int i = 0; i < proto.getFilesCount(); i++)
         gc.filenames.add(proto.getFiles(i));
 
       // error condition on a GribCollection Index
-      if ((proto.getFilesCount() == 0) && !(this instanceof TimePartitionBuilder)) {
+      if (proto.getFilesCount() == 0) {
         logger.warn("GribCollection {} has no files, force recreate ", gc.getName());
         return false;
       }
@@ -250,8 +248,9 @@ public class GribCollectionBuilder {
 
   GribCollection.GroupHcs readGroup(GribCollectionProto.Group p, GribCollection.GroupHcs group) throws IOException {
 
-    Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(p.getGds().toByteArray());
-    group.setHorizCoordSystem(gdss);
+    Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(p.getGds().toByteArray());
+    Grib1Gds gds = gdss.getGDS();
+    group.setHorizCoordSystem(gds.makeHorizCoordSys());
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
     for (int i = 0; i < p.getVariablesCount(); i++)
@@ -357,17 +356,17 @@ public class GribCollectionBuilder {
   // writing
 
   private class Group {
-    public Grib2SectionGridDefinition gdss;
+    public Grib1SectionGridDefinition gdss;
     public int gdsHash; // may have been modified
-    public Rectilyser rect;
-    public List<Grib2Record> records = new ArrayList<Grib2Record>();
+    public Grib1Rectilyser rect;
+    public List<Grib1Record> records = new ArrayList<Grib1Record>();
     public String name;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
-    private Group(Grib2SectionGridDefinition gdss, int gdsHash) {
+    private Group(Grib1SectionGridDefinition gdss, int gdsHash) {
       this.gdss = gdss;
       this.gdsHash = gdsHash;
-      Grib2Gds gds = gdss.getGDS();
+      Grib1Gds gds = gdss.getGDS();
       name = gds.getNameShort() + "-" + gds.ny + "X" + gds.nx;
     }
   }
@@ -406,20 +405,20 @@ public class GribCollectionBuilder {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
         filenames.add(mfile.getPath());
 
-        Grib2Index index = new Grib2Index();
+        Grib1Index index = new Grib1Index();
         try {
           if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked against the data file
             index.makeIndex(mfile.getPath(), f);
-            f.format("  Index written: %s == %d records %n", mfile.getName() + Grib2Index.IDX_EXT, index.getRecords().size());
+            f.format("  Index written: %s == %d records %n", mfile.getName() + Grib1Index.IDX_EXT, index.getRecords().size());
           } else if (debug) {
-            f.format("  Index read: %s == %d records %n", mfile.getName() + Grib2Index.IDX_EXT, index.getRecords().size());
+            f.format("  Index read: %s == %d records %n", mfile.getName() + Grib1Index.IDX_EXT, index.getRecords().size());
           }
         } catch (IOException ioe) {
-          f.format("GribCollectionBuilder: reading/Creating gbx9 index failed err=%s%n  skipping %s%n", ioe.getMessage(), mfile.getPath() + Grib2Index.IDX_EXT);
+          f.format("GribCollectionBuilder: reading/Creating gbx9 index failed err=%s%n  skipping %s%n", ioe.getMessage(), mfile.getPath() + Grib1Index.IDX_EXT);
           continue;
         }
 
-        for (Grib2Record gr : index.getRecords()) {
+        for (Grib1Record gr : index.getRecords()) {
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
           if (gdsConvert != null && gdsConvert.get(gdsHash) != null) { // allow external config to muck with gdsHash. Why? because of error in encoding
@@ -439,10 +438,10 @@ public class GribCollectionBuilder {
     }
     f.format(" total grib records= %d%n", total);
 
-    Rectilyser.Counter c = new Rectilyser.Counter();
+    Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Rectilyser(g.records, g.gdsHash);
+      g.rect = new Grib1Rectilyser(g.records, g.gdsHash);
       f.format(" GDS hash %d == ", g.gdsHash);
       g.rect.make(f, c);
     }
@@ -461,7 +460,7 @@ public class GribCollectionBuilder {
    */
 
   private void createIndex(File indexFile, List<Group> groups, ArrayList<String> filenames, Formatter f) throws IOException {
-    Grib2Record first = null; // take global metadata from here
+    Grib1Record first = null; // take global metadata from here
 
     if (indexFile.exists()) indexFile.delete(); // replace it
     f.format(" createIndex for %s%n", indexFile.getPath());
@@ -479,7 +478,7 @@ public class GribCollectionBuilder {
       int countRecords = 0;
       for (Group g : groups) {
         g.fileSet = new HashSet<Integer>();
-        for (Rectilyser.VariableBag vb : g.rect.getGribvars()) {
+        for (Grib1Rectilyser.VariableBag vb : g.rect.getGribvars()) {
           if (first == null) first = vb.first;
           GribCollectionProto.VariableRecords vr = writeRecordsProto(vb, g.fileSet);
           byte[] b = vr.toByteArray();
@@ -519,16 +518,13 @@ public class GribCollectionBuilder {
       } */
 
       // what about just storing first ??
-      Grib2SectionIdentification ids = first.getId();
-      indexBuilder.setCenter(ids.getCenter_id());
-      indexBuilder.setSubcenter(ids.getSubcenter_id());
-      indexBuilder.setMaster(ids.getMaster_table_version());
-      indexBuilder.setLocal(ids.getLocal_table_version());
+      Grib1SectionProductDefinition pds = first.getPDSsection();
+      indexBuilder.setCenter(pds.getCenter());
+      indexBuilder.setSubcenter(pds.getSubCenter());
+      indexBuilder.setMaster(pds.getTableVersion());
+      indexBuilder.setLocal(0);
 
-      Grib2Pds pds = first.getPDS();
-      indexBuilder.setGenProcessType(pds.getGenProcessType());
-      indexBuilder.setGenProcessId(pds.getGenProcessId());
-      indexBuilder.setBackProcessId(pds.getBackProcessId());
+      indexBuilder.setGenProcessType(pds.getGenProcess());
 
       GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
       byte[] b = index.toByteArray();
@@ -544,7 +540,7 @@ public class GribCollectionBuilder {
   }
 
   /* private void createIndexForGroup(Group group, ArrayList<String> filenames) throws IOException {
-    Grib2Record first = null; // take global metadata from here
+    Grib1Record first = null; // take global metadata from here
 
     File file = new File(gc.getDirectory(), group.name + GribCollection.IDX_EXT);
     if (file.exists()) file.delete(); // replace it
@@ -595,7 +591,7 @@ public class GribCollectionBuilder {
         count++;
       }
 
-      Grib2SectionIdentification ids = first.getId();
+      Grib1SectionIdentification ids = first.getId();
       indexBuilder.setCenter(ids.getCenter_id());
       indexBuilder.setSubcenter(ids.getSubcenter_id());
       indexBuilder.setMaster(ids.getMaster_table_version());
@@ -614,10 +610,10 @@ public class GribCollectionBuilder {
     }
   } */
 
-  private GribCollectionProto.VariableRecords writeRecordsProto(Rectilyser.VariableBag vb, Set<Integer> fileSet) throws IOException {
+  private GribCollectionProto.VariableRecords writeRecordsProto(Grib1Rectilyser.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.VariableRecords.Builder b = GribCollectionProto.VariableRecords.newBuilder();
     b.setCdmHash(vb.first.cdmVariableHash(0));
-    for (Rectilyser.Record ar : vb.recordMap) {
+    for (Grib1Rectilyser.Record ar : vb.recordMap) {
       GribCollectionProto.Record.Builder br = GribCollectionProto.Record.newBuilder();
 
       if (ar == null || ar.gr == null) {
@@ -627,7 +623,7 @@ public class GribCollectionBuilder {
       } else {
         br.setFileno(ar.gr.getFile());
         fileSet.add(ar.gr.getFile());
-        Grib2SectionDataRepresentation drs = ar.gr.getDataRepresentationSection();
+        Grib1SectionBinaryData drs = ar.gr.getDataSection();
         br.setDrsPos(drs.getStartingPosition());
       }
       b.addRecords(br);
@@ -640,7 +636,7 @@ public class GribCollectionBuilder {
 
     b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
 
-    for (Rectilyser.VariableBag vb : g.rect.getGribvars())
+    for (Grib1Rectilyser.VariableBag vb : g.rect.getGribvars())
       b.addVariables(writeVariableProto(vb));
 
     List<TimeCoord> timeCoords = g.rect.getTimeCoords();
@@ -661,16 +657,20 @@ public class GribCollectionBuilder {
     return b.build();
   }
 
-  private GribCollectionProto.Variable writeVariableProto(Rectilyser.VariableBag vb) throws IOException {
+  private GribCollectionProto.Variable writeVariableProto(Grib1Rectilyser.VariableBag vb) throws IOException {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
+    Grib1SectionProductDefinition pds = vb.first.getPDSsection();
 
-    b.setDiscipline(vb.first.getDiscipline());
-    Grib2Pds pds = vb.first.getPDS();
-    b.setCategory(pds.getParameterCategory());
+    b.setDiscipline(0);
+    b.setCategory(0);
     b.setParameter(pds.getParameterNumber());
-    b.setLevelType(pds.getLevelType1());
-    b.setIsLayer(Grib2Utils.isLayer(vb.first));
-    b.setIntervalType(pds.getStatisticalProcessType());
+    b.setLevelType(pds.getLevelType());
+    Grib1ParamLevel plevel = pds.getParamLevel();
+    b.setIsLayer(plevel.isLayer());
+    Grib1ParamTime ptime = pds.getParamTime();
+    Grib1ParamTime.StatType stat = ptime.getStatType();
+    if (stat != null)
+      b.setIntervalType(stat.ordinal());
     b.setCdmHash(vb.first.cdmVariableHash(0));
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
@@ -680,16 +680,16 @@ public class GribCollectionBuilder {
     if (vb.ensCoordIndex >= 0)
       b.setEnsIdx(vb.ensCoordIndex);
 
-    if (pds.isEnsembleDerived()) {
-      Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
+    /* if (pds.isEnsembleDerived()) {
+      Grib1Pds.PdsEnsembleDerived pdsDerived = (Grib1Pds.PdsEnsembleDerived) pds;
       b.setEnsDerivedType(pdsDerived.getDerivedForecastType()); // derived type (table 4.7)
     }
 
     if (pds.isProbability()) {
-      Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
+      Grib1Pds.PdsProbability pdsProb = (Grib1Pds.PdsProbability) pds;
       b.setProbabilityName(pdsProb.getProbabilityName());
       b.setProbabilityType(pdsProb.getProbabilityType());
-    }
+    } */
 
     return b.build();
   }
@@ -731,10 +731,10 @@ public class GribCollectionBuilder {
     b.setUnit(vc.getUnits());
     for (VertCoord.Level coord : vc.getCoords()) {
       if (vc.isLayer()) {
-        b.addValues((float) coord.value1);
-        b.addBound((float) coord.value2);
+        b.addValues((float) coord.getValue1());
+        b.addBound((float) coord.getValue2());
       } else {
-        b.addValues((float) coord.value1);
+        b.addValues((float) coord.getValue1());
       }
     }
     return b.build();
@@ -745,8 +745,8 @@ public class GribCollectionBuilder {
     b.setCode(0);
     b.setUnit("");
     for (EnsCoord.Coord coord : ec.getCoords()) {
-      b.addValues((float) coord.code);
-      b.addValues((float) coord.ensMember);
+      b.addValues((float) coord.getCode());
+      b.addValues((float) coord.getEnsMember());
     }
     return b.build();
   }

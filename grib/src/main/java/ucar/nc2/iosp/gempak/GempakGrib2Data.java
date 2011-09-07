@@ -44,7 +44,7 @@ import java.io.IOException;
 
 /**
  * A class used to extract Grib2 data from a Gempak file.
- * called from ucar.nc2.iosp.gempak.GempakGridReader
+ * called from ucar.nc2.iosp.gempak.GempakGridReader by reflection
  *
  * @author Robb Kambic
  */

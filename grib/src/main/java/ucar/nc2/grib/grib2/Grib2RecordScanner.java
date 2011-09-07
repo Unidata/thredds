@@ -21,6 +21,20 @@ public class Grib2RecordScanner {
   static private final boolean debug = false;
   static private final boolean debugRepeat = false;
 
+  static public boolean isValidFile(RandomAccessFile raf) {
+    try {
+      raf.seek(0);
+      boolean found = raf.searchForward(matcher, 16 * 1000); // look in first 16K
+      if (!found) return false;
+      raf.skipBytes(7); // will be positioned on byte 0 of indicator section
+      int edition = raf.read(); // read at byte 8
+      return (edition == 2);
+
+    } catch (IOException e) {
+     return false;
+    }
+  }
+
   private Map<Long, Grib2SectionGridDefinition> gdsMap = new HashMap<Long, Grib2SectionGridDefinition>();
   private ucar.unidata.io.RandomAccessFile raf = null;
 

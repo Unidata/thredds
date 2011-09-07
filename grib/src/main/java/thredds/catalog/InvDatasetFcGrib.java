@@ -43,7 +43,8 @@ import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.table.GribTables;
+import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.StringUtil2;
@@ -55,7 +56,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Implement FeatureCollection GRIB - a collection of Grib2 files that are served as Grids.
+ * Implement FeatureCollection GRIB - a collection of Grib1 or Grib2 files that are served as Grids.
  *
  * @author caron
  * @since 4/15/11
@@ -118,7 +119,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       } else {
         GribCollection previous = localState.gribCollection;
-        localState.gribCollection = GribCollectionBuilder.factory(dcm, config.updateConfig.force, new Formatter());
+        localState.gribCollection = Grib2CollectionBuilder.factory(dcm, config.updateConfig.force, new Formatter());
         localState.timePartition = null;
         if (previous != null) previous.close(); // LOOK thread safety
       }
@@ -299,7 +300,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       for (GribCollection.VariableIndex vindex : group.varIndex) {
         ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
         VertCoord vc = (vindex.vertIdx < 0) ? null : group.vertCoords.get(vindex.vertIdx);
-        GribTables tables = group.getGribCollection().getTables();
+        //GribTables tables = group.getGribCollection().getTables(); // LOOK
+        Grib2Tables tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
         tv.setName( Grib2Iosp.makeVariableName(gribCollection, vindex));
         tv.setDescription( Grib2Iosp.makeVariableLongName(tables, vindex));
@@ -321,7 +323,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupHcs group) {
-    GdsHorizCoordSys gdsCoordSys = group.hcs.gds.makeHorizCoordSys();
+    GdsHorizCoordSys gdsCoordSys = group.hcs; // .gds.makeHorizCoordSys();
     LatLonRect llbb = GridCoordSys.getLatLonBoundingBox(gdsCoordSys.proj, gdsCoordSys.getStartX(), gdsCoordSys.getStartY(),
             gdsCoordSys.getEndX(), gdsCoordSys.getEndY());
 
@@ -329,7 +331,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (llbb != null)
       gc.setBoundingBox(llbb);
 
-    if (group.hcs.gds.isLatLon()) {
+    if (group.hcs.isLatLon()) {
       gc.setLonResolution(gdsCoordSys.dx);
       gc.setLatResolution(gdsCoordSys.dy);
     }

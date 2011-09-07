@@ -312,7 +312,7 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
       double startx = startP.getX();
       double starty = startP.getY();
-      return new GdsHorizCoordSys(proj, startx, deltaLon, starty, deltaLat, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, startx, deltaLon, starty, deltaLat, nx, ny);
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -392,7 +392,7 @@ Template 3.1 (Grid definition template 3.1 - rotated latitude/longitude (or equi
       LatLonPoint startLL = proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
       double startx = startLL.getLongitude();
       double starty = startLL.getLatitude();
-      return new GdsHorizCoordSys(proj, startx, deltaLon, starty, deltaLat, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, startx, deltaLon, starty, deltaLat, nx, ny);
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -511,7 +511,7 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
       double startx = startP.getX();
       double starty = startP.getY();
 
-      return new GdsHorizCoordSys(proj, startx, dX, starty, dY, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, startx, dX, starty, dY, nx, ny);
     }
 
 
@@ -646,7 +646,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       }
 
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(la1, lo1));
-      return new GdsHorizCoordSys(proj, start.getX(), dX, start.getY(), dY, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, start.getX(), dX, start.getY(), dY, nx, ny);
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -792,7 +792,7 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
-      return new GdsHorizCoordSys(proj, start.getX(), dX, start.getY(), dY, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, start.getX(), dX, start.getY(), dY, nx, ny);
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -920,7 +920,7 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
         }
       }
 
-      GdsHorizCoordSys coordSys = new GdsHorizCoordSys(new LatLonProjection(), lo1, deltaLon, 0, 0, nx, ny);
+      GdsHorizCoordSys coordSys = new GdsHorizCoordSys(getNameShort(), new LatLonProjection(), lo1, deltaLon, 0, 0, nx, ny);
       coordSys.gaussLats = Array.factory(DataType.FLOAT, new int[]{ny}, data);
       coordSys.gaussw = Array.factory(DataType.FLOAT, new int[]{ny}, gaussw);
 
@@ -1108,7 +1108,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
       double incry = scale_factor / lfac;
 
       MSGnavigation proj = new MSGnavigation(LaP, LoP, majorAxis, minorAxis, Nr * majorAxis, scale_x, scale_y);
-      return new GdsHorizCoordSys(proj, startx, incrx, starty, incry, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, startx, incrx, starty, incry, nx, ny);
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -1183,7 +1183,7 @@ Octet	Contents
 
     public GdsHorizCoordSys makeHorizCoordSys() {
       LatLonProjection proj = new LatLonProjection();
-      return new GdsHorizCoordSys(proj, 0, 1, 0, 1, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, 0, 1, 0, 1, nx, ny);
     }
 
     public void testHorizCoordSys(Formatter f) {

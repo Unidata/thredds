@@ -33,6 +33,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -200,7 +201,7 @@ public class Grib2IdxPanel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = GribCollectionBuilder.createFromIndex(file.getPath(), null, raf);
+      GribCollection cgc = Grib2CollectionBuilder.createFromIndex(file.getPath(), null, raf);
       List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
@@ -253,7 +254,7 @@ public class Grib2IdxPanel extends JPanel {
     if (gc != null) gc.close();
 
     RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
-    gc = GribCollectionBuilder.createFromIndex(indexFile, null, raf);
+    gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf);
 
     List<GroupBean> groups = new ArrayList<GroupBean>();
     for (GribCollection.GroupHcs g : gc.getGroups()) {
@@ -277,7 +278,7 @@ public class Grib2IdxPanel extends JPanel {
 
   private void showFiles(Formatter f) {
     if (gc == null) return;
-    int count =0;
+    int count = 0;
     for (String file : gc.getFilenames())
       f.format("%5d %s%n", count++, file);
 
@@ -300,7 +301,7 @@ public class Grib2IdxPanel extends JPanel {
       this.group = g;
     }
 
-    public String getName() {
+    public String getGroupName() {
       return group.hcs.getName();
     }
 
@@ -346,7 +347,7 @@ public class Grib2IdxPanel extends JPanel {
       return group.hcs.getName();
     }
 
-    public String getId() {
+    public String getVariableId() {
       return v.discipline + "-" + v.category + "-" + v.parameter;
     }
 
@@ -370,14 +371,14 @@ public class Grib2IdxPanel extends JPanel {
       f.format("%12s ", " ");
       List<VertCoord.Level> levels = vcoord.getCoords();
       boolean isLayer = vcoord.isLayer();
-      for (int j=0; j<levels.size(); j++)
+      for (int j = 0; j < levels.size(); j++)
         f.format("%6s ", levels.get(j).toString(isLayer));
       f.format("%n");
 
       GribCollection.Record[] records = v.getRecords();
-      for (int timeIdx=0; timeIdx<v.ntimes; timeIdx++) {
+      for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
         f.format("%10s = ", tinvs.get(timeIdx));
-        for (int vertIdx=0; vertIdx<vcoord.getSize(); vertIdx++) {
+        for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
           int idx = GribCollection.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
           GribCollection.Record r = records[idx];
           //f.format("%3d %10d ", r.fileno, r.drsPos);
@@ -408,6 +409,7 @@ public class Grib2IdxPanel extends JPanel {
     public int getSize() {
       return vc.getSize();
     }
+
     public int getCode() {
       return vc.getCode();
     }
@@ -416,7 +418,7 @@ public class Grib2IdxPanel extends JPanel {
       return vc.showCoords();
     }
 
-    public String getName() {
+    public String getVertCoordName() {
       return vc.getName();
     }
 

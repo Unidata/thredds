@@ -323,7 +323,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     convertMap.put("Forecast generating process identifier (defined by originating centre)", "ProcessId");
   }
 
-  public void showInfo(GribTables tables, byte[] raw, Formatter f) {
+  public void showInfo(Grib2Tables tables, byte[] raw, Formatter f) {
     f.format("%n(%s) %s %n", name, desc);
     for (Field fld : flds) {
       if (fld.start < 0) continue;
@@ -358,7 +358,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     return "Table " + table + " code " + value + " not found";
   } */
 
-  private String convert(GribTables tables, String table, int value) {
+  private String convert(Grib2Tables tables, String table, int value) {
     String result = tables.getTableValue(table, value);
     return (result != null) ? result : "Table " + table + " code " + value + " not found";
   }

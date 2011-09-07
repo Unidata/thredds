@@ -57,7 +57,7 @@ import java.util.TimeZone;
  * @deprecated use Grib2Pds
  */
 
-public final class Grib2ProductDefinitionSection {
+public final class  Grib2ProductDefinitionSection {
 
   /**
    * Length in bytes of this PDS.

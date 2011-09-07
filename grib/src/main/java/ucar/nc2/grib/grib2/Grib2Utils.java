@@ -178,8 +178,9 @@ public class Grib2Utils {
   }
 
   public enum LatLonCoordType {U, V, P}
+
   static public LatLonCoordType getLatLon2DcoordType(String desc) {
-    LatLonCoordType type = null;
+    LatLonCoordType type;
     if (desc.contains("u-component")) type = LatLonCoordType.U;
     else if (desc.contains("v-component")) type = LatLonCoordType.V;
     else if (desc.contains("Latitude of") || desc.contains("Longitude of")) type = null;

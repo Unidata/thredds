@@ -37,6 +37,7 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -51,7 +52,7 @@ import java.util.*;
  * @author caron
  * @since 4/28/11
  */
-public class TimePartitionBuilder extends GribCollectionBuilder {
+public class TimePartitionBuilder extends Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartitionBuilder.class);
   static private final int versionTP = 2;
   static private final boolean trace = false;
@@ -416,7 +417,7 @@ public class TimePartitionBuilder extends GribCollectionBuilder {
   private GribCollectionProto.Group writeGroupProto(GribCollection.GroupHcs g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGds(ByteString.copyFrom(g.hcs.gds.getRawBytes()));
+    // LOOK b.setGds(ByteString.copyFrom(g.hcs.gds.getRawBytes()));
 
     for (GribCollection.VariableIndex vb : g.varIndex)
       b.addVariables(writeVariableProto( (TimePartition.VariableIndexPartitioned) vb));

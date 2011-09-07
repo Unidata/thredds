@@ -36,6 +36,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.iosp.grid.GridParameter;
 
 import java.io.*;
@@ -50,7 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * 9/1/2011: use new tables, then old tables if cant find (but not wildcards)
  */
-public class Grib1ParamTable {
+public class Grib1ParamTable implements GribTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTable.class);
 
   static private final Pattern valid = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\+]*$");
@@ -107,6 +108,11 @@ public class Grib1ParamTable {
   public static GridParameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
     Grib1ParamTable pt = getParameterTable(center, subcenter, tableVersion);
     return (pt == null) ? null : pt.getParameter(param_number);
+  }
+
+  public static GridParameter getParameter(Grib1Record record) {
+    Grib1SectionProductDefinition pds = record.getPDSsection();
+    return getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
   }
 
   /**
@@ -366,6 +372,13 @@ public class Grib1ParamTable {
       readParameterTable();
     return parameters.get(id);
   }
+
+
+  @Override
+  public String getLevelNameShort(int code) {
+    return Grib1ParamLevel.getNameShort(code);
+  }
+
 
   @Override
   public String toString() {

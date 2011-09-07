@@ -51,13 +51,13 @@ public class VertCoord { // implements Comparable<VertCoord> {
   private final VertUnit unit;
   private final boolean isLayer;
 
-  VertCoord(int code, List<VertCoord.Level> coords, boolean isLayer) {
+  public VertCoord(int code, List<VertCoord.Level> coords, boolean isLayer) {
     this.coords = coords;
     this.isLayer = isLayer;
     this.unit = Grib2Utils.getLevelUnit(code);
   }
 
-  VertCoord(List<VertCoord.Level> coords, VertUnit unit, boolean isLayer) {
+  public VertCoord(List<VertCoord.Level> coords, VertUnit unit, boolean isLayer) {
     this.coords = coords;
     this.unit = unit;
     this.isLayer = isLayer;
@@ -166,7 +166,7 @@ public class VertCoord { // implements Comparable<VertCoord> {
     final double value2;
 
     // LOOK - you might need to track isLayer
-    Level(double value1, double value2) {
+    public Level(double value1, double value2) {
       this.value1 = value1;
       this.value2 = value2;
     }

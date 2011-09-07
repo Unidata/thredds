@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.time.CalendarPeriod;
 
 /**
@@ -64,12 +65,13 @@ public class Grib1Utils {
 
   /**
    * Currently only defined for center 7 NCEP
-   * @param center center id
+   *
+   * @param center     center id
    * @param genProcess generating process id (pds octet 6)
    * @return generating process name, or null if unknown
    */
   public static final String getTypeGenProcessName(int center, int genProcess) {
-    if( center != 7 ) return null;
+    if (center != 7) return null;
 
     switch (genProcess) {
 
@@ -382,11 +384,16 @@ public class Grib1Utils {
       case 255:
         return "Missing";
 
-        default:
+      default:
         //return "Unknown "+ Integer.toString( model );
         return null;
-      }
+    }
 
+  }
+
+  static public String getVariableName(Grib1Record record) {
+    GridParameter param = Grib1ParamTable.getParameter(record);
+    return param == null ? "UNKNOWN" : param.getDescription();
   }
 
 }

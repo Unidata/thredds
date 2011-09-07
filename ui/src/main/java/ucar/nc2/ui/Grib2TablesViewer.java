@@ -32,7 +32,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.grib.grib2.table.GribTables;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.ui.dialog.Grib1TableDialog;
 import ucar.nc2.ui.widget.BAMutil;
@@ -130,9 +130,9 @@ public class Grib2TablesViewer extends JPanel {
     buttPanel.add(infoButton);
 
     try {
-      java.util.List<GribTables.GribTableId> tables = GribTables.getLocalTableIds();
+      java.util.List<Grib2Tables.GribTableId> tables = Grib2Tables.getLocalTableIds();
       java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.size());
-      for (GribTables.GribTableId t : tables) {
+      for (Grib2Tables.GribTableId t : tables) {
         beans.add(new TableBean(t));
       }
       Collections.sort(beans);
@@ -153,12 +153,12 @@ public class Grib2TablesViewer extends JPanel {
     // if (fileChooser != null) fileChooser.save();
   }
 
-  public void setEntries(GribTables.GribTableId tableId) {
-    GribTables gt = GribTables.factory(tableId.center, tableId.subCenter, tableId.masterVersion, tableId.localVersion);
+  public void setEntries(Grib2Tables.GribTableId tableId) {
+    Grib2Tables gt = Grib2Tables.factory(tableId.center, tableId.subCenter, tableId.masterVersion, tableId.localVersion);
     List params = gt.getParameters();
     java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
     for (Object p : params) {
-      beans.add(new EntryBean((GribTables.Parameter) p));
+      beans.add(new EntryBean((Grib2Tables.Parameter) p));
     }
     entryTable.setBeans(beans);
   }
@@ -171,7 +171,7 @@ public class Grib2TablesViewer extends JPanel {
 
     f.format("non-udunits%n");
     for (Object t : entryTable.getBeans()) {
-      GribTables.Parameter p = ((EntryBean) t).param;
+      Grib2Tables.Parameter p = ((EntryBean) t).param;
       if (p.getUnit() == null) continue;
       if (p.getUnit().length() == 0) continue;
       try {
@@ -192,8 +192,8 @@ public class Grib2TablesViewer extends JPanel {
     int conflict = 0;
     f.format("Conflicts with WMO%n");
     for (Object t : entryTable.getBeans()) {
-      GribTables.Parameter p = ((EntryBean) t).param;
-      if (GribTables.isLocal(p)) continue;
+      Grib2Tables.Parameter p = ((EntryBean) t).param;
+      if (Grib2Tables.isLocal(p)) continue;
       WmoCodeTable.TableEntry wmo = WmoCodeTable.getParameterEntry(p.getDiscipline(), p.getCategory(), p.getNumber());
       if (wmo == null) {
         extra++;
@@ -211,12 +211,12 @@ public class Grib2TablesViewer extends JPanel {
   }
 
   public class TableBean implements Comparable<TableBean> {
-    GribTables.GribTableId table;
+    Grib2Tables.GribTableId table;
 
     public TableBean() {
     }
 
-    public TableBean(GribTables.GribTableId table) {
+    public TableBean(Grib2Tables.GribTableId table) {
       this.table = table;
     }
 
@@ -252,13 +252,13 @@ public class Grib2TablesViewer extends JPanel {
   }
 
   public class EntryBean {
-    GribTables.Parameter param;
+    Grib2Tables.Parameter param;
 
     // no-arg constructor
     public EntryBean() {
     }
 
-    public EntryBean(GribTables.Parameter param) {
+    public EntryBean(Grib2Tables.Parameter param) {
       this.param = param;
     }
 
