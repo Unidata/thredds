@@ -94,7 +94,7 @@ public class TableAnalyzer {
     registerAnalyzer("FSL Raobs", FslRaob.class, null);  // must be before FslRaob
 
     registerAnalyzer("IRIDL", Iridl.class, null);
-    registerAnalyzer("Ndbc", Ndbc.class, null);
+    registerAnalyzer("Ndbc", NdbcCoards.class, null);
     registerAnalyzer("Suomi-Station-CDM", Suomi.class, null);
     registerAnalyzer("BuoyShip-NetCDF", BuoyShipSynop.class, null);
     registerAnalyzer("NCAR-RAF/nimbus", RafNimbus.class, null);

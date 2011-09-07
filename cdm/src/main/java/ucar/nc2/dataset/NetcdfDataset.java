@@ -829,14 +829,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     } catch (ClassNotFoundException e) {
       log.info("opendap.jar is not on class path");
 
-    } catch (NoSuchMethodException e) {
-      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
-    } catch (InvocationTargetException e) {
-      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
-    } catch (InstantiationException e) {
-      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
-    } catch (IllegalAccessException e) {
-      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
+    } catch (Throwable e) {
+      log.error("Error openDodsByReflection: ", e);
     }
 
     throw new IOException("opendap.jar is not on classpath or is incorrect version");
