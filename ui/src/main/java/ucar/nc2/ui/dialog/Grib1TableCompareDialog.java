@@ -36,7 +36,6 @@
 
 package ucar.nc2.ui.dialog;
 
-import ucar.grib.grib1.GribPDSParamTable;
 import ucar.nc2.ui.Grib1TablesViewer;
 
 import java.awt.*;

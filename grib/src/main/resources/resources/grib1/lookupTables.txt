@@ -1,6 +1,6 @@
 # resources\grib1\lookupTables.txt
   0:	-1:		 -1:	dss/WMO_GRIB1.xml
-#  7:    -1:       -1:	ncep/table2.htm
+#  7:    -1:       -1:	wgrib/table2.htm
  57:    -1:       2:	local/afwa.tab
  58:   42 :       2:	local/af_2.tab
  60:   255:       2:	local/wrf_amps.wrf

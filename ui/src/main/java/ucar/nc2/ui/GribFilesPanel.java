@@ -38,8 +38,8 @@ import ucar.grib.NoValidGribException;
 import ucar.grib.grib1.Grib1Input;
 import ucar.grib.grib1.Grib1Pds;
 import ucar.grib.grib1.Grib1Record;
-import ucar.grib.grib1.GribPDSParamTable;
 import ucar.grib.grib2.Grib2IndicatorSection;
+import ucar.nc2.grib.grib1.Grib1ParamTable;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.ui.widget.*;
@@ -313,7 +313,7 @@ public class GribFilesPanel extends JPanel {
   public class Grib1Bean {
     MFile m;
     Grib1Record first;
-    GribPDSParamTable table;
+    Grib1ParamTable table;
 
     public Grib1Bean() {
     }
@@ -353,13 +353,13 @@ public class GribFilesPanel extends JPanel {
 
     public String getTable() {
       if (table == null)
-        table = GribPDSParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
+        table = Grib1ParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
       return (table == null) ? " missing" : table.getName();
     }
 
     public int getTableKey() {
       if (table == null)
-        table = GribPDSParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
+        table = Grib1ParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
       return (table == null) ? -1 : table.getKey();
     }
 

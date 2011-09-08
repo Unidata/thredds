@@ -247,6 +247,13 @@ public class TestRegexp extends TestCase {
     testMatch(p, m, true);
   }
 
+  // {7, "Geopotential height", "gpm", "ZGEO"},
+   public void testNclGrib1Table() {
+    String m = "{7, \"Geopotential height\", \"gpm\", \"ZGEO\"},";
+    //String p = "\\{(\\d*)\\,\\s*\"([^\"]*)\".*";
+    String p = "\\{(\\d*)\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\".*";
+    testMatch(p, m, true);
+  }
   /////////////////////////////////////////////////////////
 
   // test pattern ps against match, show result

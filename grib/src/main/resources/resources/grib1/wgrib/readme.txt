@@ -122,4 +122,6 @@ notes for tables in ncep
 
  - conclusion is to wait on any further work on center 7.
 
+ 9/7/2011 rename resources/grib1/ncep drectory to wgrib
+
 

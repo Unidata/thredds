@@ -144,4 +144,12 @@ Notes for grib-1 tables (global)
         m
     assume they really overrided this entry. delete all ebtries < 128 except 118.
 
-
+9/7/2011
+ - NCL describes their processing of GRIB: http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB
+ of note:
+   Dimensions:
+      ensemble or probability (4.3.0 or later.)
+      initial_time // (run time)
+      forecast_time
+      level
+ - NCL describes their GRIB1 table handling : http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB1-built-in-parameter-tables

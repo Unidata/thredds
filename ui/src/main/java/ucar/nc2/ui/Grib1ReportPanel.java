@@ -206,7 +206,7 @@ public class Grib1ReportPanel extends JPanel {
       Integer subcenter_id = (gatt == null) ? -1 : (Integer) gatt.getNumericValue();
       gatt = ncfile.findGlobalAttributeIgnoreCase("Table_version");
       Integer version = (gatt == null) ? -1 : (Integer) gatt.getNumericValue();
-      GribPDSParamTable table = GribPDSParamTable.getParameterTable(center_id, subcenter_id, version);
+      Grib1ParamTable table = Grib1ParamTable.getParameterTable(center_id, subcenter_id, version);
       if (table == null) {
         fm.format("  Missing table = %d %d %d%n", center_id, subcenter_id, version);
         return;
@@ -341,8 +341,8 @@ public class Grib1ReportPanel extends JPanel {
         if (pds.getParameterNumber() > 127)
           local.count(key);
 
-        GribPDSParamTable table = GribPDSParamTable.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getParameterTableVersion());
-        if (table == null && useIndex) table = GribPDSParamTable.getDefaultTable();
+        Grib1ParamTable table = Grib1ParamTable.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getParameterTableVersion());
+        if (table == null && useIndex) table = Grib1ParamTable.getDefaultTable();
         if (table == null || null == table.getParameter(pds.getParameterNumber()))
           missing.count(key);
       }
@@ -398,8 +398,8 @@ public class Grib1ReportPanel extends JPanel {
         if (pds.getParameterNumber() > 127)
           local.count(key);
 
-        GribPDSParamTable table = GribPDSParamTable.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
-        if (table == null && useIndex) table = GribPDSParamTable.getDefaultTable();
+        Grib1ParamTable table = Grib1ParamTable.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
+        if (table == null && useIndex) table = Grib1ParamTable.getDefaultTable();
         if (table == null || null == table.getParameter(pds.getParameterNumber()))
           missing.count(key);
       }

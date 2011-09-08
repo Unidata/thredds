@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib1;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.junit.Ignore;
 import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.iosp.grid.GridParameter;
@@ -43,6 +44,7 @@ import java.io.*;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -399,10 +401,12 @@ public class Grib1ParamTable implements GribTables {
       readParameterTableTab();                               // wgrib format
     else if (name.endsWith(".wrf"))
       readParameterTableSplit("\\|", new int[]{0, 3, 1, 2}); // WRF AMPS
+    else if (name.endsWith(".h"))
+      readParameterTableNcl(); // NCL
     else if (name.endsWith(".dss"))
       readParameterTableSplit("\t", new int[]{0, -1, 1, 2}); // NCAR DSS
     else if (name.endsWith(".xml"))
-      readParameterTableXml();                               // NCAR DSS format
+      readParameterTableXml();                               // NCAR DSS XML format
     else if (name.endsWith(".htm"))
       readParameterTableNcepScrape();                        // NCEP screen scrape
     else if (name.startsWith("table_2_") || name.startsWith("local_table_2_"))
@@ -410,6 +414,81 @@ public class Grib1ParamTable implements GribTables {
     else
       logger.warn("Dont know how to read " +name +" file="+path);
     return parameters;
+  }
+
+/*
+ * Brazilian Space Agency - INPE/CPTEC
+ * Center: 46
+ * Subcenter: 0
+ * Parameter table version: 254
+ *
+
+TBLE2 cptec_254_params[] = {
+{1, "Pressure", "hPa", "PRES"},
+{2, "Pressure reduced to MSL", "hPa", "PSNM"},
+{3, "Pressure tendency", "Pa/s", "TSPS"},
+{6, "Geopotential", "dam", "GEOP"},
+{7, "Geopotential height", "gpm", "ZGEO"},
+{8, "Geometric height", "m", "GZGE"},
+{11, "ABSOLUTE TEMPERATURE", "K", "TEMP"},
+
+   */
+
+  static private final Pattern nclPattern = Pattern.compile("\\{(\\d*)\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\".*");
+  private boolean readParameterTableNcl() {
+    HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
+
+    InputStream is = null;
+    try {
+      is = GribResourceReader.getInputStream(path);
+      if (is == null) return false;
+
+      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+      // Ignore header
+      while (true) {
+        String line = br.readLine();
+        if (line == null) break; // done with the file
+        if (line.startsWith("TBLE2")) break;
+      }
+
+      while (true) {
+        String line = br.readLine();
+        if (line == null) break; // done with the file
+        if ((line.length() == 0) || line.startsWith("#")) continue;
+
+        Matcher m = nclPattern.matcher(line);
+        if (!m.matches()) continue;
+
+        GridParameter parameter = new GridParameter();
+        try {
+          int p1 = Integer.parseInt(m.group(1));
+          parameter.setNumber(p1);
+        } catch (Exception e) {
+          logger.warn("Cant parse "+m.group(1)+ " in file "+path);
+        }
+        parameter.setName(m.group(4));
+        parameter.setDescription(GridParameter.cleanupDescription(m.group(2)));
+        parameter.setUnit(m.group(3));
+        result.put(parameter.getNumber(), parameter);
+        if (debug) System.out.printf(" %s%n", parameter);
+      }
+
+      parameters = result; // all at once - thread safe
+      return true;
+
+    } catch (IOException ioError) {
+      logger.warn("An error occurred in Grib1ParamTable while trying to open the parameter table "
+              + path + " : " + ioError);
+      return false;
+
+    } finally {
+      if (is != null) try {
+        is.close();
+      } catch (IOException e) {
+      }
+    }
+
   }
 
   /*

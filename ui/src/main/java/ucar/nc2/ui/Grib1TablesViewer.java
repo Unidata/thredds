@@ -1,7 +1,8 @@
 package ucar.nc2.ui;
 
 import ucar.grib.GribResourceReader;
-import ucar.grib.grib1.GribPDSParamTable;
+//import ucar.grib.grib1.GribPDSParamTable;
+import ucar.nc2.grib.grib1.Grib1ParamTable;
 import ucar.nc2.ui.dialog.Grib1TableCompareDialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -73,7 +74,7 @@ public class Grib1TablesViewer extends JPanel {
         if (bean == null) return;
         initTableDialog();
 
-        GribPDSParamTable wmo = GribPDSParamTable.getParameterTable(0, 0, bean.getVersion());
+        Grib1ParamTable wmo = Grib1ParamTable.getParameterTable(0, 0, bean.getVersion());
         if (wmo == null) {
           infoTA.setText("Cant find WMO version " + bean.getVersion());
           infoWindow.showIfNotIconified();
@@ -156,9 +157,9 @@ public class Grib1TablesViewer extends JPanel {
     buttPanel.add(infoButton);
 
     try {
-      List<GribPDSParamTable> tables = GribPDSParamTable.getParameterTables();
+      List<Grib1ParamTable> tables = Grib1ParamTable.getParameterTables();
       java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.size());
-      for (GribPDSParamTable t : tables) {
+      for (Grib1ParamTable t : tables) {
         beans.add(new TableBean(t));
       }
       //Collections.sort(beans);
@@ -194,13 +195,13 @@ public class Grib1TablesViewer extends JPanel {
 
 
   public void setTable(String filename) throws IOException {
-    GribPDSParamTable table = new GribPDSParamTable(filename);
+    Grib1ParamTable table = new Grib1ParamTable(filename);
     TableBean bean = new TableBean(table);
     codeTable.addBean( bean);
     codeTable.setSelectedBean(bean);
   }
 
-  private void setEntries(GribPDSParamTable table) {
+  private void setEntries(Grib1ParamTable table) {
     Map<Integer, GridParameter> map = table.getParameters();
     if (map == null) {
       System.out.println("HEY");
@@ -256,7 +257,7 @@ public class Grib1TablesViewer extends JPanel {
     infoWindow.showIfNotIconified();
   }
 
-  private void compare(GribPDSParamTable t1, GribPDSParamTable t2, Grib1TableCompareDialog.Data data, Formatter out) {
+  private void compare(Grib1ParamTable t1, Grib1ParamTable t2, Grib1TableCompareDialog.Data data, Formatter out) {
     out.format("Compare%n %s%n %s%n", t1.toString(), t2.toString());
     Map<Integer, GridParameter> h1 = t1.getParameters();
     Map<Integer, GridParameter> h2 = t2.getParameters();
@@ -321,7 +322,7 @@ public class Grib1TablesViewer extends JPanel {
     return org1.equalsIgnoreCase(org2);
   }
 
-  private void compareAll(GribPDSParamTable t1, Grib1TableCompareDialog.Data data, Formatter out) {
+  private void compareAll(Grib1ParamTable t1, Grib1TableCompareDialog.Data data, Formatter out) {
     out.format("CompareAll %s%n", t1.toString());
     Map<Integer, GridParameter> h1 = t1.getParameters();
     List<Integer> keys = new ArrayList<Integer>(h1.keySet());
@@ -361,7 +362,7 @@ public class Grib1TablesViewer extends JPanel {
   }
 
   public class TableBean implements Comparable<TableBean> {
-    GribPDSParamTable table;
+    Grib1ParamTable table;
 
     // no-arg constructor
 
@@ -370,7 +371,7 @@ public class Grib1TablesViewer extends JPanel {
 
     // create from a dataset
 
-    public TableBean(GribPDSParamTable table) {
+    public TableBean(Grib1ParamTable table) {
       this.table = table;
     }
 
