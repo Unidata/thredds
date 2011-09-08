@@ -1166,7 +1166,7 @@ public abstract class Array {
    * @return next element as an Object, same as IndexIterator.getObjectNext().
    */
   public Object next() {
-    return (ii==null?null:ii.getObjectNext());
+    return ii.getObjectNext();
   }
 
   /**
