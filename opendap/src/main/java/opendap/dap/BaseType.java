@@ -580,21 +580,21 @@ public abstract class BaseType extends DAPNode
     {
         BaseType parent = (BaseType)getParent();
         BaseType array =  null;
-	if(parent != null) {
-	    if(parent instanceof DArray) {
-		array = parent;	
-		parent = (BaseType)parent.getParent();
-	    }
-	}	   
-	if(array != null)
-	    array.printConstraint(os);
-        else  {
-            if(parent != null && !(parent instanceof DDS)) {
-	        parent.printConstraint(os);
-	        os.print(".");
-	    }
-            os.print(getEncodedName());
+        if(parent != null) {
+            if(parent instanceof DArray) {
+            array = parent;
+            parent = (BaseType)parent.getParent();
+            }
         }
+        if(array != null)
+            array.printConstraint(os);
+            else  {
+                if(parent != null && !(parent instanceof DDS)) {
+                parent.printConstraint(os);
+                os.print(".");
+            }
+                os.print(getEncodedName());
+            }
     }
 
 

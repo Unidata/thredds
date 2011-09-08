@@ -264,7 +264,7 @@ private void openConnection(String urlString, Command command) throws IOExceptio
     // if (debugHeaders) ucar.nc2.util.net.HttpClientManager.showHttpRequestInfo(f, method);
 
     if (statusCode == HTTPSession.SC_NOT_FOUND) {
-      throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText());
+      throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText()+": "+urlString);
     }
 
     if (statusCode == HTTPSession.SC_UNAUTHORIZED) {

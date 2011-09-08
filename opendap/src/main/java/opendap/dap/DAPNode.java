@@ -245,10 +245,10 @@ public class DAPNode implements Cloneable, Serializable
 
     public Object clone() {
         try {
-	    CloneMap map = new CloneMap();
+  	        CloneMap map = new CloneMap();
             map.root = this;
             map.nodes.put(NULLNODE,NULLNODE);
-	    return cloneDAG(map);
+	        return cloneDAG(map);
         } catch (CloneNotSupportedException e) {
             // this shouldn't happen, since we are Cloneable
             throw new InternalError();
