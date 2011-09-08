@@ -45,6 +45,7 @@ import java.io.File;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestAll;
+import ucar.nc2.dataset.NetcdfDataset;
 
 public class TestReadingGempak extends TestCase {
 
@@ -53,49 +54,33 @@ public class TestReadingGempak extends TestCase {
   }
 
   public void testCompare() throws IOException {
-    File where = new File("C:/data/grib/idd");
-    if (where.exists()) {
-      String[] args = new String[1];
-      args[0] = "C:/data/grib/idd";
-      doAll(args);
-    } else {
-      doAll(null);
-    }
+    doAll(TestAll.cdmUnitTestDir + "formats/gempak");
   }
 
-  void doAll(String args[]) throws IOException {
-
-    String dirB1;
-    if (args == null || args.length < 1) {
-      dirB1 = TestAll.cdmUnitTestDir + "formats/gempak";
-    } else {
-      dirB1 = args[0] + "/gempak";
-    }
-    File dir = new File(dirB1);
-    if (dir.isDirectory()) {
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
-      String[] children = dir.list();
-      for (String child : children) {
-        if ( child.endsWith( ".gem" ) ) {
-          if( child.startsWith( "air"))
-            continue;
-          System.out.println("\n\nReading File " + dirB1 + "/" + child);
-          long start = System.currentTimeMillis();
-
-          NetcdfFile ncfileBinary = NetcdfFile.open(dirB1 + "/" + child);
-          System.out.println("Time to create Netcdf object using Gempak Iosp " +
-              (System.currentTimeMillis() - start) + "  ms");
-          ncfileBinary.close();
-        }
+  void doAll(String dirName) throws IOException {
+    File dir = new File(dirName);
+    System.out.printf("%nIn directory %s%n", dir.getPath());
+    for (File child : dir.listFiles()) {
+      if (child.isDirectory()) continue;
+      NetcdfFile ncfile = null;
+      try {
+        // if( child.startsWith( "air"))  continue;
+        System.out.printf("  Open File %s ", child.getPath());
+        long start = System.currentTimeMillis();
+        ncfile = NetcdfDataset.openFile(child.getPath(), null);
+        String ft = ncfile.findAttValueIgnoreCase(null, "featureType", "none");
+        String iosp = ncfile.getIosp().getFileTypeId();
+        System.out.printf(" iosp=%s ft=%s took =%d ms%n", iosp, ft, (System.currentTimeMillis() - start));
+      } catch (Throwable t) {
+        System.out.printf(" FAILED =%s%n", t.getMessage());
+        if (ncfile != null) ncfile.close();
       }
-    } else {
     }
-  }
 
-  static public void main(String args[]) throws IOException {
-    TestReadingGempak ggi = new TestReadingGempak("");
-    ggi.testCompare();
-  }
+    for (File child : dir.listFiles()) {
+      if (child.isDirectory()) doAll(child.getPath());
+    }
 
+  }
 
 }

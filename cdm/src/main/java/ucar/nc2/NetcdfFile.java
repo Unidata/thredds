@@ -97,7 +97,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<IOServiceProvider>();
   static protected boolean debugSPI = false, debugCompress = false, showRequest = false;
   static boolean debugStructureIterator = false;
-  static boolean loadWarnings = false;
+  static boolean loadWarnings = true;
 
   static private boolean userLoads = false;
 

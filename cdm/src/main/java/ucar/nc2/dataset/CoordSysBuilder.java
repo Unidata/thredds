@@ -400,6 +400,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     else
       builder.setConventionUsed(convClass.getName());
 
+    ds.addAttribute(null, new Attribute(_Coordinate._CoordSysBuilder, convClass.getName()));
     return builder;
   }
 

@@ -126,8 +126,7 @@ public class NCdumpW {
 
     NetcdfFile nc = null;
     try {
-        //nc = NetcdfFile.open(filename, ct);
-        nc = NetcdfDataset.openFile(filename, ct);
+      nc = NetcdfDataset.openFile(filename, ct);
 
       // the rest of the command
       int pos = command.indexOf(filename);
@@ -209,7 +208,7 @@ public class NCdumpW {
     NetcdfFile nc = null;
     try {
       //nc = NetcdfFileCache.acquire(fileName, ct);
-      nc = NetcdfFile.open(filename, ct);
+      nc = NetcdfDataset.openFile(filename, ct);
       return print(nc, out, showAll, showCoords, ncml, strict, varNames, ct);
 
     } catch (java.io.FileNotFoundException e) {
@@ -673,23 +672,23 @@ public class NCdumpW {
    * @param ncfile     write NcML for this file
    * @param os         write to this Writer. Must be using UTF-8 encoding (where applicable)
    * @param showCoords show coordinate variable values.
-   * @param uri        use this for the url attribute; if null use getLocation(). // ??
+   * @param url        use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException on write error
    */
-  static public void writeNcML(NetcdfFile ncfile, java.io.Writer os, boolean showCoords, String uri) throws IOException {
-    writeNcML(ncfile, os, showCoords ? WantValues.coordsOnly : WantValues.none, uri);
+  static public void writeNcML(NetcdfFile ncfile, java.io.Writer os, boolean showCoords, String url) throws IOException {
+    writeNcML(ncfile, os, showCoords ? WantValues.coordsOnly : WantValues.none, url);
   }
 
-  static public void writeNcML(NetcdfFile ncfile, java.io.Writer os, WantValues showValues, String uri) throws IOException {
-    writeNcML(ncfile, new Formatter(os), showValues, uri);
+  static public void writeNcML(NetcdfFile ncfile, java.io.Writer os, WantValues showValues, String url) throws IOException {
+    writeNcML(ncfile, new Formatter(os), showValues, url);
   }
 
-  static public void writeNcML(NetcdfFile ncfile, Formatter out, WantValues showValues, String uri) throws IOException {
+  static public void writeNcML(NetcdfFile ncfile, Formatter out, WantValues showValues, String url) throws IOException {
     out.format("<?xml version='1.0' encoding='UTF-8'?>%n");
     out.format("<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'%n");
 
-    if (uri != null)
-      out.format("    location='%s' >%n%n", StringUtil2.quoteXmlAttribute(uri));
+    if (url != null)
+      out.format("    location='%s' >%n%n", StringUtil2.quoteXmlAttribute(url));
     else
       out.format("    location='%s' >%n%n", StringUtil2.quoteXmlAttribute(URLnaming.canonicalizeWrite(ncfile.getLocation())));
 

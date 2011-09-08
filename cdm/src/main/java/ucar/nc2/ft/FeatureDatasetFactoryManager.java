@@ -257,7 +257,7 @@ public class FeatureDatasetFactoryManager {
     }
 
     if (null == useFactory) {
-      // errlog.format("**Failed to find Datatype Factory for= %s datatype=%s\n", ncd.getLocation(), wantFeatureType);
+      errlog.format("**Failed to find FeatureDatasetFactory for= %s datatype=%s\n", ncd.getLocation(), wantFeatureType);
       return null;
     }
 
