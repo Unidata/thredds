@@ -55,6 +55,9 @@ public class _Coordinate {
   static public final String ZisLayer = "_CoordinateZisLayer";
   static public final String ZisPositive = "_CoordinateZisPositive";
 
+  // global attributes
+  static public final String _CoordSysBuilder = "_CoordSysBuilder";
+
   // class not interface, per Bloch item 17
   private _Coordinate() {} // disable instantiation
 }

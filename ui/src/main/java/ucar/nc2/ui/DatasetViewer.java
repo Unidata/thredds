@@ -213,7 +213,18 @@ public class DatasetViewer extends JPanel {
     if (attTable == null) {
       // global attributes
       attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
-      attWindow = new IndependentWindow("Global Attribuutes", BAMutil.getImage( "netcdfUI"), attTable);
+      PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(attTable.getJTable(), "Options");
+      varPopup.addAction("Show Attribute", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          AttributeBean bean = (AttributeBean) attTable.getSelectedBean();
+          if (bean != null) {
+            infoTA.setText(bean.att.toString());
+            infoTA.gotoTop();
+            infoWindow.show();
+          }
+        }
+      });
+      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage( "netcdfUI"), attTable);
       attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
     }
 

@@ -42,11 +42,11 @@ import ucar.nc2.Dimension;
 import java.util.Formatter;
 
 /**
- * Ndbc Convention (National Data Buoy Center)
+ * Ndbc (National Data Buoy Center) Coards Convention (National Data Buoy Center)
  * @author caron
  * @since Apr 23, 2008
  */
-public class Ndbc extends TableConfigurerImpl  {
+public class NdbcCoards extends TableConfigurerImpl  {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     if (!ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("COARDS"))

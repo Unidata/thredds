@@ -74,6 +74,17 @@ public class TestRegexp extends TestCase {
     testMatch("(.*)\\(see Note.*", "Software identification (see Note 2)", true);
   }
 
+  public void testEcmwfTable() {
+    testOneLine("2 msl MSL Mean sea level pressure Pa");
+    testOneLine("3 3 None Pressure tendency Pa s**-1");
+    testOneLine("4 pv PV Potential vorticity K m**2 kg**-1 s**-1");
+    testOneLine("21 21 None Radar spectra (1) -");
+  }
+
+  private void testOneLine(String line) {
+    testMatch("([^\\s]*) ([^\\s]*) ([^\\s]*) ([^\\*-]*) ([^\\s]*)?", line, true);
+  }
+
   public void testSplit() {
     String[] split = "what is  it".split("[ ]+");
     for (String s : split)
@@ -251,7 +262,7 @@ public class TestRegexp extends TestCase {
 
   // test pattern ps against match, show result
   private void testMatch(String ps, String match, boolean expect) {
-    System.out.printf("match %s against %s%n%n", ps, match);
+    System.out.printf("%nmatch %s against %s%n", ps, match);
 
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
@@ -263,11 +274,13 @@ public class TestRegexp extends TestCase {
         found = true;
     }
     if(!found)
-        System.out.printf("No match found.%n"); */
+        System.out.printf("No match found.%n"); // */
 
-    System.out.printf("%n matches = %s %n", matcher.matches());
-    for (int i=1; i<=matcher.groupCount(); i++)
-      System.out.printf(" group %d == '%s'%n",i,matcher.group(i));
+    System.out.printf("matches = %s %n", matcher.matches());
+    if (matcher.matches()) {
+      for (int i=1; i<=matcher.groupCount(); i++)
+        System.out.printf(" group %d == '%s'%n",i,matcher.group(i));
+    }
   }
 
 }

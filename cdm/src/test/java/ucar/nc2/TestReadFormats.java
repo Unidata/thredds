@@ -49,7 +49,7 @@ public class TestReadFormats extends TestCase {
     openAllInDir(TestAll.cdmUnitTestDir + "/formats", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
-    assert countFail == 0;
+    assert countFail == 0 : "Failed = "+countFail;
   }
 
   // these are fairly complete hdf4 files from nsidc
