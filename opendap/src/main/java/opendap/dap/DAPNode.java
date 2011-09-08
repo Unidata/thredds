@@ -296,11 +296,11 @@ public class DAPNode implements Cloneable, Serializable
         throws CloneNotSupportedException
     {
         DAPNode node = (DAPNode)super.clone(); // Object.clone
-	    map.nodes.put(this,node);
-        if(_myParent != null) {
-            if(_myParent != map.root) // make sure we do not clone above initial starting point
-                node._myParent = cloneDAG(map,_myParent);
-        }
+	map.nodes.put(this,node);
+
+        DAPNode tmp = map.nodes.get(_myParent);
+        if(tmp != node)
+            _myParent = tmp;
         return node;
     }
 

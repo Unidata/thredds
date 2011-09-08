@@ -32,8 +32,13 @@ public class TestSequence extends TestCase
         Variable var = struct.findVariable("time");
         Array arr = var.read();
         int n = (int) arr.getSize();
-        for (int i=0; i<n; i++)
+        int i;
+        for (i=0; arr.hasNext() && i<n; i++)
 	    System.out.println(arr.nextDouble());
+        if(i != n) {
+            System.err.println("short sequence");
+            System.exit(1);
+        }
         } catch (Exception e) {
             e.printStackTrace();
         }
