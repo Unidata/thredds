@@ -1,6 +1,6 @@
 package ucar.nc2.grib.grib2;
 
-import ucar.grib.GribNumbers;
+import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;

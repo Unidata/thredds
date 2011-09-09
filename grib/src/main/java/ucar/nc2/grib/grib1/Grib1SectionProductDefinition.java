@@ -36,8 +36,7 @@
 package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
-import ucar.grib.GribNumbers;
-import ucar.nc2.iosp.grid.GridParameter;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
@@ -329,7 +328,7 @@ public final class Grib1SectionProductDefinition {
             (ptable == null) ? "MISSING" : ptable.getName());
 
     if (ptable != null) {
-      GridParameter parameter = ptable.getParameter(getParameterNumber());
+      Grib1Parameter parameter = ptable.getParameter(getParameterNumber());
       if (parameter != null) {
         f.format("                Parameter Name : (%d) %s%n", getParameterNumber(), parameter.getName());
         f.format("                Parameter Desc : %s%n", parameter.getDescription());

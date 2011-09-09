@@ -56,7 +56,8 @@ import java.util.*;
 public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
 
-  protected static final int version = 4;
+  public static final String MAGIC_START = "Grib2CollectionIndex";
+  protected static final int version = 5;
   private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist
@@ -171,8 +172,7 @@ public class Grib2CollectionBuilder {
       raf.seek(0);
 
       //// header message
-      String magic = gc.getMagicBytes();
-      if (!NcStream.readAndTest(raf, magic.getBytes())) {
+      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes())) {
         logger.error("GribCollection {} invalid index", gc.getName());
         throw new IOException("GribCollection " + gc.getName() + " invalid index");
       }
@@ -348,8 +348,9 @@ public class Grib2CollectionBuilder {
     int timeIdx = pv.getTimeIdx();
     int vertIdx = pv.getVertIdx();
     int ensIdx = pv.getEnsIdx();
+    int tableVersion = pv.getTableVersion();
 
-    return gc.makeVariableIndex(group, discipline, category, param, levelType, isLayer, intvType, ensDerivedType,
+    return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, ensDerivedType,
             probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
@@ -470,8 +471,7 @@ public class Grib2CollectionBuilder {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     try {
       //// header message
-      String magic = gc.getMagicBytes();
-      raf.write(magic.getBytes("UTF-8"));
+      raf.write(MAGIC_START.getBytes("UTF-8"));
       raf.writeInt(version);
       long lenPos = raf.getFilePointer();
       raf.writeLong(0); // save space to write the length of the record section
@@ -622,13 +622,13 @@ public class Grib2CollectionBuilder {
 
       if (ar == null || ar.gr == null) {
         br.setFileno(0);
-        br.setDrsPos(0); // missing
+        br.setPos(0); // missing
 
       } else {
         br.setFileno(ar.gr.getFile());
         fileSet.add(ar.gr.getFile());
         Grib2SectionDataRepresentation drs = ar.gr.getDataRepresentationSection();
-        br.setDrsPos(drs.getStartingPosition());
+        br.setPos(drs.getStartingPosition());
       }
       b.addRecords(br);
     }

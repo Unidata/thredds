@@ -5,7 +5,7 @@ option java_outer_classname = "GribCollectionProto";
 
 message Record {
   required uint32 fileno = 1;  // index into GribCollectionIndex.files
-  required uint64 drsPos = 2;  // offset in Grib file of the start of drs
+  required uint64 pos = 2;  // offset in Grib file of the start of drs (grib2) or entire message (grib1)
 }
 
 // write VariableRecords first
@@ -18,7 +18,7 @@ message VariableRecords {
 
 // reference VariableRecords with pos,length, for deferred access
 message Variable {
-  required int32 discipline = 1;
+  required int32 discipline = 1;  // should be uint
   required int32 category = 2;
   required int32 parameter = 3;
   required int32 levelType = 4;    // table 4.5
@@ -38,6 +38,9 @@ message Variable {
 
   repeated uint32 groupno = 16;  // only for partitions
   repeated uint32 varno = 17;
+
+  // in case different from the GribCollectionIndex
+  optional uint32 tableVersion = 18;      // grib1 table Version, grib2 local
 }
 
 message Coord {
@@ -100,7 +103,7 @@ message GribCollectionIndex {
   required int32 center = 5;      // these 4 fields are to get a GribTable object
   required int32 subcenter = 6;
   required int32 master = 7;
-  required int32 local = 8;
+  required int32 local = 8;       // grib1 table Version
   optional int32 genProcessType = 10;
   optional int32 genProcessId = 11;
   optional int32 backProcessId = 12;
@@ -108,5 +111,5 @@ message GribCollectionIndex {
   repeated Partition partitions = 13;  // for time partitions only
 }
 
-//  cd c:/dev/tds4.2n/grib/src/main/java
+//  cd c:/dev/github/thredds/grib/src/main/java
 //  protoc --proto_path=. --java_out=. ucar/nc2/grib/gribCollection.proto

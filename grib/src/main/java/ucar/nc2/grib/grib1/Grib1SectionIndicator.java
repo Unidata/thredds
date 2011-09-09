@@ -34,7 +34,7 @@
 package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
-import ucar.grib.GribNumbers;
+import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 
@@ -86,10 +86,18 @@ public class Grib1SectionIndicator {
     return messageLength;
   }
 
+  /**
+   * Starting position of the entire GRIB message: the 'G' in GRIB
+   * @return the starting position of the entire GRIB message
+   */
   public long getStartPos() {
    return startPos;
  }
 
+  /**
+   * Ending position of the entire GRIB message: startPos + messageLength
+   * @return the ending position of the entire GRIB message
+   */
   public long getEndPos() {
    return startPos + messageLength;
  }

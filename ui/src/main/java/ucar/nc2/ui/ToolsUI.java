@@ -81,7 +81,6 @@ import ucar.nc2.ui.util.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
-import ucar.grib.grib2.Grib2Dump;
 
 import thredds.wcs.v1_0_0_1.GetCapabilities;
 import thredds.wcs.v1_0_0_1.WcsException;
@@ -141,10 +140,10 @@ public class ToolsUI extends JPanel {
   private GeoGridPanel gridPanel;
   private GribFilesPanel gribFilesPanel;
   private GribNewPanel gribNewPanel;
+  private Grib1IndexPanel gribIndexPanel;
   private Grib2IdxPanel gribIdxPanel;
-  private GribRawPanel gribRawPanel;
+  // private GribRawPanel gribRawPanel;
   private Grib1RawPanel grib1RawPanel;
-  private GribIndexPanel gribIndexPanel;
   private Grib1ReportPanel grib1ReportPanel;
   private Grib2ReportPanel grib2ReportPanel;
   private GribCodePanel gribCodePanel;
@@ -168,7 +167,7 @@ public class ToolsUI extends JPanel {
   private WmsPanel wmsPanel;
 
   private JTabbedPane tabbedPane;
-  private JTabbedPane iospTabPane, bufrTabPane, gribnTabPane, griboTabPane;
+  private JTabbedPane iospTabPane, bufrTabPane, grib2TabPane, grib1TabPane;
   private JTabbedPane ftTabPane;
   private JTabbedPane fmrcTabPane;
   private JTabbedPane ncmlTabPane;
@@ -202,8 +201,8 @@ public class ToolsUI extends JPanel {
     // all the tabbed panes
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
     iospTabPane = new JTabbedPane(JTabbedPane.TOP);
-    gribnTabPane = new JTabbedPane(JTabbedPane.TOP);
-    griboTabPane = new JTabbedPane(JTabbedPane.TOP);
+    grib2TabPane = new JTabbedPane(JTabbedPane.TOP);
+    grib1TabPane = new JTabbedPane(JTabbedPane.TOP);
     bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
     ftTabPane = new JTabbedPane(JTabbedPane.TOP);
     fmrcTabPane = new JTabbedPane(JTabbedPane.TOP);
@@ -241,8 +240,8 @@ public class ToolsUI extends JPanel {
 
     // nested tab - iosp
     iospTabPane.addTab("BUFR", bufrTabPane);
-    iospTabPane.addTab("GRIBnew", gribnTabPane);
-    iospTabPane.addTab("GRIBold", griboTabPane);
+    iospTabPane.addTab("GRIB2", grib2TabPane);
+    iospTabPane.addTab("GRIB1", grib1TabPane);
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addTab("NCS", new JLabel("NCS"));
@@ -294,59 +293,59 @@ public class ToolsUI extends JPanel {
     });
 
     // nested-2 tab - grib new
-    gribnTabPane.addTab("GRIB2n", new JLabel("GRIB2n"));
-    gribnTabPane.addTab("GRIB2idx", new JLabel("GRIB2idx"));
-    gribnTabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
-    gribnTabPane.addTab("GRIB1-RAW", new JLabel("GRIB1-RAW"));
-    gribnTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
-    gribnTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
-    gribnTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
-    gribnTabPane.addTab("GRIB2-TABLES", new JLabel("GRIB2-TABLES"));
-    gribnTabPane.addChangeListener(new ChangeListener() {
+    grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2n"));
+    grib2TabPane.addTab("GRIB2idx", new JLabel("GRIB2idx"));
+    grib2TabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
+    grib2TabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
+    grib2TabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
+    grib2TabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
+    grib2TabPane.addTab("GRIB2-TABLES", new JLabel("GRIB2-TABLES"));
+    grib2TabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        Component c = gribnTabPane.getSelectedComponent();
+        Component c = grib2TabPane.getSelectedComponent();
         if (c instanceof JLabel) {
-          int idx = gribnTabPane.getSelectedIndex();
-          String title = gribnTabPane.getTitleAt(idx);
-          makeComponent(gribnTabPane, title);
+          int idx = grib2TabPane.getSelectedIndex();
+          String title = grib2TabPane.getTitleAt(idx);
+          makeComponent(grib2TabPane, title);
         }
       }
     });
-    gribnTabPane.addComponentListener(new ComponentAdapter() {
+    grib2TabPane.addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
-        Component c = gribnTabPane.getSelectedComponent();
+        Component c = grib2TabPane.getSelectedComponent();
         if (c instanceof JLabel) {
-          int idx = gribnTabPane.getSelectedIndex();
-          String title = gribnTabPane.getTitleAt(idx);
-          makeComponent(gribnTabPane, title);
+          int idx = grib2TabPane.getSelectedIndex();
+          String title = grib2TabPane.getTitleAt(idx);
+          makeComponent(grib2TabPane, title);
         }
       }
     });
 
     // nested-2 tab - grib old
     //griboTabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
-    griboTabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
-    griboTabPane.addTab("GRIB-INDEX", new JLabel("GRIB-INDEX"));
-    griboTabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
-    griboTabPane.addTab("GRIB1-REPORT", new JLabel("GRIB1-REPORT"));
-    griboTabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
-    griboTabPane.addChangeListener(new ChangeListener() {
+    grib1TabPane.addTab("GRIB1-RAW", new JLabel("GRIB1-RAW"));
+    //grib1TabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
+    grib1TabPane.addTab("GRIB1-INDEX", new JLabel("GRIB-INDEX"));
+    grib1TabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
+    grib1TabPane.addTab("GRIB1-REPORT", new JLabel("GRIB1-REPORT"));
+    grib1TabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
+    grib1TabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        Component c = griboTabPane.getSelectedComponent();
+        Component c = grib1TabPane.getSelectedComponent();
         if (c instanceof JLabel) {
-          int idx = griboTabPane.getSelectedIndex();
-          String title = griboTabPane.getTitleAt(idx);
-          makeComponent(griboTabPane, title);
+          int idx = grib1TabPane.getSelectedIndex();
+          String title = grib1TabPane.getTitleAt(idx);
+          makeComponent(grib1TabPane, title);
         }
       }
     });
-    griboTabPane.addComponentListener(new ComponentAdapter() {
+    grib1TabPane.addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
-        Component c = griboTabPane.getSelectedComponent();
+        Component c = grib1TabPane.getSelectedComponent();
         if (c instanceof JLabel) {
-          int idx = griboTabPane.getSelectedIndex();
-          String title = griboTabPane.getTitleAt(idx);
-          makeComponent(griboTabPane, title);
+          int idx = grib1TabPane.getSelectedIndex();
+          String title = grib1TabPane.getTitleAt(idx);
+          makeComponent(grib1TabPane, title);
         }
       }
     });
@@ -485,10 +484,6 @@ public class ToolsUI extends JPanel {
       cdmremotePanel = new CdmremotePanel((PreferencesExt) mainPrefs.node("cdmremote"));
       c = cdmremotePanel;
 
-    } else if (title.equals("GRIB-RAW")) {
-      gribRawPanel = new GribRawPanel((PreferencesExt) mainPrefs.node("grib"));
-      c = gribRawPanel;
-
     } else if (title.equals("GRIB1-RAW")) {
       grib1RawPanel = new Grib1RawPanel((PreferencesExt) mainPrefs.node("grib1raw"));
       c = grib1RawPanel;
@@ -505,8 +500,8 @@ public class ToolsUI extends JPanel {
       gribIdxPanel = new Grib2IdxPanel((PreferencesExt) mainPrefs.node("gribIdx"));
       c = gribIdxPanel;
 
-    } else if (title.equals("GRIB-INDEX")) {
-      gribIndexPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("grib2"));
+    } else if (title.equals("GRIB1-INDEX")) {
+      gribIndexPanel = new Grib1IndexPanel((PreferencesExt) mainPrefs.node("grib1idx"));
       c = gribIndexPanel;
 
     } else if (title.equals("GRIB1-REPORT")) {
@@ -1008,7 +1003,7 @@ public class ToolsUI extends JPanel {
     if (gribFilesPanel != null) gribFilesPanel.save();
     if (gribNewPanel != null) gribNewPanel.save();
     if (gribIdxPanel != null) gribIdxPanel.save();
-    if (gribRawPanel != null) gribRawPanel.save();
+    //if (gribRawPanel != null) gribRawPanel.save();
     if (grib1RawPanel != null) grib1RawPanel.save();
     if (gribIndexPanel != null) gribIndexPanel.save();
     if (grib1ReportPanel != null) grib1ReportPanel.save();
@@ -1079,27 +1074,19 @@ public class ToolsUI extends JPanel {
   }
 
   private void openGrib2n(String collection) {
-    makeComponent(gribnTabPane, "GRIB2n");
+    makeComponent(grib2TabPane, "GRIB2collection");
     gribNewPanel.setCollection(collection);
     tabbedPane.setSelectedComponent(iospTabPane);
-    iospTabPane.setSelectedComponent(gribnTabPane);
-    gribnTabPane.setSelectedComponent(gribNewPanel);
+    iospTabPane.setSelectedComponent(grib2TabPane);
+    grib2TabPane.setSelectedComponent(gribNewPanel);
   }
 
-  private void openGrib2o(String collection) {
-    makeComponent(griboTabPane, "GRIB2o");
-    gribNewPanel.setCollection(collection);
+  private void openGrib1Raw(String filename) {
+    makeComponent(grib1TabPane, "GRIB-RAW");
+    grib1RawPanel.process(filename);
     tabbedPane.setSelectedComponent(iospTabPane);
-    iospTabPane.setSelectedComponent(griboTabPane);
-    griboTabPane.setSelectedComponent(gribFilesPanel);
-  }
-
-  private void openGribRaw(String filename) {
-    makeComponent(griboTabPane, "GRIB-RAW");
-    gribRawPanel.process(filename);
-    tabbedPane.setSelectedComponent(iospTabPane);
-    iospTabPane.setSelectedComponent(griboTabPane);
-    griboTabPane.setSelectedComponent(gribRawPanel);
+    iospTabPane.setSelectedComponent(grib1TabPane);
+    grib1TabPane.setSelectedComponent(grib1RawPanel);
   }
 
   private void openGridDataset(String datasetName) {
@@ -2480,13 +2467,9 @@ public class ToolsUI extends JPanel {
       add(gribTable, BorderLayout.CENTER);
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openGrib2o")) {
-            String collectionName = (String) e.getNewValue();
-            openGrib2o(collectionName);
-
-          } else  if (e.getPropertyName().equals("openGribRaw")) {
+          if (e.getPropertyName().equals("openGrib1Raw")) {
             String filename = (String) e.getNewValue();
-            openGribRaw(filename);
+            openGrib1Raw(filename);
           }
         }
       });
@@ -2720,7 +2703,7 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
-  // raw grib access - dont go through the IOSP
+  /* raw grib access - dont go through the IOSP
   private class GribRawPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     GribOldRawPanel gribTable;
@@ -2802,7 +2785,9 @@ public class ToolsUI extends JPanel {
       super.save();
     }
 
-  }  /////////////////////////////////////////////////////////////////////
+  }  */
+
+  /////////////////////////////////////////////////////////////////////
   // raw grib access - dont go through the IOSP
   private class Grib1RawPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
@@ -2868,10 +2853,10 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   // Indexed GRIB, using the IOSP
-  private class GribIndexPanel extends OpPanel {
+  private class Grib1IndexPanel extends OpPanel {
     ucar.nc2.ui.GribIndexPanel gribTable;
 
-    GribIndexPanel(PreferencesExt p) {
+    Grib1IndexPanel(PreferencesExt p) {
       super(p, "file:", true, false);
       gribTable = new ucar.nc2.ui.GribIndexPanel(prefs);
       add(gribTable, BorderLayout.CENTER);

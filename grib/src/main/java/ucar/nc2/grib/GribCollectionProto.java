@@ -15,9 +15,9 @@ public final class GribCollectionProto {
     boolean hasFileno();
     int getFileno();
     
-    // required uint64 drsPos = 2;
-    boolean hasDrsPos();
-    long getDrsPos();
+    // required uint64 pos = 2;
+    boolean hasPos();
+    long getPos();
   }
   public static final class Record extends
       com.google.protobuf.GeneratedMessage
@@ -58,19 +58,19 @@ public final class GribCollectionProto {
       return fileno_;
     }
     
-    // required uint64 drsPos = 2;
-    public static final int DRSPOS_FIELD_NUMBER = 2;
-    private long drsPos_;
-    public boolean hasDrsPos() {
+    // required uint64 pos = 2;
+    public static final int POS_FIELD_NUMBER = 2;
+    private long pos_;
+    public boolean hasPos() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    public long getDrsPos() {
-      return drsPos_;
+    public long getPos() {
+      return pos_;
     }
     
     private void initFields() {
       fileno_ = 0;
-      drsPos_ = 0L;
+      pos_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -81,7 +81,7 @@ public final class GribCollectionProto {
         memoizedIsInitialized = 0;
         return false;
       }
-      if (!hasDrsPos()) {
+      if (!hasPos()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -96,7 +96,7 @@ public final class GribCollectionProto {
         output.writeUInt32(1, fileno_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeUInt64(2, drsPos_);
+        output.writeUInt64(2, pos_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -113,15 +113,17 @@ public final class GribCollectionProto {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(2, drsPos_);
+          .computeUInt64Size(2, pos_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -239,7 +241,7 @@ public final class GribCollectionProto {
         super.clear();
         fileno_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
-        drsPos_ = 0L;
+        pos_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
@@ -286,7 +288,7 @@ public final class GribCollectionProto {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.drsPos_ = drsPos_;
+        result.pos_ = pos_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -306,8 +308,8 @@ public final class GribCollectionProto {
         if (other.hasFileno()) {
           setFileno(other.getFileno());
         }
-        if (other.hasDrsPos()) {
-          setDrsPos(other.getDrsPos());
+        if (other.hasPos()) {
+          setPos(other.getPos());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -318,7 +320,7 @@ public final class GribCollectionProto {
           
           return false;
         }
-        if (!hasDrsPos()) {
+        if (!hasPos()) {
           
           return false;
         }
@@ -355,7 +357,7 @@ public final class GribCollectionProto {
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              drsPos_ = input.readUInt64();
+              pos_ = input.readUInt64();
               break;
             }
           }
@@ -385,23 +387,23 @@ public final class GribCollectionProto {
         return this;
       }
       
-      // required uint64 drsPos = 2;
-      private long drsPos_ ;
-      public boolean hasDrsPos() {
+      // required uint64 pos = 2;
+      private long pos_ ;
+      public boolean hasPos() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-      public long getDrsPos() {
-        return drsPos_;
+      public long getPos() {
+        return pos_;
       }
-      public Builder setDrsPos(long value) {
+      public Builder setPos(long value) {
         bitField0_ |= 0x00000002;
-        drsPos_ = value;
+        pos_ = value;
         onChanged();
         return this;
       }
-      public Builder clearDrsPos() {
+      public Builder clearPos() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        drsPos_ = 0L;
+        pos_ = 0L;
         onChanged();
         return this;
       }
@@ -548,8 +550,10 @@ public final class GribCollectionProto {
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -1118,6 +1122,10 @@ public final class GribCollectionProto {
     java.util.List<java.lang.Integer> getVarnoList();
     int getVarnoCount();
     int getVarno(int index);
+    
+    // optional uint32 tableVersion = 18;
+    boolean hasTableVersion();
+    int getTableVersion();
   }
   public static final class Variable extends
       com.google.protobuf.GeneratedMessage
@@ -1270,12 +1278,12 @@ public final class GribCollectionProto {
     
     // optional string probabilityName = 13;
     public static final int PROBABILITYNAME_FIELD_NUMBER = 13;
-    private Object probabilityName_;
+    private java.lang.Object probabilityName_;
     public boolean hasProbabilityName() {
       return ((bitField0_ & 0x00001000) == 0x00001000);
     }
     public String getProbabilityName() {
-      Object ref = probabilityName_;
+      java.lang.Object ref = probabilityName_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -1289,7 +1297,7 @@ public final class GribCollectionProto {
       }
     }
     private com.google.protobuf.ByteString getProbabilityNameBytes() {
-      Object ref = probabilityName_;
+      java.lang.Object ref = probabilityName_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -1348,6 +1356,16 @@ public final class GribCollectionProto {
       return varno_.get(index);
     }
     
+    // optional uint32 tableVersion = 18;
+    public static final int TABLEVERSION_FIELD_NUMBER = 18;
+    private int tableVersion_;
+    public boolean hasTableVersion() {
+      return ((bitField0_ & 0x00008000) == 0x00008000);
+    }
+    public int getTableVersion() {
+      return tableVersion_;
+    }
+    
     private void initFields() {
       discipline_ = 0;
       category_ = 0;
@@ -1366,6 +1384,7 @@ public final class GribCollectionProto {
       isLayer_ = false;
       groupno_ = java.util.Collections.emptyList();;
       varno_ = java.util.Collections.emptyList();;
+      tableVersion_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1462,6 +1481,9 @@ public final class GribCollectionProto {
       for (int i = 0; i < varno_.size(); i++) {
         output.writeUInt32(17, varno_.get(i));
       }
+      if (((bitField0_ & 0x00008000) == 0x00008000)) {
+        output.writeUInt32(18, tableVersion_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -1549,13 +1571,19 @@ public final class GribCollectionProto {
         size += dataSize;
         size += 2 * getVarnoList().size();
       }
+      if (((bitField0_ & 0x00008000) == 0x00008000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(18, tableVersion_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -1705,6 +1733,8 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00008000);
         varno_ = java.util.Collections.emptyList();;
         bitField0_ = (bitField0_ & ~0x00010000);
+        tableVersion_ = 0;
+        bitField0_ = (bitField0_ & ~0x00020000);
         return this;
       }
       
@@ -1813,6 +1843,10 @@ public final class GribCollectionProto {
           bitField0_ = (bitField0_ & ~0x00010000);
         }
         result.varno_ = varno_;
+        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+          to_bitField0_ |= 0x00008000;
+        }
+        result.tableVersion_ = tableVersion_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1893,6 +1927,9 @@ public final class GribCollectionProto {
             varno_.addAll(other.varno_);
           }
           onChanged();
+        }
+        if (other.hasTableVersion()) {
+          setTableVersion(other.getTableVersion());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2058,6 +2095,11 @@ public final class GribCollectionProto {
                 addVarno(input.readUInt32());
               }
               input.popLimit(limit);
+              break;
+            }
+            case 144: {
+              bitField0_ |= 0x00020000;
+              tableVersion_ = input.readUInt32();
               break;
             }
           }
@@ -2319,12 +2361,12 @@ public final class GribCollectionProto {
       }
       
       // optional string probabilityName = 13;
-      private Object probabilityName_ = "";
+      private java.lang.Object probabilityName_ = "";
       public boolean hasProbabilityName() {
         return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       public String getProbabilityName() {
-        Object ref = probabilityName_;
+        java.lang.Object ref = probabilityName_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           probabilityName_ = s;
@@ -2486,6 +2528,27 @@ public final class GribCollectionProto {
         return this;
       }
       
+      // optional uint32 tableVersion = 18;
+      private int tableVersion_ ;
+      public boolean hasTableVersion() {
+        return ((bitField0_ & 0x00020000) == 0x00020000);
+      }
+      public int getTableVersion() {
+        return tableVersion_;
+      }
+      public Builder setTableVersion(int value) {
+        bitField0_ |= 0x00020000;
+        tableVersion_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTableVersion() {
+        bitField0_ = (bitField0_ & ~0x00020000);
+        tableVersion_ = 0;
+        onChanged();
+        return this;
+      }
+      
       // @@protoc_insertion_point(builder_scope:gribCollectionIndex.Variable)
     }
     
@@ -2559,12 +2622,12 @@ public final class GribCollectionProto {
     
     // required string unit = 2;
     public static final int UNIT_FIELD_NUMBER = 2;
-    private Object unit_;
+    private java.lang.Object unit_;
     public boolean hasUnit() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public String getUnit() {
-      Object ref = unit_;
+      java.lang.Object ref = unit_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -2578,7 +2641,7 @@ public final class GribCollectionProto {
       }
     }
     private com.google.protobuf.ByteString getUnitBytes() {
-      Object ref = unit_;
+      java.lang.Object ref = unit_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -2689,8 +2752,10 @@ public final class GribCollectionProto {
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -3017,12 +3082,12 @@ public final class GribCollectionProto {
       }
       
       // required string unit = 2;
-      private Object unit_ = "";
+      private java.lang.Object unit_ = "";
       public boolean hasUnit() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public String getUnit() {
-        Object ref = unit_;
+        java.lang.Object ref = unit_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           unit_ = s;
@@ -3200,12 +3265,12 @@ public final class GribCollectionProto {
     private int bitField0_;
     // required string name = 1;
     public static final int NAME_FIELD_NUMBER = 1;
-    private Object name_;
+    private java.lang.Object name_;
     public boolean hasName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getName() {
-      Object ref = name_;
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -3219,7 +3284,7 @@ public final class GribCollectionProto {
       }
     }
     private com.google.protobuf.ByteString getNameBytes() {
-      Object ref = name_;
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -3246,12 +3311,12 @@ public final class GribCollectionProto {
     
     // optional string sdata = 3;
     public static final int SDATA_FIELD_NUMBER = 3;
-    private Object sdata_;
+    private java.lang.Object sdata_;
     public boolean hasSdata() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public String getSdata() {
-      Object ref = sdata_;
+      java.lang.Object ref = sdata_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -3265,7 +3330,7 @@ public final class GribCollectionProto {
       }
     }
     private com.google.protobuf.ByteString getSdataBytes() {
-      Object ref = sdata_;
+      java.lang.Object ref = sdata_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -3334,8 +3399,10 @@ public final class GribCollectionProto {
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -3606,12 +3673,12 @@ public final class GribCollectionProto {
       private int bitField0_;
       
       // required string name = 1;
-      private Object name_ = "";
+      private java.lang.Object name_ = "";
       public boolean hasName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public String getName() {
-        Object ref = name_;
+        java.lang.Object ref = name_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           name_ = s;
@@ -3687,12 +3754,12 @@ public final class GribCollectionProto {
       }
       
       // optional string sdata = 3;
-      private Object sdata_ = "";
+      private java.lang.Object sdata_ = "";
       public boolean hasSdata() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public String getSdata() {
-        Object ref = sdata_;
+        java.lang.Object ref = sdata_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           sdata_ = s;
@@ -4046,8 +4113,10 @@ public final class GribCollectionProto {
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -5205,8 +5274,10 @@ public final class GribCollectionProto {
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -7054,12 +7125,12 @@ public final class GribCollectionProto {
     
     // required string unit = 2;
     public static final int UNIT_FIELD_NUMBER = 2;
-    private Object unit_;
+    private java.lang.Object unit_;
     public boolean hasUnit() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public String getUnit() {
-      Object ref = unit_;
+      java.lang.Object ref = unit_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -7073,7 +7144,7 @@ public final class GribCollectionProto {
       }
     }
     private com.google.protobuf.ByteString getUnitBytes() {
-      Object ref = unit_;
+      java.lang.Object ref = unit_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -7238,8 +7309,10 @@ public final class GribCollectionProto {
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -7628,12 +7701,12 @@ public final class GribCollectionProto {
       }
       
       // required string unit = 2;
-      private Object unit_ = "";
+      private java.lang.Object unit_ = "";
       public boolean hasUnit() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public String getUnit() {
-        Object ref = unit_;
+        java.lang.Object ref = unit_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           unit_ = s;
@@ -7896,12 +7969,12 @@ public final class GribCollectionProto {
     private int bitField0_;
     // required string name = 1;
     public static final int NAME_FIELD_NUMBER = 1;
-    private Object name_;
+    private java.lang.Object name_;
     public boolean hasName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getName() {
-      Object ref = name_;
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -7915,7 +7988,7 @@ public final class GribCollectionProto {
       }
     }
     private com.google.protobuf.ByteString getNameBytes() {
-      Object ref = name_;
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -7928,12 +8001,12 @@ public final class GribCollectionProto {
     
     // required string filename = 2;
     public static final int FILENAME_FIELD_NUMBER = 2;
-    private Object filename_;
+    private java.lang.Object filename_;
     public boolean hasFilename() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public String getFilename() {
-      Object ref = filename_;
+      java.lang.Object ref = filename_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -7947,7 +8020,7 @@ public final class GribCollectionProto {
       }
     }
     private com.google.protobuf.ByteString getFilenameBytes() {
-      Object ref = filename_;
+      java.lang.Object ref = filename_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -8010,8 +8083,10 @@ public final class GribCollectionProto {
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -8255,12 +8330,12 @@ public final class GribCollectionProto {
       private int bitField0_;
       
       // required string name = 1;
-      private Object name_ = "";
+      private java.lang.Object name_ = "";
       public boolean hasName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public String getName() {
-        Object ref = name_;
+        java.lang.Object ref = name_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           name_ = s;
@@ -8291,12 +8366,12 @@ public final class GribCollectionProto {
       }
       
       // required string filename = 2;
-      private Object filename_ = "";
+      private java.lang.Object filename_ = "";
       public boolean hasFilename() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public String getFilename() {
-        Object ref = filename_;
+        java.lang.Object ref = filename_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           filename_ = s;
@@ -8438,12 +8513,12 @@ public final class GribCollectionProto {
     private int bitField0_;
     // required string name = 1;
     public static final int NAME_FIELD_NUMBER = 1;
-    private Object name_;
+    private java.lang.Object name_;
     public boolean hasName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getName() {
-      Object ref = name_;
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -8457,7 +8532,7 @@ public final class GribCollectionProto {
       }
     }
     private com.google.protobuf.ByteString getNameBytes() {
-      Object ref = name_;
+      java.lang.Object ref = name_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -8782,8 +8857,10 @@ public final class GribCollectionProto {
       return size;
     }
     
+    private static final long serialVersionUID = 0L;
     @java.lang.Override
-    protected Object writeReplace() throws java.io.ObjectStreamException {
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
     
@@ -9308,12 +9385,12 @@ public final class GribCollectionProto {
       private int bitField0_;
       
       // required string name = 1;
-      private Object name_ = "";
+      private java.lang.Object name_ = "";
       public boolean hasName() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public String getName() {
-        Object ref = name_;
+        java.lang.Object ref = name_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           name_ = s;
@@ -10175,49 +10252,49 @@ public final class GribCollectionProto {
   static {
     java.lang.String[] descriptorData = {
       "\n\"ucar/nc2/grib/gribCollection.proto\022\023gr" +
-      "ibCollectionIndex\"(\n\006Record\022\016\n\006fileno\030\001 " +
-      "\002(\r\022\016\n\006drsPos\030\002 \002(\004\"P\n\017VariableRecords\022\017" +
-      "\n\007cdmHash\030\001 \002(\007\022,\n\007records\030\002 \003(\0132\033.gribC" +
-      "ollectionIndex.Record\"\355\002\n\010Variable\022\022\n\ndi" +
-      "scipline\030\001 \002(\005\022\020\n\010category\030\002 \002(\005\022\021\n\tpara" +
-      "meter\030\003 \002(\005\022\021\n\tlevelType\030\004 \002(\005\022\030\n\014interv" +
-      "alType\030\005 \001(\005:\002-1\022\017\n\007cdmHash\030\006 \002(\007\022\022\n\nrec" +
-      "ordsPos\030\007 \002(\004\022\022\n\nrecordsLen\030\010 \002(\r\022\017\n\007tim" +
-      "eIdx\030\t \002(\r\022\023\n\007vertIdx\030\n \001(\005:\002-1\022\022\n\006ensId",
-      "x\030\013 \001(\005:\002-1\022\032\n\016ensDerivedType\030\014 \001(\005:\002-1\022" +
-      "\027\n\017probabilityName\030\r \001(\t\022\033\n\017probabilityT" +
-      "ype\030\016 \001(\005:\002-1\022\026\n\007isLayer\030\017 \001(\010:\005false\022\017\n" +
-      "\007groupno\030\020 \003(\r\022\r\n\005varno\030\021 \003(\r\"B\n\005Coord\022\014" +
-      "\n\004code\030\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006values\030\003 \003" +
-      "(\002\022\r\n\005bound\030\004 \003(\002\"6\n\tParameter\022\014\n\004name\030\001" +
-      " \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"\266\001\n\020Ho" +
-      "rizCoordSystem\022\014\n\004code\030\001 \002(\005\022\n\n\002nx\030\002 \002(\005" +
-      "\022\n\n\002ny\030\003 \002(\005\022\016\n\006startx\030\004 \002(\001\022\016\n\006starty\030\005" +
-      " \002(\001\022\014\n\004incx\030\006 \002(\001\022\014\n\004incy\030\007 \002(\001\022\020\n\010scan",
-      "Mode\030\010 \002(\005\022.\n\006params\030\t \003(\0132\036.gribCollect" +
-      "ionIndex.Parameter\"\323\002\n\005Group\022\013\n\003gds\030\001 \002(" +
-      "\014\0220\n\tvariables\030\002 \003(\0132\035.gribCollectionInd" +
-      "ex.Variable\022.\n\ntimeCoords\030\003 \003(\0132\032.gribCo" +
-      "llectionIndex.Coord\022.\n\nvertCoords\030\004 \003(\0132" +
-      "\032.gribCollectionIndex.Coord\022-\n\tensCoords" +
-      "\030\005 \003(\0132\032.gribCollectionIndex.Coord\022.\n\006pa" +
-      "rams\030\006 \003(\0132\036.gribCollectionIndex.Paramet" +
-      "er\022\016\n\006fileno\030\007 \003(\005\022<\n\017timeCoordUnions\030\010 " +
-      "\003(\0132#.gribCollectionIndex.TimeCoordUnion",
-      "\"m\n\016TimeCoordUnion\022\014\n\004code\030\001 \002(\005\022\014\n\004unit" +
-      "\030\002 \002(\t\022\016\n\006values\030\003 \003(\002\022\r\n\005bound\030\004 \003(\002\022\021\n" +
-      "\tpartition\030\005 \003(\005\022\r\n\005index\030\006 \003(\005\"+\n\tParti" +
-      "tion\022\014\n\004name\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\"\311\002\n" +
-      "\023GribCollectionIndex\022\014\n\004name\030\001 \002(\t\022\r\n\005fi" +
-      "les\030\002 \003(\t\022*\n\006groups\030\003 \003(\0132\032.gribCollecti" +
-      "onIndex.Group\022.\n\006params\030\004 \003(\0132\036.gribColl" +
-      "ectionIndex.Parameter\022\016\n\006center\030\005 \002(\005\022\021\n" +
-      "\tsubcenter\030\006 \002(\005\022\016\n\006master\030\007 \002(\005\022\r\n\005loca" +
-      "l\030\010 \002(\005\022\026\n\016genProcessType\030\n \001(\005\022\024\n\014genPr",
-      "ocessId\030\013 \001(\005\022\025\n\rbackProcessId\030\014 \001(\005\0222\n\n" +
-      "partitions\030\r \003(\0132\036.gribCollectionIndex.P" +
-      "artitionB$\n\rucar.nc2.gribB\023GribCollectio" +
-      "nProto"
+      "ibCollectionIndex\"%\n\006Record\022\016\n\006fileno\030\001 " +
+      "\002(\r\022\013\n\003pos\030\002 \002(\004\"P\n\017VariableRecords\022\017\n\007c" +
+      "dmHash\030\001 \002(\007\022,\n\007records\030\002 \003(\0132\033.gribColl" +
+      "ectionIndex.Record\"\203\003\n\010Variable\022\022\n\ndisci" +
+      "pline\030\001 \002(\005\022\020\n\010category\030\002 \002(\005\022\021\n\tparamet" +
+      "er\030\003 \002(\005\022\021\n\tlevelType\030\004 \002(\005\022\030\n\014intervalT" +
+      "ype\030\005 \001(\005:\002-1\022\017\n\007cdmHash\030\006 \002(\007\022\022\n\nrecord" +
+      "sPos\030\007 \002(\004\022\022\n\nrecordsLen\030\010 \002(\r\022\017\n\007timeId" +
+      "x\030\t \002(\r\022\023\n\007vertIdx\030\n \001(\005:\002-1\022\022\n\006ensIdx\030\013",
+      " \001(\005:\002-1\022\032\n\016ensDerivedType\030\014 \001(\005:\002-1\022\027\n\017" +
+      "probabilityName\030\r \001(\t\022\033\n\017probabilityType" +
+      "\030\016 \001(\005:\002-1\022\026\n\007isLayer\030\017 \001(\010:\005false\022\017\n\007gr" +
+      "oupno\030\020 \003(\r\022\r\n\005varno\030\021 \003(\r\022\024\n\014tableVersi" +
+      "on\030\022 \001(\r\"B\n\005Coord\022\014\n\004code\030\001 \002(\005\022\014\n\004unit\030" +
+      "\002 \002(\t\022\016\n\006values\030\003 \003(\002\022\r\n\005bound\030\004 \003(\002\"6\n\t" +
+      "Parameter\022\014\n\004name\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n" +
+      "\005sdata\030\003 \001(\t\"\266\001\n\020HorizCoordSystem\022\014\n\004cod" +
+      "e\030\001 \002(\005\022\n\n\002nx\030\002 \002(\005\022\n\n\002ny\030\003 \002(\005\022\016\n\006start" +
+      "x\030\004 \002(\001\022\016\n\006starty\030\005 \002(\001\022\014\n\004incx\030\006 \002(\001\022\014\n",
+      "\004incy\030\007 \002(\001\022\020\n\010scanMode\030\010 \002(\005\022.\n\006params\030" +
+      "\t \003(\0132\036.gribCollectionIndex.Parameter\"\323\002" +
+      "\n\005Group\022\013\n\003gds\030\001 \002(\014\0220\n\tvariables\030\002 \003(\0132" +
+      "\035.gribCollectionIndex.Variable\022.\n\ntimeCo" +
+      "ords\030\003 \003(\0132\032.gribCollectionIndex.Coord\022." +
+      "\n\nvertCoords\030\004 \003(\0132\032.gribCollectionIndex" +
+      ".Coord\022-\n\tensCoords\030\005 \003(\0132\032.gribCollecti" +
+      "onIndex.Coord\022.\n\006params\030\006 \003(\0132\036.gribColl" +
+      "ectionIndex.Parameter\022\016\n\006fileno\030\007 \003(\005\022<\n" +
+      "\017timeCoordUnions\030\010 \003(\0132#.gribCollectionI",
+      "ndex.TimeCoordUnion\"m\n\016TimeCoordUnion\022\014\n" +
+      "\004code\030\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006values\030\003 \003(" +
+      "\002\022\r\n\005bound\030\004 \003(\002\022\021\n\tpartition\030\005 \003(\005\022\r\n\005i" +
+      "ndex\030\006 \003(\005\"+\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020\n" +
+      "\010filename\030\002 \002(\t\"\311\002\n\023GribCollectionIndex\022" +
+      "\014\n\004name\030\001 \002(\t\022\r\n\005files\030\002 \003(\t\022*\n\006groups\030\003" +
+      " \003(\0132\032.gribCollectionIndex.Group\022.\n\006para" +
+      "ms\030\004 \003(\0132\036.gribCollectionIndex.Parameter" +
+      "\022\016\n\006center\030\005 \002(\005\022\021\n\tsubcenter\030\006 \002(\005\022\016\n\006m" +
+      "aster\030\007 \002(\005\022\r\n\005local\030\010 \002(\005\022\026\n\016genProcess",
+      "Type\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rback" +
+      "ProcessId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.gr" +
+      "ibCollectionIndex.PartitionB$\n\rucar.nc2." +
+      "gribB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -10229,7 +10306,7 @@ public final class GribCollectionProto {
           internal_static_gribCollectionIndex_Record_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Record_descriptor,
-              new java.lang.String[] { "Fileno", "DrsPos", },
+              new java.lang.String[] { "Fileno", "Pos", },
               ucar.nc2.grib.GribCollectionProto.Record.class,
               ucar.nc2.grib.GribCollectionProto.Record.Builder.class);
           internal_static_gribCollectionIndex_VariableRecords_descriptor =
@@ -10245,7 +10322,7 @@ public final class GribCollectionProto {
           internal_static_gribCollectionIndex_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Variable_descriptor,
-              new java.lang.String[] { "Discipline", "Category", "Parameter", "LevelType", "IntervalType", "CdmHash", "RecordsPos", "RecordsLen", "TimeIdx", "VertIdx", "EnsIdx", "EnsDerivedType", "ProbabilityName", "ProbabilityType", "IsLayer", "Groupno", "Varno", },
+              new java.lang.String[] { "Discipline", "Category", "Parameter", "LevelType", "IntervalType", "CdmHash", "RecordsPos", "RecordsLen", "TimeIdx", "VertIdx", "EnsIdx", "EnsDerivedType", "ProbabilityName", "ProbabilityType", "IsLayer", "Groupno", "Varno", "TableVersion", },
               ucar.nc2.grib.GribCollectionProto.Variable.class,
               ucar.nc2.grib.GribCollectionProto.Variable.Builder.class);
           internal_static_gribCollectionIndex_Coord_descriptor =

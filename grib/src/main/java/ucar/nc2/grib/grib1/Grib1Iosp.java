@@ -39,11 +39,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.grib.*;
-//import ucar.nc2.grib.grib2.*;
-//import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
@@ -58,7 +54,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * GRIB1 collections
+ * IOSP for GRIB1 collections
  *
  * @author John
  * @since 9/5/11
@@ -67,62 +63,106 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Iosp.class);
   static private final boolean debugTime = false, debugRead = false;
 
+ /*
+  http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB
+  The following section gives the algorithm NCL uses to assign names to GRIB1 variables.
+
+  GRIB1 data variable name encoding:
+
+    if entry matching parameter table version and parameter number is found (either in built-in or user-supplied table)
+      and entry contains a short name for the parameter:
+        if recognized as probability product:
+          <probability_parameter_short_name>_<subject_variable_short_name> (ex: PROB_A_PCP)
+        else:
+          <parameter_short_name> (ex: TMP)
+    else:
+       VAR_<parameter_number> (ex: VAR_179)
+
+    if pre-defined grid:
+       _<pre-defined_grid_number> (ex: TMP_6)
+    else if grid defined in GDS (Grid Description Section):
+       _GDS<grid_type_number> (ex: TMP_GDS4)
+
+    _<level_type_abbreviation> (ex: TMP_GDS4_ISBL)
+
+    if not statistically processed variable and not duplicate name the name is complete at this point.
+
+    if statistically-processed variable with constant specified statistical processing duration:
+          _<statistical_processing_type_abbreviation><statistical_processing_duration><duration_units> (ex: ACPCP_44_SFC_acc6h)
+    else if statistically-processed variable with no specified processing duration
+       _<statistical_processing_type_abbreviation> (ex: A_PCP_192_SFC_acc)
+
+    if variable name is duplicate of existing variable name (this should not normally occur):
+       _n (where n begins with 1 for first duplicate) (ex: TMP_GDS4_ISBL_1)
+
+Notes:
+  * Probability products are properly recognized in version 4.3.0 or later.
+  * NCL uses the generic construction VAR_<parameter_number> in two situations:
+    - The entry in the applicable published table contains no short name suitable for use as a component of an NCL variable name.
+      Users should expect that later revisions to the table may result in the parameter receiving a short name, causing the name to change.
+    - There is no recognized entry for the parameter number. In this case, NCL outputs a warning message. The parameter index
+      could be unrecognized for several reasons:
+        > No parameter table has been supplied for the originating center and the index is greater than 127. (The default GRIB parameter table
+          properly applies only to indexes less than 128.)
+        > The index is not present in the applicable parameter table, perhaps because the table is out of date or is otherwise incorrect.
+        > The GRIB file has been generated incorrectly, perhaps specifying a wrong parameter table or a non-existent index.
+
+  * Pre-defined grids are enumerated in Table B of the NCEP GRIB1 documentation.
+  * GDS Grids types are listed in Table 6 of the NCEP GRIB1 documentation.
+  * Level type abbreviations are taken from Table 3 of the NCEP GRIB1 documentation.
+  * The abbreviations corresponding to the supported statistical processing methods are:
+      ave - average
+      acc - accumulation
+      dif - difference
+  * Note that the duration period and units abbreviation were added in NCL version 4.2.0.a028 in order to handle GRIB files with
+    more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
+    names relative to earlier versions.
+ */
   static public String makeVariableName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
-    f.format("P%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
+    Grib1Parameter param = Grib1ParamTable.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
 
-    // if this uses any local tables, then we have to add the center id
-    if ((vindex.category > 191) || (vindex.parameter > 191) || (vindex.levelType > 191) || (vindex.intvType > 191)
-            || (vindex.ensDerivedType > 191) || (vindex.probType > 191)) {
-      f.format("_C%d", gribCollection.getCenter());
-      if (gribCollection.getSubcenter() > 0)
-        f.format("-%d", gribCollection.getSubcenter());
+    if (param == null) {
+      f.format("VAR%d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+    } else {
+      if (param.getName() != null)
+        f.format("%s", param.getName());
+      else
+        f.format("VAR%d", vindex.parameter);
     }
 
     if (vindex.levelType != GribTables.MISSING) { // satellite data doesnt have a level
-      f.format("_L%d", vindex.levelType); // code table 4.5
+      f.format("_%s", Grib1ParamLevel.getNameShort(vindex.levelType)); // code table 3
       if (vindex.isLayer) f.format("layer");
     }
 
-    if (vindex.intvType >= 0)
-      f.format("_S%d", vindex.intvType);
-
-    if (vindex.ensDerivedType >= 0)
-      f.format("_D%d", vindex.ensDerivedType);
-
-    else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
-      String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
-      f.format("_Prob_%s", s);
+    if (vindex.intvType >= 0) {
+      Grib1ParamTime.StatType stype = Grib1ParamTime.getStatType(vindex.intvType);
+      if (stype != null)
+        f.format("_%s", stype.name());
     }
 
     return f.toString();
   }
 
-  static public String makeVariableLongName(GribTables tables, GribCollection.VariableIndex vindex) {
+  static public String makeVariableLongName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
     boolean isProb = (vindex.probabilityName != null && vindex.probabilityName.length() > 0);
     if (isProb)
       f.format("Probability ");
 
-    Grib1ParamTable table1 = (Grib1ParamTable) tables;
-    GridParameter gp = table1.getParameter(vindex.parameter);
-    if (gp == null)
-      f.format("Unknown Parameter %d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
+    Grib1Parameter param = Grib1ParamTable.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+    if (param == null)
+      f.format("Unknown Parameter %d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
     else
-      f.format("%s", gp.getName());
+      f.format("%s", param.getDescription());
 
     if (vindex.intvType >= 0) {
-      Grib1ParamTime.StatType stat = Grib1ParamTime.StatType.values()[vindex.intvType]; // LOOK
-      f.format(" (%s)", stat.name());
+      Grib1ParamTime.StatType stat = Grib1ParamTime.getStatType(vindex.intvType);
+      if (stat != null) f.format(" (%s)", stat.name());
     }
-
-    /* if (vindex.ensDerivedType >= 0)
-      f.format(" (%s)", tables.getTableValue("4.7", vindex.ensDerivedType));
-
-    else if (isProb)
-      f.format(" %s %s", vindex.probabilityName, getVindexUnits(tables, vindex)); // add data units here  */
 
     if (vindex.levelType != GribTables.MISSING) { // satellite data doesnt have a level
       f.format(" @ %s", Grib1ParamLevel.getNameShort(vindex.levelType));
@@ -132,13 +172,8 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     return f.toString();
   }
 
-  static public String makeVariableUnits(GribTables tables, GribCollection.VariableIndex vindex) {
-    if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) return "%";
-    return getVindexUnits(tables, vindex);
-  }
-
-  static private String getVindexUnits(GribTables tables, GribCollection.VariableIndex vindex) {
-    GribTables.Parameter gp = Grib1ParamTable.getParameter(vindex., vindex.category, vindex.parameter);
+  static public String makeVariableUnits(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+    Grib1Parameter gp = Grib1ParamTable.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
     String val = (gp == null) ? "" : gp.getUnit();
     return (val == null) ? "" : val;
   }
@@ -147,7 +182,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
   private TimePartition timePartition;
   private GribCollection gribCollection;
-  private GribTables tables;
+  //private GribTables tables;
   private GribCollection.GroupHcs gHcs;
   private boolean isTimePartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
@@ -156,10 +191,10 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    byte[] b = new byte[GribCollection.MAGIC_START.length()];  // also matches GribCollectionTimePartitioned
+    byte[] b = new byte[Grib1CollectionBuilder.MAGIC_START.length()];  // LOOK NOT also matches GribCollectionTimePartitioned
     raf.readFully(b);
     String magic = new String(b);
-    if (magic.equals(GribCollection.MAGIC_START)) return true;
+    if (magic.equals(Grib1CollectionBuilder.MAGIC_START)) return true;
 
     // check for GRIB1 file
     return Grib1RecordScanner.isValidFile(raf);
@@ -167,12 +202,12 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
   @Override
   public String getFileTypeId() {
-    return "GRIB2collection";
+    return "GRIB1collection";
   }
 
   @Override
   public String getFileTypeDescription() {
-    return "GRIB2 Collection";
+    return "GRIB1 Collection";
   }
 
   // public no-arg constructor for reflection
@@ -196,7 +231,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     if (isGrib) {
       Grib1Index index = new Grib1Index();
       Formatter f= new Formatter();
-      this.gribCollection = index.makeCollection(raf, CollectionManager.Force.test, f);
+      this.gribCollection = index.makeCollection(raf, CollectionManager.Force.test, f, 1);
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor
@@ -205,7 +240,6 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
         isTimePartitioned = true;
         timePartition = (TimePartition) gribCollection;
       }
-      tables = gribCollection.getTables();
       addGroup(ncfile, gHcs, false);
 
     } else if (gribCollection != null) { // use the gribCollection set in the constructor
@@ -213,7 +247,6 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
         isTimePartitioned = true;
         timePartition = (TimePartition) gribCollection;
       }
-      tables = gribCollection.getTables();
       boolean useGroups = gribCollection.getGroups().size() > 1;
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
         addGroup(ncfile, g, useGroups);
@@ -221,10 +254,10 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     } else { // read in entire collection
 
       raf.seek(0);
-      byte[] b = new byte[TimePartition.MAGIC_STARTP.length()];
+      byte[] b = new byte[TimePartitionBuilder.MAGIC_STARTP.length()];
       raf.readFully(b);
       String magic = new String(b);
-      isTimePartitioned = magic.equals(TimePartition.MAGIC_STARTP);
+      isTimePartitioned = magic.equals(TimePartitionBuilder.MAGIC_STARTP);
 
       String location = raf.getLocation();
       File f = new File(location);
@@ -236,10 +269,8 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
         timePartition = TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf);
+        gribCollection = Grib1CollectionBuilder.createFromIndex(name, f.getParentFile(), raf);
       }
-
-      tables = gribCollection.getTables();
 
       boolean useGroups = gribCollection.getGroups().size() > 1;
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
@@ -250,20 +281,14 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
     val = CommonCodeTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
     ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
-    ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.getMaster() + "/" + gribCollection.getLocal()));
+    ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
 
-    val = tables.getTableValue("4.3", gribCollection.getGenProcessType());
+    val = Grib1Utils.getTypeGenProcessName(gribCollection.getCenter(), gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Type of generating process", val));
-    val = tables.getTableValue("ProcessId", gribCollection.getGenProcessId());
-    if (val != null)
-      ncfile.addAttribute(null, new Attribute("Analysis or forecast generating process identifier (defined by originating centre)", val));
-    val = tables.getTableValue("ProcessId", gribCollection.getGenProcessId());
-    if (val != null)
-      ncfile.addAttribute(null, new Attribute("Background generating process identifier (defined by originating centre)", val));
 
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.5"));
-    ncfile.addAttribute(null, new Attribute("history", "Read using CDM IOSP GribCollection"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.6"));
+    ncfile.addAttribute(null, new Attribute("history", "Read using CDM IOSP Grib1Collection"));
     ncfile.addAttribute(null, new Attribute("featureType", "GRID"));
     for (Parameter p : gribCollection.getParams())
       ncfile.addAttribute(null, new Attribute(p));
@@ -292,15 +317,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       throw new IllegalStateException();
     }
 
-    boolean is2D = tables.isLatLon2D(gHcs.hcs.template, gribCollection.getCenter());
-    if (is2D) {
-      horizDims = "lat lon";  // LOOK: orthogonal curvilinear
-
-      // LOOK - assume same number of points for all grids
-      ncfile.addDimension(g, new Dimension("lon", hcs.nx));
-      ncfile.addDimension(g, new Dimension("lat", hcs.ny));
-
-    } else if (tables.isLatLon(gHcs.hcs.template, gribCollection.getCenter())) {
+    if (hcs.isLatLon()) {
       horizDims = "lat lon";
       ncfile.addDimension(g, new Dimension("lon", hcs.nx));
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
@@ -347,11 +364,11 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       ncfile.addDimension(g, new Dimension(vcName, n));
       Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
       v.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
-      v.addAttribute(new Attribute(CF.LONG_NAME, tables.getTableValue("4.5", vc.getCode())));
+      v.addAttribute(new Attribute(CF.LONG_NAME, Grib1ParamLevel.getLevelDescription(vc.getCode())));
       v.addAttribute(new Attribute("positive", vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
 
-      v.addAttribute(new Attribute("GRIB2_level_type", vc.getCode()));
-      VertCoord.VertUnit vu = tables.getLevelUnit(vc.getCode());
+      v.addAttribute(new Attribute("GRIB1_level_code", vc.getCode()));
+      VertCoord.VertUnit vu = Grib1ParamLevel.getLevelUnit(vc.getCode());
       if (vu != null) {
         if (vu.datum != null)
           v.addAttribute(new Attribute("datum", vu.datum));
@@ -461,30 +478,17 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       ncfile.addVariable(g, v);
       //System.out.printf("added %s%n",vname);
 
-      String desc = makeVariableLongName(tables, vindex);
+      String desc = makeVariableLongName(gribCollection, vindex);
       v.addAttribute(new Attribute(CF.LONG_NAME, desc));
-      v.addAttribute(new Attribute(CF.UNITS, makeVariableUnits(tables, vindex)));
+      v.addAttribute(new Attribute(CF.UNITS, makeVariableUnits(gribCollection, vindex)));
       v.addAttribute(new Attribute(CF.MISSING_VALUE, Float.NaN));
+      v.addAttribute(new Attribute(CF.GRID_MAPPING, hcsName));
 
-      if (is2D) {
-        String s = searchCoord(gribCollection, tables.getLatLon2DcoordType(desc), gHcs.varIndex);
-        if (s == null) { // its a lat/lon coordinate
-          v.setDimensions(horizDims); // LOOK make this 2D and munge the units
-          String units = desc.contains("Latitude of") ? "degrees_north" : "degrees_east";
-          v.addAttribute(new Attribute(CF.UNITS, units));
-
-        } else {
-          v.addAttribute(new Attribute(CF.COORDINATES, s));
-        }
-      } else {
-        v.addAttribute(new Attribute(CF.GRID_MAPPING, hcsName));
-      }
-
-      v.addAttribute(new Attribute("Grib_Parameter", vindex.discipline + "-" + vindex.category + "-" + vindex.parameter));
+      v.addAttribute(new Attribute("Grib_Parameter", vindex.parameter));
       v.addAttribute(new Attribute("Grib_Level_Type", vindex.levelType));
       if (vindex.intvType >= 0) {
         v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));
-        CF.CellMethods cm = tables.convertTable4_10(vindex.intvType);
+        CF.CellMethods cm = CF.CellMethods.convertGrib1code(vindex.intvType);
         if (cm != null)
           v.addAttribute(new Attribute("cell_methods", tcName + ": " + cm.toString()));
       }
@@ -495,35 +499,6 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
       v.setSPobject(vindex);
     }
-  }
-
-  private String searchCoord(GribCollection gc, GribTables.LatLonCoordType type, List<GribCollection.VariableIndex> list) {
-    if (type == null) return null;
-
-    GribCollection.VariableIndex lat, lon;
-    switch (type) {
-      case U:
-        lat = searchCoord(list, 198);
-        lon = searchCoord(list, 199);
-        return (lat != null && lon != null) ? makeVariableName(gc, lat) + " "+ makeVariableName(gc, lon) : null;
-      case V:
-        lat = searchCoord(list, 200);
-        lon = searchCoord(list, 201);
-        return (lat != null && lon != null) ? makeVariableName(gc, lat) + " "+ makeVariableName(gc, lon) : null;
-      case P:
-        lat = searchCoord(list, 202);
-        lon = searchCoord(list, 203);
-        return (lat != null && lon != null) ? makeVariableName(gc, lat) + "  "+ makeVariableName(gc, lon) : null;
-    }
-    return null;
-  }
-
-  private GribCollection.VariableIndex searchCoord(List<GribCollection.VariableIndex> list, int p) {
-    for (GribCollection.VariableIndex vindex : list) {
-      if ((vindex.discipline == 0) && (vindex.category == 2) && (vindex.parameter == p))
-        return vindex;
-    }
-    return null;
   }
 
   @Override
@@ -647,7 +622,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
           GribCollection.Record record = vindex.records[recordIndex];
 
           // add this record to be read
-          dataReader.addRecord(vindex, val.getPartition(), record.fileno, record.drsPos, resultIndex);
+          dataReader.addRecord(vindex, val.getPartition(), record.fileno, record.pos, resultIndex);
         }
       }
     }
@@ -699,8 +674,8 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     private DataReaderPartitioned() {
     }
 
-    void addRecord(GribCollection.VariableIndex vindex, int partno, int fileno, long drsPos, int resultIndex) {
-      records.add(new DataRecord(partno, vindex, resultIndex, fileno, drsPos));
+    void addRecord(GribCollection.VariableIndex vindex, int partno, int fileno, long pos, int resultIndex) {
+      records.add(new DataRecord(partno, vindex, resultIndex, fileno, pos));
     }
 
     void read(DataReceiver dataReceiver) throws IOException {
@@ -718,19 +693,24 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
         }
 
         if (debugRead) { // for validation
-          Grib1Record gr = Grib1RecordScanner.findRecordByDrspos(rafData, dr.drsPos);
+          rafData.seek(dr.pos);
+          Grib1Record gr = new Grib1Record(rafData);
           if (gr != null) {
+            Grib1SectionProductDefinition pds = gr.getPDSsection();
+            Grib1Parameter param = Grib1ParamTable.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
             Formatter f = new Formatter();
             f.format("File=%s%n", rafData.getLocation());
-            f.format("  Parameter=%s%n", tables.getVariableName(gr));
+            f.format("  Parameter=%s%n", param);
             f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
-            f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
-            int[] tinv = tables.getForecastTimeInterval(gr);
-            if (tinv != null)
-              f.format("  TimeInterval=(%d,%d)%n",tinv[0],tinv[1]);
+            Grib1ParamTime ptime = pds.getParamTime();
+            f.format("  ForecastTime=%d%n", ptime.getForecastTime());
+            if (ptime.isInterval()) {
+              int tinv[] = ptime.getInterval();
+              f.format("  TimeInterval=(%d,%d)%n", tinv[0], tinv[1]);
+            }
             f.format("%n");
             gr.getPDSsection().showPds(f);
-            System.out.printf(" Grib2Record.readData at drsPos %d = %s%n", dr.drsPos, f.toString());
+            System.out.printf(" Grib1Record.readData at drsPos %d = %s%n", dr.pos, f.toString());
           }
         }
 
@@ -745,14 +725,14 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       GribCollection.VariableIndex vindex; // the vindex of the partition
       int resultIndex; // where does this record go in the result array?
       int fileno;
-      long drsPos;
+      long pos;
 
-      DataRecord(int partno, GribCollection.VariableIndex vindex, int resultIndex, int fileno, long drsPos) {
+      DataRecord(int partno, GribCollection.VariableIndex vindex, int resultIndex, int fileno, long pos) {
         this.partno = partno;
         this.vindex = vindex;
         this.resultIndex = resultIndex;
         this.fileno = fileno;
-        this.drsPos = drsPos;
+        this.pos = pos;
       }
 
       @Override
@@ -760,7 +740,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
         int r = partno - o.partno;
         if (r != 0) return r;
         r = fileno - o.fileno;
-        return (r != 0) ? r : (int) (drsPos - o.drsPos);
+        return (r != 0) ? r : (int) (pos - o.pos);
       }
     }
   }
@@ -813,7 +793,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     void addRecord(int ensIdx, int timeIdx, int levIdx, int resultIndex) {
       int recordIndex = GribCollection.calcIndex(timeIdx, ensIdx, levIdx, vindex.nens, vindex.nverts);
       GribCollection.Record record = vindex.records[recordIndex];
-      records.add(new DataRecord(timeIdx, ensIdx, levIdx, resultIndex, record.fileno, record.drsPos));
+      records.add(new DataRecord(timeIdx, ensIdx, levIdx, resultIndex, record.fileno, record.pos));
     }
 
     void read(DataReceiver dataReceiver) throws IOException {
@@ -829,23 +809,28 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
         }
 
         if (debugRead) { // for validation
-          Grib1Record gr = Grib1RecordScanner.findRecordByDrspos(rafData, dr.drsPos);
+          rafData.seek(dr.pos);
+          Grib1Record gr = new Grib1Record(rafData);
           if (gr != null) {
             Formatter f = new Formatter();
             f.format("File=%s%n", raf.getLocation());
-            f.format("  Parameter=%s%n", Grib1Utils.getVariableName(gr));
+            Grib1SectionProductDefinition pds = gr.getPDSsection();
+            Grib1Parameter param = Grib1ParamTable.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
+            f.format("  Parameter=%s%n", param);
             f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
-            f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
-            int[] tinv = tables.getForecastTimeInterval(gr);
-            if (tinv != null)
-              f.format("  TimeInterval=(%d,%d)%n",tinv[0],tinv[1]);
-            f.format("  ");
+            Grib1ParamTime ptime = pds.getParamTime();
+            f.format("  ForecastTime=%d%n", ptime.getForecastTime());
+            if (ptime.isInterval()) {
+              int tinv[] = ptime.getInterval();
+              f.format("  TimeInterval=(%d,%d)%n", tinv[0], tinv[1]);
+            }
+            f.format("%n");
             gr.getPDSsection().showPds(f);
-            System.out.printf("%nGrib2Record.readData at drsPos %d = %s%n", dr.drsPos, f.toString());
+            System.out.printf("%nGrib1Record.readData at drsPos %d = %s%n", dr.pos, f.toString());
           }
         }
 
-        float[] data = null; // Grib1Record.readData(rafData, dr.drsPos, vindex.group.hcs.nPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
+        float[] data = Grib1Record.readData(rafData, dr.pos);
         dataReceiver.addData(data, dr.resultIndex, vindex.group.hcs.nx);
       }
       if (rafData != null) rafData.close();
@@ -855,21 +840,21 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       int ensIdx, timeIdx, levIdx;
       int resultIndex; // index in the ens / time / vert array
       int fileno;
-      long drsPos;
+      long pos;
 
-      DataRecord(int timeIdx, int ensIdx, int levIdx, int resultIndex, int fileno, long drsPos) {
+      DataRecord(int timeIdx, int ensIdx, int levIdx, int resultIndex, int fileno, long pos) {
         this.ensIdx = ensIdx;
         this.timeIdx = timeIdx;
         this.levIdx = levIdx;
         this.resultIndex = resultIndex;
         this.fileno = fileno;
-        this.drsPos = drsPos;
+        this.pos = pos;
       }
 
       @Override
       public int compareTo(DataRecord o) {
         int r = fileno - o.fileno;
-        return (r == 0) ? (int) (drsPos - o.drsPos) : r;
+        return (r == 0) ? (int) (pos - o.pos) : r;
       }
     }
   }

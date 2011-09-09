@@ -53,6 +53,8 @@ import java.util.*;
  * @since 4/28/11
  */
 public class TimePartitionBuilder extends Grib2CollectionBuilder {
+  public static final String MAGIC_STARTP = "GribCollectionIndexTimePartitioned";
+
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartitionBuilder.class);
   static private final int versionTP = 2;
   static private final boolean trace = false;
@@ -374,8 +376,7 @@ public class TimePartitionBuilder extends Grib2CollectionBuilder {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     try {
       //// header message
-      String magic = tp.getMagicBytes();
-      raf.write(magic.getBytes("UTF-8"));
+      raf.write(MAGIC_STARTP.getBytes("UTF-8"));
       raf.writeInt(versionTP);
       raf.writeLong(0); // no record section
 

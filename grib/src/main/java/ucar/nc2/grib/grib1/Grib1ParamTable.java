@@ -35,10 +35,8 @@ package ucar.nc2.grib.grib1;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.junit.Ignore;
-import ucar.grib.GribResourceReader;
+import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.iosp.grid.GridParameter;
 
 import java.io.*;
 
@@ -107,12 +105,12 @@ public class Grib1ParamTable implements GribTables {
     return paramTables;
   }
 
-  public static GridParameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
+  public static Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
     Grib1ParamTable pt = getParameterTable(center, subcenter, tableVersion);
     return (pt == null) ? null : pt.getParameter(param_number);
   }
 
-  public static GridParameter getParameter(Grib1Record record) {
+  public static Grib1Parameter getParameter(Grib1Record record) {
     Grib1SectionProductDefinition pds = record.getPDSsection();
     return getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
   }
@@ -292,7 +290,7 @@ public class Grib1ParamTable implements GribTables {
   private int version;
   private String name;  // name of the table
   private String path; // path of filename containing this table
-  private Map<Integer, GridParameter> parameters; // param number -> param
+  private Map<Integer, Grib1Parameter> parameters; // param number -> param
 
   public Grib1ParamTable(String path) throws IOException {
     this.path = path;
@@ -333,7 +331,7 @@ public class Grib1ParamTable implements GribTables {
   }
 
   // debugging
-  public Map<Integer, GridParameter> getParameters() {
+  public Map<Integer, Grib1Parameter> getParameters() {
     if (parameters == null)
       readParameterTable();
     return parameters;
@@ -343,13 +341,13 @@ public class Grib1ParamTable implements GribTables {
    * Get the parameter with id. If not found, look in default table.
    *
    * @param id the parameter number
-   * @return the GridParameter, or null if not found
+   * @return the Grib1Parameter, or null if not found
    */
-  public GridParameter getParameter(int id) {
+  public Grib1Parameter getParameter(int id) {
     if (parameters == null)
       readParameterTable();
 
-    GridParameter p = parameters.get(id);
+    Grib1Parameter p = parameters.get(id);
     if (p != null) return p;
 
     // get out of the wmo table if possible
@@ -360,16 +358,16 @@ public class Grib1ParamTable implements GribTables {
     logger.warn("Grib1ParamTable: Could not find parameter " + id + " for center:" + center_id
             + " subcenter:" + subcenter_id + " number:" + version + " table " + filename);
     String unknown = "UnknownParameter_" + Integer.toString(id) + "_table_" + filename;
-    return new GridParameter(id, unknown, unknown, "Unknown", null); */
+    return new Grib1Parameter(id, unknown, unknown, "Unknown", null); */
   }
 
   /**
    * Get the parameter with id, but dont look in default table.
    *
    * @param id the parameter number
-   * @return the GridParameter, or null if not found
+   * @return the Grib1Parameter, or null if not found
    */
-  public GridParameter getLocalParameter(int id) {
+  public Grib1Parameter getLocalParameter(int id) {
     if (parameters == null)
       readParameterTable();
     return parameters.get(id);
@@ -396,7 +394,7 @@ public class Grib1ParamTable implements GribTables {
   //////////////////////////////////////////////////////////////////////////////////////
   // reading
 
-  private Map<Integer, GridParameter> readParameterTable() {
+  private Map<Integer, Grib1Parameter> readParameterTable() {
     if (name.endsWith(".tab"))
       readParameterTableTab();                               // wgrib format
     else if (name.endsWith(".wrf"))
@@ -436,7 +434,7 @@ TBLE2 cptec_254_params[] = {
 
   static private final Pattern nclPattern = Pattern.compile("\\{(\\d*)\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\".*");
   private boolean readParameterTableNcl() {
-    HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
+    HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
 
     InputStream is = null;
     try {
@@ -460,7 +458,7 @@ TBLE2 cptec_254_params[] = {
         Matcher m = nclPattern.matcher(line);
         if (!m.matches()) continue;
 
-        GridParameter parameter = new GridParameter();
+        Grib1Parameter parameter = new Grib1Parameter();
         try {
           int p1 = Integer.parseInt(m.group(1));
           parameter.setNumber(p1);
@@ -468,7 +466,7 @@ TBLE2 cptec_254_params[] = {
           logger.warn("Cant parse "+m.group(1)+ " in file "+path);
         }
         parameter.setName(m.group(4));
-        parameter.setDescription(GridParameter.cleanupDescription(m.group(2)));
+        parameter.setDescription(Grib1Parameter.cleanupDescription(m.group(2)));
         parameter.setUnit(m.group(3));
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
@@ -527,7 +525,7 @@ TBLE2 cptec_254_params[] = {
    */
 
   private boolean readParameterTableEcmwf() {
-    HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
+    HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
 
     InputStream is = null;
     try {
@@ -560,7 +558,7 @@ TBLE2 cptec_254_params[] = {
         line = br.readLine();
         String notes = (line == null || line.startsWith("...")) ? null : line.trim();
 
-        GridParameter parameter = new GridParameter();
+        Grib1Parameter parameter = new Grib1Parameter();
         try {
           int p1 = Integer.parseInt(num);
           parameter.setNumber(p1);
@@ -568,7 +566,7 @@ TBLE2 cptec_254_params[] = {
           logger.warn("Cant parse "+num+ " in file "+path);
         }
         parameter.setName(name);
-        parameter.setDescription(GridParameter.cleanupDescription(desc));
+        parameter.setDescription(Grib1Parameter.cleanupDescription(desc));
         parameter.setUnit(units1);
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
@@ -612,7 +610,7 @@ TBLE2 cptec_254_params[] = {
       org.jdom.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
+      HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
 
       List<Element> params = root.getChildren("tr");
       for (Element elem1 : params) {
@@ -624,7 +622,7 @@ TBLE2 cptec_254_params[] = {
         String units = elems.get(2).getText();
         String name = elems.get(3).getText();
 
-        GridParameter parameter = new GridParameter(code, name, desc, units);
+        Grib1Parameter parameter = new Grib1Parameter(code, name, desc, units);
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
       }
@@ -663,7 +661,7 @@ TBLE2 cptec_254_params[] = {
       org.jdom.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
+      HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
 
       List<Element> params = root.getChildren("parameter");
       for (Element elem1 : params) {
@@ -674,7 +672,7 @@ TBLE2 cptec_254_params[] = {
         if (units == null) units = "";
         String name = elem1.getChildText("shortName");
         String cf = elem1.getChildText("CF");
-        GridParameter parameter = new GridParameter(code, name, desc, units, cf);
+        Grib1Parameter parameter = new Grib1Parameter(code, name, desc, units, cf);
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
       }
@@ -699,7 +697,7 @@ TBLE2 cptec_254_params[] = {
 
   // order: num, name, desc, unit
   private boolean readParameterTableSplit(String regexp, int[] order) {
-    HashMap<Integer, GridParameter> result = new HashMap<Integer, GridParameter>();
+    HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
 
     InputStream is = null;
     try {
@@ -716,10 +714,10 @@ TBLE2 cptec_254_params[] = {
         if ((line.length() == 0) || line.startsWith("#")) continue;
         String[] flds = line.split(regexp);
 
-        GridParameter parameter = new GridParameter();
+        Grib1Parameter parameter = new Grib1Parameter();
         parameter.setNumber(Integer.parseInt(flds[order[0]].trim())); // must have a number
         if (order[1] >= 0) parameter.setName(flds[order[1]].trim());
-        parameter.setDescription(GridParameter.cleanupDescription(flds[order[2]].trim()));
+        parameter.setDescription(Grib1Parameter.cleanupDescription(flds[order[2]].trim()));
         if (flds.length > order[3]) parameter.setUnit(flds[order[3]].trim());
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
@@ -758,14 +756,14 @@ TBLE2 cptec_254_params[] = {
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
       br.readLine(); // skip a line
 
-      HashMap<Integer, GridParameter> params = new HashMap<Integer, GridParameter>(); // thread safe - local var
+      HashMap<Integer, Grib1Parameter> params = new HashMap<Integer, Grib1Parameter>(); // thread safe - local var
       while (true) {
         String line = br.readLine();
         if (line == null) break;
         if ((line.length() == 0) || line.startsWith("#")) continue;
         String[] tableDefArr = line.split(":");
 
-        GridParameter parameter = new GridParameter();
+        Grib1Parameter parameter = new Grib1Parameter();
         parameter.setNumber(Integer.parseInt(tableDefArr[0].trim()));
         parameter.setName(tableDefArr[1].trim());
         // check to see if unit defined, if not, parameter is undefined

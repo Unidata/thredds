@@ -32,7 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
-import ucar.grib.GribNumbers;
+import ucar.nc2.grib.GribNumbers;
 import ucar.ma2.Array;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.util.Misc;

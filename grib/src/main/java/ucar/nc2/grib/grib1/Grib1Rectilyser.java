@@ -36,7 +36,6 @@ import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
-import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -207,22 +206,23 @@ public class Grib1Rectilyser {
 
   private VertCoord makeVertCoord(VariableBag vb) {
     Grib1SectionProductDefinition pdsFirst = vb.first.getPDSsection();
-    Grib1ParamLevel plevel = pdsFirst.getParamLevel();
-    boolean isLayer = plevel.isLayer();
+    Grib1ParamLevel plevelFirst = pdsFirst.getParamLevel();
+    boolean isLayer = plevelFirst.isLayer();
+    boolean isPositiveUp = plevelFirst.isPositiveUp();
 
     Set<VertCoord.Level> coords = new HashSet<VertCoord.Level>();
 
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
-      r.vcCoord = new VertCoord.Level(pds.getLevelValue1(), pds.getLevelValue2());
+      Grib1ParamLevel plevel = pds.getParamLevel();
+      r.vcCoord = new VertCoord.Level(plevel.getValue1(), plevel.getValue2());
       coords.add(r.vcCoord);
     }
 
     List<VertCoord.Level> vlist = new ArrayList<VertCoord.Level>(coords);
     Collections.sort(vlist);
-    if (!plevel.isPositiveUp()) {
+    if (isPositiveUp)
       Collections.reverse(vlist);
-    }
 
     VertCoord.VertUnit vertUnit = Grib1ParamLevel.getLevelUnit(pdsFirst.getLevelType());
     return new VertCoord(vlist, vertUnit, isLayer);

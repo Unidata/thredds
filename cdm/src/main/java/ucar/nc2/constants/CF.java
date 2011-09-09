@@ -224,10 +224,6 @@ maybe:
   }
      */
 
-    /**
-     *
-     * @deprecated - see GribTables
-     */
     public static CellMethods convertGribCodeTable4_10(int code) {
       switch (code) {
         case 0:
@@ -249,7 +245,62 @@ maybe:
         default:
           return null;
       }
+    }
 
+    /*
+      static public StatType getStatType(int timeType) {
+    switch (timeType) {
+      case 3:
+      case 6:
+      case 7:
+      case 51:
+      case 113:
+      case 115:
+      case 117:
+      case 123:
+        return StatType.Average;
+      case 4:
+      case 114:
+      case 116:
+      case 124:
+        return StatType.Accumulation;
+      case 5:
+        return StatType.Difference;
+      case 118:
+        return StatType.Variance;
+      case 119:
+      case 125:
+        return StatType.StdDev;
+    }
+    return null;
+  }
+     */
+
+  public static CellMethods convertGrib1code(int code) {
+      switch (code) {
+      case 3:
+      case 6:
+      case 7:
+      case 51:
+      case 113:
+      case 115:
+      case 117:
+      case 123:
+        return CellMethods.mean; // "Average";
+      case 4:
+      case 114:
+      case 116:
+      case 124:
+        return CellMethods.sum; // "Accumulation";
+      //case 5:
+      //  return StatType.Difference;
+      case 118:
+        return CellMethods.variance;
+      case 119:
+      case 125:
+        return CellMethods.standard_deviation; // "StandardDeviation";
+    }
+    return null;
     }
   }
 

@@ -155,4 +155,24 @@ public class CalendarPeriod {
   public String toString() {
     return value + " " + field;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CalendarPeriod that = (CalendarPeriod) o;
+
+    if (value != that.value) return false;
+    if (field != that.field) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = value;
+    result = 31 * result + (field != null ? field.hashCode() : 0);
+    return result;
+  }
 }

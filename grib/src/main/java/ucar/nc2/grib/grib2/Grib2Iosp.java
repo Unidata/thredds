@@ -174,10 +174,10 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    byte[] b = new byte[GribCollection.MAGIC_START.length()];  // also matches GribCollectionTimePartitioned
+    byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.length()];  // LOOK NOT also matches GribCollectionTimePartitioned
     raf.readFully(b);
     String magic = new String(b);
-    if (magic.equals(GribCollection.MAGIC_START)) return true;
+    if (magic.equals(Grib2CollectionBuilder.MAGIC_START)) return true;
 
     // check for GRIB2 file
     return Grib2RecordScanner.isValidFile(raf);
@@ -214,7 +214,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     if (isGrib) {
       Grib2Index index = new Grib2Index();
       Formatter f= new Formatter();
-      this.gribCollection = index.makeCollection(raf, CollectionManager.Force.test, f);
+      this.gribCollection = index.makeCollection(raf, CollectionManager.Force.test, f, 2);
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor
@@ -239,10 +239,10 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     } else { // read in entire collection
 
       raf.seek(0);
-      byte[] b = new byte[TimePartition.MAGIC_STARTP.length()];
+      byte[] b = new byte[TimePartitionBuilder.MAGIC_STARTP.length()];
       raf.readFully(b);
       String magic = new String(b);
-      isTimePartitioned = magic.equals(TimePartition.MAGIC_STARTP);
+      isTimePartitioned = magic.equals(TimePartitionBuilder.MAGIC_STARTP);
 
       String location = raf.getLocation();
       File f = new File(location);
@@ -280,8 +280,8 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Background generating process identifier (defined by originating centre)", val));
 
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.5"));
-    ncfile.addAttribute(null, new Attribute("history", "Read using CDM IOSP GribCollection"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.6"));
+    ncfile.addAttribute(null, new Attribute("history", "Read using CDM IOSP Grib2Collection"));
     ncfile.addAttribute(null, new Attribute("featureType", "GRID"));
     for (Parameter p : gribCollection.getParams())
       ncfile.addAttribute(null, new Attribute(p));
@@ -665,7 +665,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
           GribCollection.Record record = vindex.records[recordIndex];
 
           // add this record to be read
-          dataReader.addRecord(vindex, val.getPartition(), record.fileno, record.drsPos, resultIndex);
+          dataReader.addRecord(vindex, val.getPartition(), record.fileno, record.pos, resultIndex);
         }
       }
     }
@@ -831,7 +831,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     void addRecord(int ensIdx, int timeIdx, int levIdx, int resultIndex) {
       int recordIndex = GribCollection.calcIndex(timeIdx, ensIdx, levIdx, vindex.nens, vindex.nverts);
       GribCollection.Record record = vindex.records[recordIndex];
-      records.add(new DataRecord(timeIdx, ensIdx, levIdx, resultIndex, record.fileno, record.drsPos));
+      records.add(new DataRecord(timeIdx, ensIdx, levIdx, resultIndex, record.fileno, record.pos));
     }
 
     void read(DataReceiver dataReceiver) throws IOException {

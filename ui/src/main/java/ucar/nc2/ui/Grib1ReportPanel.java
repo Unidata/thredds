@@ -35,12 +35,10 @@ package ucar.nc2.ui;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
-import ucar.grib.grib1.*;
-import ucar.grib.grib1.Grib1Record;
+import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.grib1.*;
 import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
@@ -227,7 +225,7 @@ public class Grib1ReportPanel extends JPanel {
         }
 
 
-        GridParameter param = table.getParameter(number);
+        Grib1Parameter param = table.getParameter(number);
         if (param == null) {
           fm.format("  Missing parameter = %s (%d) %n", currName, number);
           miss++;
@@ -301,7 +299,6 @@ public class Grib1ReportPanel extends JPanel {
 
   }
 
-
   /////////////////////////////////////////////////////////////////
 
   private void doCheckTables(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
@@ -330,18 +327,17 @@ public class Grib1ReportPanel extends JPanel {
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
-      Grib1Input reader = new Grib1Input(raf);
-      reader.scan(false, false);
-      for (Grib1Record gr : reader.getRecords()) {
-        gr.getPDS();
-        Grib1Pds pds = gr.getPDS().getPdsVars();
-        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getParameterTableVersion();
+      Grib1RecordScanner reader = new Grib1RecordScanner(raf);
+      while (reader.hasNext()) {
+        ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+        Grib1SectionProductDefinition pds = gr.getPDSsection();
+        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
         tableSet.count(key);
 
         if (pds.getParameterNumber() > 127)
           local.count(key);
 
-        Grib1ParamTable table = Grib1ParamTable.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getParameterTableVersion());
+        Grib1ParamTable table = Grib1ParamTable.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
         if (table == null && useIndex) table = Grib1ParamTable.getDefaultTable();
         if (table == null || null == table.getParameter(pds.getParameterNumber()))
           missing.count(key);

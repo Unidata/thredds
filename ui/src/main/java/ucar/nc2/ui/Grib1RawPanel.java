@@ -56,7 +56,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Description
+ * Refactored Grib1 raw access
  *
  * @author John
  * @since 9/3/11
@@ -326,7 +326,7 @@ public class Grib1RawPanel extends JPanel {
     Grib1SectionProductDefinition pds;
     List<RecordBean> records;
     String header;
-    GridParameter param;
+    Grib1Parameter param;
 
     // no-arg constructor
 

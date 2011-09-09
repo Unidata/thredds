@@ -33,7 +33,8 @@
 package ucar.nc2.grib;
 
 import thredds.inventory.CollectionManager;
-import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
+//import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -42,7 +43,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Description
+ * Abstraction for Grib1Index and Grib2Index so GribCollection can handle both.
  *
  * @author John
  * @since 9/5/11
@@ -51,7 +52,7 @@ public abstract class GribIndex {
   public static final String IDX_EXT = ".gbx9";
   public static final boolean debug = true;
 
-  public GribCollection makeCollection(RandomAccessFile raf, CollectionManager.Force force, Formatter f) throws IOException {
+  public GribCollection makeCollection(RandomAccessFile raf, CollectionManager.Force force, Formatter f, int edition) throws IOException {
     boolean write = false, rewrite = false;
 
     String filename = raf.getLocation();
@@ -65,12 +66,15 @@ public abstract class GribIndex {
     // make or remake the index
     if (!readOk) {
       makeIndex(filename, f);
-      f.format("  Index written: %s%n", filename + Grib2Index.IDX_EXT);
+      f.format("  Index written: %s%n", filename + IDX_EXT);
     } else if (debug) {
-      f.format("  Index read: %s%n", filename + Grib2Index.IDX_EXT);
+      f.format("  Index read: %s%n", filename + IDX_EXT);
     }
 
-    return Grib2CollectionBuilder.createFromSingleFile(dataFile, f);
+    if (edition == 1)
+      return Grib1CollectionBuilder.createFromSingleFile(dataFile, f);
+    else
+      return Grib2CollectionBuilder.createFromSingleFile(dataFile, f);
   }
 
   public abstract boolean readIndex(String location, long dataModified, CollectionManager.Force force) throws IOException;

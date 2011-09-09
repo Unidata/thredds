@@ -1,0 +1,207 @@
+/*
+ * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+package ucar.nc2.grib.grib1;
+
+import ucar.unidata.util.StringUtil2;
+
+/**
+ * Description
+ *
+ * @author John
+ * @since 9/8/11
+ */
+public class Grib1Parameter {
+
+  static public String cleanupUnits(String unit) {
+    if (unit == null) return null;
+    if (unit.equalsIgnoreCase("-")) unit = "";
+    else {
+      if (unit.startsWith("/")) unit = "1" + unit;
+      unit = unit.trim();
+      unit = StringUtil2.remove(unit, "**");
+      StringBuilder sb = new StringBuilder(unit);
+      StringUtil2.remove(sb, "^[]");
+      StringUtil2.replace(sb, ' ', ".");
+      StringUtil2.replace(sb, '*', ".");
+      unit = sb.toString();
+    }
+    return unit;
+  }
+
+  static public String cleanupDescription(String desc) {
+    if (desc == null) return null;
+    int pos = desc.indexOf("(see");
+    if (pos > 0) desc = desc.substring(0, pos);
+
+    StringBuilder sb = new StringBuilder(desc.trim());
+    StringUtil2.remove(sb, ".;,=[]()/");
+    return sb.toString().trim();
+  }
+
+  protected int number;
+  protected String name;
+  protected String description;
+  protected String unit;
+  protected String cf_name; // CF standard name, if it exists
+
+  public Grib1Parameter() {
+    number = -1;
+    name = "undefined";
+    description = "undefined";
+    unit = "undefined";
+  }
+
+  public Grib1Parameter(int number, String name, String description, String unit) {
+    this.number = number;
+    setName(name);
+    setDescription(description);
+    setUnit(unit);
+  }
+
+  public Grib1Parameter(int number, String name, String description, String unit, String cf_name) {
+    this.number = number;
+    setName(name);
+    setDescription(description);
+    setUnit(unit);
+    this.cf_name = cf_name;
+  }
+
+  public final int getNumber() {
+    return number;
+  }
+
+  public final String getName() {
+    return name;
+  }
+
+  /**
+   * description of parameter.
+   *
+   * @return description
+   */
+  public final String getDescription() {
+    return description;
+  }
+
+  /**
+   * unit of parameter.
+   *
+   * @return unit
+   */
+  public final String getUnit() {
+    return unit;
+  }
+
+  public String getCFname() {
+    return cf_name;
+  }
+
+  /**
+   * sets number of parameter.
+   *
+   * @param number of parameter
+   */
+  public final void setNumber(int number) {
+    this.number = number;
+  }
+
+  /**
+   * sets name of parameter.
+   *
+   * @param name of parameter
+   */
+  public final void setName(String name) {
+    if (name != null)
+      this.name = StringUtil2.replace(name, ' ', "_"); // replace blanks
+  }
+
+  /**
+   * sets description of parameter.
+   *
+   * @param description of parameter
+   */
+  public final void setDescription(String description) {
+    this.description = cleanupDescription(description);
+  }
+
+  /**
+   * sets unit of parameter.
+   *
+   * @param unit of parameter
+   */
+  public final void setUnit(String unit) {
+    this.unit = cleanupUnits(unit);
+  }
+
+  /**
+   * Return a String representation of this object
+   *
+   * @return a String representation of this object
+   */
+  @Override
+  public String toString() {
+    return "GridParameter{" +
+            "number=" + number +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", unit='" + unit + '\'' +
+            '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Grib1Parameter that = (Grib1Parameter) o;
+
+    if (number != that.number) return false;
+    if (cf_name != null ? !cf_name.equals(that.cf_name) : that.cf_name != null) return false;
+    if (description != null ? !description.equals(that.description) : that.description != null) return false;
+    if (name != null ? !name.equals(that.name) : that.name != null) return false;
+    if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = number;
+    result = 31 * result + (name != null ? name.hashCode() : 0);
+    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + (unit != null ? unit.hashCode() : 0);
+    result = 31 * result + (cf_name != null ? cf_name.hashCode() : 0);
+    return result;
+  }
+}
+

@@ -54,7 +54,6 @@ import java.util.*;
  */
 public class TimePartition extends Grib2Collection {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
-  public static final String MAGIC_STARTP = "Grib2CollectionIndexTimePartitioned";
 
   Map<String, Partition> partitionMap;
   List<Partition> partitions;
@@ -135,7 +134,7 @@ public class TimePartition extends Grib2Collection {
                           int intvType, int ensDerivedType, int probType, String probabilityName,
                           int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
-      super(g, discipline, category, parameter, levelType, isLayer, intvType, ensDerivedType, probType, probabilityName,
+      super(g, 0,discipline, category, parameter, levelType, isLayer, intvType, ensDerivedType, probType, probabilityName,
               cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
     }
 
@@ -162,11 +161,6 @@ public class TimePartition extends Grib2Collection {
 
   TimePartition(String name, File directory) {
     super(name, directory);
-  }
-
-  @Override
-  public String getMagicBytes() {
-    return MAGIC_STARTP;
   }
 
   @Override

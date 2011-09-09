@@ -69,7 +69,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * ToolsUI/Iosp/Grib2 - indexed access
+ * ToolsUI/Iosp/Grib2 - seems to be old Grib2 and Grib1
  *
  * @author caron
  * @since Aug 15, 2008

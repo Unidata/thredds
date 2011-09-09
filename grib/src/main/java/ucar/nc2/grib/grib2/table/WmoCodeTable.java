@@ -35,8 +35,6 @@ package ucar.nc2.grib.grib2.table;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import ucar.grib.grib2.ParameterTable;
-import ucar.nc2.iosp.grid.GridParameter;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -602,7 +600,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
 
-  public static void showDiffFromCurrent(List<WmoCodeTable> tlist) throws IOException {
+  /* public static void showDiffFromCurrent(List<WmoCodeTable> tlist) throws IOException {
     int total = 0;
     int nsame = 0;
     int nsameIgn = 0;
@@ -637,7 +635,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       }
     }
     System.out.printf("Total=%d same=%d sameIgn=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknown);
-  }
+  } */
 
   static String munge(String org) {
     String result = StringUtil2.remove(org, "_");
@@ -663,8 +661,6 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
     WmoTables gt61 = readGribCodes(Version.GRIB2_6_0_1);
     //showTable(gt61.list);
-    showDiffFromCurrent(gt61.list);
-
     //showDiff(gt52, gt61, true);
     //System.out.printf("%n");
     //showDiff(gt61, gt52, false);

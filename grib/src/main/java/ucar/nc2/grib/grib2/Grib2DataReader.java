@@ -32,8 +32,6 @@
 
 package ucar.nc2.grib.grib2;
 
-import ucar.grib.grib2.Grib2DataSection;
-import ucar.jpeg.jj2000.j2k.decoder.Decoder;
 import ucar.jpeg.jj2000.j2k.decoder.Grib2JpegDecoder;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
@@ -68,8 +66,7 @@ public class Grib2DataReader {
 
   private boolean[] bitmap;
 
-  public Grib2DataReader(int dataTemplate, int totalNPoints, int dataNPoints, int scanMode, int nx,
-                         long startPos, int dataLength) {
+  public Grib2DataReader(int dataTemplate, int totalNPoints, int dataNPoints, int scanMode, int nx, long startPos, int dataLength) {
     this.dataTemplate = dataTemplate;
     this.totalNPoints = totalNPoints;
     this.dataNPoints = dataNPoints;

@@ -32,7 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
-import ucar.grib.GribNumbers;
+import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -42,7 +42,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Scan files and extract Grib1Records.
+ * Scan files and extract Grib1Records. usage:
+ * <pre>
+    Grib1RecordScanner reader = new Grib1RecordScanner(raf);
+    while (reader.hasNext()) {
+      ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+      Grib1SectionProductDefinition pds = gr.getPDSsection();
+      Grib1SectionGridDefinition gds = gr.getGDSsection();
+     ...
+    }
+
+ </pre>
  *
  * @author John
  * @since 9/3/11
@@ -130,7 +140,7 @@ public class Grib1RecordScanner {
       Grib1SectionBinaryData dataSection = new Grib1SectionBinaryData(raf);
       if (dataSection.getStartingPosition() + dataSection.getLength() > is.getEndPos()) { // presumably corrupt
         raf.seek(dataSection.getStartingPosition()); // go back to start of the dataSection, in hopes of salvaging
-        log.warn("BAD GRIB-2 data message at " + dataSection.getStartingPosition() + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
+        log.warn("BAD GRIB-1 data message at " + dataSection.getStartingPosition() + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
         throw new IllegalStateException("Illegal Grib1SectionBinaryData Message Length");
       }
 
@@ -185,28 +195,6 @@ public class Grib1RecordScanner {
     }
 
     return null; // last record was incomplete
-  }
-
-  /*
-   * tricky bit of business. recapture the entire record based on drs position - for extracting a message
-   * for validation.
-   * @param raf             from this RandomAccessFile
-   * @param drsPos          Grib1SectionDataRepresentation starts here
-   */
-  static public Grib1Record findRecordByDrspos(RandomAccessFile raf, long drsPos) throws IOException {
-    Grib1Record result = null;
-    Grib1RecordScanner scanner = new Grib1RecordScanner(raf);
-    long pos = Math.max(0, drsPos-10000); // go back 10000 bytes
-    raf.seek(pos);
-    while (scanner.hasNext()) {  // find GRIB header
-      result = scanner.next();
-      if (result.getDataSection().getStartingPosition() == drsPos)
-        return result;
-      if (raf.getFilePointer() > drsPos)
-        break;
-    }
-    return null;
-
   }
 
   public static void main(String[] args) throws IOException {

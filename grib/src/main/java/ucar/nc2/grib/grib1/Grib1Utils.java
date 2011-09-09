@@ -32,8 +32,6 @@
 
 package ucar.nc2.grib.grib1;
 
-import ucar.nc2.iosp.grid.GridParameter;
-import ucar.nc2.time.CalendarPeriod;
 
 /**
  * static utilities for Grib-1
@@ -392,7 +390,7 @@ public class Grib1Utils {
   }
 
   static public String getVariableName(Grib1Record record) {
-    GridParameter param = Grib1ParamTable.getParameter(record);
+    Grib1Parameter param = Grib1ParamTable.getParameter(record);
     return param == null ? "UNKNOWN" : param.getDescription();
   }
 

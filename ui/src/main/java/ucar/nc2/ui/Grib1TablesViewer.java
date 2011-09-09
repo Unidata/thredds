@@ -1,8 +1,8 @@
 package ucar.nc2.ui;
 
-import ucar.grib.GribResourceReader;
-//import ucar.grib.grib1.GribPDSParamTable;
+import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.Grib1ParamTable;
+import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.ui.dialog.Grib1TableCompareDialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -202,7 +202,7 @@ public class Grib1TablesViewer extends JPanel {
   }
 
   private void setEntries(Grib1ParamTable table) {
-    Map<Integer, GridParameter> map = table.getParameters();
+    Map<Integer, Grib1Parameter> map = table.getParameters();
     if (map == null) {
       System.out.println("HEY");
       map = table.getParameters();
@@ -237,7 +237,7 @@ public class Grib1TablesViewer extends JPanel {
     infoTA.setText("Entry:" + ebean.getNumber() + "\n");
     for (Object bean : codeTable.getBeans()) {
       TableBean tbean = (TableBean) bean;
-      GridParameter p = tbean.table.getLocalParameter(ebean.getNumber());
+      Grib1Parameter p = tbean.table.getLocalParameter(ebean.getNumber());
       if (p != null) f.format(" %s from %s (%d)%n", p, tbean.table.getName(), tbean.table.getParameters().hashCode());
     }
 
@@ -259,14 +259,14 @@ public class Grib1TablesViewer extends JPanel {
 
   private void compare(Grib1ParamTable t1, Grib1ParamTable t2, Grib1TableCompareDialog.Data data, Formatter out) {
     out.format("Compare%n %s%n %s%n", t1.toString(), t2.toString());
-    Map<Integer, GridParameter> h1 = t1.getParameters();
-    Map<Integer, GridParameter> h2 = t2.getParameters();
+    Map<Integer, Grib1Parameter> h1 = t1.getParameters();
+    Map<Integer, Grib1Parameter> h2 = t2.getParameters();
     List<Integer> keys = new ArrayList<Integer>(h1.keySet());
     Collections.sort(keys);
 
     for (Integer key : keys) {
-      GridParameter d1 = h1.get(key);
-      GridParameter d2 = h2.get(key);
+      Grib1Parameter d1 = h1.get(key);
+      Grib1Parameter d2 = h2.get(key);
       if (d2 == null) {
         if (data.showMissing) out.format("**No key %s (%s) in second table%n", key, d1);
       } else {
@@ -306,8 +306,8 @@ public class Grib1TablesViewer extends JPanel {
       keys = new ArrayList<Integer>(h2.keySet());
       Collections.sort(keys);
       for (Integer key : keys) {
-        GridParameter d1 = h1.get(key);
-        GridParameter d2 = h2.get(key);
+        Grib1Parameter d1 = h1.get(key);
+        Grib1Parameter d2 = h2.get(key);
         if (d1 == null)
           out.format("**No key %s (%s) in first table%n", key, d2);
       }
@@ -324,17 +324,17 @@ public class Grib1TablesViewer extends JPanel {
 
   private void compareAll(Grib1ParamTable t1, Grib1TableCompareDialog.Data data, Formatter out) {
     out.format("CompareAll %s%n", t1.toString());
-    Map<Integer, GridParameter> h1 = t1.getParameters();
+    Map<Integer, Grib1Parameter> h1 = t1.getParameters();
     List<Integer> keys = new ArrayList<Integer>(h1.keySet());
     Collections.sort(keys);
 
     for (Integer key : keys) {
-      GridParameter d1 = h1.get(key);
+      Grib1Parameter d1 = h1.get(key);
       out.format("%n--- %s%n", d1);
 
       for (Object bean : codeTable.getBeans()) {
         TableBean tbean = (TableBean) bean;
-        GridParameter d2 = tbean.table.getLocalParameter(d1.getNumber());
+        Grib1Parameter d2 = tbean.table.getLocalParameter(d1.getNumber());
         if (d2 != null) {
           boolean descDiff = data.compareDesc &&  !equiv(d1.getDescription(), d2.getDescription());
           boolean namesDiff = data.compareNames &&  !equiv(d1.getName(), d2.getName());
@@ -419,13 +419,13 @@ public class Grib1TablesViewer extends JPanel {
   }
 
   public class EntryBean {
-    GridParameter param;
+    Grib1Parameter param;
 
     // no-arg constructor
     public EntryBean() {
     }
 
-    public EntryBean(GridParameter param) {
+    public EntryBean(Grib1Parameter param) {
       this.param = param;
     }
 

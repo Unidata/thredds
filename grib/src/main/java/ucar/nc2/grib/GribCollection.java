@@ -59,7 +59,6 @@ import java.util.*;
 public abstract class GribCollection {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   public static final String IDX_EXT = ".ncx";
-  public static final String MAGIC_START = "Grib2CollectionIndex";
 
   /* disk cache for .ncx files
   private static DiskCache2 diskCache = null;
@@ -201,6 +200,7 @@ public abstract class GribCollection {
     return -1;
   }
 
+  // must override to pass in the iosp
   static protected class MyNetcdfFile extends NetcdfFile {
     public MyNetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
       super(spi, raf, location, cancelTask);
@@ -233,7 +233,7 @@ public abstract class GribCollection {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  // these objects are created from the index.
+  // these objects are created from the ncx index.
 
   public class GroupHcs implements Comparable<GroupHcs> {
     public GdsHorizCoordSys hcs;
@@ -368,15 +368,17 @@ public abstract class GribCollection {
     }
   }   */
 
-  public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
+  public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int tableVersion,
+                         int discipline, int category, int parameter, int levelType, boolean isLayer,
                          int intvType, int ensDerivedType, int probType, String probabilityName,
                          int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
-    return new VariableIndex(g, discipline, category, parameter, levelType, isLayer, intvType, ensDerivedType,
-      probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+    return new VariableIndex(g, tableVersion, discipline, category, parameter, levelType, isLayer,
+      intvType, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   public class VariableIndex implements Comparable<VariableIndex> {
+    public final int tableVersion;
     public final int discipline, category, parameter, levelType, intvType, ensDerivedType, probType;  // uniquely identifies the variable
     public final String probabilityName;                                                              // uniquely identifies the variable
     public final boolean isLayer;              // uniquely identifies the variable
@@ -391,10 +393,12 @@ public abstract class GribCollection {
 
     int partTimeCoordIdx; // partition time coordinate index
 
-    public VariableIndex(GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
+    public VariableIndex(GroupHcs g, int tableVersion,
+                         int discipline, int category, int parameter, int levelType, boolean isLayer,
                          int intvType, int ensDerivedType, int probType, String probabilityName,
                          int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
       this.group = g;
+      this.tableVersion = tableVersion;
       this.discipline = discipline;
       this.category = category;
       this.parameter = parameter;
@@ -491,7 +495,7 @@ public abstract class GribCollection {
         Record[] recordsTemp = new Record[n];
         for (int i = 0; i < n; i++) {
           GribCollectionProto.Record pr = proto.getRecords(i);
-          recordsTemp[i] = new Record(pr.getFileno(), pr.getDrsPos());
+          recordsTemp[i] = new Record(pr.getFileno(), pr.getPos());
         }
         records = recordsTemp; // switch all at once - worse case is it gets read more than once
       }
@@ -499,7 +503,7 @@ public abstract class GribCollection {
 
     @Override
     public int compareTo(VariableIndex o) {
-      int r = discipline - o.discipline;
+      int r = discipline - o.discipline;  // LOOK add center, subcenter, version?
       if (r != 0) return r;
       r = category - o.category;
       if (r != 0) return r;
@@ -514,11 +518,11 @@ public abstract class GribCollection {
 
   public static class Record {
     public int fileno;
-    public long drsPos;
+    public long pos;
 
-    public Record(int fileno, long drsPos) {
+    public Record(int fileno, long pos) {
       this.fileno = fileno;
-      this.drsPos = drsPos;
+      this.pos = pos;
     }
   }
 
@@ -545,10 +549,6 @@ public abstract class GribCollection {
 
   public GribCollection.GroupHcs makeGroup() {
     return new GribCollection.GroupHcs();
-  }
-
-  public String getMagicBytes() {
-    return MAGIC_START;
   }
 
 }

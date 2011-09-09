@@ -143,7 +143,7 @@ public class Grib1Index extends GribIndex {
         }
 
         int size = NcStream.readVInt(fin);
-        if (size < 0 || size > 10 * 1000) // ??
+        if (size <= 0 || size > 100 * 1000 * 1000) // try to catch garbage
           throw new IOException("Grib1Index bad for " +filename);
 
         byte[] m = new byte[size];

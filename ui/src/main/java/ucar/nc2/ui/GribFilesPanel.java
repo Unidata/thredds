@@ -34,17 +34,13 @@ package ucar.nc2.ui;
 
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
-import ucar.grib.NoValidGribException;
-import ucar.grib.grib1.Grib1Input;
-import ucar.grib.grib1.Grib1Pds;
-import ucar.grib.grib1.Grib1Record;
-import ucar.grib.grib2.Grib2IndicatorSection;
-import ucar.nc2.grib.grib1.Grib1ParamTable;
+import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
+import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -61,7 +57,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Describe
+ * Examine collections of grib files. Currently only handling Grib1
  *
  * @author caron
  * @since 4/4/11
@@ -123,7 +119,7 @@ public class GribFilesPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Grib1Bean pb = (Grib1Bean) grib1Table.getSelectedBean();
         if (pb == null) return;
-        GribFilesPanel.this.firePropertyChange("openGribRaw", null, pb.m.getPath());
+        GribFilesPanel.this.firePropertyChange("openGrib1Raw", null, pb.m.getPath());
       }
     });
 
@@ -143,11 +139,11 @@ public class GribFilesPanel extends JPanel {
       }
     });
 
-      varPopup.addAction("Open in Grib2n", new AbstractAction() {
+      varPopup.addAction("Open in Grib2collecion", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib2Bean pb = (Grib2Bean) grib2Table.getSelectedBean();
         if (pb == null) return;
-        GribFilesPanel.this.firePropertyChange("openGrib2n", null, pb.m.getPath());
+        GribFilesPanel.this.firePropertyChange("openGrib2c", null, pb.m.getPath());
       }
     });
 
@@ -216,7 +212,7 @@ public class GribFilesPanel extends JPanel {
     grib1Table.setBeans(files);
   }
 
-  public Object getGribBean(MFile ff) {
+  private Object getGribBean(MFile ff) {
     String path = ff.getPath();
     RandomAccessFile raf = null;
     try {
@@ -227,13 +223,11 @@ public class GribFilesPanel extends JPanel {
        if (!raf.searchForward(matcher, 8000)) {  // must find "GRIB" in first 8k
          return null;
        }
-       raf.skipBytes(4);
-       //  Read Section 0 Indicator Section to get Edition number
-       Grib2IndicatorSection is = new Grib2IndicatorSection(raf);  // section 0
-       int edition = is.getGribEdition();
+       raf.skipBytes(7);
+       int edition = raf.read(); // always at byte 8
 
        if (edition == 1)
-         return getGrib1Bean(ff, raf);
+         return getFirstGrib1Bean(ff, raf);
        //else if (edition == 2)
        //  setGribFile2(raf);
 
@@ -250,24 +244,14 @@ public class GribFilesPanel extends JPanel {
     return null;
  }
 
-  Object getGrib1Bean(MFile mf, RandomAccessFile raf) throws IOException, NoValidGribException {
-    Grib1Input reader = new Grib1Input(raf);
-    raf.seek(0);
-    reader.scan(false, true);
-    List<Grib1Record> records = reader.getRecords();
-    Grib1Record first = records.get(0);
+  Object getFirstGrib1Bean(MFile mf, RandomAccessFile raf) throws IOException {
+    Grib1Record first = null;
+    Grib1RecordScanner reader = new Grib1RecordScanner(raf);
+    while (reader.hasNext()) {
+      first = reader.next();
+      break;
+    }
     return new Grib1Bean(mf, first);
-  }
-
-  // see ggr.cdmVariableHash() {
-
-  public int makeUniqueId(Grib1Pds pds) {
-    int result = 17;
-    result += result * 37 + pds.getParameterNumber();
-    result *= result * 37 + pds.getLevelType1();
-    if (pds.isEnsemble())
-      result *= result * 37 + 1;
-    return result;
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -314,13 +298,17 @@ public class GribFilesPanel extends JPanel {
     MFile m;
     Grib1Record first;
     Grib1ParamTable table;
+    Grib1SectionProductDefinition pds;
 
     public Grib1Bean() {
+      System.out.println("HEY");
     }
 
     public Grib1Bean(MFile m, Grib1Record first) {
       this.m = m;
       this.first = first;
+      pds = first.getPDSsection();
+      table = Grib1ParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
     }
 
     public final String getPath() {
@@ -328,38 +316,34 @@ public class GribFilesPanel extends JPanel {
     }
 
     public int getTableVersion() {
-      return first.getPDS().getTableVersion();
+      return pds.getTableVersion();
     }
 
     public int getCenter() {
-      return first.getPDS().getCenter();
+      return pds.getCenter();
     }
 
     public String getCenterName() {
-      return first.getPDS().getCenterName();
+      return CommonCodeTable.getCenterName(getCenter(), 1);
     }
 
     public int getSubCenter() {
-      return first.getPDS().getSubCenter();
+      return pds.getSubCenter();
     }
 
     public String getSubCenterName() {
-      return first.getPDS().getSubCenterName();
+      return CommonCodeTable.getSubCenterName(getCenter(), getSubCenter());
     }
 
     public int getTimeUnit() {
-      return first.getPDS().getTimeRange();
+      return pds.getTimeUnit();
     }
 
     public String getTable() {
-      if (table == null)
-        table = Grib1ParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
       return (table == null) ? " missing" : table.getName();
     }
 
     public int getTableKey() {
-      if (table == null)
-        table = Grib1ParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
       return (table == null) ? -1 : table.getKey();
     }
 

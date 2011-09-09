@@ -55,7 +55,8 @@ import java.util.*;
 public class Grib1CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
 
-  protected static final int version = 4;
+  public static final String MAGIC_START = "Grib1CollectionIndex";
+  protected static final int version = 5;
   private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist
@@ -170,8 +171,7 @@ public class Grib1CollectionBuilder {
       raf.seek(0);
 
       //// header message
-      String magic = gc.getMagicBytes();
-      if (!NcStream.readAndTest(raf, magic.getBytes())) {
+      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes())) {
         logger.error("GribCollection {} invalid index", gc.getName());
         throw new IOException("GribCollection " + gc.getName() + " invalid index");
       }
@@ -335,6 +335,7 @@ public class Grib1CollectionBuilder {
     int discipline = pv.getDiscipline();
     int category = pv.getCategory();
     int param = pv.getParameter();
+    int tableVersion = pv.getTableVersion();
     int levelType = pv.getLevelType();
     int intvType = pv.getIntervalType();
     boolean isLayer = pv.getIsLayer();
@@ -348,7 +349,7 @@ public class Grib1CollectionBuilder {
     int vertIdx = pv.getVertIdx();
     int ensIdx = pv.getEnsIdx();
 
-    return gc.makeVariableIndex(group, discipline, category, param, levelType, isLayer, intvType, ensDerivedType,
+    return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, ensDerivedType,
             probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
@@ -414,6 +415,7 @@ public class Grib1CollectionBuilder {
             f.format("  Index read: %s == %d records %n", mfile.getName() + Grib1Index.IDX_EXT, index.getRecords().size());
           }
         } catch (IOException ioe) {
+          logger.warn("GribCollectionBuilder: reading/Creating gbx9 index failed err="+ioe.getMessage());
           f.format("GribCollectionBuilder: reading/Creating gbx9 index failed err=%s%n  skipping %s%n", ioe.getMessage(), mfile.getPath() + Grib1Index.IDX_EXT);
           continue;
         }
@@ -469,8 +471,7 @@ public class Grib1CollectionBuilder {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     try {
       //// header message
-      String magic = gc.getMagicBytes();
-      raf.write(magic.getBytes("UTF-8"));
+      raf.write(MAGIC_START.getBytes("UTF-8"));
       raf.writeInt(version);
       long lenPos = raf.getFilePointer();
       raf.writeLong(0); // save space to write the length of the record section
@@ -521,8 +522,8 @@ public class Grib1CollectionBuilder {
       Grib1SectionProductDefinition pds = first.getPDSsection();
       indexBuilder.setCenter(pds.getCenter());
       indexBuilder.setSubcenter(pds.getSubCenter());
-      indexBuilder.setMaster(pds.getTableVersion());
-      indexBuilder.setLocal(0);
+      indexBuilder.setLocal(pds.getTableVersion());
+      indexBuilder.setMaster(0);
 
       indexBuilder.setGenProcessType(pds.getGenProcess());
 
@@ -539,77 +540,6 @@ public class Grib1CollectionBuilder {
     }
   }
 
-  /* private void createIndexForGroup(Group group, ArrayList<String> filenames) throws IOException {
-    Grib1Record first = null; // take global metadata from here
-
-    File file = new File(gc.getDirectory(), group.name + GribCollection.IDX_EXT);
-    if (file.exists()) file.delete(); // replace it
-
-    RandomAccessFile raf = new RandomAccessFile(file.getPath(), "rw");
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    try {
-      //// header message
-      String magic = gc.getMagicBytes();
-      raf.write(magic.getBytes("UTF-8"));
-      raf.writeInt(version);
-      long lenPos = raf.getFilePointer();
-      raf.writeLong(0); // save space to write the length of the record section
-      long countBytes = 0;
-      int countRecords = 0;
-      group.fileSet = new HashSet<Integer>();
-
-      for (Rectilyser.VariableBag vb : group.rect.getGribvars()) {
-        if (first == null) first = vb.first;
-        GribCollectionProto.VariableRecords vr = makeRecordsProto(vb, group.fileSet);
-        byte[] b = vr.toByteArray();
-        vb.pos = raf.getFilePointer();
-        vb.length = b.length;
-        raf.write(b);
-        countBytes += b.length;
-      }
-      countRecords += group.records.size();
-      if (countRecords == 0) countRecords = 1;
-      long bytesPerRecord = countBytes / countRecords;
-      logger.debug("VariableRecords: bytes = {} record = {} bytesPerRecord={}", new Object[] {countBytes, countRecords, bytesPerRecord});
-
-      long pos = raf.getFilePointer();
-      raf.seek(lenPos);
-      raf.writeLong(countBytes);
-      raf.seek(pos); // back to the output.
-
-      GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
-      indexBuilder.setName(group.name);
-
-      for (String fn : filenames)
-        indexBuilder.addFiles(fn);
-
-      indexBuilder.addGroups(makeGroupProto(group));
-
-      int count = 0;
-      for (CollectionManager dcm : collections) {
-        indexBuilder.addParams(makeParamProto(new Parameter("spec" + count, dcm.toString())));
-        count++;
-      }
-
-      Grib1SectionIdentification ids = first.getId();
-      indexBuilder.setCenter(ids.getCenter_id());
-      indexBuilder.setSubcenter(ids.getSubcenter_id());
-      indexBuilder.setMaster(ids.getMaster_table_version());
-      indexBuilder.setLocal(ids.getLocal_table_version());
-
-      GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
-      byte[] b = index.toByteArray();
-      NcStream.writeVInt(raf, b.length); // message size
-      raf.write(b);  // message  - all in one gulp
-      logger.debug("GribCollectionIndex= {} bytes%n", b.length);
-
-    } finally {
-      logger.debug("file size =  {} bytes%n", raf.length());
-      raf.close();
-      if (raf != null) raf.close();
-    }
-  } */
-
   private GribCollectionProto.VariableRecords writeRecordsProto(Grib1Rectilyser.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.VariableRecords.Builder b = GribCollectionProto.VariableRecords.newBuilder();
     b.setCdmHash(vb.first.cdmVariableHash(0));
@@ -618,13 +548,13 @@ public class Grib1CollectionBuilder {
 
       if (ar == null || ar.gr == null) {
         br.setFileno(0);
-        br.setDrsPos(0); // missing
+        br.setPos(0); // missing
 
       } else {
         br.setFileno(ar.gr.getFile());
         fileSet.add(ar.gr.getFile());
-        Grib1SectionBinaryData drs = ar.gr.getDataSection();
-        br.setDrsPos(drs.getStartingPosition());
+        Grib1SectionIndicator is = ar.gr.getIs();
+        br.setPos(is.getStartPos()); // start of entire message
       }
       b.addRecords(br);
     }
@@ -664,13 +594,11 @@ public class Grib1CollectionBuilder {
     b.setDiscipline(0);
     b.setCategory(0);
     b.setParameter(pds.getParameterNumber());
+    b.setTableVersion(pds.getTableVersion()); // can differ for variables in the same file
     b.setLevelType(pds.getLevelType());
     Grib1ParamLevel plevel = pds.getParamLevel();
     b.setIsLayer(plevel.isLayer());
-    Grib1ParamTime ptime = pds.getParamTime();
-    Grib1ParamTime.StatType stat = ptime.getStatType();
-    if (stat != null)
-      b.setIntervalType(stat.ordinal());
+    b.setIntervalType(pds.getTimeType());
     b.setCdmHash(vb.first.cdmVariableHash(0));
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
