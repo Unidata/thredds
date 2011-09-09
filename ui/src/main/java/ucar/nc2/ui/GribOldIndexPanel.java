@@ -74,7 +74,7 @@ import java.util.List;
  * @author caron
  * @since Aug 15, 2008
  */
-public class GribIndexPanel extends JPanel {
+public class GribOldIndexPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted recordTable, gdsTable, productTable;
@@ -87,7 +87,7 @@ public class GribIndexPanel extends JPanel {
 
   private NetcdfFile ncd;
 
-  public GribIndexPanel(PreferencesExt prefs) {
+  public GribOldIndexPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     PopupMenu varPopup;

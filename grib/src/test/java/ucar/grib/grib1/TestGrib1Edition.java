@@ -45,7 +45,7 @@ public final class TestGrib1Edition extends TestCase {
   private String dataPath;
 
   protected final void setUp() {
-    dataPath = TestAll.testdataDir + "cdmUnitTest/formats/grib1/";
+    dataPath = ucar.nc2.TestAll.cdmUnitTestDir + "formats/grib1/";
   }
 
   /**
@@ -90,7 +90,7 @@ public final class TestGrib1Edition extends TestCase {
     edition = GribChecker.getEdition(raf);
     assertEquals("WAVE.wmo edition", 1, edition);
     System.out.println("\nTesting GRIB edition of ecmf.wmo");
-    raf = new RandomAccessFile(dataPath + "ecmf.wmo", "r");
+    raf = new RandomAccessFile(dataPath + "ecmwf_00-003.grib", "r");
     edition = GribChecker.getEdition(raf);
     assertEquals("ecmf.wmo edition", 1, edition);
     System.out.println("\nTesting GRIB edition of ensemble.wmo");
@@ -101,14 +101,6 @@ public final class TestGrib1Edition extends TestCase {
     raf = new RandomAccessFile(dataPath + "extended.wmo", "r");
     edition = GribChecker.getEdition(raf);
     assertEquals("extended.wmo edition", 1, edition);
-    System.out.println("\nTesting GRIB edition of thin.wmo");
-    raf = new RandomAccessFile(dataPath + "thin.wmo", "r");
-    edition = GribChecker.getEdition(raf);
-    assertEquals("thin.wmo edition", 1, edition);
-    System.out.println("\nTesting GRIB edition of ukm.wmo");
-    raf = new RandomAccessFile(dataPath + "ukm.wmo", "r");
-    edition = GribChecker.getEdition(raf);
-    assertEquals("ukm.wmo edition", 1, edition);
   }
 
   /**

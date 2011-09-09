@@ -54,13 +54,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Grib1ParamTable implements GribTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTable.class);
 
-  static private final Pattern valid = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\+]*$");
-  static private final Pattern numberFirst = Pattern.compile("^[0-9]");
-
   static private Object lock = new Object();
   static private int standardTablesStart = 0; // heres where the standard tables start - keep track to user additions can go first
 
-  static private boolean debug = false;
+  static private boolean debug = false, warn = false;
   static private Grib1ParamTable defaultTable;
 
   // This is a mapping from (center,subcenter,version)-> Param table for any data that has been loaded
@@ -133,7 +130,7 @@ public class Grib1ParamTable implements GribTables {
     // match from lookup tables(s)
     table = findParameterTable(center, subcenter, tableVersion);
     if (table == null) {
-      logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
+      if (warn) logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
       return (strict) ? null : defaultTable;
     }
 

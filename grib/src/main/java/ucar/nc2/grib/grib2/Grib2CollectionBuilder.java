@@ -171,7 +171,7 @@ public class Grib2CollectionBuilder {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
-      //// header message
+     //// header message
       if (!NcStream.readAndTest(raf, MAGIC_START.getBytes())) {
         logger.error("GribCollection {} invalid index", gc.getName());
         throw new IOException("GribCollection " + gc.getName() + " invalid index");

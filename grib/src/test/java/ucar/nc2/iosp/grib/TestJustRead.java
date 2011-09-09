@@ -50,7 +50,7 @@ public class TestJustRead extends TestCase {
   }
 
   public void testReadGrib1Files() throws Exception {
-    readAllDir( TestAll.cdmUnitTestDir + "motherlode/grid", "grib1");
+    readAllDir( TestAll.cdmUnitTestDir + "formats/grib1", "grib1");
   }
 
   public void testReadGrib2Files() throws Exception {

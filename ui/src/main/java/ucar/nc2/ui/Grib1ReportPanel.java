@@ -39,7 +39,6 @@ import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -183,7 +182,12 @@ public class Grib1ReportPanel extends JPanel {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format("%n %s%n", path);
-      doCheckLocalParams(mfile, f, accum);
+      try {
+        doCheckLocalParams(mfile, f, accum);
+      } catch (Throwable t) {
+        System.out.printf("FAIL on %s%n",mfile.getPath());
+        t.printStackTrace();
+      }
     }
 
     f.format("%nGrand total=%d not operational = %d local = %d missing = %d%n", accum[0], accum[1], accum[2], accum[3]);
@@ -198,7 +202,7 @@ public class Grib1ReportPanel extends JPanel {
     GridDataset ncfile = null;
     try {
       ncfile = GridDataset.open(ff.getPath());
-      Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("Originating_center_id");
+      /* Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("Originating_center_id");
       Integer center_id = (Integer) gatt.getNumericValue();
       gatt = ncfile.findGlobalAttributeIgnoreCase("Originating_subcenter_id");
       Integer subcenter_id = (gatt == null) ? -1 : (Integer) gatt.getNumericValue();
@@ -208,27 +212,17 @@ public class Grib1ReportPanel extends JPanel {
       if (table == null) {
         fm.format("  Missing table = %d %d %d%n", center_id, subcenter_id, version);
         return;
-      }
+      }  */
 
       for (GridDatatype dt : ncfile.getGrids()) {
         String currName = dt.getName();
         total++;
 
-        Attribute att = dt.findAttributeIgnoreCase("GRIB_param_id");
-        int discipline = (Integer) att.getValue(1); // LOOK wrong
-        int category = (Integer) att.getValue(2);
-        int number = (Integer) att.getValue(3);
-        if (number >= 192) {
-          fm.format("  local parameter = %s (%d %d %d) units=%s %n", currName, discipline, category, number, dt.getUnitsString());
+        Attribute att = dt.findAttributeIgnoreCase("Grib_Parameter");
+        int number = att.getNumericValue().intValue();
+        if (number >= 128) {
+          fm.format("  local parameter = %s (%d) units=%s %n", currName, number, dt.getUnitsString());
           local++;
-          continue;
-        }
-
-
-        Grib1Parameter param = table.getParameter(number);
-        if (param == null) {
-          fm.format("  Missing parameter = %s (%d) %n", currName, number);
-          miss++;
           continue;
         }
 

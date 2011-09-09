@@ -33,6 +33,8 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.*;
+//import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -58,7 +60,7 @@ import java.util.List;
  * @author caron
  * @since 6/29/11
  */
-public class Grib2IdxPanel extends JPanel {
+public class GribCollectionIndexPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted groupTable, varTable, vertCoordTable;
@@ -67,7 +69,7 @@ public class Grib2IdxPanel extends JPanel {
   private TextHistoryPane infoPopup, detailTA;
   private IndependentWindow infoWindow, detailWindow;
 
-  public Grib2IdxPanel(PreferencesExt prefs, JPanel buttPanel) {
+  public GribCollectionIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Files", false);
@@ -254,7 +256,16 @@ public class Grib2IdxPanel extends JPanel {
     if (gc != null) gc.close();
 
     RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
-    gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf);
+    raf.seek(0);
+    byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.getBytes().length];
+    raf.read(b);
+    String magic = new String(b);
+    if (magic.equals(Grib2CollectionBuilder.MAGIC_START))
+      gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf);
+    else if (magic.equals(Grib1CollectionBuilder.MAGIC_START))
+      gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf);
+    else
+      throw new IOException("Not a grib collection index file ="+magic);
 
     List<GroupBean> groups = new ArrayList<GroupBean>();
     for (GribCollection.GroupHcs g : gc.getGroups()) {

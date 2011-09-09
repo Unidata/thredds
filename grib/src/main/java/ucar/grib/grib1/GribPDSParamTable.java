@@ -54,8 +54,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GribPDSParamTable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribPDSParamTable.class);
 
-  static private final Pattern valid = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\+]*$");
-  static private final Pattern numberFirst = Pattern.compile("^[0-9]");
+  //static private final Pattern valid = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_@:\\.\\-\\+]*$");
+  //static private final Pattern numberFirst = Pattern.compile("^[0-9]");
 
   static private Object lock = new Object();
   static private int standardTablesStart = 0; // heres where the standard tables start - keep track to user additions can go first

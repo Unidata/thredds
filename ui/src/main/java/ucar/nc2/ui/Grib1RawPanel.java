@@ -150,22 +150,23 @@ public class Grib1RawPanel extends JPanel {
     gds1Table = new BeanTableSorted(Gds1Bean.class, (PreferencesExt) prefs.node("Gds1Bean"), false, "Grib1GridDefinitionSection", "unique from Grib1Records");
 
     varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
-    varPopup.addAction("Show GDS", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(os);
-        List list = gds1Table.getSelectedBeans();
-        for (Object bo : list) {
-          Gds1Bean bean = (Gds1Bean) bo;
-          //Grib1Dump.printGDS(bean.gds, null, ps);
-          ps.append("\n");
-        }
-        infoPopup.setText(os.toString());
-        infoWindow.setVisible(true);
-      }
-    });
+    varPopup.addAction("Show raw GDS", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         ByteArrayOutputStream os = new ByteArrayOutputStream();
+         PrintStream ps = new PrintStream(os);
+         List list = gds1Table.getSelectedBeans();
+         Formatter f = new Formatter();
+         for (Object bo : list) {
+           Gds1Bean bean = (Gds1Bean) bo;
+           showRawGds(bean.gdss, f);
+           ps.append("\n");
+         }
+         infoPopup.setText(f.toString());
+         infoWindow.setVisible(true);
+       }
+     });
 
-    varPopup.addAction("Compare GDS", new AbstractAction() {
+     varPopup.addAction("Compare GDS", new AbstractAction() {
        public void actionPerformed(ActionEvent e) {
          List list = gds1Table.getSelectedBeans();
          if (list.size() == 2) {
@@ -315,6 +316,15 @@ public class Grib1RawPanel extends JPanel {
       f.format(" %3d : %3d%n", i + 1, raw[i]);
     }
   }
+
+  public void showRawGds(Grib1SectionGridDefinition gds, Formatter f) {
+     byte[] raw = gds.getRawBytes();
+    f.format("%n");
+    for (int i = 0; i < raw.length; i++) {
+      f.format(" %3d : %3d%n", i + 1, raw[i]);
+    }
+   }
+
 
   public void showProcessedPds(Grib1SectionProductDefinition pds, Formatter f) {
     pds.showPds(f);

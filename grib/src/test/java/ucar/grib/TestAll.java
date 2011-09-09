@@ -41,78 +41,11 @@ import java.util.Properties;
 
 /**
  * TestSuite that runs all the sample tests.
+ * not used
  *
  */
 public class TestAll {
-
-  /**
-   * Old test data directory. may have cruft in it
-   * Unidata "shemp:/data/testdata" directory.
-   */
-  public static String testdataDir = null;
-
-  //////////////////////////////////////////////////////////////////////
-  /** Property name for the path to the Unidata test data directory,
-   * e.g unidata.testdata.path=//shemp/data/testdata/
-   * the real directory is at shemp:/data/testdata
-   */
-  private static String testdataDirPropName ="unidata.testdata.path";
-
-
-  /** Filename of the user property file read from the "user.home" directory
-   * if the "unidata.testdata.path" and "unidata.upc.share.path" are not
-   * available as system properties. */
-  private static String threddsPropFileName = "thredds.properties";
-
-  // Determine how Unidata "/upc/share" directory is mounted
-  // on local machine by reading system or THREDDS property.
-  static {
-    // Check for system property
-    String testdataDirPath = System.getProperty( testdataDirPropName );
-
-    if (testdataDirPath == null )
-    {
-      // Get user property.
-      File userHomeDirFile = new File( System.getProperty( "user.home" ) );
-      File userThreddsPropsFile = new File( userHomeDirFile, threddsPropFileName );
-      if ( userThreddsPropsFile.exists() && userThreddsPropsFile.canRead() )
-      {
-        Properties userThreddsProps = new Properties();
-        try
-        {
-          userThreddsProps.load( new FileInputStream( userThreddsPropsFile ) );
-        }
-        catch ( IOException e )
-        {
-          System.out.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
-        }
-        if ( userThreddsProps != null && ! userThreddsProps.isEmpty() )
-        {
-          if ( testdataDirPath == null )
-            testdataDirPath = userThreddsProps.getProperty( testdataDirPropName );
-        }
-      }
-    }
-
-    // Use default paths if needed.
-    if ( testdataDirPath == null )
-    {
-      System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/share/testdata/\"." );
-      testdataDirPath = "/share/testdata/";
-    }
-    // Make sure paths ends with a slash.
-    if ((!testdataDirPath.endsWith( "/")) && !testdataDirPath.endsWith( "\\"))
-      testdataDirPath += "/";
-
-    testdataDir = testdataDirPath;
-
-    File file = new File( testdataDir );
-    if ( ! file.exists() || !file.isDirectory() )
-    {
-      System.out.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
-    }
-
-  }
+  static public String testdataDir = ucar.nc2.TestAll.cdmUnitTestDir;
 
     /**
      * .
@@ -123,7 +56,7 @@ public class TestAll {
     //  Grib 1 testing
     TestSuite suite= new TestSuite();
     suite.addTest( ucar.grib.grib1.TestGrib1Edition.suite());
-    suite.addTest( ucar.grib.grib1.TestGrib1Dump.suite());
+    //suite.addTest( ucar.grib.grib1.TestGrib1Dump.suite());
     suite.addTest( ucar.grib.grib1.TestGrib1Indexer.suite());
     suite.addTest( ucar.grib.grib1.TestGrib1Data.suite());
 

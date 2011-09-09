@@ -141,7 +141,7 @@ public class ToolsUI extends JPanel {
   private GribFilesPanel gribFilesPanel;
   private GribNewPanel gribNewPanel;
   private Grib1IndexPanel gribIndexPanel;
-  private Grib2IdxPanel gribIdxPanel;
+  private GribIdxPanel gribIdxPanel;
   // private GribRawPanel gribRawPanel;
   private Grib1RawPanel grib1RawPanel;
   private Grib1ReportPanel grib1ReportPanel;
@@ -293,8 +293,8 @@ public class ToolsUI extends JPanel {
     });
 
     // nested-2 tab - grib new
-    grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2n"));
-    grib2TabPane.addTab("GRIB2idx", new JLabel("GRIB2idx"));
+    grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2collection"));
+    grib2TabPane.addTab("GRIBindex", new JLabel("GRIBindex"));
     grib2TabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
     grib2TabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
     grib2TabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
@@ -325,7 +325,7 @@ public class ToolsUI extends JPanel {
     //griboTabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
     grib1TabPane.addTab("GRIB1-RAW", new JLabel("GRIB1-RAW"));
     //grib1TabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
-    grib1TabPane.addTab("GRIB1-INDEX", new JLabel("GRIB-INDEX"));
+    //grib1TabPane.addTab("GRIB1-INDEX", new JLabel("GRIB1-INDEX"));
     grib1TabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
     grib1TabPane.addTab("GRIB1-REPORT", new JLabel("GRIB1-REPORT"));
     grib1TabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
@@ -492,12 +492,12 @@ public class ToolsUI extends JPanel {
       gribFilesPanel = new GribFilesPanel((PreferencesExt) mainPrefs.node("gribFiles"));
       c = gribFilesPanel;
 
-    } else if (title.equals("GRIB2n")) {
+    } else if (title.equals("GRIB2collection")) {
       gribNewPanel = new GribNewPanel((PreferencesExt) mainPrefs.node("gribNew"));
       c = gribNewPanel;
 
-    } else if (title.equals("GRIB2idx")) {
-      gribIdxPanel = new Grib2IdxPanel((PreferencesExt) mainPrefs.node("gribIdx"));
+    } else if (title.equals("GRIBindex")) {
+      gribIdxPanel = new GribIdxPanel((PreferencesExt) mainPrefs.node("gribIdx"));
       c = gribIdxPanel;
 
     } else if (title.equals("GRIB1-INDEX")) {
@@ -2660,15 +2660,15 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
-  private class Grib2IdxPanel extends OpPanel {
-    ucar.nc2.ui.Grib2IdxPanel gribTable;
+  private class GribIdxPanel extends OpPanel {
+    GribCollectionIndexPanel gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
-    Grib2IdxPanel(PreferencesExt p) {
+    GribIdxPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
-      gribTable = new ucar.nc2.ui.Grib2IdxPanel(prefs, buttPanel);
+      gribTable = new GribCollectionIndexPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
     }
 
@@ -2854,11 +2854,11 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   // Indexed GRIB, using the IOSP
   private class Grib1IndexPanel extends OpPanel {
-    ucar.nc2.ui.GribIndexPanel gribTable;
+    GribOldIndexPanel gribTable;
 
     Grib1IndexPanel(PreferencesExt p) {
       super(p, "file:", true, false);
-      gribTable = new ucar.nc2.ui.GribIndexPanel(prefs);
+      gribTable = new GribOldIndexPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       AbstractAction infoAction = new AbstractAction() {
@@ -3043,6 +3043,7 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (Exception e) {
+        e.printStackTrace();
         e.printStackTrace(new PrintStream(bos));
         detailTA.setText(bos.toString());
         detailWindow.show();
