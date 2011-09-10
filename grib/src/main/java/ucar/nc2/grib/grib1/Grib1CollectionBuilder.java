@@ -218,7 +218,7 @@ public class Grib1CollectionBuilder {
 
       gc.groups = new ArrayList<GribCollection.GroupHcs>(proto.getGroupsCount());
       for (int i = 0; i < proto.getGroupsCount(); i++)
-        gc.groups.add(readGroup(proto.getGroups(i), gc.makeGroup()));
+        gc.groups.add(readGroup(proto.getGroups(i), gc.makeGroup(), gc.center));
       Collections.sort(gc.groups);
 
       gc.params = new ArrayList<Parameter>(proto.getParamsCount());
@@ -246,10 +246,14 @@ public class Grib1CollectionBuilder {
     // NOOP
   }
 
-  GribCollection.GroupHcs readGroup(GribCollectionProto.Group p, GribCollection.GroupHcs group) throws IOException {
+  GribCollection.GroupHcs readGroup(GribCollectionProto.Group p, GribCollection.GroupHcs group, int center) throws IOException {
 
-    Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(p.getGds().toByteArray());
-    Grib1Gds gds = gdss.getGDS();
+    Grib1Gds gds;
+    if (p.hasPredefinedGds()) {
+      gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(center, p.getPredefinedGds());
+    } else {
+      Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(p.getGds().toByteArray());
+      gds = gdss.getGDS();    }
     group.setHorizCoordSystem(gds.makeHorizCoordSys());
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
@@ -564,7 +568,10 @@ public class Grib1CollectionBuilder {
   private GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
+    if (g.gdss.getPredefinedGridDefinition() >= 0)
+      b.setPredefinedGds(g.gdss.getPredefinedGridDefinition());
+    else
+      b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
 
     for (Grib1Rectilyser.VariableBag vb : g.rect.getGribvars())
       b.addVariables(writeVariableProto(vb));

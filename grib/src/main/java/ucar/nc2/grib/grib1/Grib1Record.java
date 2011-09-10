@@ -137,22 +137,6 @@ public class Grib1Record {
     f.format("discipline=%d ", is.getMessageLength());
   }
 
-  //////////////////////////////////////////
-  /* setters used by repeating records
-
-
-  public void setGdss(Grib1SectionGridDefinition gdss) {
-    this.gdss = gdss;
-  }
-
-  public void setPdss(Grib1SectionProductDefinition pdss) {
-    this.pdss = pdss;
-  }
-
-  public void setDataSection(Grib1SectionBinaryData dataSection) {
-    this.dataSection = dataSection;
-  } */
-
   /**
    * A hash code to group records into a CDM variable
    * Herein lies the semantics of a variable object identity.
@@ -180,7 +164,7 @@ public class Grib1Record {
       result += result * 37 + pdss.getParameterNumber();
       result += result * 37 + pdss.getTableVersion();
 
-      if (ptime.isInterval())  // an interval must have a statProcessType
+      if (ptime.isInterval() && ptime.getStatType() != null)  // an interval must have a statProcessType
         result += result * 37 + ptime.getStatType().ordinal();
 
       /* int ensDerivedType = -1;
@@ -223,6 +207,7 @@ public class Grib1Record {
     this.file = file;
   }
 
+  /////////////// reading data
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
   public float[] readData(RandomAccessFile raf) throws IOException {

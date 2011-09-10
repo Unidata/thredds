@@ -219,7 +219,7 @@ public class Grib1ReportPanel extends JPanel {
         total++;
 
         Attribute att = dt.findAttributeIgnoreCase("Grib_Parameter");
-        int number = att.getNumericValue().intValue();
+        int number = (att == null) ? 0 : att.getNumericValue().intValue();
         if (number >= 128) {
           fm.format("  local parameter = %s (%d) units=%s %n", currName, number, dt.getUnitsString());
           local++;

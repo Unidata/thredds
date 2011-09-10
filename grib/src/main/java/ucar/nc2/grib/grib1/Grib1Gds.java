@@ -80,8 +80,12 @@ public abstract class Grib1Gds {
     switch (template) {
       case 0:
         return new LatLon(data, 0);
+      case 1:
+        return new Mercator(data, 1);
       case 3:
         return new LambertConformal(data, 3);
+      case 4:
+        return new GaussianLatLon(data, 4);
       case 5:
         return new PolarStereographic(data, 5);
       case 10:
@@ -126,6 +130,7 @@ public abstract class Grib1Gds {
   }
 
   protected int getOctet(int index) {
+    if (index > data.length) return GribNumbers.UNDEFINED;
     return data[index - 1] & 0xff;
   }
 
@@ -370,6 +375,51 @@ public abstract class Grib1Gds {
       double endx = cs.startx + (nx - 1) * cs.dx;
       double endy = cs.starty + (ny - 1) * cs.dy;
       f.format("   should end at x= (%f,%f)%n", endx, endy);
+    }
+  }
+
+  /*
+  Grid definition –   Gaussian latitude/longitude grid (including rotated, stretched or stretched and rotated)
+ Octet    Contents
+    7–8     Ni – number of points along a parallel
+    9–10    Nj – number of points along a meridian
+    11–13   La1 – latitude of first grid point
+    14–16   Lo1 – longitude of first grid point
+    17      Resolution and component flags (see Code table 7)
+    18–20   La2 – latitude of last grid point
+    21–23   Lo2 – longitude of last grid point
+    24–25   Di – i direction increment
+    26–27   N – number of parallels between a pole and the equator
+    28      Scanning mode (flags – see Flag/Code table 8)
+    29–32   Set to zero (reserved)
+    33–35   Latitude of the southern pole in millidegrees (integer)
+            Latitude of pole of stretching in millidegrees (integer)
+    36–38   Longitude of the southern pole in millidegrees (integer)
+            Longitude of pole of stretching in millidegrees (integer)
+    39–42   Angle of rotation (represented in the same way as the reference value)
+            Stretching factor (representation as for the reference value)
+    43–45   Latitude of pole of stretching in millidegrees (integer)
+    46–48   Longitude of pole of stretching in millidegrees (integer)
+    49–52   Stretching factor (representation as for the reference value)
+   */
+  public static class GaussianLatLon extends LatLon {
+    public float latSouthPole, lonSouthPole, rotAngle, latPole, lonPole, stretchFactor;
+
+    public GaussianLatLon(int template) {
+      super(template);
+    }
+
+    GaussianLatLon(byte[] data, int template) {
+      super(data, template);
+
+      latSouthPole = getOctet3(33) * scale3;
+      lonSouthPole = getOctet3(36) * scale3;
+      rotAngle = getOctet4(39) * scale3;
+      latPole = getOctet3(43) * scale3;
+      lonPole = getOctet3(46) * scale3;
+      stretchFactor = getOctet4(49) * scale3;
+
+      lastOctet = 52;
     }
   }
 
@@ -637,6 +687,124 @@ Grid definition –   polar stereographic
 
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
+    }
+
+  }
+
+  /*
+  Grid definition – Mercator
+  Octet  Contents
+    7–8   Ni – number of points along a parallel
+    9–10  Nj – number of points along a meridian
+    11–13 La1 – latitude of first grid point
+    14–16 Lo1 – longitude of first grid point
+    17    Resolution and component flags (see Code table 7)
+    18–20 La2 – latitude of last grid point
+    21–23 Lo2 – longitude of last grid point
+    24–26 Latin – latitude(s) at which the Mercator projection cylinder intersects the Earth
+    27    Set to zero (reserved)
+    28    Scanning mode (flags – see Flag/Code table 8)
+    29–31 Di – longitudinal direction grid length (see Note 2)
+    32–34 Dj – latitudinal direction grid length (see Note 2)
+    35–42 Set to zero (reserved)
+   */
+
+  public static class Mercator extends Grib1Gds {
+    public float la1, lo1, la2, lo2, latin, dX, dY;
+    protected int lastOctet;
+
+    Mercator(byte[] data, int template) {
+      super(data, template);
+
+      la1 = getOctet3(11) * scale3;
+      lo1 = getOctet3(14) * scale3;
+      resolution = (byte) getOctet(47);
+      la2 = getOctet3(18) * scale3;
+      lo2 = getOctet3(21) * scale3;
+      latin = getOctet3(24) * scale3;
+
+      scanMode = (byte) getOctet(28);
+
+      dX = getOctet3(29) * scale3;  // km
+      dY = getOctet3(32) * scale3;  // km
+
+      lastOctet = 42;
+    }
+
+    @Override
+    public float getDx() {
+      return dX;
+    }
+
+    @Override
+    public float getDy() {
+      return dY;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      Mercator mercator = (Mercator) o;
+
+      if (Float.compare(mercator.dX, dX) != 0) return false;
+      if (Float.compare(mercator.dY, dY) != 0) return false;
+      if (Float.compare(mercator.la1, la1) != 0) return false;
+      if (Float.compare(mercator.latin, latin) != 0) return false;
+      if (Float.compare(mercator.lo1, lo1) != 0) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0);
+        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
+        result = 31 * result + (latin != +0.0f ? Float.floatToIntBits(latin) : 0);
+        result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
+        result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      // put longitude origin at first point - doesnt actually matter
+      // param par standard parallel (degrees). cylinder cuts earth at this latitude.
+      Earth earth = getEarth();
+      ucar.unidata.geoloc.projection.Mercator proj = new ucar.unidata.geoloc.projection.Mercator(lo1, latin, 0, 0, earth.getEquatorRadius() * .001);
+
+      // find out where things start
+      ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      double startx = startP.getX();
+      double starty = startP.getY();
+
+      return new GdsHorizCoordSys(getNameShort(), proj, startx, dX, starty, dY, nx, ny);
+    }
+
+
+    public void testHorizCoordSys(Formatter f) {
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      double Lo2 = lo2;
+      if (Lo2 < lo1) Lo2 += 360;
+      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPointImpl endLL = new LatLonPointImpl(la2, lo2);
+
+      f.format("%s testProjection%n", getClass().getName());
+      f.format("  start at latlon= %s%n", startLL);
+      f.format("    end at latlon= %s%n", endLL);
+
+      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("     end at proj coord= %s%n", endPP);
+
+      double endx = cs.startx + (nx - 1) * cs.dx;
+      double endy = cs.starty + (ny - 1) * cs.dy;
+      f.format("   should end at x= (%f,%f)%n", endx, endy);
     }
 
   }

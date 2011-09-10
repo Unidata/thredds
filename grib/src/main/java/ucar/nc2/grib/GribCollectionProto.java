@@ -3800,1100 +3800,18 @@ public final class GribCollectionProto {
     // @@protoc_insertion_point(class_scope:gribCollectionIndex.Parameter)
   }
   
-  public interface HorizCoordSystemOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-    
-    // required int32 code = 1;
-    boolean hasCode();
-    int getCode();
-    
-    // required int32 nx = 2;
-    boolean hasNx();
-    int getNx();
-    
-    // required int32 ny = 3;
-    boolean hasNy();
-    int getNy();
-    
-    // required double startx = 4;
-    boolean hasStartx();
-    double getStartx();
-    
-    // required double starty = 5;
-    boolean hasStarty();
-    double getStarty();
-    
-    // required double incx = 6;
-    boolean hasIncx();
-    double getIncx();
-    
-    // required double incy = 7;
-    boolean hasIncy();
-    double getIncy();
-    
-    // required int32 scanMode = 8;
-    boolean hasScanMode();
-    int getScanMode();
-    
-    // repeated .gribCollectionIndex.Parameter params = 9;
-    java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter> 
-        getParamsList();
-    ucar.nc2.grib.GribCollectionProto.Parameter getParams(int index);
-    int getParamsCount();
-    java.util.List<? extends ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder> 
-        getParamsOrBuilderList();
-    ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
-        int index);
-  }
-  public static final class HorizCoordSystem extends
-      com.google.protobuf.GeneratedMessage
-      implements HorizCoordSystemOrBuilder {
-    // Use HorizCoordSystem.newBuilder() to construct.
-    private HorizCoordSystem(Builder builder) {
-      super(builder);
-    }
-    private HorizCoordSystem(boolean noInit) {}
-    
-    private static final HorizCoordSystem defaultInstance;
-    public static HorizCoordSystem getDefaultInstance() {
-      return defaultInstance;
-    }
-    
-    public HorizCoordSystem getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-    
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return ucar.nc2.grib.GribCollectionProto.internal_static_gribCollectionIndex_HorizCoordSystem_descriptor;
-    }
-    
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return ucar.nc2.grib.GribCollectionProto.internal_static_gribCollectionIndex_HorizCoordSystem_fieldAccessorTable;
-    }
-    
-    private int bitField0_;
-    // required int32 code = 1;
-    public static final int CODE_FIELD_NUMBER = 1;
-    private int code_;
-    public boolean hasCode() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    public int getCode() {
-      return code_;
-    }
-    
-    // required int32 nx = 2;
-    public static final int NX_FIELD_NUMBER = 2;
-    private int nx_;
-    public boolean hasNx() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    public int getNx() {
-      return nx_;
-    }
-    
-    // required int32 ny = 3;
-    public static final int NY_FIELD_NUMBER = 3;
-    private int ny_;
-    public boolean hasNy() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    public int getNy() {
-      return ny_;
-    }
-    
-    // required double startx = 4;
-    public static final int STARTX_FIELD_NUMBER = 4;
-    private double startx_;
-    public boolean hasStartx() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    public double getStartx() {
-      return startx_;
-    }
-    
-    // required double starty = 5;
-    public static final int STARTY_FIELD_NUMBER = 5;
-    private double starty_;
-    public boolean hasStarty() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    public double getStarty() {
-      return starty_;
-    }
-    
-    // required double incx = 6;
-    public static final int INCX_FIELD_NUMBER = 6;
-    private double incx_;
-    public boolean hasIncx() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
-    }
-    public double getIncx() {
-      return incx_;
-    }
-    
-    // required double incy = 7;
-    public static final int INCY_FIELD_NUMBER = 7;
-    private double incy_;
-    public boolean hasIncy() {
-      return ((bitField0_ & 0x00000040) == 0x00000040);
-    }
-    public double getIncy() {
-      return incy_;
-    }
-    
-    // required int32 scanMode = 8;
-    public static final int SCANMODE_FIELD_NUMBER = 8;
-    private int scanMode_;
-    public boolean hasScanMode() {
-      return ((bitField0_ & 0x00000080) == 0x00000080);
-    }
-    public int getScanMode() {
-      return scanMode_;
-    }
-    
-    // repeated .gribCollectionIndex.Parameter params = 9;
-    public static final int PARAMS_FIELD_NUMBER = 9;
-    private java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter> params_;
-    public java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter> getParamsList() {
-      return params_;
-    }
-    public java.util.List<? extends ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder> 
-        getParamsOrBuilderList() {
-      return params_;
-    }
-    public int getParamsCount() {
-      return params_.size();
-    }
-    public ucar.nc2.grib.GribCollectionProto.Parameter getParams(int index) {
-      return params_.get(index);
-    }
-    public ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
-        int index) {
-      return params_.get(index);
-    }
-    
-    private void initFields() {
-      code_ = 0;
-      nx_ = 0;
-      ny_ = 0;
-      startx_ = 0D;
-      starty_ = 0D;
-      incx_ = 0D;
-      incy_ = 0D;
-      scanMode_ = 0;
-      params_ = java.util.Collections.emptyList();
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-      
-      if (!hasCode()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasNx()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasNy()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasStartx()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasStarty()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasIncx()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasIncy()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasScanMode()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      for (int i = 0; i < getParamsCount(); i++) {
-        if (!getParams(i).isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-    
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, code_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt32(2, nx_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt32(3, ny_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeDouble(4, startx_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeDouble(5, starty_);
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeDouble(6, incx_);
-      }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeDouble(7, incy_);
-      }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeInt32(8, scanMode_);
-      }
-      for (int i = 0; i < params_.size(); i++) {
-        output.writeMessage(9, params_.get(i));
-      }
-      getUnknownFields().writeTo(output);
-    }
-    
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-    
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, code_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, nx_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, ny_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(4, startx_);
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(5, starty_);
-      }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(6, incx_);
-      }
-      if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(7, incy_);
-      }
-      if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(8, scanMode_);
-      }
-      for (int i = 0; i < params_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(9, params_.get(i));
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-    
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-    
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data).buildParsed();
-    }
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return newBuilder().mergeFrom(data, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      Builder builder = newBuilder();
-      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
-        return builder.buildParsed();
-      } else {
-        return null;
-      }
-    }
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input).buildParsed();
-    }
-    public static ucar.nc2.grib.GribCollectionProto.HorizCoordSystem parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return newBuilder().mergeFrom(input, extensionRegistry)
-               .buildParsed();
-    }
-    
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(ucar.nc2.grib.GribCollectionProto.HorizCoordSystem prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements ucar.nc2.grib.GribCollectionProto.HorizCoordSystemOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return ucar.nc2.grib.GribCollectionProto.internal_static_gribCollectionIndex_HorizCoordSystem_descriptor;
-      }
-      
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return ucar.nc2.grib.GribCollectionProto.internal_static_gribCollectionIndex_HorizCoordSystem_fieldAccessorTable;
-      }
-      
-      // Construct using ucar.nc2.grib.GribCollectionProto.HorizCoordSystem.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-      
-      private Builder(BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getParamsFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-      
-      public Builder clear() {
-        super.clear();
-        code_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        nx_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        ny_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        startx_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        starty_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        incx_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000020);
-        incy_ = 0D;
-        bitField0_ = (bitField0_ & ~0x00000040);
-        scanMode_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000080);
-        if (paramsBuilder_ == null) {
-          params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000100);
-        } else {
-          paramsBuilder_.clear();
-        }
-        return this;
-      }
-      
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-      
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return ucar.nc2.grib.GribCollectionProto.HorizCoordSystem.getDescriptor();
-      }
-      
-      public ucar.nc2.grib.GribCollectionProto.HorizCoordSystem getDefaultInstanceForType() {
-        return ucar.nc2.grib.GribCollectionProto.HorizCoordSystem.getDefaultInstance();
-      }
-      
-      public ucar.nc2.grib.GribCollectionProto.HorizCoordSystem build() {
-        ucar.nc2.grib.GribCollectionProto.HorizCoordSystem result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-      
-      private ucar.nc2.grib.GribCollectionProto.HorizCoordSystem buildParsed()
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        ucar.nc2.grib.GribCollectionProto.HorizCoordSystem result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(
-            result).asInvalidProtocolBufferException();
-        }
-        return result;
-      }
-      
-      public ucar.nc2.grib.GribCollectionProto.HorizCoordSystem buildPartial() {
-        ucar.nc2.grib.GribCollectionProto.HorizCoordSystem result = new ucar.nc2.grib.GribCollectionProto.HorizCoordSystem(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.code_ = code_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.nx_ = nx_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.ny_ = ny_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.startx_ = startx_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.starty_ = starty_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000020;
-        }
-        result.incx_ = incx_;
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000040;
-        }
-        result.incy_ = incy_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000080;
-        }
-        result.scanMode_ = scanMode_;
-        if (paramsBuilder_ == null) {
-          if (((bitField0_ & 0x00000100) == 0x00000100)) {
-            params_ = java.util.Collections.unmodifiableList(params_);
-            bitField0_ = (bitField0_ & ~0x00000100);
-          }
-          result.params_ = params_;
-        } else {
-          result.params_ = paramsBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-      
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ucar.nc2.grib.GribCollectionProto.HorizCoordSystem) {
-          return mergeFrom((ucar.nc2.grib.GribCollectionProto.HorizCoordSystem)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-      
-      public Builder mergeFrom(ucar.nc2.grib.GribCollectionProto.HorizCoordSystem other) {
-        if (other == ucar.nc2.grib.GribCollectionProto.HorizCoordSystem.getDefaultInstance()) return this;
-        if (other.hasCode()) {
-          setCode(other.getCode());
-        }
-        if (other.hasNx()) {
-          setNx(other.getNx());
-        }
-        if (other.hasNy()) {
-          setNy(other.getNy());
-        }
-        if (other.hasStartx()) {
-          setStartx(other.getStartx());
-        }
-        if (other.hasStarty()) {
-          setStarty(other.getStarty());
-        }
-        if (other.hasIncx()) {
-          setIncx(other.getIncx());
-        }
-        if (other.hasIncy()) {
-          setIncy(other.getIncy());
-        }
-        if (other.hasScanMode()) {
-          setScanMode(other.getScanMode());
-        }
-        if (paramsBuilder_ == null) {
-          if (!other.params_.isEmpty()) {
-            if (params_.isEmpty()) {
-              params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00000100);
-            } else {
-              ensureParamsIsMutable();
-              params_.addAll(other.params_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.params_.isEmpty()) {
-            if (paramsBuilder_.isEmpty()) {
-              paramsBuilder_.dispose();
-              paramsBuilder_ = null;
-              params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00000100);
-              paramsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getParamsFieldBuilder() : null;
-            } else {
-              paramsBuilder_.addAllMessages(other.params_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-      
-      public final boolean isInitialized() {
-        if (!hasCode()) {
-          
-          return false;
-        }
-        if (!hasNx()) {
-          
-          return false;
-        }
-        if (!hasNy()) {
-          
-          return false;
-        }
-        if (!hasStartx()) {
-          
-          return false;
-        }
-        if (!hasStarty()) {
-          
-          return false;
-        }
-        if (!hasIncx()) {
-          
-          return false;
-        }
-        if (!hasIncy()) {
-          
-          return false;
-        }
-        if (!hasScanMode()) {
-          
-          return false;
-        }
-        for (int i = 0; i < getParamsCount(); i++) {
-          if (!getParams(i).isInitialized()) {
-            
-            return false;
-          }
-        }
-        return true;
-      }
-      
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder(
-            this.getUnknownFields());
-        while (true) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              this.setUnknownFields(unknownFields.build());
-              onChanged();
-              return this;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                this.setUnknownFields(unknownFields.build());
-                onChanged();
-                return this;
-              }
-              break;
-            }
-            case 8: {
-              bitField0_ |= 0x00000001;
-              code_ = input.readInt32();
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              nx_ = input.readInt32();
-              break;
-            }
-            case 24: {
-              bitField0_ |= 0x00000004;
-              ny_ = input.readInt32();
-              break;
-            }
-            case 33: {
-              bitField0_ |= 0x00000008;
-              startx_ = input.readDouble();
-              break;
-            }
-            case 41: {
-              bitField0_ |= 0x00000010;
-              starty_ = input.readDouble();
-              break;
-            }
-            case 49: {
-              bitField0_ |= 0x00000020;
-              incx_ = input.readDouble();
-              break;
-            }
-            case 57: {
-              bitField0_ |= 0x00000040;
-              incy_ = input.readDouble();
-              break;
-            }
-            case 64: {
-              bitField0_ |= 0x00000080;
-              scanMode_ = input.readInt32();
-              break;
-            }
-            case 74: {
-              ucar.nc2.grib.GribCollectionProto.Parameter.Builder subBuilder = ucar.nc2.grib.GribCollectionProto.Parameter.newBuilder();
-              input.readMessage(subBuilder, extensionRegistry);
-              addParams(subBuilder.buildPartial());
-              break;
-            }
-          }
-        }
-      }
-      
-      private int bitField0_;
-      
-      // required int32 code = 1;
-      private int code_ ;
-      public boolean hasCode() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      public int getCode() {
-        return code_;
-      }
-      public Builder setCode(int value) {
-        bitField0_ |= 0x00000001;
-        code_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearCode() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        code_ = 0;
-        onChanged();
-        return this;
-      }
-      
-      // required int32 nx = 2;
-      private int nx_ ;
-      public boolean hasNx() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      public int getNx() {
-        return nx_;
-      }
-      public Builder setNx(int value) {
-        bitField0_ |= 0x00000002;
-        nx_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearNx() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        nx_ = 0;
-        onChanged();
-        return this;
-      }
-      
-      // required int32 ny = 3;
-      private int ny_ ;
-      public boolean hasNy() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      public int getNy() {
-        return ny_;
-      }
-      public Builder setNy(int value) {
-        bitField0_ |= 0x00000004;
-        ny_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearNy() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        ny_ = 0;
-        onChanged();
-        return this;
-      }
-      
-      // required double startx = 4;
-      private double startx_ ;
-      public boolean hasStartx() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      public double getStartx() {
-        return startx_;
-      }
-      public Builder setStartx(double value) {
-        bitField0_ |= 0x00000008;
-        startx_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearStartx() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        startx_ = 0D;
-        onChanged();
-        return this;
-      }
-      
-      // required double starty = 5;
-      private double starty_ ;
-      public boolean hasStarty() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      public double getStarty() {
-        return starty_;
-      }
-      public Builder setStarty(double value) {
-        bitField0_ |= 0x00000010;
-        starty_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearStarty() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        starty_ = 0D;
-        onChanged();
-        return this;
-      }
-      
-      // required double incx = 6;
-      private double incx_ ;
-      public boolean hasIncx() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
-      }
-      public double getIncx() {
-        return incx_;
-      }
-      public Builder setIncx(double value) {
-        bitField0_ |= 0x00000020;
-        incx_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearIncx() {
-        bitField0_ = (bitField0_ & ~0x00000020);
-        incx_ = 0D;
-        onChanged();
-        return this;
-      }
-      
-      // required double incy = 7;
-      private double incy_ ;
-      public boolean hasIncy() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
-      }
-      public double getIncy() {
-        return incy_;
-      }
-      public Builder setIncy(double value) {
-        bitField0_ |= 0x00000040;
-        incy_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearIncy() {
-        bitField0_ = (bitField0_ & ~0x00000040);
-        incy_ = 0D;
-        onChanged();
-        return this;
-      }
-      
-      // required int32 scanMode = 8;
-      private int scanMode_ ;
-      public boolean hasScanMode() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
-      }
-      public int getScanMode() {
-        return scanMode_;
-      }
-      public Builder setScanMode(int value) {
-        bitField0_ |= 0x00000080;
-        scanMode_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearScanMode() {
-        bitField0_ = (bitField0_ & ~0x00000080);
-        scanMode_ = 0;
-        onChanged();
-        return this;
-      }
-      
-      // repeated .gribCollectionIndex.Parameter params = 9;
-      private java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter> params_ =
-        java.util.Collections.emptyList();
-      private void ensureParamsIsMutable() {
-        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
-          params_ = new java.util.ArrayList<ucar.nc2.grib.GribCollectionProto.Parameter>(params_);
-          bitField0_ |= 0x00000100;
-         }
-      }
-      
-      private com.google.protobuf.RepeatedFieldBuilder<
-          ucar.nc2.grib.GribCollectionProto.Parameter, ucar.nc2.grib.GribCollectionProto.Parameter.Builder, ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder> paramsBuilder_;
-      
-      public java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter> getParamsList() {
-        if (paramsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(params_);
-        } else {
-          return paramsBuilder_.getMessageList();
-        }
-      }
-      public int getParamsCount() {
-        if (paramsBuilder_ == null) {
-          return params_.size();
-        } else {
-          return paramsBuilder_.getCount();
-        }
-      }
-      public ucar.nc2.grib.GribCollectionProto.Parameter getParams(int index) {
-        if (paramsBuilder_ == null) {
-          return params_.get(index);
-        } else {
-          return paramsBuilder_.getMessage(index);
-        }
-      }
-      public Builder setParams(
-          int index, ucar.nc2.grib.GribCollectionProto.Parameter value) {
-        if (paramsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureParamsIsMutable();
-          params_.set(index, value);
-          onChanged();
-        } else {
-          paramsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      public Builder setParams(
-          int index, ucar.nc2.grib.GribCollectionProto.Parameter.Builder builderForValue) {
-        if (paramsBuilder_ == null) {
-          ensureParamsIsMutable();
-          params_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          paramsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addParams(ucar.nc2.grib.GribCollectionProto.Parameter value) {
-        if (paramsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureParamsIsMutable();
-          params_.add(value);
-          onChanged();
-        } else {
-          paramsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      public Builder addParams(
-          int index, ucar.nc2.grib.GribCollectionProto.Parameter value) {
-        if (paramsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureParamsIsMutable();
-          params_.add(index, value);
-          onChanged();
-        } else {
-          paramsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      public Builder addParams(
-          ucar.nc2.grib.GribCollectionProto.Parameter.Builder builderForValue) {
-        if (paramsBuilder_ == null) {
-          ensureParamsIsMutable();
-          params_.add(builderForValue.build());
-          onChanged();
-        } else {
-          paramsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addParams(
-          int index, ucar.nc2.grib.GribCollectionProto.Parameter.Builder builderForValue) {
-        if (paramsBuilder_ == null) {
-          ensureParamsIsMutable();
-          params_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          paramsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      public Builder addAllParams(
-          java.lang.Iterable<? extends ucar.nc2.grib.GribCollectionProto.Parameter> values) {
-        if (paramsBuilder_ == null) {
-          ensureParamsIsMutable();
-          super.addAll(values, params_);
-          onChanged();
-        } else {
-          paramsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      public Builder clearParams() {
-        if (paramsBuilder_ == null) {
-          params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000100);
-          onChanged();
-        } else {
-          paramsBuilder_.clear();
-        }
-        return this;
-      }
-      public Builder removeParams(int index) {
-        if (paramsBuilder_ == null) {
-          ensureParamsIsMutable();
-          params_.remove(index);
-          onChanged();
-        } else {
-          paramsBuilder_.remove(index);
-        }
-        return this;
-      }
-      public ucar.nc2.grib.GribCollectionProto.Parameter.Builder getParamsBuilder(
-          int index) {
-        return getParamsFieldBuilder().getBuilder(index);
-      }
-      public ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
-          int index) {
-        if (paramsBuilder_ == null) {
-          return params_.get(index);  } else {
-          return paramsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      public java.util.List<? extends ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder> 
-           getParamsOrBuilderList() {
-        if (paramsBuilder_ != null) {
-          return paramsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(params_);
-        }
-      }
-      public ucar.nc2.grib.GribCollectionProto.Parameter.Builder addParamsBuilder() {
-        return getParamsFieldBuilder().addBuilder(
-            ucar.nc2.grib.GribCollectionProto.Parameter.getDefaultInstance());
-      }
-      public ucar.nc2.grib.GribCollectionProto.Parameter.Builder addParamsBuilder(
-          int index) {
-        return getParamsFieldBuilder().addBuilder(
-            index, ucar.nc2.grib.GribCollectionProto.Parameter.getDefaultInstance());
-      }
-      public java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter.Builder> 
-           getParamsBuilderList() {
-        return getParamsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          ucar.nc2.grib.GribCollectionProto.Parameter, ucar.nc2.grib.GribCollectionProto.Parameter.Builder, ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder> 
-          getParamsFieldBuilder() {
-        if (paramsBuilder_ == null) {
-          paramsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              ucar.nc2.grib.GribCollectionProto.Parameter, ucar.nc2.grib.GribCollectionProto.Parameter.Builder, ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder>(
-                  params_,
-                  ((bitField0_ & 0x00000100) == 0x00000100),
-                  getParentForChildren(),
-                  isClean());
-          params_ = null;
-        }
-        return paramsBuilder_;
-      }
-      
-      // @@protoc_insertion_point(builder_scope:gribCollectionIndex.HorizCoordSystem)
-    }
-    
-    static {
-      defaultInstance = new HorizCoordSystem(true);
-      defaultInstance.initFields();
-    }
-    
-    // @@protoc_insertion_point(class_scope:gribCollectionIndex.HorizCoordSystem)
-  }
-  
   public interface GroupOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required bytes gds = 1;
+    // optional int32 predefinedGds = 1;
+    boolean hasPredefinedGds();
+    int getPredefinedGds();
+    
+    // optional bytes gds = 2;
     boolean hasGds();
     com.google.protobuf.ByteString getGds();
     
-    // repeated .gribCollectionIndex.Variable variables = 2;
+    // repeated .gribCollectionIndex.Variable variables = 3;
     java.util.List<ucar.nc2.grib.GribCollectionProto.Variable> 
         getVariablesList();
     ucar.nc2.grib.GribCollectionProto.Variable getVariables(int index);
@@ -4903,7 +3821,7 @@ public final class GribCollectionProto {
     ucar.nc2.grib.GribCollectionProto.VariableOrBuilder getVariablesOrBuilder(
         int index);
     
-    // repeated .gribCollectionIndex.Coord timeCoords = 3;
+    // repeated .gribCollectionIndex.Coord timeCoords = 4;
     java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> 
         getTimeCoordsList();
     ucar.nc2.grib.GribCollectionProto.Coord getTimeCoords(int index);
@@ -4913,7 +3831,7 @@ public final class GribCollectionProto {
     ucar.nc2.grib.GribCollectionProto.CoordOrBuilder getTimeCoordsOrBuilder(
         int index);
     
-    // repeated .gribCollectionIndex.Coord vertCoords = 4;
+    // repeated .gribCollectionIndex.Coord vertCoords = 5;
     java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> 
         getVertCoordsList();
     ucar.nc2.grib.GribCollectionProto.Coord getVertCoords(int index);
@@ -4923,7 +3841,7 @@ public final class GribCollectionProto {
     ucar.nc2.grib.GribCollectionProto.CoordOrBuilder getVertCoordsOrBuilder(
         int index);
     
-    // repeated .gribCollectionIndex.Coord ensCoords = 5;
+    // repeated .gribCollectionIndex.Coord ensCoords = 6;
     java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> 
         getEnsCoordsList();
     ucar.nc2.grib.GribCollectionProto.Coord getEnsCoords(int index);
@@ -4933,7 +3851,7 @@ public final class GribCollectionProto {
     ucar.nc2.grib.GribCollectionProto.CoordOrBuilder getEnsCoordsOrBuilder(
         int index);
     
-    // repeated .gribCollectionIndex.Parameter params = 6;
+    // repeated .gribCollectionIndex.Parameter params = 7;
     java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter> 
         getParamsList();
     ucar.nc2.grib.GribCollectionProto.Parameter getParams(int index);
@@ -4943,12 +3861,12 @@ public final class GribCollectionProto {
     ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder getParamsOrBuilder(
         int index);
     
-    // repeated int32 fileno = 7;
+    // repeated int32 fileno = 8;
     java.util.List<java.lang.Integer> getFilenoList();
     int getFilenoCount();
     int getFileno(int index);
     
-    // repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 8;
+    // repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 9;
     java.util.List<ucar.nc2.grib.GribCollectionProto.TimeCoordUnion> 
         getTimeCoordUnionsList();
     ucar.nc2.grib.GribCollectionProto.TimeCoordUnion getTimeCoordUnions(int index);
@@ -4987,18 +3905,28 @@ public final class GribCollectionProto {
     }
     
     private int bitField0_;
-    // required bytes gds = 1;
-    public static final int GDS_FIELD_NUMBER = 1;
+    // optional int32 predefinedGds = 1;
+    public static final int PREDEFINEDGDS_FIELD_NUMBER = 1;
+    private int predefinedGds_;
+    public boolean hasPredefinedGds() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public int getPredefinedGds() {
+      return predefinedGds_;
+    }
+    
+    // optional bytes gds = 2;
+    public static final int GDS_FIELD_NUMBER = 2;
     private com.google.protobuf.ByteString gds_;
     public boolean hasGds() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+      return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public com.google.protobuf.ByteString getGds() {
       return gds_;
     }
     
-    // repeated .gribCollectionIndex.Variable variables = 2;
-    public static final int VARIABLES_FIELD_NUMBER = 2;
+    // repeated .gribCollectionIndex.Variable variables = 3;
+    public static final int VARIABLES_FIELD_NUMBER = 3;
     private java.util.List<ucar.nc2.grib.GribCollectionProto.Variable> variables_;
     public java.util.List<ucar.nc2.grib.GribCollectionProto.Variable> getVariablesList() {
       return variables_;
@@ -5018,8 +3946,8 @@ public final class GribCollectionProto {
       return variables_.get(index);
     }
     
-    // repeated .gribCollectionIndex.Coord timeCoords = 3;
-    public static final int TIMECOORDS_FIELD_NUMBER = 3;
+    // repeated .gribCollectionIndex.Coord timeCoords = 4;
+    public static final int TIMECOORDS_FIELD_NUMBER = 4;
     private java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> timeCoords_;
     public java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> getTimeCoordsList() {
       return timeCoords_;
@@ -5039,8 +3967,8 @@ public final class GribCollectionProto {
       return timeCoords_.get(index);
     }
     
-    // repeated .gribCollectionIndex.Coord vertCoords = 4;
-    public static final int VERTCOORDS_FIELD_NUMBER = 4;
+    // repeated .gribCollectionIndex.Coord vertCoords = 5;
+    public static final int VERTCOORDS_FIELD_NUMBER = 5;
     private java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> vertCoords_;
     public java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> getVertCoordsList() {
       return vertCoords_;
@@ -5060,8 +3988,8 @@ public final class GribCollectionProto {
       return vertCoords_.get(index);
     }
     
-    // repeated .gribCollectionIndex.Coord ensCoords = 5;
-    public static final int ENSCOORDS_FIELD_NUMBER = 5;
+    // repeated .gribCollectionIndex.Coord ensCoords = 6;
+    public static final int ENSCOORDS_FIELD_NUMBER = 6;
     private java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> ensCoords_;
     public java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> getEnsCoordsList() {
       return ensCoords_;
@@ -5081,8 +4009,8 @@ public final class GribCollectionProto {
       return ensCoords_.get(index);
     }
     
-    // repeated .gribCollectionIndex.Parameter params = 6;
-    public static final int PARAMS_FIELD_NUMBER = 6;
+    // repeated .gribCollectionIndex.Parameter params = 7;
+    public static final int PARAMS_FIELD_NUMBER = 7;
     private java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter> params_;
     public java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter> getParamsList() {
       return params_;
@@ -5102,8 +4030,8 @@ public final class GribCollectionProto {
       return params_.get(index);
     }
     
-    // repeated int32 fileno = 7;
-    public static final int FILENO_FIELD_NUMBER = 7;
+    // repeated int32 fileno = 8;
+    public static final int FILENO_FIELD_NUMBER = 8;
     private java.util.List<java.lang.Integer> fileno_;
     public java.util.List<java.lang.Integer>
         getFilenoList() {
@@ -5116,8 +4044,8 @@ public final class GribCollectionProto {
       return fileno_.get(index);
     }
     
-    // repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 8;
-    public static final int TIMECOORDUNIONS_FIELD_NUMBER = 8;
+    // repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 9;
+    public static final int TIMECOORDUNIONS_FIELD_NUMBER = 9;
     private java.util.List<ucar.nc2.grib.GribCollectionProto.TimeCoordUnion> timeCoordUnions_;
     public java.util.List<ucar.nc2.grib.GribCollectionProto.TimeCoordUnion> getTimeCoordUnionsList() {
       return timeCoordUnions_;
@@ -5138,6 +4066,7 @@ public final class GribCollectionProto {
     }
     
     private void initFields() {
+      predefinedGds_ = 0;
       gds_ = com.google.protobuf.ByteString.EMPTY;
       variables_ = java.util.Collections.emptyList();
       timeCoords_ = java.util.Collections.emptyList();
@@ -5152,10 +4081,6 @@ public final class GribCollectionProto {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
       
-      if (!hasGds()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       for (int i = 0; i < getVariablesCount(); i++) {
         if (!getVariables(i).isInitialized()) {
           memoizedIsInitialized = 0;
@@ -5200,28 +4125,31 @@ public final class GribCollectionProto {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, gds_);
+        output.writeInt32(1, predefinedGds_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, gds_);
       }
       for (int i = 0; i < variables_.size(); i++) {
-        output.writeMessage(2, variables_.get(i));
+        output.writeMessage(3, variables_.get(i));
       }
       for (int i = 0; i < timeCoords_.size(); i++) {
-        output.writeMessage(3, timeCoords_.get(i));
+        output.writeMessage(4, timeCoords_.get(i));
       }
       for (int i = 0; i < vertCoords_.size(); i++) {
-        output.writeMessage(4, vertCoords_.get(i));
+        output.writeMessage(5, vertCoords_.get(i));
       }
       for (int i = 0; i < ensCoords_.size(); i++) {
-        output.writeMessage(5, ensCoords_.get(i));
+        output.writeMessage(6, ensCoords_.get(i));
       }
       for (int i = 0; i < params_.size(); i++) {
-        output.writeMessage(6, params_.get(i));
+        output.writeMessage(7, params_.get(i));
       }
       for (int i = 0; i < fileno_.size(); i++) {
-        output.writeInt32(7, fileno_.get(i));
+        output.writeInt32(8, fileno_.get(i));
       }
       for (int i = 0; i < timeCoordUnions_.size(); i++) {
-        output.writeMessage(8, timeCoordUnions_.get(i));
+        output.writeMessage(9, timeCoordUnions_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -5234,27 +4162,31 @@ public final class GribCollectionProto {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, gds_);
+          .computeInt32Size(1, predefinedGds_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, gds_);
       }
       for (int i = 0; i < variables_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, variables_.get(i));
+          .computeMessageSize(3, variables_.get(i));
       }
       for (int i = 0; i < timeCoords_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, timeCoords_.get(i));
+          .computeMessageSize(4, timeCoords_.get(i));
       }
       for (int i = 0; i < vertCoords_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, vertCoords_.get(i));
+          .computeMessageSize(5, vertCoords_.get(i));
       }
       for (int i = 0; i < ensCoords_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, ensCoords_.get(i));
+          .computeMessageSize(6, ensCoords_.get(i));
       }
       for (int i = 0; i < params_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, params_.get(i));
+          .computeMessageSize(7, params_.get(i));
       }
       {
         int dataSize = 0;
@@ -5267,7 +4199,7 @@ public final class GribCollectionProto {
       }
       for (int i = 0; i < timeCoordUnions_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(8, timeCoordUnions_.get(i));
+          .computeMessageSize(9, timeCoordUnions_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -5399,43 +4331,45 @@ public final class GribCollectionProto {
       
       public Builder clear() {
         super.clear();
-        gds_ = com.google.protobuf.ByteString.EMPTY;
+        predefinedGds_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
+        gds_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         if (variablesBuilder_ == null) {
           variables_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000004);
         } else {
           variablesBuilder_.clear();
         }
         if (timeCoordsBuilder_ == null) {
           timeCoords_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           timeCoordsBuilder_.clear();
         }
         if (vertCoordsBuilder_ == null) {
           vertCoords_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
         } else {
           vertCoordsBuilder_.clear();
         }
         if (ensCoordsBuilder_ == null) {
           ensCoords_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
         } else {
           ensCoordsBuilder_.clear();
         }
         if (paramsBuilder_ == null) {
           params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000040);
         } else {
           paramsBuilder_.clear();
         }
         fileno_ = java.util.Collections.emptyList();;
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         if (timeCoordUnionsBuilder_ == null) {
           timeCoordUnions_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000080);
+          bitField0_ = (bitField0_ & ~0x00000100);
         } else {
           timeCoordUnionsBuilder_.clear();
         }
@@ -5480,61 +4414,65 @@ public final class GribCollectionProto {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
+        result.predefinedGds_ = predefinedGds_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
         result.gds_ = gds_;
         if (variablesBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
             variables_ = java.util.Collections.unmodifiableList(variables_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.variables_ = variables_;
         } else {
           result.variables_ = variablesBuilder_.build();
         }
         if (timeCoordsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
             timeCoords_ = java.util.Collections.unmodifiableList(timeCoords_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.timeCoords_ = timeCoords_;
         } else {
           result.timeCoords_ = timeCoordsBuilder_.build();
         }
         if (vertCoordsBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
             vertCoords_ = java.util.Collections.unmodifiableList(vertCoords_);
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.vertCoords_ = vertCoords_;
         } else {
           result.vertCoords_ = vertCoordsBuilder_.build();
         }
         if (ensCoordsBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+          if (((bitField0_ & 0x00000020) == 0x00000020)) {
             ensCoords_ = java.util.Collections.unmodifiableList(ensCoords_);
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000020);
           }
           result.ensCoords_ = ensCoords_;
         } else {
           result.ensCoords_ = ensCoordsBuilder_.build();
         }
         if (paramsBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          if (((bitField0_ & 0x00000040) == 0x00000040)) {
             params_ = java.util.Collections.unmodifiableList(params_);
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000040);
           }
           result.params_ = params_;
         } else {
           result.params_ = paramsBuilder_.build();
         }
-        if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        if (((bitField0_ & 0x00000080) == 0x00000080)) {
           fileno_ = java.util.Collections.unmodifiableList(fileno_);
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000080);
         }
         result.fileno_ = fileno_;
         if (timeCoordUnionsBuilder_ == null) {
-          if (((bitField0_ & 0x00000080) == 0x00000080)) {
+          if (((bitField0_ & 0x00000100) == 0x00000100)) {
             timeCoordUnions_ = java.util.Collections.unmodifiableList(timeCoordUnions_);
-            bitField0_ = (bitField0_ & ~0x00000080);
+            bitField0_ = (bitField0_ & ~0x00000100);
           }
           result.timeCoordUnions_ = timeCoordUnions_;
         } else {
@@ -5556,6 +4494,9 @@ public final class GribCollectionProto {
       
       public Builder mergeFrom(ucar.nc2.grib.GribCollectionProto.Group other) {
         if (other == ucar.nc2.grib.GribCollectionProto.Group.getDefaultInstance()) return this;
+        if (other.hasPredefinedGds()) {
+          setPredefinedGds(other.getPredefinedGds());
+        }
         if (other.hasGds()) {
           setGds(other.getGds());
         }
@@ -5563,7 +4504,7 @@ public final class GribCollectionProto {
           if (!other.variables_.isEmpty()) {
             if (variables_.isEmpty()) {
               variables_ = other.variables_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureVariablesIsMutable();
               variables_.addAll(other.variables_);
@@ -5576,7 +4517,7 @@ public final class GribCollectionProto {
               variablesBuilder_.dispose();
               variablesBuilder_ = null;
               variables_ = other.variables_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
               variablesBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getVariablesFieldBuilder() : null;
@@ -5589,7 +4530,7 @@ public final class GribCollectionProto {
           if (!other.timeCoords_.isEmpty()) {
             if (timeCoords_.isEmpty()) {
               timeCoords_ = other.timeCoords_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureTimeCoordsIsMutable();
               timeCoords_.addAll(other.timeCoords_);
@@ -5602,7 +4543,7 @@ public final class GribCollectionProto {
               timeCoordsBuilder_.dispose();
               timeCoordsBuilder_ = null;
               timeCoords_ = other.timeCoords_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
               timeCoordsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getTimeCoordsFieldBuilder() : null;
@@ -5615,7 +4556,7 @@ public final class GribCollectionProto {
           if (!other.vertCoords_.isEmpty()) {
             if (vertCoords_.isEmpty()) {
               vertCoords_ = other.vertCoords_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureVertCoordsIsMutable();
               vertCoords_.addAll(other.vertCoords_);
@@ -5628,7 +4569,7 @@ public final class GribCollectionProto {
               vertCoordsBuilder_.dispose();
               vertCoordsBuilder_ = null;
               vertCoords_ = other.vertCoords_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000010);
               vertCoordsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getVertCoordsFieldBuilder() : null;
@@ -5641,7 +4582,7 @@ public final class GribCollectionProto {
           if (!other.ensCoords_.isEmpty()) {
             if (ensCoords_.isEmpty()) {
               ensCoords_ = other.ensCoords_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000020);
             } else {
               ensureEnsCoordsIsMutable();
               ensCoords_.addAll(other.ensCoords_);
@@ -5654,7 +4595,7 @@ public final class GribCollectionProto {
               ensCoordsBuilder_.dispose();
               ensCoordsBuilder_ = null;
               ensCoords_ = other.ensCoords_;
-              bitField0_ = (bitField0_ & ~0x00000010);
+              bitField0_ = (bitField0_ & ~0x00000020);
               ensCoordsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getEnsCoordsFieldBuilder() : null;
@@ -5667,7 +4608,7 @@ public final class GribCollectionProto {
           if (!other.params_.isEmpty()) {
             if (params_.isEmpty()) {
               params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000040);
             } else {
               ensureParamsIsMutable();
               params_.addAll(other.params_);
@@ -5680,7 +4621,7 @@ public final class GribCollectionProto {
               paramsBuilder_.dispose();
               paramsBuilder_ = null;
               params_ = other.params_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000040);
               paramsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getParamsFieldBuilder() : null;
@@ -5692,7 +4633,7 @@ public final class GribCollectionProto {
         if (!other.fileno_.isEmpty()) {
           if (fileno_.isEmpty()) {
             fileno_ = other.fileno_;
-            bitField0_ = (bitField0_ & ~0x00000040);
+            bitField0_ = (bitField0_ & ~0x00000080);
           } else {
             ensureFilenoIsMutable();
             fileno_.addAll(other.fileno_);
@@ -5703,7 +4644,7 @@ public final class GribCollectionProto {
           if (!other.timeCoordUnions_.isEmpty()) {
             if (timeCoordUnions_.isEmpty()) {
               timeCoordUnions_ = other.timeCoordUnions_;
-              bitField0_ = (bitField0_ & ~0x00000080);
+              bitField0_ = (bitField0_ & ~0x00000100);
             } else {
               ensureTimeCoordUnionsIsMutable();
               timeCoordUnions_.addAll(other.timeCoordUnions_);
@@ -5716,7 +4657,7 @@ public final class GribCollectionProto {
               timeCoordUnionsBuilder_.dispose();
               timeCoordUnionsBuilder_ = null;
               timeCoordUnions_ = other.timeCoordUnions_;
-              bitField0_ = (bitField0_ & ~0x00000080);
+              bitField0_ = (bitField0_ & ~0x00000100);
               timeCoordUnionsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getTimeCoordUnionsFieldBuilder() : null;
@@ -5730,10 +4671,6 @@ public final class GribCollectionProto {
       }
       
       public final boolean isInitialized() {
-        if (!hasGds()) {
-          
-          return false;
-        }
         for (int i = 0; i < getVariablesCount(); i++) {
           if (!getVariables(i).isInitialized()) {
             
@@ -5796,47 +4733,52 @@ public final class GribCollectionProto {
               }
               break;
             }
-            case 10: {
+            case 8: {
               bitField0_ |= 0x00000001;
-              gds_ = input.readBytes();
+              predefinedGds_ = input.readInt32();
               break;
             }
             case 18: {
+              bitField0_ |= 0x00000002;
+              gds_ = input.readBytes();
+              break;
+            }
+            case 26: {
               ucar.nc2.grib.GribCollectionProto.Variable.Builder subBuilder = ucar.nc2.grib.GribCollectionProto.Variable.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addVariables(subBuilder.buildPartial());
               break;
             }
-            case 26: {
+            case 34: {
               ucar.nc2.grib.GribCollectionProto.Coord.Builder subBuilder = ucar.nc2.grib.GribCollectionProto.Coord.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addTimeCoords(subBuilder.buildPartial());
               break;
             }
-            case 34: {
+            case 42: {
               ucar.nc2.grib.GribCollectionProto.Coord.Builder subBuilder = ucar.nc2.grib.GribCollectionProto.Coord.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addVertCoords(subBuilder.buildPartial());
               break;
             }
-            case 42: {
+            case 50: {
               ucar.nc2.grib.GribCollectionProto.Coord.Builder subBuilder = ucar.nc2.grib.GribCollectionProto.Coord.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addEnsCoords(subBuilder.buildPartial());
               break;
             }
-            case 50: {
+            case 58: {
               ucar.nc2.grib.GribCollectionProto.Parameter.Builder subBuilder = ucar.nc2.grib.GribCollectionProto.Parameter.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addParams(subBuilder.buildPartial());
               break;
             }
-            case 56: {
+            case 64: {
               ensureFilenoIsMutable();
               fileno_.add(input.readInt32());
               break;
             }
-            case 58: {
+            case 66: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
               while (input.getBytesUntilLimit() > 0) {
@@ -5845,7 +4787,7 @@ public final class GribCollectionProto {
               input.popLimit(limit);
               break;
             }
-            case 66: {
+            case 74: {
               ucar.nc2.grib.GribCollectionProto.TimeCoordUnion.Builder subBuilder = ucar.nc2.grib.GribCollectionProto.TimeCoordUnion.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addTimeCoordUnions(subBuilder.buildPartial());
@@ -5857,10 +4799,31 @@ public final class GribCollectionProto {
       
       private int bitField0_;
       
-      // required bytes gds = 1;
+      // optional int32 predefinedGds = 1;
+      private int predefinedGds_ ;
+      public boolean hasPredefinedGds() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public int getPredefinedGds() {
+        return predefinedGds_;
+      }
+      public Builder setPredefinedGds(int value) {
+        bitField0_ |= 0x00000001;
+        predefinedGds_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearPredefinedGds() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        predefinedGds_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional bytes gds = 2;
       private com.google.protobuf.ByteString gds_ = com.google.protobuf.ByteString.EMPTY;
       public boolean hasGds() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public com.google.protobuf.ByteString getGds() {
         return gds_;
@@ -5869,25 +4832,25 @@ public final class GribCollectionProto {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
         gds_ = value;
         onChanged();
         return this;
       }
       public Builder clearGds() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         gds_ = getDefaultInstance().getGds();
         onChanged();
         return this;
       }
       
-      // repeated .gribCollectionIndex.Variable variables = 2;
+      // repeated .gribCollectionIndex.Variable variables = 3;
       private java.util.List<ucar.nc2.grib.GribCollectionProto.Variable> variables_ =
         java.util.Collections.emptyList();
       private void ensureVariablesIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
           variables_ = new java.util.ArrayList<ucar.nc2.grib.GribCollectionProto.Variable>(variables_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
          }
       }
       
@@ -6003,7 +4966,7 @@ public final class GribCollectionProto {
       public Builder clearVariables() {
         if (variablesBuilder_ == null) {
           variables_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           variablesBuilder_.clear();
@@ -6059,7 +5022,7 @@ public final class GribCollectionProto {
           variablesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ucar.nc2.grib.GribCollectionProto.Variable, ucar.nc2.grib.GribCollectionProto.Variable.Builder, ucar.nc2.grib.GribCollectionProto.VariableOrBuilder>(
                   variables_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000004) == 0x00000004),
                   getParentForChildren(),
                   isClean());
           variables_ = null;
@@ -6067,13 +5030,13 @@ public final class GribCollectionProto {
         return variablesBuilder_;
       }
       
-      // repeated .gribCollectionIndex.Coord timeCoords = 3;
+      // repeated .gribCollectionIndex.Coord timeCoords = 4;
       private java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> timeCoords_ =
         java.util.Collections.emptyList();
       private void ensureTimeCoordsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
           timeCoords_ = new java.util.ArrayList<ucar.nc2.grib.GribCollectionProto.Coord>(timeCoords_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
          }
       }
       
@@ -6189,7 +5152,7 @@ public final class GribCollectionProto {
       public Builder clearTimeCoords() {
         if (timeCoordsBuilder_ == null) {
           timeCoords_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           timeCoordsBuilder_.clear();
@@ -6245,7 +5208,7 @@ public final class GribCollectionProto {
           timeCoordsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ucar.nc2.grib.GribCollectionProto.Coord, ucar.nc2.grib.GribCollectionProto.Coord.Builder, ucar.nc2.grib.GribCollectionProto.CoordOrBuilder>(
                   timeCoords_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  ((bitField0_ & 0x00000008) == 0x00000008),
                   getParentForChildren(),
                   isClean());
           timeCoords_ = null;
@@ -6253,13 +5216,13 @@ public final class GribCollectionProto {
         return timeCoordsBuilder_;
       }
       
-      // repeated .gribCollectionIndex.Coord vertCoords = 4;
+      // repeated .gribCollectionIndex.Coord vertCoords = 5;
       private java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> vertCoords_ =
         java.util.Collections.emptyList();
       private void ensureVertCoordsIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
           vertCoords_ = new java.util.ArrayList<ucar.nc2.grib.GribCollectionProto.Coord>(vertCoords_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000010;
          }
       }
       
@@ -6375,7 +5338,7 @@ public final class GribCollectionProto {
       public Builder clearVertCoords() {
         if (vertCoordsBuilder_ == null) {
           vertCoords_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           vertCoordsBuilder_.clear();
@@ -6431,7 +5394,7 @@ public final class GribCollectionProto {
           vertCoordsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ucar.nc2.grib.GribCollectionProto.Coord, ucar.nc2.grib.GribCollectionProto.Coord.Builder, ucar.nc2.grib.GribCollectionProto.CoordOrBuilder>(
                   vertCoords_,
-                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  ((bitField0_ & 0x00000010) == 0x00000010),
                   getParentForChildren(),
                   isClean());
           vertCoords_ = null;
@@ -6439,13 +5402,13 @@ public final class GribCollectionProto {
         return vertCoordsBuilder_;
       }
       
-      // repeated .gribCollectionIndex.Coord ensCoords = 5;
+      // repeated .gribCollectionIndex.Coord ensCoords = 6;
       private java.util.List<ucar.nc2.grib.GribCollectionProto.Coord> ensCoords_ =
         java.util.Collections.emptyList();
       private void ensureEnsCoordsIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
           ensCoords_ = new java.util.ArrayList<ucar.nc2.grib.GribCollectionProto.Coord>(ensCoords_);
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
          }
       }
       
@@ -6561,7 +5524,7 @@ public final class GribCollectionProto {
       public Builder clearEnsCoords() {
         if (ensCoordsBuilder_ == null) {
           ensCoords_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
           onChanged();
         } else {
           ensCoordsBuilder_.clear();
@@ -6617,7 +5580,7 @@ public final class GribCollectionProto {
           ensCoordsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ucar.nc2.grib.GribCollectionProto.Coord, ucar.nc2.grib.GribCollectionProto.Coord.Builder, ucar.nc2.grib.GribCollectionProto.CoordOrBuilder>(
                   ensCoords_,
-                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  ((bitField0_ & 0x00000020) == 0x00000020),
                   getParentForChildren(),
                   isClean());
           ensCoords_ = null;
@@ -6625,13 +5588,13 @@ public final class GribCollectionProto {
         return ensCoordsBuilder_;
       }
       
-      // repeated .gribCollectionIndex.Parameter params = 6;
+      // repeated .gribCollectionIndex.Parameter params = 7;
       private java.util.List<ucar.nc2.grib.GribCollectionProto.Parameter> params_ =
         java.util.Collections.emptyList();
       private void ensureParamsIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
           params_ = new java.util.ArrayList<ucar.nc2.grib.GribCollectionProto.Parameter>(params_);
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000040;
          }
       }
       
@@ -6747,7 +5710,7 @@ public final class GribCollectionProto {
       public Builder clearParams() {
         if (paramsBuilder_ == null) {
           params_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000040);
           onChanged();
         } else {
           paramsBuilder_.clear();
@@ -6803,7 +5766,7 @@ public final class GribCollectionProto {
           paramsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ucar.nc2.grib.GribCollectionProto.Parameter, ucar.nc2.grib.GribCollectionProto.Parameter.Builder, ucar.nc2.grib.GribCollectionProto.ParameterOrBuilder>(
                   params_,
-                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  ((bitField0_ & 0x00000040) == 0x00000040),
                   getParentForChildren(),
                   isClean());
           params_ = null;
@@ -6811,12 +5774,12 @@ public final class GribCollectionProto {
         return paramsBuilder_;
       }
       
-      // repeated int32 fileno = 7;
+      // repeated int32 fileno = 8;
       private java.util.List<java.lang.Integer> fileno_ = java.util.Collections.emptyList();;
       private void ensureFilenoIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
           fileno_ = new java.util.ArrayList<java.lang.Integer>(fileno_);
-          bitField0_ |= 0x00000040;
+          bitField0_ |= 0x00000080;
          }
       }
       public java.util.List<java.lang.Integer>
@@ -6851,18 +5814,18 @@ public final class GribCollectionProto {
       }
       public Builder clearFileno() {
         fileno_ = java.util.Collections.emptyList();;
-        bitField0_ = (bitField0_ & ~0x00000040);
+        bitField0_ = (bitField0_ & ~0x00000080);
         onChanged();
         return this;
       }
       
-      // repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 8;
+      // repeated .gribCollectionIndex.TimeCoordUnion timeCoordUnions = 9;
       private java.util.List<ucar.nc2.grib.GribCollectionProto.TimeCoordUnion> timeCoordUnions_ =
         java.util.Collections.emptyList();
       private void ensureTimeCoordUnionsIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
+        if (!((bitField0_ & 0x00000100) == 0x00000100)) {
           timeCoordUnions_ = new java.util.ArrayList<ucar.nc2.grib.GribCollectionProto.TimeCoordUnion>(timeCoordUnions_);
-          bitField0_ |= 0x00000080;
+          bitField0_ |= 0x00000100;
          }
       }
       
@@ -6978,7 +5941,7 @@ public final class GribCollectionProto {
       public Builder clearTimeCoordUnions() {
         if (timeCoordUnionsBuilder_ == null) {
           timeCoordUnions_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000080);
+          bitField0_ = (bitField0_ & ~0x00000100);
           onChanged();
         } else {
           timeCoordUnionsBuilder_.clear();
@@ -7034,7 +5997,7 @@ public final class GribCollectionProto {
           timeCoordUnionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ucar.nc2.grib.GribCollectionProto.TimeCoordUnion, ucar.nc2.grib.GribCollectionProto.TimeCoordUnion.Builder, ucar.nc2.grib.GribCollectionProto.TimeCoordUnionOrBuilder>(
                   timeCoordUnions_,
-                  ((bitField0_ & 0x00000080) == 0x00000080),
+                  ((bitField0_ & 0x00000100) == 0x00000100),
                   getParentForChildren(),
                   isClean());
           timeCoordUnions_ = null;
@@ -10218,11 +9181,6 @@ public final class GribCollectionProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_gribCollectionIndex_Parameter_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_gribCollectionIndex_HorizCoordSystem_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_gribCollectionIndex_HorizCoordSystem_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_gribCollectionIndex_Group_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -10268,33 +9226,29 @@ public final class GribCollectionProto {
       "on\030\022 \001(\r\"B\n\005Coord\022\014\n\004code\030\001 \002(\005\022\014\n\004unit\030" +
       "\002 \002(\t\022\016\n\006values\030\003 \003(\002\022\r\n\005bound\030\004 \003(\002\"6\n\t" +
       "Parameter\022\014\n\004name\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n" +
-      "\005sdata\030\003 \001(\t\"\266\001\n\020HorizCoordSystem\022\014\n\004cod" +
-      "e\030\001 \002(\005\022\n\n\002nx\030\002 \002(\005\022\n\n\002ny\030\003 \002(\005\022\016\n\006start" +
-      "x\030\004 \002(\001\022\016\n\006starty\030\005 \002(\001\022\014\n\004incx\030\006 \002(\001\022\014\n",
-      "\004incy\030\007 \002(\001\022\020\n\010scanMode\030\010 \002(\005\022.\n\006params\030" +
-      "\t \003(\0132\036.gribCollectionIndex.Parameter\"\323\002" +
-      "\n\005Group\022\013\n\003gds\030\001 \002(\014\0220\n\tvariables\030\002 \003(\0132" +
-      "\035.gribCollectionIndex.Variable\022.\n\ntimeCo" +
-      "ords\030\003 \003(\0132\032.gribCollectionIndex.Coord\022." +
-      "\n\nvertCoords\030\004 \003(\0132\032.gribCollectionIndex" +
-      ".Coord\022-\n\tensCoords\030\005 \003(\0132\032.gribCollecti" +
-      "onIndex.Coord\022.\n\006params\030\006 \003(\0132\036.gribColl" +
-      "ectionIndex.Parameter\022\016\n\006fileno\030\007 \003(\005\022<\n" +
-      "\017timeCoordUnions\030\010 \003(\0132#.gribCollectionI",
-      "ndex.TimeCoordUnion\"m\n\016TimeCoordUnion\022\014\n" +
-      "\004code\030\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006values\030\003 \003(" +
-      "\002\022\r\n\005bound\030\004 \003(\002\022\021\n\tpartition\030\005 \003(\005\022\r\n\005i" +
-      "ndex\030\006 \003(\005\"+\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020\n" +
-      "\010filename\030\002 \002(\t\"\311\002\n\023GribCollectionIndex\022" +
-      "\014\n\004name\030\001 \002(\t\022\r\n\005files\030\002 \003(\t\022*\n\006groups\030\003" +
-      " \003(\0132\032.gribCollectionIndex.Group\022.\n\006para" +
-      "ms\030\004 \003(\0132\036.gribCollectionIndex.Parameter" +
-      "\022\016\n\006center\030\005 \002(\005\022\021\n\tsubcenter\030\006 \002(\005\022\016\n\006m" +
-      "aster\030\007 \002(\005\022\r\n\005local\030\010 \002(\005\022\026\n\016genProcess",
-      "Type\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rback" +
-      "ProcessId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.gr" +
-      "ibCollectionIndex.PartitionB$\n\rucar.nc2." +
-      "gribB\023GribCollectionProto"
+      "\005sdata\030\003 \001(\t\"\352\002\n\005Group\022\025\n\rpredefinedGds\030" +
+      "\001 \001(\005\022\013\n\003gds\030\002 \001(\014\0220\n\tvariables\030\003 \003(\0132\035." +
+      "gribCollectionIndex.Variable\022.\n\ntimeCoor",
+      "ds\030\004 \003(\0132\032.gribCollectionIndex.Coord\022.\n\n" +
+      "vertCoords\030\005 \003(\0132\032.gribCollectionIndex.C" +
+      "oord\022-\n\tensCoords\030\006 \003(\0132\032.gribCollection" +
+      "Index.Coord\022.\n\006params\030\007 \003(\0132\036.gribCollec" +
+      "tionIndex.Parameter\022\016\n\006fileno\030\010 \003(\005\022<\n\017t" +
+      "imeCoordUnions\030\t \003(\0132#.gribCollectionInd" +
+      "ex.TimeCoordUnion\"m\n\016TimeCoordUnion\022\014\n\004c" +
+      "ode\030\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006values\030\003 \003(\002\022" +
+      "\r\n\005bound\030\004 \003(\002\022\021\n\tpartition\030\005 \003(\005\022\r\n\005ind" +
+      "ex\030\006 \003(\005\"+\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020\n\010f",
+      "ilename\030\002 \002(\t\"\311\002\n\023GribCollectionIndex\022\014\n" +
+      "\004name\030\001 \002(\t\022\r\n\005files\030\002 \003(\t\022*\n\006groups\030\003 \003" +
+      "(\0132\032.gribCollectionIndex.Group\022.\n\006params" +
+      "\030\004 \003(\0132\036.gribCollectionIndex.Parameter\022\016" +
+      "\n\006center\030\005 \002(\005\022\021\n\tsubcenter\030\006 \002(\005\022\016\n\006mas" +
+      "ter\030\007 \002(\005\022\r\n\005local\030\010 \002(\005\022\026\n\016genProcessTy" +
+      "pe\030\n \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackPr" +
+      "ocessId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.grib" +
+      "CollectionIndex.PartitionB$\n\rucar.nc2.gr" +
+      "ibB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -10341,24 +9295,16 @@ public final class GribCollectionProto {
               new java.lang.String[] { "Name", "Data", "Sdata", },
               ucar.nc2.grib.GribCollectionProto.Parameter.class,
               ucar.nc2.grib.GribCollectionProto.Parameter.Builder.class);
-          internal_static_gribCollectionIndex_HorizCoordSystem_descriptor =
-            getDescriptor().getMessageTypes().get(5);
-          internal_static_gribCollectionIndex_HorizCoordSystem_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_gribCollectionIndex_HorizCoordSystem_descriptor,
-              new java.lang.String[] { "Code", "Nx", "Ny", "Startx", "Starty", "Incx", "Incy", "ScanMode", "Params", },
-              ucar.nc2.grib.GribCollectionProto.HorizCoordSystem.class,
-              ucar.nc2.grib.GribCollectionProto.HorizCoordSystem.Builder.class);
           internal_static_gribCollectionIndex_Group_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(5);
           internal_static_gribCollectionIndex_Group_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Group_descriptor,
-              new java.lang.String[] { "Gds", "Variables", "TimeCoords", "VertCoords", "EnsCoords", "Params", "Fileno", "TimeCoordUnions", },
+              new java.lang.String[] { "PredefinedGds", "Gds", "Variables", "TimeCoords", "VertCoords", "EnsCoords", "Params", "Fileno", "TimeCoordUnions", },
               ucar.nc2.grib.GribCollectionProto.Group.class,
               ucar.nc2.grib.GribCollectionProto.Group.Builder.class);
           internal_static_gribCollectionIndex_TimeCoordUnion_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_gribCollectionIndex_TimeCoordUnion_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_TimeCoordUnion_descriptor,
@@ -10366,7 +9312,7 @@ public final class GribCollectionProto {
               ucar.nc2.grib.GribCollectionProto.TimeCoordUnion.class,
               ucar.nc2.grib.GribCollectionProto.TimeCoordUnion.Builder.class);
           internal_static_gribCollectionIndex_Partition_descriptor =
-            getDescriptor().getMessageTypes().get(8);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_gribCollectionIndex_Partition_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Partition_descriptor,
@@ -10374,7 +9320,7 @@ public final class GribCollectionProto {
               ucar.nc2.grib.GribCollectionProto.Partition.class,
               ucar.nc2.grib.GribCollectionProto.Partition.Builder.class);
           internal_static_gribCollectionIndex_GribCollectionIndex_descriptor =
-            getDescriptor().getMessageTypes().get(9);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_gribCollectionIndex_GribCollectionIndex_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_GribCollectionIndex_descriptor,

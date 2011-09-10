@@ -56,28 +56,17 @@ message Parameter {  // copied from ncStream.proto
   optional string sdata = 3; // used for string data
 }
 
-message HorizCoordSystem {
-  required int32 code = 1; // GDS template
-  required int32 nx = 2;
-  required int32 ny = 3;
-  required double startx = 4;
-  required double starty = 5;
-  required double incx = 6;
-  required double incy = 7;
-  required int32 scanMode = 8;
-  repeated Parameter params = 9; // supposed to be the projection parameters
-}
-
 message Group {
-  required bytes gds = 1;        // all variables use the same GDS
-  repeated Variable variables = 2; // list of variables
-  repeated Coord timeCoords = 3; // list of time coordinates
-  repeated Coord vertCoords = 4; // list of vert coordinates
-  repeated Coord ensCoords = 5;  // list of ens coordinates
-  repeated Parameter params = 6; // group attributes
-  repeated int32 fileno = 7;     // this is so we can show just the component files that are in this group
+  optional int32 predefinedGds = 1;   // predefined GDS code, defined by center
+  optional bytes gds = 2;             // all variables in the group use the same GDS
+  repeated Variable variables = 3;    // list of variables
+  repeated Coord timeCoords = 4; // list of time coordinates
+  repeated Coord vertCoords = 5; // list of vert coordinates
+  repeated Coord ensCoords = 6;  // list of ens coordinates
+  repeated Parameter params = 7; // group attributes
+  repeated int32 fileno = 8;     // this is so we can show just the component files that are in this group
 
-  repeated TimeCoordUnion timeCoordUnions = 8; // for time partitions only
+  repeated TimeCoordUnion timeCoordUnions = 9; // for time partitions only
 }
 
 message TimeCoordUnion { // extends Coord

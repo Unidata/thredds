@@ -49,7 +49,8 @@ import java.util.zip.CRC32;
 public class Grib1SectionGridDefinition {
   private final byte[] rawData;
   private final long startingPosition;
-  private final int gridTemplate;
+  private final int gridTemplate; // octet 6
+  private final int predefinedGridDefinition; // = -1 if not used
 
   /**
    * Read Grib Definition section from raf.
@@ -73,6 +74,8 @@ public class Grib1SectionGridDefinition {
     rawData = new byte[length];
     raf.seek(startingPosition);
     raf.readFully(rawData);
+
+    predefinedGridDefinition = -1;
   }
 
   /**
@@ -84,13 +87,15 @@ public class Grib1SectionGridDefinition {
     this.rawData = rawData;
     this.gridTemplate = getOctet(6);
     this.startingPosition = -1;
+    predefinedGridDefinition = -1;
   }
 
-  public Grib1SectionGridDefinition(Grib1SectionProductDefinition pds) throws IOException {
+  public Grib1SectionGridDefinition(Grib1SectionProductDefinition pds) {
     startingPosition = -1;
-    gridTemplate = 1000 * pds.getGridDefinition(); // LOOK
+    gridTemplate = -pds.getGridDefinition(); // LOOK ??
     rawData = null;
     gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(pds.getCenter(), pds.getGridDefinition());
+    predefinedGridDefinition = pds.getGridDefinition();
   }
 
 
@@ -134,10 +139,18 @@ public class Grib1SectionGridDefinition {
   /**
    * Get Grid Template number (code table 6)
    *
-   * @return Grod Template number.
+   * @return Grid Template number.
    */
   public int getGridTemplate() {
     return gridTemplate;
+  }
+
+  /**
+   * From pds.getGridDefinition
+   * @return  pds.getGridDefinition, or -1 if uses a real Grib1SectionGridDefinition
+   */
+  public int getPredefinedGridDefinition() {
+    return predefinedGridDefinition;
   }
 
   private final int getOctet(int index) {

@@ -115,8 +115,10 @@ public final class Grib1SectionProductDefinition {
 
   /**
    * Grid Definition (octet 7).
-   * "Number of grid used – from catalogue defined by originating centre".
-   * So this is center dependent.
+   * "Number of grid used – from catalogue defined by originating centre". So this is center dependent.
+   * "Where octet 7 defines a catalogued grid, that grid should also be defined in Section 2, provided the flag in octet 8
+      indicates inclusion of Section 2.
+      Octet 7 must be set to 255 to indicate a non-catalogued grid, in which case the grid will be defined in Section 2."
    * @return Grid Definition.
    */
   public final int getGridDefinition() {
@@ -351,6 +353,7 @@ public final class Grib1SectionProductDefinition {
       f.format("             Level Description : %s%n", plevel.getLevelDescription());
       f.format("                 Level Value 1 : %f%n", plevel.getValue1());
       f.format("                 Level Value 2 : %f%n", plevel.getValue2());
+      f.format("               Grid Definition : %d%n", getGridDefinition());
       f.format("                    GDS Exists : %s%n", gdsExists());
       f.format("                    BMS Exists : %s%n", bmsExists());
     }

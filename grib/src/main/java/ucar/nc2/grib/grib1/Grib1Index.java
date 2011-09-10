@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.GribIndex;
@@ -177,35 +178,15 @@ public class Grib1Index extends GribIndex {
       return true;
     }
 
-    /*
-  message Grib1Record {
-   // indicator section
-   required uint64 gribMessageLength = 1;
-   required uint32 discipline = 2;
-
-   // id section
-   required GribIdSection ids = 3;
-
-   // other sections
-   optional bytes lus = 4;
-   required sint64 gdsCrc = 5;
-   required bytes pds = 6;
-   required uint64 drsPos = 7;
-   required uint64 bmsPos = 8;
-   required uint64 dataPos = 9;
-    */
+    // deserialize the Grib1Record object
     private Grib1Record readRecord(Grib1IndexProto.Grib1Record p) {
       Grib1SectionIndicator is = new Grib1SectionIndicator(p.getGribMessageStart(), p.getGribMessageLength());
-
-      int gdsIndex = p.getGdsIdx();
-      Grib1SectionGridDefinition gds = gdsList.get(gdsIndex);
       Grib1SectionProductDefinition pds = new Grib1SectionProductDefinition(p.getPds().toByteArray());
-      Grib1SectionBitMap bms = null;
-      if (pds.bmsExists()) {
-        bms = new Grib1SectionBitMap(p.getBmsPos());
-      }
-      Grib1SectionBinaryData dataSection = new Grib1SectionBinaryData(p.getDataPos(), p.getDataLen());
 
+      Grib1SectionGridDefinition gds = pds.gdsExists() ? gdsList.get(p.getGdsIdx()) : new Grib1SectionGridDefinition(pds);
+      Grib1SectionBitMap bms = pds.bmsExists() ? new Grib1SectionBitMap(p.getBmsPos()) : null;
+
+      Grib1SectionBinaryData dataSection = new Grib1SectionBinaryData(p.getDataPos(), p.getDataLen());
       return new Grib1Record(p.getHeader().toByteArray(), is, gds, pds, bms, dataSection);
     }
 
@@ -242,7 +223,9 @@ public class Grib1Index extends GribIndex {
 
           Grib1SectionGridDefinition gds = r.getGDSsection();
           Integer index = gdsMap.get(gds.calcCRC());
-          if (index == null) {
+          if (gds.getPredefinedGridDefinition() >= 0) // skip predefined gds - they dont have raw bytes
+            index = 0;
+          else if (index == null) {
             gdsList.add(gds);
             index = gdsList.size()-1;
             gdsMap.put(gds.calcCRC(), index);
