@@ -161,9 +161,68 @@ public class Grib1SectionGridDefinition {
   private Grib1Gds gds = null;
 
   public Grib1Gds getGDS() {
-    if (gds == null)
+    if (gds == null) {
       gds = Grib1Gds.factory(gridTemplate, rawData);
+      if (isThin())
+        gds.setNptsInLine(getNptsInLine());
+    }
     return gds;
+  }
+
+
+  //////////////////////////////////
+  // the infinite grib1 baloney
+
+  public boolean hasVerticalCoordinates() {
+    int octet5 = getOctet(5);
+    int nv = getOctet(4);
+    return (octet5 != 255) && (nv != 0 && nv != 255);
+  }
+
+  /**
+   * Number of Vertical coordinates
+   * octet 4
+   *
+   * @return Number of Vertical coordinates
+   */
+  public int getNVerticalCoordinates() {
+    return getOctet(4);
+  }
+
+  /**
+   * is a "thin" grid
+   *
+   * @return if a thin grid
+   */
+  public final boolean isThin() {
+    if (rawData == null) return false;
+    int octet5 = getOctet(5);
+    int nv = getOctet(4);
+    return (octet5 != 255) && (nv == 0 || nv == 255);
+  }
+
+  /**
+   * Gets the number of points in each line for Quasi/Thin grids
+   * "List of numbers of points in each row (length = NROWS x 2 octets, where NROWS is the
+   *  total number of rows defined within the grid description)"
+   * @return number of points in each line as int[]
+   */
+  private int[] getNptsInLine() {
+    getGDS();
+    int numPts;
+
+    if ((gds.getScanMode() & 32) == 0) { // bit3 = 0 : Adjacent points in i direction are consecutive
+      numPts = gds.getNy();
+    } else {                             // bit3 = 1 : Adjacent points in j direction are consecutive
+      numPts = gds.getNx();
+    }
+
+    int[] parallels = new int[numPts];
+    int offset = getOctet(5);
+    for (int i = 0; i < numPts; i++) {
+      parallels[i] = GribNumbers.int2(getOctet(offset++), getOctet(offset++));
+    }
+    return parallels;
   }
 
 }

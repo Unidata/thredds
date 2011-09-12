@@ -33,12 +33,13 @@
 package ucar.nc2.grib.grib1;
 
 import ucar.nc2.grib.GribNumbers;
-import ucar.ma2.Array;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.Stereographic;
+import ucar.unidata.util.GaussianLatitudes;
 
 import java.util.Formatter;
 
@@ -100,14 +101,16 @@ public abstract class Grib1Gds {
   private static final float scale6 = (float) 1.0e-6;
 
   protected final byte[] data;
+  protected int[] nptsInLine; // thin grids, else null
 
   public int template;
   public float earthRadius, majorAxis, minorAxis;
-  public int earthShape, nx, ny;
+  public int earthShape;
+  protected int nx, ny;
   public byte scanMode, resolution;
   protected int lastOctet;
 
-  public Grib1Gds(int template) {
+  protected Grib1Gds(int template) {
     this.template = template;
     this.data = null;
   }
@@ -118,15 +121,18 @@ public abstract class Grib1Gds {
 
     nx = getOctet2(7);
     ny = getOctet2(9);
-
-    //earthShape = getOctet(15);
-    //earthRadius = getScaledValue(16);
-    //majorAxis = getScaledValue(21);
-    //minorAxis = getScaledValue(26);
   }
 
   public byte[] getRawBytes() {
     return data;
+  }
+
+  public int[] getNptsInLine() {
+    return nptsInLine;
+  }
+
+  public void setNptsInLine(int[] nptsInLine) {
+    this.nptsInLine = nptsInLine;
   }
 
   protected int getOctet(int index) {
@@ -159,6 +165,16 @@ public abstract class Grib1Gds {
     return false;
   }
 
+  /*
+  Flag/Code table 8 – Scanning mode
+ Bit Value Meaning
+  1   0   Points scan in +i direction
+      1   Points scan in –i direction
+  2   0   Points scan in –j direction
+      1   Points scan in +j direction
+  3   0   Adjacent points in i direction are consecutive
+      1   Adjacent points in j direction are consecutive
+   */
   public byte getScanMode() {
     return scanMode;
   }
@@ -167,17 +183,46 @@ public abstract class Grib1Gds {
     return resolution;
   }
 
-  public int getNx() {
+  public int getNxRaw() {
     return nx;
   }
 
-  public int getNy() {
+  public int getNyRaw() {
     return ny;
   }
 
-  public abstract float getDx();
+  ///////// thin grid crapola
+  /*
+    For data on a quasi-regular grid, in which all the rows or columns do not necessarily have the same number of grid
+    points, either Ni (octets 7–8) or Nj (octets 9–10) and the corresponding Di (octets 24–25) or Dj (octets 26–27) shall be
+    coded with all bits set to 1 (missing); the actual number of points along each parallel or meridian shall be coded.
+  */
 
-  public abstract float getDy();
+  // number of points along nx, adjusted for thin grid
+  public int getNx() {
+    if (nptsInLine == null || nx > 0) return nx;
+    return QuasiRegular.getMax(nptsInLine);
+  }
+
+  // number of points along ny, adjusted for thin grid
+  public int getNy() {
+    if (nptsInLine == null || ny > 0) return ny;
+    return QuasiRegular.getMax(nptsInLine);
+  }
+
+  // delta in x direction
+  public float getDx() {
+    return getDxRaw();
+  }
+
+  // delta in y direction
+  public float getDy() {
+    return getDyRaw();
+  }
+
+  public abstract float getDxRaw();
+
+  public abstract float getDyRaw();
 
   public abstract GdsHorizCoordSys makeHorizCoordSys();
 
@@ -287,10 +332,17 @@ public abstract class Grib1Gds {
       la2 = getOctet3(18) * scale3;
       lo2 = getOctet3(21) * scale3;
 
-      deltaLon = getOctet2(24) * scale3;
-      //if (lo2 < lo1) deltaLon = -deltaLon;
-      deltaLat = getOctet2(26)  * scale3;
-      //if (la2 < la1) deltaLat = -deltaLat;
+      if (lo2 < lo1) lo2 += 360.0F;
+
+      deltaLon = getOctet2(24);
+      if (deltaLon != GribNumbers.UNDEFINED) deltaLon *= scale3; // undefined for thin grids
+
+      deltaLat = getOctet2(26);
+      if (deltaLat != GribNumbers.UNDEFINED) { // undefined for thin grids
+        deltaLat *= scale3;
+        if (la2 < la1) deltaLat *= -1.0;
+      }
+
       scanMode = (byte) getOctet(28);
 
       lastOctet = 28;
@@ -303,11 +355,23 @@ public abstract class Grib1Gds {
 
     @Override
     public float getDx() {
-      return deltaLon;
-    }
+      if (nptsInLine == null || deltaLon != GribNumbers.UNDEFINED) return deltaLon;
+      return (float) (lo2 - lo1) / (getNx() - 1);
+  }
 
     @Override
     public float getDy() {
+      if (nptsInLine == null || deltaLat != GribNumbers.UNDEFINED) return deltaLat;
+      return (float) (la2 - la1) / (getNy() - 1);
+  }
+
+    @Override
+    public float getDxRaw() {
+       return deltaLon;
+    }
+
+    @Override
+    public float getDyRaw() {
       return deltaLat;
     }
 
@@ -338,15 +402,16 @@ public abstract class Grib1Gds {
       return hashCode;
     }
 
-    public int[] getOptionalPoints() {
-      int[] optionalPoints = null;
-      int n = getOctet(11); // Number of octets for optional list of numbers
-      if (n > 0) {
-        optionalPoints = new int[n / 4];
-        for (int i = 0; i < optionalPoints.length; i++)
-          optionalPoints[i] = getOctet4(lastOctet + 4 * n);
-      }
-      return optionalPoints;
+    @Override
+    public String toString() {
+      return "LatLon{" +
+              "la1=" + la1 +
+              ", lo1=" + lo1 +
+              ", la2=" + la2 +
+              ", lo2=" + lo2 +
+              ", deltaLon=" + deltaLon +
+              ", deltaLat=" + deltaLat +
+              '}';
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
@@ -354,7 +419,7 @@ public abstract class Grib1Gds {
       ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
       double startx = startP.getX();
       double starty = startP.getY();
-      return new GdsHorizCoordSys(getNameShort(), proj, startx, deltaLon, starty, deltaLat, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, startx, getDx(), starty, getDy(), getNx(), getNy());
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -372,8 +437,8 @@ public abstract class Grib1Gds {
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       f.format("   should end at x= (%f,%f)%n", endx, endy);
     }
   }
@@ -403,15 +468,12 @@ public abstract class Grib1Gds {
     49–52   Stretching factor (representation as for the reference value)
    */
   public static class GaussianLatLon extends LatLon {
+    int nparellels;
     public float latSouthPole, lonSouthPole, rotAngle, latPole, lonPole, stretchFactor;
-
-    public GaussianLatLon(int template) {
-      super(template);
-    }
 
     GaussianLatLon(byte[] data, int template) {
       super(data, template);
-
+      nparellels = getOctet2(26);
       latSouthPole = getOctet3(33) * scale3;
       lonSouthPole = getOctet3(36) * scale3;
       rotAngle = getOctet4(39) * scale3;
@@ -420,6 +482,29 @@ public abstract class Grib1Gds {
       stretchFactor = getOctet4(49) * scale3;
 
       lastOctet = 52;
+    }
+
+    @Override
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      GdsHorizCoordSys hc = super.makeHorizCoordSys();
+      hc.setGaussianLats(nparellels, la1, la2);
+      return hc;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append(super.toString());
+      sb.append("\nGaussianLatLon");
+      sb.append("{nparellels=").append(nparellels);
+      sb.append(", latSouthPole=").append(latSouthPole);
+      sb.append(", lonSouthPole=").append(lonSouthPole);
+      sb.append(", rotAngle=").append(rotAngle);
+      sb.append(", latPole=").append(latPole);
+      sb.append(", lonPole=").append(lonPole);
+      sb.append(", stretchFactor=").append(stretchFactor);
+      sb.append('}');
+      return sb.toString();
     }
   }
 
@@ -444,7 +529,7 @@ Grid definition –   polar stereographic
     public byte projCenterFlag;
     private float lad = (float) 60.0; // LOOK
 
-    public PolarStereographic(int template) {
+    protected PolarStereographic(int template) {
       super(template);
     }
 
@@ -499,12 +584,12 @@ Grid definition –   polar stereographic
     }
 
     @Override
-    public float getDx() {
+    public float getDxRaw() {
       return dX;
     }
 
     @Override
-    public float getDy() {
+    public float getDyRaw() {
       return dY;
     }
 
@@ -534,15 +619,15 @@ Grid definition –   polar stereographic
       }
 
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(la1, lo1));
-      return new GdsHorizCoordSys(getNameShort(), proj, start.getX(), dX, start.getY(), dY, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy());
     }
 
     public void testHorizCoordSys(Formatter f) {
       GdsHorizCoordSys cs = makeHorizCoordSys();
       f.format("%s testProjection %s%n", getClass().getName(), cs.proj.getClass().getName());
 
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
@@ -605,12 +690,12 @@ Grid definition –   polar stereographic
     }
 
     @Override
-    public float getDx() {
+    public float getDxRaw() {
       return dX;
     }
 
     @Override
-    public float getDy() {
+    public float getDyRaw() {
       return dY;
     }
 
@@ -669,15 +754,15 @@ Grid definition –   polar stereographic
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
-      return new GdsHorizCoordSys(getNameShort(), proj, start.getX(), dX, start.getY(), dY, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy());
     }
 
     public void testHorizCoordSys(Formatter f) {
       GdsHorizCoordSys cs = makeHorizCoordSys();
       f.format("%s testProjection %s%n", getClass().getName(), cs.proj.getClass().getName());
 
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
@@ -732,12 +817,12 @@ Grid definition –   polar stereographic
     }
 
     @Override
-    public float getDx() {
+    public float getDxRaw() {
       return dX;
     }
 
     @Override
-    public float getDy() {
+    public float getDyRaw() {
       return dY;
     }
 
@@ -783,7 +868,7 @@ Grid definition –   polar stereographic
       double startx = startP.getX();
       double starty = startP.getY();
 
-      return new GdsHorizCoordSys(getNameShort(), proj, startx, dX, starty, dY, nx, ny);
+      return new GdsHorizCoordSys(getNameShort(), proj, startx, getDx(), starty, getDy(), getNx(), getNy());
     }
 
 
@@ -802,8 +887,8 @@ Grid definition –   polar stereographic
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
-      double endx = cs.startx + (nx - 1) * cs.dx;
-      double endy = cs.starty + (ny - 1) * cs.dy;
+      double endx = cs.startx + (getNx() - 1) * cs.dx;
+      double endy = cs.starty + (getNy() - 1) * cs.dy;
       f.format("   should end at x= (%f,%f)%n", endx, endy);
     }
 

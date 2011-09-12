@@ -61,7 +61,7 @@ public class Grib1RecordScanner {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
   static private final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
   static private final boolean debug = false;
-  static private final boolean debugGds = true;
+  static private final boolean debugGds = false;
 
   static public boolean isValidFile(RandomAccessFile raf) {
     try {

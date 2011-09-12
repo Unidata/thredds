@@ -372,7 +372,7 @@ public class Grib1CollectionBuilder {
       this.gdss = gdss;
       this.gdsHash = gdsHash;
       Grib1Gds gds = gdss.getGDS();
-      name = gds.getNameShort() + "-" + gds.ny + "X" + gds.nx;
+      name = gds.getNameShort() + "-" + gds.getNy() + "X" + gds.getNx();
     }
   }
 

@@ -32,6 +32,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.grid.GridParameter;
@@ -41,8 +42,10 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -152,14 +155,11 @@ public class Grib1RawPanel extends JPanel {
     varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
     varPopup.addAction("Show raw GDS", new AbstractAction() {
        public void actionPerformed(ActionEvent e) {
-         ByteArrayOutputStream os = new ByteArrayOutputStream();
-         PrintStream ps = new PrintStream(os);
          List list = gds1Table.getSelectedBeans();
          Formatter f = new Formatter();
          for (Object bo : list) {
            Gds1Bean bean = (Gds1Bean) bo;
            showRawGds(bean.gdss, f);
-           ps.append("\n");
          }
          infoPopup.setText(f.toString());
          infoWindow.setVisible(true);
@@ -178,6 +178,26 @@ public class Grib1RawPanel extends JPanel {
            infoPopup2.gotoTop();
            infoWindow2.showIfNotIconified();
          }
+       }
+     });
+
+    varPopup.addAction("Show GDS", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         ByteArrayOutputStream os = new ByteArrayOutputStream();
+         List list = gds1Table.getSelectedBeans();
+         Formatter f = new Formatter();
+         for (Object bo : list) {
+           Gds1Bean bean = (Gds1Bean) bo;
+           f.format("Grib1GDS = %s", bean.gds);
+           GdsHorizCoordSys gdsHc = bean.gds.makeHorizCoordSys();
+           f.format("%n%n%s", gdsHc);
+           ProjectionImpl proj = gdsHc.proj;
+           f.format("%n%nProjection %s%n", proj.getName());
+           for (Parameter p : proj.getProjectionParameters())
+             f.format("  %s == %s%n", p.getName(), p.getStringValue());
+         }
+         infoPopup.setText(f.toString());
+         infoWindow.setVisible(true);
        }
      });
 
@@ -531,10 +551,6 @@ public class Grib1RawPanel extends JPanel {
       return Long.toBinaryString(gds.getResolution());
     }
 
-    //public String getResolution() {
-    //  return Long.toBinaryString(gds.getResolution());
-    //}
-
     public double getDx() {
       return gds.getDx();
     }
@@ -543,13 +559,29 @@ public class Grib1RawPanel extends JPanel {
       return gds.getDy();
     }
 
+    public double getDxRaw() {
+      return gds.getDxRaw();
+    }
+
+    public double getDyRaw() {
+      return gds.getDyRaw();
+    }
+
     public int getNx() {
-      return gds.getNx();
-    }
+       return gds.getNx();
+     }
 
-    public int getNy() {
-      return gds.getNy();
-    }
+     public int getNy() {
+       return gds.getNy();
+     }
 
-  }
+    public int getNxRaw() {
+       return gds.getNxRaw();
+     }
+
+     public int getNyRaw() {
+       return gds.getNyRaw();
+     }
+
+   }
 }

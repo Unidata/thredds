@@ -32,9 +32,9 @@
 
 package ucar.nc2.grib.grib1;
 
+import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -214,7 +214,13 @@ public class Grib1Record {
     Grib1Gds gds = gdss.getGDS();
     Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), dataSection.getStartingPosition());
     boolean[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
-    return reader.getData(raf, bm);
+    float[] data = reader.getData(raf, bm);
+
+    if (gdss.isThin()) {
+      data = QuasiRegular.convertQuasiGrid(data, gds.getNptsInLine(), gds.getNxRaw(), gds.getNyRaw() );
+    }
+
+    return data;
   }
 
   /**
@@ -231,7 +237,7 @@ public class Grib1Record {
     return gr.readData(raf);
   }
 
-  /**
+  /*
    * Read data array: use when you want to be independent of the GribRecord
    *
    * @param raf          from this RandomAccessFile
@@ -242,7 +248,7 @@ public class Grib1Record {
    * @param ny           gds.ny
    * @return data as float[] array
    * @throws IOException on read error
-   */
+   *
   static public float[] readData(RandomAccessFile raf, long bmPos, int decimalScale, int scanMode, int nx, int ny) throws IOException {
     raf.seek(bmPos);
     Grib1SectionBitMap bms = new Grib1SectionBitMap(raf);
@@ -251,5 +257,5 @@ public class Grib1Record {
     boolean[] bitmap = bms.getBitmap(raf);
 
     return reader.getData(raf, bitmap);
-  }
+  } */
 }

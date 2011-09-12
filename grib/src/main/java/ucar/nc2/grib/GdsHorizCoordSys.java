@@ -33,8 +33,10 @@
 package ucar.nc2.grib;
 
 import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.util.GaussianLatitudes;
 
 /**
  * Description
@@ -63,9 +65,9 @@ public class GdsHorizCoordSys {
     this.ny = ny;
   }
 
-    public String getName() {
-      return name + "-" + ny + "X" + nx;
-    }
+  public String getName() {
+    return name + "-" + ny + "X" + nx;
+  }
 
   public double getStartX() {
     return startx;
@@ -87,6 +89,75 @@ public class GdsHorizCoordSys {
 
   public boolean isLatLon() {
     return proj instanceof LatLonProjection;
+  }
+
+
+  // set gaussian weights based on nparellels
+  // some wierd adjustment for la1 and la2.
+  public void setGaussianLats(int nparellels, float la1, float la2) {
+
+    int nlats = (int) (2 * nparellels);
+    GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
+
+    int bestStartIndex = 0, bestEndIndex = 0;
+    double bestStartDiff = Double.MAX_VALUE;
+    double bestEndDiff = Double.MAX_VALUE;
+    for (int i = 0; i < nlats; i++) {
+      double diff = Math.abs(gaussLats.latd[i] - la1);
+      if (diff < bestStartDiff) {
+        bestStartDiff = diff;
+        bestStartIndex = i;
+      }
+      diff = Math.abs(gaussLats.latd[i] - la2);
+      if (diff < bestEndDiff) {
+        bestEndDiff = diff;
+        bestEndIndex = i;
+      }
+    }
+    if (Math.abs(bestEndIndex - bestStartIndex + 1) != ny) {
+      //log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
+      nlats = ny;
+      gaussLats = new GaussianLatitudes(nlats);
+      bestStartIndex = 0;
+      bestEndIndex = ny - 1;
+    }
+    boolean goesUp = bestEndIndex > bestStartIndex;
+
+    // create the data
+    int useIndex = bestStartIndex;
+    float[] data = new float[ny];
+    float[] gaussw = new float[ny];
+    for (int i = 0; i < ny; i++) {
+      data[i] = (float) gaussLats.latd[useIndex];
+      gaussw[i] = (float) gaussLats.gaussw[useIndex];
+      if (goesUp) {
+        useIndex++;
+      } else {
+        useIndex--;
+      }
+    }
+
+    this.gaussLats = Array.factory(DataType.FLOAT, new int[]{ny}, data);
+    this.gaussw = Array.factory(DataType.FLOAT, new int[]{ny}, gaussw);
+  }
+
+  @Override
+  public String toString() {
+    return "GdsHorizCoordSys" +
+            "\n name='" + name + '\'' +
+            "\n  template=" + template +
+            "\n  nPoints=" + nPoints +
+            "\n  scanMode=" + scanMode +
+            "\n  proj=" + proj +
+            "\n  startx=" + startx +
+            "\n  dx=" + dx +
+            "\n  starty=" + starty +
+            "\n  dy=" + dy +
+            "\n  nx=" + nx +
+            "\n  ny=" + ny +
+            "\n  gaussLats=" + gaussLats +
+            "\n  gaussw=" + gaussw +
+            '\n';
   }
 }
 

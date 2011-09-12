@@ -59,7 +59,7 @@ import java.util.*;
  */
 public class Grib1ReportPanel extends JPanel {
   public static enum Report {
-    checkTables, checkLocalParams, scanNew// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
+    checkTables, showLocalParams, scanIssues// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
   }
 
   private PreferencesExt prefs;
@@ -138,10 +138,10 @@ public class Grib1ReportPanel extends JPanel {
         case checkTables:
           doCheckTables(f, dcm, useIndex);
           break;
-        case checkLocalParams:
+        case showLocalParams:
           doCheckLocalParams(f, dcm, useIndex);
           break;
-        case scanNew:
+        case scanIssues:
           doScanNew(f, dcm, useIndex);
           break;
         /* case localUseSection:
@@ -175,7 +175,7 @@ public class Grib1ReportPanel extends JPanel {
   ///////////////////////////////////////////////
 
   private void doCheckLocalParams(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-    f.format("Check Grib-2 Parameter Tables%n");
+    f.format("Check Grib-1 Parameter Tables for local entries%n");
     int[] accum = new int[4];
 
     for (MFile mfile : dcm.getFiles()) {
@@ -190,7 +190,7 @@ public class Grib1ReportPanel extends JPanel {
       }
     }
 
-    f.format("%nGrand total=%d not operational = %d local = %d missing = %d%n", accum[0], accum[1], accum[2], accum[3]);
+    f.format("%nGrand total=%d local = %d missing = %d%n", accum[0], accum[2], accum[3]);
   }
 
   private void doCheckLocalParams(MFile ff, Formatter fm, int[] accum) throws IOException {
@@ -202,17 +202,6 @@ public class Grib1ReportPanel extends JPanel {
     GridDataset ncfile = null;
     try {
       ncfile = GridDataset.open(ff.getPath());
-      /* Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("Originating_center_id");
-      Integer center_id = (Integer) gatt.getNumericValue();
-      gatt = ncfile.findGlobalAttributeIgnoreCase("Originating_subcenter_id");
-      Integer subcenter_id = (gatt == null) ? -1 : (Integer) gatt.getNumericValue();
-      gatt = ncfile.findGlobalAttributeIgnoreCase("Table_version");
-      Integer version = (gatt == null) ? -1 : (Integer) gatt.getNumericValue();
-      Grib1ParamTable table = Grib1ParamTable.getParameterTable(center_id, subcenter_id, version);
-      if (table == null) {
-        fm.format("  Missing table = %d %d %d%n", center_id, subcenter_id, version);
-        return;
-      }  */
 
       for (GridDatatype dt : ncfile.getGrids()) {
         String currName = dt.getName();
@@ -223,14 +212,14 @@ public class Grib1ReportPanel extends JPanel {
         if (number >= 128) {
           fm.format("  local parameter = %s (%d) units=%s %n", currName, number, dt.getUnitsString());
           local++;
-          continue;
+          if (currName.startsWith("VAR")) miss++;
         }
 
       }
     } finally {
       if (ncfile != null) ncfile.close();
     }
-    fm.format("total=%d not operational = %d local = %d missing = %d%n", total, nonop, local, miss);
+    fm.format("total=%d local = %d miss=%d %n", total, local, miss);
     accum[0] += total;
     accum[1] += nonop;
     accum[2] += local;
@@ -350,8 +339,8 @@ public class Grib1ReportPanel extends JPanel {
   /////////////////////////////////////////////////////////////////
 
   private void doScanNew(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
-    CounterS tableSet = new CounterS("table");
-    CounterS local = new CounterS("local");
+    Counter predefined = new Counter("predefined");
+    Counter thin = new Counter("thin");
     CounterS missing = new CounterS("missing");
     Counter timeUnit = new Counter("timeUnit");
 
@@ -359,17 +348,18 @@ public class Grib1ReportPanel extends JPanel {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
-      doScanNew(f, mfile, useIndex, tableSet, local, missing, timeUnit);
+      doScanNew(f, mfile, useIndex, predefined, thin, timeUnit);
     }
 
     f.format("SCAN NEW%n");
-    tableSet.show(f);
-    local.show(f);
-    missing.show(f);
+    predefined.show(f);
+    thin.show(f);
     timeUnit.show(f);
   }
 
-  private void doScanNew(Formatter fm, MFile ff, boolean useIndex, CounterS tableSet, CounterS local, CounterS missing, Counter timeUnit) throws IOException {
+  private void doScanNew(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit) throws IOException {
+    boolean showThin = true;
+    boolean showPredefined = true;
     String path = ff.getPath();
     RandomAccessFile raf = null;
     try {
@@ -380,18 +370,22 @@ public class Grib1ReportPanel extends JPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+        Grib1SectionGridDefinition gdss = gr.getGDSsection();
         Grib1SectionProductDefinition pds = gr.getPDSsection();
-        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
-        tableSet.count(key);
+        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for COunterS
         timeUnit.count(pds.getTimeType());
 
-        if (pds.getParameterNumber() > 127)
-          local.count(key);
+        if (gdss.isThin()) {
+          if (showThin) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), ff.getPath());
+          thin.count(1);
+          showThin = false;
+        }
 
-        Grib1ParamTable table = Grib1ParamTable.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
-        if (table == null && useIndex) table = Grib1ParamTable.getDefaultTable();
-        if (table == null || null == table.getParameter(pds.getParameterNumber()))
-          missing.count(key);
+        if (!pds.gdsExists()) {
+           if (showPredefined) fm.format("   PREDEFINED GDS= %s%n", ff.getPath());
+          predefined.count(1);
+          showPredefined = false;
+        }
       }
 
     } catch (Throwable ioe) {

@@ -9,6 +9,18 @@ import java.util.zip.CRC32;
 
 /**
  * The Grid Definition section 3 for GRIB-2 files
+ * <pre>
+  Octet Contents
+  1–4   Length of section in octets (nn)
+  5     Number of section (3)
+  6     Source of grid definition (see Code table 3.0 and Note 1)
+  7–10  Number of data points
+  11    Number of octets for optional list of numbers (see Note 2)
+  12    Interpretation of list of numbers (see Code table 3.11)
+  13–14 Grid definition template number (= N) (see Code table 3.1)
+  15–xx Grid definition template (see Template 3.N, where N is the grid definition template number given in octets 13–14)
+  [xx+1]–nn Optional list of numbers defining number of points (see Notes 2, 3 and 4)
+ </pre>
  *
  * @author caron
  * @since 3/28/11
@@ -93,7 +105,8 @@ public class   Grib2SectionGridDefinition {
   /**
    * octet 6
    * source of grid definition (Code Table 3.0)
-   *
+   * "If octet 6 is not zero, octets 15–xx (15–nn if octet 11 is zero) may not be supplied. This should be documented with all
+      bits set to 1 (missing value) in the grid definition template number."
    * @return source
    */
   public int getSource() {
