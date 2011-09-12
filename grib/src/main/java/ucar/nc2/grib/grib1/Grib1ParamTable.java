@@ -37,6 +37,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.GribTables;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 
@@ -71,8 +72,9 @@ public class Grib1ParamTable implements GribTables {
       List<Grib1ParamTable> tables = new CopyOnWriteArrayList<Grib1ParamTable>();
       LookupTable lookup = new LookupTable();
       lookup.readLookupTable("resources/grib1/lookupTables.txt", tables);
-      lookup.readLookupTable("resources/grib1/dss/lookupTables.txt", tables);
       lookup.readLookupTable("resources/grib1/ecmwf/lookupTables.txt", tables);
+      lookup.readLookupTable("resources/grib1/ncl/lookupTables.txt", tables);
+      lookup.readLookupTable("resources/grib1/dss/lookupTables.txt", tables);
       lookup.readLookupTable("resources/grib1/ncep/lookupTables.txt", tables);
       // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt", tables);  too many problems -must check every one !
       paramTables = new CopyOnWriteArrayList<Grib1ParamTable>(tables); // in case user adds tables
@@ -151,7 +153,8 @@ public class Grib1ParamTable implements GribTables {
     for (Grib1ParamTable table : localCopy) {
       // look for a match
       if (center == table.center_id) {
-        if ((table.subcenter_id == -1) || (subcenter == table.subcenter_id)) {
+        //if ((table.subcenter_id == -1) || (subcenter == table.subcenter_id)) {
+        if ((table.subcenter_id == -1) || (table.subcenter_id == 0) || (subcenter == table.subcenter_id)) {
           if ((table.version == -1) || version == table.version) {  // match
             //  see if the parameters for this table have been read in yet.
             if (table.parameters == null) {
@@ -290,7 +293,7 @@ public class Grib1ParamTable implements GribTables {
   private Map<Integer, Grib1Parameter> parameters; // param number -> param
 
   public Grib1ParamTable(String path) throws IOException {
-    this.path = path;
+    this.path = StringUtil2.replace(path, "\\", "/");
     this.name = GribResourceReader.getFilename(path);
     this.parameters = readParameterTable();
   }
@@ -441,10 +444,19 @@ TBLE2 cptec_254_params[] = {
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
       // Ignore header
+      int count = 0;
       while (true) {
         String line = br.readLine();
         if (line == null) break; // done with the file
         if (line.startsWith("TBLE2")) break;
+
+        if (line.contains("Center:"))
+          center_id = extract(line, "Center:");
+        else if (line.contains("Subcenter:"))
+          subcenter_id = extract(line, "Subcenter:");
+        else if (line.contains("version:"))
+          version = extract(line, "version:");
+        count++;
       }
 
       while (true) {
@@ -484,6 +496,18 @@ TBLE2 cptec_254_params[] = {
       }
     }
 
+  }
+
+  private int extract(String line, String key) {
+    int pos = line.indexOf(key);
+    if (pos < 0) return -1;
+    String want = line.substring(pos + key.length());
+    try {
+      return Integer.parseInt(want.trim());
+    } catch (NumberFormatException e) {
+      System.out.printf("BAD %s (%s)%n",line, path);
+      return -1;
+    }
   }
 
   /*
@@ -554,6 +578,8 @@ TBLE2 cptec_254_params[] = {
         // optional notes
         line = br.readLine();
         String notes = (line == null || line.startsWith("...")) ? null : line.trim();
+
+        if (desc.equalsIgnoreCase("undefined")) continue; // skip
 
         Grib1Parameter parameter = new Grib1Parameter();
         try {
@@ -796,8 +822,15 @@ TBLE2 cptec_254_params[] = {
   }
 
   static public void main(String[] args) throws IOException {
-    debug = true;
-    addParameterUserLookup("C:/dev/tds4.2/thredds/grib/resources/resources/grib1/tablesOld/zagreb_221_1.tab");
+    String dirS =  "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncl";
+    File dir = new File(dirS);
+    for (File f : dir.listFiles()) {
+      if (!f.getName().endsWith(".h")) continue;
+      Grib1ParamTable table = new Grib1ParamTable(f.getPath());
+
+      //  60:	 1:		180:	WMO_GRIB1.60-1.180.xml
+      System.out.printf("%5d: %5d: %5d: %s%n", table.getCenter_id(), table.getSubcenter_id(), table.getVersion(), table.getName());
+    }
   }
 }
 

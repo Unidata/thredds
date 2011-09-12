@@ -1,7 +1,7 @@
 /*
  * Japanese Meteorological Agency - Tokyo (RSMC)
  * Center: 34
- * Subcenter: 
+ * Subcenter: 0
  * Parameter table version: 3
  */
 

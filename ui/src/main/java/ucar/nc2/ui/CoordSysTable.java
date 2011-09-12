@@ -34,7 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.DateUnit;
@@ -310,9 +310,15 @@ public class CoordSysTable extends JPanel {
     }
   }
 
+   private String getCalendarAttribute(VariableDS vds) {
+    Attribute cal = vds.findAttribute("calendar");
+    return (cal == null) ? null : cal.getStringValue();
+  }
+
   private boolean showCalendarDates(CoordinateAxis1D axis1D, String units) throws Exception {
     try {
-      CalendarDateUnit cdu = CalendarDateUnit.of(null, units);
+      String cal = getCalendarAttribute(axis1D);
+      CalendarDateUnit cdu = CalendarDateUnit.of(cal, units);
       if (!axis1D.isInterval()) {
         for (double val : axis1D.getCoordValues()) {
           if (Double.isNaN(val)) infoTA.appendLine(" N/A");

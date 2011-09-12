@@ -1,0 +1,261 @@
+# See attached. Here gribmap.txt is for grib1 output. -- wrfhelp
+# sent 9/7/2011
+
+
+-1:255:255:4
+0:var0:undefined::
+1:PRES:Pressure [Pa]::
+2:PRMSL:Pressure reduced to MSL [Pa]::
+3:PTEND:Pressure tendency [Pa/s]::
+4:PVORT:Pot. vorticity [km^2/kg/s]::
+5:ICAHT:ICAO Standard Atmosphere Reference Height [M]::
+6:GP:Geopotential [m^2/s^2]::
+7:HGT:Geopotential height [gpm]::
+8:DIST:Geometric height [m]::
+9:HSTDV:Std dev of height [m]::
+10:TOZNE:Total ozone [Dobson]::
+11:TMP:Temp. [K]::
+12:VTMP:Virtual temp. [K]::
+13:POT:Potential temp. [K]::
+14:EPOT:Pseudo-adiabatic pot. temp. [K]::
+15:TMAX:Max. temp. [K]::
+16:TMIN:Min. temp. [K]::
+17:DPT:Dew point temp. [K]::
+18:DEPR:Dew point depression [K]::
+19:LAPR:Lapse rate [K/m]::
+20:VIS:Visibility [m]::
+21:RDSP1:Radar spectra (1) [non-dim]::
+22:RDSP2:Radar spectra (2) [non-dim]::
+23:RDSP3:Radar spectra (3) [non-dim]::
+24:PLI:Parcel lifted index (to 500 hPa) [K]::
+25:TMPA:Temp. anomaly [K]::
+26:PRESA:Pressure anomaly [Pa]::
+27:GPA:Geopotential height anomaly [gpm]::
+28:WVSP1:Wave spectra (1) [non-dim]::
+29:WVSP2:Wave spectra (2) [non-dim]::
+30:WVSP3:Wave spectra (3) [non-dim]::
+31:WDIR:Wind direction [deg]::
+32:WIND:Wind speed [m/s]::
+33:UGRD:u wind [m/s]::
+34:VGRD:v wind [m/s]::
+35:STRM:Stream function [m^2/s]::
+36:VPOT:Velocity potential [m^2/s]::
+37:MNTSF:Montgomery stream function [m^2/s^2]::
+38:SGCVV:Sigma coord. vertical velocity [/s]::
+39:VVEL:Pressure vertical velocity [Pa/s]::
+40:DZDT:Geometric vertical velocity [m/s]::
+41:ABSV:Absolute vorticity [/s]::
+42:ABSD:Absolute divergence [/s]::
+43:RELV:Relative vorticity [/s]::
+44:RELD:Relative divergence [/s]::
+45:VUCSH:Vertical u shear [/s]::
+46:VVCSH:Vertical v shear [/s]::
+47:DIRC:Direction of current [deg]::
+48:SPC:Speed of current [m/s]::
+49:UOGRD:u of current [m/s]::
+50:VOGRD:v of current [m/s]::
+51:SPFH:Specific humidity [kg/kg]::
+52:RH:Relative humidity [%]::
+53:MIXR:Humidity mixing ratio [kg/kg]::
+54:PWAT:Precipitable water [kg/m^2]::
+55:VAPP:Vapor pressure [Pa]::
+56:SATD:Saturation deficit [Pa]::
+57:EVP:Evaporation [kg/m^2]::
+58:CICE:Cloud Ice [kg/m^2]::
+59:PRATE:Precipitation rate [kg/m^2/s]::
+60:TSTM:Thunderstorm probability [%]::
+61:APCP:Total precipitation [kg/m^2]::
+62:NCPCP:Large scale precipitation [kg/m^2]::
+63:ACPCP:Convective precipitation [kg/m^2]::
+64:SRWEQ:Snowfall rate water equiv. [kg/m^2/s]::
+65:WEASD:Accum. snow [kg/m^2]::
+66:SNOD:Snow depth [m]::
+67:MIXHT:Mixed layer depth [m]::
+68:TTHDP:Transient thermocline depth [m]::
+69:MTHD:Main thermocline depth [m]::
+70:MTHA:Main thermocline anomaly [m]::
+71:TCDC:Total cloud cover [%]::
+72:CDCON:Convective cloud cover [%]::
+73:LCDC:Low level cloud cover [%]::
+74:MCDC:Mid level cloud cover [%]::
+75:HCDC:High level cloud cover [%]::
+76:CWAT:Cloud water [kg/m^2]::
+77:BLI:Best lifted index (to 500 hPa) [K]::
+78:SNOC:Convective snow [kg/m^2]::
+79:SNOL:Large scale snow [kg/m^2]::
+80:WTMP:Water temp. [K]::
+81:LAND:Land cover (land=1;sea=0) [fraction]::
+82:DSLM:Deviation of sea level from mean [m]::
+83:SFCR:Surface roughness [m]::
+84:ALBDO:Albedo [%]::
+85:TSOIL:Soil temp. [K]::
+86:SOILM:Soil moisture content [kg/m^2]::
+87:VEG:Vegetation [%]::
+88:SALTY:Salinity [kg/kg]::
+89:DEN:Density [kg/m^3]::
+90:WATR:Water runoff [kg/m^2]::
+91:ICEC:Ice concentration (ice=1;no ice=0) [fraction]::
+92:ICETK:Ice thickness [m]::
+93:DICED:Direction of ice drift [deg]::
+94:SICED:Speed of ice drift [m/s]::
+95:UICE:u of ice drift [m/s]::
+96:VICE:v of ice drift [m/s]::
+97:ICEG:Ice growth rate [m/s]::
+98:ICED:Ice divergence [/s]::
+99:SNOM:Snow melt [kg/m^2]::
+100:HTSGW:Sig height of wind waves and swell [m]::
+101:WVDIR:Direction of wind waves [deg]::
+102:WVHGT:Sig height of wind waves [m]::
+103:WVPER:Mean period of wind waves [s]::
+104:SWDIR:Direction of swell waves [deg]::
+105:SWELL:Sig height of swell waves [m]::
+106:SWPER:Mean period of swell waves [s]::
+107:DIRPW:Primary wave direction [deg]::
+108:PERPW:Primary wave mean period [s]::
+109:DIRSW:Secondary wave direction [deg]::
+110:PERSW:Secondary wave mean period [s]::
+111:NSWRS:Net short wave (surface) [W/m^2]::
+112:NLWRS:Net long wave (surface) [W/m^2]::
+113:NSWRT:Net short wave (top) [W/m^2]::
+114:NLWRT:Net long wave (top) [W/m^2]::
+115:LWAVR:Long wave [W/m^2]::
+116:SWAVR:Short wave [W/m^2]::
+117:GRAD:Global radiation [W/m^2]::
+118:BRTMP:Brightness temperature [K]::
+119:LWRAD:Radiance with respect to wave no. [W/m/sr]::
+120:SWRAD:Radiance with respect ot wave len. [W/m^3/sr]::
+121:LHTFL:Latent heat flux [W/m^2]::
+122:SHTFL:Sensible heat flux [W/m^2]::
+123:BLYDP:Boundary layer dissipation [W/m^2]::
+124:UFLX:Zonal momentum flux [N/m^2]::
+125:VFLX:Meridional momentum flux [N/m^2]::
+126:WMIXE:Wind mixing energy [J]::
+127:IMGD:Image data []::
+128:RU_BXS::RU_BXS:1
+129:RU_BXE::RU_BXE:1
+130:RU_BYS::RU_BYS:1
+131:RU_BYE::RU_BYE:1
+132:RU_BTXS::RU_BTXS:6
+133:RU_BTXE::RU_BTXE:6
+134:RU_BTYS::RU_BTYS:6
+135:RU_BTYE::RU_BTYE:6
+136:RV_BXS::RV_BXS:1
+137:RV_BXE::RV_BXE:1
+138:RV_BYS::RV_BYS:1
+139:RV_BYE::RV_BYE:1
+140:RV_BTXS::RV_BTXS:6
+141:RV_BTXE::RV_BTXE:6
+142:RV_BTYS::RV_BTYS:6
+143:RV_BTYE::RV_BTYE:6
+144:RW_BXS::RW_BXS:1
+145:RW_BXE::RW_BXE:1
+146:RW_BYS::RW_BYS:1
+147:RW_BYE::RW_BYE:1
+148:RW_BTXS::RW_BTXS:6
+149:RW_BTXE::RW_BTXE:6
+150:RW_BTYS::RW_BTYS:6
+151:RW_BTYE::RW_BTYE:6
+152:PH_BXS::PH_BXS:-1
+153:PH_BXE::PH_BXE:-1
+154:PH_BYS::PH_BYS:-1
+155:PH_BYE::PH_BYE:-1
+156:PH_BTXS::PH_BTXS:4
+157:PH_BTXE::PH_BTXE:4
+158:PH_BTYS::PH_BTYS:4
+159:PH_BTYE::PH_BTYE:4
+160:T_BXS::T_BXS:1
+161:T_BXE::T_BXE:1
+162:T_BYS::T_BYS:1
+163:T_BYE::T_BYE:1
+164:T_BTXS::T_BTXS:6
+165:T_BTXE::T_BTXE:6
+166:T_BTYS::T_BTYS:6
+167:T_BTYE::T_BTYE:6
+168:MU_BXS::MU_BXS:4
+169:MU_BXE::MU_BXE:4
+170:MU_BYS::MU_BYS:4
+171:MU_BYE::MU_BYE:4
+172:MU_BTXS::MU_BTXS:9
+173:MU_BTXE::MU_BTXE:9
+174:MU_BTYS::MU_BTYS:9
+175:MU_BTYE::MU_BTYE:9
+176:RQV_BXS::RQV_BXS:4
+177:RQV_BXE::RQV_BXE:4
+178:RQV_BYS::RQV_BYS:4
+179:RQV_BYE::RQV_BYE:4
+180:RQV_BTXS::RQV_BTXS:10
+181:RQV_BTXE::RQV_BTXE:10
+182:RQV_BTYS::RQV_BTYS:10
+183:RQV_BTYE::RQV_BTYE:10
+184:RQC_BXS::RQC_BXS:4
+185:RQC_BXE::RQC_BXE:4
+186:RQC_BYS::RQC_BYS:4
+187:RQC_BYE::RQC_BYE:4
+188:RQC_BTXS::RQC_BTXS:10
+189:RQC_BTXE::RQC_BTXE:10
+190:RQC_BTYS::RQC_BTYS:10
+191:RQC_BTYE::RQC_BTYE:10
+192:RQR_BXS::RQR_BXS:4
+193:RQR_BXE::RQR_BXE:4
+194:RQR_BYS::RQR_BYS:4
+195:RQR_BYE::RQR_BYE:4
+196:RQR_BTXS::RQR_BTXS:10
+197:RQR_BTXE::RQR_BTXE:10
+198:RQR_BTYS::RQR_BTYS:10
+199:RQR_BTYE::RQR_BTYE:10
+200:RQI_BXS::RQI_BXS:4
+201:RQI_BXE::RQI_BXE:4
+202:RQI_BYS::RQI_BYS:4
+203:RQI_BYE::RQI_BYE:4
+204:RQI_BTXS::RQI_BTXS:10
+205:RQI_BTXE::RQI_BTXE:10
+206:RQI_BTYS::RQI_BTYS:10
+207:RQI_BTYE::RQI_BTYE:10
+208:RQS_BXS::RQS_BXS:4
+209:RQS_BXE::RQS_BXE:4
+210:RQS_BYS::RQS_BYS:4
+211:RQS_BYE::RQS_BYE:4
+212:RQS_BTXS::RQS_BTXS:10
+213:RQS_BTXE::RQS_BTXE:10
+214:RQS_BTYS::RQS_BTYS:10
+215:RQS_BTYE::RQS_BTYE:10
+216:RQG_BXS::RQG_BXS:4
+217:RQG_BXE::RQG_BXE:4
+218:RQG_BYS::RQG_BYS:4
+219:RQG_BYE::RQG_BYE:4
+220:RQG_BTXS::RQG_BTXS:10
+221:RQG_BTXE::RQG_BTXE:10
+222:RQG_BTYS::RQG_BTYS:10
+223:RQG_BTYE::RQG_BTYE:10
+224:QICE_BXS::QICE_BXS:10
+225:QICE_BXE::QICE_BXE:10
+226:QICE_BYS::QICE_BYS:10
+227:QICE_BYE::QICE_BYE:10
+228:QICE_BTXS::QICE_BTXS:4
+229:QICE_BTXE::QICE_BTXE:4
+230:QICE_BTYS::QICE_BTYS:4
+231:QICE_BTYE::QICE_BTYE:4
+232:QSNOW_BTYE::QSNOW_BTYE:2
+233:QSNOW_BXS::QSNOW_BXS:10
+234:QSNOW_BXE::QSNOW_BXE:10
+235:QSNOW_BYS::QSNOW_BYS:10
+236:QSNOW_BYE::QSNOW_BYE:10
+237:QSNOW_BTXS::QSNOW_BTXS:4
+238:QSNOW_BTXE::QSNOW_BTXE:4
+239:QSNOW_BTYS::QSNOW_BTYS:4
+240:QSNOW_BTYE::QSNOW_BTYE:4
+241:QGRAUP_BXS::QGRAUP_BXS:10
+242:QGRAUP_BXE::QGRAUP_BXE:10
+243:QGRAUP_BYS::QGRAUP_BYS:10
+244:QGRAUP_BYE::QGRAUP_BYE:10
+245:QGRAUP_BTXS::QGRAUP_BTXS:4
+246:QGRAUP_BTXE::QGRAUP_BTXE:4
+247:QGRAUP_BTYS::QGRAUP_BTYS:4
+248:QGRAUP_BTYE::QGRAUP_BTYE:4
+249:var249:undefined::
+250:var250:undefined::
+251:var251:undefined::
+252:var252:undefined::
+253:var253:undefined::
+254:var254:undefined::
+255:var255:undefined::

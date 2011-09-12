@@ -1,0 +1,8 @@
+# resources\grib1\wrf\lookupTables.txt
+    7:     -1:   129: wrf7-129.tab
+    7:     -1:   130: wrf7-130.tab
+    255:   255:   2:  wrf2.tab
+    255:   255:   3:  wrf3.tab
+    255:   255:   4:  wrf4.tab
+    255:   255:   5:  wrf5.tab
+    255:   255:   6:  wrf6.tab

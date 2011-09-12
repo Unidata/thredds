@@ -202,7 +202,12 @@ public class Grib1ReportPanel extends JPanel {
     GridDataset ncfile = null;
     try {
       ncfile = GridDataset.open(ff.getPath());
-
+      Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("GRIB table");
+      if (gatt != null) {
+        String[] s = gatt.getStringValue().split("-");
+        Grib1ParamTable gtable = Grib1ParamTable.getParameterTable(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
+        fm.format("  %s == %s%n", gatt, gtable.getPath());
+      }
       for (GridDatatype dt : ncfile.getGrids()) {
         String currName = dt.getName();
         total++;

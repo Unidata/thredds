@@ -282,6 +282,7 @@ Notes:
     val = CommonCodeTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
     ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
     ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
+    ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
 
     val = Grib1Utils.getTypeGenProcessName(gribCollection.getCenter(), gribCollection.getGenProcessId());
     if (val != null)

@@ -1,0 +1,260 @@
+# See attached. Here gribmap.txt is for grib1 output. -- wrfhelp
+# sent 9/7/2011
+
+-1:255:255:3
+0:var0:undefined::
+1:PRES:Pressure [Pa]::
+2:PRMSL:Pressure reduced to MSL [Pa]::
+3:PTEND:Pressure tendency [Pa/s]::
+4:PVORT:Pot. vorticity [km^2/kg/s]::
+5:ICAHT:ICAO Standard Atmosphere Reference Height [M]::
+6:GP:Geopotential [m^2/s^2]::
+7:HGT:Geopotential height [gpm]::
+8:DIST:Geometric height [m]::
+9:HSTDV:Std dev of height [m]::
+10:TOZNE:Total ozone [Dobson]::
+11:TMP:Temp. [K]::
+12:VTMP:Virtual temp. [K]::
+13:POT:Potential temp. [K]::
+14:EPOT:Pseudo-adiabatic pot. temp. [K]::
+15:TMAX:Max. temp. [K]::
+16:TMIN:Min. temp. [K]::
+17:DPT:Dew point temp. [K]::
+18:DEPR:Dew point depression [K]::
+19:LAPR:Lapse rate [K/m]::
+20:VIS:Visibility [m]::
+21:RDSP1:Radar spectra (1) [non-dim]::
+22:RDSP2:Radar spectra (2) [non-dim]::
+23:RDSP3:Radar spectra (3) [non-dim]::
+24:PLI:Parcel lifted index (to 500 hPa) [K]::
+25:TMPA:Temp. anomaly [K]::
+26:PRESA:Pressure anomaly [Pa]::
+27:GPA:Geopotential height anomaly [gpm]::
+28:WVSP1:Wave spectra (1) [non-dim]::
+29:WVSP2:Wave spectra (2) [non-dim]::
+30:WVSP3:Wave spectra (3) [non-dim]::
+31:WDIR:Wind direction [deg]::
+32:WIND:Wind speed [m/s]::
+33:UGRD:u wind [m/s]::
+34:VGRD:v wind [m/s]::
+35:STRM:Stream function [m^2/s]::
+36:VPOT:Velocity potential [m^2/s]::
+37:MNTSF:Montgomery stream function [m^2/s^2]::
+38:SGCVV:Sigma coord. vertical velocity [/s]::
+39:VVEL:Pressure vertical velocity [Pa/s]::
+40:DZDT:Geometric vertical velocity [m/s]::
+41:ABSV:Absolute vorticity [/s]::
+42:ABSD:Absolute divergence [/s]::
+43:RELV:Relative vorticity [/s]::
+44:RELD:Relative divergence [/s]::
+45:VUCSH:Vertical u shear [/s]::
+46:VVCSH:Vertical v shear [/s]::
+47:DIRC:Direction of current [deg]::
+48:SPC:Speed of current [m/s]::
+49:UOGRD:u of current [m/s]::
+50:VOGRD:v of current [m/s]::
+51:SPFH:Specific humidity [kg/kg]::
+52:RH:Relative humidity [%]::
+53:MIXR:Humidity mixing ratio [kg/kg]::
+54:PWAT:Precipitable water [kg/m^2]::
+55:VAPP:Vapor pressure [Pa]::
+56:SATD:Saturation deficit [Pa]::
+57:EVP:Evaporation [kg/m^2]::
+58:CICE:Cloud Ice [kg/m^2]::
+59:PRATE:Precipitation rate [kg/m^2/s]::
+60:TSTM:Thunderstorm probability [%]::
+61:APCP:Total precipitation [kg/m^2]::
+62:NCPCP:Large scale precipitation [kg/m^2]::
+63:ACPCP:Convective precipitation [kg/m^2]::
+64:SRWEQ:Snowfall rate water equiv. [kg/m^2/s]::
+65:WEASD:Accum. snow [kg/m^2]::
+66:SNOD:Snow depth [m]::
+67:MIXHT:Mixed layer depth [m]::
+68:TTHDP:Transient thermocline depth [m]::
+69:MTHD:Main thermocline depth [m]::
+70:MTHA:Main thermocline anomaly [m]::
+71:TCDC:Total cloud cover [%]::
+72:CDCON:Convective cloud cover [%]::
+73:LCDC:Low level cloud cover [%]::
+74:MCDC:Mid level cloud cover [%]::
+75:HCDC:High level cloud cover [%]::
+76:CWAT:Cloud water [kg/m^2]::
+77:BLI:Best lifted index (to 500 hPa) [K]::
+78:SNOC:Convective snow [kg/m^2]::
+79:SNOL:Large scale snow [kg/m^2]::
+80:WTMP:Water temp. [K]::
+81:LAND:Land cover (land=1;sea=0) [fraction]::
+82:DSLM:Deviation of sea level from mean [m]::
+83:SFCR:Surface roughness [m]::
+84:ALBDO:Albedo [%]::
+85:TSOIL:Soil temp. [K]::
+86:SOILM:Soil moisture content [kg/m^2]::
+87:VEG:Vegetation [%]::
+88:SALTY:Salinity [kg/kg]::
+89:DEN:Density [kg/m^3]::
+90:WATR:Water runoff [kg/m^2]::
+91:ICEC:Ice concentration (ice=1;no ice=0) [fraction]::
+92:ICETK:Ice thickness [m]::
+93:DICED:Direction of ice drift [deg]::
+94:SICED:Speed of ice drift [m/s]::
+95:UICE:u of ice drift [m/s]::
+96:VICE:v of ice drift [m/s]::
+97:ICEG:Ice growth rate [m/s]::
+98:ICED:Ice divergence [/s]::
+99:SNOM:Snow melt [kg/m^2]::
+100:HTSGW:Sig height of wind waves and swell [m]::
+101:WVDIR:Direction of wind waves [deg]::
+102:WVHGT:Sig height of wind waves [m]::
+103:WVPER:Mean period of wind waves [s]::
+104:SWDIR:Direction of swell waves [deg]::
+105:SWELL:Sig height of swell waves [m]::
+106:SWPER:Mean period of swell waves [s]::
+107:DIRPW:Primary wave direction [deg]::
+108:PERPW:Primary wave mean period [s]::
+109:DIRSW:Secondary wave direction [deg]::
+110:PERSW:Secondary wave mean period [s]::
+111:NSWRS:Net short wave (surface) [W/m^2]::
+112:NLWRS:Net long wave (surface) [W/m^2]::
+113:NSWRT:Net short wave (top) [W/m^2]::
+114:NLWRT:Net long wave (top) [W/m^2]::
+115:LWAVR:Long wave [W/m^2]::
+116:SWAVR:Short wave [W/m^2]::
+117:GRAD:Global radiation [W/m^2]::
+118:BRTMP:Brightness temperature [K]::
+119:LWRAD:Radiance with respect to wave no. [W/m/sr]::
+120:SWRAD:Radiance with respect ot wave len. [W/m^3/sr]::
+121:LHTFL:Latent heat flux [W/m^2]::
+122:SHTFL:Sensible heat flux [W/m^2]::
+123:BLYDP:Boundary layer dissipation [W/m^2]::
+124:UFLX:Zonal momentum flux [N/m^2]::
+125:VFLX:Meridional momentum flux [N/m^2]::
+126:WMIXE:Wind mixing energy [J]::
+127:IMGD:Image data []::
+128:STEP_NUMBER::STEP_NUMBER:1
+129:DTS:Small Timestep:DTS:1
+130:DTSEPS:Time Weight Constant for Small Steps:DTSEPS:1
+131:FCX:Relaxation Term for Boundary Zone:FCX:5
+132:GCX:Second relaxation term for boundary Zone:GCX:5
+133:DTBC:Time since boundary read:DTBC:1
+134:SHDMAX:Annual MAX veg fraction:SHDMAX:4
+135:SHDMIN:Annual MIN veg fraction:SHDMIN:4
+136:SNOALB:Annual MAX snow albedor in fraction:SNOALB:4
+137:FNDSNOWH::FNDSNOWH:1
+138:TOTSWDN:Radiation State Variable:TOTSWDN:4
+139:TOTLWDN:Radiation State Variable:TOTLWDN:4
+140:RSWTOA:Radiation State Variable:RSWTOA:4
+141:RLWTOA:Radiation State Variable:RLWTOA:4
+142:CZMEAN:Radiation State Variable:CZMEAN:4
+143:CFRACL:Radiation State Variable:CFRACL:4
+144:CFRACM:Radiation State Variable:CFRACM:4
+145:CFRACH:Radiation State Variable:CFRACH:4
+146:ACFRST:Radiation State Variable:ACFRST:4
+147:NCFRST:Radiation State Variable:NCFRST:4
+148:ACFRCV:Radiation State Variable:ACFRCV:4
+149:NCFRCV:Radiation State Variable:NCFRCV:4
+150:FNDSOILW::FNDSOILW:1
+151:U_FRAME:FRAME X WIND [m/s]:U_FRAME:4
+152:V_FRAME:FRAME Y WIND [m/s]:V_FRAME:4
+153:ALBBCK:Background Albedo:ALBBCK:4
+154:U_BASE:Base State X Wind in Idealized Cases:U_BASE:3
+155:V_BASE:Base State Y Wind in Idealized Cases:V_BASE:3
+156:QV_BASE:Base State QV in Idealized Cases:QV_BASE:5
+157:Z_BASE:Base State Height in Idealized Cases:Z_BASE:5
+158:T_BASE:Base State T in Idealized Cases:T_BASE:2
+159:var159:undefined::
+160:TSOIL1:Soil temp. 0-10 cm [K]:ST000010:2
+161:TSOIL2:Soil temp. 10-40 cm [K]:ST010040:2
+162:TSOIL3:Soil temp. 40-100 cm [K]:ST040100:2
+163:TSOIL4:Soil temp. 100-200 cm [K]:ST100200:2
+164:SOILM1:Soil moisture content 0-10 cm [kg/m^2]:SM000010:2
+165:SOILM2:Soil moisture content 10-40 cm [kg/m^2]:SM010040:2
+166:SOILM3:Soil moisture content 40-100 cm [kg/m^2]:SM040100:2
+167:SOILM4:Soil moisture content 100-200 cm [kg/m^2]:SM100200:2
+168:SR:Fraction of frozen precipitation:SR:2
+169:POTEVP::POTEVP:4
+170:SNOPCX::SNOPCX:2
+171:SOILTB::SOILTB:2
+172:XTIME:Minutes since simulation start:XTIME:3
+173:RHOSN:Snow Density [kg/m^3]:RHOSN:2
+174:QNDROPSOURCE:Droplet number source [#/kg/s]:QNDROPSOURCE:3
+175:SNOWNC:Accumulated total grid scale snow and ice [mm]:SNOWNC:1
+176:GRAUPELNC:Accumulated total grid scale graupel [mm]:GRAUPELNC:1
+177:OLR:TOA Outgoing Long Wave [W/m^2]:OLR:1
+178:GREENFRAC:Monthly green fraction:GREENFRAC:2
+179:SM:SM in metgrid [?]:SM:4
+180:ST:ST in metgrid [?]:ST:3
+181:SM010200:SM010200 in metgrid [?]:SM010200:4
+182:ST010200:ST010200 in metgrid [?]:ST010200:3
+183:SOILTEMP:Annual mean deep soil temperature for metgrid [K]:SOILTEMP:3
+184:HGT_V:Topography height for metgrid [m]:HGT_V:3
+185:HGT_U:Topography height for metgrid [m]:HGT_U:3
+186:HGT_M:Topography height for metgrid [m]:HGT_M:3
+187:XLONG_M:Longitude on U grid for metgrid:XLONG_M:3
+188:XLONG_U:Longitude on U grid for metgrid:XLONG_U:3
+189:XLONG_V:Longitude on U grid for metgrid:XLONG_V:3
+190:XLAT_M:Longitude on U grid for metgrid:XLAT_M:3
+191:XLAT_U:Longitude on U grid for metgrid:XLAT_U:3
+192:XLAT_V:Longitude on U grid for metgrid:XLAT_V:3
+193:var193:undefined::
+194:var194:undefined::
+195:var195:undefined::
+196:var196:undefined::
+197:var197:undefined::
+198:var198:undefined::
+199:var199:undefined::
+200:var200:undefined::
+201:var201:undefined::
+202:var202:undefined::
+203:var203:undefined::
+204:var204:undefined::
+205:var205:undefined::
+206:var206:undefined::
+207:var207:undefined::
+208:var208:undefined::
+209:var209:undefined::
+210:var210:undefined::
+211:var211:undefined::
+212:var212:undefined::
+213:var213:undefined::
+214:var214:undefined::
+215:var215:undefined::
+216:var216:undefined::
+217:var217:undefined::
+218:var218:undefined::
+219:var219:undefined::
+220:var220:undefined::
+221:var221:undefined::
+222:var222:undefined::
+223:LAT_LL_T:Lower Left Latitude of temp point [deg]:LAT_LL_T:4
+224:LAT_UL_T:Lower Left Latitude of temp point [deg]:LAT_UL_T:4
+225:LAT_UR_T:Lower Left Latitude of temp point [deg]:LAT_UR_T:4
+226:LAT_LR_T:Lower Left Latitude of temp point [deg]:LAT_LR_T:4
+227:LAT_LL_U:Lower Left Latitude of u point [deg]:LAT_LL_U:4
+228:LAT_UL_U:Lower Left Latitude of u point [deg]:LAT_UL_U:4
+229:LAT_UR_U:Lower Left Latitude of u point [deg]:LAT_UR_U:4
+230:LAT_LR_U:Lower Left Latitude of u point [deg]:LAT_LR_U:4
+231:LAT_LL_V:Lower Left Latitude of v point [deg]:LAT_LL_V:4
+232:LAT_UL_V:Lower Left Latitude of v point [deg]:LAT_UL_V:4
+233:LAT_UR_V:Lower Left Latitude of v point [deg]:LAT_UR_V:4
+234:LAT_LR_V:Lower Left Latitude of v point [deg]:LAT_LR_V:4
+235:LAT_LL_D:Lower Left Latitude of massless point [deg]:LAT_LL_D:4
+236:LAT_UL_D:Lower Left Latitude of massless point [deg]:LAT_UL_D:4
+237:LAT_UR_D:Lower Left Latitude of massless point [deg]:LAT_UR_D:4
+238:LAT_LR_D:Lower Left Latitude of massless point [deg]:LAT_LR_D:4
+239:LON_LL_T:Lower Left Longitude of temp point [deg]:LON_LL_T:4
+240:LON_UL_T:Lower Left Longitude of temp point [deg]:LON_UL_T:4
+241:LON_UR_T:Lower Left Longitude of temp point [deg]:LON_UR_T:4
+242:LON_LR_T:Lower Left Longitude of temp point [deg]:LON_LR_T:4
+243:LON_LL_U:Lower Left Longitude of u point [deg]:LON_LL_U:4
+244:LON_UL_U:Lower Left Longitude of u point [deg]:LON_UL_U:4
+245:LON_UR_U:Lower Left Longitude of u point [deg]:LON_UR_U:4
+246:LON_LR_U:Lower Left Longitude of u point [deg]:LON_LR_U:4
+247:LON_LL_V:Lower Left Longitude of v point [deg]:LON_LL_V:4
+248:LON_UL_V:Lower Left Longitude of v point [deg]:LON_UL_V:4
+249:LON_UR_V:Lower Left Longitude of v point [deg]:LON_UR_V:4
+250:LON_LR_V:Lower Left Longitude of v point [deg]:LON_LR_V:4
+251:LON_LL_D:Lower Left Longitude of massless point [deg]:LON_LL_D:4
+252:LON_UL_D:Lower Left Longitude of massless point [deg]:LON_UL_D:4
+253:LON_UR_D:Lower Left Longitude of massless point [deg]:LON_UR_D:4
+254:LON_LR_D:Lower Left Longitude of massless point [deg]:LON_LR_D:4
+255:var255:undefined::
