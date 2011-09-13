@@ -205,7 +205,7 @@ public class Grib2CollectionBuilder {
       gc.genProcessId = proto.getGenProcessId();
       gc.backProcessId = proto.getBackProcessId();
       gc.local = proto.getLocal();
-      gc.tables = Grib2Tables.factory(gc.center, gc.subcenter, gc.master, gc.local);
+      // gc.tables = Grib2Tables.factory(gc.center, gc.subcenter, gc.master, gc.local);
 
       gc.filenames = new ArrayList<String>(proto.getFilesCount());
       for (int i = 0; i < proto.getFilesCount(); i++)
@@ -286,7 +286,7 @@ public class Grib2CollectionBuilder {
       vi.nens = (ec == null) ? 0 : ec.getSize();
     }
 
-    group.assignVertNames();
+    // group.assignVertNames();
 
     return group;
   }

@@ -45,6 +45,39 @@ import java.util.*;
  */
 @Immutable
 public class VertCoord { // implements Comparable<VertCoord> {
+
+  static public void assignVertNames(List<VertCoord> vertCoords, GribTables tables) {
+    List<VertCoord> temp = new ArrayList<VertCoord>(vertCoords); // dont change order of original !!!!!
+
+    // assign name
+    for (VertCoord vc : temp) {
+      String shortName = tables.getLevelNameShort(vc.getCode());
+      if (vc.isLayer()) shortName = shortName + "_layer";
+      vc.setName(shortName);
+    }
+
+    // sort by name
+    Collections.sort(temp, new Comparator<VertCoord>() {
+      public int compare(VertCoord o1, VertCoord o2) {
+        return o1.getName().compareTo(o2.getName());
+      }
+    });
+
+    // disambiguate names
+    String lastName = null;
+    int count = 0;
+    for (VertCoord vc : temp) {
+      String name = vc.getName();
+      if ((lastName == null) || !lastName.equals(name)) {
+        count = 0;
+      } else {
+        count++;
+        vc.setName(name + count);
+      }
+      lastName = name;
+    }
+  }
+
   private String name;
 
   private final List<VertCoord.Level> coords;

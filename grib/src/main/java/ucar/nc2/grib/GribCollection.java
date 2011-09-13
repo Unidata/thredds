@@ -49,8 +49,11 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Manage a collection of grib files. Rectilyse and manage grib collection index.
- * Covers GribCollectionProto.
+ * Manage a collection of grib files, and manage grib collection index (ncx)
+ * Covers GribCollectionProto, which serializes and deserializes.
+ * Rectilyse means to turn the collection into a multidimensional variable.
+ * Concrete classes are for Grib1 and Grib2.
+ * Note that there is no dependence on GRIB tables here.
  *
  * @author caron
  * @since 4/6/11
@@ -106,7 +109,7 @@ public abstract class GribCollection {
   public List<String> filenames;
   public List<GroupHcs> groups;
   public List<Parameter> params;
-  public GribTables tables;
+  // public GribTables tables;
 
   // need thread safety
   public RandomAccessFile raf; // this is the raf of the index file
@@ -200,13 +203,6 @@ public abstract class GribCollection {
     return -1;
   }
 
-  // must override to pass in the iosp
-  static protected class MyNetcdfFile extends NetcdfFile {
-    public MyNetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
-      super(spi, raf, location, cancelTask);
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
 
@@ -267,38 +263,6 @@ public abstract class GribCollection {
         result.add(filenames.get(fileno));
       Collections.sort(result);
       return result;
-    }
-
-    public void assignVertNames() {
-      List<VertCoord> temp = new ArrayList<VertCoord>(vertCoords); // dont change order of original !!!!!
-
-      // assign name
-      for (VertCoord vc : temp) {
-        String shortName = tables.getLevelNameShort(vc.getCode());
-        if (vc.isLayer()) shortName = shortName + "_layer";
-        vc.setName(shortName);
-      }
-
-      // sort by name
-      Collections.sort(temp, new Comparator<VertCoord>() {
-        public int compare(VertCoord o1, VertCoord o2) {
-          return o1.getName().compareTo(o2.getName());
-        }
-      });
-
-      // disambiguate names
-      String lastName = null;
-      int count = 0;
-      for (VertCoord vc : temp) {
-        String name = vc.getName();
-        if ((lastName == null) || !lastName.equals(name)) {
-          count = 0;
-        } else {
-          count++;
-          vc.setName(name + count);
-        }
-        lastName = name;
-      }
     }
 
     public GribCollection.VariableIndex findAnyVariableWithTime( int usesTimeIndex) {
@@ -378,10 +342,10 @@ public abstract class GribCollection {
   }
 
   public class VariableIndex implements Comparable<VariableIndex> {
-    public final int tableVersion;
+    public final int tableVersion; // grib1 : can vary by variable
     public final int discipline, category, parameter, levelType, intvType, ensDerivedType, probType;  // uniquely identifies the variable
     public final String probabilityName;                                                              // uniquely identifies the variable
-    public final boolean isLayer;              // uniquely identifies the variable
+    public final boolean isLayer;                                                                     // uniquely identifies the variable
     public final int cdmHash;                  // unique hashCode - from Grib2Record, but works here also
     public final int timeIdx, vertIdx, ensIdx; // which time, vert and ens coordinates to use (in group)
     public final long recordsPos;              // where the records array is stored in the index
@@ -549,6 +513,14 @@ public abstract class GribCollection {
 
   public GribCollection.GroupHcs makeGroup() {
     return new GribCollection.GroupHcs();
+  }
+
+  // must override NetcdfFile to pass in the iosp
+  // used by the subclasses of GribCollection
+  static protected class MyNetcdfFile extends NetcdfFile {
+    public MyNetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
+      super(spi, raf, location, cancelTask);
+    }
   }
 
 }

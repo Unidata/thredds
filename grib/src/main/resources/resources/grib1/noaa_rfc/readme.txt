@@ -65,5 +65,10 @@ NOAA RFS (River Forecast Center) GRIB1 table notes
   - check their "version 2 entries" against standard: all ok (for once!)
   - things look good now. note that parameter 61 has mixed intervals, 237 has hourly intervals.
   
+9/13/2011 from John:
+You are correct, wgrib also misinterprets these parameters, but I was able to get the right decoding by using an external user defined table with wgrib.
 
+The table you are including should work for any center 9/128 grib1.  However, the table is specifically from the program used at the NWS RFC's to
+convert xmrg formatted data into grib1 for transmission.  Based on all of the grib1 tables that I looked through, these parameters are consistent
+within the NWS field offices (i.e. Center 9 - US NWS FIELD STATIONS) and differ from those in use at NCEP, CPC/CDC and other Centers.
 

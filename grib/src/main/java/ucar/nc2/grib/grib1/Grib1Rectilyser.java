@@ -389,7 +389,7 @@ public class Grib1Rectilyser {
 
     @Override
     public int compareTo(VariableBag o) {
-      return Grib1Utils.getVariableName(first).compareTo(Grib1Utils.getVariableName(o.first));
+      return Grib1Utils.getVariableName(first).compareTo(Grib1Utils.getVariableName(o.first)); // LOOK
     }
 
     int countDensity() {

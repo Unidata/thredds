@@ -118,10 +118,10 @@ Notes:
     more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
     names relative to earlier versions.
  */
-  static public String makeVariableName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+  static public String makeVariableName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
-    Grib1Parameter param = Grib1ParamTable.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+    Grib1Parameter param = tables.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
 
     if (param == null) {
       f.format("VAR%d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
@@ -146,14 +146,14 @@ Notes:
     return f.toString();
   }
 
-  static public String makeVariableLongName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+  static public String makeVariableLongName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
     boolean isProb = (vindex.probabilityName != null && vindex.probabilityName.length() > 0);
     if (isProb)
       f.format("Probability ");
 
-    Grib1Parameter param = Grib1ParamTable.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+    Grib1Parameter param = tables.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
     if (param == null)
       f.format("Unknown Parameter %d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
     else
@@ -172,8 +172,8 @@ Notes:
     return f.toString();
   }
 
-  static public String makeVariableUnits(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    Grib1Parameter gp = Grib1ParamTable.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+  static public String makeVariableUnits(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+    Grib1Parameter gp = tables.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
     String val = (gp == null) ? "" : gp.getUnit();
     return (val == null) ? "" : val;
   }
@@ -182,7 +182,7 @@ Notes:
 
   private TimePartition timePartition;
   private GribCollection gribCollection;
-  //private GribTables tables;
+  private Grib1Tables tables = new Grib1Tables();
   private GribCollection.GroupHcs gHcs;
   private boolean isTimePartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
@@ -209,6 +209,24 @@ Notes:
   public String getFileTypeDescription() {
     return "GRIB1 Collection";
   }
+
+  @Override
+  public Object sendIospMessage(Object special) {
+    if (special instanceof String) {
+      String s = (String) special;
+      if (s.startsWith("GribParameterTable")) {
+        int pos = s.indexOf("=");
+        if (pos > 0) {
+          String lookupTable = s.substring(pos+1).trim();
+          System.out.printf("GRIB got IOSP message=%s%n", lookupTable);
+          tables = new Grib1Tables(lookupTable);
+        }
+        return null;
+      }
+    }
+    return super.sendIospMessage(special);
+  }
+
 
   // public no-arg constructor for reflection
   public Grib1Iosp() {
@@ -298,6 +316,7 @@ Notes:
   private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {
     GdsHorizCoordSys hcs = gHcs.hcs;
     String hcsName = hcs.getName(); // hcs.gds.getNameShort();
+    VertCoord.assignVertNames(gHcs.vertCoords, tables);
 
     Group g;
     if (useGroups) {
@@ -474,14 +493,14 @@ Notes:
 
       dims.append(" ").append(horizDims);
 
-      String vname = makeVariableName(gribCollection, vindex);
+      String vname = makeVariableName(tables, gribCollection, vindex);
       Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dims.toString());
       ncfile.addVariable(g, v);
       //System.out.printf("added %s%n",vname);
 
-      String desc = makeVariableLongName(gribCollection, vindex);
+      String desc = makeVariableLongName(tables, gribCollection, vindex);
       v.addAttribute(new Attribute(CF.LONG_NAME, desc));
-      v.addAttribute(new Attribute(CF.UNITS, makeVariableUnits(gribCollection, vindex)));
+      v.addAttribute(new Attribute(CF.UNITS, makeVariableUnits(tables, gribCollection, vindex)));
       v.addAttribute(new Attribute(CF.MISSING_VALUE, Float.NaN));
       v.addAttribute(new Attribute(CF.GRID_MAPPING, hcsName));
 
@@ -698,7 +717,7 @@ Notes:
           Grib1Record gr = new Grib1Record(rafData);
           if (gr != null) {
             Grib1SectionProductDefinition pds = gr.getPDSsection();
-            Grib1Parameter param = Grib1ParamTable.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
+            Grib1Parameter param = tables.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
             Formatter f = new Formatter();
             f.format("File=%s%n", rafData.getLocation());
             f.format("  Parameter=%s%n", param);
@@ -816,7 +835,7 @@ Notes:
             Formatter f = new Formatter();
             f.format("File=%s%n", raf.getLocation());
             Grib1SectionProductDefinition pds = gr.getPDSsection();
-            Grib1Parameter param = Grib1ParamTable.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
+            Grib1Parameter param = tables.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
             f.format("  Parameter=%s%n", param);
             f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
             Grib1ParamTime ptime = pds.getParamTime();

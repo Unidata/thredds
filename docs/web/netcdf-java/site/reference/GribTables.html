@@ -6,7 +6,6 @@ pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
-.style1 {font-weight: bold}
 </style>
 </head>
 
@@ -31,22 +30,39 @@ dl {margin: 10px 5px 5px 15px;)
 <ol>
   <li>Use a version number between 128-254.</li>
   <li>Do not override any entries in the WMO standard tables, ie, with parameter numbers less than 128.</li>
-  <li>There are no standards for publishing your tables, but any fixed column ASCII, CSV, or XML format is ok. Follow the <a href="http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.xml">NCAR DSS format</a> if you like. Do not use HTML, PDF, MS Word etc, since these are not machine readable formats.</li>
-  <li>We need to be able to find your tables. Add enough metadata so that a google search on &quot;&lt;your center name&gt; GRIB tables&quot; finds you within the first 2 pages. Send a link to netcdf-java@unidata.ucar.edu and we will link to you.</li>
+  <li>There is no one standard for publishing your tables, but any fixed column ASCII, CSV, or XML format is ok. In the US, many follow the <a href="ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/usertables.txt">NCEP table format</a>. Use the <a href="#XML_Schema">XML Schema for declaring Grib-1 Parameters</a> if you like XML. Do not use HTML, PDF, MS Word etc, since these are not machine readable formats.</li>
+  <li>A parameter name is encouraged, as it makes the datasets more readable. However, <em>you must insure that your names are unique within any file that uses your table.</em></li>
+  <li>Unidata encourages the use of <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html#Database">udunit formatting</a> for expressing units.</li>
+  <li>We need to be able to find your tables. Add enough metadata so that a google search on &quot;&lt;your center name&gt; GRIB tables&quot; finds you within the first 2 pages. Send a link to netcdf-java@unidata.ucar.edu and we will link to you (and use your tables in the CDM library).</li>
 </ol>
-<p>&nbsp;</p>
+<hr WIDTH="100%">
+<h2>XML Schema for declaring Grib-1 Parameters<a name="XML_Schema"></a></h2>
+<p>Derived from  <a href="RuntimeLoading.html#XML">NCAR DSS format</a> with additional &quot;name&quot; element.</p>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; elementFormDefault=&quot;qualified&quot;&gt;<br>  &lt;xs:element name=&quot;parameterMap&quot;&gt;<br>    &lt;xs:complexType&gt;<br>      &lt;xs:sequence&gt;<br>        &lt;xs:element ref=&quot;title&quot;/&gt;<br>        &lt;xs:element maxOccurs=&quot;unbounded&quot; ref=&quot;parameter&quot;/&gt;<br>      &lt;/xs:sequence&gt;<br>    &lt;/xs:complexType&gt;<br>  &lt;/xs:element&gt;<br>  &lt;xs:element name=&quot;title&quot; type=&quot;xs:string&quot;/&gt;<br>  &lt;xs:element name=&quot;parameter&quot;&gt;<br>    &lt;xs:complexType&gt;<br>      &lt;xs:sequence&gt;<br>        &lt;xs:element ref=&quot;description&quot;/&gt;<br>        &lt;xs:element minOccurs=&quot;0&quot; ref=&quot;units&quot;/&gt;<br>        &lt;xs:element minOccurs=&quot;0&quot; ref=&quot;name&quot;/&gt;<br>        &lt;xs:element minOccurs=&quot;0&quot; ref=&quot;CF&quot;/&gt;<br>        &lt;xs:element minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; ref=&quot;GCMD&quot;/&gt;<br>      &lt;/xs:sequence&gt;<br>      &lt;xs:attribute name=&quot;code&quot; use=&quot;required&quot; type=&quot;xs:integer&quot;/&gt;<br>    &lt;/xs:complexType&gt;<br>  &lt;/xs:element&gt;<br>  &lt;xs:element name=&quot;description&quot; type=&quot;xs:string&quot;/&gt;<br>  &lt;xs:element name=&quot;units&quot; type=&quot;xs:string&quot;/&gt;<br>  &lt;xs:element name=&quot;name&quot; type=&quot;xs:string&quot;/&gt;<br>  &lt;xs:element name=&quot;CF&quot; type=&quot;xs:NCName&quot;/&gt;<br>  &lt;xs:element name=&quot;GCMD&quot;&gt;<br>    &lt;xs:complexType mixed=&quot;true&quot;&gt;<br>      &lt;xs:attribute name=&quot;ifLevelType&quot; type=&quot;xs:integer&quot;/&gt;<br>    &lt;/xs:complexType&gt;<br>  &lt;/xs:element&gt;<br>&lt;/xs:schema&gt;
+</pre>
+<p>  Example:<br>
+</p>
+<pre>&lt;?xml version=&quot;1.0&quot; ?&gt;<br>
+
+
+
+&lt;parameterMap&gt;<br>  &lt;title&gt;WMO GRIB1 Parameter Code Table 3&lt;/title&gt;<br>  &lt;parameter code=&quot;1&quot;&gt;<br>    &lt;description&gt;Pressure&lt;/description&gt;<br>    &lt;units&gt;Pa&lt;/units&gt;<br>    &lt;name&gt;PRES&lt;/name&gt;<br>	   &lt;CF&gt;air_pressure&lt;/CF&gt;<br>    &lt;GCMD ifLevelType=&quot;1&quot;&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Surface Pressure&lt;/GCMD&gt;<br>    &lt;GCMD ifLevelType=&quot;2&quot;&gt;EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Base Pressure&lt;/GCMD&gt;<br>    &lt;GCMD ifLevelType=&quot;3&quot;&gt;EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Top Pressure&lt;/GCMD&gt;<br>    &lt;GCMD ifLevelType=&quot;7&quot;&gt;EARTH SCIENCE &gt; Atmosphere &gt; Altitude &gt; Tropopause&lt;/GCMD&gt;<br>    &lt;GCMD ifLevelType=&quot;102&quot;&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Sea Level Pressure&lt;/GCMD&gt;<br>    &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Hydrostatic Pressure&lt;/GCMD&gt;<br>  &lt;/parameter&gt;<br>  &lt;parameter code=&quot;2&quot;&gt;<br>    &lt;description&gt;Pressure reduced to MSL&lt;/description&gt;<br>    &lt;units&gt;Pa&lt;/units&gt;<br>    &lt;name&gt;PRMSL&lt;/name&gt;<br>  &lt;/parameter&gt;<br>  &lt;parameter code=&quot;3&quot;&gt;<br>    &lt;description&gt;Pressure tendency&lt;/description&gt;<br>    &lt;units&gt;Pa/s&lt;/units&gt;<br>    &lt;name&gt;PTEND&lt;/name&gt;<br>    &lt;CF&gt;tendency_of_air_pressure&lt;/CF&gt;<br>    &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Pressure Tendency&lt;/GCMD&gt;<br>  &lt;/parameter&gt;<br>  &lt;parameter code=&quot;4&quot;&gt;<br>    &lt;description&gt;Potential vorticity&lt;/description&gt;<br>    &lt;units&gt;K.m2.kg-1.s-1&lt;/units&gt;<br>    &lt;name&gt;PVORT&lt;/name&gt;<br>    &lt;CF&gt;ertel_potential_vorticity&lt;/CF&gt;<br>    &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Winds &gt; Vorticity&lt;/GCMD&gt;<br>  &lt;/parameter&gt;<br>  &lt;parameter code=&quot;5&quot;&gt;<br>    &lt;description&gt;ICAO Standard Atmosphere reference height&lt;/description&gt;<br>    &lt;units&gt;m&lt;/units&gt;<br>    &lt;name&gt;ICAHT&lt;/name&gt;<br>  &lt;/parameter&gt;
+   ...
+
+&lt;/parameterMap&gt;</pre>
+<hr WIDTH="100%">
 <h2>Reading Grib-1 files with the CDM library version 4.3</h2>
 <h3>Standard table mapping</h3>
 <ol>
-  <li>See <em>resources/grib1/grib1Tables.txt </em>in<strong> grib-version.jar</strong> or <em>grib/src/main/resources/resources/grib1/grib1Tables.txt</em> from the source tree.</li>
-  <li>You can view the standard tables in ToolsUI, using the <strong>iosp/GRIBold/GRIB1-TABLES</strong> tab.</li>
+  <li>See <em>resources/grib1/lookupTables.txt </em>in<strong> grib-&lt;version&gt;.jar</strong> or <em>grib/src/main/resources/resources/grib1/lookupTables.txt</em> from the source tree.</li>
+  <li>You can view the standard tables in ToolsUI, using the <strong>iosp/GRIB-1/GRIB1-TABLES</strong> tab.</li>
   <li>The table that matches the center-subcenter-version is used. </li>
-  <li>Use a &quot;-1&quot; for the subcenter or version in order to match any. The order of the entries in the <em>grib1Tables.txt</em> file is therefore important.</li>
+  <li>Use a &quot;-1&quot; for the subcenter or version in order to match &quot;any&quot;. The order of the entries in the <em>grib1Tables.txt</em> file is therefore important.</li>
   <li>If a table is not matched, the file will fail to open. You can change that in the <a href="RuntimeLoading.html#XML">RunTime configuration file</a> by adding<a name="strict"></a> 
     <blockquote>
       <pre>&lt;grib1Table strict=&quot;false&quot;/&gt;</pre>
     </blockquote>
-  In this case, the default WMO table will be used, but there's no way of knowing if the parameters are correctly named.</li>
+  In this case, the default WMO table will be used, but there's no way of knowing if the parameters have correct names or units.</li>
 </ol>
 <h3>Adding to the standard table mapping</h3>
 <ol>
@@ -55,8 +71,42 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Parameters that are not present in your table are taken from the default WMO table, if they exist.</li>
   <li>Missing parameters are marked &quot;unknown&quot; in the variable name and units.</li>
 </ol>
+<h3>Specifying a table for a particular dataset</h3>
+<p>A dataset that does not correctly encode the center/subcenter/version should be configured with the correct table. Do not override standard table mappings, as this is a global setting and may affect other datasets. </p>
+<blockquote>
+  <h4>Directly embed table in NcML</h4>
+  <p>You must use the <a href="#XML_Schema">XML Schema for declaring Grib-1 Parameters</a>:</p>
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"&gt;<br>  &lt;parameterMap&gt;
+    &lt;parameter code=&quot;2&quot;&gt;<br>      &lt;description&gt;Pressure reduced to MSL&lt;/description&gt;<br>      &lt;units&gt;Pa&lt;/units&gt;<br>      &lt;name&gt;PRMSL&lt;/name&gt;<br>    &lt;/parameter&gt;<br>    &lt;parameter code=&quot;3&quot;&gt;<br>      &lt;description&gt;Pressure tendency&lt;/description&gt;<br>      &lt;units&gt;Pa/s&lt;/units&gt;<br>      &lt;name&gt;PTEND&lt;/name&gt;<br>      &lt;CF&gt;tendency_of_air_pressure&lt;/CF&gt;<br>      &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Pressure Tendency&lt;/GCMD&gt;<br>    &lt;/parameter&gt;
+    ...<br>  &lt;/parameterMap&gt;<br>&lt;/netcdf&gt;</pre>
+  <h4>Reference to a table in NcML</h4>
+  <p>This can be any format that that CDM recognizes.</p>
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  iospParam=&quot;GribParameterTable=/data/NCEP/grib1/version123.tab&quot;&gt;<br>&lt;/netcdf&gt;</pre>
+  <h4></h4>
+  <h4>Directly embed table in TDS configuration catalog</h4>
+  <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
+  &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
+1)&lt;parameterMap&gt;
+    &lt;parameter code=&quot;2&quot;&gt;<br>      &lt;description&gt;Pressure reduced to MSL&lt;/description&gt;<br>      &lt;units&gt;Pa&lt;/units&gt;<br>      &lt;name&gt;PRMSL&lt;/name&gt;<br>    &lt;/parameter&gt;<br>    &lt;parameter code=&quot;3&quot;&gt;<br>      &lt;description&gt;Pressure tendency&lt;/description&gt;<br>      &lt;units&gt;Pa/s&lt;/units&gt;<br>      &lt;name&gt;PTEND&lt;/name&gt;<br>      &lt;CF&gt;tendency_of_air_pressure&lt;/CF&gt;<br>      &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Pressure Tendency&lt;/GCMD&gt;<br>    &lt;/parameter&gt;
+    ...<br>  &lt;/parameterMap&gt;
+&lt;/featureCollection&gt;  </pre>
+  <ol>
+    <li>A parameterMap is directly added to a GRIB featureCollection element.</li>
+  </ol>
+</blockquote>
+<blockquote>
+  <h4>Reference table in TDS configuration catalog</h4>
+  <p>A reference to a table is  added to a GRIB featureCollection element:</p>
+  <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
+  &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
+  &lt;parameterMapReference table=&quot;/data/NCEP/grib1/version123.tab&quot;&gt;
+&lt;/featureCollection&gt;</pre>
+</blockquote>
+<hr WIDTH="100%">
+<p>&nbsp;</p>
 <h2>Table Registry</h2>
 <p>In principle, if everything is done right, the reader ends up using the table that the writer used. In practice, there are many ways for that to fail. In order to increase the reliability of table-based file formats, I have <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib">proposed</a> a web registry of tables, which would create a unique id for each registered table. The writer would then embed the id into the GRIB or BUFR message (possibly in the &quot;local use&quot; section of GRIB-2, or  GRIB-1 octets &gt; 41 in PDS), and the reader could use the id to unambiguously retrieve the table from the web registry. Stay tuned for further details and a trial implementation.</p>
+<hr WIDTH="100%">
 <p>&nbsp;</p>
 <h2>GRIB homogeneity</h2>
 <ul>

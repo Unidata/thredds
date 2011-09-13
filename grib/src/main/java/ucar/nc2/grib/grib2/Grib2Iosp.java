@@ -290,6 +290,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
   private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {
     GdsHorizCoordSys hcs = gHcs.hcs;
     String hcsName = hcs.getName(); // hcs.gds.getNameShort();
+    VertCoord.assignVertNames(gHcs.vertCoords, tables);
 
     Group g;
     if (useGroups) {
