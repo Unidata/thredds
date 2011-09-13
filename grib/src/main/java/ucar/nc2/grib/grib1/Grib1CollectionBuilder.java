@@ -528,8 +528,7 @@ public class Grib1CollectionBuilder {
       indexBuilder.setSubcenter(pds.getSubCenter());
       indexBuilder.setLocal(pds.getTableVersion());
       indexBuilder.setMaster(0);
-
-      indexBuilder.setGenProcessType(pds.getGenProcess());
+      indexBuilder.setGenProcessId(pds.getGenProcess());
 
       GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
       byte[] b = index.toByteArray();

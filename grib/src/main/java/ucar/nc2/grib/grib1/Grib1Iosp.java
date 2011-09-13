@@ -279,7 +279,7 @@ Notes:
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
     ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
-    val = CommonCodeTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
+    val = Grib1Utils.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
     ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
     ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
     ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));

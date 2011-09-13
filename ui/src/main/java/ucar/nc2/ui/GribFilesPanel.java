@@ -332,7 +332,7 @@ public class GribFilesPanel extends JPanel {
     }
 
     public String getSubCenterName() {
-      return CommonCodeTable.getSubCenterName(getCenter(), getSubCenter());
+      return Grib1Utils.getSubCenterName(getCenter(), getSubCenter());
     }
 
     public int getTimeUnit() {

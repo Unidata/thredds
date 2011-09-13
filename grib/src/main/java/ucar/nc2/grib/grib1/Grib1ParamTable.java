@@ -76,7 +76,8 @@ public class Grib1ParamTable implements GribTables {
       lookup.readLookupTable("resources/grib1/ncl/lookupTables.txt", tables);
       lookup.readLookupTable("resources/grib1/dss/lookupTables.txt", tables);
       lookup.readLookupTable("resources/grib1/ncep/lookupTables.txt", tables);
-      // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt", tables);  too many problems -must check every one !
+      lookup.readLookupTable("resources/grib1/wrf/lookupTables.txt", tables); // */
+      // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt", tables);  // too many problems -must check every one !
       paramTables = new CopyOnWriteArrayList<Grib1ParamTable>(tables); // in case user adds tables
       defaultTable = getParameterTable(0, -1, -1);
 
