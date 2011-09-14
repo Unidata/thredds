@@ -484,8 +484,8 @@ public class Grib1Utils {
   }
 
   static public String getVariableName(Grib1Record record) {
-    Grib1Parameter param = Grib1ParamTable.getParameter(record);
-    return param == null ? "UNKNOWN" : param.getDescription();
+    Grib1SectionProductDefinition pds = record.getPDSsection();
+    return pds.getCenter()+"-"+pds.getSubCenter()+"-"+pds.getTableVersion()+"-"+pds.getParameterNumber();
   }
 
 }

@@ -72,17 +72,21 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Missing parameters are marked &quot;unknown&quot; in the variable name and units.</li>
 </ol>
 <h3>Specifying a table for a particular dataset</h3>
-<p>A dataset that does not correctly encode the center/subcenter/version should be configured with the correct table. Do not override standard table mappings, as this is a global setting and may affect other datasets. </p>
+<p>A dataset that does not correctly encode the center/subcenter/version should be configured with the correct table at the dataset level. Do not override standard table mappings, as this is a global setting and may affect other datasets. </p>
 <blockquote>
   <h4>Directly embed table in NcML</h4>
   <p>You must use the <a href="#XML_Schema">XML Schema for declaring Grib-1 Parameters</a>:</p>
   <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"&gt;<br>  &lt;parameterMap&gt;
     &lt;parameter code=&quot;2&quot;&gt;<br>      &lt;description&gt;Pressure reduced to MSL&lt;/description&gt;<br>      &lt;units&gt;Pa&lt;/units&gt;<br>      &lt;name&gt;PRMSL&lt;/name&gt;<br>    &lt;/parameter&gt;<br>    &lt;parameter code=&quot;3&quot;&gt;<br>      &lt;description&gt;Pressure tendency&lt;/description&gt;<br>      &lt;units&gt;Pa/s&lt;/units&gt;<br>      &lt;name&gt;PTEND&lt;/name&gt;<br>      &lt;CF&gt;tendency_of_air_pressure&lt;/CF&gt;<br>      &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Pressure Tendency&lt;/GCMD&gt;<br>    &lt;/parameter&gt;
     ...<br>  &lt;/parameterMap&gt;<br>&lt;/netcdf&gt;</pre>
-  <h4>Reference to a table in NcML</h4>
-  <p>This can be any format that that CDM recognizes.</p>
+  <h4>Reference to a Grib1 Parameter table in NcML</h4>
+  <p>This can be any format that that CDM recognizes. Anything in this table will be used first, if it matches the parameter number. If not matched, the standard tables are used.</p>
   <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  iospParam=&quot;GribParameterTable=/data/NCEP/grib1/version123.tab&quot;&gt;<br>&lt;/netcdf&gt;</pre>
   <h4></h4>
+  <h4>Reference to a Grib1 Parameter table lookup in NcML</h4>
+  <p>A list of tables to use, with center/subcenter and version matching. If not matched, the standard tables are used.</p>
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  iospParam=&quot;GribParameterTableLookup=/data/NCEP/grib1/lookupTable.txt&quot;&gt;<br>&lt;/netcdf&gt;
+</pre>
   <h4>Directly embed table in TDS configuration catalog</h4>
   <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
   &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
@@ -103,19 +107,19 @@ dl {margin: 10px 5px 5px 15px;)
 &lt;/featureCollection&gt;</pre>
 </blockquote>
 <hr WIDTH="100%">
-<p>&nbsp;</p>
 <h2>Table Registry</h2>
 <p>In principle, if everything is done right, the reader ends up using the table that the writer used. In practice, there are many ways for that to fail. In order to increase the reliability of table-based file formats, I have <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib">proposed</a> a web registry of tables, which would create a unique id for each registered table. The writer would then embed the id into the GRIB or BUFR message (possibly in the &quot;local use&quot; section of GRIB-2, or  GRIB-1 octets &gt; 41 in PDS), and the reader could use the id to unambiguously retrieve the table from the web registry. Stay tuned for further details and a trial implementation.</p>
 <hr WIDTH="100%">
-<p>&nbsp;</p>
 <h2>GRIB homogeneity</h2>
 <ul>
-  <li>table version changes</li>
-  <li>reference dates change</li>
+  <li>center, subcenter assumed constant</li>
+  <li>table version differ for records ok</li>
+  <li>reference dates differ for records ok</li>
+  <li></li>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated August 2011
+<img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Sept. 2011
 </address>
 </body>
 </html>

@@ -35,7 +35,7 @@ package ucar.nc2.grib.grib1;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * Description
+ * A Grib-1 Parameter
  *
  * @author John
  * @since 9/8/11
@@ -68,32 +68,38 @@ public class Grib1Parameter {
     return sb.toString().trim();
   }
 
+  ///////////////////////////////////////////////////////////////
+
+  protected Grib1ParamTable table;
   protected int number;
   protected String name;
   protected String description;
   protected String unit;
-  protected String cf_name; // CF standard name, if it exists
+  protected String cfName; // CF standard name, if it exists
 
-  public Grib1Parameter() {
-    number = -1;
-    name = "undefined";
-    description = "undefined";
-    unit = "undefined";
+  public Grib1Parameter(Grib1ParamTable table) {
+    this.table = table;
   }
 
-  public Grib1Parameter(int number, String name, String description, String unit) {
+  public Grib1Parameter(Grib1ParamTable table, int number, String name, String description, String unit) {
+    this.table = table;
     this.number = number;
     setName(name);
     setDescription(description);
     setUnit(unit);
   }
 
-  public Grib1Parameter(int number, String name, String description, String unit, String cf_name) {
+  public Grib1Parameter(Grib1ParamTable table, int number, String name, String description, String unit, String cf_name) {
+    this.table = table;
     this.number = number;
     setName(name);
     setDescription(description);
     setUnit(unit);
-    this.cf_name = cf_name;
+    this.cfName = cf_name;
+  }
+
+  public Grib1ParamTable getTable() {
+    return table;
   }
 
   public final int getNumber() {
@@ -123,7 +129,7 @@ public class Grib1Parameter {
   }
 
   public String getCFname() {
-    return cf_name;
+    return cfName;
   }
 
   /**
@@ -186,7 +192,7 @@ public class Grib1Parameter {
     Grib1Parameter that = (Grib1Parameter) o;
 
     if (number != that.number) return false;
-    if (cf_name != null ? !cf_name.equals(that.cf_name) : that.cf_name != null) return false;
+    if (cfName != null ? !cfName.equals(that.cfName) : that.cfName != null) return false;
     if (description != null ? !description.equals(that.description) : that.description != null) return false;
     if (name != null ? !name.equals(that.name) : that.name != null) return false;
     if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
@@ -200,7 +206,7 @@ public class Grib1Parameter {
     result = 31 * result + (name != null ? name.hashCode() : 0);
     result = 31 * result + (description != null ? description.hashCode() : 0);
     result = 31 * result + (unit != null ? unit.hashCode() : 0);
-    result = 31 * result + (cf_name != null ? cf_name.hashCode() : 0);
+    result = 31 * result + (cfName != null ? cfName.hashCode() : 0);
     return result;
   }
 }

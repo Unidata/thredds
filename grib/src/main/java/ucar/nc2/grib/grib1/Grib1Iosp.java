@@ -182,7 +182,7 @@ Notes:
 
   private TimePartition timePartition;
   private GribCollection gribCollection;
-  private Grib1Tables tables = new Grib1Tables();
+  private Grib1Tables tables;
   private GribCollection.GroupHcs gHcs;
   private boolean isTimePartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
@@ -210,19 +210,24 @@ Notes:
     return "GRIB1 Collection";
   }
 
+  private String lookupTablePath, paramTablePath;
   @Override
   public Object sendIospMessage(Object special) {
     if (special instanceof String) {
       String s = (String) special;
-      if (s.startsWith("GribParameterTable")) {
+      if (s.startsWith("GribParameterTableLookup")) {
         int pos = s.indexOf("=");
-        if (pos > 0) {
-          String lookupTable = s.substring(pos+1).trim();
-          System.out.printf("GRIB got IOSP message=%s%n", lookupTable);
-          tables = new Grib1Tables(lookupTable);
-        }
-        return null;
+        if (pos > 0)
+          lookupTablePath = s.substring(pos+1).trim();
+
+      } else if (s.startsWith("GribParameterTable")) {
+        int pos = s.indexOf("=");
+        if (pos > 0)
+          paramTablePath = s.substring(pos+1).trim();
       }
+
+      System.out.printf("GRIB got IOSP message=%s%n", special);
+      return null;
     }
     return super.sendIospMessage(special);
   }
@@ -244,6 +249,7 @@ Notes:
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
+    tables = Grib1Tables.factory(paramTablePath, lookupTablePath);
 
     boolean isGrib = Grib1RecordScanner.isValidFile(raf);
     if (isGrib) {
@@ -729,7 +735,7 @@ Notes:
               f.format("  TimeInterval=(%d,%d)%n", tinv[0], tinv[1]);
             }
             f.format("%n");
-            gr.getPDSsection().showPds(f);
+            gr.getPDSsection().showPds(tables, f);
             System.out.printf(" Grib1Record.readData at drsPos %d = %s%n", dr.pos, f.toString());
           }
         }
@@ -845,7 +851,7 @@ Notes:
               f.format("  TimeInterval=(%d,%d)%n", tinv[0], tinv[1]);
             }
             f.format("%n");
-            gr.getPDSsection().showPds(f);
+            gr.getPDSsection().showPds(tables, f);
             System.out.printf("%nGrib1Record.readData at drsPos %d = %s%n", dr.pos, f.toString());
           }
         }

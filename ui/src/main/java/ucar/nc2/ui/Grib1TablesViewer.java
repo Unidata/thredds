@@ -158,7 +158,7 @@ public class Grib1TablesViewer extends JPanel {
     buttPanel.add(infoButton);
 
     try {
-      List<Grib1ParamTable> tables = Grib1ParamTable.getParameterTables();
+      List<Grib1ParamTable> tables = Grib1ParamTable.getStandardParameterTables();
       java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.size());
       for (Grib1ParamTable t : tables) {
         beans.add(new TableBean(t));

@@ -132,7 +132,7 @@ public abstract class GribResourceReader {
       return s;
     }
 
-    //Try it as a url
+    /* try it as a url
     try {
       Matcher m = Pattern.compile(" ").matcher(resourceName);  // LOOK WTF?
       String encodedUrl = m.replaceAll("%20");
@@ -140,7 +140,7 @@ public abstract class GribResourceReader {
       URLConnection connection = dataUrl.openConnection();
       s = connection.getInputStream();
     } catch (Exception exc) {
-    }
+    } */
 
     return s;
   }

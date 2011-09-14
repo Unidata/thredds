@@ -40,11 +40,13 @@ dl {margin: 10px 5px 5px 15px;)
 
 </pre>
 
-<h3>Register a GRIB1 or GRIB2 Lookup Table:</h3>
-<pre wrap=""> <strong> ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup</strong>( String filename);
-  <strong>ucar.grib.grib2.ParameterTable.addParametersUser</strong>( String filename);</pre>
+<h3>Register a GRIB1 or GRIB2 Lookup Table (version 4.2 or before):</h3>
+<pre> <strong> ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup</strong>( String filename);
+  <strong>ucar.grib.grib2.ParameterTable.addParametersUser</strong>( String filename);
+</pre>
 <h3>Register a GRIB1  Table (version 4.3):</h3>
-<pre wrap=""> <strong> ucar.grib.grib1.GribPDSParamTable.addParameterTable(int center, int subcenter, int tableVersion, String filename)</strong></pre>
+<pre> <strong> ucar.grib.grib1.Grib1ParamTable.addParameterTable(int center, int subcenter, int tableVersion, String tableFilename)
+  ucar.grib.grib1.Grib1ParamTable.addParameterTableLookup(String lookupFilename)</strong></pre>
 <h3>Register a BUFR Table lookup:</h3>
 <pre wrap=""> <strong> ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile</strong>( String filename) throws throws FileNotFoundException;</pre>
 <p wrap=""> The 

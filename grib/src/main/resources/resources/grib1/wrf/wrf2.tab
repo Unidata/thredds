@@ -133,14 +133,14 @@
 128:MSLSA:Mean sea level pressure (Std Atm) [Pa]::
 129:MSLMA:Mean sea level pressure (MAPS) [Pa]::
 130:LU_INDEX:Land Use Category:LU_INDEX:1
-131:DN:DNW values [dimensionless]:DNW:4
+131:DNW:DNW values [dimensionless]:DNW:4
 132:SOILW:Volumetric soil moisture [fraction]:SMOIS:4
 133:XLAND:Land cover (land=1;sea=0) [fraction]:XLAND:1
 134:ZNW:Eta values [dimensionless]:ZNW:4
 135:GP_BASE:Base-state geopotential [m^2/s^2]:PHB:3
 136:GP_PERT:Perturbation geopotential [m^2/s^2]:PH:4
 137:CFN:CFN from WRF [?]:CFN:3
-138:CFN:CFN1 from WRF [?]:CFN1:3
+138:CFN1:CFN1 from WRF [?]:CFN1:3
 139:MU_BASE:Base-state dry air mass in column [Pa]:MUB:2
 140:MU_PERT:Perturbation dry air mass in column [Pa]:MU:2
 141:MU_INIT:Initial dry air mass in column [Pa]:MU0:2

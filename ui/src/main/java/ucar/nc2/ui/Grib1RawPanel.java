@@ -34,12 +34,9 @@ package ucar.nc2.ui;
 
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.grib1.*;
-import ucar.nc2.grib.grib2.table.WmoTemplateTable;
-import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -74,12 +71,7 @@ public class Grib1RawPanel extends JPanel {
 
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
-  private FileManager fileChooser;
-
-  private RandomAccessFile raf = null;
-  private Map<String, WmoTemplateTable> productTemplates = null;
-
-  private DateFormatter df = new DateFormatter();
+  private Grib1Tables tables = new Grib1Tables(); // default
 
   public Grib1RawPanel(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -347,7 +339,7 @@ public class Grib1RawPanel extends JPanel {
 
 
   public void showProcessedPds(Grib1SectionProductDefinition pds, Formatter f) {
-    pds.showPds(f);
+    pds.showPds(tables, f);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -383,6 +375,7 @@ public class Grib1RawPanel extends JPanel {
     }
 
     public String getTableVersion() {
+
       return pds.getCenter() + "-" + pds.getSubCenter() + "-"+ pds.getTableVersion();
     }
 

@@ -320,21 +320,20 @@ public final class Grib1SectionProductDefinition {
     return new Grib1ParamTime(this);
   }
 
-  public void showPds(Formatter f) {
+  public void showPds(Grib1Tables tables, Formatter f) {
 
     f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
     f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), Grib1Utils.getSubCenterName(getCenter(), getSubCenter()));
-    Grib1ParamTable ptable = Grib1ParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
 
-    f.format("               Parameter_table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(),
-            (ptable == null) ? "MISSING" : ptable.getName());
+    Grib1ParamTable ptable = tables.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
+    f.format("               Parameter_table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(), (ptable == null) ? "MISSING" : ptable.getPath());
 
-    if (ptable != null) {
-      Grib1Parameter parameter = ptable.getParameter(getParameterNumber());
-      if (parameter != null) {
+    Grib1Parameter parameter = tables.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
+    if (parameter != null) {
         f.format("                Parameter Name : (%d) %s%n", getParameterNumber(), parameter.getName());
         f.format("                Parameter Desc : %s%n", parameter.getDescription());
         f.format("               Parameter Units : %s%n", parameter.getUnit());
+        f.format("               Parameter Table : %s%n", parameter.getTable().getName());
       } else {
         f.format("               Parameter %d not found%n", getParameterNumber());
       }
@@ -357,7 +356,6 @@ public final class Grib1SectionProductDefinition {
       f.format("                    GDS Exists : %s%n", gdsExists());
       f.format("                    BMS Exists : %s%n", bmsExists());
     }
-  }
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // LOOK - from old
