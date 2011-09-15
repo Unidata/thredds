@@ -38,12 +38,15 @@
 package ucar.nc2.grib.grib1;
 
 
+import net.jcip.annotations.Immutable;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
 
 /**
  * Process level information from GRIB-1 Table 3: "TYPE AND VALUE OF LEVEL"
  */
-public final class Grib1ParamLevel {
+@Immutable
+public class Grib1ParamLevel {
 
   /**
    * type of vertical coordinate: Description or short Name
@@ -630,7 +633,7 @@ public final class Grib1ParamLevel {
    /**
    * Unit of vertical coordinate.
    * from Grib2 code table 4.5.
-   * LOOK need scientific vetting, need center specific override- move to GribTables
+   * LOOK need scientific vetting, need center specific override - move to GribTables ?
    *
    * @param code code from table 4.5
    * @return level unit, default is empty unit string
@@ -644,8 +647,8 @@ public final class Grib1ParamLevel {
 
   private final int center, subcenter; // in case of center specific processing
   private final int levelType; // code Table 3 (octet 10)
-  private float value1;
-  private float value2;
+  private final float value1;
+  private final float value2;
 
   /**
    * Implements tables 3 and 3a.
@@ -670,10 +673,12 @@ public final class Grib1ParamLevel {
 
       case 20:
         value1 = (float) (pds1112 * 0.01);
+        value2 = GribNumbers.MISSING;
         break;
 
       case 100:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       case 101:
@@ -683,6 +688,7 @@ public final class Grib1ParamLevel {
 
       case 103:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       case 104:
@@ -692,6 +698,7 @@ public final class Grib1ParamLevel {
 
       case 105:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       case 106:
@@ -701,6 +708,7 @@ public final class Grib1ParamLevel {
 
       case 107:
         value1 = (float) (pds1112 * 0.0001);
+        value2 = GribNumbers.MISSING;
         break;
 
       case 108:
@@ -710,6 +718,7 @@ public final class Grib1ParamLevel {
 
       case 109:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       case 110:
@@ -719,6 +728,7 @@ public final class Grib1ParamLevel {
 
       case 111:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       case 112:
@@ -728,6 +738,7 @@ public final class Grib1ParamLevel {
 
       case 113:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       case 114:
@@ -737,6 +748,7 @@ public final class Grib1ParamLevel {
 
       case 115:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       case 116:
@@ -746,10 +758,12 @@ public final class Grib1ParamLevel {
 
       case 117:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       case 119:
         value1 = (float) (pds1112 * 0.0001);
+        value2 = GribNumbers.MISSING;
         break;
 
       case 120:
@@ -764,10 +778,12 @@ public final class Grib1ParamLevel {
 
       case 125:
         value1 = pds1112;
-        break;
+        value2 = GribNumbers.MISSING;
+       break;
 
       case 126:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       case 128:
@@ -783,6 +799,7 @@ public final class Grib1ParamLevel {
 
       case 160:
         value1 = pds1112;
+        value2 = GribNumbers.MISSING;
         break;
 
       // LOOK NCEP specific

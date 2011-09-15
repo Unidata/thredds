@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -41,6 +42,7 @@ import ucar.nc2.time.CalendarPeriod;
  * @author John
  * @since 9/4/11
  */
+@Immutable
 public class Grib1ParamTime {
   static public enum StatType {Average, Accumulation, Difference, StdDev, Variance}
 
@@ -253,11 +255,11 @@ public class Grib1ParamTime {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  private int timeType; // code Table 5 (octet 21)
-  private int p1, p2; // octet 19 and 20
+  private final int timeType; // code Table 5 (octet 21)
+  private final int p1, p2; // octet 19 and 20
+  private final boolean isInterval;
   private int start;
   private int end;
-  boolean isInterval;
   private int forecastTime;
 
   /**
@@ -279,11 +281,13 @@ public class Grib1ParamTime {
         Image product for reference time (P1 = 0) */
       case 0:
         forecastTime = p1;
+        isInterval = false;
         break;
 
       // Initialized analysis product for reference time (P1 = 0)
       case 1:
         forecastTime = 0;
+        isInterval = false;
         break;
 
       // Product with a valid time ranging between reference time + P1 and reference time + P2
@@ -333,6 +337,7 @@ public class Grib1ParamTime {
       // P1 occupies octets 19 and 20; product valid at reference time + P1
       case 10:
         forecastTime = GribNumbers.int2(p1, p2);
+        isInterval = false;
         break;
 
 
@@ -349,6 +354,7 @@ public class Grib1ParamTime {
         The units of P2 are given by the contents of octet 18 and Code table 4 */
       case 51:  // LOOK ??
         forecastTime = p2;
+        isInterval = false;
         break;
 
       /* Average  of  N  forecasts  (or  initialized  analyses);  each  product  has  forecast  period  of  P1

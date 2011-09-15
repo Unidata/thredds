@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import net.jcip.annotations.Immutable;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -40,6 +41,7 @@ import ucar.unidata.util.StringUtil2;
  * @author John
  * @since 9/8/11
  */
+@Immutable
 public class Grib1Parameter {
 
   static public String cleanupUnits(String unit) {
@@ -51,6 +53,7 @@ public class Grib1Parameter {
       unit = StringUtil2.remove(unit, "**");
       StringBuilder sb = new StringBuilder(unit);
       StringUtil2.remove(sb, "^[]");
+      StringUtil2.substitute(sb, " / ", "/");
       StringUtil2.replace(sb, ' ', ".");
       StringUtil2.replace(sb, '*', ".");
       unit = sb.toString();
@@ -70,31 +73,28 @@ public class Grib1Parameter {
 
   ///////////////////////////////////////////////////////////////
 
-  protected Grib1ParamTable table;
-  protected int number;
-  protected String name;
-  protected String description;
-  protected String unit;
-  protected String cfName; // CF standard name, if it exists
-
-  public Grib1Parameter(Grib1ParamTable table) {
-    this.table = table;
-  }
+  private final Grib1ParamTable table;  // which table did this come from ?
+  private final int number;
+  private final String name;
+  private final String description;
+  private final String unit;
+  private final String cfName; // CF standard name, if it exists
 
   public Grib1Parameter(Grib1ParamTable table, int number, String name, String description, String unit) {
     this.table = table;
     this.number = number;
-    setName(name);
-    setDescription(description);
-    setUnit(unit);
+    this.name = setName(name);
+    this.description = setDescription(description);
+    this.unit = setUnit(unit);
+    this.cfName = null;
   }
 
   public Grib1Parameter(Grib1ParamTable table, int number, String name, String description, String unit, String cf_name) {
     this.table = table;
     this.number = number;
-    setName(name);
-    setDescription(description);
-    setUnit(unit);
+    this.name = setName(name);
+    this.description = setDescription(description);
+    this.unit = setUnit(unit);
     this.cfName = cf_name;
   }
 
@@ -132,48 +132,19 @@ public class Grib1Parameter {
     return cfName;
   }
 
-  /**
-   * sets number of parameter.
-   *
-   * @param number of parameter
-   */
-  public final void setNumber(int number) {
-    this.number = number;
+  private String setName(String name) {
+    if (name == null) return null;
+    return StringUtil2.replace(name, ' ', "_"); // replace blanks
   }
 
-  /**
-   * sets name of parameter.
-   *
-   * @param name of parameter
-   */
-  public final void setName(String name) {
-    if (name != null)
-      this.name = StringUtil2.replace(name, ' ', "_"); // replace blanks
+  private String setDescription(String description) {
+    return cleanupDescription(description);
   }
 
-  /**
-   * sets description of parameter.
-   *
-   * @param description of parameter
-   */
-  public final void setDescription(String description) {
-    this.description = cleanupDescription(description);
+  private String setUnit(String unit) {
+    return cleanupUnits(unit);
   }
 
-  /**
-   * sets unit of parameter.
-   *
-   * @param unit of parameter
-   */
-  public final void setUnit(String unit) {
-    this.unit = cleanupUnits(unit);
-  }
-
-  /**
-   * Return a String representation of this object
-   *
-   * @return a String representation of this object
-   */
   @Override
   public String toString() {
     return "GridParameter{" +

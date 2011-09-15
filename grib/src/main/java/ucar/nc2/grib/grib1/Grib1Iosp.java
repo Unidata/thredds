@@ -134,7 +134,7 @@ Notes:
 
     if (vindex.levelType != GribTables.MISSING) { // satellite data doesnt have a level
       f.format("_%s", Grib1ParamLevel.getNameShort(vindex.levelType)); // code table 3
-      if (vindex.isLayer) f.format("layer");
+      // if (vindex.isLayer) f.format("_layer"); LOOK ? assumes that cant have two variables on same vertical type, differeing only by isLayer
     }
 
     if (vindex.intvType >= 0) {

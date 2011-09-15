@@ -44,7 +44,6 @@ import java.io.IOException;
  * @author caron
  */
 @Immutable
-
 public class Grib1SectionIndicator {
   static final byte[] MAGIC = new byte[]{'G','R','I','B'};
 

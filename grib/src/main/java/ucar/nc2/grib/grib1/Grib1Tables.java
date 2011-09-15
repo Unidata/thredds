@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribTables;
 
 import java.io.FileNotFoundException;
@@ -43,6 +44,7 @@ import java.io.IOException;
  * @author caron
  * @since 9/13/11
  */
+@Immutable
 public class Grib1Tables implements GribTables {
 
   static public Grib1Tables factory(String paramTablePath, String lookupTablePath) throws IOException {

@@ -218,7 +218,6 @@ public class Grib1ParamTable implements GribTables {
 
         Grib1ParamTable table = new Grib1ParamTable(center, subcenter, version, path);
         tables.add(table);
-        tableMap.put(makeKey(center, subcenter, version), table);
       }
       is.close();
 
@@ -473,16 +472,14 @@ TBLE2 cptec_254_params[] = {
         Matcher m = nclPattern.matcher(line);
         if (!m.matches()) continue;
 
-        Grib1Parameter parameter = new Grib1Parameter(this);
+        int p1;
         try {
-          int p1 = Integer.parseInt(m.group(1));
-          parameter.setNumber(p1);
+          p1 = Integer.parseInt(m.group(1));
         } catch (Exception e) {
           logger.warn("Cant parse " + m.group(1) + " in file " + path);
+          continue;
         }
-        parameter.setName(m.group(4));
-        parameter.setDescription(Grib1Parameter.cleanupDescription(m.group(2)));
-        parameter.setUnit(m.group(3));
+        Grib1Parameter parameter = new Grib1Parameter(this, p1, m.group(4), m.group(2), m.group(3));
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
       }
@@ -587,16 +584,14 @@ TBLE2 cptec_254_params[] = {
 
         if (desc.equalsIgnoreCase("undefined")) continue; // skip
 
-        Grib1Parameter parameter = new Grib1Parameter(this);
+        int p1;
         try {
-          int p1 = Integer.parseInt(num);
-          parameter.setNumber(p1);
+          p1 = Integer.parseInt(num);
         } catch (Exception e) {
           logger.warn("Cant parse " + num + " in file " + path);
+          continue;
         }
-        parameter.setName(name);
-        parameter.setDescription(Grib1Parameter.cleanupDescription(desc));
-        parameter.setUnit(units1);
+        Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units1);
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
       }
@@ -743,11 +738,12 @@ TBLE2 cptec_254_params[] = {
         if ((line.length() == 0) || line.startsWith("#")) continue;
         String[] flds = line.split(regexp);
 
-        Grib1Parameter parameter = new Grib1Parameter(this);
-        parameter.setNumber(Integer.parseInt(flds[order[0]].trim())); // must have a number
-        if (order[1] >= 0) parameter.setName(flds[order[1]].trim());
-        parameter.setDescription(Grib1Parameter.cleanupDescription(flds[order[2]].trim()));
-        if (flds.length > order[3]) parameter.setUnit(flds[order[3]].trim());
+        int p1 = Integer.parseInt(flds[order[0]].trim()); // must have a number
+        String name = (order[1] >= 0) ? flds[order[1]].trim() : null;
+        String desc = flds[order[2]].trim();
+        String units = (flds.length > order[3]) ? flds[order[3]].trim() : "";
+
+        Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units);
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);
       }
@@ -792,19 +788,21 @@ TBLE2 cptec_254_params[] = {
         if ((line.length() == 0) || line.startsWith("#")) continue;
         String[] tableDefArr = line.split(":");
 
-        Grib1Parameter parameter = new Grib1Parameter(this);
-        parameter.setNumber(Integer.parseInt(tableDefArr[0].trim()));
-        parameter.setName(tableDefArr[1].trim());
+        int p1 = Integer.parseInt(tableDefArr[0].trim());
+        String name = tableDefArr[1].trim();
+        String desc ,units;
         // check to see if unit defined, if not, parameter is undefined
         if (tableDefArr[2].indexOf('[') == -1) {
           // Undefined unit
-          parameter.setDescription(tableDefArr[2].trim());
-          parameter.setUnit(tableDefArr[2].trim());
+          desc = tableDefArr[2].trim();
+          units = "";
         } else {
           String[] arr2 = tableDefArr[2].split("\\[");
-          parameter.setDescription(arr2[0].trim());
-          parameter.setUnit(arr2[1].substring(0, arr2[1].lastIndexOf(']')).trim());
+          desc =  arr2[0].trim();
+          units = arr2[1].substring(0, arr2[1].lastIndexOf(']')).trim();
         }
+
+        Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units);
         if (!parameter.getDescription().equalsIgnoreCase("undefined"))
           params.put(parameter.getNumber(), parameter);
         if (debug)

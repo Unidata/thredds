@@ -546,8 +546,7 @@ public class StringUtil2 {
    * @param subst    string to substitute
    * @return a new string with substitutions
    */
-  static public String substitute(String original, String match,
-                                  String subst) {
+  static public String substitute(String original, String match, String subst) {
     String s = original;
     int pos;
     while (0 <= (pos = s.indexOf(match))) {

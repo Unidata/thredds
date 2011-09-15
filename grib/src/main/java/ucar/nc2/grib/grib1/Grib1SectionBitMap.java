@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -43,6 +44,7 @@ import java.io.IOException;
  * @author John
  * @since 9/3/11
  */
+@Immutable
 public class Grib1SectionBitMap {
   private final long startingPosition;
 

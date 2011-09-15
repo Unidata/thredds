@@ -94,8 +94,8 @@ public class TestProjections extends TestCase {
         Stereographic.class);
 
     p = test(testDir+ "Mercator.grib1",
-        "Mercator",
-        "Temperature",
+        "Mercator-68X93",
+        "TMP_isobaric",
         Mercator.class);
 
     p = test(testDir+ "Eumetsat.VerticalPerspective.grb",
