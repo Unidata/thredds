@@ -40,6 +40,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
@@ -63,10 +64,17 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
   static private final boolean debugTime = false, debugRead = false;
 
-  static public String makeVariableName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+  static public String makeVariableName(Grib2Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
-    f.format("P%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
+    //f.format("P%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
+    GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+
+    if (param == null) {
+      f.format("VAR%d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+    } else {
+      f.format("%s", Grib1Parameter.makeNameFromDescription(param.getName()));
+    }
 
     // if this uses any local tables, then we have to add the center id
     if ((vindex.category > 191) || (vindex.parameter > 191) || (vindex.levelType > 191) || (vindex.intvType > 191)
@@ -76,7 +84,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
         f.format("-%d", gribCollection.getSubcenter());
     }
 
-    if (vindex.levelType != GribNumbers.MISSING) { // satellite data doesnt have a level
+    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_L%d", vindex.levelType); // code table 4.5
       if (vindex.isLayer) f.format("layer");
     }
@@ -142,7 +150,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     else if (isProb)
       f.format(" %s %s", vindex.probabilityName, getVindexUnits(tables, vindex)); // add data units here
 
-    if (vindex.levelType != GribNumbers.MISSING) { // satellite data doesnt have a level
+    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format(" @ %s", tables.getTableValue("4.5", vindex.levelType));
       if (vindex.isLayer) f.format(" layer");
     }
@@ -408,7 +416,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
 
     for (TimeCoord tc : gHcs.timeCoords) {
       int n = tc.getSize();
-      String tcName = "time" + tc.getCode();
+      String tcName = tc.getName();
       ncfile.addDimension(g, new Dimension(tcName, n));
       Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, tcName));
       v.addAttribute(new Attribute(CF.UNITS, tc.getUnits()));
@@ -465,7 +473,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       StringBuilder dims = new StringBuilder();
 
       // canonical order: time, ens, z, y, x
-      String tcName = "time" + tc.getCode();
+      String tcName = tc.getName();
       dims.append(tcName);
 
       if (ec != null)
@@ -476,7 +484,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
 
       dims.append(" ").append(horizDims);
 
-      String vname = makeVariableName(gribCollection, vindex);
+      String vname = makeVariableName(tables, gribCollection, vindex);
       Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dims.toString());
       ncfile.addVariable(g, v);
       //System.out.printf("added %s%n",vname);
@@ -525,15 +533,15 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       case U:
         lat = searchCoord(list, 198);
         lon = searchCoord(list, 199);
-        return (lat != null && lon != null) ? makeVariableName(gc, lat) + " "+ makeVariableName(gc, lon) : null;
+        return (lat != null && lon != null) ? makeVariableName(tables, gc, lat) + " "+ makeVariableName(tables, gc, lon) : null;
       case V:
         lat = searchCoord(list, 200);
         lon = searchCoord(list, 201);
-        return (lat != null && lon != null) ? makeVariableName(gc, lat) + " "+ makeVariableName(gc, lon) : null;
+        return (lat != null && lon != null) ? makeVariableName(tables, gc, lat) + " "+ makeVariableName(tables, gc, lon) : null;
       case P:
         lat = searchCoord(list, 202);
         lon = searchCoord(list, 203);
-        return (lat != null && lon != null) ? makeVariableName(gc, lat) + "  "+ makeVariableName(gc, lon) : null;
+        return (lat != null && lon != null) ? makeVariableName(tables, gc, lat) + "  "+ makeVariableName(tables, gc, lon) : null;
     }
     return null;
   }

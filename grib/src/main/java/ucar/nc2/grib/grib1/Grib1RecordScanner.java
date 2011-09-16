@@ -59,7 +59,7 @@ import java.util.Map;
  */
 public class Grib1RecordScanner {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
-  static private final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
+  static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'});
   static private final boolean debug = false;
   static private final boolean debugGds = false;
 
@@ -86,10 +86,6 @@ public class Grib1RecordScanner {
   private long startPos = 0;
   private long lastPos = 0;
 
-  // deal with repeating sections - each becomes a Grib1Record
-  private long repeatPos = -1;             // if > 0, we are in middle of repeating record
-  private Grib1Record repeatRecord = null; // current repeating record
-
   public Grib1RecordScanner(RandomAccessFile raf) throws IOException {
     startPos = 0;
     this.raf = raf;
@@ -100,33 +96,36 @@ public class Grib1RecordScanner {
 
   public boolean hasNext() throws IOException {
     if (lastPos >= raf.length()) return false;
-    /* if (repeatPos > 0) {
-      if (nextRepeating()) // this has created a new repeatRecord
-        return true;
-    } else {
-      repeatRecord = null;
-      // fall through to new record
-    }  */
+    boolean more;
+    long foundAt = 0;
 
-    raf.seek(lastPos);
-    boolean more = raf.searchForward(matcher, -1); // will scan to end for another GRIB header
+    while (true) { // scan until we get a GRIB-1 or more is false
+      raf.seek(lastPos);
+      more = raf.searchForward(matcher, -1); // will scan to end for a 'GRIB' string
+      if (!more) break;
+
+      foundAt = raf.getFilePointer();
+      // see if its GRIB-1
+      raf.skipBytes(7);
+      int edition = raf.read();
+      if (edition == 1) break;
+      lastPos = raf.getFilePointer(); // not edition 1 ! could terminate ??
+    }
+
     if (more) {
-      long foundAt = raf.getFilePointer();
+      // read the header - stuff between the records
       int sizeHeader = (int) (foundAt - lastPos);
-      //if (sizeHeader > 30) sizeHeader = 30;
       header = new byte[sizeHeader];
       startPos = foundAt-sizeHeader;
       raf.seek(startPos);
       raf.read(header);
       if (debug) System.out.println(" 'GRIB' found at "+foundAt+" starting from lastPos "+ lastPos);
     }
+
     return more;
   }
 
   public Grib1Record next() throws IOException {
-    if (repeatRecord != null) { // serve current repeatRecord if it exists
-      return new Grib1Record(repeatRecord);
-    }
 
     Grib1SectionIndicator is = null;
     try {

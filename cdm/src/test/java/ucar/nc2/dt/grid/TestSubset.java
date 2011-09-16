@@ -97,7 +97,7 @@ public class TestSubset extends TestCase {
   public void testGrib() throws Exception {
     GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "formats/grib1/AVN.wmo");
 
-    GeoGrid grid = dataset.findGridByName("Temperature");
+    GeoGrid grid = dataset.findGridByName("TMP_isobaric");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;

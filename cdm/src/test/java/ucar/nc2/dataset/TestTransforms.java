@@ -88,7 +88,7 @@ public class TestTransforms extends TestCase {
     String filename = testDir +  "HIRLAMhybrid.ncml";
     //String filename =   "/local/robb/data/grib/hybrid/HIRLAMhybrid.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VerticalTransform vt = test(ncd, "hybrid", "Relative_humidity", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
+    VerticalTransform vt = test(ncd, "hybrid", "Relative_humidity_hybrid", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
         SimpleUnit.pressureUnit);
 
     Dimension timeDim = ncd.findDimension("time");
@@ -213,7 +213,7 @@ public class TestTransforms extends TestCase {
       if (ct.getTransformType() == TransformType.Vertical)
         vList.add(ct);
     }
-    assert vList.size() == 1;
+    assert vList.size() == 1 : vList.size();
     CoordinateTransform ct = (CoordinateTransform) vList.get(0);
     assert ct.getTransformType() == TransformType.Vertical;
     assert ct instanceof VerticalCT;

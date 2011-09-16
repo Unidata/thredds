@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class Grib2RecordScanner {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
-  static private final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
+  static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'});
   static private final boolean debug = false;
   static private final boolean debugRepeat = false;
 
@@ -66,10 +66,23 @@ public class Grib2RecordScanner {
       // fall through to new record
     }
 
-    raf.seek(lastPos);
-    boolean more = raf.searchForward(matcher, -1); // will scan to end for another GRIB header
+    boolean more;
+    long stop = 0;
+
+    while (true) { // scan until we get a GRIB-1 or more is false
+      raf.seek(lastPos);
+      more = raf.searchForward(matcher, -1); // will scan to end for a 'GRIB' string
+      if (!more) break;
+
+      stop = raf.getFilePointer();
+      // see if its GRIB-2
+      raf.skipBytes(7);
+      int edition = raf.read();
+      if (edition == 2) break;
+      lastPos = raf.getFilePointer(); // not edition 2 ! could terminate ??
+    }
+
     if (more) {
-      long stop = raf.getFilePointer();
       int sizeHeader = (int) (stop - lastPos);
       //if (sizeHeader > 30) sizeHeader = 30;
       header = new byte[sizeHeader];

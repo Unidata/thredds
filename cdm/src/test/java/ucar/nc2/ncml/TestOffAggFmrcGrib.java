@@ -61,8 +61,9 @@ public class TestOffAggFmrcGrib extends TestCase {
       "  </aggregation>\n" +
       "</netcdf>";
 
-    System.out.printf("%s%n", xml);
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcGrib", null);
+    String location = TestAll.cdmUnitTestDir + "ncml/nc/nam_c20s/aggFmrcGrib.ncml";
+    System.out.printf("%s%n%s%n", location, xml);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), location, null);
     TestAll.showMem("TestAggFmrcGrib start ");
 
     int naggs = 8;

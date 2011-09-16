@@ -71,6 +71,17 @@ public class Grib1Parameter {
     return sb.toString().trim();
   }
 
+  static public String makeNameFromDescription(String desc) {
+    if (desc == null) return null;
+    int pos = desc.indexOf("(see");
+    if (pos > 0) desc = desc.substring(0, pos);
+
+    StringBuilder sb = new StringBuilder(desc.trim());
+    StringUtil2.remove(sb, ".;,=[]()/");
+    StringUtil2.replace(sb, ' ', "_");
+    return sb.toString();
+  }
+
   ///////////////////////////////////////////////////////////////
 
   private final Grib1ParamTable table;  // which table did this come from ?

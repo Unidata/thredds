@@ -97,7 +97,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
                     "</netcdf>";
 
     String location = "file:"+ TestAll.cdmUnitTestDir + "ncml/nc/narr/";
-    System.out.println(" TestOffAggExistingTimeUnitsChange.testNarrGrib=\n"+ ncml);
+    System.out.printf(" TestOffAggExistingTimeUnitsChange.testNarrGrib=%s%n%s", location, ncml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
 
     Variable v = ncfile.findVariable("time");

@@ -303,7 +303,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         //GribTables tables = group.getGribCollection().getTables(); // LOOK
         Grib2Tables tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
-        tv.setName( Grib2Iosp.makeVariableName(gribCollection, vindex));
+        tv.setName( Grib2Iosp.makeVariableName(tables, gribCollection, vindex));
         tv.setDescription( Grib2Iosp.makeVariableLongName(tables, vindex));
         tv.setUnits( Grib2Iosp.makeVariableUnits(tables, vindex));
 

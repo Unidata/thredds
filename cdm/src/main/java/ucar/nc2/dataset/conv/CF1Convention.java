@@ -85,7 +85,7 @@ public class CF1Convention extends CSMConvention {
     return CF.POSITIVE_UP;
   }
 
-  private static String[] vertical_coords = {
+  private static final String[] vertical_coords = {
           "atmosphere_sigma_coordinate",
           "atmosphere_hybrid_sigma_pressure_coordinate",
           "atmosphere_hybrid_height_coordinate",

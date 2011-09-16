@@ -162,6 +162,10 @@ public class TimeCoord {
     return code;
   }
 
+  public String getName() {
+    return (code == 0) ? "time": "time"+code;
+  }
+
   public String getType() {
     return isInterval() ? "interval" : "integers";
   }

@@ -129,10 +129,10 @@ Notes:
       if (param.getName() != null)
         f.format("%s", param.getName());
       else
-        f.format("VAR%d", vindex.parameter);
+        f.format("%s", Grib1Parameter.makeNameFromDescription(param.getDescription()));
     }
 
-    if (vindex.levelType != GribNumbers.MISSING) { // satellite data doesnt have a level
+    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_%s", Grib1ParamLevel.getNameShort(vindex.levelType)); // code table 3
       // if (vindex.isLayer) f.format("_layer"); LOOK ? assumes that cant have two variables on same vertical type, differeing only by isLayer
     }
@@ -164,7 +164,7 @@ Notes:
       if (stat != null) f.format(" (%s)", stat.name());
     }
 
-    if (vindex.levelType != GribNumbers.MISSING) { // satellite data doesnt have a level
+    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format(" @ %s", Grib1ParamLevel.getNameShort(vindex.levelType));
       if (vindex.isLayer) f.format(" layer");
     }
@@ -430,7 +430,7 @@ Notes:
 
     for (TimeCoord tc : gHcs.timeCoords) {
       int n = tc.getSize();
-      String tcName = "time" + tc.getCode();
+      String tcName = tc.getName();
       ncfile.addDimension(g, new Dimension(tcName, n));
       Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, tcName));
       v.addAttribute(new Attribute(CF.UNITS, tc.getUnits()));
@@ -487,7 +487,7 @@ Notes:
       StringBuilder dims = new StringBuilder();
 
       // canonical order: time, ens, z, y, x
-      String tcName = "time" + tc.getCode();
+      String tcName = tc.getName();
       dims.append(tcName);
 
       if (ec != null)

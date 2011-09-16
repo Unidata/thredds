@@ -94,13 +94,13 @@ public class TestProjections extends TestCase {
         Stereographic.class);
 
     p = test(testDir+ "Mercator.grib1",
-        "Mercator-68X93",
+        "Mercator_Projection",
         "TMP_isobaric",
         Mercator.class);
 
     p = test(testDir+ "Eumetsat.VerticalPerspective.grb",
-        "Space_View_Perspective_or_Orthographic",
-        "Pixel_scene_type",
+        "SpaceViewPerspective_Projection",
+        "P3-0-8",
         MSGnavigation.class);
   }
 
