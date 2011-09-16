@@ -55,8 +55,7 @@ import org.apache.commons.httpclient.auth.*;
  * store depends on the particular auth scheme (HTTP Basic, ESG Keystore,
  * etc.)
  *
- * HTTPAuthProvider implements the AuthScheme interface, but its functionality
- * is intended to be broader than that interface.
+ * HTTPAuthProvider implements the CredentialsProvider interface.
  */
 
 public class HTTPAuthProvider implements Serializable, CredentialsProvider
