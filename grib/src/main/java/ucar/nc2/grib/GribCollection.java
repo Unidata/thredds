@@ -100,8 +100,9 @@ public abstract class GribCollection {
 
   ////////////////////////////////////////////////////////////////
 
-  public final String name;
+  protected final String name;
   public final File directory;
+  private Set<String> groupNames = new HashSet<String>(5);
 
   // set by the builder
   public int center, subcenter, master, local;
@@ -109,7 +110,6 @@ public abstract class GribCollection {
   public List<String> filenames;
   public List<GroupHcs> groups;
   public List<Parameter> params;
-  // public GribTables tables;
 
   // need thread safety
   public RandomAccessFile raf; // this is the raf of the index file
@@ -189,7 +189,7 @@ public abstract class GribCollection {
 
   public GroupHcs findGroup(String name) {
     for (GroupHcs g : getGroups()) {
-      if (g.hcs.getName().equals(name))
+      if (g.getGroupName().equals(name))
         return g;
     }
     return null;
@@ -198,7 +198,7 @@ public abstract class GribCollection {
   public int findGroupIdx(String name) {
     for (int i=0; i < groups.size(); i++) {
       GroupHcs g = groups.get(i);
-      if (g.hcs.getName().equals(name)) return i;
+      if (g.getGroupName().equals(name)) return i;
     }
     return -1;
   }
@@ -232,6 +232,7 @@ public abstract class GribCollection {
   // these objects are created from the ncx index.
 
   public class GroupHcs implements Comparable<GroupHcs> {
+    private String name;
     public GdsHorizCoordSys hcs;
     public List<VariableIndex> varIndex;
     public List<TimeCoord> timeCoords;
@@ -242,19 +243,37 @@ public abstract class GribCollection {
 
     public void setHorizCoordSystem(GdsHorizCoordSys hcs) {
       this.hcs = hcs;
+      setName();
+    }
+
+    private void setName() {
+      String base = hcs.getName()+"-"+hcs.nx+"X"+hcs.ny;
+      String tryit = base;
+      int count = 1;
+      while (groupNames.contains(tryit)) {
+        count++;
+        tryit = base+"-"+count;
+      }
+      this.name = tryit;
+      groupNames.add(name);
     }
 
     public GribCollection getGribCollection() {
       return GribCollection.this;
     }
 
+    // unique name for Group
     public String getGroupName() {
-      return getName() +"/" + hcs.getName();
+      return name;
     }
+
+    //public String getGroupNameOld() {
+    //  return getName() +"/" + hcs.getName();
+    //}
 
     @Override
     public int compareTo(GroupHcs o) {
-      return hcs.getName().compareTo(o.hcs.getName());
+      return getGroupName().compareTo(o.getGroupName());
     }
 
     public List<String> getFilenames() {
@@ -395,7 +414,7 @@ public abstract class GribCollection {
     @Override
     public String toString() {
       return "VariableIndex{" +
-              "group=" + group.hcs.getName() +
+              "group=" + group.getGroupName() +
               ", discipline=" + discipline +
               ", category=" + category +
               ", parameter=" + parameter +

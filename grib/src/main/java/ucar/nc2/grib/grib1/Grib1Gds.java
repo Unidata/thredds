@@ -90,7 +90,7 @@ public abstract class Grib1Gds {
       case 5:
         return new PolarStereographic(data, 5);
       case 10:
-        return new RotLatLon(data, 10);
+        return new RotatedLatLon(data, 10);
       default:
         throw new UnsupportedOperationException("Unsupported GDS type = " + template);
     }
@@ -419,7 +419,7 @@ public abstract class Grib1Gds {
       ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
       double startx = startP.getX();
       double starty = startP.getY();
-      return new GdsHorizCoordSys(getNameShort(), proj, startx, getDx(), starty, getDy(), getNx(), getNy());
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(), getNx(), getNy());
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -619,7 +619,7 @@ Grid definition –   polar stereographic
       }
 
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(la1, lo1));
-      return new GdsHorizCoordSys(getNameShort(), proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy());
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy());
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -754,7 +754,7 @@ Grid definition –   polar stereographic
 
       LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
       ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
-      return new GdsHorizCoordSys(getNameShort(), proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy());
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, start.getX(), getDx(), start.getY(), getDy(), getNx(), getNy());
     }
 
     public void testHorizCoordSys(Formatter f) {
@@ -868,9 +868,8 @@ Grid definition –   polar stereographic
       double startx = startP.getX();
       double starty = startP.getY();
 
-      return new GdsHorizCoordSys(getNameShort(), proj, startx, getDx(), starty, getDy(), getNx(), getNy());
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(), getNx(), getNy());
     }
-
 
     public void testHorizCoordSys(Formatter f) {
       GdsHorizCoordSys cs = makeHorizCoordSys();
@@ -894,25 +893,88 @@ Grid definition –   polar stereographic
 
   }
 
-  public static class RotLatLon extends LatLon {
-    public float basicAngle, stretch;
-    public int latStretch, lonStretch;
+  public static class RotatedLatLon extends LatLon {
+    public float angleRotation; // Angle of rotation (represented in the same way as the reference value)
+    public float latSouthPole; // Latitude of pole of stretching in millidegrees (integer)
+    public float lonSouthPole;  // Longitude of pole of stretching in millidegrees (integer)
     protected int lastOctet;
 
-    RotLatLon(byte[] data, int template) {
+    RotatedLatLon(byte[] data, int template) {
       super(data, template);
 
-      basicAngle = getOctet4(39) * scale3;
-      latStretch = getOctet3(43);
-      lonStretch = getOctet3(46);
-      stretch = getOctet3(49) * scale3;
+      latSouthPole = getOctet3(33) * scale3;
+      lonSouthPole = getOctet3(36) * scale3;
+      angleRotation = getOctet4(39) * scale3;
 
-      lastOctet = 52;
+      lastOctet = 43;
     }
 
     public String getName() {
       return "Rotated latitude/longitude";
     }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append(super.toString());
+      sb.append("\nRotLatLon");
+      sb.append("{angleRotation=").append(angleRotation);
+      sb.append(", latSouthPole=").append(latSouthPole);
+      sb.append(", lonSouthPole=").append(lonSouthPole);
+      sb.append(", lastOctet=").append(lastOctet);
+      sb.append('}');
+      return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      RotatedLatLon other = (RotatedLatLon) o;
+      if (!Misc.closeEnough(angleRotation, other.angleRotation)) return false;
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + (angleRotation != +0.0f ? Float.floatToIntBits(angleRotation) : 0);
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      ucar.unidata.geoloc.projection.RotatedLatLon proj =
+              new ucar.unidata.geoloc.projection.RotatedLatLon(latSouthPole, lonSouthPole, angleRotation);
+      // LOOK dont transform - works for grib1 Q:/cdmUnitTest/transforms/HIRLAMhybrid.grib
+      // LatLonPoint startLL = proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
+      //double startx = startLL.getLongitude();
+      //double starty = startLL.getLatitude();
+      return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, lo1, deltaLon, la1, deltaLat, nx, ny);
+    }
+
+    public void testHorizCoordSys(Formatter f) {
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      LatLonPoint startLL = cs.proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
+      LatLonPoint endLL = cs.proj.projToLatLon(new ProjectionPointImpl(lo2, la2));
+
+      f.format("%s testProjection%n", getClass().getName());
+      f.format("  start at latlon= %s%n", startLL);
+      f.format("    end at latlon= %s%n", endLL);
+
+      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("     end at proj coord= %s%n", endPP);
+
+      double endx = cs.startx + (nx - 1) * cs.dx;
+      double endy = cs.starty + (ny - 1) * cs.dy;
+      f.format("   should end at x= (%f,%f)%n", endx, endy);
+    }
+
   }
 
 }

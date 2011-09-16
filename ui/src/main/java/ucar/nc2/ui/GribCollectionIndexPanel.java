@@ -313,7 +313,7 @@ public class GribCollectionIndexPanel extends JPanel {
     }
 
     public String getGroupName() {
-      return group.hcs.getName();
+      return group.getGroupName();
     }
 
   }
@@ -355,7 +355,7 @@ public class GribCollectionIndexPanel extends JPanel {
     }
 
     public String getGroup() {
-      return group.hcs.getName();
+      return group.getGroupName();
     }
 
     public String getVariableId() {

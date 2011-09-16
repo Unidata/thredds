@@ -34,6 +34,7 @@ package ucar.nc2.grib.grib2.table;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.constants.CF;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -421,7 +422,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables {
         return "Depth_below_sea";
       case 255:
         return "Missing_level_type";
-      case Grib2Pds.MISSING:
+      case GribNumbers.UNDEFINED:
         return "none";
       default:
         return "UnknownLevelType-" + id;

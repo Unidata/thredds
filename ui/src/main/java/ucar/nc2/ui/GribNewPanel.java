@@ -37,6 +37,7 @@ import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
@@ -1342,24 +1343,24 @@ public class GribNewPanel extends JPanel {
 
     public final int getPertN() {
       int v = pds.getPerturbationNumber();
-      if (v == Grib2Pds.MISSING) v = -1;
+      if (v == GribNumbers.UNDEFINED) v = -1;
       return v;
     }
 
     public final int getNForecastsInEns() {
       int v = pds.getNumberEnsembleForecasts();
-      if (v == Grib2Pds.MISSING) v = -1;
+      if (v == GribNumbers.UNDEFINED) v = -1;
       return v;
     }
 
     public final int getPertType() {
       int v =  pds.getPerturbationType();
-      return (v == Grib2Pds.MISSING) ? -1 : v;
+      return (v == GribNumbers.UNDEFINED) ? -1 : v;
     }
 
     public final String getProbLimits() {
       double v =  pds.getProbabilityLowerLimit();
-      if (v == Grib2Pds.MISSINGD) return "";
+      if (v == GribNumbers.UNDEFINEDD) return "";
       else return pds.getProbabilityLowerLimit() + "-" + pds.getProbabilityUpperLimit();
     }
 

@@ -46,16 +46,20 @@ import ucar.unidata.util.GaussianLatitudes;
  */
 public class GdsHorizCoordSys {
   private String name;
-  public int template, nPoints, scanMode; // LOOK
+  public int template, gdsNumberPoints, scanMode;
   public ucar.unidata.geoloc.ProjectionImpl proj;
   public double startx, dx; // km
   public double starty, dy; // km
   public int nx, ny;
   public Array gaussLats;
-  public Array gaussw; // ??
+  public Array gaussw;
 
-  public GdsHorizCoordSys(String name, ProjectionImpl proj, double startx, double dx, double starty, double dy, int nx, int ny) {
+  public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, ProjectionImpl proj,
+                          double startx, double dx, double starty, double dy, int nx, int ny) {
     this.name = name;
+    this.template = template;
+    this.gdsNumberPoints = gdsNumberPoints; // only used by GRIB2
+    this.scanMode = scanMode;
     this.proj = proj;
     this.startx = startx;
     this.dx = dx;
@@ -66,7 +70,7 @@ public class GdsHorizCoordSys {
   }
 
   public String getName() {
-    return name + "-" + ny + "X" + nx;
+    return name;
   }
 
   public double getStartX() {
@@ -146,7 +150,7 @@ public class GdsHorizCoordSys {
     return "GdsHorizCoordSys" +
             "\n name='" + name + '\'' +
             "\n  template=" + template +
-            "\n  nPoints=" + nPoints +
+            "\n  gdsNumberPoints=" + gdsNumberPoints +
             "\n  scanMode=" + scanMode +
             "\n  proj=" + proj +
             "\n  startx=" + startx +

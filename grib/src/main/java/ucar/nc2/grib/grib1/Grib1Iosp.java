@@ -132,7 +132,7 @@ Notes:
         f.format("VAR%d", vindex.parameter);
     }
 
-    if (vindex.levelType != GribTables.MISSING) { // satellite data doesnt have a level
+    if (vindex.levelType != GribNumbers.MISSING) { // satellite data doesnt have a level
       f.format("_%s", Grib1ParamLevel.getNameShort(vindex.levelType)); // code table 3
       // if (vindex.isLayer) f.format("_layer"); LOOK ? assumes that cant have two variables on same vertical type, differeing only by isLayer
     }
@@ -164,7 +164,7 @@ Notes:
       if (stat != null) f.format(" (%s)", stat.name());
     }
 
-    if (vindex.levelType != GribTables.MISSING) { // satellite data doesnt have a level
+    if (vindex.levelType != GribNumbers.MISSING) { // satellite data doesnt have a level
       f.format(" @ %s", Grib1ParamLevel.getNameShort(vindex.levelType));
       if (vindex.isLayer) f.format(" layer");
     }
@@ -321,12 +321,11 @@ Notes:
 
   private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {
     GdsHorizCoordSys hcs = gHcs.hcs;
-    String hcsName = hcs.getName(); // hcs.gds.getNameShort();
     VertCoord.assignVertNames(gHcs.vertCoords, tables);
-
+    String grid_mapping = hcs.getName()+"_Projection";
     Group g;
     if (useGroups) {
-      g = new Group(ncfile, null, hcs.getName());
+      g = new Group(ncfile, null, gHcs.getGroupName());
       try {
         ncfile.addGroup(null, g);
       } catch (Exception e) {
@@ -361,7 +360,7 @@ Notes:
 
     } else {
       // make horiz coordsys coordinate variable
-      Variable hcsV = ncfile.addVariable(g, new Variable(ncfile, g, null, hcsName, DataType.INT, ""));
+      Variable hcsV = ncfile.addVariable(g, new Variable(ncfile, g, null, grid_mapping, DataType.INT, ""));
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[]{0}));
       for (Parameter p : hcs.proj.getProjectionParameters())
         hcsV.addAttribute(new Attribute(p));
@@ -508,7 +507,7 @@ Notes:
       v.addAttribute(new Attribute(CF.LONG_NAME, desc));
       v.addAttribute(new Attribute(CF.UNITS, makeVariableUnits(tables, gribCollection, vindex)));
       v.addAttribute(new Attribute(CF.MISSING_VALUE, Float.NaN));
-      v.addAttribute(new Attribute(CF.GRID_MAPPING, hcsName));
+      v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
 
       v.addAttribute(new Attribute("Grib_Parameter", vindex.parameter));
       v.addAttribute(new Attribute("Grib_Level_Type", vindex.levelType));

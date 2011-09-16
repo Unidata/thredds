@@ -32,7 +32,6 @@
 
 package ucar.nc2.grib;
 
-import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.TimePartitionCollection;
@@ -198,7 +197,7 @@ public class TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // for each group in canonical Partition
     for (GribCollection.GroupHcs firstGroup : canon.getGribCollection(f).getGroups()) {
-      String gname = firstGroup.hcs.getName();
+      String gname = firstGroup.getGroupName();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // hash proto variables for quick lookup
@@ -218,7 +217,7 @@ public class TimePartitionBuilder extends Grib2CollectionBuilder {
 
         // get corresponding group
         GribCollection gc = tpp.getGribCollection(f);
-        int groupIdx = gc.findGroupIdx(firstGroup.hcs.getName());
+        int groupIdx = gc.findGroupIdx(firstGroup.getGroupName());
         if (groupIdx < 0) {
           f.format(" Cant find group %s in partition %s%n", gname, tpp.getName());
           ok = false;
@@ -289,7 +288,7 @@ public class TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // for each group in canonical Partition
     for (GribCollection.GroupHcs firstGroup : canon.getGribCollection(f).getGroups()) {
-      String gname = firstGroup.hcs.getName();
+      String gname = firstGroup.getGroupName();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // get list of corresponding groups from all the time partition, so we dont have to keep looking it up

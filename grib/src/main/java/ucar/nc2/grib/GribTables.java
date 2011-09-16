@@ -44,8 +44,8 @@ import ucar.nc2.time.CalendarDate;
  * @since 9/5/11
  */
 public interface GribTables {
-  public static final int MISSING = -9999;   // LOOK ?? from Grib2PDS
-  public static final double MISSINGD = -9999.0;
+  //public static final int MISSING = -9999;   // LOOK ?? from Grib2PDS
+  //public static final double MISSINGD = -9999.0;
 
   String getLevelNameShort(int code);
 

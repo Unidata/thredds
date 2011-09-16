@@ -58,6 +58,7 @@ public final class GribNumbers {
    * if missing value is not defined use this value.
    */
   public static final int UNDEFINED = -9999;
+  public static final double UNDEFINEDD = -9999.0;
 
   /**
    * Grib uses this internal to mean missing

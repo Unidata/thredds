@@ -76,7 +76,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
         f.format("-%d", gribCollection.getSubcenter());
     }
 
-    if (vindex.levelType != Grib2Pds.MISSING) { // satellite data doesnt have a level
+    if (vindex.levelType != GribNumbers.MISSING) { // satellite data doesnt have a level
       f.format("_L%d", vindex.levelType); // code table 4.5
       if (vindex.isLayer) f.format("layer");
     }
@@ -142,7 +142,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     else if (isProb)
       f.format(" %s %s", vindex.probabilityName, getVindexUnits(tables, vindex)); // add data units here
 
-    if (vindex.levelType != Grib2Pds.MISSING) { // satellite data doesnt have a level
+    if (vindex.levelType != GribNumbers.MISSING) { // satellite data doesnt have a level
       f.format(" @ %s", tables.getTableValue("4.5", vindex.levelType));
       if (vindex.isLayer) f.format(" layer");
     }
@@ -289,12 +289,12 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
 
   private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {
     GdsHorizCoordSys hcs = gHcs.hcs;
-    String hcsName = hcs.getName(); // hcs.gds.getNameShort();
+    String grid_mapping = hcs.getName()+"_Projection";
     VertCoord.assignVertNames(gHcs.vertCoords, tables);
 
     Group g;
     if (useGroups) {
-      g = new Group(ncfile, null, hcs.getName());
+      g = new Group(ncfile, null, gHcs.getGroupName());
       try {
         ncfile.addGroup(null, g);
       } catch (Exception e) {
@@ -311,6 +311,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       throw new IllegalStateException();
     }
 
+    // CurvilinearOrthogonal - lat and lon fields must be present in the file
     boolean is2D = Grib2Utils.isLatLon2D(gHcs.hcs.template, gribCollection.getCenter());
     if (is2D) {
       horizDims = "lat lon";  // LOOK: orthogonal curvilinear
@@ -337,7 +338,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
 
     } else {
       // make horiz coordsys coordinate variable
-      Variable hcsV = ncfile.addVariable(g, new Variable(ncfile, g, null, hcsName, DataType.INT, ""));
+      Variable hcsV = ncfile.addVariable(g, new Variable(ncfile, g, null, grid_mapping, DataType.INT, ""));
       hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[]{0}));
       for (Parameter p : hcs.proj.getProjectionParameters())
         hcsV.addAttribute(new Attribute(p));
@@ -496,7 +497,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
           v.addAttribute(new Attribute(CF.COORDINATES, s));
         }
       } else {
-        v.addAttribute(new Attribute(CF.GRID_MAPPING, hcsName));
+        v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
       }
 
       v.addAttribute(new Attribute("Grib_Parameter", vindex.discipline + "-" + vindex.category + "-" + vindex.parameter));
@@ -753,7 +754,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
           }
         }
 
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.vindex.group.hcs.nPoints, dr.vindex.group.hcs.scanMode, dr.vindex.group.hcs.nx);
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.vindex.group.hcs.gdsNumberPoints, dr.vindex.group.hcs.scanMode, dr.vindex.group.hcs.nx);
         dataReceiver.addData(data, dr.resultIndex, dr.vindex.group.hcs.nx);
       }
       if (rafData != null) rafData.close();
@@ -864,7 +865,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
           }
         }
 
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.nPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
         dataReceiver.addData(data, dr.resultIndex, vindex.group.hcs.nx);
       }
       if (rafData != null) rafData.close();

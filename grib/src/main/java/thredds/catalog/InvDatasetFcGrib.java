@@ -248,7 +248,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (localState.timePartition == null) {
 
       for (GribCollection.GroupHcs group : localState.gribCollection.getGroups()) {
-        String name = group.hcs.getName();
+        String name = group.getGroupName();
         InvDatasetImpl ds = new InvDatasetImpl(this, name);
         name = StringUtil2.replace(name, ' ', "_");
         ds.setUrlPath(this.path + "/" + name);
@@ -389,7 +389,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (id == null) id = getPath();
 
     for (GribCollection.GroupHcs group : gribCollection.getGroups()) {
-      String name = group.hcs.getName();
+      String name = group.getGroupName();
       InvDatasetImpl ds = new InvDatasetImpl(this, name+"_"+COLLECTION);
       name = StringUtil2.replace(name, ' ', "_");
       ds.setUrlPath(this.path + "/" + collectionName + "/" + name);
@@ -458,7 +458,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     for (String f : group.getFilenames()) {
       int pos = f.lastIndexOf("/");
       String fname = f.substring(pos + 1);
-      String path = collectionName + "/" + group.hcs.getName() + "/" + fname;
+      String path = collectionName + "/" + group.getGroupName() + "/" + fname;
       InvDatasetImpl ds = new InvDatasetImpl(this, fname);
       ds.setUrlPath(this.path + "/" + path);
       ds.setID(id + "/" + path);

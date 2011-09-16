@@ -22,9 +22,6 @@ import java.util.zip.CRC32;
 public abstract class Grib2Pds {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
 
-  public static final int MISSING = -9999;
-  public static final double MISSINGD = -9999.0;
-
   /**
    * Factory for Grib2Pds
    *
@@ -129,23 +126,23 @@ public abstract class Grib2Pds {
    * @return Type of Generating Process
    */
   public int getGenProcessType() {
-    return MISSING;
+    return GribNumbers.UNDEFINED;
   }
 
   public double getLevelValue1() {
-    return MISSINGD;
+    return GribNumbers.UNDEFINED;
   }
 
   public double getLevelValue2() {
-    return MISSING;
+    return GribNumbers.UNDEFINED;
   }
 
   public int getLevelType1() {
-    return MISSING;
+    return GribNumbers.UNDEFINED;
   }
 
   public int getLevelType2() {
-    return MISSING;
+    return GribNumbers.UNDEFINED;
   }
 
   /**
@@ -159,11 +156,11 @@ public abstract class Grib2Pds {
    * @return generating process id
    */
   public int getGenProcessId() {
-    return MISSING;
+    return GribNumbers.UNDEFINED;
   }
 
    public int getBackProcessId() {
-     return MISSING;
+     return GribNumbers.UNDEFINED;
   }
 
   public boolean isInterval() {
@@ -198,11 +195,11 @@ public abstract class Grib2Pds {
   }
 
   public int getPerturbationNumber() {
-    return MISSING;
+    return GribNumbers.UNDEFINED;
   }
 
   public int getPerturbationType() {
-    return MISSING;
+    return GribNumbers.UNDEFINED;
   }
 
   public boolean isEnsembleDerived() {
@@ -210,7 +207,7 @@ public abstract class Grib2Pds {
   }
 
   public int getNumberEnsembleForecasts() {
-    return MISSING;
+    return GribNumbers.UNDEFINED;
   }
 
   public boolean isProbability() {
@@ -218,15 +215,15 @@ public abstract class Grib2Pds {
   }
 
   public double getProbabilityLowerLimit() {
-    return MISSINGD;
+    return GribNumbers.UNDEFINED;
   }
 
   public double getProbabilityUpperLimit() {
-    return MISSINGD;
+    return GribNumbers.UNDEFINED;
   }
 
   public int getProbabilityType() {
-    return MISSING;
+    return GribNumbers.UNDEFINED;
   }
 
   public boolean isPercentile() {
