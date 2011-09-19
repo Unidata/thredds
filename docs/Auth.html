@@ -9,14 +9,25 @@ for netCDF Opendap</h1>
 <h2>Dennis Heimbigner<br>
 Unidata<br>
 July 20, 2011<br>
-Revised: August 28, 2011</h2>
+Revised: September 15, 2011</h2>
 </center>
 
 <h2><a name="HTTPAuthStore"><u>HTTPAuthStore</u></a></h2>
-New classes are introduced to the package ucar.nc2.util.net.
-The primary ones are
-<i>HTTPAuthStore</i>
-and <i>HTTPAuthScheme</i>.
+New classes are introduced to the package ucar.nc2.util.net
+to support a variety of authorization mechanisms.
+These mechanisms currently are Http BASIC and DIGEST, Proxy,
+and client side keys for SSL connections.
+<p>
+Most of these classes are invisible to the user. The user
+indirectly accesses them through the HTTPSession interface.
+<p>
+The primary new classes are
+<ul>
+<li><i>HTTPAuthStore</i>
+<li><i>HTTPAuthScheme</i>
+<li><i>HTTPAuthProvider</i>
+<li><i>HTTPSSLProvider</i>
+</ul>
 <p>
 The goal of these new classes
 is to provide a general approach to the problem of
@@ -35,7 +46,7 @@ The authorization schemes currently supported are as follows.
 <ol>
 <li> HTTP Basic
 <li> HTTP Digest
-<li> HTTP Proxies
+<li> HTTP Proxy
 <li> Client-side keys using java keystores and truststores.
      (initially for ESG credentialling).
 </ol>
@@ -76,270 +87,222 @@ the operating system process.
 <p>
 This database is kept as class level object consisting of a set
 of row instances of type <i>HTTPAuthStore.Entry</i>.
-The columns of each entry are as follows.
+The <u>columns</u> of each entry are as follows.
 <ol>
- <li> Session of type HTTPSession (with a special session
-      instance acting as the session wildcard ANY_SESSION.
- <li> Principal (aka user id) of type String,
- <li> Hostname of type String,
- <li> Port of type integer,
- <li> Path of type string,
- <li> Scheme of type <i>HTTPAuthScheme</i>,
+ <li> <u>scheme</u> of type <i>HTTPAuthScheme</i>
+      (with a special instance acting as the wildcard ANY_SCHEME).
+ <p>   
+ <li> <u>url</u> of type <i>String</i>
+      (with a special instance acting as the wildcard ANY_URL).
+ <p>   
+ <li> <u>creds</u> of type
+      <i>org.apache.commons.httpclient.auth.CredentialsProvider</i>.
 </ol>
 <p>
-Wild cards can be specified for any of the field.
-The defined set of wild cards are the constants:
-ANY_SESSION
-ANY_PRINCIPAL,
-ANY_HOST,
-ANY_PORT, and
-ANY_PATH.
-
-
-<p>
-The term "realm" is used in the security community, but
-does not seem to have a well defined meaning. So it is not
-included as part of the entry. This may change in the future.
-<p>
-The Scheme field is assumed to store an instance of
-<a href="#HTTPAuthScheme">HTTPAuthScheme</a>.
-The scheme instance is tagged with an enumeration
-with the following values.
-<ul>
- <li> BASIC
- <li> DIGEST
- <li> KEYSTORE
- <li> PROXY
-</ul>
-BASIC and DIGEST operate essentially the same and require as
-credentials a principal and a password. The KEYSTORE scheme
-is to accomodate client-side key authentication. It requires
-information about a keystore and truststore and their
-associated passwords.  The PROXY scheme requires as
-credentials a principal and password.
-<p>
 The <i>HTTPAuthStore</i> <a href="#HTTPAuthStore.API">API</a>
-provides operations to insert and delete rows, and to search
+itself provides operations to insert and delete rows, and to search
 for rows matching specified criteria.
 
-<h2><a name="HTTPAuthScheme">HTTPAuthScheme</a></h2>
-<i>HTTPAuthScheme</i> is a class intended to hold arbitrary credentials
-information.
-In keeping with the approach used in Apache httpclient code, HTTPAuthScheme
-is primarily a database of (key,value) pairs. Where the key is a string
-and the value is an arbitrary object.
-The specific contents depends on what type of authorization is being
-supported.
-<p>
-Note specifically that <i>HTTPAuthScheme</i> does not implement
-or subtype either 
-<i>Credentials</i> or <i>CredentialsProvider</i> , although it may contain
-instances of those in its database.
+<h2>Class Descriptions</h2>
 
-<h3>Credential Information for: BASIC, DIGEST, and PROXY</h3>
-For these schemes, which are password based, the HTTPAuthScheme instance
-will store the following.
-<ul>
- <li> The actual credentials (principal+password)
-      using the key tag "HTTPAuthScheme.CREDENTIALS"
-      and the value which is an instance of the class
-      <i>org.apache.commons.httpclient.Credentials</i>.
- <li> An instance of
-      <i>org.apache.commons.httpclient.auth.CredentialsProvider</i>,
-      stored using the key tag
-      "HTTPAuthScheme.CREDENTIALSPROVIDER". At the appropriate time,
-      the credentials provider will be invoked to obtain the necessary
-      credentials. The resulting credentials will then be cached for
-      later use to avoid re-invoking the credentials provider.
-</ul>
-<p>
-If both a set of credentials and a credential provider are provided, then
-the credentials will take precedence.
-
-<h3>Credential Information for: KEYSTORE</h3>
-For the keystore scheme, the HTTPAuthScheme object must contain
-keys identifying the following items of information.
-<table border=1>
-<tr valign=center><th>Key<th>Value<th>Description
-<tr valign=top><td>KEYSTORE<td>String
-<td>An absolute file path pointing to the keystore file.
-<tr valign=top><td>KEYSTOREPASSWORD<td>String
-<td>The password for the specified keystore
-<tr valign=top><td>TRUSTSTORE<td>String
-<td>(Optional) An absolute file path pointing to the truststore file.
-<tr valign=top><td>TRUSTSTOREPASSWORD<td>String
-<td>The password for the truststore (if specified)
-</table>
+<h3><a name="HTTPSSLProvider">HTTPSSLProvider</a></h3>
+Note that any typical implementation of the
+<i>CredentialsProvider</i>
+interface may be used for an <i>HTTPAuthStore</i>
+database row.
+As a special case and when the scheme is SSL,
+then the user should use the
+provided
+<i>HTTPSSLProvider</i> <a href="#HTTPSSLProvider.API">class</a>
+for this field. Its constructor requires arguments for
+the client side keystore plus password and the client side
+truststore plus password.
+The keystore and truststore arguments are absolute paths.
 <p>
 If the truststore is not specified then essentially any certificate provided
 by the server will be accepted (including, specifically,
 self-signed certificates).
 
-<h2>HTTPAuthCredentials</h2>
-Internally, the authorization mechanism uses an additional,
-"hidden", class
-<i>HTTPAuthCredentials</i>. It wraps the credentials and/or the
-credentials provider specified by the user in the HTTPAuthStore
-Entry scheme. Internally, it caches any credentials and
-at the appropriate time, it invokes any actual credentials
-provider originally specified in the Entry scheme.
+<h3><a name="HTTPAuthScheme">HTTPAuthScheme</a></h3>
+The <u>scheme</u> field is assumed to store an instance of
+the enum type <a href="#HTTPAuthScheme.API">HTTPAuthScheme</a>.
+The elements of the enum are as follows:
+<ul>
+<li> BASIC
+<li> DIGEST
+<li> SSL
+<li> PROXY
+<li> ANY
+</ul>
+<p>
+BASIC and DIGEST operate essentially the same and require as
+credentials a principal and a password. The SSL scheme
+is to accomodate client-side key authentication. It requires
+information about a keystore and truststore and their
+associated passwords.  The PROXY scheme requires as
+credentials a principal and password.
+The ANY value serves as a wildcard.
 
+<h3><a name="HTTPAuthProvider">HTTPAuthProvider</a></h3>
+The <i>HTTPAuthProvider</i> class implements the
+<i>org.apache.commons.httpclient.auth.CredentialsProvider</i>
+interface. It is used as a wrapper for the <i>HTTPAuthStore.Entry</i>
+<u>creds</u> field and manages accessing the auth store
+at the appropriate point to obtain the information
+needed for getting the proper credentials.
+<p>
+The constructor for
+<i>HTTPAuthProvider</i>
+takes a URL as an argument.
+When the <i>getCredentials</i> method is invoked
+the URL plus the <i>AuthScheme</i> argument
+are used to locate the most specific matching entry
+in the auth store database. This entry is then used
+to properly invoke the correct <i>CredentialsProvider</i>
+instance.
+
+<h2><a name="url.match">URL Matching</a></h2>
+When searching the auth store rows for matches, schemes
+are either simple equal or not equal. However, when matching the url
+field, urls may match in a more complicated way.
+In particular, a missing user info field 
+or missing path will act as a wildcard when matching to
+another url. For the path, prefix matching also can result
+in a match.
+
+<h2><a name="Serialization">Serialization</a></h2>
+Encrypted serialization of the auth store is supported
+with significant limitations.
+The relevant methods are as follows.
+<ul>
+<li>static public void serialize(OutputStream ostream, String password)
+    throws HTTPException
+<li>static public void deserialize(InputStream istream, String password)
+    throws HTTPException
+</ul>
+<p>
+Serialization (and de-serialization) of the
+<u>scheme</u> and <u>url</u>
+fields are straightforward.
+<p>
+<u><b>WARNING</b></u>: Serialization of the <u>creds</u> field
+is tricky because the instance may or may itself
+be serializable. If it supports the <i>Serializable</i>
+interface, then it will be serialized.
+If it does not implement that interface, then
+the class of the <i>creds</i> field is serialized
+instead. This will be ok for essentially stateless
+implementations of <i>CredentialsProvider</i>, but
+otherwise will produce incorrect results.
 
 <h2><a name="Appendices"><u>Appendices: Authorization APIs</u></a></h2>
 
-<h3>URL Patterns</h3>
-In several of the following methods, the parameter "pattern"
-is used. The pattern allows for a more compact representation
-of the entry.
-<p>
-For example, set of arguments
-(ANY_PRINCIPAL, ANY_HOST, ANY_PORT, ANY_PATH)
-can be represented as "http://_@_:_/_".
-<p>
-In general any set of values (principal,host,port,path)
-can be represented as "http://principal@host:port/path"
-(assuming that any leading '/' in the path has been removed).
-If any of the principal, host, port, or path are wildcards,
-then the character '_' can be used.
-Note that there is no way to specify the session in the url
-pattern.
-<p>
-If the principal is ANY_PRINCIPAL, then the "principal@" can be elided.
-Similarly for ANY_PORT and ANY_PATH.
-Thus the simplest url pattern is "http://_".
-Note also that the "http" is ignored and could be
-any string you like: "pattern://_", for example.
-
-<h3><a name"HTTPAuthStore.API">HTTPAuthStore API</a></h3>
+<h3><a name="HTTPAuthStore.API">HTTPAuthStore API</a></h3>
 The primary API methods are described.
 All of the following methods are tagged "static public".
 Other, minor methods, exist and the Javadoc should be consulted
 for those.
 
 <h4><u>Insert</u></h4>
-There are three <i>insert</i> methods.
-All of them insert an entry into the HTTPAuthStore database
-and return false if it replaces an existing row, else return true.
-<ul>
-<li>
+The single method takes an <i>HTTPAuthStore.Entry</i>
+instance to insert into the auth store database.
+It returns false if the entry instance
+replaces an existing row, else returns true.
+<pre>
 boolean insert(HTTPAuthStore.Entry entry);
-<li>
-boolean insert(HTTPSession session, String principal, String host, int port, String path, HTTPAuthScheme scheme)
-<li>
-boolean insert(HTTPSession session, String pattern, HTTPAuthScheme scheme)
-</ul>
+</pre>
 
 <h4><u>Remove</u></h4>
-There are three <i>remove</i> methods with argument sets similar to
-<i>insert</i>.
-All of them remove any matching entry from the HTTPAuthStore database.
-False is returned if no matching row is found.
-<ul>
-<li>
+The single method takes an <i>HTTPAuthStore.Entry</i>
+instance to remove from the auth store database.
+It returns false if the entry instance
+is not in the current database, else returns true.
+<pre>
 boolean remove(HTTPAuthStore.Entry entry);
-<li>
-boolean remove(HTTPSession session, String principal, String host, int port, String path)
-<li>
-boolean remove(HTTPSession session, String pattern)
-</ul>
+</pre>
 
 <h4><u>Search</u></h4>
-There are three <i>search</i> methods.
-All of them search for matching entries from the HTTPAuthStore database.
-A list of matching entries is returned, possibly of size zero.
+The single method takes an <i>HTTPAuthStore.Entry</i>
+instance to serve as the pattern to search the auth store database.
+It returns an array of matching entries, which may be zero length.
 The returned list is ordered from most restrictive to least restrictive.
-<ul>
-<li>
+<pre>
 Entry[] search(HTTPAuthStore.Entry entry);
-<li>
-Entry[] search(HTTPSession session, String principal, String host, int port, String path)
-<li>
-Entry[] search(HTTPSession session, String pattern)
-</ul>
+</pre>
+
 <p>
 The search pattern match is defined by the following tests.
 <p>
 <table border=1>
-<tr><td>Session<td width=750>
-     Comparison is by ==; wildcard is specified by ANY_SESSION.
-<tr><td>Principal<td>
-     Comparison is by String equals function; wildcard is specified by ANY_PRINCIPAL.
-<tr valign=top><td> Host<td>
-     Comparison is by String equals function; wildcard is specified by ANY_HOST.
-<tr valign=top><td>Port<td>
-     Comparison is by ==; wildcard is specified by ANY_PORT.
-<tr valign=top><td>Path<td>
-     Comparison is by String compare function; wildcard is specified by ANY_PATH.
-     <br>This field represents some prefix of the url path. This allows specifying
-     authorization on a specific url substree.
+<tr><td>Scheme<td width=750>
+     Comparison is by ==; wildcard is specified by ANY_SCHEME.
+<tr><td>URL<td>
+     Comparison is as defined <a href="#url.match">above</a>.
 </table>
 
-<h3><a name"HTTPAuthScheme.API">HTTPAuthScheme API</a></h3>
-The primary methods of <i>HTTPAuthScheme</i>
-are designed to set the credentials for a given scheme.
-All return the <i>HTTPAuthScheme</i> (i.e. "this") to support staging.
+<h3><a name="HTTPAuthScheme.API">HTTPAuthScheme API</a></h3>
+The primary methods of <i>HTTPAuthScheme</i> enum
+are as follows.
 <ul>
-<li>public HTTPAuthScheme setCredentialsProvider(CredentialsProvider cp)
-<li>public HTTPAuthScheme setUserPassword(String user, String pwd)
-<li>public HTTPAuthScheme setKeystore(String keypath, String keypwd)
-<li>public HTTPAuthScheme setKeyStore(String keypath, String keypwd, String trustpath, String trustpwd)
-<li>public HTTPAuthScheme setProxy(String pwd)
+<li>public String getSchemeName() returns a canonical string representing
+the name of the scheme.
+<li>static public HTTPAuthScheme schemeForName(String name)
+returns an HTTPAuthScheme value given a string and returns null if there
+is no such value.
+<li>static public HTTPAuthScheme fromAuthScope(String name)
+returns an HTTPAuthScheme value given a string from an <i>AuthScope</i>
+instance and returns null if the name is not recognized.
 </ul>
 
-<h2>Examples</h2>
-<ol>
-<li> For backward compatibility, the <i>HTTPSession</i> class supports
-the method "setGlobalCredentialsProvider(CredentialsProvider provider)".
-This invokes the equivalent of this example.
-<pre>
-HTTPAuthScheme scheme = new HTTPAuthScheme(HTTPAuthScheme.BASIC);
-HTTPAuthStore.insert(
-HTTPAuthStore.ANY_SESSION,
-HTTPAuthStore.ANY_PRINCIPAL,
-HTTPAuthStore.ANY_HOST,
-HTTPAuthStore.ANY_PORT,
-HTTPAuthStore.ANY_PATH,
-scheme);
-</pre>
-The insert could be specified more compactly as
-<pre>
-HTTPAuthStore.insert(HTTPAuthStore.ANY_SESSION,"pattern://_@_:_/_",scheme).
-</pre>
-<p>
-<li> Specifying an entry that is maximally constrained could be done
-as follows:
-<pre>
-HTTPSession session = new HTTPSession("http:dennis@ucar.edu:8080/testdata.nc");
-HTTPAuthScheme scheme = new HTTPAuthScheme(HTTPAuthScheme.BASIC);
-HTTPAuthStore.insert(session,"pattern://dennis@ucar.edu:8080/testdata.nc",scheme).
-</pre>
-Do not read too much into the fact that the session url argument
-and the pattern are identical. A more likely pattern would be
-"pattern://dennis@ucar.edu:8080/_"
-because most authorizations are usually (but not always) independent
-of the path.
-</ol>
+<h3><a name"HTTPAuthProvider.API">HTTPAuthProvider API</a></h3>
+The primary methods of the <i>HTTPAuthProvider</i> class
+are as follows.
+<ul>
+<li>public HTTPAuthProvider(String url) is the constructor
+taking a url for controlling the search into the auth store.
+<li>public Credentials getCredentials(AuthScheme authscheme,
+    String host, int port, boolean isproxy)
+    throws CredentialsNotAvailableException is invoked
+    by the underlying authorization code to get the credentials
+    and this method in turn consults the auth store.
+</ul>
+
+<h3><a name="HTTPSSLProvider.API">HTTPSSLProvider API</a></h3>
+The primary methods of the <i>HTTPAuthProvider</i> class
+are as follows.
+<ul>
+<li>public HTTPSSLProvider(String keystore,String keypass,
+                           String truststore,String trustpass)
+<li>public HTTPSSLProvider(String keystore, String keypass)
+<li>public String getKeystore()
+<li>public String getKeypassword()
+<li>public String getTruststore()
+<li>public String getTrustpassword()
+<li>public Credentials getCredentials(AuthScheme authscheme,
+                   String host,
+                   int port,
+	           boolean isproxy)
+        throws CredentialsNotAvailableException<br>
+    (Note that this interface is abused and is not intended
+     for external invocation).
+</ul>
 
 <h2><a name="Status">Status</a></h2>
 <ul>
 <li> Currently, this code is in the Thredds code trunk.
-However, the new handling of ESG keystores is disabled
-in favor of the original use of the java -D flags
+Backward compatibility is provided for
+the old handling of ESG keystore arguments
+using the java -D flags
 <i>keystore</i>,
 <i>keystorepassword</i>,
 <i>truststore</i>, and
 <i>truststorepassword</i>.
-<p>
-The new mechanism can be enabled by setting and exporting the environment
-variable "AUTHSTORE" with any non-null value
-(e.g. "AUTHSTORE=1; export AUTHSTORE").
 </ul>
 
 <h2><u>Author</u></h2>
 Author: Dennis Heimbigner<br>
 Affiliation: UCAR/Unidata<br>
 email: dmh@ucar.edu
-
 
 </body>
 </html>

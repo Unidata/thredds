@@ -73,7 +73,6 @@ public class HTTPSSLProvider implements CredentialsProvider, Credentials, Serial
 	this(keystore,keypass,null,null);
     }     
 
-
     // Provide accessors
     public String getKeystore() {return keystore;}
     public String getKeypassword() {return keypass;}
