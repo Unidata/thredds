@@ -184,10 +184,7 @@
       <file leaf-file-name="TestServlet.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
           <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
             <state line="373" column="114" selection-start="12874" selection-end="12874" vertical-scroll-proportion="0.032210834">
-=======
-            <state line="379" column="89" selection-start="13030" selection-end="13030" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -427,11 +424,7 @@
       <recent name="ucar.nc2.util.net" />
     </key>
   </component>
-<<<<<<< HEAD
   <component name="RunManager" selected="JUnit.TestAll">
-=======
-  <component name="RunManager" selected="Application.ToolsUI">
->>>>>>> 32cf0b394ab264ca9d7c362a885ade31afa33478
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -1040,17 +1033,10 @@
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-<<<<<<< HEAD
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.47009346" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16380237" sideWeight="0.6700935" order="1" side_tool="true" content_ui="tabs" />
-=======
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.47031963" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.5449011" order="1" side_tool="true" content_ui="tabs" />
->>>>>>> 32cf0b394ab264ca9d7c362a885ade31afa33478
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39933994" sideWeight="0.5281583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1058,11 +1044,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32990655" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-<<<<<<< HEAD
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.47488585" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-=======
-      <window_info id="Find" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.47488585" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
->>>>>>> 32cf0b394ab264ca9d7c362a885ade31afa33478
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1343,39 +1325,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/test/resources/dts/WEB-INF/web.xml">
       <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
         <state line="42" column="7" selection-start="1462" selection-end="1462" vertical-scroll-proportion="0.0">
           <folding />
         </state>
-=======
-        <state line="42" column="7" selection-start="1462" selection-end="1462" vertical-scroll-proportion="0.0" />
-      </provider>
-      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorProvider">
-        <state />
->>>>>>> 32cf0b394ab264ca9d7c362a885ade31afa33478
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
       <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
         <state line="373" column="114" selection-start="12874" selection-end="12874" vertical-scroll-proportion="0.032210834">
-=======
-        <state line="379" column="89" selection-start="13030" selection-end="13030" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/ucar/nc2/dods/DODSNetcdfFile.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="611" column="0" selection-start="23154" selection-end="23154" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/Group.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="457" column="0" selection-start="14849" selection-end="14849" vertical-scroll-proportion="0.36690646">
->>>>>>> 32cf0b394ab264ca9d7c362a885ade31afa33478
           <folding />
         </state>
       </provider>
