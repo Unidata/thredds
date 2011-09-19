@@ -42,6 +42,8 @@ import java.util.Set;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.auth.*;
+import org.apache.commons.logging.*;
+
 
 /**
  * HTTPAuthCreds contains the necessary information to support a given
@@ -79,6 +81,8 @@ static String USER = "ucar.nc2.user";
 static public final String WWW_AUTH_RESP = "Authorization";   // from HttpMethodDirector
 static public final String PROXY_AUTH_RESP = "Proxy-Authorization"; // from HttpMethodDirector
 
+static private final Log LOG = LogFactory.getLog(HTTPAuthProvider.class);
+
 //////////////////////////////////////////////////
 // Instance variables
 
@@ -104,30 +108,41 @@ getCredentials(AuthScheme authscheme,
 {
     // Figure out what scheme is being used
     HTTPAuthScheme scheme;
+    Credentials credentials = null;
+
     if(isproxy)
 	scheme = HTTPAuthScheme.PROXY;
     else
 	scheme = HTTPAuthScheme.schemeForName(authscheme.getSchemeName());
 
-    if(scheme == null)
-        throw new CredentialsNotAvailableException("HTTPAuthProvider: unsupported scheme: "+authscheme.getSchemeName());
+    if(scheme == null) {
+        LOG.error("HTTPAuthProvider: unsupported scheme: "+authscheme.getSchemeName());
+        return null;
+    }
 
     // search for matching authstore entries
     HTTPAuthStore.Entry[] matches = HTTPAuthStore.search(new HTTPAuthStore.Entry(scheme,url,null));
-    if(matches.length == 0)
-        throw new CredentialsNotAvailableException("HTTPAuthProvider: no match for ("+scheme+","+url+")");
+    if(matches.length == 0)  {
+        LOG.error("HTTPAuthProvider: no match for ("+scheme+","+url+")");
+        return null;
+    }
 
     HTTPAuthStore.Entry entry = matches[0];
+    LOG.info("HTTPAuthProvider: AuthStore row: "+entry.toString());
     CredentialsProvider provider = entry.creds;
 
-    if(provider == null)
-        throw new CredentialsNotAvailableException("HTTPAuthProvider: no credentials provider provided");
+    if(provider == null) {
+        LOG.error("HTTPAuthProvider: no credentials provider provided");
+        return null;
+    }
 
     // invoke the (real) credentials provider
     // Use the incoming parameters
-    Credentials credentials = provider.getCredentials(authscheme,host,port,isproxy);
-    if(credentials == null)
-        throw new CredentialsNotAvailableException("HTTPAuthProvider: cannot obtain credentials");
+    credentials = provider.getCredentials(authscheme,host,port,isproxy);
+    if(credentials == null) {
+        LOG.error("HTTPAuthProvider: cannot obtain credentials");
+        return null;
+    }
     return credentials;
 }
 

@@ -243,7 +243,7 @@ protected void construct(String urlencoded)
 
         // Allow (circular) redirects
         clientparams.setParameter(ALLOW_CIRCULAR_REDIRECTS, true);
-        clientparams.setParameter(MAX_REDIRECTS, 100);
+        clientparams.setParameter(MAX_REDIRECTS, 25);
 
         setAuthenticationPreemptive(globalauthpreemptive);
 
@@ -475,13 +475,16 @@ public void setGlobalAuthenticationPreemptive(boolean tf)
     globalauthpreemptive = tf;
 }
 
-public void
+static public void
 setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
 {
-    sessionProvider = provider;
-    // Add entry to AuthStore
+    // Add/remove entry to AuthStore
     try {
-        HTTPAuthStore.insert(new HTTPAuthStore.Entry(scheme,url,provider));
+        if(provider == null) {//remove
+            HTTPAuthStore.remove(new HTTPAuthStore.Entry(scheme,url,provider));
+        } else { // add
+            HTTPAuthStore.insert(new HTTPAuthStore.Entry(scheme,url,provider));
+        }
     } catch (HTTPException he) {
         System.err.println("HTTPSession.setCredentialsProvider failed");
     }
@@ -490,19 +493,15 @@ setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider pr
 public void
 setCredentialsProvider(CredentialsProvider provider)
 {
+    sessionProvider = provider;
     setCredentialsProvider(HTTPAuthScheme.ANY,urlencoded,provider);
 }
 
 static synchronized public void
-setGlobalCredentialsProvider(CredentialsProvider cp)
+setGlobalCredentialsProvider(CredentialsProvider provider)
 {
-    globalProvider = cp;
-    // Add entry to AuthStore
-    try {
-        HTTPAuthStore.insert(new HTTPAuthStore.Entry(HTTPAuthScheme.ANY,HTTPAuthStore.ANY_URL,cp));
-    }   catch (HTTPException he) {
-        System.err.println("HTTPSession.setGlobalCredentialsProvider failed");
-    }
+    globalProvider = provider;
+    setCredentialsProvider(HTTPAuthScheme.ANY,HTTPAuthStore.ANY_URL,provider);
 }
 
 }

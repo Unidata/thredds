@@ -71,7 +71,8 @@ public class HTTPBasicProvider implements CredentialsProvider, Credentials, Seri
 	           boolean isproxy)
         throws CredentialsNotAvailableException
     {
-	return new UsernamePasswordCredentials(username,password);
+	    Credentials creds = new UsernamePasswordCredentials(username,password);
+        return creds;
     }
 
 

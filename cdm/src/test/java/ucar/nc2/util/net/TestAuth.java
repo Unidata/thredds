@@ -8,15 +8,16 @@ import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.Credentials;
 import org.junit.Test;
+import ucar.nc2.iosp.uamiv.UAMIVServiceProvider;
 
 import java.io.*;
 import java.util.List;
 
 public class TestAuth extends TestCase
 {
+    // TODO: add proxy and digest tests
 
     static boolean debug = false;
-    static boolean createbaseline = true;
 
     final String TITLE = "DAP Authorization Mechanism Tests";
 
@@ -29,11 +30,6 @@ public class TestAuth extends TestCase
     int xfailcount = 0;
     int failcount = 0;
     boolean verbose = true;
-    String test = null;
-    String testname = null;
-    String testno = null;
-    String testdataname = null;
-    String url = null;
     boolean pass = false;
 
     public TestAuth(String name, String testdir)
@@ -46,52 +42,79 @@ public class TestAuth extends TestCase
         this(name, null);
     }
 
-    protected void
-    setUp()
-    {
-        passcount = 0;
-        xfailcount = 0;
-        failcount = 0;
-    }
 
+    static String[] sshurls = {
+            "https://motherlode.ucar.edu:8443/thredds/fileServer/station/profiler/wind/1hr/20110919/PROFILER_wind_01hr_20110919_2000.nc"
+    };
 
     @Test
     public void
     testSSH() throws Exception
     {
-        junit.framework.Assert.assertTrue("testSSH", true);
+        System.out.println("*** Testing: Simple Https");
+        for(String url: sshurls) {
+            System.out.println("*** URL: " + url);
+            HTTPSession session = new HTTPSession(url);
+            HTTPMethod method = HTTPMethod.Get(session);
+            int status = method.execute();
+            System.out.printf("\tstatus code = %d\n", status);
+            pass = (status == 200);
+            junit.framework.Assert.assertTrue("testSSH", pass);
+        }
     }
+
+    static class AuthDataBasic
+    {
+        String url;
+        String user;
+        String password;
+        public AuthDataBasic(String url, String usr, String pwd)
+        {
+            this.url = url;
+            this.user = usr;
+            this.password = pwd;
+        }
+    }
+
+    static AuthDataBasic[] basictests = {
+            new AuthDataBasic("http://www.giss.nasa.gov/staff/rschmunk/test/file1.nc","jcaron","boulder"),
+            new AuthDataBasic("http://motherlode.ucar.edu/thredds/dodsC/restrict/testdata/testData.nc.html","tiggeUser","tigge")
+    };
 
     @Test
     public void
     testBasic() throws Exception
     {
-        String url = "http://www.giss.nasa.gov/staff/rschmunk/test/file1.nc";
-        String user = "jcaron";
-        String password = "boulder";
-        CredentialsProvider provider = new HTTPBasicProvider(user, password);
-
         System.out.println("*** Testing: Http Basic Password Authorization");
-        System.out.println("*** URL: " + url);
 
-        // Test local credentials provider
-        HTTPSession session = new HTTPSession(url);
-        session.setCredentialsProvider(provider);
-        HTTPMethod method = HTTPMethod.Get(session);
-        int status = method.execute();
-        System.out.printf("Local provider test: status code = %d\n", status);
-        pass = (status == 200);
-        if(pass) {
-            // Test global credentials provider
-            HTTPSession.setGlobalCredentialsProvider(provider);
-            session = new HTTPSession(url);
-            method = HTTPMethod.Get(session);
-            status = method.execute();
-            System.out.printf("Global provider test: status code = %d\n", status);
+        for(AuthDataBasic data: basictests) {
+            CredentialsProvider provider = new HTTPBasicProvider(data.user, data.password);
+            System.out.println("*** URL: " + data.url);
+            // Test local credentials provider
+            HTTPSession session = new HTTPSession(data.url);
+            session.setCredentialsProvider(provider);
+            HTTPMethod method = HTTPMethod.Get(session);
+            int status = method.execute();
+            System.out.printf("\tlocal provider: status code = %d\n", status);  System.out.flush();
+            session.setCredentialsProvider(null);
             pass = (status == 200);
+            if(pass) System.out.println("\tLocal test passed");
+
+            if(pass) {
+                // Test global credentials provider
+                HTTPSession.setGlobalCredentialsProvider(provider);
+                session = new HTTPSession(data.url);
+                method = HTTPMethod.Get(session);
+                status = method.execute();
+                System.out.printf("\tglobal provider test: status code = %d\n", status);  System.out.flush();
+                pass = (status == 200);
+                if(pass) System.out.println("\tGlobal test passed");
+
+            }
+            junit.framework.Assert.assertTrue("testBasic", pass);
         }
-        junit.framework.Assert.assertTrue("testBasic", pass);
     }
+
 
     public boolean
     testKeystore() throws Exception
