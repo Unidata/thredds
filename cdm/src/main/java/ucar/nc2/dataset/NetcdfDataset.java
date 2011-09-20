@@ -821,19 +821,27 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile openDodsByReflection( String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
-    try {
-      Class c = NetcdfDataset.class.getClassLoader().loadClass("ucar.nc2.dods.DODSNetcdfFile");
-      Constructor con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
-      return (NetcdfFile) con.newInstance(location, cancelTask);
-
+      Constructor con = null;
+      Class c = null;
+      NetcdfFile file = null;
+      try {
+      c = NetcdfDataset.class.getClassLoader().loadClass("ucar.nc2.dods.DODSNetcdfFile");
+      con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
     } catch (ClassNotFoundException e) {
-      log.info("opendap.jar is not on class path");
-
+      log.info("opendap.jar is not on class path or is incorrect version");
+      throw new IOException("opendap.jar is not on classpath or is incorrect version");
     } catch (Throwable e) {
       log.error("Error openDodsByReflection: ", e);
+      throw new IOException("opendap.jar is not on classpath or is incorrect version");
+    }
+    try {
+        file = (NetcdfFile) con.newInstance(location, cancelTask);
+        return file;
+    }  catch (Exception e) {
+        log.error("Error openDodsByReflection: ", e.getCause());
+        throw new IOException(e.getCause());
     }
 
-    throw new IOException("opendap.jar is not on classpath or is incorrect version");
   }
 
 
