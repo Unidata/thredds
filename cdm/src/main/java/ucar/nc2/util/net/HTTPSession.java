@@ -245,6 +245,9 @@ protected void construct(String urlencoded)
         clientparams.setParameter(ALLOW_CIRCULAR_REDIRECTS, true);
         clientparams.setParameter(MAX_REDIRECTS, 25);
 
+	// Temp for IDV, use a long sotimeout
+        clientparams.setSoTimeout(1000000);
+
         setAuthenticationPreemptive(globalauthpreemptive);
 
         // H/T: nick.bower@metoceanengineers.com
