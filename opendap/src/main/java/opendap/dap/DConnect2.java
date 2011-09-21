@@ -49,6 +49,7 @@ import java.nio.charset.Charset;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 
+import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
@@ -245,10 +246,13 @@ private void openConnection(String urlString, Command command) throws IOExceptio
   HTTPMethod method = null;
   InputStream is = null;
 
+  //Encode: temp: encode urlstring query.
+  String urlencoded = URLnaming.escapeQueryURIUtil(urlString);
+
   HTTPSession _session = null;
 
   try {
-    _session = new HTTPSession(urlString);
+    _session = new HTTPSession(urlencoded);
     method = HTTPMethod.Get(_session);
 
     if (acceptCompress)
@@ -558,7 +562,10 @@ public DDS getDDS() throws IOException, ParseException, DAP2Exception {
  */
 public DDS getDDS(String CE) throws IOException, ParseException, DAP2Exception {
   DDSCommand command = new DDSCommand();
-  command.setURL(urlString+"?"+CE);
+    if(CE != null && CE.indexOf('[') >= 0) {
+        int x = 0;
+    }
+  command.setURL(CE == null || CE.length() == 0 ? urlString : urlString+"?"+CE);
   if (filePath != null) {
     command.process(new FileInputStream(filePath + ".dds"));
   } else if (stream != null) {
@@ -574,6 +581,9 @@ private class DDSCommand implements Command {
   String url = null;
   public void setURL(String url)
   {
+      if(url.equals("dods://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_22km_20100504_0000.grib1")) {
+          int x = 0;
+      }
       this.url = url;
       if(dds != null && url != null) dds.setURL(url);
   }

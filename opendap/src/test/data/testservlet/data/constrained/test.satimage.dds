@@ -1,0 +1,7 @@
+Dataset {
+    Sequence {
+        String Channel;
+        String Resolution;
+        Int32 Year;
+    } Sat_Images;
+} EOSDB;

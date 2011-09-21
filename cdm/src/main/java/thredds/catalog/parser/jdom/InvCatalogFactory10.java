@@ -86,7 +86,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   private String version = "1.0.1";
   private boolean debugMetadataRead = false;
 
-  /* public InvCatalogImpl parseXML( InvCatalogFactory fac, org.w3c.dom.Document domDoc, URI uri) {
+  /* public InvCatalogImpl parseXML( InvCatalogFactory fac, org.w3c.dom.Document domDoc, URI url) {
     this.factory = fac;
 
     // convert to JDOM document
@@ -97,7 +97,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       System.out.println ("*** catalog/showParsedXML = \n"+xmlOut.outputString(doc)+"\n*******");
     }
 
-    InvCatalogImpl catalog = readCatalog( doc.getRootElement(), uri);
+    InvCatalogImpl catalog = readCatalog( doc.getRootElement(), url);
 
     return catalog;
   } */
@@ -1403,10 +1403,10 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
     /* open and read the referenced catalog XML
-    if (debugMetadataRead) System.out.println(" readMetadataContentFromURL = " + uri);
-    org.w3c.dom.Element mdataElement = factory.readOtherXML( uri);
+    if (debugMetadataRead) System.out.println(" readMetadataContentFromURL = " + url);
+    org.w3c.dom.Element mdataElement = factory.readOtherXML( url);
     if (mdataElement == null) {
-      factory.appendErr(" ** failed to read thredds metadata at = "+uri+" for dataset"+dataset.getName()+"\n");
+      factory.appendErr(" ** failed to read thredds metadata at = "+url+" for dataset"+dataset.getName()+"\n");
       return null;
     }
 

@@ -1,0 +1,15 @@
+Dataset {
+    Structure {
+        Structure {
+            Float64 Pollution[Time%3aUTMGrid = 10][YDim%3aUTMGrid = 200][XDim%3aUTMGrid = 120];
+            Float64 Vegetation[YDim%3aUTMGrid = 200][XDim%3aUTMGrid = 120];
+        } Data%20Fields;
+    } UTMGrid;
+    Structure {
+        Structure {
+            Float64 Soil%20Dryness[YDim%3aPolarGrid = 100][XDim%3aPolarGrid = 100];
+            Float64 MRGFLD_Temperature[MRGDIM%3aPolarGrid_2 = 2][YDim%3aPolarGrid = 100][XDim%3aPolarGrid = 100];
+            Float64 Spectra[Bands%3aPolarGrid = 3][YDim%3aPolarGrid = 100][XDim%3aPolarGrid = 100];
+        } Data%20Fields;
+    } PolarGrid;
+} GridFile.hdf;

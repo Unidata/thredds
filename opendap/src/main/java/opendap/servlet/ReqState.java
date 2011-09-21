@@ -457,7 +457,7 @@ public class ReqState {
         String path4 = myHttpRequest.getPathInfo();
         System.err.println("cxt="+path1);
         System.err.println("sv="+path2);
-        System.err.println("uri="+path3);
+        System.err.println("url="+path3);
         System.err.println("path="+path4);
 	System.err.flush();
 

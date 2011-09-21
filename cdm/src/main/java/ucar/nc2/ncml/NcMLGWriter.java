@@ -65,7 +65,7 @@ public class NcMLGWriter {
    * @param ncd write this dataset; should have opened with "add coordinates".
    * @param os write to this OutputStream
    * @param showCoords show 1D coordinate values
-   * @param uri use this uri, if null use getLocation()
+   * @param uri use this url, if null use getLocation()
    * @throws IOException on io error
    */
   public void writeXML(NetcdfDataset ncd, OutputStream os, boolean showCoords, String uri) throws IOException {
@@ -90,9 +90,9 @@ public class NcMLGWriter {
       rootElem.setAttribute("id", ncd.getId());
 
     if (null != uri)
-      rootElem.setAttribute("uri", uri);
+      rootElem.setAttribute("url", uri);
     else
-      rootElem.setAttribute("uri", ncd.getLocation());
+      rootElem.setAttribute("url", ncd.getLocation());
 
         // dimensions
     for (Dimension dim : ncd.getDimensions()) {

@@ -1,0 +1,8 @@
+#
+# Test new datatypes (int16, uint16, float32)
+
+Dataset {
+    int16 x;
+    uint16 y;
+    float32 f;
+} data5;

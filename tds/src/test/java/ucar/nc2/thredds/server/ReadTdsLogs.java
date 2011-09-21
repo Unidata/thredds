@@ -134,8 +134,8 @@ public class ReadTdsLogs {
       HTTPMethod method = null;
       try {
         String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
-        String uriencoded = server + URLnaming.escapeQuery(unescapedForm);
-        httpClient = new HTTPSession(uriencoded);
+        String urlencoded = server + URLnaming.escapeQuery(unescapedForm);
+        httpClient = new HTTPSession(urlencoded);
         method = HTTPMethod.Get(httpClient);  // escape the query part
         //out2.format("send %s %n", method.getPath());
         statusCode = method.execute();

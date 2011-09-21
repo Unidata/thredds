@@ -1,0 +1,70 @@
+# Constrained dataset test for test server
+
+global comp_output		# contains output from geturl
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+global host
+
+set testdir ${TESTDIR}
+
+set test_name "constrained"
+
+set constraint  "i32,s"
+#geturl_dds  "${testdir}" "test.01" $constraint
+geturl_dods "${testdir}" "test.01" $constraint
+
+set constraint  "types.strings.s"
+#geturl_dds  "${testdir}" "test.05" $constraint "a"
+geturl_dods "${testdir}" "test.05" $constraint "a"
+
+set constraint  "s"
+#geturl_dds  "${testdir}" "test.05" $constraint "b"
+geturl_dods "${testdir}" "test.05" $constraint "b"
+
+set constraint  "FourD.tamp\\\[1:2:9\\\]\\\[1:2:9\\\]\\\[1:2:9\\\]\\\[1:2:9\\\]"
+#geturl_dds   "${testdir}" "test.06" $constraint  "a"
+geturl_dods  "${testdir}" "test.06" $constraint  "a"
+
+set constraint  "FourD.tamp\\\[1:2:9\\\]\\\[1:2:9\\\]\\\[1:2:9\\\]\\\[1:2:9\\\],FourD.x,FourD.y,FourD.z,FourD.t"
+#geturl_dds   "${testdir}" "test.06" $constraint  "b"
+geturl_dods  "${testdir}" "test.06" $constraint  "b"
+
+set constraint  "FourD.tamp\\\[1:2:9\\\]\\\[1:2:9\\\]\\\[1:2:9\\\]\\\[1:2:9\\\],FourD.x\\\[1:2:9\\\],FourD.y\\\[1:2:9\\\],FourD.z\\\[1:2:9\\\],FourD.t\\\[1:2:9\\\]"
+#geturl_dds   "${testdir}" "test.06" $constraint  "c"
+geturl_dods  "${testdir}" "test.06" $constraint  "c"
+
+set constraint  "tamp"
+#geturl_dds   "${testdir}" "test.06" $constraint  "d"
+geturl_dods  "${testdir}" "test.06" $constraint  "d"
+
+set constraint  "t"
+#geturl_dds   "${testdir}" "test.06" $constraint  "e"
+geturl_dods  "${testdir}" "test.06" $constraint  "e"
+
+
+
+
+
+
+
+
+
+# Jakes gnarly constrained data sets...
+
+set constraint "SDS_DFNT_INT32\\\[1:2\\\],SDS_DFNT_UINT32\\\[1:1\\\],SDS_DFNT_INT16\\\[1:2\\\],SDS_DFNT_UINT16\\\[0:0\\\],SDS_DFNT_INT8\\\[0:0\\\],SDS_DFNT_UINT8\\\[2:2\\\],SDS_DFNT_FLOAT32\\\[2:3\\\],SDS_DFNT_FLOAT64,SDS_DFNT_CHAR8\\\[0:1\\\],SDS_DFNT_UCHAR8\\\[0:1\\\]"
+#geturl_dds   "${testdir}" "test.sds1" $constraint  
+#geturl_dods  "${testdir}" "test.sds1" $constraint 
+
+set constraint "SDS_2\\\[3:5\\\]\\\[2:3\\\],SDS_3\\\[2:2\\\]\\\[2:3\\\]\\\[0:1\\\],SDS_6\\\[0:1\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\],SDS_20\\\[0:1\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:1\\\]\\\[0:0\\\]\\\[0:0\\\]\\\[0:0\\\]"
+#geturl_dds   "${testdir}" "test.sds3" $constraint  
+#geturl_dods  "${testdir}" "test.sds3" $constraint 
+
+set constraint  "GR_DFNT_INT32\\\[0:1\\\]\\\[1:2\\\],GR_DFNT_FLOAT64\\\[2:3\\\]\\\[0:1\\\]"
+#geturl_dds   "${testdir}" "test.gr1" $constraint  
+#geturl_dods  "${testdir}" "test.gr1" $constraint 
+
+set constraint  "Vdata_DFNT_UINT16&Vdata_DFNT_UINT16.Field_DFNT_UINT16.Field_DFNT_UINT16__0<5"
+#geturl_dds   "${testdir}" "test.vs1" $constraint  
+#geturl_dods  "${testdir}" "test.vs1" $constraint 
+
+

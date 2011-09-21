@@ -1,0 +1,17 @@
+The data:
+Sequence {
+    String name;
+    Int32 age;
+} person = { { "This is a data test string (pass 0).", 1 }, { "This is a data test string (pass 1).", 2 }, { "This is a data test string (pass 2).", 3 }, { "This is a data test string (pass 3).", 5 }, { "This is a data test string (pass 4).", 8 } };
+Sequence {
+    Byte b;
+    Int32 i32;
+    UInt32 ui32;
+    Int16 i16;
+    UInt16 ui16;
+    Float32 f32;
+    Float64 f64;
+    String s;
+    Url u;
+} types = { { 0, 13, 0, 0, 0, 0, 1000, "This is a data test string (pass 5).", "http://www.dods.org" }, { 1, 21, 2, 16, 65520, 0.999983, 999.950000416665, "This is a data test string (pass 6).", "http://www.dods.org" }, { 2, 34, 6, 32, 65504, 1.99987, 999.800006666578, "This is a data test string (pass 7).", "http://www.dods.org" }, { 3, 55, 12, 48, 65488, 2.99955, 999.550033748988, "This is a data test string (pass 8).", "http://www.dods.org" }, { 4, 89, 20, 64, 65472, 3.99893, 999.200106660978, "This is a data test string (pass 9).", "http://www.dods.org" } };
+

@@ -1,0 +1,12 @@
+Dataset {
+    Int32 SDS_DFNT_INT32[fakeDim0 = 2];
+    UInt32 SDS_DFNT_UINT32[fakeDim1 = 1];
+    Int32 SDS_DFNT_INT16[fakeDim2 = 2];
+    UInt32 SDS_DFNT_UINT16[fakeDim3 = 1];
+    Int32 SDS_DFNT_INT8[fakeDim4 = 1];
+    Byte SDS_DFNT_UINT8[fakeDim5 = 1];
+    Float64 SDS_DFNT_FLOAT32[fakeDim6 = 2];
+    Float64 SDS_DFNT_FLOAT64[fakeDim7 = 7];
+    Byte SDS_DFNT_CHAR8[fakeDim8 = 2];
+    Byte SDS_DFNT_UCHAR8[fakeDim9 = 2];
+} testsds1.hdf;

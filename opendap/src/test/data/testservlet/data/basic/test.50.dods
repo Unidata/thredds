@@ -1,0 +1,13 @@
+The data:
+Structure {
+    Byte b;
+    Int32 i32;
+    UInt32 ui32;
+    Int16 i16;
+    UInt16 ui16;
+    Float32 f32;
+    Float64 f64;
+    String s;
+    Url u;
+} types[10] = {{ 0, 1, 0, 0, 0, 0, 1000, "This is a data test string (pass 0).", "http://www.dods.org" }, { 1, 2, 2, 16, 65520, 0.999983, 999.950000416665, "This is a data test string (pass 1).", "http://www.dods.org" }, { 2, 3, 6, 32, 65504, 1.99987, 999.800006666578, "This is a data test string (pass 2).", "http://www.dods.org" }, { 3, 5, 12, 48, 65488, 2.99955, 999.550033748988, "This is a data test string (pass 3).", "http://www.dods.org" }, { 4, 8, 20, 64, 65472, 3.99893, 999.200106660978, "This is a data test string (pass 4).", "http://www.dods.org" }, { 5, 13, 30, 80, 65456, 4.99792, 998.750260394966, "This is a data test string (pass 5).", "http://www.dods.org" }, { 6, 21, 42, 96, 65440, 5.9964, 998.200539935204, "This is a data test string (pass 6).", "http://www.dods.org" }, { 7, 34, 56, 112, 65424, 6.99428, 997.55100025328, "This is a data test string (pass 7).", "http://www.dods.org" }, { 8, 55, 72, 128, 65408, 7.99147, 996.801706302619, "This is a data test string (pass 8).", "http://www.dods.org" }, { 9, 89, 90, 144, 65392, 8.98785, 995.952733011994, "This is a data test string (pass 9).", "http://www.dods.org" }};
+

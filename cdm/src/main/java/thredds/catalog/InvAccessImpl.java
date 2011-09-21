@@ -91,7 +91,7 @@ public class InvAccessImpl extends InvAccess {
         log.append("**InvAccess in (").append(dataset.getFullName()).append("):cannot declare both service (").append(serviceName).append(")" + " and serviceType <").append(typeName).append(">\n");
       else {
         this.service = new InvService("", typeName, "", "", null); // "anonymous" service
-        //if ((uri != null) && !uri.isAbsolute())
+        //if ((url != null) && !url.isAbsolute())
         //  log.append("  **InvAccess (4) in ("+dataset.getFullName()+"): urlPath must be absolute ("+urlPath+") for anonymous service\n");
       }
     }

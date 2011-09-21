@@ -131,7 +131,7 @@ public class TestMisc extends TestCase {
 running this
 simple code to get z values..
 
-uri=http://coast-enviro.er.usgs.gov/models/share/erie_test.ncml;
+url=http://coast-enviro.er.usgs.gov/models/share/erie_test.ncml;
 var='temp';
 
 z is of shape 20x2x87, it should be 20x87x193.

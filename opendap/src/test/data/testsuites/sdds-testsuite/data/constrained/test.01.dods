@@ -1,0 +1,4 @@
+The data:
+Int32 i32 = 1;
+String s = "This is a data test string (pass 0).";
+

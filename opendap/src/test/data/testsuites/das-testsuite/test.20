@@ -1,0 +1,10 @@
+
+# -*- Perl -*-
+# byte values that should not parse, in various ways...
+
+Attributes {
+    test {
+	Int32 x 70000;
+	Int16 y 80000;
+    }
+}

@@ -1077,7 +1077,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
 
 
     /**
-     * getting data uri list
+     * getting data url list
      *
      * @param sName  station name
      * @param dateSelect the date selection

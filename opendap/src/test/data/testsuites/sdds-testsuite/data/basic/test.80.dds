@@ -1,0 +1,15 @@
+Error {
+    code = 3;
+    message = "
+There was a problem parsing the DDS:
+Expected an array subscript, but didn't find it
+
+The offending line contains the characters: longitude
+
+ParseException Message: 
+Encountered "10" at line 5, column 26.
+Was expecting:
+    "=" ...
+    
+";
+};

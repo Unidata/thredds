@@ -1,0 +1,12 @@
+#
+# Test identifiers with '*' in them. 6/22/2001 jhrg
+
+Dataset {
+   Int32 a;
+   Grid {
+     Array:
+       Byte Image#data[size*10=512];
+     Maps:
+       String colors[size*10=512];
+   } huh;
+} test.20;

@@ -1,0 +1,37 @@
+dataset {
+
+    Grid {
+      Array:
+	    float64 amp[10];
+      Maps:
+	    float64 x[10];
+    } OneD;
+
+    Grid {
+      Array:
+	    float64 amp[10][10];
+      Maps:
+	    float64 x[10];
+	    float64 y[10];
+    } TwoD;
+
+    Grid {
+      Array:
+	    float64 amp[y=100][z=1000][x=10];
+      Maps:
+	    float64 x[100];
+	    float64 y[1000];
+	    float64 z[10];
+    } ThreeD;
+
+    Grid {
+      Array:
+	    float64 tamp[10][10][10][10];
+      Maps:
+	    float64 x[10];
+	    float64 y[10];
+	    float64 z[10];
+	    float64 t[10];
+    } FourD;
+
+} SimpleGrids;

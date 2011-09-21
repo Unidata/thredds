@@ -1,0 +1,7 @@
+Dataset {
+    Sequence {
+        Structure {
+            UInt32 Field_DFNT_UINT16__0;
+        } Field_DFNT_UINT16;
+    } Vdata_DFNT_UINT16;
+} testvs1.hdf;

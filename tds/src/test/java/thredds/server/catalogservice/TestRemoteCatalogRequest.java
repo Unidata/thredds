@@ -69,8 +69,8 @@ public class TestRemoteCatalogRequest extends TestCase
   public void testCommandDefaultValues()
   {
     // Command defaults to SHOW when dataset ID not given:
-    //     check that [uri=http://**/*.xml, command=null, dataset=null] is
-    //     valid and becomes [uri, command=SHOW, dataset=null]
+    //     check that [url=http://**/*.xml, command=null, dataset=null] is
+    //     valid and becomes [url, command=SHOW, dataset=null]
     req = basicSetup( catUriString, null, null, null, null );
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );

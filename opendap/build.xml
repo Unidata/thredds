@@ -58,6 +58,7 @@
   <!-- ".."                                          -->
   <!-- - - - - - - - - - - - - - - - - - - - - - - - -->
 
+  <!-- opendap/cdm version -->
   <property name="VERSION" value="4.3"/>
 
   <!-- Compiler Settings -->
@@ -130,9 +131,15 @@
   <property name="build.doc" location="${build.dir}/doc"/>
   <property name="build.lib" location="${build.dir}/lib"/>
 
-  <property name="war.dir" location="${build.dir}/dts"/>
-  <property name="webapp.dir" location="src/test/resources"/>
-  <property name="warfile" value="dts-${VERSION}.war"/>
+  <property name="war.name" value="dts"/>
+  <property name="war.dir" location="${build.dir}/${war.name}"/>
+  <property name="webapp.dir" value="src/test/resources/dts"/>
+  <property name="warfile" value="dods#${war.name}.war"/>
+
+  <!-- tomcat directory properties -->  
+  <property name="tomcat.dir" location="c:/tools/tomcat6"/>
+  <property name="tomcat.webapps.dir" location="${tomcat.dir}/webapps"/>
+  <property name="tomcat.logs.dir" location="${tomcat.dir}/logs"/>
 
 
   <!-- Where to put test case output -->
@@ -151,6 +158,7 @@
    - Libraries are taken from three places:
    - release.libs.dir	= ${root}/lib/release
    - external.libs.dir	= ${root}/lib/external
+     - except servlet-api.jar should not be included in the war file
    - dap.external.libs.dir	= ${root}/opendap/lib
    - [Note: external and dap external should be merged]
    - Add new properties for each new library that you add to the project.
@@ -158,7 +166,7 @@
 
   <!-- Release libs -->
   <property name="release.libs.dir" location="../lib/release"/>
-  <property name="cdm.lib" value="netcdf-4.3.jar"/>
+  <property name="cdm.lib" value="netcdf-${VERSION}.jar"/>
 
   <!-- External libs -->
 
@@ -171,7 +179,6 @@
 
   <!-- DAP.External libs -->
   <property name="dap.external.libs.dir" location="lib"/>
-  <!--property name="servlet.lib"	 value="tomcat-5.5.20_servlet-api.jar"-->
   <property name="jdom.lib" value="jdom-1.0.jar"/>
   <property name="xercesImpl.lib" value="xercesImpl-2.9.0.jar"/>
   <property name="xercesXmlApis.lib" value="xml-apis-2.9.0.jar"/>
@@ -187,11 +194,14 @@
   </fileset>
 
   <fileset dir="${external.libs.dir}" id="libs.external">
-    <include name="${servlet.lib}"/>
     <include name="${httpclient.lib}"/>
     <include name="${codec.lib}"/>
     <include name="${logging.lib}"/>
     <include name="${loggingAPI.lib}"/>
+  </fileset>
+
+  <fileset dir="${external.libs.dir}" id="servlet.api.lib">
+    <include name="${servlet.lib}"/>
   </fileset>
 
   <fileset dir="${dap.external.libs.dir}" id="libs.dap.external">
@@ -206,8 +216,9 @@
   <path id="dap.compile.classpath">
     <pathelement path="${build.classes}"/>
     <fileset refid="libs.release"/>
-    <fileset refid="libs.external"/>
     <fileset refid="libs.dap.external"/>
+    <fileset refid="libs.external"/>
+    <fileset refid="servlet.api.lib"/>
   </path>
 
   <!-- CLASSPATH dependancies for DAP Server -->
@@ -283,8 +294,9 @@
       <classpath refid="dap.compile.classpath"/>
       <src path="${src.java.dir}"/>
       <include name="opendap/dap/**/*.java"/>
-      <include name="opendap/Server/**/*.java"/>
+      <include name="opendap/servers/**/*.java"/>
       <include name="opendap/servlet/**/*.java"/>
+      <include name="opendap/dts/**/*.java"/>
       <include name="opendap/tools/**/*.java"/>
       <include name="opendap/util/**/*.java"/>
       <include name="opendap/Version.java"/>
@@ -305,10 +317,9 @@
            debuglevel="${compile.debuglevel}"
            deprecation="${compile.deprecation}"
            includeAntRuntime="false" source="1.5" target="1.5">
-      <classpath refid="servers.compile.classpath"/>
-      <src path="${src.java.dir}"/>
-      <include name="opendap/servers/test/dts/**/*.java"/>
-      <!-- ?include name="opendap/servers/sql/**/*.java" -->
+      <classpath refid="dap.compile.classpath"/>
+      <src path="${src.test.java.dir}"/>
+      <include name="opendap/test/dts/**/*.java"/>
     </javac>
   </target>
 
@@ -338,8 +349,21 @@
   -
   -->
 
+   <target name="war-clean">
+	<delete dir="${tomcat.webapps.dir}/${war.name}"/>
+	<delete file="${tomcat.webapps.dir}/${warfile}"/>
+        <delete>
+            <fileset dir="${tomcat.logs.dir}" includes="*"/>
+        </delete>
+   </target>
+
+   <target name="war-install" depends="war-clean">
+	<copy file="${build.dir}/${warfile}" todir="${tomcat.webapps.dir}"/>
+   </target>
+
   <!--	    depends="opendap-lib" -->
   <target name="war"
+          depends="dts"
           description="create a war file from the distribution directory">
 
     <!-- copy classes to war classes directory. -->
@@ -357,6 +381,7 @@
           overwrite="true"
           preservelastmodified="true">
       <fileset refid="libs.external"/>
+      <fileset refid="libs.release"/>
     </copy>
 
     <!-- Copy webapps dir  -->
@@ -364,6 +389,15 @@
           overwrite="true"
           preservelastmodified="true">
       <fileset dir="${webapp.dir}"/>
+    </copy>
+
+    <!-- Copy testdatasets -->
+    <mkdir dir="${war.dir}/WEB-INF/resources"/>
+    <copy todir="${war.dir}/WEB-INF/resources/testdatasets"
+          preservelastmodified="true"
+          overwrite="true">
+      <fileset dir="${test.dir}/data/testsuites/sdds-testsuite"
+               includes="**/*"/>
     </copy>
 
     <jar destfile="${build.dir}/${warfile}">
@@ -420,7 +454,7 @@
       <srcfiles dir="${src.java.dir}">
         <include name="opendap/Version.java"/>
         <include name="opendap/dap/**/*.java"/>
-        <include name="opendap/Server/**/*.java"/>
+        <include name="opendap/servers/**/*.java"/>
         <include name="opendap/util/**/*.java"/>
         <include name="opendap/servlet/**/*.java"/>
         <include name="opendap/test/**/*.java"/>

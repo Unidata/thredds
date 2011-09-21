@@ -34,6 +34,8 @@ package ucar.nc2.dods;
 
 import junit.framework.*;
 import opendap.test.TestEncode;
+import opendap.test.TestOpenDap;
+import ucar.nc2.util.net.TestAuth;
 
 /**
  * TestSuite that runs all the sample tests
@@ -46,7 +48,9 @@ public class TestDODS {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
 
-    suite.addTest( new TestSuite(TestEncode.class));
+      suite.addTest( new TestSuite(TestEncode.class));
+      suite.addTest( opendap.test.TestOpenDap.suite());
+      suite.addTest( new TestSuite(TestAuth.class));
 
     // just read em and see if they weep
     suite.addTest(new TestSuite(TestDODSRead.class)); //

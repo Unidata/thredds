@@ -126,7 +126,7 @@ public class BtServlet extends HttpServlet {
 
     String urlString = req.getParameter("URL");
     if (urlString != null) {
-      // validate the uri String
+      // validate the url String
       try {
         URI uri = new URI(urlString);
         urlString = uri.toASCIIString(); // LOOK do we want just toString() ? Is this useful "input validation" ?

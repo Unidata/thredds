@@ -1150,7 +1150,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Write the NcML representation.
    *
    * @param os  write to this Output Stream.
-   * @param uri use this for the uri attribute; if null use getLocation().
+   * @param uri use this for the url attribute; if null use getLocation().
    * @throws IOException
    */
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
@@ -1162,7 +1162,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param os         write to this Output Stream.
    * @param showCoords shoe the values of coordinate axes
-   * @param uri        use this for the uri attribute; if null use getLocation().
+   * @param uri        use this for the url attribute; if null use getLocation().
    * @throws IOException on write error
    */
   public void writeNcMLG(java.io.OutputStream os, boolean showCoords, String uri) throws IOException {
@@ -1610,7 +1610,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public static void debugDump(PrintStream out, NetcdfDataset ncd) {
     String referencedLocation = ncd.orgFile == null ? "(null)" : ncd.orgFile.getLocation();
-    out.println("\nNetcdfDataset dump = " + ncd.getLocation() + " uri= " + referencedLocation + "\n");
+    out.println("\nNetcdfDataset dump = " + ncd.getLocation() + " url= " + referencedLocation + "\n");
     ncd.dumpClasses(ncd.getRootGroup(), out);
   }
 

@@ -1,0 +1,43 @@
+Dataset {
+    Structure {
+            Float64 amp;
+            Float32 damp;
+            Float64 clamp;
+    } somearray[twizzle = 1024][dizzle = 2211];
+    Structure {
+        Float32 amp[x = 256][y = 256];
+        Float32 julianday;
+        Int16 InstrumentNumber;
+        Structure {
+            Float64 arf;
+            Float64 barf[2222];
+        } foo;
+    } wormbutt;
+    Grid {
+     ARRAY:
+        Float64 sst[latitude = 1024][longitude = 1024];
+     MAPS:
+        Float64 latitude[1024];
+        Float64 longitude[1024];
+    } sst;
+    Sequence {
+        Float64 jday;
+        Float32 latitude;
+        Float32 longitude;
+        Float32 surfaceIrradiance;
+        Sequence {
+            Float64 depth;
+            Float64 temperature;
+            Float64 conductivity;
+            Float64 fluoresence;
+        } CTD_Profile;
+    } testSeq;
+    Structure {
+        Byte diggle;
+        Byte piggle;
+        Byte wiggle;
+        Byte doo;
+    } moo;
+ 
+} protoDDX;
+

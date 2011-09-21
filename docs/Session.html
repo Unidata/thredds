@@ -11,7 +11,7 @@ UCAR/Unidata</h2>
 <h3>Draft 1: July 20, 2011</h3>
 </center>
 
-<h2><a name="HTTPSession"><u>HTTPSession and Session Semantics</u></a></h2>
+<h2><a name="Intro"><u>Introduction</u></a></h2>
 New public classes are introduced to the package ucar.nc2.util.net.
 These are
 <i>HTTPSession.java</i>,
@@ -26,22 +26,18 @@ the Apache httpclient4 library.
 These classes support a form of <i>session</i>
 semantics for Java network access. The notion of session
 is only loosely tied to the HTTP notion of session.
-<p>
-A session is encapsulated in an instance of the class <i>HTTPSession</i>.
-The encapsulation is with respect to a specific uri and (optionally) principal.
-This means that once a session is specified, it is tied permanently
-to that url and principal.
-Note that the term "principal" is another name for user id.
-If no principal is ever set, the the session assumes a special principal called
-<i>ANY_PRINCIPAL</i>.
-<p>
-Currently principals are ignored, but will become important
-when new authorization mechanisms are put in place.
-Also, per-instance setting of principals is disabled because
-the Apache httpclient-3 library cannot utilize them.
-They will be activated when the httpclient-4 library replaces
-the httpclient-3 library.
 
+<h3><a name="HTTPSession">HTTPSession and Session Semantics</a></h3>
+A session is encapsulated in an instance of the class <i>HTTPSession</i>.
+The encapsulation is with respect to a specific url.
+This means that once a session is specified, it is tied permanently
+to that url and <a href="#HTTPMethod.URL">"compatible"</a> urls.
+<p>
+As a special case for backward compatibility,
+an <i>HTTPSession</i> constructor with no arguments is provided.
+If used, then (1) the session is tied to no specific url,
+and (2) method creation must specify a url
+(see <a href="#HTTPMethod">HTTPMethod</a>).
 <p>
 It is important to note that Session objects do NOT
 correspond with the HttpClient objects of the Apache
@@ -68,6 +64,13 @@ for example, one would invoke this operation
 HTTPMethod m = HTTPMethod.Get(session);
 </pre>
 where "session" is a previously created session object.
+<p>
+Alternately, one can create a method
+and specify a url.
+<pre>
+HTTPMethod m = HTTPMethod.Get(session,url);
+</pre>
+See the section on <a href="#HTTPMethod.URL">specifying a url when creating an HTTPMethod instance</a> for more information.
 
 <h3><a name="HTTPMethodStream">HTTPMethodStream</a></h3>
 The purpose of this class is to allow
@@ -127,7 +130,7 @@ public class Main
     {
 	String url = argv[0];
 
-        HTTPSession.setGlobalPrincipal(System.getProperty("user.name"));
+        HTTPSession.setGlobalCredentialsProvider(new UserPasswordProvider());
 	HTTPSession.setGlobalUserAgent("netcdf/java");
 	HTTPSession.setMaxConnections(4);
 	HTTPSession.setGlobalAuthenticationPreemptive(true);
@@ -151,7 +154,7 @@ public class Main
 	String url = argv[0];
 
         HTTPSession session = new HTTPSession(url);
-        session.setPrincipal(System.getProperty("user.name"));
+        session.setCredentialsProvider(new UserPasswordProvider());
 	session.setAuthenticationPreemptive(true);
 	session.setUserAgent("agent");
 	session.setConnectionManagerTimeout(475);
@@ -168,7 +171,7 @@ public class Main
 }
 </pre>
 
-<h3><a name="HTTPMethod.URL"><u>Specifying a url when creating an HTTPMethod Instance</u></a></h3>
+<h2><a name="HTTPMethod.URL"><u>Specifying a url when creating an HTTPMethod Instance</u></a></h2>
 It is possible to specify a  url when invoking, for example,
 <i>HTTPMethod.Get</i>.
 This is because the url argument to the <i>HTTPSession</i> constructor actually serves two purposes.
@@ -193,6 +196,94 @@ the <i>HTTPSession</i> url, as a string, must be a prefix
 of the url given to <i>HTTPMethod.Get</i>.
 This maintains the semantics of the Session but allows flexibility in accessing
 data from the server.
+<p>
+There are some exceptions to the prefix rule for compatibility.
+Let
+<i>surl</i>
+be the session url and
+<i>murl</i>
+be the url specified for the method.
+The following rule holds.
+<ul>
+<li>If the <i>surl</i>
+does not have a principal,
+then the <i>murl</i> without its principal is tested
+for compatibility.
+In effect, a missing principal acts like a wildcard.
+<p>
+Similarly, missing ports or paths in the
+<i>surl</i>
+also act like wildcards.
+</ul>
+<p>
+Additionally, and for backward compatibility,
+if <i>surl</i> is null or is the empty string (""), then <i>murl</i> must be specified
+and any such url is considered compatible.
+
+<h2><a name="Credentials"><u>Authorization Credentials</u></a></h2>
+<i>HTTPSession</i>
+operates in conjunction with the new credentialing mechanisms
+to support better mechanisms for setting authorization credentials.
+<p>
+The key idea is that a single, global database of credentials
+is maintained.  The key for the database is the combination
+of the authorization scheme plus a url. This key pair maps
+to an instance of CredentialsProvider.
+At the time an HTTP method is executed, the url indicates
+when to apply authorization (if the server requests it).
+The scheme indicates the kind of authorization scheme
+is being used: HTTP Basic or Digest for example.
+The credentials provider is then invoked to compute the set
+of credentials to be sent to the server.
+<p>
+The primary credentialling method in
+<i>HTTPSession</i>
+is as follows.
+<pre>
+public void setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
+</pre>
+<p>
+The set of defined schemes is as follows:
+<ul>
+<li> Basic - the HTTP Basic scheme based on clear-text user name and password.
+<li> Digest - the HTTP digest scheme based on encrypted user name and password.
+<li> Proxy -  a scheme for accessing a proxy server
+based on clear-text user name and password.
+<li> Keystore - a scheme that uses a client-side key to authenticate
+the client to the server. The credentials provider is used
+in a non-standard way and it contains the following information.
+    <ul>
+    <li> The path to the keystore file
+    <li> The password for decrypting the keystore file.
+    <li> The path to a truststore file
+    <li> The password for decrypting the truststore file.
+    </ul>
+The last two items are optional. If missing, then the client will
+accept any certificate sent to it by the server. This includes
+self-signed certificates.
+<p>
+The keystore scheme is usually part of an SSL connection
+where the server authenticates to the client and then the client
+authenticates to the server.
+</ul>
+<p>
+A somewhat simpler method is available that only takes
+a credentials provider as argument.
+<pre>
+public void setCredentialsProvider(CredentialsProvider provider)
+</pre>
+It is defined as:
+<pre>
+    setCredentialsProvider(HTTPAuthScheme.BASIC,url,provider);
+</pre>
+where the url argument is the session's url.
+<p>
+Finally, it is also possible to establish a "global"
+credentials provider that is used for any combination
+of scheme + url as a last resort.
+<pre>
+static synchronized public void setGlobalCredentialsProvider(CredentialsProvider cp)
+</pre>
 
 <h2><a name="Appendices"><u>Appendices: Session APIs</u></a></h2>
 Note: the following set may lag the actual API, so the JavaDoc or code
@@ -201,12 +292,6 @@ should be referenced to see any modifications.
 <h3><a name"HTTPSession.API">HTTPSession API</a></h3>
 <h4>Static Get/Set Methods</h4>
 <ul>
-<li>static synchronized void setGlobalPrincipal(String p)
-     <ul>
-     <li> Set a principal that will be used when establishing
-          any session.
-     </ul>
-<li>static synchronized String getGlobalPrincipal()
 <li>static synchronized void setGlobalUserAgent(String _userAgent)
      <ul>
      <li> Set a user agent that will be used when establishing
@@ -236,8 +321,7 @@ should be referenced to see any modifications.
      </ul>
 <li>void setGlobalCredentialsProvider(CredentialsProvider cp)
      <ul>
-     <li> Specifies that all HTTPSession instances should use the specified
-          CredentialsProvider for authentication.
+     <li> Last resort credentials provider.
      </ul>
 </ul>
 
@@ -247,6 +331,11 @@ should be referenced to see any modifications.
      <ul>
      <li> Creates a session object with the specified
           session defining url.
+     </ul>
+<li>HTTPSession()
+     <ul>
+     <li> Creates a session object compatible
+          with any url.
      </ul>
 </ul>
 
@@ -265,6 +354,7 @@ should be referenced to see any modifications.
      <li> Set proxy authorization using the two system properties
 		"http.proxyHost" and "http.proxyPort".
     </ul>
+<li>void setCredentialsProvider(CredentialsProvider provider)
 </ul>
 
 <h4>Session Shutdown Methods</h4>

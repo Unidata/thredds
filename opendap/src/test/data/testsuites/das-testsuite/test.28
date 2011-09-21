@@ -1,0 +1,16 @@
+# -*- perl -*-
+#
+# Test aliases
+
+Attributes {
+    var1 {
+        Int32 x 14;
+	Int32 y 15, 16, 17;
+	component1 {
+	    Float64 g 6.02e23;
+	    String name "A part of the whole";
+	}
+	
+	Alias z .var1.component1.g;
+    }
+}

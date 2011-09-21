@@ -1,0 +1,55 @@
+
+# Tcl/Expect code for the DDS test.
+
+# Make sure the global var DDSTEST is set correctly.
+
+global DDSTEST
+if ![info exists DDSTEST] then {
+    set DDSTEST "java dods.dap.test.dds_test"
+}
+
+# The four required proc for dds-test.
+
+proc dds-test_start { options {ifile ""} {ofile ""}} {
+    global verbose
+    global DDSTEST
+    global comp_output
+    # spawn_id *MUST* be decalred as global for spawn to work in a proc!!
+    global spawn_id
+
+    if {$verbose >= 1} {
+	verbose "Starting $DDSTEST $options $ifile $ofile ...\n"
+	exp_internal 1
+    }
+
+    if {$ifile != ""} {
+	set ifile "< $ifile"
+    }
+
+    if {$ofile != ""} {
+	set ofile "> $ofile"
+    }
+
+    switch $options {
+	p {catch "exec $DDSTEST -p $ifile $ofile" comp_output}
+	s {spawn $DDSTEST -s}
+    }
+
+    if {$verbose >= 1} {
+	switch $options {
+	    p {send_user "Comp output:\n$comp_output\n"}
+	    s {send_user "Program running: spawn_id=$spawn_id\n"}
+	}
+    }
+}
+
+proc dds-test_load {} {
+}
+
+proc dds-test_exit {} {
+    send -raw ""
+}
+
+proc dds-test_version {} {
+    send_user "DDS testsuite version 1.2\n"
+}

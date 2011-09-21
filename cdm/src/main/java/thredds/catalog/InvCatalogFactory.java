@@ -298,9 +298,9 @@ public class InvCatalogFactory {
     try {
       jdomDoc = saxBuilder.build(uri.toURL());
 //      HttpUriResolver httpUriResolver = HttpUriResolver.newDefaultUriResolver();
-//      String s = httpUriResolver.getString( uri );
+//      String s = httpUriResolver.getString( url );
 //      //StringReader
-//      is = new BufferedInputStream( httpUriResolver.getInputStream( uri ), 1000000 );
+//      is = new BufferedInputStream( httpUriResolver.getInputStream( url ), 1000000 );
 //      jdomDoc = saxBuilder.build( is );
     } catch (Exception e) {
       InvCatalogImpl cat = new InvCatalogImpl(uri.toString(), null, null);
@@ -373,7 +373,7 @@ public class InvCatalogFactory {
     catch ( Exception e )
     {
       InvCatalogImpl cat = new InvCatalogImpl( baseUri.toString(), null, null );
-      cat.appendErrorMessage( "**Fatal:  InvCatalogFactory.readXML(String catAsString, URI uri) failed:"
+      cat.appendErrorMessage( "**Fatal:  InvCatalogFactory.readXML(String catAsString, URI url) failed:"
                               + "\n  Exception= " + e.getClass().getName() + " " + e.getMessage()
                               + "\n  fatalMessages= " + fatalMessages.toString()
                               + "\n  errMessages= " + errMessages.toString()
@@ -476,13 +476,13 @@ public class InvCatalogFactory {
     return cat;
   }
 
-  /* public org.w3c.dom.Element readOtherXML( URI uri) {
+  /* public org.w3c.dom.Element readOtherXML( URI url) {
 
     Document doc;
     try {
-      doc = builder.parse(uri.toString());
+      doc = builder.parse(url.toString());
     } catch (Exception e) {
-      errMessages.append( "**Error:  InvCatalogFactory.readOtherXML failed on "+ uri+
+      errMessages.append( "**Error:  InvCatalogFactory.readOtherXML failed on "+ url+
         "\n Exception= "+e.getClass().getName()+" "+e.getMessage()+"\n");
       return null;
     }

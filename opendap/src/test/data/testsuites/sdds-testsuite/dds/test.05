@@ -1,0 +1,23 @@
+dataset {
+    Structure {
+        Structure {
+            Byte	b;
+            int32	i32;
+            uint32	ui32;
+            int16	i16;
+            uint16	ui16;
+        } integers;
+
+        Structure {
+            float32	f32;
+            float64	f64;
+        } floats;
+
+        Structure {
+            string	s;
+            URL	u;
+        } strings;
+
+    } types;
+
+} NestedStructure;
