@@ -15,10 +15,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPBasicProvider.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPBasicProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java" afterPath="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestOpenDap.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestOpenDap.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" />
     </list>
     <ignored path="thredds.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -42,99 +42,6 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
-    <line_breakpoints>
-      <breakpoint url="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" line="565" class="opendap.dap.DConnect2" package="opendap.dap">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/server/opendap/OpendapServlet.java" line="319" class="thredds.server.opendap.OpendapServlet" package="thredds.server.opendap">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/server/opendap/OpendapServlet.java" line="782" class="thredds.server.opendap.OpendapServlet" package="thredds.server.opendap">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/ReqState.java" line="285" class="opendap.servlet.ReqState" package="opendap.servlet">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/ReqState.java" line="136" class="opendap.servlet.ReqState" package="opendap.servlet">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java" line="145" class="ucar.nc2.util.net.HTTPAuthProvider" package="ucar.nc2.util.net">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java" line="134" class="ucar.nc2.util.net.HTTPAuthProvider" package="ucar.nc2.util.net">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-    </line_breakpoints>
     <breakpoint_any>
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -195,16 +102,7 @@
       <file leaf-file-name="TestAuth.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="114" column="52" selection-start="3814" selection-end="3814" vertical-scroll-proportion="0.9015444">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HTTPMethod.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="617" column="25" selection-start="16950" selection-end="16950" vertical-scroll-proportion="-1.451613">
+            <state line="116" column="0" selection-start="3849" selection-end="3849" vertical-scroll-proportion="0.5168375">
               <folding />
             </state>
           </provider>
@@ -213,27 +111,61 @@
       <file leaf-file-name="HTTPAuthProvider.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="142" column="73" selection-start="5613" selection-end="5613" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Log.class" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar!/org/apache/commons/logging/Log.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="17" selection-start="168" selection-end="168" vertical-scroll-proportion="-4.4">
+            <state line="145" column="0" selection-start="5641" selection-end="5641" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HTTPBasicProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPBasicProvider.java">
+      <file leaf-file-name="TestFiles.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestFiles.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="73" column="0" selection-start="3091" selection-end="3091" vertical-scroll-proportion="0.0">
+            <state line="113" column="53" selection-start="4146" selection-end="4146" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestNC2.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/TestNC2.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="65" column="24" selection-start="2756" selection-end="2756" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestDODS.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="51" column="0" selection-start="2476" selection-end="2476" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestAll.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/TestAll.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="174" column="24" selection-start="6566" selection-end="6618" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Test.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/../../lib/external/source/junit-4.5-src.jar!/junit/framework/Test.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="7" column="17" selection-start="128" selection-end="128" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestOpenDap.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestOpenDap.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="59" column="71" selection-start="2810" selection-end="2810" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -271,8 +203,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/DapParser.java" />
-        <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/server/parsers/Celex.java" />
         <option value="$PROJECT_DIR$/../../opendap/build.xml" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/GetDirHandler.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/resources/webapp/WEB-INF/web.xml" />
@@ -286,6 +216,8 @@
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPBasicProvider.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java" />
+        <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestOpenDap.java" />
+        <option value="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java" />
       </list>
     </option>
@@ -472,7 +404,7 @@
       <recent name="ucar.nc2.util.net" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.TestAuth">
+  <component name="RunManager" selected="JUnit.TestAll">
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -1106,12 +1038,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1218" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.47488585" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.5281583" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.42242992" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1128,6 +1059,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32990655" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.47476634" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1346,110 +1278,84 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/ReqState.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="240" column="0" selection-start="7979" selection-end="7979" vertical-scroll-proportion="0.02746365" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestSequence.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="91" selection-start="610" selection-end="610" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/resources/dts/WEB-INF/web.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="7" selection-start="1462" selection-end="1462" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="373" column="114" selection-start="12874" selection-end="12874" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/ucar/nc2/dods/DODSNetcdfFile.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="611" column="0" selection-start="23154" selection-end="23154" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/Group.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="467" column="95" selection-start="15264" selection-end="15264" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthStore.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="369" column="0" selection-start="10915" selection-end="10915" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/tools/jdk1.6/src.zip!/java/net/SocketInputStream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="23" selection-start="2261" selection-end="2261" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPBasicProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="73" column="0" selection-start="3091" selection-end="3091" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="76" column="23" selection-start="2261" selection-end="2261" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="jar://$USER_HOME$/tools/jdk1.6/jre/lib/rt.jar!/sun/reflect/NativeMethodAccessorImpl.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="28" selection-start="470" selection-end="470" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="12" column="28" selection-start="470" selection-end="470" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar!/org/apache/commons/httpclient/HttpMethodDirector.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="51" column="146" selection-start="3946" selection-end="3946" vertical-scroll-proportion="-17.48">
-          <folding />
-        </state>
+        <state line="51" column="146" selection-start="3946" selection-end="3946" vertical-scroll-proportion="-17.48" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="617" column="25" selection-start="16950" selection-end="16950" vertical-scroll-proportion="-1.451613">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="244" column="64" selection-start="10004" selection-end="10004" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="617" column="25" selection-start="16950" selection-end="16950" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar!/org/apache/commons/logging/Log.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="17" selection-start="168" selection-end="168" vertical-scroll-proportion="-4.4">
-          <folding />
-        </state>
+        <state line="5" column="17" selection-start="168" selection-end="168" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPBasicProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="0" selection-start="3091" selection-end="3091" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="73" selection-start="5613" selection-end="5613" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
+        <state line="145" column="0" selection-start="5641" selection-end="5641" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestFiles.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="113" column="53" selection-start="4146" selection-end="4146" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/TestNC2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="65" column="24" selection-start="2756" selection-end="2756" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="51" column="0" selection-start="2476" selection-end="2476" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/TestAll.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="174" column="24" selection-start="6566" selection-end="6618" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/../../lib/external/source/junit-4.5-src.jar!/junit/framework/Test.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="17" selection-start="128" selection-end="128" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestOpenDap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="59" column="71" selection-start="2810" selection-end="2810" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="244" column="64" selection-start="10004" selection-end="10004" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthStore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="369" column="0" selection-start="10915" selection-end="10915" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="114" column="52" selection-start="3814" selection-end="3814" vertical-scroll-proportion="0.9015444">
+        <state line="116" column="0" selection-start="3849" selection-end="3849" vertical-scroll-proportion="0.5168375">
           <folding />
         </state>
       </provider>

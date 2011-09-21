@@ -78,7 +78,7 @@ public class TestAuth extends TestCase
 
     static AuthDataBasic[] basictests = {
             new AuthDataBasic("http://www.giss.nasa.gov/staff/rschmunk/test/file1.nc","jcaron","boulder"),
-            new AuthDataBasic("http://motherlode.ucar.edu/thredds/dodsC/restrict/testdata/testData.nc.html","tiggeUser","tigge")
+            //new AuthDataBasic("http://motherlode.ucar.edu/thredds/dodsC/restrict/testdata/testData.nc.html","tiggeUser","tigge")
     };
 
     @Test
@@ -111,7 +111,10 @@ public class TestAuth extends TestCase
                 if(pass) System.out.println("\tGlobal test passed");
 
             }
-            junit.framework.Assert.assertTrue("testBasic", pass);
+            if(pass)
+                junit.framework.Assert.assertTrue("testBasic", true);
+            else
+                junit.framework.Assert.assertTrue("testBasic", false);
         }
     }
 
