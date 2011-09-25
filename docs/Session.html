@@ -8,7 +8,9 @@
 for netCDF Opendap</h1>
 <h2>Dennis Heimbigner<br>
 UCAR/Unidata</h2>
-<h3>Draft 1: July 20, 2011</h3>
+<h3>Date: July 20, 2011<br>
+Revised: September 25, 2011
+</h3>
 </center>
 
 <h2><a name="Intro"><u>Introduction</u></a></h2>
@@ -216,9 +218,9 @@ Similarly, missing ports or paths in the
 also act like wildcards.
 </ul>
 <p>
-Additionally, and for backward compatibility,
-if <i>surl</i> is null or is the empty string (""), then <i>murl</i> must be specified
-and any such url is considered compatible.
+Additionally, and for backward compatibility, if <i>surl</i>
+is null or is the empty string (""), then <i>murl</i> must
+be specified and any such url is considered compatible.
 
 <h2><a name="Credentials"><u>Authorization Credentials</u></a></h2>
 <i>HTTPSession</i>
@@ -236,22 +238,28 @@ is being used: HTTP Basic or Digest for example.
 The credentials provider is then invoked to compute the set
 of credentials to be sent to the server.
 <p>
-The primary credentialling method in
-<i>HTTPSession</i>
-is as follows.
-<pre>
-public void setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
-</pre>
+Currently the following schemes are supported.
 <p>
-The set of defined schemes is as follows:
-<ul>
-<li> Basic - the HTTP Basic scheme based on clear-text user name and password.
-<li> Digest - the HTTP digest scheme based on encrypted user name and password.
-<li> Proxy -  a scheme for accessing a proxy server
+<b>Basic</b>:
+the HTTP Basic scheme based on clear-text user name and password.
+<p>
+<b>Digest</b>:
+the HTTP digest scheme based on encrypted user name and password.
+<p>
+<b>Proxy</b>:
+a scheme for accessing a proxy server
 based on clear-text user name and password.
-<li> Keystore - a scheme that uses a client-side key to authenticate
-the client to the server. The credentials provider is used
-in a non-standard way and it contains the following information.
+<p>
+<b>SSL</b>:
+a scheme that uses a client-side key to authenticate
+the client to the server.
+The ssl scheme is usually part of an SSL connection
+where the server authenticates to the client and then the client
+authenticates to the server.
+<p>
+The credentials provider
+(see <a href="#HTTPSSLProvider.API">HTTPSSLProvider</a>)
+is used in a non-standard way and it contains the following information.
     <ul>
     <li> The path to the keystore file
     <li> The password for decrypting the keystore file.
@@ -259,13 +267,34 @@ in a non-standard way and it contains the following information.
     <li> The password for decrypting the truststore file.
     </ul>
 The last two items are optional. If missing, then the client will
-accept any certificate sent to it by the server. This includes
-self-signed certificates.
+accept any certificate sent to it by the server. This includes,
+specifically, self-signed certificates.
 <p>
-The keystore scheme is usually part of an SSL connection
-where the server authenticates to the client and then the client
-authenticates to the server.
-</ul>
+Before the introduction of the authorization mechanisms described
+in this document, it was possible to specify the
+keystore+password and the truststore+password
+using the command line flags
+<pre>
+-Dkeystore
+-Dkeystorepassword
+-Dtruststore
+-Dtruststorepassword
+</pre>
+For purposes of backward compatibility, a check is made for these
+flags, and if they are defined, then
+an entry equivalent to the following is inserted into the auth store.
+<pre>
+insert(new Entry(HTTPAuthScheme.SSL,ANY_URL,
+                 new HTTPSSLProvider(keystore,kpassword,
+                                     truststore,trustpassword)));
+</pre>
+<h4>Setting Credentials</h4>
+The primary credentialling method in
+<i>HTTPSession</i>
+is as follows.
+<pre>
+public void setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
+</pre>
 <p>
 A somewhat simpler method is available that only takes
 a credentials provider as argument.
@@ -285,11 +314,19 @@ of scheme + url as a last resort.
 static synchronized public void setGlobalCredentialsProvider(CredentialsProvider cp)
 </pre>
 
+<h2><a name="Misc"><u>Miscellaneous Changes</u></a></h2>
+As a side effect of the insertion of the auth mechanisms,
+a number of miscellaneous changes also occurred.
+<ol>
+<li> HttpClientManager class was moved to the same
+package as HTTPSession, namely ucar.nc2.util.net.
+</ol>
+
 <h2><a name="Appendices"><u>Appendices: Session APIs</u></a></h2>
 Note: the following set may lag the actual API, so the JavaDoc or code
 should be referenced to see any modifications.
 
-<h3><a name"HTTPSession.API">HTTPSession API</a></h3>
+<h3><u><a name="HTTPSession.API">HTTPSession API</a></u></h3>
 <h4>Static Get/Set Methods</h4>
 <ul>
 <li>static synchronized void setGlobalUserAgent(String _userAgent)
@@ -305,7 +342,7 @@ should be referenced to see any modifications.
 <li>static int getGlobalThreadCount()
 <li>static void setGlobalCredentialsProvider(CredentialsProvider)
      <ul>
-     <li> Backward compatibility; will create a row
+     <li> For Backward compatibility; this methods will create a row
           in <i>HTTPAuthStore</i> and an instance of
           <i>HTTPCreds</i> supporting global authorization
           using the specified credentials provider.
@@ -366,7 +403,7 @@ should be referenced to see any modifications.
      </ul>
 </ul>
 
-<h3><a name"HTTPMethod.API">HTTPMethod API</a></h3>
+<h3><u><a name="HTTPMethod.API">HTTPMethod API</a></u></h3>
 <h4>Static Methods</h4>
 <ul>
 <li>static HTTPMethod {Get|Head|Put|Post|Options}(HTTPSession session) throws HTTPException
@@ -450,11 +487,54 @@ body in various forms.
 </ul>
 </ul>
 
-<h3><a name"HTTPMethodStream.API">HTTPMethodStream API</a></h3>
+
+<h3><u><a name="HTTPMethodStream.API">HTTPMethodStream API</a></u></h3>
 This class subclasses <i>java.io.InputStream</i>
 and provides the <i>InputStream</i> interface.
 In addition, if the stream is closed, then the
 underlying method is closed as well.
+
+<h3><u><a name="HTTPSSLProvider.API">HTTPSSLProvider API</a></u></h3>
+Since no existing <i>CredentialsProvider</i> implementation
+exists to support the SSL scheme,
+the <i>HTTPSSLProvider</i> class is provided for that purpose.
+Its constructor requires arguments for
+the client side keystore plus password and the client side
+truststore plus password.
+The keystore and truststore arguments are absolute paths.
+<h4>Constructor(s)</h4>
+<ul>
+<li>HTTTPSSLProvider(String keystore,String keypass, String truststore, String trustpass)
+     <ul>
+     <li> Creates an SSL provider that uses the client side key in the
+          keystore and validates the server-side certificate using the
+          truststore. If the truststore is null, then any certificate
+          presented by the server will be accepted.
+     </ul>
+<p>
+<li> HTTPSSLProvider()
+     <ul>
+     <li> Equivalent to HTTPSSLProvider(null,"",null,"");
+     </ul>
+<p>
+<li> HTTPSSLProvider(String keystore, String keypass)
+     <ul>
+     <li> Equivalent to HTTPSSLProvider(keystore,keypass,null,"");
+     </ul>
+<p>
+</ul>
+<h4>Credentials Provider Interface</h4>
+<ul>
+<li> Credentials getCredentials(AuthScheme authscheme,
+                   String host,
+                   int port,
+	           boolean isproxy)<br>
+        throws CredentialsNotAvailableException
+     <ul>
+     <li> This function is here only to satisfy the interface
+          and will never be invoked.
+     </ul>
+</ul>
 
 <h2><u>Author</u></h2>
 Author: Dennis Heimbigner<br>
