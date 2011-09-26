@@ -15,10 +15,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java" afterPath="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestOpenDap.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestOpenDap.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" />
     </list>
     <ignored path="thredds.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -99,19 +96,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TestAuth.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="TestAuth.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="116" column="0" selection-start="3849" selection-end="3849" vertical-scroll-proportion="0.5168375">
+            <state line="125" column="107" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HTTPAuthProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java">
+      <file leaf-file-name="DODSNetcdfFile.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/ucar/nc2/dods/DODSNetcdfFile.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="145" column="0" selection-start="5641" selection-end="5641" vertical-scroll-proportion="0.0">
+            <state line="1336" column="6" selection-start="49530" selection-end="49530" vertical-scroll-proportion="0.1368524">
               <folding />
             </state>
           </provider>
@@ -404,7 +401,7 @@
       <recent name="ucar.nc2.util.net" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.TestAll">
+  <component name="RunManager" selected="Application.ToolsUI">
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -1038,7 +1035,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1218" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1303,11 +1300,6 @@
         <state line="5" column="17" selection-start="168" selection-end="168" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPBasicProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="73" column="0" selection-start="3091" selection-end="3091" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="145" column="0" selection-start="5641" selection-end="5641" vertical-scroll-proportion="0.0" />
@@ -1355,7 +1347,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="116" column="0" selection-start="3849" selection-end="3849" vertical-scroll-proportion="0.5168375">
+        <state line="125" column="107" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/ucar/nc2/dods/DODSNetcdfFile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1336" column="6" selection-start="49530" selection-end="49530" vertical-scroll-proportion="0.1368524">
           <folding />
         </state>
       </provider>
