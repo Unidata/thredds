@@ -44,6 +44,8 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.*;
+import org.apache.commons.logging.*;
+
 import ucar.unidata.util.Urlencoded;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +80,31 @@ static public HTTPMethod Post(HTTPSession session, String urlencoded) throws HTT
     {return new HTTPMethod(HTTPSession.Methods.Post,session,urlencoded);}
 static public HTTPMethod Options(HTTPSession session, String urlencoded) throws HTTPException
     {return new HTTPMethod(HTTPSession.Methods.Options,session,urlencoded);}
+
+
+static private final Log LOG = LogFactory.getLog(HTTPMethod.class);
+
+//////////////////////////////////////////////////
+// Define a Retry Handler that supports more retries and is verbose.
+
+    static final int MAXRETRIES = 10;
+
+    static public class RetryHandler extends  org.apache.commons.httpclient.DefaultHttpMethodRetryHandler
+    {
+	static final boolean verbose = true;
+
+        public RetryHandler() {super(MAXRETRIES,false);}
+        public boolean retryMethod(final org.apache.commons.httpclient.HttpMethod method,
+                                   final IOException exception,
+                                   int executionCount)
+        {
+	    if(verbose)
+		    LOG.info(String.format("Retry: count=%d exception=%s\n",executionCount, exception.toString()));
+	    return super.retryMethod(method,exception,executionCount);
+        }
+    }
+
+
 
 //////////////////////////////////////////////////
 // Static fields
@@ -219,6 +246,10 @@ public int execute() throws HTTPException
                 hmp.setParameter(key, params.get(key));
             }
         }
+
+        // Change the retry handler
+	method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,new RetryHandler());
+
         setcontent();
 
         setAuthentication(session,this);

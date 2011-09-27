@@ -15,6 +15,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
     </list>
     <ignored path="thredds.iws" />
@@ -96,37 +97,37 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TestAuth.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="125" column="107" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DODSNetcdfFile.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="DODSNetcdfFile.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/ucar/nc2/dods/DODSNetcdfFile.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1336" column="6" selection-start="49530" selection-end="49530" vertical-scroll-proportion="0.1368524">
+            <state line="1341" column="0" selection-start="49813" selection-end="49813" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestFiles.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestFiles.java">
+      <file leaf-file-name="ArrayList.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/tools/jdk1.6/src.zip!/java/util/ArrayList.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="113" column="53" selection-start="4146" selection-end="4146" vertical-scroll-proportion="0.0">
+            <state line="546" column="0" selection-start="20058" selection-end="20058" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestNC2.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/TestNC2.java">
+      <file leaf-file-name="Variable.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/Variable.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="65" column="24" selection-start="2756" selection-end="2756" vertical-scroll-proportion="0.0">
+            <state line="821" column="0" selection-start="29083" selection-end="29083" vertical-scroll-proportion="0.33333334">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HTTPMethod.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="112" column="106" selection-start="5246" selection-end="5246" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -200,7 +201,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/../../opendap/build.xml" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/GetDirHandler.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/resources/webapp/WEB-INF/web.xml" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" />
@@ -216,6 +216,7 @@
         <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestOpenDap.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java" />
+        <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java" />
       </list>
     </option>
   </component>
@@ -401,7 +402,7 @@
       <recent name="ucar.nc2.util.net" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.ToolsUI">
+  <component name="RunManager" selected="JUnit.TestAll">
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -1035,7 +1036,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1218" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1048,7 +1049,7 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.47009346" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16380237" sideWeight="0.6700935" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32975295" sideWeight="0.6700935" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39933994" sideWeight="0.5281583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1275,24 +1276,9 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$USER_HOME$/tools/jdk1.6/src.zip!/java/net/SocketInputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="23" selection-start="2261" selection-end="2261" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/tools/jdk1.6/jre/lib/rt.jar!/sun/reflect/NativeMethodAccessorImpl.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="28" selection-start="470" selection-end="470" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar!/org/apache/commons/httpclient/HttpMethodDirector.class">
       <provider selected="true" editor-type-id="text-editor">
         <state line="51" column="146" selection-start="3946" selection-end="3946" vertical-scroll-proportion="-17.48" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="617" column="25" selection-start="16950" selection-end="16950" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="jar://$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar!/org/apache/commons/logging/Log.class">
@@ -1303,6 +1289,11 @@
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="145" column="0" selection-start="5641" selection-end="5641" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="125" column="107" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestFiles.java">
@@ -1345,16 +1336,30 @@
         <state line="369" column="0" selection-start="10915" selection-end="10915" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="125" column="107" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0">
+        <state line="112" column="106" selection-start="5246" selection-end="5246" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/ucar/nc2/dods/DODSNetcdfFile.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1336" column="6" selection-start="49530" selection-end="49530" vertical-scroll-proportion="0.1368524">
+        <state line="1341" column="0" selection-start="49813" selection-end="49813" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/tools/jdk1.6/src.zip!/java/util/ArrayList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="546" column="0" selection-start="20058" selection-end="20058" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/Variable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="821" column="0" selection-start="29083" selection-end="29083" vertical-scroll-proportion="0.33333334">
           <folding />
         </state>
       </provider>
