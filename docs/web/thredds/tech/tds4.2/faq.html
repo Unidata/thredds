@@ -39,7 +39,6 @@
   <li><a href="#catalogCaching">What does the TDS do at startup to read the configuration catalogs? What gets cached? Does it have a way to know a referenced catalog is unchanged? When do referenced catalogs get scanned?</a></li>
   <li><a href="#antDeployTask">Why do I get a message that "class org.apache.catalina.ant.DeployTask
     cannot be found" when I try to build the TDS from source using Ant?</a></li>
-  <li><a href="#rh5SymLinksAndContent">Why does the TDS fail to deploy in the Tomcat provided by RedHat 5?</a></li>
 </ul>
 <h2>Caching</h2>
 <ul>
@@ -47,7 +46,10 @@
 </ul>
 <h2>TDS Install Errors</h2>
 <ul>
+  <li><a href="#contentCreate">ERROR - TdsContext.init(): Content directory does not exist and could not be created</a></li>
+  <li><a href="#rh5SymLinksAndContent">Why does the TDS fail to deploy in the Tomcat provided by RedHat 5?</a></li>
   <li><a href="#listenerStart">SEVERE: Error listenerStart</a></li>
+  <li><a href="#log4jAppender">What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot;?</a></li>
 </ul>
 <h2>Tomcat</h2>
 <ul>
@@ -60,11 +62,6 @@
   <li><a href="#howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></li>
 </ul>
 
-<h2>Tomcat Install Errors</h2>
-<ul>
-  <li> <a href="#contentCreate">ERROR - TdsContext.init(): Content directory does not exist and could not be created</a>&nbsp; </li>
-  <li><a href="#log4jAppender">What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</a></li>
-</ul>
 <hr width="100%">
 <h2>General</h2>
 <p><strong>Q: <a name="strange"></a>I have a strange problem and I need help figuring out whats going on.</strong></p>
@@ -271,13 +268,35 @@ mkdir javaUtilPrefs/.systemPrefs
   </p>
 </blockquote>
 
-<hr width="50%" align="left">
+<hr width="100%">
 
-<p><a name="rh5SymLinksAndContent" id="rh5SymLinksAndContent"></a><strong>
-  Q: Why does the TDS fail to deploy in the Tomcat provided by RedHat 5?</strong>
+<h2>Caching</h2>
+<p><strong>Q: We use <a name="compressed"></a> compressed netcdf files and the very first access to them are quite slow, although  subsequent accesses are much   faster, then become slow again after a while. I   can see that TDS uncompress these files to the cdm cache  directory, but then they must get deleted.  Is there a way to keep them in the cache  permanently? </strong><br>
 </p>
 <blockquote>
-  <p>The Tomcat installation provided with RedHat 5 is run from <code>/usr/share/tomcat5</code>
+  <p>Esentially this is a tradeoff between storage spaceand the time to decompress . I assume you dont want to   store the files uncompressed, so you have to pay the price of that. To control how these files are cached, see:<br>
+    <br>
+    <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/ThreddsConfigXMLFile.html#DiskCache">http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/ThreddsConfigXMLFile.html#DiskCache</a><br>
+    <br>
+    I would suggest that you use:<br>
+  </p>
+</blockquote>
+<pre> &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;true&lt;/alwaysUse&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;</pre>
+<blockquote>
+  <p>    and choose <strong>maxSize</strong> carefully. The default directory is&nbsp;<em>{tomcat}/content/thredds/cache/cdm/ </em>by default, or set it in the above   xml.<br>
+    <br>
+  The   trick is to make <strong>maxSize</strong> big enough to keep the "working set"   uncompressed, ie if there is a reletively small "hot" set of files that   get accessed a lot, you want to give enough cache space to keep them   uncompressed in the cache. Monitor the cache directory closely to see what files stay uncompressed, and how old they are, and modify <strong>maxSize</strong> as needed.<br>
+  </p>
+</blockquote>
+
+<hr>
+<h2>TDS Install Errors</h2>
+
+<p><a name="rh5SymLinksAndContent" id="rh5SymLinksAndContent"></a><strong>
+  Q: Why does the TDS fail to deploy in the Tomcat provided by RedHat 5 or 6?</strong>
+</p>
+<blockquote>
+  <p>The Tomcat installation provided with RedHat 5 and 6 (and with yum) is run from <code>/usr/share/tomcat5</code>
     which contains symbolic links that point into <code>/var/lib/tomcat5</code>. The permissions
     are such that the TDS cannot write the content/thredds directory in the standard location,
     <code>${TOMCAT_HOME}/content/thredds</code> (in this case
@@ -299,38 +318,39 @@ SEVERE: Context [/thredds] startup failed due to previous errors
     like this:
   </p>
   <pre>ERROR - TdsContext.init(): Content directory does not exist and could not be created [/usr/share/tomcat5/content]</pre>
-  <p>The solution is to:</p>
-  <ul>
-    <li>create the TDS <code>content</code> directory by hand,
-      <code>/var/lib/tomcat5/content</code>;</li>
-    <li>make sure the tomcat user owns the directory and has read/write permission; and </li>
-    <li>create the symlink <code>/usr/share/tomcat5/content</code> that points to that directory.</li>
-  </ul>
+  <p>There are currently two solutions:</p>
+  <ol>
+    <li>Create the needed directories by hand and setup appropriate symlinks
+      <ul>
+        <li>create the TDS <code>content</code> directory in <code>/var/lib/tomcat5</code>;
+        </li>
+        <li>make sure the tomcat user owns the <code>content</code> directory and has read/write permission; and</li>
+        <li>create the symlink <code>/usr/share/tomcat5/content</code> that points to the directory created above.</li>
+      </ul>
+    </li>
+    <li>Give the TDS an absolute path to the desired location for the <code>content</code> directory by setting the
+      <strong>tds.content.root.path</strong> system property with a command-line argument (e.g.,
+      "<code>-Dtds.content.root.path=/some/absolute/path</code>"). More information is available
+      <a href="reference/ConfigDirectory.html#moveLocation">here</a>.</li>
+  </ol>
 </blockquote>
 
-<hr width="100%">
+<hr width="50%" align="left">
 
-<h2>Caching</h2>
-<p><strong>Q: We use <a name="compressed"></a> compressed netcdf files and the very first access to them are quite slow, although  subsequent accesses are much   faster, then become slow again after a while. I   can see that TDS uncompress these files to the cdm cache  directory, but then they must get deleted.  Is there a way to keep them in the cache  permanently? </strong><br>
+<p><a name="contentCreate" id="contentCreate"></a>
+  <strong>Q: ERROR - TdsContext.init(): Content directory does not exist and could not be created</strong>
 </p>
 <blockquote>
-  <p>Esentially this is a tradeoff between storage spaceand the time to decompress . I assume you dont want to   store the files uncompressed, so you have to pay the price of that. To control how these files are cached, see:<br>
-    <br>
-    <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/ThreddsConfigXMLFile.html#DiskCache">http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/ThreddsConfigXMLFile.html#DiskCache</a><br>
-    <br>
-    I would suggest that you use:<br>
+  <p>The TDS needs to create the directory <strong>${tomcat_home}/content</strong> but it does not have permission,
+    typically because <strong>${tomcat_home}</strong> is owned by root. Make <strong>${tomcat_home}</strong> owned by
+    the tomcat user, or manually create <strong>${tomcat_home}/content</strong> and make it owned by the tomcat
+    user.<br>
   </p>
 </blockquote>
-<pre> &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;true&lt;/alwaysUse&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;</pre>
-<blockquote>
-  <p>    and choose <strong>maxSize</strong> carefully. The default directory is&nbsp;<em>{tomcat}/content/thredds/cache/cdm/ </em>by default, or set it in the above   xml.<br>
-    <br>
-  The   trick is to make <strong>maxSize</strong> big enough to keep the "working set"   uncompressed, ie if there is a reletively small "hot" set of files that   get accessed a lot, you want to give enough cache space to keep them   uncompressed in the cache. Monitor the cache directory closely to see what files stay uncompressed, and how old they are, and modify <strong>maxSize</strong> as needed.<br>
-  </p>
-</blockquote>
-<hr>
-<h2>TDS Install Errors<a name="listenerStart" id="listenerStart"></a></h2>
-<p><strong> Q: On starting up TDS, I get the error &quot;SEVERE: Error listenerStart&quot; and &quot;SEVERE: Context [/thredds] startup failed due to previous errors&quot;, and TDS wont start.</strong></p>
+
+<hr width="50%" align="left">
+
+<p><strong><a name="listenerStart" id="listenerStart"></a> Q: On starting up TDS, I get the error &quot;SEVERE: Error listenerStart&quot; and &quot;SEVERE: Context [/thredds] startup failed due to previous errors&quot;, and TDS wont start.</strong></p>
 <ul><li>
   <p>Startup output looks something like:</p>
   <pre>1)
@@ -357,8 +377,17 @@ Jul 11, 2011 2:22:12 PM org.apache.catalina.core.StandardContext start SEVERE: C
     <li>Various initialization info messages</li>
     <li>This is the problem, but it doesnt actually contain enough information to know whats going on. It usually means theres an error in how you set up Tomcat.</li>
   </ol>
-  <p>&nbsp;</p>
 </blockquote>
+
+<hr width="50%" align="left">
+
+<p><strong>Q: <a name="log4jAppender"></a>What does this error mean: &quot;log4j:ERROR Attempted to append to closed
+  appender named [foobar]&quot; ?</strong></p>
+<blockquote>
+  <p>The log4j.xml file has 2 loggers with the same name, that uses the appender &quot;foobar&quot;. You must delete one
+    of the loggers.</p>
+</blockquote>
+
 <hr>
 <h2>Tomcat</h2>
 <h2>&nbsp;</h2>
@@ -476,18 +505,6 @@ better to explicitly redeploy the application: </p>
 </blockquote>
 
   <hr>
-  <h2><strong>Tomcat Install Errors</strong></h2>
-  <p><strong>Q: <a name="contentCreate"></a>ERROR - TdsContext.init(): Content directory does not exist and could not be created</strong>&nbsp;</p>
-<blockquote>
-  <p>The TDS needs to create the directory  <strong>${tomcat_home}/content</strong> but it does not have permission, typically because   <strong>${tomcat_home}</strong> is owned by root. Make    <strong>${tomcat_home}</strong> owned by the tomcat user, or manually create   <strong>${tomcat_home}/content</strong> and make it owned by the tomcat user.<br>
-  </p>
-</blockquote>
-<hr>
-<p><strong>Q: <a name="log4jAppender"></a>What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</strong></p>
-<blockquote>
-  <p>The log4j.xml file has 2 loggers with the same name, that uses the appender &quot;foobar&quot;. You must delete one of the loggers.</p>
-</blockquote>
-<hr>
 <h2>Tomcat Resources</h2>
 <ul>
     <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ (Apache site)</a> </li>
