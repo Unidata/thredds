@@ -100,7 +100,7 @@ public class testEngine {
         tInt32_1 = 0;
         tInt32_2 = 1;
 
-        tURL = "http://www.opendap.org";
+        tURL = "http://www.dods.org";
         tStringCount = 0;
     }
 

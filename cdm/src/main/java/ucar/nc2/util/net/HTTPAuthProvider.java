@@ -42,8 +42,6 @@ import java.util.Set;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.auth.*;
-import org.apache.commons.logging.*;
-
 
 /**
  * HTTPAuthCreds contains the necessary information to support a given
@@ -81,7 +79,7 @@ static String USER = "ucar.nc2.user";
 static public final String WWW_AUTH_RESP = "Authorization";   // from HttpMethodDirector
 static public final String PROXY_AUTH_RESP = "Proxy-Authorization"; // from HttpMethodDirector
 
-static private final Log LOG = LogFactory.getLog(HTTPAuthProvider.class);
+static private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(HTTPAuthProvider.class);
 
 //////////////////////////////////////////////////
 // Instance variables
