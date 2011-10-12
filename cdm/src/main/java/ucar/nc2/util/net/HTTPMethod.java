@@ -80,7 +80,6 @@ static public HTTPMethod Post(HTTPSession session, String urlencoded) throws HTT
 static public HTTPMethod Options(HTTPSession session, String urlencoded) throws HTTPException
     {return new HTTPMethod(HTTPSession.Methods.Options,session,urlencoded);}
 
-
 static private org.slf4j.Logger LOG = null;
 
 //////////////////////////////////////////////////
