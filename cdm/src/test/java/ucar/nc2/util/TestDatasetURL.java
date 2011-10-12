@@ -116,7 +116,7 @@ public class TestDatasetURL extends TestCase {
   }
 
   public void testDods() throws URISyntaxException {
-    String uriString = "http://motherlode.ucar.edu:8081/dods/dts/test.53.dods?types[0:1:9]";
+    String uriString = "http://motherlode.ucar.edu:8080/dods/dts/test.53.dods?types[0:1:9]";
     new URI(uriString);
   }
 

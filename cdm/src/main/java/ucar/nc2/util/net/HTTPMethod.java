@@ -44,7 +44,6 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.*;
-import org.apache.commons.logging.*;
 
 import ucar.unidata.util.Urlencoded;
 
@@ -82,7 +81,7 @@ static public HTTPMethod Options(HTTPSession session, String urlencoded) throws 
     {return new HTTPMethod(HTTPSession.Methods.Options,session,urlencoded);}
 
 
-static private final Log LOG = LogFactory.getLog(HTTPMethod.class);
+static private org.slf4j.Logger LOG = null;
 
 //////////////////////////////////////////////////
 // Define a Retry Handler that supports more retries and is verbose.
@@ -91,15 +90,17 @@ static private final Log LOG = LogFactory.getLog(HTTPMethod.class);
 
     static public class RetryHandler extends  org.apache.commons.httpclient.DefaultHttpMethodRetryHandler
     {
-	static final boolean verbose = true;
+	    static final boolean verbose = false;
 
         public RetryHandler() {super(MAXRETRIES,false);}
         public boolean retryMethod(final org.apache.commons.httpclient.HttpMethod method,
                                    final IOException exception,
                                    int executionCount)
         {
-	    if(verbose)
+	    if(verbose) {
+            if(LOG == null)  LOG = org.slf4j.LoggerFactory.getLogger(HTTPMethod.class);
 		    LOG.info(String.format("Retry: count=%d exception=%s\n",executionCount, exception.toString()));
+        }
 	    return super.retryMethod(method,exception,executionCount);
         }
     }

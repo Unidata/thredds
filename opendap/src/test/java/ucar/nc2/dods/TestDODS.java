@@ -43,7 +43,7 @@ import ucar.nc2.util.net.TestAuth;
  */
 public class TestDODS {
   //public static String server = "http://dods.coas.oregonstate.edu:8080/dods/dts/";
-  public static String server = "http://motherlode.ucar.edu:8081/dods/dts/";
+  public static String server = "http://motherlode.ucar.edu:8080/dods/dts/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
