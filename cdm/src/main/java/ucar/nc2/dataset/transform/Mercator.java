@@ -58,6 +58,13 @@ public class Mercator extends AbstractCoordTransBuilder {
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
     double par = readAttributeDouble( ctv, CF.STANDARD_PARALLEL, Double.NaN);
+    if (Double.isNaN(par)) {
+      double scale = readAttributeDouble( ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
+      if (Double.isNaN(scale))
+        throw new IllegalArgumentException("Mercator projection must have attribute "+CF.STANDARD_PARALLEL+" or "+ CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN);
+      par = ucar.unidata.geoloc.projection.Mercator.convertScaleToStandardParallel(scale);
+    }
+
     double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN); // LOOK not used
     double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);

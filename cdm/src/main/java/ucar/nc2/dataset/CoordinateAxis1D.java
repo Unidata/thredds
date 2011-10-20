@@ -863,7 +863,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @return List of ucar.nc2.util.NamedObject, or empty list.
    */
   public List<NamedObject> getNames() {
-    int n = (int) getSize();
+    int n = (int) getDimension(0).getLength();
     List<NamedObject> names = new ArrayList<NamedObject>(n);
     for (int i = 0; i < n; i++)
       names.add(new ucar.nc2.util.NamedAnything(getCoordName(i), getUnitsString()));

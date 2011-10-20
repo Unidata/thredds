@@ -37,6 +37,8 @@ import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.SpecialMathFunction;
 
+import java.math.MathContext;
+
 /**
  * Mercator projection, spherical earth.
  * Projection plane is a cylinder tangent to the earth at tangentLon.
@@ -48,6 +50,20 @@ import ucar.unidata.util.SpecialMathFunction;
  */
 
 public class Mercator extends ProjectionImpl {
+
+  /**
+   * Convert "scale at standard parellel" to "standard parellel"
+   * @param scale scale at standard parallel
+   * @return  standard parellel in degrees
+   */
+  public static double convertScaleToStandardParallel(double scale) {
+    // k = 1 / cos (par); snyder p 44
+    // par = arccos(1/k);
+    double par = Math.acos(1.0/scale);
+    return Math.toRadians(par);
+  }
+
+  /////////////////////////////////////////////////////////////////////
   private final double earthRadius;
   private final double lon0; // longitude of the origin in degrees
   private final double par; // standard parallel in degrees

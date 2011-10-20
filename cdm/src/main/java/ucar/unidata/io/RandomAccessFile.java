@@ -1321,32 +1321,52 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
   }
 
   /**
-   * Reads the next line of text from this file. This method
-   * successively reads bytes from the file until it reaches the end of
-   * a line of text.
-   * <p/>
-   * <p/>
-   * A line of text is terminated by a carriage-return character
-   * (<code>'&#92;r'</code>), a newline character (<code>'&#92;n'</code>), a
-   * carriage-return character immediately followed by a newline
-   * character, or the end of the input stream. The line-terminating
-   * character(s), if any, are included as part of the string returned.
-   * <p/>
-   * <p/>
-   * This method blocks until a newline character is read, a carriage
-   * return and the byte following it are read (to see if it is a
-   * newline), the end of the stream is detected, or an exception is thrown.
+   * Reads the next line of text from this file.  This method successively
+   * reads bytes from the file, starting at the current file pointer,
+   * until it reaches a line terminator or the end
+   * of the file.  Each byte is converted into a character by taking the
+   * byte's value for the lower eight bits of the character and setting the
+   * high eight bits of the character to zero.  This method does not,
+   * therefore, support the full Unicode character set.
    *
-   * @return the next line of text from this file.
-   * @throws IOException if an I/O error occurs.
+   * <p> A line of text is terminated by a carriage-return character
+   * (<code>'&#92;r'</code>), a newline character (<code>'&#92;n'</code>), a
+   * carriage-return character immediately followed by a newline character,
+   * or the end of the file.  Line-terminating characters are discarded and
+   * are not included as part of the string returned.
+   *
+   * <p> This method blocks until a newline character is read, a carriage
+   * return and the byte following it are read (to see if it is a newline),
+   * the end of the file is reached, or an exception is thrown.
+   *
+   * @return the next line of text from this file, or null if end
+   *             of file is encountered before even one byte is read.
+   * @exception IOException  if an I/O error occurs.
    */
   public final String readLine() throws IOException {
-    StringBuilder input = new StringBuilder();
-    int c;
+    StringBuffer input = new StringBuffer();
+    int c = -1;
+    boolean eol = false;
 
-    while (((c = read()) != -1) && (c != '\n')) {
-      input.append((char) c);
+    while (!eol) {
+      switch (c = read()) {
+        case -1:
+        case '\n':
+          eol = true;
+          break;
+        case '\r':
+          eol = true;
+          long cur = getFilePointer();
+          if ((read()) != '\n') {
+            seek(cur);
+          }
+          break;
+        default:
+          input.append((char) c);
+          break;
+      }
     }
+
     if ((c == -1) && (input.length() == 0)) {
       return null;
     }

@@ -102,6 +102,7 @@ public class CdmInit {
       startupLog.error("CdmInit: Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);
     }
 
+    /*
     // new for 4.1 - ehcache object caching
     String ehConfig = ThreddsConfig.get("ehcache.configFile", tdsContext.getWebinfPath() + "/ehcache.xml");
     String ehDirectory = ThreddsConfig.get("ehcache.dir", null);
@@ -115,6 +116,7 @@ public class CdmInit {
     } catch (IOException ioe) {
       startupLog.error("CdmInit: Cant read ehcache config file "+ehConfig, ioe);
     }
+    */
 
     boolean useBytesForDataSize = ThreddsConfig.getBoolean("catalogWriting.useBytesForDataSize", false);    
     InvCatalogFactory10.useBytesForDataSize(useBytesForDataSize);

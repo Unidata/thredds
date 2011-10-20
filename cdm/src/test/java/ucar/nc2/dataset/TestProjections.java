@@ -220,4 +220,48 @@ public class TestProjections extends TestCase {
 
     ncd.close();
   }
+
+  public void testMercatorScaleFactor() throws IOException {
+    String filename = testDir+ "melb-small_M-1SP.nc";
+    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
+    GridDataset gds = new GridDataset(ncd);
+    GridCoordSystem gsys = null;
+    ProjectionImpl p = null;
+
+    for (ucar.nc2.dt.GridDataset.Gridset g : gds.getGridsets()) {
+      gsys = g.getGeoCoordSystem();
+      for (CoordinateTransform t : gsys.getCoordinateTransforms()) {
+        if (t instanceof ProjectionCT) {
+          p = ((ProjectionCT)t).getProjection();
+          break;
+        }
+      }
+    }
+
+    CoordinateAxis1D xaxis = (CoordinateAxis1D) gsys.getXHorizAxis();
+    CoordinateAxis1D yaxis =  (CoordinateAxis1D) gsys.getYHorizAxis();
+    p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
+    LatLonPointImpl start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
+    LatLonPointImpl end =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
+    System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
+    System.out.printf( "end = %f %f%n", end.getLatitude(), end.getLongitude());
+
+    /*
+    wgrib2 /data/laps/lapsprd/gr2/102711000.gr2 -ijlat 358 353 -d 1
+      1:0:(358,353),lon=270.784605,lat=41.527360,val=216.094
+
+    wgrib2 /data/laps/lapsprd/gr2/102711000.gr2 -grid -d 11:0:grid_template=20:
+	    polar stereographic grid: (358 x 353) input WE|EW:SN output WE:SN res 8
+	    North pole lat1 26.023346 lon1 251.023136 latD 34.183360 lonV 259.280944 dx 5000.000000 m dy 5000.000000 m
+     */
+
+    assert TestAll.closeEnough(start1.getLatitude(), -36.940012) : start1.getLatitude();
+    assert TestAll.closeEnough(start1.getLongitude(), 145.845218) : start1.getLongitude();
+
+    assert TestAll.closeEnough(end.getLatitude(), -36.918406) :  end.getLatitude();
+    assert TestAll.closeEnough(end.getLongitude(), 145.909746) : end.getLongitude();
+
+    ncd.close();
+  }
+
 }

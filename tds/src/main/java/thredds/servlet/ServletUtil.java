@@ -606,8 +606,10 @@ public class ServletUtil {
       contentLength = endPos - startPos;
     }
 
-    res.addHeader("Content-Length", Long.toString(contentLength));
-    // res.setContentLength( (int) contentLength);
+    if (contentLength > Integer.MAX_VALUE)
+      res.addHeader("Content-Length", Long.toString(contentLength));  // allow content length > MAX_INT
+    else
+      res.setContentLength( (int) contentLength); // note HEAD only allows this
 
     String filename = file.getPath();
     boolean debugRequest = Debug.isSet("returnFile");

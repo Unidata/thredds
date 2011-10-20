@@ -150,6 +150,38 @@ public class TestTransforms extends TestCase {
     test(filename, "sigma", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
+  /* btestOceanS3
+  problem is that u is
+
+   float u(ocean_time=1, s_rho=6, eta_u=120, xi_u=155);
+     :coordinates = "lon_u lat_u s_rho ocean_time";
+
+    double s_rho(s_rho=6);
+     :long_name = "S-coordinate at RHO-points";
+     :positive = "up";
+     :standard_name = "ocean_s_coordinate";
+     :formula_terms = "s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc";
+
+     which uses zeta:
+        float zeta(ocean_time=1, eta_rho=120, xi_rho=156);
+
+     which is 120 x 126 instead of 120 x 125.
+
+     seems to be an rsignell file. may be motivation for staggered convention
+
+ OceanS_Transform_s_rho type=Vertical
+    standard_name = ocean_s_coordinate
+    formula_terms = s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc
+    height_formula = height(x,y,z) = depth_c*s(z) + (depth(x,y)-depth_c)*C(z) + eta(x,y) * (1 + (depth_c*s(z) + (depth(x,y)-depth_c)*C(z))/depth(x,y)
+    C_formula = C(z) = (1-b)*sinh(a*s(z))/sinh(a) + b*(tanh(a*(s(z)+0.5))/(2*tanh(0.5*a))-0.5)
+    Eta_variableName = zeta
+    S_variableName = s_rho
+    Depth_variableName = h
+    Depth_c_variableName = hc
+    A_variableName = theta_s
+    B_variableName = theta_b
+
+   */
   public void btestOceanS3() throws IOException, InvalidRangeException {
     String filename = testDir+ "ocean_his.nc";
     test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
