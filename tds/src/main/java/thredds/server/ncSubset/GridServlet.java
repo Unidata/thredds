@@ -308,12 +308,13 @@ public class GridServlet extends AbstractServlet {
         sendPointFile(req, res, gds, qp);
 
       } catch (InvalidRangeException e) {
-        e.printStackTrace();
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
         if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       }
 
     } catch (Throwable e) {
+      System.err.println("GridServlet.processGridAsPoint req="+req.getRequestURI());
+      e.printStackTrace(); // logger not showing stack trace !!
       log.error("GridServlet.processGridAsPoint", e);
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

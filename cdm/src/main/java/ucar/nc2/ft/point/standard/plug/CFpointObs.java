@@ -1235,8 +1235,13 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.structName = obsIsStruct ? "record" : childDim.getName();
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
 
+    // kunicki 10/21/2011
     Variable ragged_parentIndex = Evaluator.getVariableWithAttributeValue(ds, CF.RAGGED_PARENTINDEX, parentDim.getName());
-    if ((null == ragged_parentIndex) || (ragged_parentIndex.getRank() == 0) || (ragged_parentIndex.getDimension(0).getName() != childDim.getName())) {
+    if ( (ragged_parentIndex == null) ||
+         (!ragged_parentIndex.isMemberOfStructure() && (ragged_parentIndex.getRank() == 0 || ragged_parentIndex.getDimension(0).getName() != childDim.getName()) ||
+         (ragged_parentIndex.isMemberOfStructure() && (ragged_parentIndex.getParentStructure().getRank() == 0 || ragged_parentIndex.getParentStructure().getDimension(0).getName() != childDim.getName())))
+       ) {
+    // if ((null == ragged_parentIndex) || (ragged_parentIndex.getRank() == 0) || (ragged_parentIndex.getDimension(0).getName() != childDim.getName())) {
       errlog.format("there must be a ragged_parent_index variable with outer dimension that matches obs dimension %s%n", childDim.getName());
       return null;
     }

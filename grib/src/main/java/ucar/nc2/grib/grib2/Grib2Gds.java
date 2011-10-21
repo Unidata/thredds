@@ -853,6 +853,7 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
       super(data);
       this.template = 40;
       Nparellels = getOctet4(68);
+      deltaLon = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
     }
 
     @Override

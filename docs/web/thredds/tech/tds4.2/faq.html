@@ -15,6 +15,7 @@
 <h2>General</h2>
 <ul>
   <li><a href="#strange">I have a strange problem and I need help figuring out whats going on!</a></li>
+  <li><a href="#restart">I made changes to my catalog and restarted tomcat but nothing changes!</a></li>
 </ul>
 <h2>Catalogs</h2>
 <ul>
@@ -82,6 +83,28 @@
       <li>Send the logs and a detailed description of what you do to make the problem happen, and what the problem looks like. If it took a while to get the problem to happen, note what time it happened so that we can correlate with the logs.</li>
     </ol>
   </li>
+</ol>
+<p><strong>Q: I made changes to my catalog and restarted<a name="restart"></a> tomcat but nothing changes.</strong></p>
+<ol>
+  <li>look in<strong> catalina.out </strong>for a message that tomcat did not shut down:<br>
+    <pre>java.net.BindException: Address already in use:8080 </pre>
+  </li>
+  <li>make sure tomcat really gets stopped:
+    <ol>
+      <li><em>ps -ef | grep java </em>to find the process id </li>
+      <li><em>kill &lt;pid&gt; </em>or<em> kill -9 &lt;pid&gt;</em></li>
+      <li><em>ps -ef | grep java</em> to verify that the process goes away. </li>
+    </ol>
+   </li>
+   <li>
+   Restart tomcat: 
+     <ol>
+       <li><em>sh ./startup.sh
+         </em></li>
+       <li>Check <strong>catalina.out</strong> that tomcat started correctly</li>
+       <li><em>ps -ef | grep java</em> to verify that theer is a new tomcat process.</li>
+     </ol>
+   </li>
 </ol>
 <hr width="100%">
 <h2>Catalogs</h2>

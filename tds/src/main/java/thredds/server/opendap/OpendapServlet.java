@@ -286,7 +286,7 @@ public class OpendapServlet extends AbstractServlet
     } catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
-        log.info("ClientAbortException: " + e.getMessage());
+        log.debug("ClientAbortException: " + e.getMessage());
         log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_CLIENT_ABORT, -1));
         return;
       }
