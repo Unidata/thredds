@@ -15,6 +15,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolver.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolver.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolverFactory.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolverFactory.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
     </list>
@@ -89,10 +91,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HTTPSession.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="HTTPSession.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="507" column="0" selection-start="16583" selection-end="16583" vertical-scroll-proportion="0.29867986">
+            <state line="529" column="60" selection-start="17220" selection-end="17220" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HttpUriResolver.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolver.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="68" column="31" selection-start="2839" selection-end="2839" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HttpUriResolverFactory.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolverFactory.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="78" column="31" selection-start="3227" selection-end="3227" vertical-scroll-proportion="0.5033557">
               <folding />
             </state>
           </provider>
@@ -112,8 +132,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/../../opendap/src/test/resources/webapp/WEB-INF/web.xml" />
-        <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/IO.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/EscapeStrings.java" />
         <option value="$PROJECT_DIR$/../../tds/src/main/java/thredds/server/opendap/OpendapServlet.java" />
@@ -128,6 +146,8 @@
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" />
+        <option value="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolver.java" />
+        <option value="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolverFactory.java" />
       </list>
     </option>
   </component>
@@ -947,19 +967,21 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1298" height="818" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4733638" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.5281583" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.42242992" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.46879756" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.0" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2590759" sideWeight="0.53120244" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39933994" sideWeight="0.5281583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -967,8 +989,6 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32990655" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.47476634" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.47009346" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1187,11 +1207,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar!/org/apache/commons/logging/Log.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="17" selection-start="168" selection-end="168" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="145" column="0" selection-start="5641" selection-end="5641" vertical-scroll-proportion="0.0" />
@@ -1254,14 +1269,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="51" column="30" selection-start="2609" selection-end="2609" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="51" column="30" selection-start="2609" selection-end="2609" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="507" column="0" selection-start="16583" selection-end="16583" vertical-scroll-proportion="0.29867986">
+        <state line="529" column="60" selection-start="17220" selection-end="17220" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="31" selection-start="2839" selection-end="2839" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolverFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="78" column="31" selection-start="3227" selection-end="3227" vertical-scroll-proportion="0.5033557">
           <folding />
         </state>
       </provider>

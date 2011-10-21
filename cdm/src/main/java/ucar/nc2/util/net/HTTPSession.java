@@ -58,7 +58,6 @@ static final public HTTPAuthScheme DIGEST = HTTPAuthScheme.DIGEST;
 static final public HTTPAuthScheme SSL = HTTPAuthScheme.SSL;
 static final public HTTPAuthScheme PROXY = HTTPAuthScheme.PROXY;
 
-static int DFALTTHREADCOUNT = 50;
 static public int SC_NOT_FOUND = HttpStatus.SC_NOT_FOUND;
 static public int SC_UNAUTHORIZED = HttpStatus.SC_UNAUTHORIZED;
 static public int SC_OK = HttpStatus.SC_OK;
@@ -85,6 +84,8 @@ static public String HTTP_TARGET_HOST = "<undefined>";
 static public String ORIGIN_SERVER = "<undefined>";
 static public String WAIT_FOR_CONTINUE = "<undefined>";
 
+static int DFALTTHREADCOUNT = 50;
+static int DFALTTIMEOUT = 5*60*1000; // 5 minutes (300000 milliseconds)
 
 static MultiThreadedHttpConnectionManager connmgr;
 //fix: protected static SchemeRegistry schemes;
@@ -94,6 +95,7 @@ static List<HTTPSession> sessionList; // List of all HTTPSession instances
 static boolean globalauthpreemptive = false;
 static CredentialsProvider globalProvider = null;
 static int globalSoTimeout = 0;
+static int globalConnectionTimeout = 0;
 
 static {
     //fix: schemes = new SchemeRegistry();
@@ -104,8 +106,8 @@ static {
     // allow self-signed certificates
     Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
     sessionList = new ArrayList<HTTPSession>(); // see kill function
-    setGlobalConnectionTimeout(5*60);
-    setGlobalSoTimeout(5*60);
+    setGlobalConnectionTimeout(DFALTTIMEOUT);
+    setGlobalSoTimeout(DFALTTIMEOUT);
 }
 
 // ////////////////////////////////////////////////////////////////////////
@@ -250,6 +252,8 @@ protected void construct(String urlencoded)
 
         if(globalSoTimeout > 0)
             setSoTimeout(globalSoTimeout);
+        if(globalConnectionTimeout > 0)
+            setConnectionTimeout(globalConnectionTimeout);
 
         setAuthenticationPreemptive(globalauthpreemptive);
 
@@ -285,7 +289,11 @@ public void setAuthenticationPreemptive(boolean tf)
 public void setSoTimeout(int timeout)
 {
     sessionClient.getParams().setSoTimeout(timeout);
+}
 
+public void setConnectionTimeout(int timeout)
+{
+    sessionClient.setConnectionTimeout(timeout);
 }
 
 
