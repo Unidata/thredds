@@ -15,8 +15,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/TestDatasetURL.java" afterPath="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/TestDatasetURL.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestSources.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestSources.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" />
     </list>
     <ignored path="thredds.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -80,10 +83,55 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="HTTPMethod.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="HTTPMethod.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="91" column="44" selection-start="4562" selection-end="4562" vertical-scroll-proportion="0.029462738">
+            <state line="91" column="44" selection-start="4562" selection-end="4562" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dodsTestsDAS.txt" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../cdm/doc/dods/dodsTestsDAS.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="409" column="37" selection-start="15000" selection-end="15000" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="URLnaming.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="297" column="55" selection-start="10713" selection-end="10713" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestDatasetURL.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/TestDatasetURL.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="118" column="55" selection-start="4830" selection-end="4830" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestSources.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestSources.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="51" column="70" selection-start="2071" selection-end="2071" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestDODS.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="45" column="64" selection-start="2319" selection-end="2319" vertical-scroll-proportion="0.17518248">
               <folding />
             </state>
           </provider>
@@ -130,8 +178,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/IO.java" />
-        <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/EscapeStrings.java" />
         <option value="$PROJECT_DIR$/../../tds/src/main/java/thredds/server/opendap/OpendapServlet.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/resources/dts/WEB-INF/web.xml" />
@@ -139,13 +185,15 @@
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPBasicProvider.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestOpenDap.java" />
-        <option value="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java" />
-        <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolver.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolverFactory.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java" />
+        <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java" />
+        <option value="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/TestDatasetURL.java" />
+        <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestSources.java" />
+        <option value="$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java" />
       </list>
     </option>
   </component>
@@ -188,6 +236,37 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Favorites" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="thredds" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="thredds" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="thredds" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="opendap" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="Scope">
         <subPane subId="Project Files">
           <PATH>
@@ -286,52 +365,21 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Favorites" />
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thredds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="PackagesPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thredds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thredds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="opendap" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="MemberChooser.sorted" value="false" />
     <property name="recentsLimit" value="5" />
+    <property name="MemberChooser.sorted" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
-    <property name="project.structure.side.proportion" value="0.2" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="dynamic.classpath" value="false" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -973,11 +1021,12 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1298" height="818" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4733638" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.5281583" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.42242992" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -985,15 +1034,14 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.4718417" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.47792998" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39933994" sideWeight="0.5281583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.51598173" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.5098935" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32990655" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4733638" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.46879756" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1213,21 +1261,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPAuthProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="145" column="0" selection-start="5641" selection-end="5641" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="125" column="107" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestFiles.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="113" column="53" selection-start="4146" selection-end="4146" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/TestNC2.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="65" column="24" selection-start="2756" selection-end="2756" vertical-scroll-proportion="0.0" />
@@ -1241,11 +1274,6 @@
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/Variable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="821" column="0" selection-start="29083" selection-end="29083" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="51" column="0" selection-start="2476" selection-end="2476" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/TestAll.java">
@@ -1268,9 +1296,11 @@
         <state line="369" column="0" selection-start="10915" selection-end="10915" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java">
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="296" column="93" selection-start="10657" selection-end="10657" vertical-scroll-proportion="0.118236475" />
+        <state line="91" column="44" selection-start="4562" selection-end="4562" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java">
@@ -1288,9 +1318,37 @@
         <state line="85" column="91" selection-start="3358" selection-end="3358" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java">
+    <entry file="file://$PROJECT_DIR$/../../cdm/doc/dods/dodsTestsDAS.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="91" column="44" selection-start="4562" selection-end="4562" vertical-scroll-proportion="0.029462738">
+        <state line="409" column="37" selection-start="15000" selection-end="15000" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="297" column="55" selection-start="10713" selection-end="10713" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/TestDatasetURL.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="118" column="55" selection-start="4830" selection-end="4830" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestSources.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="51" column="70" selection-start="2071" selection-end="2071" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/ucar/nc2/dods/TestDODS.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="45" column="64" selection-start="2319" selection-end="2319" vertical-scroll-proportion="0.17518248">
           <folding />
         </state>
       </provider>
