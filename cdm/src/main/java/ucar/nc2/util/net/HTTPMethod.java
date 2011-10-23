@@ -85,11 +85,11 @@ static private org.slf4j.Logger LOG = null;
 //////////////////////////////////////////////////
 // Define a Retry Handler that supports more retries and is verbose.
 
-    static final int MAXRETRIES = 10;
 
     static public class RetryHandler extends  org.apache.commons.httpclient.DefaultHttpMethodRetryHandler
     {
-	    static final boolean verbose = false;
+        static final int MAXRETRIES = 10;
+	static final boolean verbose = false;
 
         public RetryHandler() {super(MAXRETRIES,false);}
         public boolean retryMethod(final org.apache.commons.httpclient.HttpMethod method,

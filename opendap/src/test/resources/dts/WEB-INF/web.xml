@@ -8,7 +8,7 @@
 
   <context-param>
     <param-name>ContextPath</param-name>
-    <param-value>/dods/dts</param-value>
+    <param-value>/dts</param-value>
   </context-param>
   <!-- Turn on some more targeted debugging. -->
   <context-param>

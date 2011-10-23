@@ -134,7 +134,7 @@
   <property name="war.name" value="dts"/>
   <property name="war.dir" location="${build.dir}/${war.name}"/>
   <property name="webapp.dir" value="src/test/resources/dts"/>
-  <property name="warfile" value="dods#${war.name}.war"/>
+  <property name="warfile" value="${war.name}.war"/>
 
   <!-- tomcat directory properties -->  
   <property name="tomcat.dir" location="c:/tools/tomcat6"/>
