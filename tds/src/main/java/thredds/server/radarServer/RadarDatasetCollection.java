@@ -161,7 +161,7 @@ public class RadarDatasetCollection {
       ArrayList<String> rdc = new ArrayList<String>();
       sb.setLength( 0 );
       sb.append("In directory ").append(dir.getParent()).append("/").append(dir.getName());
-      log.info( sb.toString() );
+      log.debug( sb.toString() );
       String[] children = dir.list();
       for (String child : children) {
         if ( ! child.startsWith( ".2"))

@@ -594,8 +594,13 @@ public class InvDatasetFmrc extends InvCatalogRef {
         int pos2 = name.indexOf("hr");
         if ((pos1<0) || (pos2<0)) return null;
         String id = name.substring(pos1+OFFSET_NAME.length(), pos2);
-        double hour = Double.parseDouble(id);
-        result = fmrc.getForecastOffsetDataset( hour);
+
+        try {
+          double hour = Double.parseDouble(id);
+          result = fmrc.getForecastOffsetDataset( hour);
+        } catch (NumberFormatException e) {
+          return null; // user input error
+        }
 
       } else if (type.equals(RUNS)) {
         int pos1 = name.indexOf(RUN_NAME);
@@ -604,7 +609,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
         DateFormatter formatter = new DateFormatter();
         Date date = formatter.getISODate(id);
-        result = fmrc.getRunTimeDataset(date);
+        result = (date == null) ? null : fmrc.getRunTimeDataset(date);
 
       } else if (type.equals(FORECAST)) {
         int pos1 = name.indexOf(FORECAST_NAME);
@@ -613,7 +618,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
         DateFormatter formatter = new DateFormatter();
         Date date = formatter.getISODate(id);
-        result = fmrc.getForecastTimeDataset(date);
+        result = (date == null) ? null : fmrc.getForecastTimeDataset(date);
       }
     }
 

@@ -206,7 +206,7 @@
     <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Vertical Wind Motion</GCMD>
   </parameter>
   <parameter code="39">
-    <description>Vertical velocity</description>
+    <description>Pressure Vertical velocity</description>
     <units>Pa s^-1</units>
     <CF>lagrangian_tendency_of_air_pressure</CF>
     <GCMD>EARTH SCIENCE > Atmosphere > Atmospheric Winds > Vertical Wind Motion</GCMD>

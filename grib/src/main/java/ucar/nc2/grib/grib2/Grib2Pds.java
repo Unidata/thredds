@@ -12,7 +12,8 @@ import java.util.Formatter;
 import java.util.zip.CRC32;
 
 /**
- * Describe
+ * Abstract superclass for GRIB2 PDS handling.
+ * Inner classes are specific to each template.
  *
  * @author caron
  * @since 3/28/11
@@ -133,6 +134,10 @@ public abstract class Grib2Pds {
     return GribNumbers.UNDEFINED;
   }
 
+  public int getLevelScale() {
+    return GribNumbers.UNDEFINED;
+  }
+
   public double getLevelValue2() {
     return GribNumbers.UNDEFINED;
   }
@@ -247,8 +252,12 @@ public abstract class Grib2Pds {
    * @return input[index-1] & 0xff
    */
   public final int getOctet(int index) {
-    if (index > input.length) return GribNumbers.UNDEFINED;
+    //if (index > input.length) return GribNumbers.UNDEFINED; // allow exception
     return input[index - 1] & 0xff;
+  }
+
+  public final int getOctetSigned(int index) {
+    return GribNumbers.convertSignedByte(input[index - 1]);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -377,9 +386,14 @@ public abstract class Grib2Pds {
      * @return float FirstFixedSurfaceValue
      */
     public double getLevelValue1() {
-      int scaleFirstFixedSurface = getOctet(24);
+      int scaleFirstFixedSurface = getOctetSigned(24);
       int valueFirstFixedSurface = GribNumbers.int4(getOctet(25), getOctet(26), getOctet(27), getOctet(28));
       return applyScaleFactor(scaleFirstFixedSurface, valueFirstFixedSurface);
+    }
+
+    // debug
+    public int getLevelScale() {
+      return getOctet(24);
     }
 
     /**
@@ -397,7 +411,7 @@ public abstract class Grib2Pds {
      * @return float FirstFixedSurfaceValue
      */
     public double getLevelValue2() {
-      int scale = getOctet(30);
+      int scale = getOctetSigned(30);
       int value = GribNumbers.int4(getOctet(31), getOctet(32), getOctet(33), getOctet(34));
       return applyScaleFactor(scale, value);
     }
@@ -708,13 +722,13 @@ public abstract class Grib2Pds {
     }
 
     public double getProbabilityLowerLimit() {
-      int scale = getOctet(38);
+      int scale = getOctetSigned(38);
       int value = GribNumbers.int4(getOctet(39), getOctet(40), getOctet(41), getOctet(42));
       return applyScaleFactor(scale, value);
     }
 
     public double getProbabilityUpperLimit() {
-      int scale = getOctet(43);
+      int scale = getOctetSigned(43);
       int value = GribNumbers.int4(getOctet(44), getOctet(45), getOctet(46), getOctet(47));
       return applyScaleFactor(scale, value);
     }
@@ -1103,7 +1117,7 @@ public abstract class Grib2Pds {
         sb.number = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
         sb.series = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
         sb.instrumentType = getOctet(pos + 4);
-        int scaleFactor = getOctet(pos + 5);
+        int scaleFactor = getOctetSigned(pos + 5);
         int svalue = GribNumbers.int4(getOctet(pos + 6), getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9));
         sb.value = applyScaleFactor(scaleFactor, svalue);
         pos += 10;
@@ -1154,6 +1168,13 @@ public abstract class Grib2Pds {
     return calendar.getTimeInMillis();*/
   }
 
+  /**
+   * Apply scale factor to value, return a double result.
+   *
+   * @param scale signed scale factor
+   * @param value apply to this value
+   * @return   value ^ -scale
+   */
   double applyScaleFactor(int scale, int value) {
     return ((scale == 0) || (scale == 255) || (value == 0)) ? value : value * Math.pow(10, -scale);
   }

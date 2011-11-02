@@ -1435,7 +1435,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (id == null)
       setId(findAttValueIgnoreCase(null, "_Id", null));
     if (title == null)
-      setId(findAttValueIgnoreCase(null, "_Title", null));
+      setTitle(findAttValueIgnoreCase(null, "_Title", null));
   }
 
   /**

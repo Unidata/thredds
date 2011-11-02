@@ -498,6 +498,7 @@ class FmrcDataset {
    * @throws IOException on read error
    */
   private GridDataset buildDataset2D(NetcdfDataset result, NetcdfDataset proto, FmrcInvLite lite) throws IOException {
+    if (lite == null) return null;
     // make a copy, so that this object can coexist with previous incarnations
     if (result == null) result = new NetcdfDataset();
     result.setLocation(lite.collectionName);
@@ -823,6 +824,7 @@ class FmrcDataset {
    * @throws IOException on read error
    */
   private GridDataset buildDataset1D(NetcdfDataset proto, FmrcInvLite lite, TimeInventory timeInv) throws IOException {
+    if (timeInv == null) return null;
     NetcdfDataset result = new NetcdfDataset(); // make a copy, so that this object can coexist with previous incarnations
     result.setLocation(lite.collectionName);
     transferGroup(proto.getRootGroup(), result.getRootGroup(), result);

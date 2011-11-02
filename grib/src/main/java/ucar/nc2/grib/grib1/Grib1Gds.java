@@ -152,14 +152,14 @@ public abstract class Grib1Gds {
     return GribNumbers.int4(getOctet(start), getOctet(start + 1), getOctet(start + 2), getOctet(start + 3));
   }
 
-  protected float getScaledValue(int start) {
+  /* protected float getScaledValue(int start) {
     int scaleFactor = getOctet(start);
     int scaleValue = getOctet4(start + 1);
     if (scaleFactor != 0)
       return (float) (scaleValue / Math.pow(10, scaleFactor));
     else
       return (float) scaleValue;
-  }
+  } */
 
   public boolean isLatLon() {
     return false;

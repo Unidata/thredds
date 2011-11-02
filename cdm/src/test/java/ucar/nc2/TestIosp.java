@@ -37,6 +37,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.Range;
+import ucar.nc2.grib.TestGribMiscCoordinates;
 import ucar.nc2.util.CompareNetcdf;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class TestIosp {
 
     suite.addTest( new TestSuite( TestReadFormats.class)); // sanity check
 
-    suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestMiscCoordinates.class));
+    suite.addTest( new TestSuite( TestGribMiscCoordinates.class));
     suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestOfsData.class));
     // suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestGridGribIosp.class));
     

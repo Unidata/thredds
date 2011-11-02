@@ -112,12 +112,16 @@ public abstract class Grib2Gds {
     return data[index - 1] & 0xff;
   }
 
+  protected int getOctetSigned(int index) {
+    return GribNumbers.convertSignedByte(data[index - 1]);
+  }
+
   protected int getOctet4(int start) {
     return GribNumbers.int4(getOctet(start), getOctet(start + 1), getOctet(start + 2), getOctet(start + 3));
   }
 
   protected float getScaledValue(int start) {
-    int scaleFactor = getOctet(start);
+    int scaleFactor = getOctetSigned(start);
     int scaleValue = getOctet4(start + 1);
     if (scaleFactor != 0)
       return (float) (scaleValue / Math.pow(10, scaleFactor));

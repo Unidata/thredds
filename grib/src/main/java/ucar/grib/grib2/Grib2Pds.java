@@ -41,7 +41,6 @@ package ucar.grib.grib2;
 import net.jcip.annotations.Immutable;
 import ucar.grib.GribNumbers;
 import ucar.grib.GribPds;
-import ucar.nc2.time.CalendarDate;
 
 import java.io.IOException;
 import java.util.Calendar;

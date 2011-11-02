@@ -655,6 +655,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (location.startsWith("dods:")) {
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
+
     } else if ( location.startsWith("file:") && (
                location.endsWith(".dds")
                || location.endsWith(".das")
@@ -674,18 +675,21 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         throw new IOException(log.toString());
       return ncfile;
 
-    } else if (location.endsWith(".xml") || location.endsWith(".ncml")) { //open as a NetcdfDataset through NcML
-      if (!location.startsWith("http:") && !location.startsWith("file:"))
-        location = "file:" + location;
-      return acquireNcml(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
-
+      // http: may be dods or cdmremote or HttpService
     } else if (location.startsWith("http:")) {
       ServiceType stype = disambiguateHttp(location);
       if (stype == ServiceType.OPENDAP)
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject); // try as a dods file
       else if (stype == ServiceType.CdmRemote)
         return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through CDM remote
-      // else fall through for HttpService
+    // else fall through for HttpService
+    }
+
+    // ncml file
+    if (location.endsWith(".xml") || location.endsWith(".ncml")) { //open as a NetcdfDataset through NcML
+      if (!location.startsWith("http:") && !location.startsWith("file:"))
+        location = "file:" + location;
+      return acquireNcml(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
     }
 
     if (cache != null) {

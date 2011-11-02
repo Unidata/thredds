@@ -38,11 +38,11 @@ public abstract class GribPds {
   }
 
   /**
-   * Get the indexth byte in the PDS as an integer.
+   * Get the index-th byte in the PDS as an unsigned integer.
    * THIS IS ONE BASED (not zero) to correspond with the manual
    *
    * @param index 1 based index
-   * @return input[index-1] & 0xff
+   * @return input[index-1] & 0xff  (unsigned integer)
    */
   public final int getOctet(int index) {
     if (index > input.length) return GribNumbers.UNDEFINED;

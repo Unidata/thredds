@@ -381,10 +381,11 @@ public class Grib2ReportPanel extends JPanel {
       Counter statTypeSet = new Counter("statType");
       Counter NTimeIntervals = new Counter("NTimeIntervals");
       Counter processId = new Counter("processId");
+      Counter scale = new Counter("scale");
 
       for (MFile mfile : dcm.getFiles()) {
         f.format(" %s%n", mfile.getPath());
-        doPdsSummary(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, processId);
+        doPdsSummary(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, processId, scale);
       }
 
       templateSet.show(f);
@@ -392,6 +393,7 @@ public class Grib2ReportPanel extends JPanel {
       statTypeSet.show(f);
       NTimeIntervals.show(f);
       processId.show(f);
+      scale.show(f);
     }
   }
 
@@ -448,7 +450,7 @@ public class Grib2ReportPanel extends JPanel {
   }
 
   private void doPdsSummary(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter statTypeSet, Counter NTimeIntervals,
-                            Counter processId) throws IOException {
+                            Counter processId, Counter scale) throws IOException {
     String path = mf.getPath();
     Grib2Index index = new Grib2Index();
     if (!index.readIndex(path, mf.getLastModified()))
@@ -459,6 +461,12 @@ public class Grib2ReportPanel extends JPanel {
       templateSet.count(pds.getTemplateNumber());
       timeUnitSet.count(pds.getTimeUnit());
       processId.count(pds.getGenProcessId());
+      if (pds.getLevelScale() > 127 ) {
+        if (Grib2Utils.isLevelUsed(pds.getLevelType1())) {
+          System.out.printf("%s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), pds.getLevelScale());
+          scale.count(pds.getLevelScale());
+        }
+      }
 
       if (pds instanceof Grib2Pds.PdsInterval) {
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;

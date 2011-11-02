@@ -34,19 +34,10 @@
 package ucar.nc2.grib;
 
 import ucar.unidata.io.RandomAccessFile;
-
-/*
- * GribNumbers.java  1.0  10/29/2004
- *
- * (C) Robb Kambic
- */
-
 import java.io.IOException;
 
-
 /**
- * A class that contains several static methods for converting multiple
- * bytes into one float or integer.
+ * Utilities for reading and interpreting GRIB bytes.
  *
  * @author Robb Kambic  10/20/04
  * @version 2.0
@@ -64,46 +55,6 @@ public final class GribNumbers {
    * Grib uses this internal to mean missing
    */
   public static final int MISSING = 255;
-
-  /**
-   * Bit mask for bit 1 in an octet
-   */
-  public static final int BIT_1 = 1 << 7;
-
-  /**
-   * Bit mask for bit 1 in an octet
-   */
-  public static final int BIT_2 = 1 << 6;
-
-  /**
-   * Bit mask for bit 1 in an octet
-   */
-  public static final int BIT_3 = 1 << 5;
-
-  /**
-   * Bit mask for bit 1 in an octet
-   */
-  public static final int BIT_4 = 1 << 4;
-
-  /**
-   * Bit mask for bit 1 in an octet
-   */
-  public static final int BIT_5 = 1 << 3;
-
-  /**
-   * Bit mask for bit 1 in an octet
-   */
-  public static final int BIT_6 = 1 << 2;
-
-  /**
-   * Bit mask for bit 1 in an octet
-   */
-  public static final int BIT_7 = 1 << 1;
-
-  /**
-   * Bit mask for bit 1 in an octet
-   */
-  public static final int BIT_8 = 1;
 
   /**
    * Convert 2 bytes into a signed integer.
@@ -127,8 +78,6 @@ public final class GribNumbers {
    * @return int
    */
   public static int int2(int a, int b) {
-    //System.out.println( "a=" + a );
-    //System.out.println( "b=" + b );
     if (((a == 0xff) && (b == 0xff))) {  // all bits set to one
       return UNDEFINED;
     }
@@ -250,40 +199,7 @@ public final class GribNumbers {
     return a << 16 | b << 8 | c;
   }
 
-  // --Commented out by Inspection START (12/5/05 4:21 PM):
-  //  /**
-  //    * Convert 4 bytes into an unsigned integer.
-  //    * @param raf
-  //    * @return integer value
-  //    * @throws IOException
-  //    */
-  //   public static int uint4(RandomAccessFile raf) throws IOException
-  //   {
-  //     int a = raf.read();
-  //     int b = raf.read();
-  //     int c = raf.read();
-  //     int d = raf.read();
-  //
-  //     return uint4(a, b, c, d);
-  //   }
-  // --Commented out by Inspection STOP (12/5/05 4:21 PM)
-
-  // --Commented out by Inspection START (12/5/05 4:21 PM):
-  //    /**
-  //     * Convert 4 bytes to  an unsigned int.
-  //     * @param a
-  //     * @param b
-  //     * @param c
-  //     * @param d
-  //     * @return unsigned int
-  //     */
-  //   public static int uint4(int a, int b, int c, int d)
-  //   {
-  //      return  a << 32 | b << 16 | c << 8 | d;
-  //   }
-  // --Commented out by Inspection STOP (12/5/05 4:21 PM)
-
-  /**
+   /**
    * Convert 4 bytes into a float value.
    *
    * @param raf read from here
@@ -356,25 +272,28 @@ public final class GribNumbers {
     return (value & bitMask) != 0;
   }
 
-  /*
-  * Check if numbers are equal with default tolerance
-  * @param v1 first floating point number
-  * @param v2 second floating point number
-  * @return true if within tolerance
-  *
- //private static double maxRelativeError = 1.0e-6;
- private static double maxRelativeError = 1.0e-4;
- public static boolean closeEnough( double v1, double v2) {
-   if (v1 == v2) return true;
-   double diff = (v2 == 0.0) ? Math.abs(v1-v2) :  Math.abs(v1/v2-1);
-   return diff < maxRelativeError;
- } */
+  /**
+   * A signed byte has a sign bit then 1 15-bit value.
+   * This is not twos complement (!)
+   * @param v convert byte to signed int
+   * @return signed int
+   */
+  public static final int convertSignedByte(byte v) {
+    int sign = ((v & 0x80) != 0) ? -1 : 1;
+    int value = v & 0x7f;
+    return sign * value;
+  }
+
+  public static final int convertSignedByte2(byte v) {
+    return (v >= 0) ? (int) v : -(128 + v);
+  }
 
   public static void main(String[] args) {
-    int a = 128;
-    int b = 1;
-    System.out.printf("%d%n", int2(a, b));
-    assert int2(a, b) == -1;
+    for (int i=125; i<256;i++) {
+      byte b = (byte) i;
+      System.out.printf("%d == %d == %d%n", b, convertSignedByte(b), convertSignedByte2(b));
+      assert convertSignedByte(b) == convertSignedByte2(b) : convertSignedByte(b) +"!=" +convertSignedByte2(b);
+    }
   }
 
 }

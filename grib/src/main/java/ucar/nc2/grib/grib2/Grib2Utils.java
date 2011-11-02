@@ -169,6 +169,11 @@ public class Grib2Utils {
     }
   }
 
+  static public boolean isLevelUsed(int code) {
+    VertCoord.VertUnit vunit = getLevelUnit(code);
+    return vunit.units.length() > 0;
+  }
+
   static public boolean isLatLon(int gridTemplate, int center) {
     return ((gridTemplate < 4) || ((gridTemplate >= 40) && (gridTemplate < 44)));
   }

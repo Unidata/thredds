@@ -24,9 +24,13 @@ DSS GRIB1 table notes
   - use tables from ECMWF GRIBEX, remove DSS tables for center 98
 
  9/2/2011
- - ignore center 7, whats missing is:
+  - ignore center 7, whats missing is:
       60-0-129: count = 1
         60-0-2: count = 49
         60-1-2: count = 2
+
+ 11/01/2011
+  - WMO_GRIB1.xml param 39 and 40 both have name "Vertical velocity" with different units.
+    Change 39 to "Pressure vertical velocity"
 
 

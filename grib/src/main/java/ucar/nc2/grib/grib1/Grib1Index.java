@@ -33,7 +33,6 @@
 package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.GribIndex;
