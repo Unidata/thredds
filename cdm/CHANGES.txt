@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  2:(2011-xx-xx)
+  grib 1/2: dont use bytes for flags
   grib2 gaussian (gds 40): calc deltaLon from (lo2-lo1)/(nx-1).
   grib1 : allow reference dates to be different
   grib1 table refactor

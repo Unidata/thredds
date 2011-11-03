@@ -85,12 +85,12 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_L%d", vindex.levelType); // code table 4.5
-      if (vindex.isLayer) f.format("layer");
+      f.format("_%s", tables.getLevelNameShort(vindex.levelType)); // vindex.levelType); // code table 4.5
+      if (vindex.isLayer) f.format("_layer");
     }
 
     if (vindex.intvType >= 0)
-      f.format("_S%d", vindex.intvType);
+      f.format("_%s", tables.getIntervalNameShort(vindex.intvType)); // vindex.intvType);
 
     if (vindex.ensDerivedType >= 0)
       f.format("_D%d", vindex.ensDerivedType);

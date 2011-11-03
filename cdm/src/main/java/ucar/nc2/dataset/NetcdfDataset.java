@@ -832,7 +832,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     } catch (NoSuchMethodException e) {
       log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
     } catch (InvocationTargetException e) {
-      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
+      throw new IOException(e.getCause());
     } catch (InstantiationException e) {
       log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
     } catch (IllegalAccessException e) {

@@ -70,7 +70,7 @@ import java.io.IOException;
  */
 public class ThreddsDataFactory {
   static public final String SCHEME = "thredds:";
-  static private boolean preferCdm = false; // temp debugging
+  static private boolean preferCdm = true;
 
   static public void setPreferCdm(boolean prefer) {
     preferCdm = prefer;
