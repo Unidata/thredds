@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  2:(2011-xx-xx)
+  grib 1/2: dont use bytes for flags
   netcdfDataset.openOrAcquireFile(): check on http before ncml
   grib2: scale factor is signed
   grib2 gaussian (gds 40): calc deltaLon from (lo2-lo1)/(nx-1).

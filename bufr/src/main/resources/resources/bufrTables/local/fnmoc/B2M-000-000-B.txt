@@ -1,0 +1,750 @@
+#
+# BUFR Table B - Classification of Elements
+#
+#                                       Data
+#F      X       Y       Scale   RefVal  Width   Units           Element Name
+  0;    0;      1;      0;           0;   24;    CCITT_IA5; TABLE A ENTRY
+  0;    0;      2;      0;           0;  256;    CCITT_IA5; TABLE A  DATA CATEGORY DESCRIPTIO
+  0;    0;      3;      0;           0;  256;    CCITT_IA5; TABLE A DATA CATEGORY DESCRIPTION
+  0;    0;      5;      0;           0;   24;    CCITT_IA5; BUFR EDITION NUMBER
+  0;    0;     10;      0;           0;    8;    CCITT_IA5; F DESCRIPTOR TO BE ADDED OR DEFIN
+  0;    0;     11;      0;           0;   16;    CCITT_IA5; X DESCRIPTOR TO BE ADDED OR DEFIN
+  0;    0;     12;      0;           0;   24;    CCITT_IA5; Y DESCRIPTOR TO BE ADDED OR DEFIN
+  0;    0;     13;      0;           0;  256;    CCITT_IA5; ELEMENT NAME LN 1
+  0;    0;     14;      0;           0;  256;    CCITT_IA5; ELEMENT NAME LN 2
+  0;    0;     15;      0;           0;  192;    CCITT_IA5; UNITS NAME
+  0;    0;     16;      0;           0;    8;    CCITT_IA5; UNITS SCALE SIGN
+  0;    0;     17;      0;           0;   24;    CCITT_IA5; UNITS SCALE
+  0;    0;     18;      0;           0;    8;    CCITT_IA5; UNITS REFERENCE SIGN
+  0;    0;     19;      0;           0;   80;    CCITT_IA5; UNITS REFERENCE VALUE
+  0;    0;     20;      0;           0;   24;    CCITT_IA5; ELEMENT DATA WIDTH
+  0;    0;     30;      0;           0;   48;    CCITT_IA5; DESCRIPTOR DEFINING SEQUENCE
+  0;    1;      1;      0;           0;    7;      NUMERIC; WMO BLOCK NUMBER
+  0;    1;      2;      0;           0;   10;      NUMERIC; WMO STATION NUMBER
+  0;    1;      3;      0;           0;    3;      NUMERIC; WMO REGION NUMBER
+  0;    1;      4;      0;           0;    3;      NUMERIC; WMO REGION SUB-AREA
+  0;    1;      5;      0;           0;   17;      NUMERIC; BUOY/PLATFORM IDENTIFIER
+  0;    1;      6;      0;           0;   64;    CCITT_IA5; AIRCRAFT IDENTIFIER (FLIGHT NUMBE
+  0;    1;      7;      0;           0;   10;   CODE_TABLE; SATELLITE IDENTIFIER
+  0;    1;      8;      0;           0;   64;    CCITT_IA5; AIRCRAFT REGISTRATION NUMBER (TAI
+  0;    1;      9;      0;           0;   64;    CCITT_IA5; TYPE OF COMMERCIAL ACFT
+  0;    1;     10;      0;           0;   64;    CCITT_IA5; STATIONARY BOUY PLATFORM IDENTIFI
+  0;    1;     11;      0;           0;   72;    CCITT_IA5; SHIP CALL SIGN
+  0;    1;     12;      0;           0;    9; DEGREES_TRUE; DIRECTION OF MOTION OBSERVING PLA
+  0;    1;     13;      0;           0;   10; METER/SECOND; SPEED OF MOTION OF OBSERVING PLAT
+  0;    1;     14;      2;           0;   10; METER/SECOND; PLATFORM DRIFT SPEED (HIGH PRECIS
+  0;    1;     15;      0;           0;    4;   CODE_TABLE; TRUE DIR OF MOVING PLATFORM PAST
+  0;    1;     16;      0;           0;    4;   CODE_TABLE; AVG SPD MOVING PLATFORM PAST 3 HO
+  0;    1;     18;      0;           0;   40;    CCITT_IA5; SHORT STATION OR SITE NAME
+  0;    1;     19;      0;           0;  256;    CCITT_IA5; LONG STATION OR SITE NAME
+  0;    1;     20;      0;           0;    4;      NUMERIC; WMO REGION SUB-AREA
+  0;    1;     21;      0;           0;   14;      NUMERIC; SYNOPTIC FEATURE ID
+  0;    1;     25;      0;           0;   24;    CCITT_IA5; STORM IDENTIFIER
+  0;    1;     26;      0;           0;   64;    CCITT_IA5; WMO STORM NAME
+  0;    1;     31;      0;           0;   16;   CODE_TABLE; GENERATING CENTER
+  0;    1;     32;      0;           0;    8;   CODE_TABLE; GENERATING APPLICATION
+  0;    1;     50;      0;           0;   48;    CCITT_IA5; NMC REPORT IDENTIFIER
+  0;    1;     62;      0;           0;   40;    CCITT_IA5; NAT'L ASSIGNED STATION IDENTIFIER
+  0;    1;     63;      0;           0;   64;    CCITT_IA5; ICAO LOCATION IDENTIFIER
+  0;    1;    192;      0;           0;    4;    CCITT_IA5; RADIOSONDE REPORT PART
+  0;    1;    193;      0;           0;   64;    CCITT_IA5; SATELLITE IDENTIFIER
+  0;    1;    194;      0;           0;   64;    CCITT_IA5; BULLETIN HEADER
+  0;    1;    195;      0;           0;   48;    CCITT_IA5; NMC REPORT IDENTIFIER
+  0;    1;    196;      0;           0;   96;    CCITT_IA5; ALPHANUMERIC IDENTIFIER
+  0;    1;    197;      0;           0;   64;    CCITT_IA5; RADIOSONDE SHIP OR MOBILE LND STN
+  0;    2;      1;      0;           0;    2;   CODE_TABLE; TYPE OF STATION
+  0;    2;      2;      0;           0;    4;   FLAG_TABLE; TYPE OF INSTR. FOR WIND MEASUREME
+  0;    2;      3;      0;           0;    4;   CODE_TABLE; TYPE OF MEASURING INSTRUMENT USED
+  0;    2;      4;      0;           0;    4;   CODE_TABLE; TYPE OF INSTR/CROP FOR EVAP/EVAPO
+  0;    2;      5;      2;           0;    7;      DEGREES; PRECISION OF TEMPERATURE OBS.
+  0;    2;     11;      0;           0;    8;   CODE_TABLE; RADIOSONDE TYPE
+  0;    2;     12;      0;           0;    4;   CODE_TABLE; RADIOSONDE COMPUTATIONAL METHOD
+  0;    2;     13;      0;           0;    4;   CODE_TABLE; SOLAR AND INFRARED RADIATION CORR
+  0;    2;     14;      0;           0;    7;   CODE_TABLE; TRACKING TECHNIQUE/STATUS OF SYST
+  0;    2;     15;      0;           0;    4;   CODE_TABLE; RADIOSONDE COMPLETENESS
+  0;    2;     21;      0;           0;    9;   FLAG_TABLE; SATELLITE INSTRUMENT DATA USED IN
+  0;    2;     22;      0;           0;    8;   FLAG_TABLE; SATELLITE DATA PROCESSING TECHNIQ
+  0;    2;     23;      0;           0;    4;   CODE_TABLE; SATELLITE DERIVED WIND COMPUTATIO
+  0;    2;     24;      0;           0;    4;   CODE_TABLE; INT. MEAN HUMIDITY COMPUTATIONAL
+  0;    2;     25;      0;           0;   25;   FLAG_TABLE; SATELLITE CHANNEL(S) USED IN COMP
+  0;    2;     26;      2;           0;   12;       METERS; CROSS TRACK RESOLUTION
+  0;    2;     27;      2;           0;   12;       METERS; ALONG TRACK RESOLUTION
+  0;    2;     28;      0;           0;   32;   FLAG_TABLE; GEOSTAT. SOUNDER SATELL CHAN'LS U
+  0;    2;     29;      0;           0;    8;   FLAG_TABLE; GEOSTAT. SOUNDER SATELL CHAN'LS U
+  0;    2;     30;      0;           0;    3;   CODE_TABLE; METH OF CURRENT MEASUREMENT
+  0;    2;     31;      0;           0;    5;   CODE_TABLE; DURATION & TIME OF CURRENT CODE M
+  0;    2;     32;      0;           0;    2;   CODE_TABLE; INDICATOR FOR DIGITIZATION
+  0;    2;     33;      0;           0;    3;   CODE_TABLE; METHOD OF SALINITY/DEPTH MEASUREM
+  0;    2;     34;      0;           0;    5;   CODE_TABLE; DROGUE TYPE
+  0;    2;     35;      0;           0;    9;       METERS; CABLE LENGTH
+  0;    2;     36;      0;           0;    2;   CODE_TABLE; BUOY TYPE
+  0;    2;     37;      0;           0;    3;   CODE_TABLE; METHOD OF TIDAL OBSERVATION
+  0;    2;     38;      0;           0;    3;   CODE_TABLE; METH OF SEA SURFACE TEMPERATURE M
+  0;    2;     39;      0;           0;    3;   CODE_TABLE; METH OF WET BULB TEMPERATURE MEAS
+  0;    2;     40;      0;           0;    4;   CODE_TABLE; METH RMV CODE VELOC & MOTION OF P
+  0;    2;     41;      0;           0;    6;   CODE_TABLE; METH FOR EST RPTS OF SYNOP FEATUR
+  0;    2;     42;      0;           0;    6;   CODE_TABLE; METHOD OF REPORT CONSTRUCTION
+  0;    2;     43;      0;           0;    6;   CODE_TABLE; PRECISION OF LAT/LON REPORT
+  0;    2;     51;      0;           0;    4;   CODE_TABLE; INDIC TO SPECIFY OBS METH EXTRM T
+  0;    2;     61;      0;           0;    3;   CODE_TABLE; AIRCRAFT NAVIGATION   SYSTEM
+  0;    2;     62;      0;           0;    4;   CODE_TABLE; TYPE OF AIRCRAFT DATA RELAY SYSTE
+  0;    2;     63;      2;      -18000;   16;      DEGREES; AIRCRAFT ROLL ANGLE
+  0;    2;     70;      0;           0;    4;   CODE_TABLE; ORIGINAL SPECIFICATION OF LAT/LON
+  0;    2;    101;      0;           0;    4;   CODE_TABLE; TYPE OF ANTENNA
+  0;    2;    102;      0;           0;    8;       METERS; ANTENNA HGT ABOVE TOWER
+  0;    2;    103;      0;           0;    2;        FLAGE; TABLE     RADOME
+  0;    2;    104;      0;           0;    4;   CODE_TABLE; ANTENNA POLARIZATION
+  0;    2;    105;      0;           0;    6;           DB; MAXIMUM ANTENNA GAIN
+  0;    2;    106;      1;           0;    6;      DEGREES; 3 - DB BANDWIDTH
+  0;    2;    107;      0;           0;    6;           DB; SIDELOBE SUPRESSION
+  0;    2;    108;      0;           0;    6;           DB; CROSSPOL DISCRI. (ON AXIS)
+  0;    2;    109;      2;           0;   12; DEGREES/SECOND; ANTENNA SPEED (AZIMUTH)
+  0;    2;    110;      2;           0;   12; DEGREES/SECOND; ANTENNA SPEED (ELEVATION)
+  0;    2;    111;      1;           0;   10;      DEGREES; RADAR INCIDENCE ANGLE
+  0;    2;    112;      1;           0;   12;      DEGREES; RADAR AZIMUTH ANGLE
+  0;    2;    113;      0;           0;    4;     NUMERICS; NO. OF AZIMUTH LOOKS
+  0;    2;    114;      0;           0;   15;         M**2; ANTENNA EFFECTIVE SURFACE AREA
+  0;    2;    121;      8;           0;    7;           HZ; MEAN FREQUENCY
+  0;    2;    122;      6;        -128;    8;           HZ; FREQUENCY AGILITY RANGE
+  0;    2;    123;      4;           0;    7;        WATTS; PEAK POWER
+  0;    2;    124;      1;           0;    7;        WATTS; AVERAGE POWER
+  0;    2;    125;      1;           0;    8;           HZ; PULSE REPETITION FREQUENCY
+  0;    2;    126;      7;           0;    6;       SECOND; PULSE WIDTH
+  0;    2;    127;      6;           0;    7;           HZ; RECEIVER INTERMEDIATE FREQUENCY
+  0;    2;    128;      5;           0;    6;           HZ; INTERMEDIATE FREQUENCY BANDWIDTH
+  0;    2;    129;      0;        -150;    5;           DB; MINIMUM DETECTABLE SIGNAL
+  0;    2;    130;      0;           0;    7;           DB; DYNAMIC RANGE
+  0;    2;    131;      0;           0;    2;   FLAG_TABLE; SENSITIVITY TIME CONTROL
+  0;    2;    132;      2;           0;    6;      DEGREES; AZIMUTH POINTING ACCURACY
+  0;    2;    133;      2;           0;    6;      DEGREES; ELEVATION POINTING ACCURACY
+  0;    2;    134;      2;           0;   16;      DEGREES; ANTENNA BEAM AZIMUTH
+  0;    2;    135;      2;       -9000;   15;      DEGREES; ANTENNA ELEVATION
+  0;    2;    140;      0;           0;    9;      DEGREES; SATELLITE RADAR BEAM AZIMUTH ANGL
+  0;    2;    141;      0;           0;   24;    CCITT_IA5; MEAS.TYPE SERIAL NBR/IDENT
+  0;    2;    142;      0;           0;   32;    CCITT_IA5; OZONE INSTRUMENT
+  0;    2;    143;      0;           0;    7;      NUMERIC; INSTRUMENT TYPE
+  0;    2;    183;      0;           0;    1;   CODE_TABLE; QUALITY OF PRESSURE MEASUREMENT
+  0;    2;    184;      0;           0;    1;   CODE_TABLE; QUALITY OF WATER SFC TEMP MEASURE
+  0;    2;    185;      0;           0;    1;   CODE_TABLE; QUALITY OF AIR TEMP MEASUREMENT
+  0;    2;    186;      0;           0;    3;   CODE_TABLE; QUAL CONTROL INDIC FOR FOLLOWING
+  0;    2;    187;      0;           0;    1;   CODE_TABLE; QUALITY OF BUOY SATELLIT TRANSMIS
+  0;    2;    188;      0;           0;    3;   CODE_TABLE; QUAL CONTROL INDICATOR FOR BUOY L
+  0;    2;    189;      0;           0;    3;   CODE_TABLE; QUAL CONTROL INDIC FOR BUOY TIME
+  0;    2;    190;      0;           0;    8;   CODE_TABLE; U, V QUALITY INDICATOR
+  0;    2;    191;      0;           0;    4;   CODE_TABLE; W QUALITY INDICATOR
+  0;    2;    192;      0;           0;    6;   CODE_TABLE; RADIOSONDE CORRECTION TYPE APPLIE
+  0;    2;    193;      0;           0;    3;   CODE_TABLE; IND TYPE OF STN OPERATION PAST/PR
+  0;    2;    200;      0;           0;    4;   CODE_TABLE; OBJECTIVE FORECAST TECHNIQUE USED
+  0;    2;    206;      0;           0;    4;        MONTH; MONTH  - RELEASE TIME
+  0;    2;    207;      0;           0;    6;          DAY; DAY    - RELEASE TIME
+  0;    2;    208;      0;           0;    5;         HOUR; HOUR   - RELEASE TIME
+  0;    2;    209;      0;           0;    6;       MINUTE; MINUTE - RELEASE TIME
+  0;    2;    210;      0;           0;    3;   FLAG_TABLE; STATION/SEA LEVEL COMPARISON
+  0;    4;      1;      0;           0;   12;         YEAR; YEAR
+  0;    4;      2;      0;           0;    4;        MONTH; MONTH
+  0;    4;      3;      0;           0;    6;          DAY; DAY
+  0;    4;      4;      0;           0;    5;         HOUR; HOUR
+  0;    4;      5;      0;           0;    6;       MINUTE; MINUTE
+  0;    4;      6;      0;           0;    6;       SECOND; SECOND
+  0;    4;     11;      0;       -1024;   11;        YEARS; TIME INCREMENT
+  0;    4;     12;      0;       -1024;   11;       MONTHS; TIME INCREMENT
+  0;    4;     13;      0;       -1024;   11;         DAYS; TIME INCREMENT
+  0;    4;     14;      0;       -1024;   11;        HOURS; TIME INCREMENT
+  0;    4;     15;      0;       -2048;   12;      MINUTES; TIME INCREMENT
+  0;    4;     16;      0;       -4096;   13;      SECONDS; TIME INCREMENT
+  0;    4;     21;      0;       -1024;   11;        YEARS; TIME PERIOD OR DISPLACEMENT
+  0;    4;     22;      0;       -1024;   11;       MONTHS; TIME PERIOD OR DISPLACEMENT
+  0;    4;     23;      0;       -1024;   11;         DAYS; TIME PERIOD OR DISPLACEMENT
+  0;    4;     24;      0;       -2048;   12;        HOURS; TIME PERIOD OR DISPLACEMENT
+  0;    4;     25;      0;       -2048;   12;      MINUTES; TIME PERIOD OR DISPLACEMENT
+  0;    4;     26;      0;       -4096;   13;      SECONDS; TIME PERIOD OR DISPLACEMENT
+  0;    4;     31;      0;           0;    8;         HOUR; DUR OF TIME REL TO FOLLOWING VALU
+  0;    4;     41;      0;       -1440;   12;       MINUTE; TIME DIFFERENCE UTC - LMT
+  0;    4;     43;      0;           0;    9;          DAY; DAY OF THE YEAR
+  0;    4;     44;      0;           0;    3;   CODE_TABLE; DAY OF THE WEEK
+  0;    4;     53;      0;           0;    6;      NUMERIC; NUMBER OF DAYS WITH PRECIP => 1MM
+  0;    4;    192;      0;           0;   12;        HOURS; RECIEPT TIME - REPORT TIME
+  0;    4;    193;      0;           0;   31;      MINUTES; RECIEPT TIME - REPORT TIME
+  0;    4;    194;      0;           0;   12;        HOURS; RELEASE TIME OF SONDE
+  0;    4;    195;      0;           0;    5;         HOUR; FORECAST CYCLE HOUR
+  0;    4;    200;      0;           0;   12;         YEAR; YEAR   - TIME OF RECEIPT
+  0;    4;    201;      0;           0;    4;        MONTH; MONTH  - TIME OF RECEIPT
+  0;    4;    202;      0;           0;    6;          DAY; DAY    - TIME OF RECEIPT
+  0;    4;    203;      0;           0;    5;         HOUR; HOUR   - TIME OF RECEIPT
+  0;    4;    204;      0;           0;    6;       MINUTE; MINUTE - TIME OF RECEIPT
+  0;    4;    205;      0;           0;    6;       SECOND; SECOND - TIME OF RECEIPT
+  0;    4;    206;      0;           0;   32;       SECOND; DATA BASE INGEST TIME FROM 1 JAN
+  0;    4;    207;      0;           0;    5;         HOUR; HOUR - TIME OF MAX WIND (GUST)
+  0;    4;    208;      0;           0;    6;       MINUTE; MINUTE - TIME OF NAX WIND (GUST)
+  0;    5;      1;      5;    -9000000;   25;      DEGREES; LATITUDE(HIGH ACCURACY)
+  0;    5;      2;      2;       -9000;   15;      DEGREES; LATITUDE(COARSE ACCURACY)
+  0;    5;      3;      2;       -9000;   15;      DEGREES; ALTERNATE LATITUDE
+  0;    5;     11;      5;    -9000000;   25;      DEGREES; LATITUDE INCREMENT(HIGH ACCURACY)
+  0;    5;     12;      2;       -9000;   15;      DEGREES; LATITUDE INCREMENT(COARSE ACCURAC
+  0;    5;     21;      2;           0;   16; DEGREES_TRUE; BEARING OR AZIMUTH
+  0;    5;     22;      2;           0;   16; DEGREES_TRUE; SOLAR AZIMUTH
+  0;    5;     30;      0;           0;   12;      DEGREES; DIRECTION (SPECTRAL)
+  0;    5;     31;      0;           0;   12;      NUMERIC; ROW NUMBER
+  0;    5;     33;      1;           0;   16;       METERS; PIXEL SIZE ON HORIZONTAL-1
+  0;    5;     34;      0;           0;   11;      NUMERIC; ALONG TRACK ROW NUMBER
+  0;    5;     40;      0;           0;   24;      NUMERIC; ORBIT NUMBER
+  0;    5;     41;      0;           0;    8;      NUMERIC; SCAN LINE NUMBER
+  0;    5;     42;      0;           0;    6;      NUMERIC; CHANNEL NUMBER
+  0;    5;     43;      0;           0;    8;      NUMERIC; FIELD OF VIEW NUMBER
+  0;    5;     50;      5;           0;   17;      NUMERIC; SIGMA LEVEL
+  0;    5;     52;      0;           0;    5;      NUMERIC; CHANNEL NUMBER INCREMENT
+  0;    5;     53;      0;           0;    5;      NUMERIC; FIELD OF VIEW NUMBER INCREMENT
+  0;    6;      1;      5;   -18000000;   26;      DEGREES; LONGITUDE (HIGH ACCURACY)
+  0;    6;      2;      2;      -18000;   16;      DEGREES; LONGITUDE (COARSE ACCURACY)
+  0;    6;      3;      2;      -18000;   16;      DEGREES; ALTERNATE LONGITUDE
+  0;    6;     11;      5;   -18000000;   26;      DEGREES; LONGITUDE INCREMENT (HIGH ACCURAC
+  0;    6;     12;      2;      -18000;   16;      DEGREES; LONGITUDE INCREMENT (COARSE ACCUR
+  0;    6;     21;      1;           0;   13;       METERS; DISTANCE
+  0;    6;     30;      5;           0;   13;        RAD/M; WAVENUMBER (SPECTRAL)
+  0;    6;     31;      0;           0;   12;      NUMERIC; COLUMN NUMBER
+  0;    6;     33;      1;           0;   16;       METERS; PIXEL SIZE ON HORIZONTAL-2
+  0;    6;     34;      0;           0;    7;      NUMERIC; CROSS-TRACK CELL NUMBER
+  0;    7;      1;      0;        -400;   15;       METERS; HEIGHT OF STATION
+  0;    7;      2;      1;         -40;   16;       METERS; HEIGHT OR ALTITUDE
+  0;    7;      3;      1;        -400;   17;    M**2/S**2; GEOPOTENTIAL
+  0;    7;      4;      1;           0;   14;      PASCALS; PRESSURE
+  0;    7;      5;      0;        -400;   12;       METERS; HEIGHT INCREMENT
+  0;    7;      6;      0;           0;   15;       METERS; HEIGHT ABOVE STATION
+  0;    7;      7;      0;       -1000;   17;            M; HEIGHT
+  0;    7;      8;      0;      -10000;   20;    M**2/S**2; GEOPOTENTIAL
+  0;    7;     21;      2;       -9000;   15;      DEGREES; ELEVATION
+  0;    7;     22;      2;       -9000;   15;      DEGREES; SOLAR ELEVATION
+  0;    7;     61;      2;           0;   14;       METERS; DEPTH BELOW LAND SURFACE
+  0;    7;     62;      1;           0;   17;       METERS; DEPTH BELOW SEA SURFACE
+  0;    7;    190;      0;           0;   12;       METERS; HEIGHT INCREMENT
+  0;    7;    192;      0;        -400;   17;          GPM; FLIGHT LEVEL (PRESSURE ALTITUDE)
+  0;    7;    193;      0;        -400;   17;         GPDM; FLIGHT LEVEL (PRESSURE ALTITUDE)
+  0;    7;    194;      0;        -400;   15;            M; HEIGHT OR ALTITUDE ABOVE MSL
+  0;    8;      1;      0;           0;    7;   FLAG_TABLE; VERTICAL SOUNDING SIGNIFICANCE
+  0;    8;      2;      0;           0;    6;   CODE_TABLE; VERT. SIGNIFICANCE (SFC OBSERVATI
+  0;    8;      3;      0;           0;    6;   CODE_TABLE; VERT. SIGNIFICANCE (SAT OBSERVATI
+  0;    8;      4;      0;           0;    3;   CODE_TABLE; PHASE OF AIRCRAFT FLIGHT
+  0;    8;      5;      0;           0;    4;   CODE_TABLE; SURFACE SYNOPTIC FEATURE SIGNIFIC
+  0;    8;     10;      0;           0;    4;   CODE_TABLE; VERT SIGNIFICANCE(FORECAST SOUNDI
+  0;    8;     11;      0;           0;    6;   CODE_TABLE; HORIZONTAL SIGNIFICANCE
+  0;    8;     12;      0;           0;    2;   CODE_TABLE; LAND/SEA QUALIFIER
+  0;    8;     13;      0;           0;    2;   CODE_TABLE; DAY/NIGHT QUALIFIER
+  0;    8;     20;      0;           0;   16;      NUMERIC; TOTAL NR MISG ENTITIES W/RES TO A
+  0;    8;     21;      0;           0;    5;   CODE_TABLE; TIME SIGNIFICANCE
+  0;    8;     22;      0;           0;   16;      NUMERIC; TOTAL NUMBER(W/RESPECT TO ACCUM O
+  0;    8;     23;      0;           0;    7;   CODE_TABLE; FIRST ORDER STATISTICS
+  0;    8;     24;      0;           0;    7;   CODE_TABLE; DIFFERENCE STATISTICS
+  0;    8;     31;      0;           0;    8;         BUFR; TABLE A    DATA CATEGORY
+  0;    8;     32;      0;           0;   14;   CODE_TABLE; DATA SIGNIF-INTERACTIVE RETRIEVAL
+  0;    8;     51;      0;           0;    3;   CODE_TABLE; QUALIFIER-NR MISG VALUES IN CALC
+  0;    8;     52;      0;           0;    5;   CODE_TABLE; COND. FOR  WHICH NR OF DAYS OF OC
+  0;    8;     53;      0;           0;    2;   CODE_TABLE; DAY OF OCCURRENCE QUALIFIER
+  0;    8;     77;      0:           0;    7;   CODE_TABLE: RADIOMETER SENSED SURFACE TYPE
+  0;    8;    192;      0;           0;   16;      NUMERIC; UPDATE SEQUENCE NUMBER
+  0;    8;    193;      0;           0;   16;      NUMERIC; OBSERVATION DATABASE KEY
+  0;    8;    194;      0;           0;    6;   CODE_TABLE; CORRECTION INDICATOR
+  0;    8;    195;      0;           0;    6;   CODE_TABLE; QUALITY CONTROL TYPE
+  0;    8;    196;      0;           0;    6;   CODE_TABLE; QUALITY CONTROL DECISION
+  0;    8;    197;      0;           0;    5;   CODE_TABLE; RECORD TEMPERATURE KEY
+  0;    8;    198;      0;           0;    4;   CODE_TABLE; TIME SIGNIFICANCE
+  0;    8;    199;      0;           0;    3;   CODE_TABLE; SOURCE UNITS OF WIND SPEED
+  0;    8;    200;      0;           0;    4;      NUMERIC; NMC QUALITY MARK
+  0;    8;    232;      0;           0;   14;   CODE_TABLE; DATA SIGNIF-INTERACTIVE RETRIEVAL
+  0;    9;      6;      3;           0;   10;      SECONDS; TIME OF ASCENDING NODE
+  0;   10;      1;      0;        -400;   15;       METERS; HEIGHT OF LAND SURFACE
+  0;   10;      2;      1;         -40;   16;       METERS; HEIGHT
+  0;   10;      3;      1;        -400;   17;    M**2/S**2; GEOPOTENTIAL
+  0;   10;      4;      1;           0;   14;      PASCALS; PRESSURE
+  0;   10;      7;      0;       -1000;   17;       METERS; HEIGHT
+  0;   10;      8;      0;      -10000;   20;    M**2/S**2; GEOPOTENTIAL
+  0;   10;      9;      0;       -1000;   17;          GPM; GEOPOTENTIAL HEIGHT
+  0;   10;     10;     -1;           0;   14;      PASCALS; MIN PRESSURE REDUCED TO MSL
+  0;   10;     11;     -1;           0;   14;      PASCALS; MAX PRESSURE REDUCED TO MSL
+  0;   10;     31;      2; -1073741824;   31;       METERS; DIR OF NORTH POLE, DIST FROM EART
+  0;   10;     32;      1;           0;   27;       METERS; SATELLITE DIST TO EARTH CENTER
+  0;   10;     33;      1;           0;   27;       METERS; ALTITUDE (PLATFORM TO ELLIPSOID)
+  0;   10;     50;      2;           0;   16;       METERS; STD. DEV. ALTITUDE
+  0;   10;     51;      1;           0;   14;      PASCALS; PRESSURE REDUCED TO MSL
+  0;   10;     52;      1;           0;   14;      PASCALS; ALTIMETER SETTING (QNH)
+  0;   10;     60;      1;       -1024;   11;      PASCALS; PRESSURE CHANGE
+  0;   10;     61;      1;        -500;   10;      PASCALS; 3 HOUR PRESSURE CHANGE
+  0;   10;     62;      1;       -1000;   11;      PASCALS; 24 HOUR PRESSURE CHANGE
+  0;   10;     63;      0;           0;    4;   CODE_TABLE; CHARACTERISTIC OF PRESSURE TENDEN
+  0;   10;     64;      0;           0;    3;   CODE_TABLE; SIGMET CRUISING LEVEL
+  0;   10;     70;      0;        -400;   16;       METERS; INDICATED AIRCRAFT ALTITUDE
+  0;   10;     80;      2;       -9000;   15;      DEGREES; VIEWING ZENITH ANGLE
+  0;   10;     81;      3;           0;   31;       METERS; ALTITUDE OF COG ABOVE REF ELLIPSO
+  0;   10;     82;      3;      -65536;   17; METERS/SECOND; INSTANTANEOUS ALTITUDE RATE
+  0;   10;     83;      2;           0;   26;       DEG**2; SQUARED OFF NADIR ANGLE OF THE SA
+  0;   10;     84;      2;           0;   26;       DEG**2; SQUARED OFF NADIR ANGLE OF THE SA
+  0;   10;     85;      3;     -131072;   18;       METERS; MEAN SEA SURFACE HEIGHT
+  0;   10;     86;      3;     -131072;   18;       METERS; GEOID'S HEIGHT 
+  0;   10;     87;      3;     -131072;   18;       METERS; OCEAN DEPTH/LAND ELEVATION
+  0;   10;     88;      3;      -32768;   16;       METERS; TOTAL GEOCENTRIC OCEAN TIDE HEIGH
+  0;   10;     89;      3;      -32768;   16;       METERS; TOTAL GEOCENTRIC OCEAN TIDE HEIGH
+  0;   10;     90;      3;      -32768;   16;       METERS; LONG PERIOD TIDE HEIGHT 
+  0;   10;     91;      3;      -32768;   16;       METERS; TIDAL LOADING HEIGHT
+  0;   10;     92;      3;      -32768;   16;       METERS; SOLID EARTH TIDE HEIGHT
+  0;   10;     93;      3;      -32768;   16;       METERS; GEOCENTRIC POLE TIDE HEIGHT 
+  0;   10;     95;      0;           0;   16;       METERS; HEIGHT OF ATMOSPHERE USED 
+  0;   10;     96;      3;     -131072;   18;       METERS; MEAN DYNAMIC TOPOGRAPHY 
+  0;   10;     97;      3;     -131072;   18;       METERS; MEAN SEA SURFACE HEIGHT FROM ALTI
+  0;   10;     98;      4;       -2000;   12;       METERS; LOADING TIDE HEIGHT GEOCENTRIC OC
+  0;   10;     99;      4;       -2000;   12;       METERS; LOADING TIDE HEIGHT GEOCENTRIC OC
+  0;   10;    100;      4;       -2000;   12;       METERS; NON-EQUILIBRIUM LONG PERIOD TIDE 
+  0;   10;    101;      2;      -32768;   16;       DEG**2; SQUARED OFF NADIR ANGLE OF THE SA
+  0;   10;    102;      3;      -32768;   16;       METERS; SEA SURFACE HEIGHT ANOMALY
+  0;   10;    192;      0;        -400;   17;          GPM; GEOPOTENTIAL HEIGHT
+  0;   10;    193;      0;        -400;   17;         GPDM; GEOPOTENTIAL HEIGHT
+  0;   10;    194;      0;       -2000;   17;          GPM; DEPARTURE FROM ICAO STD ATMOSPHER
+  0;   10;    195;      0;        -400;   17;           DM; GEOMETRIC HEIGHT
+  0;   11;      1;      0;           0;    9; DEGREES_TRUE; WIND DIRECTION
+  0;   11;      2;      1;           0;   12; METERS/SECOND; WIND SPEED
+  0;   11;      3;      1;       -4096;   13; METERS/SECOND; U-COMPONENT
+  0;   11;      4;      1;       -4096;   13; METERS/SECOND; V-COMPONENT
+  0;   11;      5;      1;        -512;   10; PASCALS/SECOND; W-COMPONENT
+  0;   11;      6;      2;       -4096;   13; METERS/SECOND; W-COMPONENT
+  0;   11;     11;      0;           0;    9; DEGREES_TRUE; WIND DIRECTION AT 10 METERS
+  0;   11;     12;      1;           0;   12; METERS/SECOND; WIND SPEED AT 10 METERS
+  0;   11;     13;      0;           0;    9; DEGREES_TRUE; WIND DIRECTION AT 5 METERS
+  0;   11;     14;      1;           0;   12; METERS/SECOND; WIND SPEED AT 5 METERS
+  0;   11;     21;      9;      -65536;   17;   SECOND**-1; RELATIVE VORTICITY
+  0;   11;     22;      9;      -65536;   17;   SECOND**-1; DIVERGENCE
+  0;   11;     23;      2;      -65536;   17;  M**2/SECOND; VELOCITY POTENTIAL
+  0;   11;     31;      0;           0;    4;   CODE_TABLE; DEGREE OF TURBULENCE
+  0;   11;     32;      1;         -40;   16;       METERS; HEIGHT OF BASE OF TURBULENCE
+  0;   11;     33;      1;         -40;   16;       METERS; HEIGHT OF TOP OF TURBULENCE
+  0;   11;     34;      1;       -1024;   11; METERS/SECOND; VERTICAL GUST VELOCITY
+  0;   11;     35;      2;       -8192;   14; METERS/SECOND**2VERTICAL; GUST ACCELERATION
+  0;   11;     36;      1;           0;   10; METERS/SECOND; MAXIMUM DERIVED EQUIVALENT VERTIC
+  0;   11;     41;      1;           0;   12; METERS/SECOND; MAX WIND SPEED (GUSTS)
+  0;   11;     42;      1;           0;   12; METERS/SECOND; MAX WIND SPEED(10 MIN MEAN WIND)
+  0;   11;     43;      0;           0;    9; DEGREES_TRUE; MAXIMUM WIND GUST DIRECTION
+  0;   11;     44;      0;           0;    9; DEGREES_TRUE; SFC-5000FT MEAN LYR WIND DIRECTIO
+  0;   11;     49;      0;           0;    9; DEGREES_TRUE; STD. DEV. OF WIND DIRECTION
+  0;   11;     50;      1;           0;   12; METERS/SECOND; STD. DEV. HORIZ WIND SPEED
+  0;   11;     51;      1;           0;    8; METERS/SECOND; STD DEV VERT WIND COMPONENT
+  0;   11;     61;      1;           0;   12; METERS/SECOND; ABSOLUTE WIND SHEAR(1KM LAYER BEL
+  0;   11;     62;      1;           0;   12; METERS/SECOND; ABSOLUTE WIND SHEAR(1KM LAYER ABO
+  0;   11;    192;      1;       -1024;   11; METERS/SECOND; MEAN U-COMPONENT
+  0;   11;    193;      1;       -1024;   11; METERS/SECOND; MEAN V-COMPONENT
+  0;   11;    194;      1;        -128;    8; METERS/SECOND; MEAN W-COMPONENT
+  0;   11;    195;      1;           0;    9; METERS/SECOND; STANDARD DEVIATION U
+  0;   11;    196;      1;           0;    9; METERS/SECOND; STANDARD DEVIATION V
+  0;   11;    197;      1;           0;    6; METERS/SECOND; STANDARD DEVIATION W
+  0;   11;    198;      1;           0;   12; METERS/SECOND; WIND SPEED 10000FT (EXTRAPLOATED)
+  0;   11;    199;      1;           0;   12; METERS/SECOND; WIND SPEED 20000FT (EXTRAPOLATED)
+  0;   11;    200;      1;           0;   12; METERS/SECOND; INFLATED WIND SPEED (MOS)
+  0;   11;    201;      1;           0;   12; METERS/SECOND; MEAN WIND SPEED PAST 12 HRS
+  0;   11;    210;      1;           0;   12; METERS/SECOND; ROOT MEAN SQUARE VECTOR WIND ERRO
+  0;   11;    221;      0;           0;    9; DEGREES_TRUE; MEAN WIND DIR 5000FT-10000FT
+  0;   11;    222;      1;           0;   12; METERS/SECOND; MEAN WIND SPEED 5000FT-10000FT
+  0;   11;    223;      1;           0;   12; METERS/SECOND; 10 METER EXTRAPOLATED WIND SPEED
+  0;   11;    224;      1;           0;   12; METERS/SECOND; 20 METER EXTRAPOLATED WIND SPEED
+  0;   12;      1;      1;           0;   12; DEGREES_KELVIN; TEMPERATURE/DRY BULB TEMPERATURE
+  0;   12;      2;      1;           0;   12; DEGREES_KELVIN; WET BULB TEMPERATURE
+  0;   12;      3;      1;           0;   12; DEGREES_KELVIN; DEW POINT TEMPERATURE
+  0;   12;      4;      1;           0;   12; DEGREES_KELVIN; DRY BULB TEMPERATURE AT 2 METERS
+  0;   12;      5;      1;           0;   12; DEGREES_KELVIN; WET BULB TEMPERATURE AT 2 METERS
+  0;   12;      6;      1;           0;   12; DEGREES_KELVIN; DEW POINT TEMPERATURE AT 2 METERS
+  0;   12;      7;      1;           0;   12; DEGREES_KELVIN; VIRTUAL TEMPERATURE
+  0;   12;     11;      1;           0;   12; DEGREES_KELVIN; MAXIMUM TEMPERATURE
+  0;   12;     12;      1;           0;   12; DEGREES_KELVIN; MINIMUM TEMPERATURE
+  0;   12;     13;      1;           0;   12; DEGREES_KELVIN; GROUND MINIMUM TEMPERATURE PAST 1
+  0;   12;     14;      1;           0;   12; DEGREES_KELVIN; MAXIMUM TEMPERATURE AT 2MTRS,PAST
+  0;   12;     15;      1;           0;   12; DEGREES_KELVIN; MINIMUM TEMPERATURE AT 2MTRS,PAST
+  0;   12;     16;      1;           0;   12; DEGREES_KELVIN; MAXIMUM TEMPERATURE AT 2MTRS,PAST
+  0;   12;     17;      1;           0;   12; DEGREES_KELVIN; MINIMUM TEMPERATURE AT 2MTRS,PAST
+  0;   12;     20;      2;       -2000;   12;          DEG; K/DAY       RADIATIVE HEATING PROFILE
+  0;   12;     30;      1;           0;   12; DEGREES_KELVIN; SOIL TEMPERATURE
+  0;   12;     40;      3;       -2048;   12; WATTS/METER**2; SENSIBLE HEAT FLUX
+  0;   12;     51;      1;           0;   10; DEGREES_KELVIN; STANDARD DEVIATION TEMPERATURE
+  0;   12;     52;      1;           0;   12; DEGREES_KELVIN; HIGHEST DAILY MEAN TEMPERATURE
+  0;   12;     53;      1;           0;   12; DEGREES_KELVIN; LOWEST DAILY MEAN TEMPERATURE
+  0;   12;     61;      1;           0;   12; DEGREES_KELVIN; SKIN TEMPERATURE
+  0;   12;     62;      1;           0;   12; DEGREES_KELVIN; EQUIVALENT BLACK BODY TEMPERATURE
+  0;   12;     63;      1;           0;   12; DEGREES_KELVIN; BRIGHTNESS TEMPERATURE
+  0;   12;     65;      1;           0;   12; DEGREES_KELVIN; STANDARD DEVIATION BRIGHTNESS TEMPERATURE
+  0;   12;    192;      0;           0;    6;   CODE_TABLE; PRECISION OF AIRCRAFT TEMPERATURE
+  0;   12;    193;      1;           0;   12; DEGREES_KELVIN; TEMPERATURE (CITY)
+  0;   12;    194;      1;           0;   12; DEGREES_KELVIN; MAXIMUM TEMPERATURE (CITY)
+  0;   12;    195;      1;           0;   12; DEGREES_KELVIN; MINIMUM TEMPERATURE (CITY)
+  0;   12;    200;      1;           0;   12; DEGREES_KELVIN; DAYTIME MAX TEMPERATURE
+  0;   12;    201;      1;           0;   12; DEGREES_KELVIN; NIGHTTIME MIN TEMPERATURE (MOS)
+  0;   13;      1;      5;           0;   14;        KG/KG; SPECIFIC HUMIDITY
+  0;   13;      2;      5;           0;   14;        KG/KG; MIXING RATIO
+  0;   13;      3;      0;           0;    7;            %; RELATIVE HUMIDITY
+  0;   13;      4;      1;           0;   10;      PASCALS; VAPOR PRESSURE
+  0;   13;      5;      3;           0;    7;  KG/METER**3; VAPOR DENSITY
+  0;   13;      6;      1;         -40;   16;       METERS; MIXING HEIGHTS
+  0;   13;     11;      1;          -1;   14;  KG/METER**2; TOTAL PRECIPITATION/TOTAL WATER E
+  0;   13;     12;      2;          -2;   12;       METERS; DEPTH OF FRESH SNOW
+  0;   13;     13;      2;          -2;   16;       METERS; TOTAL SNOW DEPTH
+  0;   13;     14;      4;           0;   12; KG/METER**2/SEC; RAINFALL/WATER EQUIV OF SNOW(AVG
+  0;   13;     15;      7;           0;   12; METERS/SECOND; SNOWFALL (AVERAGED RATE)
+  0;   13;     16;      0;           0;    7;  KG/METER**2; PRECIPITABLE WATER
+  0;   13;     19;      1;          -1;   14;  KG/METER**2; TOTAL PRECIPITATION PAST 1 HOUR
+  0;   13;     20;      1;          -1;   14;  KG/METER**2; TOTAL PRECIPITATION PAST 3 HOURS
+  0;   13;     21;      1;          -1;   14;  KG/METER**2; TOTAL PRECIPITATION PAST 6 HOURS
+  0;   13;     22;      1;          -1;   14;  KG/METER**2; TOTAL PRECIPITATION PAST 12 HOURS
+  0;   13;     23;      1;          -1;   14;  KG/METER**2; TOTAL PRECIPITATION PAST 24 HOURS
+  0;   13;     31;      0;           0;    7;  KG/METER**2; EVAPOTRANSPIRATION
+  0;   13;     32;      1;           0;    8;  KG/METER**2; EVAP/EVAPOTRANSPIRATION
+  0;   13;     40;      3;       -2048;   12; WATTS/METER**2; LATENT HEAT FLUX
+  0;   13;     41;      0;           0;    4;   CODE_TABLE; PASQUELL-GIFFORD STAB
+  0;   13;     42;      0;         -20;    6; DEGREES_KELVIN; PARCEL LIFTED INDEX (TO 500 HPA)
+  0;   13;     43;      0;         -20;    6; DEGREES_KELVIN; BEST LIFTED INDEX (TO 500 HPA)
+  0;   13;     51;      0;           0;    4;   CODE_TABLE; FREQ GRP, PRECIPITATION
+  0;   13;     52;      1;          -1;   14;          KG/; M**2        HIGHEST DAILY AMT OF PRECIPITATIO
+  0;   13;     55;      4;           0;    8;    KG/M**2/S; INTENSITY OF PRECIPITATION
+  0;   13;    192;      0;           0;    6;   CODE_TABLE; PRECIPITABLE WATER QUALITY
+  0;   13;    193;      4;          -1;   14;     KGM/M**2; 24 HR PRECIPITATION (CITY)
+  0;   13;    194;      0;           0;    3;   CODE_TABLE; INDIC INCLUSION/OMISSION OF PRECI
+  0;   14;      1;      3;       -2048;   12; JOULES/METER**2; LONGWAVE RADIATION. INTEGRATED 24
+  0;   14;      2;      3;       -2048;   12; JOULES/METER**2; LONGWAVE RAD. INTEGRATED SPEC.PER
+  0;   14;      3;      3;       -2048;   12; JOULES/METER**2; SHORTWAVE RAD. INTEGRATED 24 HOUR
+  0;   14;      4;      3;       -2048;   12; JOULES/METER**2; SHORTWAVE RAD. INTEGRATED SPEC PE
+  0;   14;     11;      3;       -2048;   12; JOULES/METER**2; NET LONGWAVE RAD. INTEG. 24 HOURS
+  0;   14;     12;      3;       -2048;   12; JOULES/METER**2; NET LONGWAVE RAD. INT SPEC PERIOD
+  0;   14;     13;      3;       -2048;   12; JOULES/METER**2; NET SHORTWAVE RAD. INTEG 24 HOURS
+  0;   14;     14;      3;       -2048;   12; JOULES/METER**2; NET SHORTWAVE RAD. INTEG SPEC PER
+  0;   14;     15;      4;      -16384;   15; JOULES/METER**2; NET RAD INTEGRATED OVER 24 HOURS
+  0;   14;     16;      4;      -16384;   15; JOULES/METER**2; NET RADIATION INTEG OVR PD SPECIF
+  0;   14;     17;      3;       -2048;   12; WATTS/METER**2; INSTANTANEOUS LONG WAVE RADIATION
+  0;   14;     18;      3;       -2048;   12; WATTS/METER**2; INSTANTANEOUS SHORT WAVE RADIATIO
+  0;   14;     19;      0;           0;    7;            %; SURFACE ALBEDO
+  0;   14;     20;      4;           0;   15; JOULES/METER**2; GLOBAL SOLAR RAD INTEG OVER  24 H
+  0;   14;     21;      4;           0;   15; JOULES/METER**2; GLOBAL RADIATION INTEG OVER PD SP
+  0;   14;     22;      4;           0;   15; JOULES/METER**2; DIFFUSE SOLAR RAD INTEG OVER  24
+  0;   14;     23;      4;           0;   15; JOULES/METER**2; DIFFUSE SOLAR RAD INTEG OVER PD S
+  0;   14;     24;      4;           0;   15; JOULES/METER**2; DIRECT SOLAR RAD INTEG OVER  24 H
+  0;   14;     25;      4;           0;   15; JOULES/METER**2; DIRECT SOLAR RAD INTEG OVER PD SP
+  0;   14;     31;      0;           0;   11;      MINUTES; TOTAL SUNSHINE
+  0;   14;     32;      0;           0;   10;        HOURS; TOTAL SUNSHINE
+  0;   14;     33;      0;           0;    9;            %; TOTAL SUNSHINE(PERCENTAGE)
+  0;   14;     41;      0;           0;    7;            %; SHORT WAVE ALBEDO
+  0;   14;     42;      0;           0;    7;            %; BI-DIRECTIONAL REFLECTANCE
+  0;   14;    200;      0;           0;    7;            %; PERCENT OF POSSIBLE SUNSHINE
+  0;   15;      1;      0;           0;   10;       DOBSON; UNITS    OZONE
+  0;   15;      2;      2;           0;   10;      NUMERIC; AIR-MASS (SLANT PATH AT 22KM)
+  0;   15;     11;      3;       14000;   12;     LOG/M**2; LOG_E OF INTEGRATED ELECTRON DENS
+  0;   19;      1;      0;           0;    6;   CODE_TABLE; TYPE OF SYNOPTIC FEATURE
+  0;   19;      2;      2;           0;   12;       METERS; EFFECTIVE RADIUS OF FEATURE
+  0;   19;      3;      0;           0;    8; METERS/SECOND; WIND SPEED THRESHOLD
+  0;   19;      4;      2;           0;   12;       METERS; EFF RAD OF FEAT W/RESP TO WINDS A
+  0;   19;      5;      0;           0;    9;          DEG; TRUE        DIRECTION OF MOTION OF FEATURE
+  0;   19;      6;      2;           0;   14; METERS/SECOND; SPEED OF MOTION OF FEATURE
+  0;   19;      7;      3;           0;   12;       METERS; EFFECTIVE RADIUS OF FEATURE
+  0;   19;      8;      0;           0;    3;   CODE_TABLE; VERTICAL EXTENT OF CIRCULATION
+  0;   19;      9;      3;           0;   12;       METERS; EFF. RAD. W/RESPECT TO FFF ABV TH
+  0;   20;      1;      1;           0;   13;       METERS; HORIZONTAL VISIBILITY
+  0;   20;      2;      1;           0;    7;       METERS; VERTICAL VISIBILITY
+  0;   20;      3;      0;           0;    9;   CODE_TABLE; PRESENT WEATHER
+  0;   20;      4;      0;           0;    5;   CODE_TABLE; PAST WEATHER (1)
+  0;   20;      5;      0;           0;    5;   CODE_TABLE; PAST WEATHER (2)
+  0;   20;      9;      1;         -40;   11;       METERS; CEILING
+  0;   20;     10;      0;           0;    7;            %; CLOUD COVER (TOTAL)
+  0;   20;     11;      0;           0;    4;   CODE_TABLE; CLOUD AMOUNT
+  0;   20;     12;      0;           0;    6;   CODE_TABLE; CLOUD TYPE
+  0;   20;     13;      1;         -40;   11;       METERS; HEIGHT OF BASE OF CLOUD
+  0;   20;     14;      1;         -40;   11;       METERS; HEIGHT OF TOP OF CLOUD
+  0;   20;     15;      1;           0;   14;      PASCALS; PRESSURE AT THE BASE OF CLOUD
+  0;   20;     16;      1;           0;   14;      PASCALS; PRESSURE AT THE TOP OF CLOUD
+  0;   20;     17;      0;           0;    4;   CODE_TABLE; CLOUD TOP DESCRIPTION
+  0;   20;     18;      1;          40;   11;       METERS; LOWEST HGT OF CLD TOP
+  0;   20;     19;      1;          40;   11;       METERS; HIGHEST HGT OF CLD TOP
+  0;   20;     20;      0;           0;    4; CODE_TABLE(02001LOW; CLOUD AMOUNT
+  0;   20;     21;      0;           0;    4; CODE_TABLE(02001MIDDLE; CLOUD AMOUNT
+  0;   20;     22;      0;           0;    4; CODE_TABLE(02001HIGH; CLOUD AMOUNT
+  0;   20;     23;      0;           0;    7;            %; SATELLITE SENSED EFF CLOUD AMOUNT
+  0;   20;     31;      2;           0;    7;       METERS; ICE DEPOSIT (THICKNESS)
+  0;   20;     32;      0;           0;    3;   CODE_TABLE; RATE OF ICE ACCRETION
+  0;   20;     33;      0;           0;    4;   FLAG_TABLE; CAUSE OF ICE ACCRETION
+  0;   20;     34;      0;           0;    5;   CODE_TABLE; SEA ICE CONCENTRATION
+  0;   20;     35;      0;           0;    4;   CODE_TABLE; AMOUNT AND TYPE OF ICE
+  0;   20;     36;      0;           0;    5;   CODE_TABLE; ICE SITUATION
+  0;   20;     37;      0;           0;    5;   CODE_TABLE; ICE DEVELOPMENT
+  0;   20;     38;      0;           0;   12; DEGREES_TRUE; BEARING OF ICE EDGE
+  0;   20;     39;      1;           0;   13;       METERS; ICE DISTANCE
+  0;   20;     41;      0;           0;    4;   CODE_TABLE; AIRFRAME ICING
+  0;   20;     51;      0;           0;    7;            %; AMOUNT OF LOW CLOUDS
+  0;   20;     52;      0;           0;    7;            %; AMOUNT OF MIDDLE CLOUDS
+  0;   20;     53;      0;           0;    7;            %; AMOUNT OF HIGH CLOUDS
+  0;   20;     61;      0;           0;   12;       METERS; RUNWAY VISUAL RANGE (RVR)
+  0;   20;     62;      0;           0;    5;   CODE_TABLE; STATE OF GROUND(W /WO SNOW)
+  0;   20;     63;      0;           0;   10;   CODE_TABLE; SPECIAL PHENOMENA
+  0;   20;    192;      0;           0;    7;   CODE_TABLE; VISIBILITY TOWARDS SEA(WMO TABLE
+  0;   20;    200;      0;           0;    7;            %; MEAN CLD COVER (OPAQUE) PAST 12 H
+  0;   21;      1;      0;         -64;    7;           DB; HORIZONTAL REFLECTIVITY
+  0;   21;      2;      0;         -64;    7;           DB; VERTICAL REFLECTIVITY
+  0;   21;      3;      1;          -5;    7;           DB; DIFFERENTIAL REFLECTIVITY
+  0;   21;      5;      0;         -65;    6;           DB; LINEAR DEPOLARIZATION RATIO
+  0;   21;      6;      0;         -65;    6;           DB; CIRCULAR DEPOLARIZATION RATIO
+  0;   21;     11;      0;        -128;    8; METERS/SECOND; DOPPLER MEAN VELOCITY IN X DIRECT
+  0;   21;     12;      0;        -128;    8; METERS/SECOND; DOPPLER MEAN VELOCITY IN Y DIRECT
+  0;   21;     13;      0;        -128;    8; METERS/SECOND; DOPPLER MEAN VELOCITY IN Z DIRECT
+  0;   21;     14;      1;       -4096;   13; METERS/SECOND; DOPPLER MEAN VELOCITY (RADIAL)
+  0;   21;     17;      1;           0;    8; METERS/SECOND; DOPPLER VELOCITY SPECTRAL WIDTH
+  0;   21;     21;      3;           0;    4;       METERS; ECHO TOPS
+  0;   21;     30;      0;         -32;    8;           DB; SIGNAL TO NOISE RATIO
+  0;   21;     31;      0;           0;    7; KILOGRAMS/METER*VERT.; INTEGRATED LIQ. WATER CONTE
+  0;   21;     36;      7;           0;   12; METERS/SECOND; RADAR RAINFALL INTENSITY
+  0;   21;     41;      2;           0;    8;       METERS; BRIGHT BAND HEIGHT
+  0;   21;     51;      0;        -256;    8;           DB; SIGNAL POWER ABOVE 1MW
+  0;   21;     62;      2;       -5000;   13;     DECIBELS; BACKSCATTER
+  0;   21;     63;      0;           0;    7;            %; NOISE FIGURE
+  0;   21;     64;      0;           0;   10;      NUMERIC; CLUTTER NOISE ESTIMATE
+  0;   21;     65;      0;        -127;    8;      NUMERIC; MISSING PACKET COUNTER
+  0;   21;     66;      0;           0;   12;   FLAG_TABLE; WAVE SCATTEROMETER PRODUCT CONFID
+  0;   21;     67;      0;           0;   12;   FLAG_TABLE; WIND SCATTEROMETER PRODUCT CONFID
+  0;   21;     68;      0;           0;    8;   FLAG_TABLE; RADAR ALTIMETER PRODUCT CONFIDENC
+  0;   21;     69;      0;           0;    7;   FLAG_TABLE; ATSR SEA SFC TEMP QUAL ANALYSIS T
+  0;   21;     70;      0;           0;   15;   FLAG_TABLE; REPROCESSED WIND SCATTEROMETER PR
+  0;   21;     71;      0;           0;   16;      NUMERIC; PEAKINESS
+  0;   21;     72;      0;           0;    4;   FLAG_TABLE; SATELLITE ALTIMETER CALIBRATION S
+  0;   21;     73;      0;           0;    9;   FLAG_TABLE; SATELLITE ALTIMETER INSTRUMENT MO
+  0;   21;     74;      2;        -512;   10; DEGREES_KELVIN; MULTI/SINGLE VIEW DIFFERENCE
+  0;   21;     75;      0;           0;    8;      NUMERIC; SPECTRAL INTENSITY
+  0;   21;     76;      0;           0;    3;   CODE_TABLE; REPRESENTATION OF INTENSITIES
+  0;   21;     77;      3;           0;   14;       METERS; ALTITUDE CORRECTION (IONOSPHERE)
+  0;   21;     78;      3;           0;    9;       METERS; ALTITUDE CORRECTION (DRY TROPOSPH
+  0;   21;     79;      3;        2000;   10;       METERS; ALTITUDE CORRECTION (WET TROPOSPH
+  0;   21;     80;      3;           0;   11;       METERS; ALTITUDE CORRECTION (CALIB. CONST
+  0;   21;     81;      3;           0;   10;       METERS; OPEN LOOP CORRECTION (HGT-TIME LO
+  0;   21;     82;      3;       -3000;   14;     DECIBELS; OPEN LOOP CORRECTION (AUTO GAIN C
+  0;   21;     83;      0;           0;    7;            %; AMBIGUITY REMOVAL CONFIDENCE
+  0;   21;     84;      0;           0;    3;   CODE_TABLE; ATSR SEA SFC TEMP QUALITY SUMMARY
+  0;   21;     85;      0;           0;    4;      NUMERIC; ATSR SEA SFC TEMP ACROSS TRACK BA
+  0;   21;    101;      0;           0;    3;      NUMERIC; NUMBER OF VECTOR AMBIGUITIES
+  0;   21;    102;      0;           0;    3;      NUMERIC; INDEX OF SELECTED WIND VECTOR
+  0;   21;    104;      3;      -30000;   15;      NUMERIC; WIND LIKELIHOOD
+  0;   21;    109;      0;           0;   17;   FLAG_TABLE; WIND VECTOR CELL QUALITY
+  0;   21;    120;      3;           0;   10;      NUMERIC; PROBABILITY OF RAIN
+  0;   21;    121;      0;           0;    8;      NUMERIC; SEAWINDS NOF RAIN INDEX
+  0;   21;    192;      0;           0;    7;           DB; SPECTRAL PEAK POWER 0TH MOMENT
+  0;   21;    193;      1;       -4096;   13; METERS/SECOND; SPECTRAL PEAK POWER 1ST MOMENT
+  0;   21;    194;      1;           0;    8; METERS/SECOND; SPECTRAL PEAK POWER 2ND MOMENT
+  0;   22;      1;      0;           0;    9; DEGREES_TRUE; DIRECTION OF WAVES
+  0;   22;      2;      0;           0;    9; DEGREES_TRUE; DIRECTION OF WIND WAVES
+  0;   22;      3;      0;           0;    9; DEGREES_TRUE; DIRECTION OF SWELL WAVES
+  0;   22;      4;      0;           0;    9; DEGREES_TRUE; DIRECTION OF CURRENT WAVES
+  0;   22;     11;      0;           0;    6;      SECONDS; PERIOD OF WAVES
+  0;   22;     12;      0;           0;    6;      SECONDS; PERIOD OF WIND WAVES
+  0;   22;     13;      0;           0;    6;      SECONDS; PERIOD OF SWELL WAVES
+  0;   22;     21;      1;           0;   10;       METERS; HEIGHT OF WAVES
+  0;   22;     22;      1;           0;   10;       METERS; HEIGHT OF WIND WAVES
+  0;   22;     23;      1;           0;   10;       METERS; HEIGHT OF SWELL WAVES
+  0;   22;     25;      2;           0;   10;       METERS; STANDARD DEVIATION WAVE
+  0;   22;     26;      2;           0;   10;       METERS; STANDARD DEVIATION SIG WAVE HEIGH
+  0;   22;     31;      2;           0;   13; METERS/SECOND; SPEED OF CURRENT
+  0;   22;     37;      3;      -10000;   15;       METERS; TIDAL ELEV WITH RESPECT TO LAND D
+  0;   22;     38;      3;      -10000;   15;       METERS; TIDAL ELEV WITH RESPECT TO CHART
+  0;   22;     39;      3;       -5000;   12;       METERS; MET RESIDUAL TIDAL ELEV (SURGE OR
+  0;   22;     41;      1;           0;   12; DEGREES_KELVIN; SEA SFC TEM (15 DAY RUNNING MEAN)
+  0;   22;     42;      1;           0;   12; DEGREES_KELVIN; SEA TEMPERATURE
+  0;   22;     43;      2;           0;   15; DEGREES_KELVIN; SEA TEMPERATURE
+  0;   22;     44;      1;           0;   14; METERS/SECOND; SOUND VELOCITY
+  0;   22;     49;      2;           0;   15; DEGREES_KELVIN: SEA SURFACE TEMPERATURE
+  0;   22;     50;      2;           0;    8;            K; STD DEV SEA-SURFACE TEMPERATURE
+  0;   22;     61;      0;           0;    4;   CODE_TABLE; STATE OF SEA
+  0;   22;     62;      2;           0;   12;   PARTS/1000; SALINITY
+  0;   22;     63;      0;           0;   14;       METERS; TOTAL WATER DEPTH
+  0;   22;    105;      1;           0;    6; DEGREES_TRUE; DIRECTION OF WAVES
+  0;   22;    143;      2;        2650;   13; DEGREES_KELVIN; SEA TEMPERATURE
+  0;   22;    192;      0;           0;    4;   CODE_TABLE; TIDE INDICATOR
+  0;   22;    193;      1;           0;   10;       METERS; ABS VALUE DEPT OF TIDE FROM PRED
+  0;   22;    194;      3;        -305;   12;       METERS; DEPT OF TIDE FROM MEAN LOWER LOW
+  0;   23;      1;      0;           0;    3;   CODE_TABLE; ACCIDENT EARLY NOTIFICATION ART.A
+  0;   23;      2;      0;           0;    5;   CODE_TABLE; ACTIVITY OR FACILITY INVOLVED IN
+  0;   23;      3;      0;           0;    3;   CODE_TABLE; TYPE OF RELEASE
+  0;   23;      4;      0;           0;    3;   CODE_TABLE; COUNTERMEASURES TAKEN NR BORDER
+  0;   23;      5;      0;           0;    2;   CODE_TABLE; CAUSE  OF INCIDENT
+  0;   23;      6;      0;           0;    3;   CODE_TABLE; INCIDENT SITUATION
+  0;   23;      7;      0;           0;    3;   CODE_TABLE; CHARACTERISTIC OF RELEASE
+  0;   23;      8;      0;           0;    2;   CODE_TABLE; STATE OF CURRENT RELEASE
+  0;   23;      9;      0;           0;    2;   CODE_TABLE; STATE OF EXPECTED RELEASE
+  0;   23;     16;      0;           0;    2;   CODE_TABLE; POSS. OF SIG CHEM.TOXIC HEALTH EF
+  0;   23;     17;      6;           0;   20; METER**3/SECOND; FLOW DISCHARGE OF MAJ. RECIPIENT
+  0;   23;     18;      0;           0;    3;   CODE_TABLE; RELEASE BEHAVIOR OVER TIME
+  0;   23;     19;      0;      -15000;   17;       METERS; ACTUAL RELEASE HEIGHT
+  0;   23;     21;      0;      -15000;   17;       METERS; EFFECTIVE RELEASE HEIGHT
+  0;   23;     22;      0;           0;   24;       METERS; DIST. OF REL PT OR SITE OF INCIDE
+  0;   23;     23;      1;           0;   12; METERS/SECOND; MAIN TRANSPORT SPEED IN ATMOSPHER
+  0;   23;     24;      2;           0;   13; METERS/SECOND; MAIN TRANSPORT SPEED IN WATER
+  0;   23;     25;      2;           0;   13; METERS/SECOND; MAIN TRANSPORT SPEED IN GROUND WA
+  0;   23;     27;      0;           0;    9; DEGREES_TRUE; MAIN TRANSPORT DIR IN ATMOSPHERE
+  0;   23;     28;      0;           0;    9; DEGREES_TRUE; MAIN TRANSPORT DIR IN WATER
+  0;   23;     29;      0;           0;    9; DEGREES_TRUE; MAIN TRANSPORT DIR IN GROUND WATE
+  0;   23;     31;      0;           0;    2;   CODE_TABLE; POSS PLUME/PRECIP ENCOUNTER
+  0;   23;     32;      0;           0;    2;   CODE_TABLE; PLUME ENCOUNTER DIR/SPD CHANGE
+  0;   24;      1;      1;           0;   28;           BQ; EST. OF RADIOACTIVITY REL.TO SPEC
+  0;   24;      2;      1;           0;   28;           BQ; EST MAXIMUM POTENTIAL RELEASE
+  0;   24;      3;      0;           0;    5;   CODE_TABLE; COMPOSITION OF RELEASE
+  0;   24;      4;      0;           0;   16;    CCITT_IA5; ELEMENT NAME
+  0;   24;      5;      0;           0;    9;      NUMERIC; ISOTOPE MASS
+  0;   24;     11;      2;           0;   32;          MSV; DOSE
+  0;   24;     12;      2;           0;   32;          MSV; TRAJ DOSE(DEF LOC & EXP TIME OF A
+  0;   24;     13;      2;           0;   32;          MSV; GAMMA DOSE IN AIR ALG MAIN TRAN P
+  0;   24;     21;      2;           0;   32;  BQ/METER**3; AIR CONC.(NAMED ISOTOPE INC GROSS
+  0;   24;     22;      2;           0;   32;         BQ/L; CONC IN PRECIP(OF NAMED ISOTOPE T
+  0;   25;      1;      1;           0;    6;       METERS; RANGE GATE LENGTH
+  0;   25;      2;      0;           0;    4;      NUMERIC; NR OF GATES AVERAGED
+  0;   25;      3;      0;           0;    8;      NUMERIC; NR. OF INTEGRATED PULSES
+  0;   25;      4;      0;           0;    2;   CODE_TABLE; ECHO PROCESSING
+  0;   25;      5;      0;           0;    2;   CODE_TABLE; ECHO INTEGRATION
+  0;   25;      6;      0;           0;    3;   CODE_TABLE; Z TO R CONVERSION
+  0;   25;      7;      0;           0;   12;      NUMERIC; Z TO R CONVERSION FACTOR
+  0;   25;      8;      2;           0;    9;      NUMERIC; Z TO R CONVERSION EXPONENT
+  0;   25;      9;      0;           0;    4;   FLAG_TABLE; CALIBRATION METHOD
+  0;   25;     10;      0;           0;    4;   CODE_TABLE; CLUTTER TREATMENT
+  0;   25;     11;      0;           0;    2;   CODE_TABLE; GND. OCCULTATION CORR. (SCREENING
+  0;   25;     12;      0;           0;    2;   CODE_TABLE; RANGE ATTENUATION CORRECTION
+  0;   25;     13;      0;           0;    2;   FLAG_TABLE; BRIGHT BAND CORRECTION
+  0;   25;     15;      0;           0;    2;   FLAG_TABLE; RADOME ATTENUATION CORRECTION
+  0;   25;     16;      5;           0;    6;     DB/METER; CLEAR AIR ATTENUATION CORRECTION
+  0;   25;     17;      0;           0;    2;   FLAG_TABLE; PRECIPITATION ATTENUATION CORRECT
+  0;   25;     18;      7;           0;    6;      NUMERIC; A TO Z LAW FOR ATTENUATION FACTOR
+  0;   25;     19;      2;           0;    7;      NUMERIC; A TO Z LAW FOR ATTENUATION EXPONE
+  0;   25;     20;      0;           0;    2;   CODE_TABLE; MEAN SPEED ESTIMATION
+  0;   25;     21;      0;           0;    8;   FLAG_TABLE; WIND COMPUTATION ENHANCEMENT
+  0;   25;     30;      0;           0;    2;   CODE_TABLE; SST USAGE
+  0;   25;     31;      0;           0;    2;   CODE_TABLE; 15 DAY SST AVAILABILITY
+  0;   25;     32;      0;           0;    2;   CODE_TABLE; NOAA WIND PROFILER HIGH/LOW MODE
+  0;   25;     33;      0;           0;    2;   CODE_TABLE; NOAA WIND PROFILER SUBMODE
+  0;   25;     34;      0;           0;    4;   CODE_TABLE; NOAA WIND PROFILER Q/C TEST RESUL
+  0;   25;     35;      0;           0;    3;   CODE_TABLE; FIRST GUESS ADJUSTMENT
+  0;   25;     36;      3;       -5000;   14;      NUMERIC; NSTAR AVERAGE VALUE
+  0;   25;     37;      0;           0;    2;   CODE_TABLE; HIRS-8 SFC AIR TEMP
+  0;   25;     38;      0;           0;    3;   CODE_TABLE; TOVS FILTER FLAGS
+  0;   25;     71;      0;           0;    5;      NUMERIC; FRAME COUNT
+  0;   25;     81;      3;           0;   17;      DEGREES; INCIDENCE ANGLE
+  0;   25;     82;      3;           0;   19;      DEGREES; AZIMUTH ANGLE
+  0;   25;    202;      0;           0;    4;   FLAG_TABLE; TEMPERATURE CHANNEL SELECTION FLA
+  0;   25;    204;      0;           0;    8;   FLAG_TABLE; MATCHUP QUALITY TEST FLAGS
+  0;   25;    205;      0;           0;    8;   FLAG_TABLE; RETRIEVAL/DPI QUALITY TEST FLAGS
+  0;   25;    209;      3;           0;   12; DECIMAL_HOURS; DPI TIME DIFFERENCE (READ AS MINU
+  0;   25;    210;      3;           0;   19;       METERS; DPI DISTANCE
+  0;   25;    211;      3;           0;   12; DECIMAL_HOURS; QUANTITATIVE RETRIEVAL TIME DIFFE
+  0;   25;    212;      3;           0;   19;       METERS; QUANTITATIVE RETRIEVAL DISTANCE
+  0;   26;      1;      1;           0;   12;         HOUR; PCPL TIME OF DAILY RDG IN UTC MAX
+  0;   26;      2;      1;           0;   12;         HOUR; PCPL TIME OF DAILY RDG IN UTC MIN
+  0;   26;     31;      2;  -107341824;   31;       METERS; DIST FM EARTH CENTER IN DIR NORTH
+  0;   26;     32;      2;  -107341824;   31;       METERS; DIST FM EARTH CENTER IN DIR NORTH
+  0;   26;     41;      5;  -107341824;   31; METERS/SECOND; VEL W/RESP EARTH CTR IN DIR NORTH
+  0;   27;      1;      5;    -9000000;   25;      DEGREES; LATITUDE (HIGH ACCURACY)
+  0;   27;      2;      2;       -9000;   15;      DEGREES; LATITUDE (COARSE ACCURACY)
+  0;   27;      3;      2;       -9000;   15;      DEGREES; ALTERNATE LATITUDE
+  0;   27;     20;      0;           0;   16;      NUMERIC; SATELLITE LOCATION COUNTER
+  0;   27;     21;      0;           0;   16;      NUMERIC; SATELLITE SUB-LOCATION DIMENSIONS
+  0;   27;     31;      2;  -107341824;   31;       METERS; DIST FM EARTH CENTER IN DIR 0 DEG
+  0;   27;     41;      5;  -107341824;   31; METERS/SECOND; VEL W/RESP EARTH CTR N DIR 0 DEG
+  0;   28;      1;      5;   -18000000;   26;      DEGREES; LONGITUDE (HIGH ACCURACY)
+  0;   28;      2;      2;      -18000;   16;      DEGREES; LONGITUDE (COARSE ACCURACY)
+  0;   28;      3;      2;      -18000;   16;      DEGREES; ALTERNATE LONGITUDE
+  0;   28;     31;      2;  -107341824;   31;       METERS; DIST FMEARTH CENTER IN DIR 90 DEG
+  0;   28;     41;      5;  -107341824;   31; METERS/SECOND; VEL W/RESP EARTH CTR IN DIR 90 DE
+  0;   29;      1;      0;           0;    3;   CODE_TABLE; PROJECTION TYPE
+  0;   29;      2;      0;           0;    3;   CODE_TABLE; COORDINATE GRID TYPE
+  0;   30;      1;      0;           0;    4;      NUMERIC; PIXEL VALUE (4 BITS)
+  0;   30;     21;      0;           0;   12;      NUMERIC; NUMBER OF PIXELS PER ROW
+  0;   30;     22;      0;           0;   12;      NUMERIC; NUMBER OF PIXELS PER COLUMN
+  0;   30;     31;      0;           0;    4;   CODE_TABLE; PICTURE TYPE
+  0;   30;     32;      0;           0;   16;   FLAG_TABLE; COMBINED PICTURE
+  0;   31;      0;      0;           0;    1;   FLAG_TABLE; DELAYED REPLICATION SWITCH
+  0;   31;      1;      0;           0;    8;      NUMERIC; DELAYED DESCRIPTOR REPLICATION FA
+  0;   31;      2;      0;           0;   16;      NUMERIC; EXT DELAYED DESCRIPTOR REPLICAT.
+  0;   31;     11;      0;           0;    8;      NUMERIC; DELAYED DESC. & DATA REPITIT. FAC
+  0;   31;     12;      0;           0;   16;      NUMERIC; EXT DELAYED DESC. & DATA REPITIT.
+  0;   31;     21;      0;           0;    6;   CODE_TABLE; ASSOCIATED FIELD SIGNIFICANCE
+  0;   31;     31;      0;           0;    1;   FLAG_TABLE; DATA PRESENT INDICATOR
+  0;   31;    192;      0;           0;    9;   CODE_TABLE; NOAA WIND PROFILER HIGH/LOW MODE
+  0;   31;    193;      0;           0;    2;   CODE_TABLE; NOAA WIND PROFILER SUBMODE
+  0;   31;    194;      0;           0;    4;   CODE_TABLE; NOAA WIND PROFILER Q/C TEST RESUL
+  0;   33;      2;      0;           0;    2;   CODE_TABLE; QUALITY INFORMATION
+  0;   33;      3;      0;           0;    3;   CODE_TABLE; QUALITY INFORMATION
+  0;   33;      4;      0;           0;    7;            %; % CONFIDENCE
+  0;   50;      1;      0;           0;   17;      NUMERIC; REPORT SEQUENCE NUMBER
+  0;   50;     20;      0;           0;    4;   CODE_TABLE; DATA QUALITY INDICATOR
+  0;   55;      6;      0;           0;   10;   CODE_TABLE; NMC REPORT TYPE
+  0;   58;      1;      0;           0;   48;    CCITT_IA5; BULLETIN HEADING
+  0;   58;      2;      0;           0;   80;    CCITT_IA5; AIRCRAFT TYPE
+  0;   58;      3;      0;        -400;   17;          GPM; ICING BASE
+  0;   58;      4;      0;        -400;   17;          GPM; ICING TOP
+  0;   58;      5;      0;           0;  224;    CCITT_IA5; COMPLETE BULLETIN HEADER
+  0;   60;      1;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .01 INCH PAS
+  0;   60;      2;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .01 INCH PAS
+  0;   60;      3;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .01 INCH PAS
+  0;   60;      4;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .10 INCH PAS
+  0;   60;      5;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .10 INCH PAS
+  0;   60;      6;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .10 INCH PAS
+  0;   60;      7;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .25 INCH PAS
+  0;   60;      8;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .25 INCH PAS
+  0;   60;      9;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .25 INCH PAS
+  0;   60;     10;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .50 INCH PAS
+  0;   60;     11;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .50 INCH PAS
+  0;   60;     12;      0;           0;    7;            %; PROB. OF LIQ PCPN GE .50 INCH PAS
+  0;   60;     13;      0;           0;    7;            %; PROB. OF LIQ PCP GE 1.00 INCH PAS
+  0;   60;     14;      0;           0;    7;            %; PROB. OF LIQ PCP GE 1.00 INCH PAS
+  0;   60;     15;      0;           0;    7;            %; PROB. OF LIQ PCP GE 1.00 INCH PAS
+  0;   60;     16;      0;           0;    7;            %; PROB. OF LIQ PCP GE 2.00 INCH PAS
+  0;   60;     17;      0;           0;    7;            %; PROB. OF LIQ PCP GE 2.00 INCH PAS
+  0;   60;     18;      0;           0;    7;            %; REL FRQ GE .01 LQ EQV PCP PAST 12
+  0;   60;     19;      0;           0;    7;            %; REL FRQ GE .01 LQ EQV PCP PAST 24
+  0;   60;     20;      0;           0;    7;            %; COND PROB PCP TYPE FREEZING
+  0;   60;     21;      0;           0;    7;            %; COND PROB PCP TYPE SNOW
+  0;   60;     22;      0;           0;    7;            %; COND PROB PCP TYPE LIQUID
+  0;   60;     23;      0;           0;    7;            %; COND PROB PCP TYPE DRIZZLE
+  0;   60;     24;      0;           0;    7;            %; COND PROB PCP TYPE CONTINUOUS
+  0;   60;     25;      0;           0;    7;            %; COND PROB PCP TYPE SHOWERS
+  0;   60;     26;      0;           0;    7;            %; PROB SNOW AMT GE TRACE PAST 6HRS
+  0;   60;     27;      0;           0;    7;            %; PROB SNOW AMT GE TRACE PAST 12HRS
+  0;   60;     28;      0;           0;    7;            %; PROB SNOW AMT GE TRACE PAST 24HRS
+  0;   60;     29;      0;           0;    7;            %; PROB SNOW AMT GE 2.0IN PAST 6HRS
+  0;   60;     30;      0;           0;    7;            %; PROB SNOW AMT GE 2.0IN PAST 12HRS
+  0;   60;     31;      0;           0;    7;            %; PROB SNOW AMT GE 2.0IN PAST 24HRS
+  0;   60;     32;      0;           0;    7;            %; PROB SNOW AMT GE 4.0IN PAST 12HRS
+  0;   60;     33;      0;           0;    7;            %; PROB SNOW AMT GE 4.0IN PAST 24HRS
+  0;   60;     34;      0;           0;    7;            %; PROB SNOW AMT GE 6.0IN PAST 12HRS
+  0;   60;     35;      0;           0;    7;            %; PROB SNOW AMT GE 6.0IN PAST 24HRS
+  0;   60;     36;      0;           0;    7;            %; COND PROB SNOW PAST 12 HRS
+  0;   60;     37;      0;           0;    7;            %; COND REL FRQ PROB SNOW PAST 12 HR
+  0;   60;     38;      0;           0;    7;            %; PROB OPAQUE SKY COVER  CLEAR
+  0;   60;     39;      0;           0;    7;            %; PROB OPAQUE SKY COVER  SCATTERED
+  0;   60;     40;      0;           0;    7;            %; PROB OPAQUE SKY COVER  BROKEN
+  0;   60;     41;      0;           0;    7;            %; PROB OPAQUE SKY COVER  OVERCAST
+  0;   60;     42;      0;           0;    7;            %; PROB CIG HGT < 200 FT
+  0;   60;     43;      0;           0;    7;            %; PROB CIG HGT 200-400 FT
+  0;   60;     44;      0;           0;    7;            %; PROB CIG HGT 500-900 FT
+  0;   60;     45;      0;           0;    7;            %; PROB CIG HGT 1000-3000 FT
+  0;   60;     46;      0;           0;    7;            %; PROB CIG HGT 3100-6500 FT
+  0;   60;     47;      0;           0;    7;            %; PROB CIG HGT 6600-12000 FT
+  0;   60;     48;      0;           0;    7;            %; PROB CIG HGT GT 12000 FT
+  0;   60;     49;      0;           0;    7;            %; PROB VSBY < 0/2 MILES
+  0;   60;     50;      0;           0;    7;            %; PROB VSBY < 0/2 - 7/8 MILES
+  0;   60;     51;      0;           0;    7;            %; PROB VSBY < 0 - 2 3/4 MILES
+  0;   60;     52;      0;           0;    7;            %; PROB VSBY < 3 - 5 MILES
+  0;   60;     53;      0;           0;    7;            %; PROB VSBY > 5   MILES
+  0;   60;     54;      0;           0;    7;            %; PROB OBS TO VISION  BLOWING PHENO
+  0;   60;     55;      0;           0;    7;            %; PROB OBS TO VISION  HAZE
+  0;   60;     56;      0;           0;    7;            %; PROB OBS TO VISION  FOG
+  0;   60;     57;      0;           0;    7;            %; PROB OBS TO VISION  NONE
+  0;   60;     58;      0;           0;    7;            %; PROB TSTM PAST 6 HRS
+  0;   60;     59;      0;           0;    7;            %; PROB TSTM PAST 12HRS
+  0;   60;     60;      0;           0;    7;            %; PROB TSTM PAST 24HRS
+  0;   60;     61;      0;           0;    7;            %; PROB SVR WX PAST 6 HRS
+  0;   60;     62;      0;           0;    7;            %; PROB SVR WX PAST 12HRS
+  0;   60;     63;      0;           0;    7;            %; PROB SVR WX PAST 24HRS
+  0;   60;     64;      0;           0;    7;            %; CLIM AVG CLD COVER (OPAQUE)
+  0;   60;     65;      1;           0;   12; METERS/SECOND; CLIMATIC WIND SPEED
+  0;   60;     66;      1;           0;   12; DEGREES_KELVIN; CLIMATIC(NORMAL) DAY MAX TEMP
+  0;   60;     67;      1;           0;   12; DEGREES_KELVIN; CLIMATIC(NORMAL) NIGHT MIN TEMP
+  0;   60;     90;      0;           0;    4;   CODE_TABLE; QUANT PCP FCST (CATEGORIES)
+  0;   60;     91;      0;           0;    3;   CODE_TABLE; COND PCP TYPE FCST (CATS)
+  0;   60;     92;      0;           0;    3;   CODE_TABLE; COND PCP CHARACTER FCST (CATS)
+  0;   60;     93;      0;           0;    3;   CODE_TABLE; QUANT SNOW AMT FCST (CATS)
+  0;   60;     94;      0;           0;    4;   CODE_TABLE; CIG HEIGHT FCST (CATS)
+  0;   60;     95;      0;           0;    3;   CODE_TABLE; VISIBILITY FCST (CATS)
+  0;   60;     96;      0;           0;    3;   CODE_TABLE; OBSTRUCT TO VISION FCST (CATS)
+  0;   60;     97;      0;           0;    2;   CODE_TABLE; THUNDERSTORM FCST (CATS)
+  0;   60;     98;      0;           0;    2;   CODE_TABLE; SEVERE WEATHER FCST (CATS)
+  0;   63;    255;      0;           0;    1;      NUMERIC; FILL BIT

@@ -39,7 +39,6 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.Stereographic;
-import ucar.unidata.util.GaussianLatitudes;
 
 import java.util.Formatter;
 
@@ -107,7 +106,7 @@ public abstract class Grib1Gds {
   public float earthRadius, majorAxis, minorAxis;
   public int earthShape;
   protected int nx, ny;
-  public byte scanMode, resolution;
+  public int scanMode, resolution;
   protected int lastOctet;
 
   protected Grib1Gds(int template) {
@@ -175,11 +174,11 @@ public abstract class Grib1Gds {
   3   0   Adjacent points in i direction are consecutive
       1   Adjacent points in j direction are consecutive
    */
-  public byte getScanMode() {
+  public int getScanMode() {
     return scanMode;
   }
 
-  public byte getResolution() {
+  public int getResolution() {
     return resolution;
   }
 
@@ -328,7 +327,7 @@ public abstract class Grib1Gds {
 
       la1 = getOctet3(11) * scale3;
       lo1 = getOctet3(14) * scale3;
-      resolution = (byte) getOctet(17);
+      resolution = getOctet(17);
       la2 = getOctet3(18) * scale3;
       lo2 = getOctet3(21) * scale3;
 
@@ -526,7 +525,7 @@ Grid definition –   polar stereographic
   */
   public static class PolarStereographic extends Grib1Gds {
     public float la1, lo1, lov, dX, dY;
-    public byte projCenterFlag;
+    public int projCenterFlag;
     private float lad = (float) 60.0; // LOOK
 
     protected PolarStereographic(int template) {
@@ -538,14 +537,14 @@ Grid definition –   polar stereographic
 
       la1 = getOctet3(11) * scale3;
       lo1 = getOctet3(14) * scale3;
-      resolution = (byte) getOctet(17);
+      resolution =  getOctet(17);
       lov = getOctet3(18) * scale3;
 
       dX = getOctet3(21) * scale3;
       dY = getOctet3(24) * scale3;
 
-      projCenterFlag = (byte) getOctet(27);
-      scanMode = (byte) getOctet(28);
+      projCenterFlag =  getOctet(27);
+      scanMode =  getOctet(28);
 
       lastOctet = 28;
     }
@@ -665,7 +664,7 @@ Grid definition –   polar stereographic
    */
   public static class LambertConformal extends Grib1Gds {
     public float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
-    public byte projCenterFlag;
+    public int projCenterFlag;
 
     // private int hla1, hlo1, hlov, hlad, hdX, hdY, hlatin1, hlatin2; // hasheesh
 
@@ -674,14 +673,14 @@ Grid definition –   polar stereographic
 
       la1 = getOctet3(11) * scale3;
       lo1 = getOctet3(14) * scale3;
-      resolution = (byte) getOctet(17);
+      resolution =  getOctet(17);
       lov = getOctet3(18) * scale3;
 
       dX = getOctet3(21) * scale3;
       dY = getOctet3(24) * scale3;
 
-      projCenterFlag = (byte) getOctet(27);
-      scanMode = (byte) getOctet(28);
+      projCenterFlag =  getOctet(27);
+      scanMode = getOctet(28);
 
       latin1 = getOctet3(29) * scale3;
       latin2 = getOctet3(32) * scale3;
@@ -803,12 +802,12 @@ Grid definition –   polar stereographic
 
       la1 = getOctet3(11) * scale3;
       lo1 = getOctet3(14) * scale3;
-      resolution = (byte) getOctet(47);
+      resolution = getOctet(47);
       la2 = getOctet3(18) * scale3;
       lo2 = getOctet3(21) * scale3;
       latin = getOctet3(24) * scale3;
 
-      scanMode = (byte) getOctet(28);
+      scanMode = getOctet(28);
 
       dX = getOctet3(29) * scale3;  // km
       dY = getOctet3(32) * scale3;  // km

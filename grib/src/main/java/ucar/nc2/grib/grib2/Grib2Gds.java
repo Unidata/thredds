@@ -89,7 +89,7 @@ public abstract class Grib2Gds {
   public int template;
   public float earthRadius, majorAxis, minorAxis;
   public int earthShape, nx, ny;
-  public byte scanMode;
+  public int scanMode;
 
   public Grib2Gds(byte[] data, int template) {
     this.data = data;
@@ -237,7 +237,7 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
   public static class LatLon extends Grib2Gds {
     public float la1, lo1, la2, lo2, deltaLon, deltaLat;
     public int basicAngle, basicAngleSubdivisions;
-    public byte flags;
+    public int flags;
     protected int lastOctet;
 
     LatLon(byte[] data) {
@@ -249,7 +249,7 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       float scale = getScale();
       la1 = getOctet4(47) * scale;
       lo1 = getOctet4(51) * scale;
-      flags = (byte) getOctet(55);
+      flags = getOctet(55);
       la2 = getOctet4(56) * scale;
       lo2 = getOctet4(60) * scale;
 
@@ -257,7 +257,7 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       //if (lo2 < lo1) deltaLon = -deltaLon;
       deltaLat = getOctet4(68) * scale;
       //if (la2 < la1) deltaLat = -deltaLat;
-      scanMode = (byte) getOctet(72);
+      scanMode = getOctet(72);
 
       lastOctet = 73;
     }
@@ -452,7 +452,7 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
    */
   public static class Mercator extends Grib2Gds {
     public float la1, lo1, la2, lo2, lad, orient, dX, dY;
-    public byte flags;
+    public int flags;
     protected int lastOctet;
 
     Mercator(byte[] data) {
@@ -460,12 +460,12 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
 
       la1 = getOctet4(39) * scale6;
       lo1 = getOctet4(43) * scale6;
-      flags = (byte) getOctet(47);
+      flags =  getOctet(47);
       lad = getOctet4(48) * scale6;
       la2 = getOctet4(52) * scale6;
       lo2 = getOctet4(56) * scale6;
 
-      scanMode = (byte) getOctet(60);
+      scanMode = getOctet(60);
 
       orient = getOctet4(61) * scale6; // LOOK not sure if should be scaled
       dX = getOctet4(65) * scale6;  // km
@@ -572,22 +572,22 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
    */
   public static class PolarStereographic extends Grib2Gds {
     public float la1, lo1, lov, lad, dX, dY;
-    public byte flags, projCenterFlag;
+    public int flags, projCenterFlag;
 
     PolarStereographic(byte[] data) {
       super(data, 20);
 
       la1 = getOctet4(39) * scale6;
       lo1 = getOctet4(43) * scale6;
-      flags = (byte) getOctet(47);
+      flags = getOctet(47);
       lad = getOctet4(48) * scale6;
       lov = getOctet4(52) * scale6;
 
       dX = getOctet4(56) * scale6;  //  km
       dY = getOctet4(60) * scale6;  //  km
 
-      projCenterFlag = (byte) getOctet(64);
-      scanMode = (byte) getOctet(65);
+      projCenterFlag = getOctet(64);
+      scanMode = getOctet(65);
     }
 
     @Override
@@ -707,7 +707,7 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
    */
   public static class LambertConformal extends Grib2Gds {
     public float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
-    public byte flags, projCenterFlag;
+    public int flags, projCenterFlag;
 
     private int hla1, hlo1, hlov, hlad, hdX, hdY, hlatin1, hlatin2; // hasheesh
 
@@ -727,15 +727,15 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
       // floating point values
       la1 = getOctet4(39) * scale6;
       lo1 = getOctet4(43) * scale6;
-      flags = (byte) getOctet(47);
+      flags = getOctet(47);
       lad = getOctet4(48) * scale6;
       lov = getOctet4(52) * scale6;
 
       dX = getOctet4(56) * scale6; // km
       dY = getOctet4(60) * scale6; // km
 
-      projCenterFlag = (byte) getOctet(64);
-      scanMode = (byte) getOctet(65);
+      projCenterFlag = getOctet(64);
+      scanMode = getOctet(65);
 
       latin1 = getOctet4(66) * scale6;
       latin2 = getOctet4(70) * scale6;
@@ -984,14 +984,14 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
   */
   public static class SpaceViewPerspective extends Grib2Gds {
     public float LaP, LoP, dX, dY, Xp, Yp, orient, Nr, Xo, Yo;
-    public byte flags;
+    public int flags;
 
     SpaceViewPerspective(byte[] data) {
       super(data, 90);
 
       LaP = getOctet4(39) * scale6;
       LoP = getOctet4(43) * scale6;
-      flags = (byte) getOctet(47);
+      flags = getOctet(47);
 
       dX = getOctet4(48);
       dY = getOctet4(52);
@@ -999,7 +999,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
       Xp = getOctet4(56) * scale3;
       Yp = getOctet4(60) * scale3;
 
-      scanMode = (byte) getOctet(64);
+      scanMode = getOctet(64);
 
       orient = getOctet4(65) * scale6;  // LOOK dunno about scale
       Nr = getOctet4(69) * scale6;
@@ -1155,13 +1155,13 @@ Octet	Contents
    */
 
   public static class CurvilinearOrthogonal extends Grib2Gds {
-    public byte flags;
+    public int flags;
 
     CurvilinearOrthogonal(byte[] data) {
       super(data, 206);
 
-      flags = (byte) getOctet(55);
-      scanMode = (byte) getOctet(72);
+      flags =  getOctet(55);
+      scanMode =  getOctet(72);
     }
 
     @Override
