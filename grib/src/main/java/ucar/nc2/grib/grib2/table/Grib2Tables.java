@@ -59,12 +59,16 @@ import java.util.List;
 @Immutable
 public class Grib2Tables implements ucar.nc2.grib.GribTables {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
-  static private Grib2Tables wmoTables, ncepTables, ndfdTables, kmaTables;
+  static private Grib2Tables wmoTables, ncepTables, ndfdTables, kmaTables, dssTables;
 
   static public Grib2Tables factory(int center, int subCenter, int masterVersion, int localVersion) {
-    if ((center == 7) || (center == 9)) { // just guessing (!)
-      if (ncepTables == null ) ncepTables = new NcepLocalTables(center, subCenter, masterVersion, localVersion);
-      return ncepTables;
+    /* if ((center == 7) && (masterVersion == 2)&& (localVersion == 1)) { // FAKE
+      if (dssTables == null ) dssTables = new DssLocalTables(center, subCenter, masterVersion, localVersion);
+      return dssTables;
+
+    } else */ if ((center == 7) || (center == 9)) { // just guessing (!)
+        if (ncepTables == null ) ncepTables = new NcepLocalTables(center, subCenter, masterVersion, localVersion);
+        return ncepTables;
 
     } else if ((center == 8) && ((subCenter == 0) || (subCenter == -9999))){
       if (ndfdTables == null ) ndfdTables = new NdfdLocalTables(center, subCenter, masterVersion, localVersion);
@@ -167,6 +171,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables {
     result.add(new GribTableId("NCEP",7,-1,-1,-1));
     result.add(new GribTableId("NDFD",8,0,-1,-1));
     result.add(new GribTableId("KMA",40,-1,-1,-1));
+    result.add(new GribTableId("DSS",7,-1,2,1));
     return result;
   }
 
@@ -420,8 +425,6 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables {
         return "Pressure_thickness";
       case 160:
         return "Depth_below_sea";
-      case 255:
-        return "Missing_level_type";
       case GribNumbers.UNDEFINED:
         return "none";
       default:
@@ -469,7 +472,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
       case 9:
         return "Maximum_ensemble";
       default:
-        return "Unknown_Prob_type" + id;
+        return "UnknownProbType" + id;
      }
   }
 
@@ -496,10 +499,8 @@ Code Table Code table 4.7 - Derived forecast (4.7)
         return "Difference"; // (Value at the start of time range minus value at the end)";
       case 9:
         return "Ratio";
-      case 255:
-        return "MissingStatisticType";
       default:
-        return "UnknownLevelType-" + id;
+        return "UnknownIntervalType-" + id;
     }
   }
 

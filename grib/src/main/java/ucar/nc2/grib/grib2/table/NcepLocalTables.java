@@ -241,7 +241,7 @@ public class NcepLocalTables extends Grib2Tables {
       case 207:
         return "AverageForecastAverages-207";
       default:
-        return super.getLevelNameShort(id);
+        return super.getIntervalNameShort(id);
     }
   }
 

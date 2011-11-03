@@ -82,11 +82,14 @@ public class Grib2TablesViewer extends JPanel {
     });
 
     ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(gribTable.getJTable(), "Options");
-    varPopup.addAction("Show File contents", new AbstractAction() {
+    varPopup.addAction("Compare two tables", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        TableBean bean = (TableBean) gribTable.getSelectedBean();
-        if (bean == null) return;
-        //showFile(bean);
+        List list = gribTable.getSelectedBeans();
+        if (list.size() == 2) {
+          TableBean bean1 = (TableBean) list.get(0);
+          TableBean bean2 = (TableBean) list.get(1);
+          compareTables(bean1.table, bean2.table);
+        }
       }
     });
 
@@ -104,7 +107,6 @@ public class Grib2TablesViewer extends JPanel {
       }
     });
     buttPanel.add(dupButton);
-
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -198,13 +200,56 @@ public class Grib2TablesViewer extends JPanel {
       if (wmo == null) {
         extra++;
         f.format(" NEW %s%n", p);
-      } else {
+      } else if (!p.getName().equals( wmo.getName()) || !p.getUnit().equals( wmo.getUnit())) {
         f.format("this=%10s %40s %15s%n", p.getId(), p.getName(), p.getUnit());
         f.format(" wmo=%10s %40s %15s%n%n", wmo.getId(), wmo.getName(), wmo.getUnit());
         conflict++;
       }
     }
     f.format("%nConflicts=%d extra=%d%n%n", conflict, extra);
+
+    infoTA.setText(f.toString());
+    infoWindow.show();
+  }
+
+  public void compareTables(Grib2Tables.GribTableId id1, Grib2Tables.GribTableId id2) {
+    Grib2Tables t1 = Grib2Tables.factory(id1.center, id1.subCenter, id1.masterVersion, id1.localVersion);
+    Grib2Tables t2 = Grib2Tables.factory(id2.center, id2.subCenter, id2.masterVersion, id2.localVersion);
+
+    Formatter f = new Formatter();
+
+    f.format("Table 1 = %s%n", id1.name);
+    f.format("Table 1 = %s%n", id2.name);
+
+    int extra = 0;
+    int conflict = 0;
+    f.format("Table 1 : %n");
+    for (Object t : t1.getParameters()) {
+      Grib2Tables.Parameter p1 = (Grib2Tables.Parameter) t;
+      Grib2Tables.Parameter  p2 = t2.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      if (p2 == null) {
+        extra++;
+        f.format(" Missing %s in table 2%n", p1);
+      } else if (!p1.getName().equals( p2.getName()) || !p1.getUnit().equals( p2.getUnit()) ||
+                (p1 != null && !p1.getAbbrev().equals( p2.getAbbrev()))) {
+        f.format("  t1=%10s %40s %15s  %15s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev());
+        f.format("  t2=%10s %40s %15s  %15s%n%n", p2.getId(), p2.getName(), p2.getUnit(), p2.getAbbrev());
+        conflict++;
+      }
+    }
+    f.format("%nConflicts=%d extra=%d%n%n", conflict, extra);
+
+    extra = 0;
+    f.format("Table 2 : %n");
+    for (Object t : t2.getParameters()) {
+      Grib2Tables.Parameter p2 = (Grib2Tables.Parameter) t;
+      Grib2Tables.Parameter  p1 = t2.getParameter(p2.getDiscipline(), p2.getCategory(), p2.getNumber());
+      if (p1 == null) {
+        extra++;
+        f.format(" Missing %s in table 1%n", p2);
+      }
+    }
+    f.format("%nextra=%d%n%n", extra);
 
     infoTA.setText(f.toString());
     infoWindow.show();
