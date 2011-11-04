@@ -271,8 +271,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
     this.location = location;
     if (debugLeaks) {
       allFiles.add(location);
-      if ((location.indexOf("01janN") >= 0) || (location.indexOf("02febN") >= 0))
-        System.out.printf("HEY!%n");
     }
 
     this.file = new java.io.RandomAccessFile(location, mode);

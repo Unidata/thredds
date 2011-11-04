@@ -205,7 +205,6 @@ public class Grib1TablesViewer extends JPanel {
   private void setEntries(Grib1ParamTable table) {
     Map<Integer, Grib1Parameter> map = table.getParameters();
     if (map == null) {
-      System.out.println("HEY");
       map = table.getParameters();
     }
 

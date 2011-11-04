@@ -45,6 +45,7 @@ import ucar.nc2.thredds.ThreddsDataFactory;
  * updated and checked into svn.
  *
  * Data should be kept in /upc/share/cdmUnitTest/tds
+ * To run, use "-Dtds.content.root.path=/$root/tds/src/test/data"  on java startup
  *
  * jcaron, resurrected Sep 2010
  */

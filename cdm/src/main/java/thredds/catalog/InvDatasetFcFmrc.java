@@ -453,8 +453,12 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         int pos2 = wantName.indexOf("hr");
         if ((pos1<0) || (pos2<0)) return null;
         String id = wantName.substring(pos1+OFFSET_NAME.length(), pos2);
-        double hour = Double.parseDouble(id);
-        return fmrc.getConstantOffsetDataset( hour);
+        try {
+            double hour = Double.parseDouble(id);
+            return fmrc.getConstantOffsetDataset( hour);
+        } catch (NumberFormatException e) {
+          return null; // user input error
+        }
 
       } else if (wantType.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs)) {
         int pos1 = wantName.indexOf(RUN_NAME);
@@ -462,6 +466,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         String id = wantName.substring(pos1+RUN_NAME.length());
 
         CalendarDate date = CalendarDate.parseISOformat(null, id);
+        if (date == null) return null; // user input error
         return fmrc.getRunTimeDataset(date);
 
       } else if (wantType.equals(FORECAST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts)) {
@@ -470,6 +475,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         String id = wantName.substring(pos1+FORECAST_NAME.length());
 
         CalendarDate date = CalendarDate.parseISOformat(null, id);
+        if (date == null) return null; // user input error
         return fmrc.getConstantForecastDataset(date);
 
       } else if (config.fmrcConfig.getBestDatasets() != null) {

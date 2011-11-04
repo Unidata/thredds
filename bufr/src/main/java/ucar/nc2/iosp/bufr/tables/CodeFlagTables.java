@@ -268,8 +268,6 @@ public class CodeFlagTables {
       if (t2 == null)
         System.out.printf(" NOT FOUND in 2: %s (%d)%n", t.fxy(), t.fxy);
       else {
-        if (t.fxy().equals("0-25-174"))
-          System.out.println("HEY");
         for (int no : t.map.keySet()) {
           String name1 = t.map.get(no);
           String name2 = t2.map.get(no);

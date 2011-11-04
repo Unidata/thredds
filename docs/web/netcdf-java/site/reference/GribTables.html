@@ -133,7 +133,7 @@ dl {margin: 10px 5px 5px 15px;)
   <li>The reference dates may differ across records.</li>
 </ul>
 <h3>Constructing CDM Variables from collections of GRIB records</h3>
-<p>The CDM library takes unordered collections of GRIB records and groups them into CDM Variables. It uses the following GRIB fields to construct a unique variable:</p>
+<p>The CDM library takes unordered collections of GRIB records and groups them into 3D or 4D CDM Variables with a time and optional vertical dimension. It uses the following GRIB fields to construct a unique variable:</p>
 <ul>
   <li>Discipline (octet 7 of Indicator section)</li>
   <li>Category (octet 10 of PDS)</li>
@@ -141,7 +141,7 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Level-1 Type (eg octet 23 of PDS template 0)</li>
   <li>is a vertical layer (Level-2 Type exists) (eg octet 29 of PDS template 0)</li>
   <li>Statistical process Type for time averages (PDS templates 8-14) (eg octet 47 of PDS template 8)</li>
-  <li>Ensemble derived Type (octet 11 of PDS)</li>
+  <li>Ensemble derived Type (PDS templates 2-4)  (eg octet 35 of PDS template 2)</li>
   <li>Probability Type (octet 11 of PDS)</li>
   <li>GDS hashcode</li>
 </ul>
