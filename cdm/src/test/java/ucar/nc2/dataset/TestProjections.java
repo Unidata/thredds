@@ -100,7 +100,7 @@ public class TestProjections extends TestCase {
 
     p = test(testDir+ "Eumetsat.VerticalPerspective.grb",
         "SpaceViewPerspective_Projection",
-        "P3-0-8",
+        "Pixel_scene_type",
         MSGnavigation.class);
   }
 

@@ -37,7 +37,6 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -622,7 +621,7 @@ public class Grib2CollectionBuilder {
 
       if (ar == null || ar.gr == null) {
         br.setFileno(0);
-        br.setPos(0); // missing
+        br.setPos(0); // missing : ok to use 0 since drsPos > 0
 
       } else {
         br.setFileno(ar.gr.getFile());

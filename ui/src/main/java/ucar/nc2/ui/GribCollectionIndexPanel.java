@@ -56,6 +56,7 @@ import java.util.List;
 
 /**
  * Examine Grib Collection Index files
+ * Grib1 or Grib2
  *
  * @author caron
  * @since 6/29/11
@@ -369,13 +370,51 @@ public class GribCollectionIndexPanel extends JPanel {
 
       try {
         if (tcoord.isInterval()) {
-          if (vcoord != null) {
             showRecords2Dintv(f, vcoord, tcoord.getIntervals());
-          }
+        } else {
+          showRecords(f, vcoord, tcoord.getCoords());
         }
       } catch (IOException ioe) {
         ioe.printStackTrace();
       }
+    }
+
+    void showRecords(Formatter f, VertCoord vcoord, List<Integer> values) throws IOException {
+      if (vcoord == null) {
+        f.format("vcoord is null%n");
+        return;
+      }
+      f.format("Variable %s%n", v.toStringComplete());
+      f.format(" Show records (file,pos)%n");
+      f.format(" time (down) x vert (across) %n");
+
+      f.format("%12s ", " ");
+      List<VertCoord.Level> levels = vcoord.getCoords();
+      boolean isLayer = vcoord.isLayer();
+      for (int j = 0; j < levels.size(); j++)
+        f.format("%6s ", levels.get(j).toString(isLayer));
+      f.format("%n");
+
+      GribCollection.Record[] records = v.getRecords();
+      for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+        f.format("%10s = ", values.get(timeIdx));
+        for (int vertIdx = 0; vertIdx < vcoord.getSize(); vertIdx++) {
+          int idx = GribCollection.calcIndex(timeIdx, 0, vertIdx, v.nens, v.nverts);
+          GribCollection.Record r = records[idx];
+          if (r == null) f.format("null");
+          else f.format("(%d,%8d) ", r.fileno, r.pos);
+        }
+        f.format("%n");
+      }
+
+      int count = 0;
+      for (GribCollection.Record r : records) {
+        if (r == null) f.format("null%n");
+        else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
+        count++;
+      }
+      f.format("%n");
+
     }
 
     void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoord.Tinv> tinvs) throws IOException {

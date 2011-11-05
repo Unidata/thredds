@@ -5,7 +5,8 @@ option java_outer_classname = "GribCollectionProto";
 
 message Record {
   required uint32 fileno = 1;  // index into GribCollectionIndex.files
-  required uint64 pos = 2;  // offset in Grib file of the start of drs (grib2) or entire message (grib1)
+  required uint64 pos = 2;     // offset in Grib file of the start of drs (grib2) or entire message (grib1)
+  optional bool missing = 3 [default = false]; // record is missing
 }
 
 // write VariableRecords first

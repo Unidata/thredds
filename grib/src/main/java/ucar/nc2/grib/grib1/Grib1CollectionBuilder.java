@@ -551,7 +551,7 @@ public class Grib1CollectionBuilder {
 
       if (ar == null || ar.gr == null) {
         br.setFileno(0);
-        br.setPos(0); // missing
+        br.setPos(0); // missing : cant use 0 since that may be a valid value
 
       } else {
         br.setFileno(ar.gr.getFile());

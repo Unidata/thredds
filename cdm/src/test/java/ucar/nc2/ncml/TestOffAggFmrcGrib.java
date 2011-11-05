@@ -61,7 +61,7 @@ public class TestOffAggFmrcGrib extends TestCase {
       "  </aggregation>\n" +
       "</netcdf>";
 
-    String location = TestAll.cdmUnitTestDir + "ncml/nc/nam_c20s/aggFmrcGrib.ncml";
+    String location = TestAll.cdmUnitTestDir + "ncml/nc/nam_c20s/fmrcAgg.ncml";
     System.out.printf("%s%n%s%n", location, xml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), location, null);
     TestAll.showMem("TestAggFmrcGrib start ");
@@ -111,7 +111,7 @@ public class TestOffAggFmrcGrib extends TestCase {
     {18.0, 21.0, 24.0, 27.0, 30.0, 33.0, 36.0, 39.0, 42.0, 45.0, 48.0, 51.0, 54.0, 57.0, 60.0, 63.0, 66.0, 69.0, 72.0, 75.0, 78.0, 81.0, 84.0, 87.0, 90.0, 93.0, 96.0, 99.0, 102.0}
   };
 
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcGribRunseq", null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "AggFmrcGribRunseq.ncml", null);
     int naggs = 4;
     String timeVarName = "time";
     String timeDimName = "time";
@@ -156,7 +156,7 @@ public class TestOffAggFmrcGrib extends TestCase {
     assert lat.getRank() == 1;
     assert lat.getSize() == n;
     assert lat.getShape()[0] == n;
-    assert lat.getDataType() == DataType.DOUBLE;
+    assert lat.getDataType().isFloatingPoint();
 
     assert !lat.isUnlimited();
     assert lat.getDimension(0).equals(ncfile.findDimension("y"));
@@ -174,7 +174,7 @@ public class TestOffAggFmrcGrib extends TestCase {
       assert data.getRank() == 1;
       assert data.getSize() == n;
       assert data.getShape()[0] == n;
-      assert data.getElementType() == double.class;
+      assert data.getElementType() == double.class || data.getElementType() == float.class;
 
       IndexIterator dataI = data.getIndexIterator();
       assert TestUtils.close(dataI.getDoubleNext(), -832.6983183345455); // -832.6982610175637);
