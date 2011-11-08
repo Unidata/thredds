@@ -126,7 +126,58 @@ import ucar.nc2.util.net.EscapeStrings;
 
 
 public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
-  //static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DODSServlet.class);
+
+    //////////////////////////////////////////////////
+    // Statics
+
+    // Define an overall logger for everyone to use
+    // Start with a default logger, but allow an application to change it later
+    static public org.slf4j.Logger Log;
+  
+    /* Provide an alternative to System.out/err */
+    static public LogStream logout;
+    static public LogStream logerr;
+    static public PrintStream systemout;
+    static public PrintStream systemerr;
+
+    static {
+        Log = org.slf4j.LoggerFactory.getLogger("OPeNDAP");
+        logout = new LogStream(Log).setMode(LogStream.Mode.info);
+        logerr = new LogStream(Log).setMode(LogStream.Mode.error);
+	systemout = new PrintStream(logout);
+	systemerr = new PrintStream(logerr);
+    }
+
+    static public void setLogger(String name)
+    {
+	Log = org.slf4j.LoggerFactory.getLogger(name);	
+	logout.setLogger(Log);	
+	logerr.setLogger(Log);	
+    }
+
+    static public void setLogger(Class cl)
+    {
+        Log = org.slf4j.LoggerFactory.getLogger(cl);	
+	logout.setLogger(Log);	
+	logerr.setLogger(Log);	
+    }
+
+    static public void printDODSException(opendap.dap.DAP2Exception de)
+    {
+       de.print(systemerr);
+       de.printStackTrace(systemerr);
+    }
+
+    static public void printThrowable(Throwable t)
+    {
+        systemerr.println(t.getMessage());
+        t.printStackTrace(systemerr);
+    }
+
+  /**
+   * ************************************************************************
+   * Compression
+   */
 
   protected boolean allowDeflate = true;
 
@@ -146,7 +197,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
   private Object syncLock = new Object();
 
 
-  /**
+  /*
    * ************************************************************************
    * Count "hits" on the server...
    *
@@ -252,16 +303,16 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param response The <code>HttpServletResponse</code> for the client.
    */
   public void parseExceptionHandler(ParseException pe, HttpServletResponse response) {
-    //log.error("DODSServlet.parseExceptionHandler", pe);
+    Log.error("DODSServlet.parseExceptionHandler", pe);
 
     if (Debug.isSet("showException")) {
-      System.out.println(pe);
-      pe.printStackTrace();
-      Log.printThrowable(pe);
+      systemout.println(pe);
+      pe.printStackTrace(systemout);
+      printThrowable(pe);
     }
 
-    //System.out.println(pe);
-    //pe.printStackTrace();
+    //systemout.println(pe);
+    //pe.printStackTrace(systemout);
 
     try {
       BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
@@ -271,7 +322,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       // C++ slients don't barf as they would if I sent "plain" AND
       // the C++ don't expect compressed data if I do this...
       response.setHeader("Content-Encoding", "");
-      // response.setContentType("text/plain");  LOOK do we need???
+      // response.setContentType("text/plain");  LOOK do we needsystemout
 
       // Strip any double quotes out of the parser error message.
       // These get stuck in auto-magically by the javacc generated parser
@@ -281,7 +332,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       DAP2Exception de2 = new DAP2Exception(opendap.dap.DAP2Exception.CANNOT_READ_FILE, msg);
       de2.print(eOut);
     } catch (IOException ioe) {
-      System.out.println("Cannot respond to client! IO Error: " + ioe.getMessage());
+      systemout.println("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
 
   }
@@ -296,12 +347,12 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param response The <code>HttpServletResponse</code> for the client.
    */
   public void dap2ExceptionHandler(DAP2Exception de, HttpServletResponse response) {
-    //log.info("DODSServlet.dodsExceptionHandler (" + de.getErrorCode() + ") " + de.getErrorMessage());
+    Log.info("DODSServlet.dodsExceptionHandler (" + de.getErrorCode() + ") " + de.getErrorMessage());
 
     if (Debug.isSet("showException")) {
-      de.print(System.out);
-      de.printStackTrace();
-      Log.printDODSException(de);
+      de.print(systemout);
+      de.printStackTrace(systemout);
+      printDODSException(de);
     }
 
     try {
@@ -317,7 +368,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       de.print(eOut);
 
     } catch (IOException ioe) {
-      System.out.println("Cannot respond to client! IO Error: " + ioe.getMessage());
+      systemout.println("Cannot respond to client! IO Error: " + ioe.getMessage());
       //log.error("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
 
@@ -357,18 +408,18 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
       if (Debug.isSet("showException")) {
         // Error message
-        System.out.println("DODServlet ERROR (IOExceptionHandler): " + e);
-        System.out.println(rs);
+        systemout.println("DODServlet ERROR (IOExceptionHandler): " + e);
+        systemout.println(rs);
         if (track) {
           RequestDebug reqD = (RequestDebug) rs.getUserObject();
-          System.out.println("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
+          systemout.println("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
         }
-        e.printStackTrace();
-        Log.printThrowable(e);
+        e.printStackTrace(systemout);
+        printThrowable(e);
       }
 
     } catch (IOException ioe) {
-      System.out.println("Cannot respond to client! IO Error: " + ioe.getMessage());
+      systemout.println("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
 
   }
@@ -388,14 +439,14 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     }
     HttpServletResponse response = rs.getResponse();
     try {
-      System.out.println("DODServlet ERROR (anyExceptionHandler): " + e);
-      System.out.println(rs);
+      systemout.println("DODServlet ERROR (anyExceptionHandler): " + e);
+      systemout.println(rs);
       if (track) {
         RequestDebug reqD = (RequestDebug) rs.getUserObject();
-        System.out.println("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
+        systemout.println("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
       }
-      e.printStackTrace();
-      Log.printThrowable(e);
+      e.printStackTrace(systemout);
+      printThrowable(e);
 
       BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
       response.setHeader("Content-Description", "dods-error");
@@ -416,7 +467,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       de2.print(eOut);
 
     } catch (IOException ioe) {
-      System.out.println("Cannot respond to client! IO Error: " + ioe.getMessage());
+      systemout.println("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
 
 
@@ -454,7 +505,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
     response.setStatus(HttpServletResponse.SC_OK);
 
-    System.out.println(serverMsg);
+    systemout.println(serverMsg);
 
 
   }
@@ -477,7 +528,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           throws Exception {
 
     if (Debug.isSet("showResponse"))
-      System.out.println("doGetDAS for dataset: " + rs.getDataSet());
+      systemout.println("doGetDAS for dataset: " + rs.getDataSet());
 
     GuardedDataset ds = null;
     try {
@@ -496,8 +547,8 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       myDAS.print(Out);
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if (Debug.isSet("showResponse")) {
-        System.out.println("DAS=\n");
-        myDAS.print(System.out);
+        systemout.println("DAS=\n");
+        myDAS.print(systemout);
       }
 
     } catch (DAP2Exception de) {
@@ -531,7 +582,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           throws Exception {
 
     if (Debug.isSet("showResponse"))
-      System.out.println("doGetDDS for dataset: " + rs.getDataSet());
+      systemout.println("doGetDDS for dataset: " + rs.getDataSet());
 
     GuardedDataset ds = null;
     try {
@@ -569,11 +620,11 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if (Debug.isSet("showResponse")) {
         if (rs.getConstraintExpression().equals("")) { // No Constraint Expression?
-          System.out.println("Unconstrained DDS=\n");
-          myDDS.print(System.out);
+          systemout.println("Unconstrained DDS=\n");
+          myDDS.print(systemout);
         } else {
-          System.out.println("Constrained DDS=\n");
-          myDDS.printConstrained(System.out);
+          systemout.println("Constrained DDS=\n");
+          myDDS.printConstrained(systemout);
         }
       }
 
@@ -610,7 +661,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           throws Exception {
 
     if (Debug.isSet("showResponse"))
-      System.out.println("doGetDDX for dataset: " + rs.getDataSet());
+      systemout.println("doGetDDX for dataset: " + rs.getDataSet());
 
     GuardedDataset ds = null;
     try {
@@ -648,11 +699,11 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if (Debug.isSet("showResponse")) {
         if (rs.getConstraintExpression().equals("")) { // No Constraint Expression?
-          System.out.println("Unconstrained DDX=\n");
-          myDDS.printXML(System.out);
+          systemout.println("Unconstrained DDX=\n");
+          myDDS.printXML(systemout);
         } else {
-          System.out.println("Constrained DDX=\n");
-          myDDS.printConstrainedXML(System.out);
+          systemout.println("Constrained DDX=\n");
+          myDDS.printConstrainedXML(systemout);
         }
       }
     } catch (ParseException pe) {
@@ -691,7 +742,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
 
     if (Debug.isSet("showResponse"))
-      System.out.println("doGetBLOB For: " + rs.getDataSet());
+      systemout.println("doGetBLOB For: " + rs.getDataSet());
 
     GuardedDataset ds = null;
     try {
@@ -770,7 +821,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
 
     if (Debug.isSet("showResponse"))
-      System.out.println("doGetDAP2Data For: " + rs.getDataSet());
+      systemout.println("doGetDAP2Data For: " + rs.getDataSet());
 
     GuardedDataset ds = null;
     try {
@@ -804,8 +855,8 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       ce.parseConstraint(rs);
 
       // debug
-      // System.out.println("CE DDS = ");
-      // myDDS.printConstrained(System.out);
+      // systemout.println("CE DDS = ");
+      // myDDS.printConstrained(systemout);
 
       // Send the constrained DDS back to the client
       PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut));
@@ -896,7 +947,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           throws Exception {
 
     if (Debug.isSet("showResponse"))
-      System.out.println("Sending Version Tag.");
+      systemout.println("Sending Version Tag.");
 
     rs.getResponse().setContentType("text/plain");
     rs.getResponse().setHeader("XDODS-Server", getServerVersion());
@@ -927,7 +978,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           throws Exception {
 
     if (Debug.isSet("showResponse"))
-      System.out.println("Sending Help Page.");
+      systemout.println("Sending Help Page.");
 
     rs.getResponse().setContentType("text/html");
     rs.getResponse().setHeader("XDODS-Server", getServerVersion());
@@ -956,7 +1007,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           throws Exception {
 
     if (Debug.isSet("showResponse"))
-      System.out.println("Sending Bad URL Page.");
+      systemout.println("Sending Bad URL Page.");
 
     //log.info("DODSServlet.badURL " + rs.getRequest().getRequestURI());
 
@@ -992,7 +1043,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    */
   public void doGetASC(ReqState rs) throws Exception {
     if (Debug.isSet("showResponse"))
-      System.out.println("doGetASC For: " + rs.getDataSet());
+      systemout.println("doGetASC For: " + rs.getDataSet());
 
     GuardedDataset ds = null;
     try {
@@ -1005,7 +1056,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
       boolean debug = false;
       if (debug)
-        System.out.println("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
+        systemout.println("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
 
       ServerDDS dds = ds.getDDS();
       //dds = url.getData(ce, null, new asciiFactory());  previous way
@@ -1062,7 +1113,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           throws Exception {
 
     if (Debug.isSet("showResponse"))
-      System.out.println("doGetINFO For: " + rs.getDataSet());
+      systemout.println("doGetINFO For: " + rs.getDataSet());
 
     GuardedDataset ds = null;
     try {
@@ -1200,15 +1251,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
         pw.println(" showFlags;showInitParameters;showRequest");
         pw.println(" on|off=(flagName)");
         doDebugCmd(cmd, tz, pw); // for subclasses
-      } else if (cmd.equals("log")) {
-        Log.reset();
-        pw.println(" logging started");
-      } else if (cmd.equals("logEnd")) {
-        Log.close();
-        pw.println(" logging ended");
-      } else if (cmd.equals("logShow")) {
-        pw.println(Log.getContents());
-        pw.println("-----done logShow");
       } else if (cmd.equals("on"))
         Debug.set(tz.nextToken(), true);
 
@@ -1233,7 +1275,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     }
 
     pw.println("--------------------------------------");
-    pw.println("Logging is " + (Log.isOn() ? "on" : "off"));
+    pw.println("Logging is on");
     Iterator iter = Debug.keySet().iterator();
     while (iter.hasNext()) {
       String key = (String) iter.next();
@@ -1539,7 +1581,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     RequestDebug reqD = null;
     try {
       if (Debug.isSet("probeRequest"))
-        probeRequest(System.out, rs);
+        probeRequest(systemout, rs);
 
       rs = getRequestState(request, rs.getResponse());
       if (rs != null) {
@@ -1560,11 +1602,11 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           }
 
           if (Debug.isSet("showRequest")) {
-            System.out.println("-------------------------------------------");
-            System.out.println("Server: " + getServerName() + "   Request #" + reqno);
-            System.out.println("Client: " + rs.getRequest().getRemoteHost());
-            System.out.println(rs.toString());
-            Log.println("Request dataset: '" + rs.getDataSet() + "' suffix: '" + rs.getRequestSuffix() +
+            systemout.println("-------------------------------------------");
+            systemout.println("Server: " + getServerName() + "   Request #" + reqno);
+            systemout.println("Client: " + rs.getRequest().getRemoteHost());
+            systemout.println(rs.toString());
+            systemout.println("Request dataset: '" + rs.getDataSet() + "' suffix: '" + rs.getRequestSuffix() +
                     "' CE: '" + rs.getConstraintExpression() + "'");
           }
         }
@@ -1664,11 +1706,11 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     //long maxMemory = Runtime.getRuntime ().maxMemory ();
     long usedMemory = (totalMemory - freeMemory);
 
-    System.out.println("****showMemUsed " + from);
-    System.out.println(" totalMemory " + totalMemory);
-    System.out.println(" freeMemory " + freeMemory);
-    //System.out.println(" maxMemory "+maxMemory);
-    System.out.println(" usedMemory " + usedMemory);
+    systemout.println("****showMemUsed " + from);
+    systemout.println(" totalMemory " + totalMemory);
+    systemout.println(" freeMemory " + freeMemory);
+    //systemout.println(" maxMemory "+maxMemory);
+    systemout.println(" usedMemory " + usedMemory);
   }
 
 

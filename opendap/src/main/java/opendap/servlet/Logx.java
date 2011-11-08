@@ -46,7 +46,7 @@ import java.io.*;
  * A minimal implementation of a logging facility.
  */
 
-public class Log {
+public class Logx {
 
     static private PrintStream logger = null;
     static private ByteArrayOutputStream buff = null;
