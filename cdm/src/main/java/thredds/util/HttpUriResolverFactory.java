@@ -42,7 +42,7 @@ import java.net.URI;
  */
 public class HttpUriResolverFactory
 {
-  private static long defaultConnectionTimeout = 30 * 1000; // Default: 30 seconds
+  private static int defaultConnectionTimeout = 30 * 1000; // Default: 30 seconds
   private static int defaultSocketTimeout = 1 * 30 * 1000; // Default: 30 seconds
   private static boolean defaultAllowContentEncoding = true;
   private static boolean defaultFollowRedirects = true;
@@ -53,7 +53,7 @@ public class HttpUriResolverFactory
                                 defaultAllowContentEncoding, defaultFollowRedirects );
   }
 
-  private long connectionTimeout;
+  private int connectionTimeout;
   private int socketTimeout;
   private boolean allowContentEncoding;
   private boolean followRedirects;
@@ -71,7 +71,7 @@ public class HttpUriResolverFactory
     return connectionTimeout;
   }
 
-  public void setConnectionTimeout( long connectionTimeout )
+  public void setConnectionTimeout( int connectionTimeout )
   {
     this.connectionTimeout = connectionTimeout;
   }

@@ -269,25 +269,6 @@ is used in a non-standard way and it contains the following information.
 The last two items are optional. If missing, then the client will
 accept any certificate sent to it by the server. This includes,
 specifically, self-signed certificates.
-<p>
-Before the introduction of the authorization mechanisms described
-in this document, it was possible to specify the
-keystore+password and the truststore+password
-using the command line flags
-<pre>
--Dkeystore
--Dkeystorepassword
--Dtruststore
--Dtruststorepassword
-</pre>
-For purposes of backward compatibility, a check is made for these
-flags, and if they are defined, then
-an entry equivalent to the following is inserted into the auth store.
-<pre>
-insert(new Entry(HTTPAuthScheme.SSL,ANY_URL,
-                 new HTTPSSLProvider(keystore,kpassword,
-                                     truststore,trustpassword)));
-</pre>
 <h4>Setting Credentials</h4>
 The primary credentialling method in
 <i>HTTPSession</i>
@@ -312,6 +293,26 @@ credentials provider that is used for any combination
 of scheme + url as a last resort.
 <pre>
 static synchronized public void setGlobalCredentialsProvider(CredentialsProvider cp)
+</pre>
+
+<h2><a name="Noapi"><u>Command Line Access to the Authorization Mechanism</u></a></h2>
+Before the introduction of the authorization mechanisms described
+in this document, it was possible to specify the
+keystore+password and the truststore+password
+using the command line flags
+<pre>
+-Dkeystore
+-Dkeystorepassword
+-Dtruststore
+-Dtruststorepassword
+</pre>
+For purposes of backward compatibility, a check is made for these
+flags, and if they are defined, then
+an entry equivalent to the following is inserted into the auth store.
+<pre>
+insert(new Entry(HTTPAuthScheme.SSL,ANY_URL,
+                 new HTTPSSLProvider(keystore,kpassword,
+                                     truststore,trustpassword)));
 </pre>
 
 <h2><a name="Misc"><u>Miscellaneous Changes</u></a></h2>

@@ -35,47 +35,35 @@ client-side authorization with respect to some server.
 The approach is to provide various kinds of authorization
 credentials (broadly construed) to servers by clients.
 <p>
-Before reading this document, the reader should have read
-the <i>Sessions.html</i> document to understand the context in
-which the authorization mechanisms operate.
-The section <a href="#Status">Status</a>
-should also be read to get important information
-about the current state of this code.
-<p>
-The authorization schemes currently supported are as follows.
-<ol>
-<li> HTTP Basic
-<li> HTTP Digest
-<li> HTTP Proxy
-<li> Client-side keys using java keystores and truststores.
-     (initially for ESG credentialling).
-</ol>
-<p>
-<h3>Global and Per-Connection Credentials</h3>
-There is an additional factor.  It is desirable to support both "global"
-and "per-session" authorization.
-<ul>
-<li>Global &mdash; this means that a single set of
-    credentials is set globally and is adequate for all
-    code running within a single program (i.e. linux or
-    windows process).
-<p>
-<li>Per-session &mdash; this means that each session (HTTPSession instance)
-         may have a separate set of
-         credentials. Further, it must be guaranteed that no
-         connection is re-used to avoid inadvertent access
-         to some other set of credentials.
-</ul>
-<h3>Delegation</h3>
-Finally, there is the "delegation" problem.  This is when a client program
-(or a server program acting as a client) wants to masquerade as some user
-and utilize the authorizations provided for that user.
-Of course, this requires that the program be sufficiently trusted
-so that is will handle the delegation responsibly.
-<p>
-Delegation is likely to be most common on the server-side
-because a server will be handling multiple clients and may
-have to access additional information on behalf of various clients.
+Before reading this document, the reader should have read the
+<a href="./Session.html">Session.html</a> document to
+understand the context in which the authorization mechanisms
+operate.  The section <a href="#Status">Status</a> should
+also be read to get important information about the current
+state of this code.  <p> The authorization schemes currently
+supported are as follows.  <ol> <li> HTTP Basic <li> HTTP
+Digest <li> HTTP Proxy <li> Client-side keys using java
+keystores and truststores.  (initially for ESG
+credentialling).  </ol> <p> <h3>Global and Per-Connection
+Credentials</h3> There is an additional factor.  It is
+desirable to support both "global" and "per-session"
+authorization.  <ul> <li>Global &mdash; this means that a
+single set of credentials is set globally and is adequate
+for all code running within a single program (i.e. linux or
+windows process).  <p> <li>Per-session &mdash; this means
+that each session (HTTPSession instance) may have a separate
+set of credentials. Further, it must be guaranteed that no
+connection is re-used to avoid inadvertent access to some
+other set of credentials.  </ul> <h3>Delegation</h3>
+Finally, there is the "delegation" problem.  This is when a
+client program (or a server program acting as a client)
+wants to masquerade as some user and utilize the
+authorizations provided for that user.  Of course, this
+requires that the program be sufficiently trusted so that is
+will handle the delegation responsibly.  <p> Delegation is
+likely to be most common on the server-side because a server
+will be handling multiple clients and may have to access
+additional information on behalf of various clients.
 
 <h2>Approach</h2>
 Access rights are stored in a "database" that is

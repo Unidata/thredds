@@ -58,7 +58,6 @@ static final public HTTPAuthScheme DIGEST = HTTPAuthScheme.DIGEST;
 static final public HTTPAuthScheme SSL = HTTPAuthScheme.SSL;
 static final public HTTPAuthScheme PROXY = HTTPAuthScheme.PROXY;
 
-static int DFALTTHREADCOUNT = 50;
 static public int SC_NOT_FOUND = HttpStatus.SC_NOT_FOUND;
 static public int SC_UNAUTHORIZED = HttpStatus.SC_UNAUTHORIZED;
 static public int SC_OK = HttpStatus.SC_OK;
@@ -85,6 +84,8 @@ static public String HTTP_TARGET_HOST = "<undefined>";
 static public String ORIGIN_SERVER = "<undefined>";
 static public String WAIT_FOR_CONTINUE = "<undefined>";
 
+static int DFALTTHREADCOUNT = 50;
+static int DFALTTIMEOUT = 5*60*1000; // 5 minutes (300000 milliseconds)
 
 static MultiThreadedHttpConnectionManager connmgr;
 //fix: protected static SchemeRegistry schemes;
@@ -93,6 +94,8 @@ static int threadcount = DFALTTHREADCOUNT;
 static List<HTTPSession> sessionList; // List of all HTTPSession instances
 static boolean globalauthpreemptive = false;
 static CredentialsProvider globalProvider = null;
+static int globalSoTimeout = 0;
+static int globalConnectionTimeout = 0;
 
 static {
     //fix: schemes = new SchemeRegistry();
@@ -103,6 +106,8 @@ static {
     // allow self-signed certificates
     Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
     sessionList = new ArrayList<HTTPSession>(); // see kill function
+    setGlobalConnectionTimeout(DFALTTIMEOUT);
+    setGlobalSoTimeout(DFALTTIMEOUT);
 }
 
 // ////////////////////////////////////////////////////////////////////////
@@ -245,8 +250,10 @@ protected void construct(String urlencoded)
         clientparams.setParameter(ALLOW_CIRCULAR_REDIRECTS, true);
         clientparams.setParameter(MAX_REDIRECTS, 25);
 
-	// Temp for IDV, use a long sotimeout
-        clientparams.setSoTimeout(1000000);
+        if(globalSoTimeout > 0)
+            setSoTimeout(globalSoTimeout);
+        if(globalConnectionTimeout > 0)
+            setConnectionTimeout(globalConnectionTimeout);
 
         setAuthenticationPreemptive(globalauthpreemptive);
 
@@ -278,16 +285,15 @@ public void setAuthenticationPreemptive(boolean tf)
         sessionClient.getParams().setAuthenticationPreemptive(tf);
 }
 
-public void setConnectionManagerTimeout(long timeout)
-{
-    connmgr.getParams().setConnectionTimeout((int) timeout);
-
-}
 
 public void setSoTimeout(int timeout)
 {
     sessionClient.getParams().setSoTimeout(timeout);
+}
 
+public void setConnectionTimeout(int timeout)
+{
+    sessionClient.setConnectionTimeout(timeout);
 }
 
 
@@ -506,5 +512,23 @@ setGlobalCredentialsProvider(CredentialsProvider provider)
     globalProvider = provider;
     setCredentialsProvider(HTTPAuthScheme.ANY,HTTPAuthStore.ANY_URL,provider);
 }
+
+static public void setConnectionManagerTimeout(int timeout)
+{
+    setGlobalConnectionTimeout(timeout);
+}
+
+static public void setGlobalConnectionTimeout(int timeout)
+{
+    connmgr.getParams().setConnectionTimeout(timeout);
+
+}
+
+static public void setGlobalSoTimeout(int timeout)
+{
+    globalSoTimeout = timeout;
+}
+
+
 
 }
