@@ -194,11 +194,11 @@ public class testEngine {
             IOException {
 
 
-        if (_Debug) System.out.println("---------------------------------------------------");
-        if (_Debug) System.out.println("testEngine.newLoadTestArray(" + datasetName + "): ");
+        if (_Debug) AbstractServlet.systemout.println("---------------------------------------------------");
+        if (_Debug) AbstractServlet.systemout.println("testEngine.newLoadTestArray(" + datasetName + "): ");
 
         try {
-            if (_Debug) System.out.println("Loading: " +
+            if (_Debug) AbstractServlet.systemout.println("Loading: " +
                     ta.getEncodedName() +
                     " an SDArray of " +
                     ta.numDimensions() +
@@ -208,12 +208,12 @@ public class testEngine {
 
             if (_Debug) {
                 Class cl = pv.getClass();
-                System.out.println("PrimitiveVector is a: " + cl.getName());
+                AbstractServlet.systemout.println("PrimitiveVector is a: " + cl.getName());
             }
 
 
             pv.setLength(getLength(ta, 0, true));
-            if (_Debug) System.out.println("Length: " + pv.getLength());
+            if (_Debug) AbstractServlet.systemout.println("Length: " + pv.getLength());
 
             newLoadArray(datasetName, ta);
 
@@ -222,7 +222,7 @@ public class testEngine {
         catch (DAP2Exception e) {
             // Don't bother to do a thing.
         }
-        if (_Debug) System.out.println("---------------------------------------------------");
+        if (_Debug) AbstractServlet.systemout.println("---------------------------------------------------");
 
 
     }
@@ -241,7 +241,7 @@ public class testEngine {
         int sizeofThisDim;
 
         if (constrained) {
-            if (_Debug) System.out.print("Scanning Dimension " + dim +
+            if (_Debug) AbstractServlet.systemout.print("Scanning Dimension " + dim +
                     "  start: " + dad.getStart() +
                     "  stop: " + dad.getStop() +
                     "  stride: " + dad.getStride());
@@ -253,7 +253,7 @@ public class testEngine {
 
         int eCount = sizeofThisDim * sizeofOtherDims;
 
-        if (_Debug) System.out.println("  length: " + sizeofThisDim);
+        if (_Debug) AbstractServlet.systemout.println("  length: " + sizeofThisDim);
 
         return (eCount);
     }
@@ -270,7 +270,7 @@ public class testEngine {
         int uDimSteps[] = new int[ta.numDimensions()];
 
 
-        if (_Debug) System.out.println("ConstrainedIndex: " + constrainedIndex);
+        if (_Debug) AbstractServlet.systemout.println("ConstrainedIndex: " + constrainedIndex);
 
 
         dim = ta.numDimensions() - 1;
@@ -283,18 +283,18 @@ public class testEngine {
         }
 
         if (_Debug) {
-            System.out.println("DimSteps: ");
+            AbstractServlet.systemout.println("DimSteps: ");
             for (dim = 0; dim < ta.numDimensions(); dim++) {
-                System.out.println("    cDimSteps[" + dim + "]: " + cDimSteps[dim]);
+                AbstractServlet.systemout.println("    cDimSteps[" + dim + "]: " + cDimSteps[dim]);
             }
-            System.out.println("");
+            AbstractServlet.systemout.println("");
             for (dim = 0; dim < ta.numDimensions(); dim++) {
-                System.out.println("    uDimSteps[" + dim + "]: " + uDimSteps[dim]);
+                AbstractServlet.systemout.println("    uDimSteps[" + dim + "]: " + uDimSteps[dim]);
             }
         }
 
 
-        if (_Debug) System.out.println("cIndices: ");
+        if (_Debug) AbstractServlet.systemout.println("cIndices: ");
 
         k = 0;
         for (dim = 0; dim < (ta.numDimensions() - 1); dim++) {
@@ -303,23 +303,23 @@ public class testEngine {
 
             cIndices[dim] = (constrainedIndex - k) / cDimSteps[dim];
 
-            if (_Debug) System.out.println("cIndices[" + dim + "]: " + cIndices[dim] + "  k: " + k);
+            if (_Debug) AbstractServlet.systemout.println("cIndices[" + dim + "]: " + cIndices[dim] + "  k: " + k);
 
             k += cIndices[dim] * cDimSteps[dim];
 
         }
 
         cIndices[dim] = (constrainedIndex - k);
-        if (_Debug) System.out.println("cIndices[" + dim + "]: " + cIndices[dim] + "  k: " + k);
+        if (_Debug) AbstractServlet.systemout.println("cIndices[" + dim + "]: " + cIndices[dim] + "  k: " + k);
 
 
-        if (_Debug) System.out.print("uIndices: (");
+        if (_Debug) AbstractServlet.systemout.print("uIndices: (");
         for (dim = 0; dim < ta.numDimensions(); dim++) {
             dad = ta.getDimension(dim);
             uIndices[dim] = dad.getStart() + cIndices[dim] * dad.getStride();
-            if (_Debug) System.out.print(uIndices[dim] + ", ");
+            if (_Debug) AbstractServlet.systemout.print(uIndices[dim] + ", ");
         }
-        if (_Debug) System.out.println(")");
+        if (_Debug) AbstractServlet.systemout.println(")");
 
         uI = 0;
         for (dim = 0; dim < ta.numDimensions(); dim++) {
@@ -337,15 +337,15 @@ public class testEngine {
 
         PrimitiveVector pv = ta.getPrimitiveVector();
 
-        if (_Debug) System.out.println("Loading Array... ");
+        if (_Debug) AbstractServlet.systemout.println("Loading Array... ");
 
         for (int j = 0; j < pv.getLength(); j++) {
-            if (_Debug) System.out.print("..\n");
+            if (_Debug) AbstractServlet.systemout.print("..\n");
 
 
             int i = nuAI(j, ta);
 
-            if (_Debug) System.out.println("ConstrainedIndex: " + j + "   UnconstrainedIndex: " + i);
+            if (_Debug) AbstractServlet.systemout.println("ConstrainedIndex: " + j + "   UnconstrainedIndex: " + i);
 
             if (pv instanceof BaseTypePrimitiveVector) {
 
@@ -402,7 +402,7 @@ public class testEngine {
             }
 
         }
-        if (_Debug) System.out.println("");
+        if (_Debug) AbstractServlet.systemout.println("");
     }
     //**************************************************************************
 
@@ -437,7 +437,7 @@ public class testEngine {
             }
 
             SDArray sam = (SDArray) tg.getVar(i + 1);
-            //System.out.println("The Map Vector Elements are: " + sam.getName());
+            //AbstractServlet.systemout.println("The Map Vector Elements are: " + sam.getName());
 
             if (sam.isProject())
                 sam.read(datasetName, this);

@@ -180,7 +180,7 @@ public class SDTest {
 	    }
         }
         catch (InvalidSwitch e) {
-	    System.err.println("Invalid Switch: "+e);
+	    AbstractServlet.systemerr.println("Invalid Switch: "+e);
 	}
     }
     //***************************************************************
