@@ -43,6 +43,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.util.Misc;
 
 public class TestOffAggFmrcGrib extends TestCase {
   private boolean showValues = false;
@@ -83,7 +84,7 @@ public class TestOffAggFmrcGrib extends TestCase {
   };
 
     testAggCoordVar(ncfile, naggs, new DateUnit("hours since 2006-03-15T18:00:00Z"), runhours);
-    testTimeCoordVar(ncfile, naggs, 29, "time", timevals);
+    testTimeCoordVar(ncfile, naggs, 29, "Pressure_surface", timevals);
 
     System.out.println("TestAggForecastModel.testReadData ");    
     testReadData(ncfile, naggs);
@@ -170,17 +171,15 @@ public class TestOffAggFmrcGrib extends TestCase {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-      Array data = lat.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == n;
-      assert data.getShape()[0] == n;
-      assert data.getElementType() == double.class || data.getElementType() == float.class;
+   Array data = lat.read();
+   assert data.getRank() == 1;
+   assert data.getSize() == n;
+   assert data.getShape()[0] == n;
+   assert data.getElementType() == double.class || data.getElementType() == float.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert TestUtils.close(dataI.getDoubleNext(), -832.6983183345455); // -832.6982610175637);
-      assert TestUtils.close(dataI.getDoubleNext(), -812.3803183345456); // -812.3802610175637);
-      assert TestUtils.close(dataI.getDoubleNext(), -792.0623183345456); // -792.0622610175637);
-
+   int last =(int)  data.getSize() - 1;
+   assert TestUtils.close(data.getDouble(0), -832.2073364257812) : data.getDouble(0);
+   assert TestUtils.close(data.getDouble(last), 4369.20068359375) : data.getDouble(last);
   }
 
   private void testAggCoordVar(NetcdfFile ncfile, int nagg, DateUnit du, int[] runhours) {
@@ -217,10 +216,13 @@ public class TestOffAggFmrcGrib extends TestCase {
 
   }
 
-  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes, String timeVarName, double[][] timevals) throws Exception {
-    Variable time = ncfile.findVariable(timeVarName);
+  private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes, String varName, double[][] timevals) throws Exception {
+    Variable v = ncfile.findVariable(varName);
+    Dimension d = v.getDimension(1); // time dim
+    Variable time = ncfile.findVariable(d.getName());
     assert null != time;
-    assert time.getShortName().equals(timeVarName);
+    System.out.printf("%ntime dimension for %s = %s%n", varName, time.getFullName());
+
     assert time.getRank() == 2;
     assert time.getSize() == nagg * ntimes;
     assert time.getShape()[0] == nagg;
@@ -255,7 +257,7 @@ public class TestOffAggFmrcGrib extends TestCase {
         double val = data.getDouble(ima.set(run, tidx));
         if (showValues) System.out.println(" run= "+ run + " tidx= "+ tidx +  " val= "+ val );
         if (!Double.isNaN(val))
-          assert val == timevals[run][tidx] : "("+run+","+tidx+"): "+val+" != "+ timevals[run][tidx];
+          assert Misc.closeEnough(val, timevals[run][tidx]) : "run,time=("+run+","+tidx+"): "+val+" != "+ timevals[run][tidx];
       }
 
   }

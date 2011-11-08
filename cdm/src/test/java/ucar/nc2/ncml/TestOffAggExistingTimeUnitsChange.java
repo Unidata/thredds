@@ -106,7 +106,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
     String units = v.getUnitsString();
     assert units != null;
-    assert units.equalsIgnoreCase("hour since 2007-04-11T00:00:00Z") : units;
+    assert units.equalsIgnoreCase("hour since 2007-04-11T00:00:00.000Z") : units;
 
     int count = 0;
     Array data = v.read();

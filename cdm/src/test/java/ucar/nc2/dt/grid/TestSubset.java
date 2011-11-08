@@ -97,7 +97,7 @@ public class TestSubset extends TestCase {
   public void testGrib() throws Exception {
     GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "formats/grib1/AVN.wmo");
 
-    GeoGrid grid = dataset.findGridByName("TMP_isobaric");
+    GeoGrid grid = dataset.findGridByName("Temperature_isobaric");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
@@ -394,7 +394,7 @@ public class TestSubset extends TestCase {
   // longitude subsetting (CoordAxis1D regular)
   public void testLatLonSubset2() throws Exception {
     GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "tds/normal/GFS_Global_onedeg_20100913_0000.grib2");
-    GeoGrid grid = dataset.findGridByName("Pressure_surface");
+    GeoGrid grid = dataset.findGridByName("Pressure_Surface");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;

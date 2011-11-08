@@ -87,7 +87,7 @@ public abstract class Grib2Gds {
   protected final byte[] data;
 
   public int template;
-  public float earthRadius, majorAxis, minorAxis;
+  public float earthRadius, majorAxis, minorAxis; // in meters
   public int earthShape, nx, ny;
   public int scanMode;
 
@@ -184,10 +184,13 @@ public abstract class Grib2Gds {
       case 0:
         return new Earth(6367470.0);
       case 1:
+        if (earthRadius < 6000000) majorAxis *= 1000.0; // bad units
         return new Earth(earthRadius);
       case 2:
         return EarthEllipsoid.IAU;
       case 3:
+        if (majorAxis < 6000000) majorAxis *= 1000.0; // bad units
+        if (minorAxis < 6000000) minorAxis *= 1000.0; // bad units
         return new EarthEllipsoid("Grib2 Type 3", -1, majorAxis, minorAxis, 0);
       case 4:
         return EarthEllipsoid.IAG_GRS80;
@@ -196,6 +199,8 @@ public abstract class Grib2Gds {
       case 6:
         return new Earth(6371229.0);
       case 7:
+        if (majorAxis < 6000000) majorAxis *= 1000.0; // bad units
+        if (minorAxis < 6000000) minorAxis *= 1000.0; // bad units
         return new EarthEllipsoid("Grib2 Type 37", -1, majorAxis * 1000, minorAxis * 1000, 0);
       case 8:
         return new Earth(6371200.0);
@@ -256,7 +261,7 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       deltaLon = getOctet4(64) * scale;
       //if (lo2 < lo1) deltaLon = -deltaLon;
       deltaLat = getOctet4(68) * scale;
-      //if (la2 < la1) deltaLat = -deltaLat;
+      if (la2 < la1) deltaLat = -deltaLat;
       scanMode = getOctet(72);
 
       lastOctet = 73;
@@ -1103,6 +1108,8 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
       double as = 2 * Math.asin(1.0 / Nr);
       double cfac = dX / as;
       double lfac = dY / as;
+
+      getEarth(); // fix units if needed
 
       // use km, so scale by the earth radius
       double scale_factor = (Nr - 1) * majorAxis / 1000; // this sets the units of the projection x,y coords in km

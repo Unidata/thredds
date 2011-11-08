@@ -61,7 +61,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     testDimensions(ncfile, 3, 113, 151);
     testCoordVar(ncfile, 113);
     testAggCoordVar(ncfile, 3);
-    testTimeCoordVar(ncfile, "time5", 3, 11);
+    testTimeCoordVar(ncfile, "time5", 3, 10);
 
     ncfile.close();
   }
@@ -93,7 +93,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     assert lat.getRank() == 1;
     assert lat.getSize() == n;
     assert lat.getShape()[0] == n;
-    assert lat.getDataType() == DataType.DOUBLE;
+    assert lat.getDataType() == DataType.DOUBLE || lat.getDataType() == DataType.FLOAT;
 
     assert !lat.isUnlimited();
     assert lat.getDimension(0).equals(ncfile.findDimension("y"));
@@ -112,7 +112,6 @@ public class TestOffAggFmrcNonuniform extends TestCase {
       assert data.getRank() == 1;
       assert data.getSize() == n;
       assert data.getShape()[0] == n;
-      assert data.getElementType() == double.class;
     } catch (IOException io) {}
 
   }
@@ -124,7 +123,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
-    assert time.getDataType() == DataType.DOUBLE;
+    assert time.getDataType() == DataType.DOUBLE || time.getDataType() == DataType.FLOAT;
 
 
     try {

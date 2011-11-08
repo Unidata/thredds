@@ -305,9 +305,11 @@ class FmrcDataset {
         FmrcInv.UberGrid grid = fmrcInv.findUberGrid(v.getFullName());
         if (grid == null) { // only non-agg vars need to be cached
           Variable orgV = (Variable) v.getSPobject();
-          if (orgV.getSize() > 10 * 1000 * 1000)
+          if (orgV.getSize() > 10 * 1000 * 1000) {
             logger.info("FMRCDataset build Proto cache >10M var= "+orgV.getNameAndDimensions());
-          v.setCachedData(orgV.read()); // read from original - store in proto
+          } else {
+            v.setCachedData(orgV.read()); // read from original - store in proto
+          }
         }
 
         v.setSPobject(null); // clear the reference to orgV for all of proto
@@ -435,8 +437,13 @@ class FmrcDataset {
         DatasetConstructor.transferVariableAttributes(v, targetV);
         VariableDS vds = (VariableDS) v;
         targetV.setSPobject(vds); //temporary, for non-agg variables when proto is made
-        if (vds.hasCachedDataRecurse())
+        if (vds.hasCachedDataRecurse()) {
+          if (vds.getSize() > 1000 * 1000) {
+            boolean wtf = vds.hasCachedDataRecurse();
+          }
+          System.out.printf(" read %s%n", vds.getFullName());
           targetV.setCachedData(vds.read()); //
+        }
         targetGroup.addVariable(targetV);
       }
     }

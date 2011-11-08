@@ -95,7 +95,7 @@ public class TestProjections extends TestCase {
 
     p = test(testDir+ "Mercator.grib1",
         "Mercator_Projection",
-        "TMP_isobaric",
+        "Temperature_isobaric",
         Mercator.class);
 
     p = test(testDir+ "Eumetsat.VerticalPerspective.grb",

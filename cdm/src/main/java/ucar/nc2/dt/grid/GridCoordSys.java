@@ -1124,9 +1124,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (proj != null && !(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation)) { // LOOK kludge - how to do this generrally ??
       // first clip the request rectangle to the bounding box of the grid
       LatLonRect bb = getLatLonBoundingBox();
-      rect = bb.intersect(rect);
-      if (null == rect)
-        throw new InvalidRangeException("Request Bounding box does not intersect Grid");
+      LatLonRect rect2 = bb.intersect(rect);
+      if (null == rect2)
+        throw new InvalidRangeException("Request Bounding box does not intersect Grid ");
+      rect = rect2;
     }
 
     CoordinateAxis xaxis = getXHorizAxis();

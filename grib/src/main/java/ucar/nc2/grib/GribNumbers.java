@@ -291,7 +291,7 @@ public final class GribNumbers {
   public static void main(String[] args) {
     for (int i=125; i<256;i++) {
       byte b = (byte) i;
-      System.out.printf("%d == %d == %d%n", b, convertSignedByte(b), convertSignedByte2(b));
+      System.out.printf("%d == %d == %d == %s%n", b, convertSignedByte(b), convertSignedByte2(b), Long.toHexString((long) i));
       assert convertSignedByte(b) == convertSignedByte2(b) : convertSignedByte(b) +"!=" +convertSignedByte2(b);
     }
   }

@@ -237,7 +237,7 @@ public class Fmrc {
       try {
         FmrcInv fmrcInv = makeFmrcInv(null);
         fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
-        if (logger.isInfoEnabled()) logger.info(config.spec+": make new Dataset, new proto = "+forceProtoLocal);
+        logger.debug(config.spec+": make new Dataset, new proto = {}", forceProtoLocal);
         if (forceProtoLocal) forceProto = false;
         this.lastInvChanged = System.currentTimeMillis();
         if (forceProtoLocal) this.lastProtoChanged = this.lastInvChanged;

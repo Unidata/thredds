@@ -179,7 +179,7 @@ public class TestPointFeatureTypes extends TestCase {
     //int n = checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
     //System.out.printf("n=%d%n", n);
 
-    assert 1516 == checkPointDataset(topdir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
+    assert 17280 == checkPointDataset(topdir + "cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, true);
     //System.out.printf("n=%d%n", n);
 
   }

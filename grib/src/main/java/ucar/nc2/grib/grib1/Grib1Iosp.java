@@ -60,6 +60,7 @@ import java.util.List;
  * @since 9/5/11
  */
 public class Grib1Iosp extends AbstractIOServiceProvider {
+  static private final float MISSING_VALUE = Float.NaN;
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Iosp.class);
   static private final boolean debugTime = false, debugRead = false;
 
@@ -126,9 +127,9 @@ Notes:
     if (param == null) {
       f.format("VAR%d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
     } else {
-      if (param.getName() != null)
-        f.format("%s", param.getName());
-      else
+      //if (param.getName() != null)
+      //  f.format("%s", param.getName());
+      //else
         f.format("%s", Grib1Parameter.makeNameFromDescription(param.getDescription()));
     }
 
@@ -506,7 +507,7 @@ Notes:
       String desc = makeVariableLongName(tables, gribCollection, vindex);
       v.addAttribute(new Attribute(CF.LONG_NAME, desc));
       v.addAttribute(new Attribute(CF.UNITS, makeVariableUnits(tables, gribCollection, vindex)));
-      v.addAttribute(new Attribute(CF.MISSING_VALUE, Float.NaN));
+      v.addAttribute(new Attribute(CF.MISSING_VALUE, MISSING_VALUE));
       v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
 
       v.addAttribute(new Attribute("Grib_Parameter", vindex.parameter));
@@ -717,6 +718,8 @@ Notes:
           currPartno = dr.partno;
         }
 
+        if (dr.pos == GribCollection.MISSING_RECORD) continue; // skip missing data
+
         if (debugRead) { // for validation
           rafData.seek(dr.pos);
           Grib1Record gr = new Grib1Record(rafData);
@@ -739,7 +742,7 @@ Notes:
           }
         }
 
-        float[] data = null; // Grib1Record.readData(rafData, dr.drsPos, dr.vindex.group.hcs.nPoints, dr.vindex.group.hcs.scanMode, dr.vindex.group.hcs.nx);
+        float[] data = null; // LOOK Grib1Record.readData(rafData, dr.drsPos, dr.vindex.group.hcs.nPoints, dr.vindex.group.hcs.scanMode, dr.vindex.group.hcs.nx);
         dataReceiver.addData(data, dr.resultIndex, dr.vindex.group.hcs.nx);
       }
       if (rafData != null) rafData.close();
@@ -833,6 +836,8 @@ Notes:
           currFile = dr.fileno;
         }
 
+        if (dr.pos == GribCollection.MISSING_RECORD) continue;
+
         if (debugRead) { // for validation
           rafData.seek(dr.pos);
           Grib1Record gr = new Grib1Record(rafData);
@@ -898,7 +903,7 @@ Notes:
       // prefill with NaNs, to deal with missing data
       IndexIterator iter = dataArray.getIndexIterator();
       while (iter.hasNext())
-        iter.setDoubleNext(Float.NaN);
+        iter.setFloatNext(MISSING_VALUE);
     }
 
     void addData(float[] data, int resultIndex, int nx) throws IOException {

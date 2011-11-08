@@ -34,6 +34,7 @@ package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.CollectionManager;
+import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
@@ -62,6 +63,7 @@ import java.util.*;
 public abstract class GribCollection {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   public static final String IDX_EXT = ".ncx";
+  public static final long MISSING_RECORD = -1;
 
   /* disk cache for .ncx files
   private static DiskCache2 diskCache = null;
@@ -478,7 +480,7 @@ public abstract class GribCollection {
         Record[] recordsTemp = new Record[n];
         for (int i = 0; i < n; i++) {
           GribCollectionProto.Record pr = proto.getRecords(i);
-          recordsTemp[i] = new Record(pr.getFileno(), pr.getPos());
+          recordsTemp[i] = new Record(pr.getFileno(), pr.getPos(), pr.getMissing());
         }
         records = recordsTemp; // switch all at once - worse case is it gets read more than once
       }
@@ -503,9 +505,10 @@ public abstract class GribCollection {
     public int fileno;
     public long pos;
 
-    public Record(int fileno, long pos) {
+    public Record(int fileno, long pos, boolean missing) {
       this.fileno = fileno;
       this.pos = pos;
+      if (missing) this.pos = MISSING_RECORD;
     }
   }
 
@@ -540,6 +543,11 @@ public abstract class GribCollection {
     public MyNetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
       super(spi, raf, location, cancelTask);
     }
+  }
+
+  public static void main(String[] args)throws IOException {
+    System.out.printf("%d%n", Long.MAX_VALUE);
+    System.out.printf("%d%n", Long.MIN_VALUE);
   }
 
 }

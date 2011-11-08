@@ -78,8 +78,8 @@ import thredds.inventory.CollectionManager;
  */
 public class GridDatasetInv {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
-  static private final int REQ_VERSION = 1; // minimum required version, else regenerate XML
-  static private final int CURR_VERSION = 1;  // current version
+  static private final int REQ_VERSION = 2; // minimum required version, else regenerate XML
+  static private final int CURR_VERSION = 2;  // current version
   
   static private boolean debug = false;  // current version
 

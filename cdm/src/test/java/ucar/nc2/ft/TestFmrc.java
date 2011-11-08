@@ -65,7 +65,7 @@ public class TestFmrc extends TestCase {
   private static String datadir = TestAll.cdmUnitTestDir + "ft/fmrc/";
   private static boolean showCount = true;
 
-  public void testCollections() throws Exception {
+  public void utestCollections() throws Exception {
     try {
       FeatureCollectionConfig.setRegularizeDefault( true);
 

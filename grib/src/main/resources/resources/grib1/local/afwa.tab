@@ -2,7 +2,7 @@
 128:3HRPCP:AVERAGE 3HR PRECIP mm per hr []
 129:AERTP:Aerosol type code 0 - none 1 - present  []
 130:HSL:Hours since land hours []
-131:PRESS:Pressure [hPa]
+131:PRESS:Pressure AFWA [hPa]
 132:MSLPRS:Pressure reduced to MSL [hPa]
 133:VERVEL:Pressure Vertical Velocity [hPa/s]
 134:DENALT:Density Altitude [m]

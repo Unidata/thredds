@@ -54,7 +54,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
   }
 
 
-  public void testOpen() throws Exception {
+  public void utestOpen() throws Exception {
     String dataDir = TestAll.cdmUnitTestDir + "ft/fmrc/rtmodels/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +

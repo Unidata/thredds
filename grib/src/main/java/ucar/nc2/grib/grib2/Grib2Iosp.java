@@ -745,6 +745,8 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
           currPartno = dr.partno;
         }
 
+        if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
+
         if (debugRead) { // for validation
           Grib2Record gr = Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos);
           if (gr != null) {
@@ -780,7 +782,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
         this.vindex = vindex;
         this.resultIndex = resultIndex;
         this.fileno = fileno;
-        this.drsPos = drsPos;
+        this.drsPos = (drsPos == 0) ? GribCollection.MISSING_RECORD : drsPos; // 0 also means missing in Grib2
       }
 
       @Override
@@ -856,6 +858,8 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
           currFile = dr.fileno;
         }
 
+        if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
+
         if (debugRead) { // for validation
           Grib2Record gr = Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos);
           if (gr != null) {
@@ -916,7 +920,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       // prefill with NaNs, to deal with missing data
       IndexIterator iter = dataArray.getIndexIterator();
       while (iter.hasNext())
-        iter.setDoubleNext(Float.NaN);
+        iter.setFloatNext(Float.NaN);
     }
 
     void addData(float[] data, int resultIndex, int nx) throws IOException {

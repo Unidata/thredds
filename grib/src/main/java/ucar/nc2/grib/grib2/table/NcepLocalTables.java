@@ -370,6 +370,7 @@ Based on:
 http://www.nco.ncep.noaa.gov/pmb/docs/grib2/GRIB2_parmeter_conversion_table.html
 Better source is:
 http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-1.shtml
+http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2.shtml
 For abreviations see:
 http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html
 
