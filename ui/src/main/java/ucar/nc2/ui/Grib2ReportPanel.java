@@ -164,26 +164,28 @@ public class Grib2ReportPanel extends JPanel {
         String currName = dt.getName();
         total++;
 
-        Attribute att = dt.findAttributeIgnoreCase("GRIB_param_id");
-        int discipline = (Integer) att.getValue(1);
-        int category = (Integer) att.getValue(2);
-        int number = (Integer) att.getValue(3);
-        if (number >= 192) {
-          fm.format("  local parameter = %s (%d %d %d) units=%s %n", currName, discipline, category, number, dt.getUnitsString());
-          local++;
-          continue;
-        }
+        Attribute att = dt.findAttributeIgnoreCase("Grib_Parameter");
+        if (att != null && att.getLength() == 3) {
+          int discipline = (Integer) att.getValue(0);
+          int category = (Integer) att.getValue(1);
+          int number = (Integer) att.getValue(2);
+          if (number >= 192) {
+            fm.format("  local parameter = %s (%d %d %d) units=%s %n", currName, discipline, category, number, dt.getUnitsString());
+            local++;
+            continue;
+          }
 
-        WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
-        if (entry == null) {
-          fm.format("  Missing parameter = %s (%d %d %d) %n", currName, discipline, category, number);
-          miss++;
-          continue;
-        }
+          WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
+          if (entry == null) {
+            fm.format("  Missing parameter = %s (%d %d %d) %n", currName, discipline, category, number);
+            miss++;
+            continue;
+          }
 
-        if (!entry.status.equalsIgnoreCase("Operational")) {
-          fm.format("  %s parameter = %s (%d %d %d) %n", entry.status, currName, discipline, category, number);
-          nonop++;
+          if (!entry.status.equalsIgnoreCase("Operational")) {
+            fm.format("  %s parameter = %s (%d %d %d) %n", entry.status, currName, discipline, category, number);
+            nonop++;
+          }
         }
 
       }
@@ -211,10 +213,8 @@ public class Grib2ReportPanel extends JPanel {
   private void doLocalUseSection(MFile mf, Formatter f, boolean useIndex) throws IOException {
     f.format("File = %s%n", mf);
 
-    String path = mf.getPath();
-    Grib2Index index = new Grib2Index();
-    if (!index.readIndex(path, mf.getLastModified()))
-      index.makeIndex(path, f);
+    Grib2Index index = createIndex(mf, f);
+    if (index == null) return;
 
     for (Grib2Record gr : index.getRecords()) {
       Grib2SectionLocalUse lus = gr.getLocalUseSection();
@@ -223,6 +223,18 @@ public class Grib2ReportPanel extends JPanel {
       else
         f.format(" %10d == %s%n", gr.getDataSection().getStartingPosition(), Misc.showBytes(lus.getRawBytes()));
     }
+  }
+
+  private Grib2Index createIndex(MFile mf, Formatter f) throws IOException {
+    String path = mf.getPath();
+    Grib2Index index = new Grib2Index();
+    if (!index.readIndex(path, mf.getLastModified())) {
+      // make sure its a grib2 file
+      RandomAccessFile raf = new RandomAccessFile(path, "r");
+      if (!Grib2RecordScanner.isValidFile(raf)) return null;
+      index.makeIndex(path, f);
+    }
+    return index;
   }
 
   ///////////////////////////////////////////////
@@ -244,10 +256,8 @@ public class Grib2ReportPanel extends JPanel {
   }
 
   private void doUniqueGds(MFile mf, Map<Integer, GdsList> gdsSet, Formatter f) throws IOException {
-    String path = mf.getPath();
-    Grib2Index index = new Grib2Index();
-    if (!index.readIndex(path, mf.getLastModified()))
-      index.makeIndex(path, f);
+    Grib2Index index = createIndex(mf, f);
+    if (index == null) return;
 
     int countGds = index.getGds().size();
     for (Grib2Record gr : index.getRecords()) {
@@ -378,32 +388,35 @@ public class Grib2ReportPanel extends JPanel {
     } else {
       Counter templateSet = new Counter("template");
       Counter timeUnitSet = new Counter("timeUnit");
+      Counter levelTypeSet = new Counter("levelType");
       Counter statTypeSet = new Counter("statType");
       Counter NTimeIntervals = new Counter("NTimeIntervals");
       Counter processId = new Counter("processId");
       Counter scale = new Counter("scale");
+      Counter ncoords = new Counter("ncoords");
 
       for (MFile mfile : dcm.getFiles()) {
         f.format(" %s%n", mfile.getPath());
-        doPdsSummary(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, processId, scale);
+        doPdsSummary(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, processId, scale, levelTypeSet, ncoords);
       }
 
       templateSet.show(f);
       timeUnitSet.show(f);
+      levelTypeSet.show(f);
       statTypeSet.show(f);
       NTimeIntervals.show(f);
       processId.show(f);
       scale.show(f);
+      ncoords.show(f);
     }
   }
 
   private void doPdsSummaryIndexed(Formatter fm, MFile ff) throws IOException {
     String path = ff.getPath();
 
-    //make sure indexes exist
-    Grib2Index index = new Grib2Index();
-    if (!index.readIndex(path, ff.getLastModified()))
-      index.makeIndex(path, fm);
+    Grib2Index index = createIndex(ff, fm);
+    if (index == null) return;
+
     GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(path), fm);
     gc.close();
 
@@ -450,20 +463,35 @@ public class Grib2ReportPanel extends JPanel {
   }
 
   private void doPdsSummary(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter statTypeSet, Counter NTimeIntervals,
-                            Counter processId, Counter scale) throws IOException {
-    String path = mf.getPath();
-    Grib2Index index = new Grib2Index();
-    if (!index.readIndex(path, mf.getLastModified()))
-      index.makeIndex(path, f);
+                            Counter processId, Counter scale, Counter levelTypeSet, Counter ncoords) throws IOException {
+    boolean showLevel = true;
+    boolean showCoords = true;
+
+    Grib2Index index = createIndex(mf, f);
+    if (index == null) return;
 
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
       Grib2Pds pds = gr.getPDS();
       templateSet.count(pds.getTemplateNumber());
       timeUnitSet.count(pds.getTimeUnit());
+
+      levelTypeSet.count(pds.getLevelType1());
+      if (showLevel && (pds.getLevelType1() == 105)) {
+        showLevel = false;
+        System.out.printf(" level = 105 : %s%n", mf.getPath());
+      }
+
+      int n = pds.getHybridCoordinatesCount();
+      ncoords.count(n);
+      if (showCoords && (n > 0)) {
+        showCoords = false;
+        System.out.printf(" ncoords > 0 : %s%n", mf.getPath());
+      }
+
       processId.count(pds.getGenProcessId());
       if (pds.getLevelScale() > 127 ) {
         if (Grib2Utils.isLevelUsed(pds.getLevelType1())) {
-          System.out.printf("%s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), pds.getLevelScale());
+          System.out.printf(" LevelScale > 127: %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), pds.getLevelScale());
           scale.count(pds.getLevelScale());
         }
       }
@@ -508,10 +536,8 @@ public class Grib2ReportPanel extends JPanel {
   private void doIdProblems(Formatter f, MFile mf, boolean showProblems,
                             Counter disciplineSet, Counter masterTable, Counter localTable, Counter centerId,
                             Counter subcenterId, Counter genProcessC, Counter backProcessC) throws IOException {
-    String path = mf.getPath();
-    Grib2Index index = new Grib2Index();
-    if (!index.readIndex(path, mf.getLastModified()))
-      index.makeIndex(path, f);
+    Grib2Index index = createIndex(mf, f);
+    if (index == null) return;
 
     // these should be the same for the entire file
     int center = -1;
@@ -606,10 +632,10 @@ public class Grib2ReportPanel extends JPanel {
   }
 
   private void doDrsSummary(Formatter f, MFile mf, boolean useIndex, Counter templateC, Counter probC) throws IOException {
+    Grib2Index index = createIndex(mf, f);
+    if (index == null) return;
+
     String path = mf.getPath();
-    Grib2Index index = new Grib2Index();
-    if (!index.readIndex(path, mf.getLastModified()))
-      index.makeIndex(path, f);
     RandomAccessFile raf = new RandomAccessFile(path, "r");
 
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
@@ -648,10 +674,8 @@ public class Grib2ReportPanel extends JPanel {
   }
 
   private void doGdsTemplate(Formatter f, MFile mf, Map<Integer, Integer> gdsSet) throws IOException {
-    String path = mf.getPath();
-    Grib2Index index = new Grib2Index();
-    if (!index.readIndex(path, mf.getLastModified()))
-      index.makeIndex(path, f);
+    Grib2Index index = createIndex(mf, f);
+    if (index == null) return;
 
     for (Grib2SectionGridDefinition gds : index.getGds()) {
       int template = gds.getGDSTemplateNumber();

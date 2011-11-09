@@ -7,6 +7,7 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 
+import javax.naming.ldap.StartTlsRequest;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.zip.CRC32;
@@ -81,6 +82,9 @@ public abstract class Grib2Pds {
   // (see Code table 4.4)
   public abstract int getTimeUnit();
 
+  // opitional cooordinates start after this
+  public abstract int templateLength();
+
   public CalendarPeriod getTimeDuration() {
     return Grib2Utils.getCalendarPeriod(getTimeUnit());
   }
@@ -90,8 +94,19 @@ public abstract class Grib2Pds {
    *
    * @return Coordinates number
    */
-  public final int getNumberCoordinates() {
+  public int getHybridCoordinatesCount() {
     return GribNumbers.int2(getOctet(6), getOctet(7));
+  }
+
+  public final float[] getHybridCoordinates() {
+    int n =  getHybridCoordinatesCount();
+    if (n == 0) return null;
+    float[] result = new float[n];
+    int count = templateLength() + 1;
+    for (int i=0; i<n; i++) {
+      result[i] = GribNumbers.float4(getOctet(count++),getOctet(count++),getOctet(count++),getOctet(count++));
+    }
+    return result;
   }
 
   /**

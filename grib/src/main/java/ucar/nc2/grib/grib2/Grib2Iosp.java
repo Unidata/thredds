@@ -508,7 +508,8 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
         v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
       }
 
-      v.addAttribute(new Attribute("Grib_Parameter", vindex.discipline + "-" + vindex.category + "-" + vindex.parameter));
+      int[] param = new int[] {vindex.discipline,vindex.category,vindex.parameter};
+      v.addAttribute(new Attribute("Grib_Parameter", Array.factory(param)));
       v.addAttribute(new Attribute("Grib_Level_Type", vindex.levelType));
       if (vindex.intvType >= 0) {
         v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));
