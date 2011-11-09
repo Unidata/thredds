@@ -139,10 +139,11 @@ public class ReqState {
         this.myServletContext = sv.getServletContext();
         this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));
         if(this.rootpath == null) {
-            System.err.println("ReqState: cannot locate dts root path");
+            LogStream.err.println("ReqState: cannot locate dts root path");
+	    LogStream.err.flush();
             this.rootpath = "";
         }
-        System.err.println("RootPath: "+this.rootpath);
+        LogStream.out.println("RootPath: "+this.rootpath);
 
         this.myHttpRequest = myRequest;
         this.response = response;
@@ -153,7 +154,7 @@ public class ReqState {
         if (this.CE == null) this.CE = "";
 
         processDodsURL();
-        System.err.println("datasetname=|"+this.dataSetName+"|");
+        LogStream.out.println("datasetname=|"+this.dataSetName+"|");
 
         defaultDDXcache  = rootpath + testdatasetspath + "/ddx";
         defaultDDScache  = rootpath + testdatasetspath + "/dds";
@@ -174,6 +175,7 @@ public class ReqState {
 
         requestURL = (encodedurl);
 
+	LogStream.out.flush();
     }
 
     public String getDataSet() {
@@ -455,11 +457,11 @@ public class ReqState {
         String path2 = myHttpRequest.getServletPath();
         String path3 = myHttpRequest.getRequestURI();
         String path4 = myHttpRequest.getPathInfo();
-        System.err.println("cxt="+path1);
-        System.err.println("sv="+path2);
-        System.err.println("url="+path3);
-        System.err.println("path="+path4);
-	System.err.flush();
+        LogStream.out.println("cxt="+path1);
+        LogStream.out.println("sv="+path2);
+        LogStream.out.println("url="+path3);
+        LogStream.out.println("path="+path4);
+	LogStream.out.flush();
 
         this.dataSetName = HTTPSession.canonicalpath(myHttpRequest.getPathInfo());
         String cxtpath = HTTPSession.canonicalpath(myHttpRequest.getContextPath());
@@ -485,8 +487,7 @@ public class ReqState {
 	    }
         }
 
-        System.err.println("this.datasetname.1="+this.dataSetName);
-	System.err.flush();
+        LogStream.out.println("this.datasetname.1="+this.dataSetName);
 
         this.requestSuffix = null;
         if (this.dataSetName != null) {
@@ -518,8 +519,8 @@ public class ReqState {
                 }
             }
         }
-        System.err.println("this.datasetname.2="+this.dataSetName);
-	System.err.flush();
+        LogStream.out.println("this.datasetname.2="+this.dataSetName);
+	LogStream.err.flush();
     }
 
     /**
