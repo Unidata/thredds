@@ -73,11 +73,11 @@ dl {margin: 10px 5px 5px 15px;)
   <li> Loads a <strong>CoordSysBuilderIF</strong> with the given class name, which looks for the given <strong>Convention</strong> attribute value. </li>
   <li>Loads a <strong>CoordTransBuilderIF</strong> with the given class name, which looks for the given <strong>transformName </strong>in the dataset. The type must be <em>vertical</em> or <em>projection</em>. </li>
   <li>Loads a <strong>TypedDatasetFactoryIF</strong> with the given class name. Currently supported datatypes are <em>Grid, Point, Station, Trajectory </em>and<em> Radial</em>. Others will be added from the enumeration in <strong>thredds.catalog.DataType</strong>.</li>
-  <li>Load a <a href="GribTables.html">GRIB-1 parameter  table</a> (as of version 4.3)</li>
-  <li>Load a <a href="GribTables.html">GRIB-1 parameter lookup table</a></li>
-  <li>Load a <a href="GribTables.html">GRIB-2 parameter lookup table</a>.</li>
+  <li>Load a <a href="../formats/GribTables.html">GRIB-1 parameter  table</a> (as of version 4.3)</li>
+  <li>Load a <a href="../formats/GribTables.html">GRIB-1 parameter lookup table</a></li>
+  <li>Load a <a href="../formats/GribTables.html">GRIB-2 parameter lookup table</a>.</li>
   <li>Load a <a href="BufrTables.html">BUFR table lookup</a> file</li>
-  <li>Turn <a href="GribTables.html#strict">strict GRIB1 table handling</a> off. </li>
+  <li>Turn <a href="../formats/GribTables.html#strict">strict GRIB1 table handling</a> off. </li>
 </ol>
 <p>There are several ways pass the XML to library. From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
 <pre>  // Example 1: read from file

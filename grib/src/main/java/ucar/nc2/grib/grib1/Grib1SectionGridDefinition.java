@@ -37,6 +37,7 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.zip.CRC32;
 
 /**
@@ -98,7 +99,6 @@ public class Grib1SectionGridDefinition {
     predefinedGridDefinition = pds.getGridDefinition();
   }
 
-
   /**
    * get the raw bytes of the GDS
    *
@@ -154,7 +154,7 @@ public class Grib1SectionGridDefinition {
   }
 
   private final int getOctet(int index) {
-    if (index > rawData.length) return GribNumbers.UNDEFINED;
+    if (index >= rawData.length) return GribNumbers.UNDEFINED;
     return rawData[index - 1] & 0xff;
   }
 
@@ -172,22 +172,6 @@ public class Grib1SectionGridDefinition {
 
   //////////////////////////////////
   // the infinite grib1 baloney
-
-  public boolean hasVerticalCoordinates() {
-    int octet5 = getOctet(5);
-    int nv = getOctet(4);
-    return (octet5 != 255) && (nv != 0 && nv != 255);
-  }
-
-  /**
-   * Number of Vertical coordinates
-   * octet 4
-   *
-   * @return Number of Vertical coordinates
-   */
-  public int getNVerticalCoordinates() {
-    return getOctet(4);
-  }
 
   /**
    * is a "thin" grid
@@ -225,5 +209,41 @@ public class Grib1SectionGridDefinition {
     return parallels;
   }
 
+  /////////////////////////////////////////////////
+
+  public boolean hasVerticalCoordinateParameters() {
+    int octet5 = getOctet(5);
+    int nv = getOctet(4);
+    return (octet5 != 255) && (nv != 0 && nv != 255);
+  }
+
+  public double[] getVerticalCoordinateParameters() {
+    if (!hasVerticalCoordinateParameters()) return null;
+
+    int offset = getOctet(5);
+    int n = getOctet(4);
+    double[] vertCoords = new double[ n ];
+    for (int i = 0; i < n; i++) {
+      vertCoords[i] = GribNumbers.float4(getOctet(offset++), getOctet(offset++), getOctet(offset++), getOctet(offset++)) ;
+      //System.out.println( "a and b values [ " + i +" ] ="+ vertCoords[i] );
+    }
+    return vertCoords;
+  }
+
+  @Override
+  public String toString() {
+    final Formatter sb = new Formatter();
+    sb.format("Grib1SectionGridDefinition");
+    sb.format("  gridTemplate=%d%n", gridTemplate);
+    sb.format("  predefinedGridDefinition=%d%n", predefinedGridDefinition);
+    double[] verts = getVerticalCoordinateParameters();
+    if (verts != null) {
+      sb.format("  verticalPressureLevels (%d)=", verts.length);
+      for (double d : verts) sb.format("%10.4f ", d);
+      sb.format("%n");
+    }
+    sb.format("%n");
+    return sb.toString();
+  }
 }
 

@@ -206,7 +206,14 @@ second
 
   private void testCoords(String unitP, boolean test) {
     String unit = unitP + " since 2009-02-29";
-    CalendarDateUnit cdu = CalendarDateUnit.of(null, unit);
+    CalendarDateUnit cdu = null;
+    try {
+      cdu = CalendarDateUnit.of(null, unit);
+    } catch (Exception e) {
+      System.out.printf("%s%n", e);
+      return;
+    }
+
     for (int i=0; i<13; i++) {
       CalendarDate cd = cdu.makeCalendarDate(i);
       System.out.printf("%d %s == %s%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));

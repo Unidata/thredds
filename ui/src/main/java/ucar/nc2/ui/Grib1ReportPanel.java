@@ -142,7 +142,7 @@ public class Grib1ReportPanel extends JPanel {
           doCheckLocalParams(f, dcm, useIndex);
           break;
         case scanIssues:
-          doScanNew(f, dcm, useIndex);
+          doScanIssues(f, dcm, useIndex);
           break;
         /* case localUseSection:
       doLocalUseSection(f, dcm, useIndex);
@@ -185,7 +185,7 @@ public class Grib1ReportPanel extends JPanel {
       try {
         doCheckLocalParams(mfile, f, accum);
       } catch (Throwable t) {
-        System.out.printf("FAIL on %s%n",mfile.getPath());
+        System.out.printf("FAIL on %s%n", mfile.getPath());
         t.printStackTrace();
       }
     }
@@ -343,28 +343,30 @@ public class Grib1ReportPanel extends JPanel {
 
   /////////////////////////////////////////////////////////////////
 
-  private void doScanNew(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doScanIssues(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
     Counter predefined = new Counter("predefined");
     Counter thin = new Counter("thin");
-    CounterS missing = new CounterS("missing");
     Counter timeUnit = new Counter("timeUnit");
+    Counter vertCoord = new Counter("vertCoord");
 
     for (MFile mfile : dcm.getFiles()) {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
-      doScanNew(f, mfile, useIndex, predefined, thin, timeUnit);
+      doScanNew(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord);
     }
 
     f.format("SCAN NEW%n");
     predefined.show(f);
     thin.show(f);
     timeUnit.show(f);
+    vertCoord.show(f);
   }
 
-  private void doScanNew(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit) throws IOException {
+  private void doScanNew(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit, Counter vertCoord) throws IOException {
     boolean showThin = true;
     boolean showPredefined = true;
+    boolean showVert = true;
     String path = ff.getPath();
     RandomAccessFile raf = null;
     try {
@@ -377,7 +379,7 @@ public class Grib1ReportPanel extends JPanel {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
         Grib1SectionGridDefinition gdss = gr.getGDSsection();
         Grib1SectionProductDefinition pds = gr.getPDSsection();
-        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for COunterS
+        String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for CounterS
         timeUnit.count(pds.getTimeType());
 
         if (gdss.isThin()) {
@@ -387,9 +389,15 @@ public class Grib1ReportPanel extends JPanel {
         }
 
         if (!pds.gdsExists()) {
-           if (showPredefined) fm.format("   PREDEFINED GDS= %s%n", ff.getPath());
+          if (showPredefined) fm.format("   PREDEFINED GDS= %s%n", ff.getPath());
           predefined.count(1);
           showPredefined = false;
+        }
+
+        if (gdss.hasVerticalCoordinateParameters()) {
+          if (showVert) fm.format("   HASVERT GDS= %s%n", ff.getPath());
+          vertCoord.count(1);
+          showVert = false;
         }
       }
 

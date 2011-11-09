@@ -57,6 +57,7 @@ public class CalendarDateUnit {
    * @param calendarName must match a calendar enum, or one of its aliases, see ucar.nc2.time.Calendar.get()
    * @param udunitString "unit since calendarDate"
    * @return CalendarDateUnit
+   * @throws IllegalArgumentException if udunitString is not paresable
    */
   static public CalendarDateUnit of(String calendarName, String udunitString) {
     Calendar calt = Calendar.get(calendarName);
@@ -65,7 +66,16 @@ public class CalendarDateUnit {
     return new CalendarDateUnit(calt, udunitString);
   }
 
+  /**
+   * Create a CalendarDateUnit from a calendar and a udunit string = "unit since calendarDate"
+   * @param calt use this Calendar, or null for default calendar
+   * @param udunitString "unit since calendarDate"
+   * @return CalendarDateUnit
+   * @throws IllegalArgumentException if udunitString is not paresable
+   */
   static public CalendarDateUnit withCalendar(Calendar calt, String udunitString) {
+    if (calt == null)
+      calt = Calendar.getDefault();
     return new CalendarDateUnit(calt, udunitString);
   }
 
@@ -165,7 +175,7 @@ public class CalendarDateUnit {
 
       return dt;
     } catch (Exception e) {
-      throw new IllegalArgumentException("Illegal base time specification: '" + dateUnitString+"' "+e.getMessage());
+      throw new IllegalArgumentException("Illegal base time specification: '" + dateUnitString+"'", e);
     }
   }
 

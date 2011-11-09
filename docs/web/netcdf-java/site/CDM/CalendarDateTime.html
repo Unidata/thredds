@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>CDM DateTime</title>
+<title>CalendarDateTime</title>
 <style type="text/css">
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
@@ -13,7 +13,8 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>CDM Calendar Date Handling </h1>
-<p>As of CDM version 4.3, dates are no longer handled by the <a href="http://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects <em><strong>datetime</strong></em> coordinate handling, called <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#time-coordinate">time coordinates</a> in CF. For all dimensional units, the udunits package is still used. </p>
+<p>As of CDM version 4.3, dates are no longer handled by the <a href="http://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects <em><strong>datetime</strong></em> coordinate handling, called <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#time-coordinate">time coordinates</a> in CF. For all dimensional units, the udunits package is still used. </p>
+<hr width="100%" />
 <h3>Definitions and Background</h3>
 <ul>
   <li><strong><em>time</em></strong> is a duration of time (a dimensional unit). Udunits handles this using a base unit of &quot;seconds&quot;. All other udunit time units are fixed multiples of a second.</li>
@@ -23,14 +24,14 @@ dl {margin: 10px 5px 5px 15px;)
 <hr width="100%" />
 <h3>CDM datetime coordinates<br />
 </h3>
-<p>The CDM library allows datetime coordinates to take the following form:</p>
+<p>The CDM library allows datetime coordinates to be specified in the following forms:</p>
 <ol>
-  <li><strong><a href="#udunit">udunit coordinate</a>:</strong> Variables of any numeric type  (<em>byte, short, int, long, float, double</em>) with a <em><strong>units</strong></em> attribute that is a  udunit date string, eg &quot;hours since 1930-01-01&quot;. This is the only form that conforms to CF.</li>
+  <li><strong><a href="#udunit">udunit coordinate</a>:</strong> Variables of any numeric type  (<em>byte, short, int, long, float, double</em>) with a <em><strong>units</strong></em> attribute that is a  udunit date string, eg &quot;hours since 1930-01-01&quot;. This is the only form that conforms to the <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#time-coordinate">current CF spec</a>.</li>
   <li><strong><a href="#calendar_field">calendar field coordinate</a>: </strong>Variables of any integer type (<em>byte, short, int, long</em>) with a <em><strong>units</strong></em> attribute that is a udunit date string but with  &quot;calendar&quot; added, eg &quot;calendar months since 1930-01-01&quot;. </li>
   <li><strong><a href="#ISO_String">ISO String coordinate</a>: </strong>Variables of type <em>String </em>or<em> char</em> in which the values follow (a slightly extended version of) the W3C profile of ISO 8601.</li>
 </ol>
 <h3>Supported Calendars</h3>
-<p>CDM 4.3 supports the following values of the <strong>calendar</strong> attribute:</p>
+<p>CDM 4.3 supports the following values of the <strong>calendar</strong> attribute, which is attached to the datetime coordinate:</p>
 <ul>
   <li><strong>gregorian</strong> or <strong>standard</strong> = Mixed Gregorian/Julian calendar. Same as Udunits except that the dates 1582-10-05 to 1582-10-14 dont exist, nor does year 0.</li>
   <li><strong>proleptic_gregorian </strong>or <strong>ISO8601</strong> = 
@@ -43,10 +44,19 @@ dl {margin: 10px 5px 5px 15px;)
     Gregorian calendar with every year being a leap year, i.e., all years are 366 days long.</li>
   <li><strong>uniform30day </strong>or<strong> 360_day</strong> =    All years are 360 days divided into 30 day months.</li>
 </ul>
-<p>The calendar attribute <strong>none</strong> is currently ignored by the CDM, but is available to the application to process.</p>
+<p>The calendar attribute <strong>none</strong> is currently ignored by the CDM, but is available to the application to process. None of these calendars handle leap seconds, but with enough effort one could define, eg, a <a href="http://en.wikipedia.org/wiki/Coordinated_Universal_Time">UTC</a> or <a href="http://en.wikipedia.org/wiki/International_Atomic_Time">TAI</a> calendar.</p>
+<p>These calendars are implemented in the CDM with classes from Jon Blower's <strong>uk.ac.rdg.resc.edal.time</strong> package.</p>
+<h3>Supported Operations</h3>
+<ul>
+  <li>A <strong>ucar.nc2.time.CalendarDate</strong> object is now used instead of a <strong>java.util.Date</strong>. </li>
+  <li><em>CalendarDate.getCalendar()</em> retrieves the calendar being used.</li>
+  <li><em>CalendarDate.isBefore(cdate)</em>, <em>CalendarDate.isAfter(cdate)</em> allows comparisions between CalendarDates.</li>
+  <li><em>CalendarDate.getDifferenceInMsecs(cdate)</em> calculates the difference between CalendarDates.</li>
+  <li>A <em>CalendarDate</em> is obtained from a <strong>ucar.nc2.time.CalendarDateUnit (</strong>instead of a <strong>ucar.units.Unit</strong> or <strong>ucar.nc2.units.DateUnit), </strong>and are created for you in classes like <strong>ucar.nc2.datset.CoordinateAxis1DTime</strong>.</li>
+</ul>
 <hr width="100%" />
 <h3>CDM udunit date  grammar<a name="udunit" id="udunit"></a></h3>
-<p>The CDM library continues to accept udunits for time coordinate units, but it doesn't use the udunit library to process them.</p>
+<p>The CDM library version 4.3 and after continues to accept udunits for time coordinate units, but it doesn't use the udunit library to process them.</p>
 <p>The <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar">udunit date grammar</a> is  difficult to understand. Heres an approximate regular expression:</p>
 <pre>period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]</pre>
 <p>The following  specifies  the CDM udunit date grammar:</p>
@@ -95,7 +105,7 @@ SINCE          = literal (case insensitive)
 80 years since 1850-01-01 == 1930-01-01T09:01:17Z
 90 years since 1850-01-01 == 1940-01-01T19:08:57Z</pre>
 <hr width="100%" />
-<h3>CDM calendar_field<a name="calendar_field" id="calendar_field"></a>  grammar</h3>
+<h3>CDM calendar_field unit grammar</h3>
 <p>The CDM accepts an extended form of udunit grammar, called a<strong><em> calendar field unit</em></strong>:</p>
 <pre>CALENDAR period SINCE reference_date</pre>
 <p>The presence of &quot;CALENDAR&quot; (case insensitive) means that the CDM library manipulates the calendar field directly, rather than converting the period to a fixed multiple of seconds. The actual result  depends on the calendar used. <em><strong>Note that values of the period must be an integer.</strong></em></p>
@@ -210,14 +220,7 @@ and:
   <li>Any fields that are not specified are set to zero.</li>
 </ul>
 <hr width="100%" />
-<h3>Problems with Udunits handling of time coordinate</h3>
-<ol>
-  <li>Does not handle non-standard calendars.</li>
-  <li>Allows <em>months</em> and <em>years</em> as a period, but implements them with fixed length intervals.</li>
-  <li>Has no ability to manipulate the calendar fields directly.</li>
-</ol>
-<hr width="100%" />
-<h3>Proposed extentions</h3>
+<h3>Possible extentions (not implemented)</h3>
 <pre wrap="">N [calendar] UNITS since DATE         // current
 
 
@@ -227,10 +230,9 @@ N [calendar] UNITS since 65M BCE
 
 
 N calendar Myears before 1980-01-01</pre>
-<p>&nbsp;</p>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  August 2011
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  November 2011
 </address>
 <p>&nbsp;</p>
 </body>

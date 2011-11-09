@@ -180,6 +180,7 @@ public class Grib1RawPanel extends JPanel {
          Formatter f = new Formatter();
          for (Object bo : list) {
            Gds1Bean bean = (Gds1Bean) bo;
+           f.format("Grib1SectionGridDefinition = %s", bean.gdss);
            f.format("Grib1GDS = %s", bean.gds);
            GdsHorizCoordSys gdsHc = bean.gds.makeHorizCoordSys();
            f.format("%n%n%s", gdsHc);
@@ -532,7 +533,11 @@ public class Grib1RawPanel extends JPanel {
       return gdss.getGridTemplate();
     }
 
-    public String getGridName() {
+    public boolean isVertCoords() {
+      return gdss.hasVerticalCoordinateParameters();
+    }
+
+     public String getGridName() {
       return gds.getNameShort();
     }
 

@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -30,32 +29,51 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.units;
 
-import junit.framework.*;
-import ucar.nc2.time.TestCalendarDateUnit;
-import ucar.nc2.time.TestCalendars;
+package ucar.nc2.time;
+
+import junit.framework.TestCase;
 
 /**
- * TestSuite that runs all nj22 unit tests.
+ * Describe
  *
+ * @author caron
+ * @since 11/8/11
  */
-public class TestUnitsAll {
+public class TestCalendars extends TestCase {
 
-  public static junit.framework.Test suite ( ) {
-    TestSuite suite= new TestSuite();
-    suite.addTest(new TestSuite(TestBasic.class));
-    suite.addTest(new TestSuite(TestSimpleUnits.class));
+    public TestCalendars( String name) {
+      super(name);
+    }
 
-    suite.addTest(new TestSuite(TestCalendarDateUnit.class));
-    suite.addTest(new TestSuite(TestCalendars.class));
+    public void testEach() {
+      for (Calendar cal : Calendar.values())
+        testCalendar(cal, "calendar months since 1953-01-01");
+      for (Calendar cal : Calendar.values())
+        testCalendar(cal, "calendar years since 1953-01-01");
+    }
 
-    // deprecated but still used
-    suite.addTest(new TestSuite(TestDate.class));
-    suite.addTest(new TestSuite(TestTimeUnits.class));
-    suite.addTest(new TestSuite(TestDateUnits.class));
-    suite.addTest(new TestSuite(TestDateRange.class));
+    private void testCalendar(Calendar cal, String s) {
 
-    return suite;
+      CalendarDateUnit cdu;
+      try {
+       cdu = CalendarDateUnit.withCalendar(cal, s);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return;
+      }
+
+      System.out.printf("%s == %s unit (cal=%s)%n", s, cdu, cdu.getCalendar());
+
+      CalendarDate base = null;
+      for (int i=0; i<13; i++) {
+        CalendarDate cd = cdu.makeCalendarDate(i);
+        if (base == null) base = cd;
+        double diff = cd.getDifferenceInMsecs(base) * 1.0e-6;
+        System.out.printf(" %d %s == %s diff = %f%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd), diff);
+      }
+      System.out.printf("%n");
+    }
+
   }
-}
+

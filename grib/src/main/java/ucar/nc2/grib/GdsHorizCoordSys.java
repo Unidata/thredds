@@ -39,7 +39,7 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.GaussianLatitudes;
 
 /**
- * Description
+ * A Horizontal coordinate system generated from a GRIB-1 or GRIB-2 GDS.
  *
  * @author John
  * @since 9/5/11

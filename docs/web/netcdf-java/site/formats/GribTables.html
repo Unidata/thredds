@@ -15,8 +15,8 @@ dl {margin: 10px 5px 5px 15px;)
 <strong>Grib1:</strong>
 <ul>
   <li><a href="#WriteGrib1">Writing Grib-1 Files</a></li>
-  <li><a href="ReadGrib1">Reading Grib-1 files with the CDM library</a></li>
-  <li><a href="#DefineGrib1Params">XML Schema for defining Grib-1 Parameterriting</a></li>
+  <li><a href="#ReadGrib1">Reading Grib-1 files with the CDM library</a></li>
+  <li><a href="#DefineGrib1Params">XML Schema for defining Grib-1 Parameters</a></li>
 </ul>
 <hr>
 <h2>Writing Grib-1 Files<a name="WriteGrib1"></a></h2>
@@ -58,7 +58,7 @@ dl {margin: 10px 5px 5px 15px;)
   <li>You can view the standard tables in ToolsUI, using the <strong>iosp/GRIB-1/GRIB1-TABLES</strong> tab.</li>
   <li>The table that matches the center-subcenter-version is used. </li>
   <li>Use a &quot;-1&quot; for the subcenter or version in order to match &quot;any&quot;. The order of the entries in the <em>grib1Tables.txt</em> file is therefore important.</li>
-  <li>If a table is not matched, the file will fail to open. You can change that in the <a href="RuntimeLoading.html#XML">RunTime configuration file</a> by adding<a name="strict"></a> 
+  <li>If a table is not matched, the file will fail to open. You can change that in the <a href="../reference/RuntimeLoading.html#XML">RunTime configuration file</a> by adding<a name="strict"></a>
     <blockquote>
       <pre>&lt;grib1Table strict=&quot;false&quot;/&gt;</pre>
     </blockquote>
@@ -66,7 +66,7 @@ dl {margin: 10px 5px 5px 15px;)
 </ol>
 <h3>Adding to the standard table mapping</h3>
 <ol>
-  <li>You can add your own table within your application, or to applications that support the <a href="RuntimeLoading.html#XML">RunTime configuration file</a>.</li>
+  <li>You can add your own table within your application, or to applications that support the <a href="../reference/RuntimeLoading.html#XML">RunTime configuration file</a>.</li>
   <li>Tables that are user-added take precedence over the standard tables.</li>
   <li>Parameters that are not present in your table are taken from the default WMO table, if they exist.</li>
   <li>Missing parameters are marked &quot;unknown&quot; in the variable name and units.</li>
@@ -107,7 +107,7 @@ dl {margin: 10px 5px 5px 15px;)
 </blockquote>
 <hr WIDTH="100%">
 <h2>XML Schema for defining Grib-1 Parameters<a name="DefineGrib1Params" id="DefineGrib1Params"></a></h2>
-  <p>Derived from <a href="RuntimeLoading.html#XML">NCAR DSS format</a> with additional &quot;name&quot; element.</p>
+  <p>Derived from <a href="../reference/RuntimeLoading.html#XML">NCAR DSS format</a> with additional &quot;name&quot; element.</p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<br>&lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot; elementFormDefault=&quot;qualified&quot;&gt;<br>  &lt;xs:element name=&quot;parameterMap&quot;&gt;<br>    &lt;xs:complexType&gt;<br>      &lt;xs:sequence&gt;<br>        &lt;xs:element ref=&quot;title&quot;/&gt;<br>        &lt;xs:element maxOccurs=&quot;unbounded&quot; ref=&quot;parameter&quot;/&gt;<br>      &lt;/xs:sequence&gt;<br>    &lt;/xs:complexType&gt;<br>  &lt;/xs:element&gt;<br>  &lt;xs:element name=&quot;title&quot; type=&quot;xs:string&quot;/&gt;<br>  &lt;xs:element name=&quot;parameter&quot;&gt;<br>    &lt;xs:complexType&gt;<br>      &lt;xs:sequence&gt;<br>        &lt;xs:element ref=&quot;description&quot;/&gt;<br>        &lt;xs:element minOccurs=&quot;0&quot; ref=&quot;units&quot;/&gt;<br>        &lt;xs:element minOccurs=&quot;0&quot; ref=&quot;name&quot;/&gt;<br>        &lt;xs:element minOccurs=&quot;0&quot; ref=&quot;CF&quot;/&gt;<br>        &lt;xs:element minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; ref=&quot;GCMD&quot;/&gt;<br>      &lt;/xs:sequence&gt;<br>      &lt;xs:attribute name=&quot;code&quot; use=&quot;required&quot; type=&quot;xs:integer&quot;/&gt;<br>    &lt;/xs:complexType&gt;<br>  &lt;/xs:element&gt;<br>  &lt;xs:element name=&quot;description&quot; type=&quot;xs:string&quot;/&gt;<br>  &lt;xs:element name=&quot;units&quot; type=&quot;xs:string&quot;/&gt;<br>  &lt;xs:element name=&quot;name&quot; type=&quot;xs:string&quot;/&gt;<br>  &lt;xs:element name=&quot;CF&quot; type=&quot;xs:NCName&quot;/&gt;<br>  &lt;xs:element name=&quot;GCMD&quot;&gt;<br>    &lt;xs:complexType mixed=&quot;true&quot;&gt;<br>      &lt;xs:attribute name=&quot;ifLevelType&quot; type=&quot;xs:integer&quot;/&gt;<br>    &lt;/xs:complexType&gt;<br>  &lt;/xs:element&gt;<br>&lt;/xs:schema&gt;
     </pre>
   <p> Example:<br>

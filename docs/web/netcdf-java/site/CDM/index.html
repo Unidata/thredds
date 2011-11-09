@@ -37,7 +37,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p>An <strong>EnumTypedef</strong> is an enumeration of Strings, used by Variables of type <em><strong>enum</strong></em>. </p>
 <p>An <strong>Array</strong> contains the actual data for a Variable after it is read from the disk or network. You get an Array from a Variable by calling <strong><em>read()</em></strong> or its variants. An Array is  rectangular in shape (like Fortran arrays). There is a specialized Array type for each of the DataTypes. </p>
 <p>An <strong>ArrayStructure</strong> is a subclass of Array that holds the data for Structure Variables. Essentially it is an array of  <strong>StructureData</strong> objects. </p>
-<p><strong><a href="../reference/DataType.html">DataType</a></strong> describes the possible types of data: </p>
+<p><strong><a href="DataType.html">DataType</a></strong> describes the possible types of data: </p>
 <blockquote>
   <p>The <strong>primitive numeric </strong> types are <strong><em>byte, short, int, long, float</em></strong> and <strong><em>double</em></strong>. The integer types (8-bit byte, 16-bit short, 32-bit int, 64-bit long) may be <em>signed</em> or <em>unsigned</em>.    Variable and Array objects have <em>isUnsigned() </em>methods to indicate, and conversion to wider types is correctly done</p>
   <p>A <strong>String</strong> is a variable length array of <a href="http://unicode.org/">Unicode</a> characters. When reading/writing a String to a  file or other external representation, the characters are by default <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8 encoded</a> (note that ASCII is a subset of UTF-8). Libraries may use different internal representations, for example the Java library uses UTF-16 encoding. </p>
@@ -142,8 +142,8 @@ With these Feature Types objects, mapping into other data models like ISO/OGC be
   <li><a href="../reference/FeatureDatasets/Overview.html">FeatureDataset APIs</a></li>
   <li><a href="../reference/FeatureDatasets/PointFeatures.html">Point Feature APIs</a></li>
   <li>CF Discrete Sampling Geometries conventions (final) <a href="http://www.unidata.ucar.edu/staff/caron/public/CFch9-may10.pdf">pdf</a> (May 2011) </li>
-  <li>CDM Feature Types <em> draft </em><a href="CDMfeatures.doc">doc</a></li>
-  <li>CDM Point Feature Types <em> draft </em><a href="CDMpoints.doc">doc</a></li>
+  <li>CDM Feature Types <em> draft </em><a href="../archive/CDMfeatures.doc">doc</a></li>
+  <li>CDM Point Feature Types <em> draft </em><a href="../archive/CDMpoints.doc">doc</a></li>
 </ul>
 <hr WIDTH="100%">
 <address>
