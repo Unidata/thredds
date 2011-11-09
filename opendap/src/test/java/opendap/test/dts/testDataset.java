@@ -47,6 +47,7 @@ import java.io.*;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
+import opendap.servlet.AbstractServlet;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 import opendap.util.Debug;

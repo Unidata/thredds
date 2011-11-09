@@ -391,7 +391,7 @@ public class TestServlet extends AbstractServlet
     if(Debug.isSet("showException")) {
       systemout.println(pe);
       pe.printStackTrace();
-      Log.printThrowable(pe);
+      printThrowable(pe);
     }
 
     //systemout.println(pe);
@@ -434,7 +434,7 @@ public class TestServlet extends AbstractServlet
     {
       de.print(systemout);
       de.printStackTrace();
-      Log.printDODSException(de);
+      printDODSException(de);
     }
 
     try {
@@ -493,7 +493,7 @@ public class TestServlet extends AbstractServlet
           systemout.println("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
         }
         e.printStackTrace();
-        Log.printThrowable(e);
+        printThrowable(e);
       }
 
     } catch (IOException ioe) {
@@ -514,7 +514,7 @@ public class TestServlet extends AbstractServlet
     try {
       systemerr.println("DODServlet ERROR (anyExceptionHandler): " + e);
       e.printStackTrace();
-      Log.printThrowable(e);
+      printThrowable(e);
       // Strip any double quotes out of the parser error message.
       // These get stuck in auto-magically by the javacc generated parser
       // code and they break our error parser (bummer!)
@@ -1326,15 +1326,6 @@ public class TestServlet extends AbstractServlet
         pw.println(" showFlags;showInitParameters;showRequest");
         pw.println(" on|off=(flagName)");
         doDebugCmd(cmd, tz, pw); // for subclasses
-      } else if(cmd.equals("log")) {
-        Log.reset();
-        pw.println(" logging started");
-      } else if(cmd.equals("logEnd")) {
-        Log.close();
-        pw.println(" logging ended");
-      } else if(cmd.equals("logShow")) {
-        pw.println(Log.getContents());
-        pw.println("-----done logShow");
       } else if(cmd.equals("on"))
         Debug.set(tz.nextToken(), true);
 
@@ -1359,7 +1350,7 @@ public class TestServlet extends AbstractServlet
     }
 
     pw.println("--------------------------------------");
-    pw.println("Logging is " + (Log.isOn() ? "on" : "off"));
+    pw.println("Logging is on");
     Iterator iter = Debug.keySet().iterator();
     while (iter.hasNext()) {
       String key = (String) iter.next();
@@ -1685,7 +1676,7 @@ public class TestServlet extends AbstractServlet
             systemout.println("Server: " + getServerName() + "   Request #" + reqno);
             systemout.println("Client: " + request.getRemoteHost());
             systemout.println(rs.toString());
-            Log.println("Request dataset: '" + rs.getDataSet() + "' suffix: '" + rs.getRequestSuffix() +
+            systemout.println("Request dataset: '" + rs.getDataSet() + "' suffix: '" + rs.getRequestSuffix() +
                     "' CE: '" + rs.getConstraintExpression() + "'");
           }
         }

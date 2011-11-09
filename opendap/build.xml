@@ -174,7 +174,9 @@
   <property name="servlet.lib" value="servlet-api.jar"/>
   <property name="httpclient.lib" value="commons-httpclient-3.1.jar"/>
   <property name="codec.lib" value="commons-codec-1.3.jar"/>
-  <property name="logging.lib" value="commons-logging-1.1.jar"/>
+  <property name="commons.log.lib" value="commons-logging-1.1.jar"/>
+  <property name="slf4j.log.lib" value="slf4j-log4j12-1.6.1.jar"/>
+  <property name="log4j.log.lib" value="log4j-1.2.16.jar"/>
   <property name="loggingAPI.lib" value="slf4j-api-1.6.1.jar"/>
 
   <!-- DAP.External libs -->
@@ -196,7 +198,9 @@
   <fileset dir="${external.libs.dir}" id="libs.external">
     <include name="${httpclient.lib}"/>
     <include name="${codec.lib}"/>
-    <include name="${logging.lib}"/>
+    <include name="${commons.log.lib}"/>
+    <include name="${slf4j.log.lib}"/>
+    <include name="${log4j.log.lib}"/>
     <include name="${loggingAPI.lib}"/>
   </fileset>
 

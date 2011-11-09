@@ -45,6 +45,7 @@ import java.io.*;
 
 import opendap.dap.*;
 import opendap.servers.*;
+import opendap.servlet.AbstractServlet;
 
 /**
  * Used by the test server to reset the server output

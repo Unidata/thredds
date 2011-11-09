@@ -32,7 +32,6 @@
 
 package ucar.nc2.ui;
 
-import opendap.servlet.Log;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import ucar.grib.NoValidGribException;

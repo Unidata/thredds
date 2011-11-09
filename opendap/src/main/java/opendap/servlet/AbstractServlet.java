@@ -141,7 +141,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     static public PrintStream systemerr;
 
     static {
-        Log = org.slf4j.LoggerFactory.getLogger("OPeNDAP");
+        Log = org.slf4j.LoggerFactory.getLogger(DAPLog.class);
         logout = new LogStream(Log).setMode(LogStream.Mode.info);
         logerr = new LogStream(Log).setMode(LogStream.Mode.error);
 	systemout = new PrintStream(logout);
