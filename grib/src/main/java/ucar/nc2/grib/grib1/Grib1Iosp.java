@@ -385,48 +385,7 @@ Notes:
     // assignVertNames(gHcs.vertCoords);
 
     for (VertCoord vc : gHcs.vertCoords) {
-      int n = vc.getSize();
-      String vcName = vc.getName();
-      ncfile.addDimension(g, new Dimension(vcName, n));
-      Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
-      v.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
-      v.addAttribute(new Attribute(CF.LONG_NAME, Grib1ParamLevel.getLevelDescription(vc.getCode())));
-      v.addAttribute(new Attribute("positive", vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
-
-      v.addAttribute(new Attribute("GRIB1_level_code", vc.getCode()));
-      VertCoord.VertUnit vu = Grib1ParamLevel.getLevelUnit(vc.getCode());
-      if (vu != null) {
-        if (vu.datum != null)
-          v.addAttribute(new Attribute("datum", vu.datum));
-      }
-
-      if (vc.isLayer()) {
-        float[] data = new float[n];
-        int count = 0;
-        for (VertCoord.Level val : vc.getCoords())
-          data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
-        v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
-
-        Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName + "_bounds", DataType.FLOAT, vcName + " 2"));
-        v.addAttribute(new Attribute(CF.BOUNDS, vcName + "_bounds"));
-        bounds.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
-        bounds.addAttribute(new Attribute(CF.LONG_NAME, "bounds for " + vcName));
-
-        data = new float[2 * n];
-        count = 0;
-        for (VertCoord.Level level : vc.getCoords()) {
-          data[count++] = (float) level.getValue1();
-          data[count++] = (float) level.getValue2();
-        }
-        bounds.setCachedData(Array.factory(DataType.FLOAT, new int[]{n, 2}, data));
-
-      } else {
-        float[] data = new float[n];
-        int count = 0;
-        for (VertCoord.Level val : vc.getCoords())
-          data[count++] = (float) val.getValue1();
-        v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
-      }
+      addVerticalCoordinate(ncfile, g, vc);
     }
 
     for (TimeCoord tc : gHcs.timeCoords) {
@@ -524,6 +483,56 @@ Notes:
         v.addAttribute(new Attribute("Grib_Probability_Type", vindex.probabilityName));
 
       v.setSPobject(vindex);
+    }
+  }
+
+  private void addVerticalCoordinate(NetcdfFile ncfile, Group g, VertCoord vc) {
+    int n = vc.getSize();
+    String vcName = vc.getName();
+    ncfile.addDimension(g, new Dimension(vcName, n));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
+    v.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
+    v.addAttribute(new Attribute(CF.LONG_NAME, Grib1ParamLevel.getLevelDescription(vc.getCode())));
+    v.addAttribute(new Attribute("positive", vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+
+    v.addAttribute(new Attribute("GRIB1_level_code", vc.getCode()));
+    VertCoord.VertUnit vu = Grib1ParamLevel.getLevelUnit(vc.getCode());
+    if (vu != null) {
+      if (vu.datum != null)
+        v.addAttribute(new Attribute("datum", vu.datum));
+    }
+
+    if (vc.isLayer()) {
+      float[] data = new float[n];
+      int count = 0;
+      for (VertCoord.Level val : vc.getCoords())
+        data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
+      v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
+
+      Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName + "_bounds", DataType.FLOAT, vcName + " 2"));
+      v.addAttribute(new Attribute(CF.BOUNDS, vcName + "_bounds"));
+      bounds.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
+      bounds.addAttribute(new Attribute(CF.LONG_NAME, "bounds for " + vcName));
+
+      data = new float[2 * n];
+      count = 0;
+      for (VertCoord.Level level : vc.getCoords()) {
+        data[count++] = (float) level.getValue1();
+        data[count++] = (float) level.getValue2();
+      }
+      bounds.setCachedData(Array.factory(DataType.FLOAT, new int[]{n, 2}, data));
+
+    } else {
+      float[] data = new float[n];
+      int count = 0;
+      for (VertCoord.Level val : vc.getCoords())
+        data[count++] = (float) val.getValue1();
+      v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
+    }
+
+    // hybrid nightmare
+    if (vc.getCode() == 109) {
+
     }
   }
 

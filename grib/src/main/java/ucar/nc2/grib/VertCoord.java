@@ -38,7 +38,7 @@ import ucar.nc2.grib.grib2.Grib2Utils;
 import java.util.*;
 
 /**
- * Generalized Vertical Coordinate
+ * Generalized Vertical Coordinate.
  *
  * @author caron
  * @since 3/31/11

@@ -353,7 +353,7 @@ public class Grib1ReportPanel extends JPanel {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
-      doScanNew(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord);
+      doScanIssues(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord);
     }
 
     f.format("SCAN NEW%n");
@@ -363,7 +363,8 @@ public class Grib1ReportPanel extends JPanel {
     vertCoord.show(f);
   }
 
-  private void doScanNew(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit, Counter vertCoord) throws IOException {
+  private void doScanIssues(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit,
+                            Counter vertCoord) throws IOException {
     boolean showThin = true;
     boolean showPredefined = true;
     boolean showVert = true;
@@ -384,19 +385,19 @@ public class Grib1ReportPanel extends JPanel {
 
         if (gdss.isThin()) {
           if (showThin) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), ff.getPath());
-          thin.count(1);
+          thin.count(gdss.getGridTemplate());
           showThin = false;
         }
 
         if (!pds.gdsExists()) {
           if (showPredefined) fm.format("   PREDEFINED GDS= %s%n", ff.getPath());
-          predefined.count(1);
+          predefined.count(gdss.getPredefinedGridDefinition());
           showPredefined = false;
         }
 
         if (gdss.hasVerticalCoordinateParameters()) {
-          if (showVert) fm.format("   HASVERT GDS= %s%n", ff.getPath());
-          vertCoord.count(1);
+          if (showVert) fm.format("   Has vertical coordinates in GDS= %s%n", ff.getPath());
+          vertCoord.count(pds.getLevelType());
           showVert = false;
         }
       }

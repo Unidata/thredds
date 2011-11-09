@@ -154,6 +154,8 @@ public class Grib1SectionGridDefinition {
   }
 
   private final int getOctet(int index) {
+    if (rawData == null)
+      return 255;   // predefined
     if (index >= rawData.length) return GribNumbers.UNDEFINED;
     return rawData[index - 1] & 0xff;
   }
@@ -212,6 +214,7 @@ public class Grib1SectionGridDefinition {
   /////////////////////////////////////////////////
 
   public boolean hasVerticalCoordinateParameters() {
+    if (rawData == null) return false;
     int octet5 = getOctet(5);
     int nv = getOctet(4);
     return (octet5 != 255) && (nv != 0 && nv != 255);
