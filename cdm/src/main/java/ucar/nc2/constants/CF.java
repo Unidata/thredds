@@ -104,8 +104,8 @@ public interface CF {
   public static final String RAGGED_PARENTINDEX = "CF:ragged_parent_index";
 
   // standard_names
-  public static final String PROJECTION_X_COORDINATE  = "projection_x_coordinate ";
-  public static final String PROJECTION_Y_COORDINATE  = "projection_y_coordinate ";
+  public static final String PROJECTION_X_COORDINATE  = "projection_x_coordinate";
+  public static final String PROJECTION_Y_COORDINATE  = "projection_y_coordinate";
 
   // proposed standard_names
   public static final String STATION_ID = "station_id";

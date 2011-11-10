@@ -135,7 +135,7 @@ public class TestCdmRemoteServer extends TestCase {
     final String urlPrefix = CdmRemote.SCHEME+"http://localhost:8080/thredds/cdmremote/opendapTest/";
     final String dirName = TestAll.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
-    TestAll.actOnAll(dirName, new TestAll.FileFilterNoWant(".gbx8"), new TestAll.Act() {
+    TestAll.actOnAll(dirName, new TestAll.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestAll.Act() {
       public int doAct(String filename) throws IOException {
         filename = StringUtil2.replace(filename, '\\', "/");
         filename = StringUtil2.remove(filename, dirName);

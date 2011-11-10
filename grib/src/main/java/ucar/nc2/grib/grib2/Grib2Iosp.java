@@ -76,13 +76,13 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       f.format("%s", Grib1Parameter.makeNameFromDescription(param.getName()));
     }
 
-    // if this uses any local tables, then we have to add the center id
+    /* if this uses any local tables, then we have to add the center id
     if ((vindex.category > 191) || (vindex.parameter > 191) || (vindex.levelType > 191) || (vindex.intvType > 191)
             || (vindex.ensDerivedType > 191) || (vindex.probType > 191)) {
       f.format("_C%d", gribCollection.getCenter());
       if (gribCollection.getSubcenter() > 0)
         f.format("-%d", gribCollection.getSubcenter());
-    }
+    } */
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_%s", tables.getLevelNameShort(vindex.levelType)); // vindex.levelType); // code table 4.5
@@ -371,7 +371,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
 
     for (VertCoord vc : gHcs.vertCoords) {
       int n = vc.getSize();
-      String vcName = vc.getName();
+      String vcName = vc.getName().toLowerCase();
       ncfile.addDimension(g, new Dimension(vcName, n));
       Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
       v.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
@@ -480,7 +480,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
         dims.append(" ").append("ens").append(vindex.ensIdx);
 
       if (vc != null)
-        dims.append(" ").append(vc.getName());
+        dims.append(" ").append(vc.getName().toLowerCase());
 
       dims.append(" ").append(horizDims);
 

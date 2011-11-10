@@ -386,7 +386,7 @@ Notes:
 
     for (VertCoord vc : gHcs.vertCoords) {
       int n = vc.getSize();
-      String vcName = vc.getName();
+      String vcName = vc.getName().toLowerCase();
       ncfile.addDimension(g, new Dimension(vcName, n));
       Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
       v.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
@@ -495,7 +495,7 @@ Notes:
         dims.append(" ").append("ens").append(vindex.ensIdx);
 
       if (vc != null)
-        dims.append(" ").append(vc.getName());
+        dims.append(" ").append(vc.getName().toLowerCase());
 
       dims.append(" ").append(horizDims);
 

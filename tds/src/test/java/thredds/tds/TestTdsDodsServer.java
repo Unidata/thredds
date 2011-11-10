@@ -216,7 +216,7 @@ public class TestTdsDodsServer extends TestCase {
     final String urlPrefix = "dods://localhost:8080/thredds/dodsC/opendapTest/";
     final String dirName = TestAll.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
-    TestAll.actOnAll(dirName, new TestAll.FileFilterNoWant(".gbx8"), new TestAll.Act() {
+    TestAll.actOnAll(dirName, new TestAll.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestAll.Act() {
       public int doAct(String filename) throws IOException {
         filename = StringUtil2.replace(filename, '\\', "/");
         filename = StringUtil2.remove(filename, dirName);
