@@ -5,7 +5,7 @@
  * by line basis.
  */
 
-package opendap.servlet;
+package opendap.log;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -19,9 +19,11 @@ public class LogStream extends java.io.OutputStream
 
     static LogStream outlog = null;
     static LogStream errlog = null;
+    static LogStream dbglog = null;
 
     static public PrintStream out = null;
     static public PrintStream err = null;
+    static public PrintStream dbg = null;
 
     static public void setLogger(Class cl)
     {
@@ -37,13 +39,20 @@ public class LogStream extends java.io.OutputStream
 	else
 	    errlog.setLogger(log);
 
+	if(dbglog == null)
+	    dbglog = new LogStream(log).setMode(Mode.debug);
+	else
+	    dbglog.setLogger(log);
+
         if(out == null)
 	    out = new PrintStream(outlog);
 	if(err == null)
 	    err = new PrintStream(errlog);
+	if(dbg == null)
+	    dbg = new PrintStream(dbglog);
     }
 
-    static org.slf4j.Logger getLog() {return log;}
+    static public org.slf4j.Logger getLog() {return log;}
 
     //////////////////////////////////////////////////
     // Instance Code

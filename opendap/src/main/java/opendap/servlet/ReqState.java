@@ -40,6 +40,8 @@
 
 package opendap.servlet;
 
+import opendap.log.LogStream;
+
 import ucar.nc2.util.net.HTTPSession;
 
 import java.util.Enumeration;

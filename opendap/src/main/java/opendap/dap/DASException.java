@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 /**
  * DAS exception. This is the root of all the DAS exception classes.

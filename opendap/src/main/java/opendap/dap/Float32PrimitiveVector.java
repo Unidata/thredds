@@ -38,6 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.io.*;
 
@@ -167,7 +168,7 @@ public class Float32PrimitiveVector extends PrimitiveVector
         for (int i = 0; i < vals.length; i++) {
             vals[i] = source.readFloat();
 
-           //System.out.printf("%d:%f ",i,vals[i]);
+           //LogStream.out.printf("%d:%f ",i,vals[i]);
             if (statusUI != null) {
                 statusUI.incrementByteCount(8);
                 if (statusUI.userCancelled())

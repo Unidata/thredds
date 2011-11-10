@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 /**
  * Thrown by <code>Attribute</code> when a bad value

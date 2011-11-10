@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -229,7 +230,10 @@ public class DAS extends AttributeTable
         while (e.hasMoreElements()) {
             String aName = (String) e.nextElement();
 
-            if (Debug.isSet("DAS")) System.out.println("DAS.resolveAliases() - aName: " + aName);
+            if (Debug.isSet("DAS")) {
+		LogStream.dbg.println("DAS.resolveAliases() - aName: " + aName);
+		LogStream.dbg.flush();
+	    }
 
             Attribute at = getAttribute(aName);
             if (at == null || !at.isContainer()) {
@@ -265,23 +269,35 @@ public class DAS extends AttributeTable
         // Set the current AttributeTable to the one that we are searching.
         currentAT = at;
 
-        if (Debug.isSet("DAS")) System.out.println("DAS.resolveAliases(at=" + at + ")");
+        if (Debug.isSet("DAS")) {
+		LogStream.dbg.println("DAS.resolveAliases(at=" + at + ")");
+		LogStream.dbg.flush();
+	    }
 
         //getall of the Attributes from the table.
         Enumeration aNames = at.getNames();
         while (aNames.hasMoreElements()) {
 
             String aName = (String) aNames.nextElement();
-            if (Debug.isSet("DAS")) System.out.println("DAS.resolveAliases(at=" + at + ") - aName: " + aName);
+            if (Debug.isSet("DAS")) {
+		LogStream.dbg.println("DAS.resolveAliases(at=" + at + ") - aName: " + aName);
+		LogStream.dbg.flush();
+	    }
 
             opendap.dap.Attribute thisA = currentAT.getAttribute(aName);
 
-            if (Debug.isSet("DAS")) System.out.println("thisA.getClass().getName(): " + thisA.getClass().getName());
+            if (Debug.isSet("DAS")) {
+		LogStream.dbg.println("thisA.getClass().getName(): " + thisA.getClass().getName());
+		LogStream.dbg.flush();
+	    }
 
             if (thisA.isAlias()) {
                 //Is Alias? Resolve it!
                 resolveAlias((Alias) thisA);
-                if (Debug.isSet("DAS")) System.out.println("Resolved Alias: '" + thisA.getEncodedName() + "'\n");
+                if (Debug.isSet("DAS")) {
+		LogStream.dbg.println("Resolved Alias: '" + thisA.getEncodedName() + "'\n");
+		LogStream.dbg.flush();
+	    }
             } else if (thisA.isContainer()) {
                 //Is AttributeTable (container)? Search it!
 
@@ -325,9 +341,11 @@ public class DAS extends AttributeTable
         Enumeration e = null;
         currentAlias = alias;
 
-        if (Debug.isSet("DAS"))
-            System.out.println("\n\nFound: Alias " + name +
+        if (Debug.isSet("DAS")) {
+		LogStream.dbg.println("\n\nFound: Alias " + name +
                     "  " + attribute);
+		LogStream.dbg.flush();
+	    }
 
         // Let's go
         // see if we can find an Attribute within that DAS that matches the attribute field
@@ -340,19 +358,23 @@ public class DAS extends AttributeTable
         }
 
 
-        if (Debug.isSet("DAS")) System.out.println("Attribute: `" + attribute + "'");
+        if (Debug.isSet("DAS")) {
+		LogStream.dbg.println("Attribute: `" + attribute + "'");
+		LogStream.dbg.flush();
+	    }
 
         // Tokenize the attribute field.
 
         Vector aNames = opendap.dap.DDS.tokenizeAliasField(attribute);
 
         if (Debug.isSet("DAS")) {
-            System.out.println("Attribute name tokenized to " + aNames.size() + " elements");
+	    LogStream.dbg.println("Attribute name tokenized to " + aNames.size() + " elements");
             e = aNames.elements();
             while (e.hasMoreElements()) {
                 String aname = (String) e.nextElement();
-                System.out.println("name: " + aname);
+                LogStream.dbg.println("name: " + aname);
             }
+	    LogStream.dbg.flush();
         }
 
 

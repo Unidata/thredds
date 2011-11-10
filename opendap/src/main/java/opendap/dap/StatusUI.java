@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 /**
  * This interface is implemented by OPeNDAP client user interfaces which give

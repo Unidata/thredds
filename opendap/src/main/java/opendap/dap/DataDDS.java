@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import opendap.dap.parsers.ParseException;
 
@@ -113,7 +114,8 @@ public class DataDDS extends DDS {
 
       /* ByteArrayOutputStream bout = new ByteArrayOutputStream(50 * 1000);
       copy(is, bout);
-      System.out.printf(" readData size=%d %n",bout.size());
+      LogStream.dbg.printf(" readData size=%d %n",bout.size());
+      LogStream.dbg.flush();
       ByteArrayInputStream bufferedIS = new ByteArrayInputStream( bout.toByteArray());  */
       //statusUI = new Counter();
 
@@ -126,10 +128,10 @@ public class DataDDS extends DDS {
             if (statusUI != null && statusUI.userCancelled()) throw new DataReadException("User cancelled");
             ClientIO bt = (ClientIO) e.nextElement();
           
-            //System.out.printf("Deserializing: %s (%s) start = %s %n", ((BaseType)bt).getTypeName(), ((BaseType)bt).getName(), counter);
+            //LogStream.out.printf("Deserializing: %s (%s) start = %s %n", ((BaseType)bt).getTypeName(), ((BaseType)bt).getName(), counter);
             bt.deserialize(dataIS, ver, statusUI);
         }
-        //System.out.printf("Deserializing: total size = %s %n", counter);
+        //LogStream.out.printf("Deserializing: total size = %s %n", counter);
 
         // notify GUI of finished download
         if (statusUI != null)

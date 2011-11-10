@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.io.*;
 
@@ -241,16 +242,16 @@ abstract public class DVector extends BaseType implements ClientIO {
         if (!(vals instanceof BaseTypePrimitiveVector)) {
             // because both XDR and OPeNDAP write the length, we must read it twice
             int length2 = source.readInt();
-            //System.out.println("array1 length read: "+getName()+" "+length+ " -- "+length2);
-            //System.out.println("  array type = : "+vals.getClass().getName());
+            //LogStream.out.println("array1 length read: "+getName()+" "+length+ " -- "+length2);
+            //LogStream.out.println("  array type = : "+vals.getClass().getName());
 
             // QC the second length
             if (length != length2) {
                 throw new DataReadException("Inconsistent array length read: " + length + " != " + length2);
             }
         } /* else {
-          System.out.println("array2 length read: "+getName()+" "+length);
-          System.out.println("  array type = : "+vals.getClass().getName());
+          LogStream.dbg.println("array2 length read: "+getName()+" "+length);
+          LogStream.dbg.println("  array type = : "+vals.getClass().getName());
         } */
 
         if (length < 0)

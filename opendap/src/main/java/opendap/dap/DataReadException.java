@@ -38,6 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 /**
  * Thrown when OPeNDAP encounters an exception while reading from a data set.

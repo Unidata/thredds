@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 /**
  * The default client-side Factory for BaseType objects.

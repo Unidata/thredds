@@ -302,6 +302,7 @@
       <include name="opendap/servlet/**/*.java"/>
       <include name="opendap/dts/**/*.java"/>
       <include name="opendap/tools/**/*.java"/>
+      <include name="opendap/log/**/*.java"/>
       <include name="opendap/util/**/*.java"/>
       <include name="opendap/Version.java"/>
       <include name="ucar/nc2/dods/*.java"/>
@@ -460,6 +461,7 @@
         <include name="opendap/dap/**/*.java"/>
         <include name="opendap/servers/**/*.java"/>
         <include name="opendap/util/**/*.java"/>
+        <include name="opendap/log/**/*.java"/>
         <include name="opendap/servlet/**/*.java"/>
         <include name="opendap/test/**/*.java"/>
       </srcfiles>

@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.net.URLConnection;
 
@@ -247,7 +248,7 @@ public class ServerVersion implements java.io.Serializable {
 
         this.subminor = -1;
 
-        // System.out.println("Server Version String: " + ver);
+        // LogStream.out.println("Server Version String: " + ver);
 
       
         switch (headerType) {

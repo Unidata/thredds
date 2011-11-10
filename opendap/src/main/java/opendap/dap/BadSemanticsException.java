@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 /**
  * Thrown by <code>BaseType</code> when the <code>checkSemantics</code>

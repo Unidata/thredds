@@ -47,7 +47,7 @@ import opendap.dap.*;
 import opendap.servers.*;
 
 import opendap.servlet.AbstractServlet;
-import opendap.servlet.LogStream;
+import opendap.log.LogStream;
 
 /**
  * Used by the test server to reset the server output

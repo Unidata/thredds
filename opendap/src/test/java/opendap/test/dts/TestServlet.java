@@ -47,6 +47,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import opendap.dap.*;
+import opendap.log.DTSLog;
+import opendap.log.LogStream;
 import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 import opendap.servlet.*;
@@ -357,9 +359,7 @@ public class TestServlet extends AbstractServlet
   {
     super.init();
     setLog(DTSLog.class);
-    LogStream.out.println("*************************************************");
     LogStream.out.println("**************** DTS INIT ***********************");
-    LogStream.out.println("*************************************************");
 
     // debugging
     String debugOn = getInitParameter("DebugOn");
