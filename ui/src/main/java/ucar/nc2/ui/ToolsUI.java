@@ -139,7 +139,7 @@ public class ToolsUI extends JPanel {
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
   private GribFilesPanel gribFilesPanel;
-  private GribNewPanel gribNewPanel;
+  private Grib2CollectionPanel gribNewPanel;
   private Grib1IndexPanel gribIndexPanel;
   private GribIdxPanel gribIdxPanel;
   // private GribRawPanel gribRawPanel;
@@ -493,7 +493,7 @@ public class ToolsUI extends JPanel {
       c = gribFilesPanel;
 
     } else if (title.equals("GRIB2collection")) {
-      gribNewPanel = new GribNewPanel((PreferencesExt) mainPrefs.node("gribNew"));
+      gribNewPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
       c = gribNewPanel;
 
     } else if (title.equals("GRIBindex")) {
@@ -2519,15 +2519,15 @@ public class ToolsUI extends JPanel {
 
    /////////////////////////////////////////////////////////////////////
   // GRIB2 new
-  private class GribNewPanel extends OpPanel {
-    ucar.nc2.ui.GribNewPanel gribTable;
+  private class Grib2CollectionPanel extends OpPanel {
+    ucar.nc2.ui.Grib2CollectionPanel gribTable;
 
     void closeOpenFiles() throws IOException {
     }
 
-    GribNewPanel(PreferencesExt p) {
+    Grib2CollectionPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.GribNewPanel(prefs);
+      gribTable = new ucar.nc2.ui.Grib2CollectionPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {

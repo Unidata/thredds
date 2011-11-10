@@ -53,7 +53,7 @@ public class TestGribMiscCoordinates extends TestCase {
     super(name);
   }
 
-  public void testHybrid1() throws IOException {
+  public void utestHybrid1() throws IOException {
 
     String filename = TestAll.cdmUnitTestDir + "formats/grib1/ECMWF.hybrid.grib1";
     System.out.println("\n\nReading File " + filename);
@@ -73,7 +73,7 @@ public class TestGribMiscCoordinates extends TestCase {
     ncfile.close();
   }
 
-  public void testHybrid2() throws IOException {
+  public void utestHybrid2() throws IOException {
     String filename = TestAll.cdmUnitTestDir + "formats/grib1/07010418_arw_d01.GrbF01500";
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFile.open(filename);

@@ -454,7 +454,7 @@ Notes:
         dims.append(" ").append("ens").append(vindex.ensIdx);
 
       if (vc != null)
-        dims.append(" ").append(vc.getName());
+        dims.append(" ").append(vc.getName().toLowerCase());
 
       dims.append(" ").append(horizDims);
 

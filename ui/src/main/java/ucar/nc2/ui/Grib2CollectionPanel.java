@@ -38,6 +38,7 @@ import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
@@ -73,7 +74,7 @@ import java.util.List;
  * @author caron
  * @since Aug 15, 2008
  */
-public class GribNewPanel extends JPanel {
+public class Grib2CollectionPanel extends JPanel {
   static private Map<String, WmoTemplateTable> gribTemplates = null;
 
   private PreferencesExt prefs;
@@ -85,7 +86,7 @@ public class GribNewPanel extends JPanel {
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private FileManager fileChooser;
 
-  public GribNewPanel(PreferencesExt prefs) {
+  public Grib2CollectionPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     PopupMenu varPopup;
@@ -757,7 +758,7 @@ public class GribNewPanel extends JPanel {
         int size = (int)(is.getMessageLength());
         long startPos = is.getStartPos();
         if (startPos < 0) {
-          JOptionPane.showMessageDialog(GribNewPanel.this, "Old index does not have message start - record not written");
+          JOptionPane.showMessageDialog(Grib2CollectionPanel.this, "Old index does not have message start - record not written");
         }
 
         byte[] rb = new byte[size];
@@ -767,10 +768,10 @@ public class GribNewPanel extends JPanel {
         n++;
       }
 
-      JOptionPane.showMessageDialog(GribNewPanel.this, filename + ": "+n+" records successfully written, append="+append);
+      JOptionPane.showMessageDialog(Grib2CollectionPanel.this, filename + ": "+n+" records successfully written, append="+append);
 
     } catch (Exception ex) {
-      JOptionPane.showMessageDialog(GribNewPanel.this, "ERROR: " + ex.getMessage());
+      JOptionPane.showMessageDialog(Grib2CollectionPanel.this, "ERROR: " + ex.getMessage());
       ex.printStackTrace();
 
     } finally {
@@ -1008,16 +1009,20 @@ public class GribNewPanel extends JPanel {
       return records.size();
     }
 
-    public final int getLevelType() {
+    public int getLevelType() {
       return pds.getLevelType1();
     }
 
-    public final String getLevelName() {
+    public String getLevelName() {
       return tables.getTableValue("4.5", pds.getLevelType1());
     }
 
-    public final String getLevelNameShort() {
+    public String getLevelNameShort() {
       return tables.getLevelNameShort(pds.getLevelType1());
+    }
+
+    public int getHybrid() {
+      return pds.getHybridCoordinatesCount();
     }
 
     public final String getStatType() {
@@ -1069,7 +1074,7 @@ public class GribNewPanel extends JPanel {
     ///////////////
 
     public String getName() {
-      return tables.getVariableName(gr);
+      return Grib1Parameter.makeNameFromDescription(tables.getVariableName(gr));
     }
 
     public String getOldName() {
@@ -1182,8 +1187,13 @@ public class GribNewPanel extends JPanel {
         f.format(" End   interval     = %d%n", intv[1]);
       }
     }
-
     showPdsTemplate(pdss, f, tables);
+    if (pds.getHybridCoordinatesCount() > 0) {
+      float[] coords =  pds.getHybridCoordinates();
+      f.format("Hybrid Coordinates (%d) %n  ", coords.length);
+      for (float fc : coords) f.format("%10.5f ", fc);
+      f.format("%n%n");
+    }
 
     Grib2SectionDataRepresentation drs = gr.getDataRepresentationSection();
     f.format("%nGrib2SectionDataRepresentation%n");

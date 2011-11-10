@@ -385,33 +385,36 @@ public class GribWmoCodesPanel extends JPanel {
         ncfile = GridDataset.open(name);
         for (GridDatatype dt : ncfile.getGrids()) {
           String currName = dt.getFullName().toLowerCase();
-          Attribute att = dt.findAttributeIgnoreCase("GRIB_param_id");
-          int discipline = (Integer) att.getValue(1);
-          int category = (Integer) att.getValue(2);
-          int number = (Integer) att.getValue(3);
-          if (number >= 192) continue;
-          
-          WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
-          if (entry == null) {
-            fm.format("%n%d %d %d CANT FIND %s%n", discipline, category, number, currName);
-            continue;
+          Attribute att = dt.findAttributeIgnoreCase("Grib_Parameter");
+          if (att != null && att.getLength() == 3) {
+            int discipline = (Integer) att.getValue(0);
+            int category = (Integer) att.getValue(1);
+            int number = (Integer) att.getValue(2);
+
+            if (number >= 192) continue;
+
+            WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
+            if (entry == null) {
+              fm.format("%n%d %d %d CANT FIND %s%n", discipline, category, number, currName);
+              continue;
+            }
+
+            String wmoName = entry.name.toLowerCase();
+            boolean same = currName.startsWith(wmoName);
+            if (same) nsame++;
+            else ndiff++;
+            total++;
+
+            /* String unitsCurr = dt.findAttributeIgnoreCase("units").getStringValue();
+            String unitsWmo = entry.unit;
+            boolean sameUnits = (unitsWmo == null) ? (unitsCurr == null) : unitsWmo.equals(unitsCurr);
+            same = same && sameUnits; */
+
+            if (same && !showSame) continue;
+
+            fm.format("%d %d %d%n wmo =%s%n curr=%s%n", discipline, category, number, wmoName, currName);
+            //if (!sameUnits) fm.format(" units wmo='%s' curr='%s' %n", unitsWmo, unitsCurr);
           }
-
-          String wmoName = entry.name.toLowerCase();
-          boolean same = currName.startsWith(wmoName);
-          if (same) nsame++;
-          else ndiff++;
-          total++;
-
-          /* String unitsCurr = dt.findAttributeIgnoreCase("units").getStringValue();
-          String unitsWmo = entry.unit;
-          boolean sameUnits = (unitsWmo == null) ? (unitsCurr == null) : unitsWmo.equals(unitsCurr);
-          same = same && sameUnits; */
-
-          if (same && !showSame) continue;
-
-          fm.format("%d %d %d%n wmo =%s%n curr=%s%n", discipline, category, number, wmoName, currName);
-          //if (!sameUnits) fm.format(" units wmo='%s' curr='%s' %n", unitsWmo, unitsCurr);
 
         }
       } finally {

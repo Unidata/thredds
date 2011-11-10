@@ -433,7 +433,7 @@ public class GribFilesPanel extends JPanel {
 
     void showComplete(Formatter f) {
       try {
-        GribNewPanel.showCompleteGribRecord(f, m.getPath(), first, tables);
+        Grib2CollectionPanel.showCompleteGribRecord(f, m.getPath(), first, tables);
       } catch (IOException e) {
         e.printStackTrace();
         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
