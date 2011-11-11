@@ -3,7 +3,10 @@
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
   <appender name="logdap" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="File" value="logs/dap.log"/>
+<!--
+    <param name="File" value="${tds.log.dir}/dap.log"/>
+-->
+    <param name="File" value="./logs/dap.log"/>
     <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd' 'HH:mm:ss.SSS} %-5p - %c%n%m%n"/>

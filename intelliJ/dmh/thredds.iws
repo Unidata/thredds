@@ -16,75 +16,7 @@
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeBadValueException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeBadValueException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeExistsException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeExistsException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeTable.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeTable.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BadSemanticsException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BadSemanticsException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseType.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseTypeFactory.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseTypeFactory.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseTypePrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseTypePrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BooleanPrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BooleanPrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BytePrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BytePrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ClientIO.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ClientIO.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ConstraintException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ConstraintException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAP2Exception.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAP2Exception.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAPNode.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAPNode.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAS.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAS.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DASException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DASException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DArray.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DArray.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DArrayDimension.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DArrayDimension.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DByte.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DByte.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConstructor.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConstructor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDSException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDSException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DFloat32.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DFloat32.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DFloat64.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DFloat64.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DGrid.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DGrid.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DInt16.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DInt16.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DInt32.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DInt32.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DList.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DList.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DSequence.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DSequence.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DString.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DString.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DStructure.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DStructure.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DUInt16.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DUInt16.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DUInt32.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DUInt32.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DURL.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DURL.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataDDS.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataDDS.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataReadException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataReadException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DefaultFactory.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DefaultFactory.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Float32PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Float32PrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Float64PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Float64PrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/HeaderInputStream.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/HeaderInputStream.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Int16PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Int16PrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Int32PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Int32PrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/InvalidDimensionException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/InvalidDimensionException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/MalformedAliasException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/MalformedAliasException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchAttributeException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchAttributeException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchFunctionException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchFunctionException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchTypeException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchTypeException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchVariableException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchVariableException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/PrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ServerVersion.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ServerVersion.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/StatusUI.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/StatusUI.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UInt16PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UInt16PrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UInt32PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UInt32PrimitiveVector.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UIntTest.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UIntTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UnresolvedAliasException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UnresolvedAliasException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Util.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Util.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/ReqState.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/ReqState.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/WEB-INF/classes/log4j.xml" afterPath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/WEB-INF/classes/log4j.xml" />
-      <change type="MOVED" beforePath="F:\git\thredds\opendap\src\main\java\opendap\servlet\DAPLog.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/log/DAPLog.java" />
-      <change type="MOVED" beforePath="F:\git\thredds\opendap\src\main\java\opendap\servlet\DTSLog.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/log/DTSLog.java" />
-      <change type="MOVED" beforePath="F:\git\thredds\opendap\src\main\java\opendap\servlet\LogStream.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/log/LogStream.java" />
-      <change type="MOVED" beforePath="F:\git\thredds\opendap\src\main\java\opendap\servlet\Logx.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/log/Logx.java" />
     </list>
     <ignored path="thredds.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -148,37 +80,46 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TestMotherlodeModels.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../ui/src/test/java/ucar/nc2/thredds/server/TestMotherlodeModels.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="89" column="88" selection-start="3700" selection-end="3700" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AbstractServlet.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="1715" column="17" selection-start="61004" selection-end="61004" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestServlet.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="TestServlet.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="359" column="86" selection-start="12303" selection-end="12303" vertical-scroll-proportion="0.4009434">
+            <state line="359" column="86" selection-start="12303" selection-end="12303" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SDTest.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/SDTest.java">
+      <file leaf-file-name="TDSMonitoringAndDebugging.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../docs/web/thredds/tech/tds4.1/tutorial/TDSMonitoringAndDebugging.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="183" column="21" selection-start="6069" selection-end="6069" vertical-scroll-proportion="0.0">
+            <state line="478" column="35" selection-start="16829" selection-end="16829" vertical-scroll-proportion="-7.6153846">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TdsConfigContextListener.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/server/config/TdsConfigContextListener.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="66" column="48" selection-start="3359" selection-end="3359" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="web.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml">
+          <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorProvider">
+            <state />
+          </provider>
+          <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
+            <state />
+          </provider>
+          <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorReferencesProvider">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="261" column="50" selection-start="8349" selection-end="8349" vertical-scroll-proportion="-2.6650486">
               <folding />
             </state>
           </provider>
@@ -310,12 +251,22 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
+      <pane id="PackagesPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="thredds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="thredds" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="opendap" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -419,22 +370,12 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane">
+      <pane id="ProjectPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
               <option name="myItemId" value="thredds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thredds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="opendap" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -442,18 +383,18 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="project.structure.last.edited" value="Artifacts" />
-    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="project.structure.proportion" value="0.15" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
+    <property name="recentsLimit" value="5" />
     <property name="MemberChooser.showClasses" value="true" />
-    <property name="GoToClass.includeLibraries" value="false" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="dynamic.classpath" value="false" />
+    <property name="GoToClass.includeLibraries" value="false" />
     <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -1100,23 +1041,23 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4733638" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4733638" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.5281583" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.42242992" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4672755" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32838285" sideWeight="0.48554033" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32838285" sideWeight="0.4977169" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39933994" sideWeight="0.5281583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32838285" sideWeight="0.03500761" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32838285" sideWeight="0.01674277" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32876712" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4672755" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1335,21 +1276,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../cdm/doc/dods/dodsTestsDAS.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="409" column="37" selection-start="15000" selection-end="15000" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="297" column="55" selection-start="10713" selection-end="10713" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/TestDatasetURL.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="118" column="55" selection-start="4830" selection-end="4830" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestSources.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="51" column="70" selection-start="2071" selection-end="2071" vertical-scroll-proportion="0.0" />
@@ -1372,16 +1298,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1715" column="17" selection-start="61004" selection-end="61004" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="1715" column="17" selection-start="61004" selection-end="61004" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/SDTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="183" column="21" selection-start="6069" selection-end="6069" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="183" column="21" selection-start="6069" selection-end="6069" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="74" selection-start="1987" selection-end="1987" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2160" column="88" selection-start="80327" selection-end="80327" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="49" column="7" selection-start="2084" selection-end="2105" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java">
@@ -1399,30 +1336,39 @@
         <state line="85" column="91" selection-start="3358" selection-end="3358" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="7" selection-start="2084" selection-end="2105" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="74" selection-start="1987" selection-end="1987" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2160" column="88" selection-start="80327" selection-end="80327" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="359" column="86" selection-start="12303" selection-end="12303" vertical-scroll-proportion="0.4009434">
+        <state line="359" column="86" selection-start="12303" selection-end="12303" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../docs/web/thredds/tech/tds4.1/tutorial/TDSMonitoringAndDebugging.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="478" column="35" selection-start="16829" selection-end="16829" vertical-scroll-proportion="-7.6153846">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/server/config/TdsConfigContextListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="66" column="48" selection-start="3359" selection-end="3359" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml">
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorProvider">
+        <state />
+      </provider>
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
+        <state />
+      </provider>
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorReferencesProvider">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="261" column="50" selection-start="8349" selection-end="8349" vertical-scroll-proportion="-2.6650486">
           <folding />
         </state>
       </provider>
