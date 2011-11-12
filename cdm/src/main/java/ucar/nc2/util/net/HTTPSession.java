@@ -495,7 +495,7 @@ setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider pr
             HTTPAuthStore.insert(new HTTPAuthStore.Entry(scheme,url,provider));
         }
     } catch (HTTPException he) {
-        System.err.println("HTTPSession.setCredentialsProvider failed");
+        LogStream.err.println("HTTPSession.setCredentialsProvider failed");
     }
 }
 

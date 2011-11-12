@@ -206,11 +206,11 @@ public class URLencode {
 
 
   private static void doOne(String in) {
-    System.out.println(" in =     "+in);
+    LogStream.out.println(" in =     "+in);
     String esc = URLencode.escape(in);
-    System.out.println(" escape = "+esc);
+    LogStream.out.println(" escape = "+esc);
     String unesc = URLencode.unescape( esc);
-    System.out.println(" unescape="+unesc);
+    LogStream.out.println(" unescape="+unesc);
     assert in.equals(unesc);
 
   }

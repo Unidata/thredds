@@ -670,8 +670,8 @@ for (int offset = 0; offset < length; ) {
 
   public static void main(String[] args) {
     String s = "http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-15T00:00:00Z.html.asc?Total_cloud_cover_low_cloud%5B1:1:1%5D%5B0:1:360%5D%5B0:1:719%5D";
-    System.out.printf("%s%n", s);
-    System.out.printf("%s%n", unescapeURL(s));
+    LogStream.out.printf("%s%n", s);
+    LogStream.out.printf("%s%n", unescapeURL(s));
   }
 
     public static void mainOld(String[] args) throws Exception
@@ -680,11 +680,11 @@ for (int offset = 0; offset < length; ) {
 
         if (args.length > 0) {
             for (String s : args) {
-                System.out.println("id2www - Input: \"" + s + "\"   Output: \"" + id2www(s) + "\"   recaptured: " + www2id(id2www(s)));
+                LogStream.out.println("id2www - Input: \"" + s + "\"   Output: \"" + id2www(s) + "\"   recaptured: " + www2id(id2www(s)));
             }
             for (String s : args) {
                 String out = id2www(s);
-                System.out.println("www2id - Input: \"" + out + "\"   Output: \"" + www2id(out) + "\" recaptured: " + id2www(www2id(out)));
+                LogStream.out.println("www2id - Input: \"" + out + "\"   Output: \"" + www2id(out) + "\" recaptured: " + id2www(www2id(out)));
             }
 
         } else {
@@ -693,10 +693,10 @@ for (int offset = 0; offset < length; ) {
             for (int b = 0; b < 256; b++)
                 allBytes[b] = (char) b;
             String allChars = new String(allBytes);
-            System.out.println("id2www All Characters");
-            System.out.println("Input String:      \"" + allChars + "\"");
-            System.out.println("Output String:     \"" + id2www(allChars) + "\"");
-            System.out.println("Recaptured String: \"" + www2id(id2www(allChars)) + "\" ");
+            LogStream.out.println("id2www All Characters");
+            LogStream.out.println("Input String:      \"" + allChars + "\"");
+            LogStream.out.println("Output String:     \"" + id2www(allChars) + "\"");
+            LogStream.out.println("Recaptured String: \"" + www2id(id2www(allChars)) + "\" ");
         }
         */
     }

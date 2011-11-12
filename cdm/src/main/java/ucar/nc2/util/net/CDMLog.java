@@ -30,56 +30,14 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.dataset;
 
-import junit.framework.*;
+/**
+ * Class is defined purely to define
+ * a Common log file
+ */
 
-import java.io.*;
+package ucar.nc2.util.net;
 
-import ucar.nc2.TestAll;
-
-/** Test writing and reading back. */
-
-public class TestJustRead extends TestCase {
-  private boolean show = false;
-
-  public TestJustRead( String name) {
-    super(name);
-  }
-
-  public void testReadConventionFiles() throws Exception {
-    readAllDir( TestAll.cdmUnitTestDir + "conventions");
-  }
-
-  void readAllDir(String dirName) throws Exception {
-    System.out.println("---------------Reading directory "+dirName);
-    File allDir = new File( dirName);
-    File[] allFiles = allDir.listFiles();
-
-    if(allFiles != null)
-        for (int i = 0; i < allFiles.length; i++) {
-          String name = allFiles[i].getAbsolutePath();
-          if (name.endsWith(".nc"))
-            doOne(name);
-        }
-
-    for (int i = 0; i < allFiles.length; i++) {
-      File f = allFiles[i];
-      if (f.isDirectory())
-        readAllDir(allFiles[i].getAbsolutePath());
-    }
-
-  }
-
-  public void utestProblem() throws Exception {
-    show = true;
-    doOne( "http://dods.ndbc.noaa.gov/thredds/dodsC/data/stdmet/31201/31201h2005.nc");
-  }
-
-  private void doOne(String filename) throws Exception {
-    System.out.println("  read dataset with convention parsing= "+filename);
-    NetcdfDataset ncDataset = NetcdfDataset.openDataset( filename, true, null);
-    if (show) ncDataset.writeNcML( System.out, null);
-    ncDataset.close();
-  }
+public class CDMLog
+{
 }

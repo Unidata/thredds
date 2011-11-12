@@ -50,7 +50,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
         installed = true;
       }
     } catch (Error e) {
-      System.out.println("Error installing URLStreamHandlerFactory "+e.getMessage());
+      LogStream.out.println("Error installing URLStreamHandlerFactory "+e.getMessage());
       // Log.errorG("Error installing URLStreamHandlerFactory "+e.getMessage());
     }
   }
@@ -103,7 +103,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
     }
     catch (Exception e)
     {
-      System.out.println(
+      LogStream.out.println(
         "Unable to set System Property: java.protocol.handler.pkgs");
     }
   }

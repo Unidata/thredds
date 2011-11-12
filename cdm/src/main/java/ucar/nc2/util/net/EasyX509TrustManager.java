@@ -65,19 +65,14 @@ import javax.net.ssl.X509TrustManager;
 public class EasyX509TrustManager implements X509TrustManager {
   private X509TrustManager standardTrustManager = null;
 
-  /**
-   * Log object for this class.
-   */
-/* FIX
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(EasyX509TrustManager.class);
-  // private static final Log LOG = LogFactory.getLog(EasyX509TrustManager.class);
-*/
+  static public org.slf4j.Logger logger = LogStream.getLog();
 
   /**
    * Constructor for EasyX509TrustManager.
    */
   public EasyX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
     super();
+    if(logger == null) logger = LogStream.getLog();
     TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
     factory.init(keystore);
     TrustManager[] trustmanagers = factory.getTrustManagers();
@@ -105,14 +100,12 @@ public class EasyX509TrustManager implements X509TrustManager {
    * see com.sun.net.ssl.X509TrustManager#isServerTrusted(X509Certificate[])
    */
   public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
-/*
     if ((certificates != null) && logger.isDebugEnabled()) {
       logger.debug("Server certificate chain:");
       for (int i = 0; i < certificates.length; i++) {
         logger.debug("X509Certificate[" + i + "]=" + certificates[i]);
       }
     }
-*/
 
     if ((certificates != null) && (certificates.length == 1)) {
       X509Certificate certificate = certificates[0];

@@ -268,7 +268,7 @@ static {
         try {
             insert(new Entry(HTTPAuthScheme.SSL,ANY_URL,creds));
         }   catch (HTTPException he) {
-            System.err.println("HTTPAuthStore: could not insert default SSL data");
+            LogStream.err.println("HTTPAuthStore: could not insert default SSL data");
         }
      }
 

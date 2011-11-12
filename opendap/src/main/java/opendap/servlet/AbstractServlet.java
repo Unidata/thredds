@@ -134,6 +134,10 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     // Define an overall logger for everyone to use
     // Start with a default logger, but allow an application to change it later
     static public org.slf4j.Logger Log = null;
+
+    static {
+	setLog(DAPLog.class);
+    }
   
     static public void setLog(Class cl)
     {
@@ -201,6 +205,18 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
      */
     private String rootpath = null;
 
+    //////////////////////////////////////////////////////////
+    // Constructor(s)
+
+    public AbstractServlet()
+    {
+	if(Log == null)
+	    setLog(DAPLog.class);
+    }
+
+    //////////////////////////////////////////////////////////
+    // Get/Set
+
     /**
      * Getter function for rootpath
      * @return rootpath
@@ -208,7 +224,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     public String getRootPath() {return rootpath;}
 
   /**
-   * ************************************************************************
    * This function must be implemented locally for each OPeNDAP server. It should
    * return a String containing the OPeNDAP Server Version...
    *
@@ -256,7 +271,10 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * impunity) from anywhere in the VM.
    */
 
-  public void init() throws ServletException {
+  public void init() throws ServletException
+  {
+    if(Log == null)
+	setLog(DAPLog.class);
 
     super.init();
 
@@ -273,8 +291,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     rootpath = servletContext.getRealPath("/");
 
   }
-  /***************************************************************************/
-
 
   /**
    * ************************************************************************

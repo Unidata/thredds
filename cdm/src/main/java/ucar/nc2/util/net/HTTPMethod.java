@@ -276,7 +276,7 @@ public void close()
 {
     // try to release underlying resources
     if (closed) {
-        System.err.println("HTTPMethod: attempt to close already closed method.");
+        LogStream.err.println("HTTPMethod: attempt to close already closed method.");
         return;
     }
     if (executed) {
