@@ -43,6 +43,7 @@ package opendap.dap;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import opendap.log.LogStream;
 /**
  * The Util class holds static methods used by this package.
  *
@@ -67,7 +68,7 @@ class Util {
         String[] names = sortedNames(v);
         // DEBUG: print out names
         //for(int i=0; i<names.length; i++) {
-        //  System.err.println("names[" + i + "] = " + names[i]);
+        //  LogStream.err.println("names[" + i + "] = " + names[i]);
         //}
         // look for any instance of consecutive names that are ==
         for (int i = 1; i < names.length; i++) {
@@ -100,7 +101,7 @@ class Util {
         }
         // DEBUG: print out names
         //for(int i=0; i<names.length; i++) {
-        //  System.err.println("names[" + i + "] = " + names[i]);
+        //  LogStream.err.println("names[" + i + "] = " + names[i]);
         //}
         // assert that size is correct
         if (count != names.length)

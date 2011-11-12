@@ -1,0 +1,12 @@
+
+
+<h2>This is the override document for OverideExample</h2>
+
+<h3>It exists to verify that the .info override system is
+working as intended. </h3>
+
+
+<h3>
+See the <a href="/opendap/servlets.html/#ADDINFFILES"> Servlets Configuration </a>
+document for more information.
+</h3>

@@ -179,8 +179,8 @@ public abstract class InvCatalog {
    * Resolve reletive URIs, using the catalog's base URI. If the uriString is not reletive, then
    * no resolution is done. This also allows baseURI to be a file: scheme.
    *
-   * @param uriString any uri, reletive or absolute
-   * @return resolved uri string, or null on error
+   * @param uriString any url, reletive or absolute
+   * @return resolved url string, or null on error
    * @throws URISyntaxException if uriString violates RFC 2396
    * @see java.net.URI#resolve
    */

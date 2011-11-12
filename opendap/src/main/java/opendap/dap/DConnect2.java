@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.net.*;
 import java.io.*;
@@ -49,6 +50,7 @@ import java.nio.charset.Charset;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 
+import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
@@ -114,11 +116,11 @@ private boolean debugHeaders = false, debugStream = false;
 
 public void setServerVersion(int major, int minor)
 {
-    //System.out.println("ServerVersion made with int,int: " + major + "," + minor);
+    //LogStream.out.println("ServerVersion made with int,int: " + major + "," + minor);
 
     ver = new ServerVersion(major, minor);
-    //System.out.println("ServerVersion.getMajor(): " + ver.getMajor());
-    //System.out.println("ServerVersion.getMinor(): " + ver.getMinor());
+    //LogStream.out.println("ServerVersion.getMajor(): " + ver.getMajor());
+    //LogStream.out.println("ServerVersion.getMinor(): " + ver.getMinor());
 }
 
 /**
@@ -245,10 +247,13 @@ private void openConnection(String urlString, Command command) throws IOExceptio
   HTTPMethod method = null;
   InputStream is = null;
 
+  //Encode: temp: encode urlstring query.
+  String urlencoded = URLnaming.escapeQueryURIUtil(urlString);
+
   HTTPSession _session = null;
 
   try {
-    _session = new HTTPSession(urlString);
+    _session = new HTTPSession(urlencoded);
     method = HTTPMethod.Get(_session);
 
     if (acceptCompress)
@@ -264,7 +269,7 @@ private void openConnection(String urlString, Command command) throws IOExceptio
     // if (debugHeaders) ucar.nc2.util.net.HttpClientManager.showHttpRequestInfo(f, method);
 
     if (statusCode == HTTPSession.SC_NOT_FOUND) {
-      throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText());
+      throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText()+": "+urlString);
     }
 
     if (statusCode == HTTPSession.SC_UNAUTHORIZED) {
@@ -296,7 +301,7 @@ private void openConnection(String urlString, Command command) throws IOExceptio
     // check for deflator
     Header h = method.getResponseHeader("content-encoding");
     String encoding = (h == null) ? null : h.getValue();
-    //if (encoding != null) System.out.println("encoding= " + encoding);
+    //if (encoding != null) LogStream.out.println("encoding= " + encoding);
 
     if (encoding != null && encoding.equals("deflate")) {
       is = new BufferedInputStream(new InflaterInputStream(is), 1000);
@@ -432,49 +437,50 @@ public String getLastExtendedHeader() {
 
 private void checkHeaders(HTTPMethod method) {
   if (debugHeaders) {
-    System.out.println("\nOpenConnection Headers for " + method.getPath());
-    System.out.println("Status Line: " + method.getStatusLine());
+    LogStream.dbg.println("\nOpenConnection Headers for " + method.getPath());
+    LogStream.dbg.println("Status Line: " + method.getStatusLine());
   }
 
   Header[] responseHeaders = method.getResponseHeaders();
   for (int i1 = 0; i1 < responseHeaders.length; i1++) {
     Header responseHeader = responseHeaders[i1];
-    if (debugHeaders) System.out.print("  " + responseHeader);
+    if (debugHeaders) LogStream.out.print("  " + responseHeader);
     String key = responseHeader.getName();
     String value = responseHeader.getValue();
 
     if (key.equals("Last-Modified")) {
       lastModified = value;
       if (debugHeaders)
-        System.out.println(" **found lastModified = " + lastModified);
+        LogStream.dbg.println(" **found lastModified = " + lastModified);
 
     } else if (key.equals("X-Last-Extended")) {
       lastExtended = value;
       if (debugHeaders)
-        System.out.println(" **found lastExtended = " + lastExtended);
+        LogStream.dbg.println(" **found lastExtended = " + lastExtended);
 
     } else if (key.equals("X-Last-Modified-Invalid")) {
       lastModifiedInvalid = value;
       if (debugHeaders)
-        System.out.println(" **found lastModifiedInvalid = " + lastModifiedInvalid);
+        LogStream.dbg.println(" **found lastModifiedInvalid = " + lastModifiedInvalid);
     }
   }
 
   if (debugHeaders)
-    System.out.println("OpenConnection Headers for " + method.getPath());
+    LogStream.dbg.println("OpenConnection Headers for " + method.getPath());
 
       Cookie[] cookies = HTTPSession.getGlobalCookies();
 
       if (cookies.length > 0) {
-        if (debugHeaders) System.out.println("Cookies= ");
+        if (debugHeaders) LogStream.dbg.println("Cookies= ");
 
         for (int i = 0; i < cookies.length; i++) {
           Cookie cooky = cookies[i];
-          if (debugHeaders) System.out.println("  " + cooky);
+          if (debugHeaders) LogStream.dbg.println("  " + cooky);
           if (cooky.getName().equalsIgnoreCase("jsessionid"))
             hasSession = true;
         }
       }
+  if (debugHeaders) LogStream.dbg.flush();
 }
 
 private interface Command {
@@ -558,7 +564,10 @@ public DDS getDDS() throws IOException, ParseException, DAP2Exception {
  */
 public DDS getDDS(String CE) throws IOException, ParseException, DAP2Exception {
   DDSCommand command = new DDSCommand();
-  command.setURL(urlString+"?"+CE);
+    if(CE != null && CE.indexOf('[') >= 0) {
+        int x = 0;
+    }
+  command.setURL(CE == null || CE.length() == 0 ? urlString : urlString+"?"+CE);
   if (filePath != null) {
     command.process(new FileInputStream(filePath + ".dds"));
   } else if (stream != null) {
@@ -574,6 +583,9 @@ private class DDSCommand implements Command {
   String url = null;
   public void setURL(String url)
   {
+      if(url.equals("dods://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_22km_20100504_0000.grib1")) {
+          int x = 0;
+      }
       this.url = url;
       if(dds != null && url != null) dds.setURL(url);
   }
@@ -632,11 +644,12 @@ private String getCompleteCE(String CE) {
   if (ce.length() > 0) ce = "?" + ce;
 
   if (false) {
-    System.out.println("projString: '" + projString + "'");
-    System.out.println("localProjString: '" + localProjString + "'");
-    System.out.println("selString: '" + selString + "'");
-    System.out.println("localSelString: '" + localSelString + "'");
-    System.out.println("Complete CE: " + ce);
+    LogStream.dbg.println("projString: '" + projString + "'");
+    LogStream.dbg.println("localProjString: '" + localProjString + "'");
+    LogStream.dbg.println("selString: '" + selString + "'");
+    LogStream.dbg.println("localSelString: '" + localSelString + "'");
+    LogStream.dbg.println("Complete CE: " + ce);
+    LogStream.dbg.flush();
   }
   return ce;   // escaping will happen elsewhere
 }
@@ -970,7 +983,8 @@ ParseException, DDSException, DAP2Exception {
 
 /* boolean dumpStreamErr = false; // opendap.util.util.Debug.isSet("dumpStreamErr");
 
-System.out.println("dds.getBlobURL(): " + dds.getBlobContentID());
+LogStream.dbg.println("dds.getBlobURL(): " + dds.getBlobContentID());
+LogStream.dbg.flush();
 
 if (dds.getBlobContentID() == null) {
 throw new MalformedURLException("Blob URL was 'null'. " +
@@ -980,7 +994,8 @@ throw new MalformedURLException("Blob URL was 'null'. " +
 
 URL blobURL = new URL(dds.getBlobContentID());
 
-System.out.println("Opening BLOB URL: " + blobURL);
+LogStream.dbg.println("Opening BLOB URL: " + blobURL);
+LogStream.dbg.flush();
 
 InputStream is = openConnection(blobURL);
 
@@ -990,8 +1005,9 @@ try {
 dds.readData(is, statusUI); // read the data!
 
 } catch (Throwable e) {
-System.out.println("DConnect dds.readData problem with: " + blobURL + "\nStack Trace:");
-e.printStackTrace(System.out);
+LogStream.err.println("DConnect dds.readData problem with: " + blobURL + "\nStack Trace:");
+e.printStackTrace(LogStream.err);
+LogStream.err.flush();
 
 throw new DAP2Exception("Connection problem when reading: " + blobURL + "\n" +
 "Error Message - " + e.toString());
@@ -1046,7 +1062,9 @@ public DataDDS getDDXDataFromURL(URL url, StatusUI statusUI, BaseTypeFactory btf
 throws IOException,
 ParseException, DDSException, DAP2Exception {
 
-System.out.println("Opening DDX URL: " + url);
+LogStream.dbg.println("Opening DDX URL: " + url);
+LogStream.dbg.flush();
+
 InputStream is = openConnection(url);
 DataDDS dds = new DataDDS(ver, btf);
 
@@ -1062,8 +1080,9 @@ dds.parseXML(is, false);    // read the DDX
 // NOTE: the HeaderInputStream will have skipped over "Data:" line
 
 } catch (Throwable e) {
-System.out.println("DConnect ddx.parse problem with: " + url + "\nStack Trace:");
-e.printStackTrace(System.out);
+LogStream.err.println("DConnect ddx.parse problem with: " + url + "\nStack Trace:");
+e.printStackTrace(LogStream.err);
+LogStream.err.flush();
 
 throw new DAP2Exception("Connection problem when reading: " + url + "\n" +
 "Error Message - " + e.toString());
@@ -1226,38 +1245,38 @@ public static void main(String[] args) {
 
   for (String url : args) {
     try {
-      System.out.println("");
-      System.out.println("");
-      System.out.println("########################################################");
-      System.out.println("\nConnecting to " + url + "\n");
+      LogStream.out.println("");
+      LogStream.out.println("");
+      LogStream.out.println("########################################################");
+      LogStream.out.println("\nConnecting to " + url + "\n");
       dc = new DConnect2(url);
 
-      System.out.println("\n- - - - - - - - - - - - - - - - - - -");
+      LogStream.out.println("\n- - - - - - - - - - - - - - - - - - -");
 
-      System.out.println("Retrieving DDS:\n");
+      LogStream.out.println("Retrieving DDS:\n");
       DDS dds = dc.getDDS();
-      dds.print(System.out);
+      dds.print(LogStream.out);
 
-      System.out.println("\n- - - - - - - - - - - - - - - - - - -");
-      System.out.println("Retrieving DAS:\n");
+      LogStream.out.println("\n- - - - - - - - - - - - - - - - - - -");
+      LogStream.out.println("Retrieving DAS:\n");
       DAS das = dc.getDAS();
-      das.print(System.out);
+      das.print(LogStream.out);
 
-      System.out.println("\n- - - - - - - - - - - - - - - - - - -");
-      System.out.println("Retrieving DATA:\n");
+      LogStream.out.println("\n- - - - - - - - - - - - - - - - - - -");
+      LogStream.out.println("Retrieving DATA:\n");
       dds = dc.getData("");
-      dds.printVal(System.out, "");
+      dds.printVal(LogStream.out, "");
 
 
-      System.out.println("\n- - - - - - - - - - - - - - - - - - -");
-      System.out.println("Retrieving DDX:\n");
+      LogStream.out.println("\n- - - - - - - - - - - - - - - - - - -");
+      LogStream.out.println("Retrieving DDX:\n");
       dds = dc.getDDX();
-      dds.printXML(System.out);
+      dds.printXML(LogStream.out);
 
-
+      LogStream.out.flush();
     }
     catch (Throwable t) {
-      t.printStackTrace(System.err);
+      t.printStackTrace(LogStream.err);
     }     */
 
   }

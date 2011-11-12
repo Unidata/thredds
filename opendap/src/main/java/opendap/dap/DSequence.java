@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -440,14 +441,14 @@ public class DSequence extends DConstructor implements ClientIO {
                                          StatusUI statusUI)
             throws IOException, DataReadException {
 
-        //System.out.println("ServerVersion.getMajor() "+sv.getMajor()+"  ServerVersion.getMinor(): "+sv.getMinor());
+        //LogStream.out.println("ServerVersion.getMajor() "+sv.getMajor()+"  ServerVersion.getMinor(): "+sv.getMinor());
 
         // check for old servers
         if (sv != null && (sv.getMajor() < 2 || (sv.getMajor() == 2 && sv.getMinor() < 15))) {
-            //System.out.println("Using oldDeserialize() mechanism.");
+            //LogStream.out.println("Using oldDeserialize() mechanism.");
             oldDeserialize(source, sv, statusUI);
         } else {
-            //System.out.println("Using new deserialize() mechanism.");
+            //LogStream.out.println("Using new deserialize() mechanism.");
 
 // ************* Pulled out the getLevel() check in order to support the "new"
 // and "improved" serialization of OPeNDAP sequences. 8/31/01 ndp

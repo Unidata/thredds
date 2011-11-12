@@ -1,0 +1,13 @@
+dataset {
+    Sequence {
+        Byte	b;
+        int32	i32;
+        uint32	ui32;
+        int16	i16;
+        uint16	ui16;
+        float32	f32;
+        float64	f64;
+        string	s;
+        URL	u;
+    } types[10];
+} ArrayOfSequences;

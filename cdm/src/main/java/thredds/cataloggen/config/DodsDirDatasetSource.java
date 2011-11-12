@@ -303,7 +303,7 @@ public class DodsDirDatasetSource extends DatasetSource
       this.uri = uri;
       this.directory = uri.toString().endsWith("/");
 
-      // Determine the datasets urlPath by removing accessPointHeader from uri.
+      // Determine the datasets urlPath by removing accessPointHeader from url.
       // (Use URIs to handle encoding and slash vs backslash issues.)
       String dsAbsolutePath = uri.toString();
       String dsRelativePath = null;

@@ -38,6 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import opendap.dap.parsers.DDSXMLParser;
 
@@ -513,7 +514,10 @@ public class Attribute extends DAPNode
     try {
       // Byte.parseByte() can't be used because values > 127 are allowed
       short val = Short.parseShort(s);
-      if (DebugValueChecking) System.out.println("Attribute.checkByte() - string: '" + s + "'   value: " + val);
+      if (DebugValueChecking) {
+	LogStream.dbg.println("Attribute.checkByte() - string: '" + s + "'   value: " + val);
+	LogStream.dbg.flush();
+      }
       if (val > 0xFF || val < 0)
         return false;
       else
@@ -533,7 +537,10 @@ public class Attribute extends DAPNode
   private static final boolean checkShort(String s) {
     try {
       short val = Short.parseShort(s);
-      if (DebugValueChecking) System.out.println("Attribute.checkShort() - string: '" + s + "'   value: " + val);
+      if (DebugValueChecking) {
+	LogStream.dbg.println("Attribute.checkShort() - string: '" + s + "'   value: " + val);
+	LogStream.dbg.flush();
+      }
       return true;
     }
     catch (NumberFormatException e) {
@@ -551,7 +558,10 @@ public class Attribute extends DAPNode
     // Note: Because there is no Unsigned class in Java, use Long instead.
     try {
       long val = Long.parseLong(s);
-      if (DebugValueChecking) System.out.println("Attribute.checkUShort() - string: '" + s + "'   value: " + val);
+      if (DebugValueChecking) {
+	LogStream.dbg.println("Attribute.checkUShort() - string: '" + s + "'   value: " + val);
+	LogStream.dbg.flush();
+      }
       if (val > 0xFFFFL)
         return false;
       else
@@ -571,7 +581,10 @@ public class Attribute extends DAPNode
   private static final boolean checkInt(String s) {
     try {
       int val = Integer.parseInt(s);
-      if (DebugValueChecking) System.out.println("Attribute.checkInt() - string: '" + s + "'   value: " + val);
+      if (DebugValueChecking) {
+	LogStream.dbg.println("Attribute.checkInt() - string: '" + s + "'   value: " + val);
+	LogStream.dbg.flush();
+      }
       return true;
     }
     catch (NumberFormatException e) {
@@ -589,7 +602,10 @@ public class Attribute extends DAPNode
     // Note: Because there is no Unsigned class in Java, use Long instead.
     try {
       long val = Long.parseLong(s);
-      if (DebugValueChecking) System.out.println("Attribute.checkUInt() - string: '" + s + "'   value: " + val);
+      if (DebugValueChecking) {
+	LogStream.dbg.println("Attribute.checkUInt() - string: '" + s + "'   value: " + val);
+	LogStream.dbg.flush();
+      }
       if (val > 0xFFFFFFFFL)
         return false;
       else
@@ -609,7 +625,10 @@ public class Attribute extends DAPNode
   private static final boolean checkFloat(String s) {
     try {
       float val = Float.parseFloat(s);
-      if (DebugValueChecking) System.out.println("Attribute.checkFloat() - string: '" + s + "'   value: " + val);
+      if (DebugValueChecking) {
+	LogStream.dbg.println("Attribute.checkFloat() - string: '" + s + "'   value: " + val);
+	LogStream.dbg.flush();
+      }
       return true;
     }
     catch (NumberFormatException e) {
@@ -629,7 +648,10 @@ public class Attribute extends DAPNode
   private static final boolean checkDouble(String s) {
     try {
       double val = Double.parseDouble(s);
-      if (DebugValueChecking) System.out.println("Attribute.checkDouble() - string: '" + s + "'   value: " + val);
+      if (DebugValueChecking) {
+	LogStream.dbg.println("Attribute.checkDouble() - string: '" + s + "'   value: " + val);
+	LogStream.dbg.flush();
+      }
       return true;
     }
     catch (NumberFormatException e) {
@@ -676,14 +698,20 @@ public class Attribute extends DAPNode
 
   private void checkContainerUsage() throws NoSuchAttributeException {
 
-    if (_Debug) System.out.print("Attribute.checkContainerUsage(): ");
+    if (_Debug) {
+	LogStream.dbg.print("Attribute.checkContainerUsage(): ");
+	LogStream.dbg.flush();
+      }
 
     if (!(attr instanceof AttributeTable)) {
       throw new NoSuchAttributeException(
               "The Attribute '" + getEncodedName() + "' is not a container (AttributeTable)." +
                       "It's content is made up of values, not other Attributes.");
     }
-    if (_Debug) System.out.println("The Attribute is a container");
+    if (_Debug) {
+	LogStream.dbg.println("The Attribute is a container");
+	LogStream.dbg.flush();
+      }
   }
 
 

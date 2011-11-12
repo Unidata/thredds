@@ -1,0 +1,14 @@
+#
+# Test identifiers with `#' in them. 6/22/2001 jhrg
+
+Dataset {
+   Int32 a;
+   Int32 b#c[10];
+   Float64 c#d;
+   Grid {
+     Array:
+       Byte Image#data[512];
+     Maps:
+       String colors[512];
+   } huh;
+} test.19;

@@ -41,7 +41,7 @@ import junit.framework.TestSuite;
  * TestSuite to test Opendap Parsers and DDS/DAS etc builders.
  *
  */
-public class TestOpenDap extends TestCase
+public class TestOpenDap
 {
 
   public static long startTime;
@@ -58,20 +58,17 @@ public class TestOpenDap extends TestCase
 
    // TestDConnect2 does access external data
    //suite.addTest(new TestSuite(opendap.test.TestDConnect2.class));
-
-    TestSetup wrapper = new TestSetup(suite) {
-
-      protected void setUp() {
-        startTime = System.currentTimeMillis();
+      return suite;
       }
 
-      protected void tearDown() {
+   protected void setUp() {
+        startTime = System.currentTimeMillis();
+   }
+
+   protected void tearDown() {
         double took = (System.currentTimeMillis() - startTime) * .001;
         System.out.println(" that took= "+took+" secs");
-      }
-    };
+   }
 
-    return wrapper;
-  }
 
 }

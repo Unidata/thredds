@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.io.*;
 import java.util.Enumeration;

@@ -38,6 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import opendap.dap.parsers.DDSXMLParser;
 
@@ -329,7 +330,7 @@ public class DArray extends DVector
             squeezeCandidates.remove(squeezeCandidates.size()-1);
 
 
-        //System.out.println("DArray.squeeze(): Removing "+
+        //LogStream.out.println("DArray.squeeze(): Removing "+
         //        squeezeCandidates.size()+" dimensions of size 1.");
 
 

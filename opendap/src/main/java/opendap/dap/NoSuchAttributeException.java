@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 /**
  * Thrown by <code>AttributeTable</code> when an attempt is made to alias to

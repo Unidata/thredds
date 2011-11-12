@@ -723,7 +723,7 @@ public class OpendapServlet extends AbstractServlet
     pw.println("</dl>");
     pw.println("For example, to request the DAS object from the FNOC1 dataset at URI/GSO (a");
     pw.println("test dataset) you would appand `.das' to the URL:");
-    pw.println("http://opendap.gso.uri.edu/cgi-bin/nph-nc/data/fnoc1.nc.das.");
+    pw.println("http://opendap.gso.url.edu/cgi-bin/nph-nc/data/fnoc1.nc.das.");
 
     pw.println("<p><b>Note</b>: Many OPeNDAP clients supply these extensions for you so you don't");
     pw.println("need to append them (for example when using interfaces supplied by us or");
@@ -731,7 +731,7 @@ public class OpendapServlet extends AbstractServlet
     pw.println("add these if you are typing a URL directly into a WWW browser.");
     pw.println("<p><b>Note</b>: If you would like version information for this server but");
     pw.println("don't know a specific data file or data set name, use `/version' for the");
-    pw.println("filename. For example: http://opendap.gso.uri.edu/cgi-bin/nph-nc/version will");
+    pw.println("filename. For example: http://opendap.gso.url.edu/cgi-bin/nph-nc/version will");
     pw.println("return the version number for the netCDF server used in the first example. ");
 
     pw.println("<p><b>Suggestion</b>: If you're typing this URL into a WWW browser and");
@@ -777,7 +777,7 @@ public class OpendapServlet extends AbstractServlet
       // The url and query strings will come to us in encoded form
       // (see HTTPmethod.newMethod())
       String baseurl = request.getRequestURL().toString();
-      baseurl = EscapeStrings.unescapeURL(baseurl) ;
+      //baseurl = EscapeStrings.unescapeURL(baseurl) ;
   
       String query = request.getQueryString();
       query = EscapeStrings.unescapeURLQuery(query);

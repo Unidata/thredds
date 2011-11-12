@@ -1,0 +1,153 @@
+#!/bin/csh
+
+
+
+set server = "http://dods.oce.orst.edu:8080/dods/servlet/dts"
+
+#goto constrained
+#goto end
+
+rm data/basic/test.*.dds
+#rm data/basic/test.*.dods
+
+echo "Building expected data for Basic tests"
+foreach tst (dds/test.*)
+	set test = `basename $tst`
+	
+	if ( -e w3chttp.out) then
+		rm w3chttp.out
+	endif
+	echo $test
+	rm -f data/basic/$test.dds
+	geturl  $server/$test.dds >& data/basic/$test.dds
+	rm -f data/basic/$test.dods
+	geturl -D  $server/$test >& data/basic/$test.dods
+	if ( -e w3chttp.out) then
+		echo "Moving recieved data to $test.dat"
+		mv w3chttp.out data/$test.dat
+	endif
+	sleep 1
+end
+
+
+constrained:
+
+
+echo "Building expected data for Constrained Tests"
+
+ 
+#goto new
+
+
+set constraint = i32,s
+set test = test.01
+rm -f data/constrained/$test.*
+echo $test
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.dods
+
+set constraint = "FourD.tamp[1:2:9][1:2:9][1:2:9][1:2:9]"
+set test = test.06
+set suffix = a
+rm -f data/constrained/$test.$suffix.*
+echo $test$suffix
+geturl  "$server/${test}.dds?$constraint" >& data/constrained/$test.$suffix.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.$suffix.dods
+
+set constraint = "FourD.tamp[1:2:9][1:2:9][1:2:9][1:2:9],FourD.x,FourD.y,FourD.z,FourD.t"
+set test = test.06
+set suffix = b
+rm -f data/constrained/$test.$suffix.*
+echo $test$suffix
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.$suffix.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.$suffix.dods
+
+
+set constraint = "FourD.tamp[1:2:9][1:2:9][1:2:9][1:2:9],FourD.x[1:2:9],FourD.y[1:2:9],FourD.z[1:2:9],FourD.t[1:2:9]"
+set test = test.06
+set suffix = c
+rm -f data/constrained/$test.$suffix.*
+echo $test$suffix
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.$suffix.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.$suffix.dods
+
+
+set constraint = tamp
+set test = test.06
+set suffix = d
+rm -f data/constrained/$test.$suffix.*
+echo $test$suffix
+geturl  "$server/${test}.dds?$constraint" >& data/constrained/$test.$suffix.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.$suffix.dods
+
+
+set constraint = t
+set test = test.06
+set suffix = e
+rm -f data/constrained/$test.$suffix.*
+echo $test$suffix
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.$suffix.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.$suffix.dods
+
+new:
+
+set constraint = types.strings.s
+set test = test.05
+set suffix = a
+rm -f data/constrained/$test.$suffix.*
+echo $test$suffix
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.$suffix.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.$suffix.dods
+
+set constraint = s
+set test = test.05
+set suffix = b
+rm -f data/constrained/$test.$suffix.*
+echo $test$suffix
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.$suffix.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.$suffix.dods
+
+
+#goto end
+
+set constraint = "SDS_DFNT_INT32[1:2],SDS_DFNT_UINT32[1:1],SDS_DFNT_INT16[1:2],SDS_DFNT_UINT16[0:0],SDS_DFNT_INT8[0:0],SDS_DFNT_UINT8[2:2],SDS_DFNT_FLOAT32[2:3],SDS_DFNT_FLOAT64,SDS_DFNT_CHAR8[0:1],SDS_DFNT_UCHAR8[0:1]"
+set test = test.sds1
+rm -f data/constrained/$test.*
+echo $test
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.dods
+
+
+
+set constraint = "SDS_2[3:5][2:3],SDS_3[2:2][2:3][0:1],SDS_6[0:1][0:0][0:0][0:0][0:0][0:0],SDS_20[0:1][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:1][0:0][0:0][0:0]"
+set test = test.sds3
+rm -f data/constrained/$test.*
+echo $test
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.dods
+
+
+set constraint = "GR_DFNT_INT32[0:1][1:2],GR_DFNT_FLOAT64[2:3][0:1]"
+set test = test.gr1
+rm -f data/constrained/$test.*
+echo $test
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.dods
+
+
+
+set constraint = "Vdata_DFNT_UINT16&Vdata_DFNT_UINT16.Field_DFNT_UINT16.Field_DFNT_UINT16__0<5"
+set test = test.vs1
+rm -f data/constrained/$test.*
+echo $test
+geturl  "$server/$test.dds?$constraint" >& data/constrained/$test.dds
+geturl -D -c "$constraint" $server/$test >& data/constrained/$test.dods
+
+end:
+
+set constraint = 'Resolution,Channel,Year&Sat_Images.north_lat<0.5'
+set test = test.satimage
+rm -f data/constrained/$test.*
+echo $test
+geturl  "$server/$test.dds?$constraint"  >& data/constrained/$test.dds
+geturl -D -c "$constraint" $server/$test  >& data/constrained/$test.dods

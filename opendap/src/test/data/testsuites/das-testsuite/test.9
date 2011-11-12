@@ -1,0 +1,18 @@
+
+#  -*- C++ -*-
+#
+# Test attribute vectors.
+
+Attributes {
+    var1 {
+	String month Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Nov, Dec;
+    }
+    var2 {
+	String day Monday, Tuesday, Wed;
+	String month Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Nov, Dec;
+	String name bob;
+	Int32 num 10;
+	String irrational 3.1415, 2.718, 1.414;
+	Float64 irrational_numbers 3.1415, 2.718, 1.414;
+    }
+}

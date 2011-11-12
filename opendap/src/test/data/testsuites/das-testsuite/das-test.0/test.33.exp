@@ -1,0 +1,55 @@
+
+# expect/tcl code to test the das parser and scanner
+# jhrg
+#
+# $Log: test.33.exp,v $
+# Revision 1.1  2003/08/11 20:50:10  ndp
+# Initial revision
+#
+# Revision 1.2  2003/03/05 00:02:48  ndp
+# *** empty log message ***
+#
+# Revision 1.1  2002/05/31 17:16:22  jimg
+# Added
+#
+# Revision 1.1.2.1  2002/03/14 20:01:16  jimg
+# Added
+#
+# Revision 1.1.2.1  2000/11/30 05:20:20  jimg
+# Added
+#
+
+global comp_output		# contains output from das-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+
+# The variable `test_name' is the name of the das input file for this test.
+
+set test_name test.33
+
+# The variable `test_out' is a string that contains the text that should be
+# stored in comp_output by das-test_start. The two strings should match
+# exactly.
+
+set test_out "Attributes {
+    var1 {
+        Float64 Float64 6.02e23;
+        String Url \"http://www.google.com/\";
+        Url String \"http://huh.com/\";
+    }
+}"
+
+das-test_start p $srcdir/$test_name
+
+
+if {$verbose >= 1} {
+    send_user "\n----- Expected output -----\n"
+    send_user "$test_out"
+    send_user "\n---------------------------\n";
+}
+
+if ![string compare $test_out $comp_output] { # check comp_output
+    pass "$test_name"
+} else {
+    fail "$test_name"
+}

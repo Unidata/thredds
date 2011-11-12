@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.io.*;
 
@@ -87,10 +88,10 @@ public class HeaderInputStream extends FilterInputStream {
         bytesRemaining = currentOffset = 0;
         endFound = false;
 
-        //System.out.print("EndSequence: ");
+        //LogStream.out.print("EndSequence: ");
         //for(int i=0; i<endSequence.length ;i++)
-        //    System.out.print(endSequence[i]+"  ");
-        //System.out.print("\n");
+        //    LogStream.out.print(endSequence[i]+"  ");
+        //LogStream.out.print("\n");
     }
 
     /**

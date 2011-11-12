@@ -1,0 +1,7 @@
+Dataset {
+    Structure {
+        Structure {
+            String s;
+        } strings;
+    } types;
+} NestedStructure;

@@ -1,0 +1,26 @@
+The data:
+Structure {
+    Structure {
+        Int32 SDS_Array[fakeDim0 = 5];
+    } Array_Vgroup;
+    Structure {
+        Grid {
+         ARRAY:
+            Int32 SDS_Grid[fakeDim1 = 5];
+         MAPS:
+            Int32 fakeDim1[5];
+        } SDS_Grid;
+    } Grid_Vgroup;
+    Structure {
+        Int32 GRaster[GRaster__Y = 5][GRaster__X = 5];
+    } GR_Vgroup;
+    Structure {
+        Sequence {
+            Structure {
+                Int32 Field__0;
+            } Field;
+        } Vdata;
+    } Vdata_Vgroup;
+} Main_Vgroup = { { {-2147483647, -2147483647, -2147483647, -2147483647, -2147483647} }, { { ARRAY: {-2147483647, -2147483647, -2147483647, -2147483647, -2147483647} MAPS: {1, 2, 3, 4, 5} } }, { {{0, 1, 2, 3, 4},{1, 2, 3, 4, 5},{2, 3, 4, 5, 6},{3, 4, 5, 6, 7},{4, 5, 6, 7, 8}} }, { { { { 1 } }, { { 2 } }, { { 3 } }, { { 4 } }, { { 5 } } } } };
+
+

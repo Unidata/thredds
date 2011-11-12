@@ -74,7 +74,7 @@ public class CdmrFeatureDataset {
     String fType = elem.getAttribute("type").getValue();  // LOOK, may be multiple types
     String uri = elem.getAttribute("url").getValue();
 
-    if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= %s uri=%s%n", endpoint, fType, uri);
+    if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= %s url=%s%n", endpoint, fType, uri);
 
     FeatureType ft = FeatureType.getType(fType);
 

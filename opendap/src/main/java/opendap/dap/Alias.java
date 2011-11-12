@@ -44,6 +44,7 @@ import java.io.PrintWriter;
 
 import opendap.dap.parsers.DDSXMLParser;
 import opendap.util.Debug;
+import opendap.log.LogStream;
 
 /**
  * The Alias type is a special attribute. It is simply a reference
@@ -308,7 +309,10 @@ public class Alias extends Attribute
 
     public void print(PrintWriter os, String pad) {
 
-        if (Debug.isSet("Alias")) System.out.println("  Attribute \"" + getClearName() + "\" is an Alias.");
+        if (Debug.isSet("Alias")) {
+	    LogStream.dbg.println("  Attribute \"" + getClearName() + "\" is an Alias.");
+	    LogStream.dbg.flush();
+	}
 
         os.println(pad + "Alias " + getEncodedName() + " " + getAliasedToAttributeField() + ";");
 

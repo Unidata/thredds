@@ -38,6 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.io.*;
 
@@ -56,25 +57,25 @@ class UIntTest {
         long l;
 
         s = ((short) 65500);
-        System.out.println("\nShort assigned to 65500.    System thinks of it as: " + s);
+        LogStream.out.println("\nShort assigned to 65500.    System thinks of it as: " + s);
         fp.writeShort(s);
-        System.out.println("Wrote it to disk. ");
+        LogStream.out.println("Wrote it to disk. ");
 
         s = ((short) 65537);
-        System.out.println("\nShort assigned to 65537.    System thinks of it as: " + s);
+        LogStream.out.println("\nShort assigned to 65537.    System thinks of it as: " + s);
         fp.writeShort(s);
-        System.out.println("Wrote it to disk. ");
+        LogStream.out.println("Wrote it to disk. ");
 
 
         i = ((int) 4294967040L);
-        System.out.println("\nInt assigned to 4294967040. System thinks of it as: " + i);
+        LogStream.out.println("\nInt assigned to 4294967040. System thinks of it as: " + i);
         fp.writeInt(i);
-        System.out.println("Wrote it to disk. ");
+        LogStream.out.println("Wrote it to disk. ");
 
         i = ((int) 4294967298L);
-        System.out.println("\nInt assigned to 4294967298. System thinks of it as: " + i);
+        LogStream.out.println("\nInt assigned to 4294967298. System thinks of it as: " + i);
         fp.writeInt(i);
-        System.out.println("Wrote it to disk. ");
+        LogStream.out.println("Wrote it to disk. ");
 
     }
 
@@ -86,38 +87,38 @@ class UIntTest {
         long l;
 
 
-        System.out.println("\nReading data...");
+        LogStream.out.println("\nReading data...");
         s = fp.readShort();
-        System.out.println("System read short from file as: " + s);
+        LogStream.out.println("System read short from file as: " + s);
         i1 = ((int) s);
-        System.out.println("Converted short to int: " + i1);
+        LogStream.out.println("Converted short to int: " + i1);
         i1 = i1 & 0xFFFF;
-        System.out.println("And'd with 0xFFFF (represented as an int in memory): " + i1);
+        LogStream.out.println("And'd with 0xFFFF (represented as an int in memory): " + i1);
 
-        System.out.println("\nReading data...");
+        LogStream.out.println("\nReading data...");
         s = fp.readShort();
-        System.out.println("System read short from file as: " + s);
+        LogStream.out.println("System read short from file as: " + s);
         i1 = ((int) s);
-        System.out.println("Converted short to int: " + i1);
+        LogStream.out.println("Converted short to int: " + i1);
         i1 = i1 & 0xFFFF;
-        System.out.println("And'd with 0xFFFF (represented as an int in memory): " + i1);
+        LogStream.out.println("And'd with 0xFFFF (represented as an int in memory): " + i1);
 
 
-        System.out.println("\nReading data...");
+        LogStream.out.println("\nReading data...");
         i2 = fp.readInt();
-        System.out.println("\nSystem read int from file as: " + i2);
+        LogStream.out.println("\nSystem read int from file as: " + i2);
         l = ((long) i2);
-        System.out.println("Converted int to long: " + l);
+        LogStream.out.println("Converted int to long: " + l);
         l = l & 0xFFFFFFFFL;
-        System.out.println("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
+        LogStream.out.println("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
 
-        System.out.println("\nReading data...");
+        LogStream.out.println("\nReading data...");
         i2 = fp.readInt();
-        System.out.println("\nSystem read int from file as: " + i2);
+        LogStream.out.println("\nSystem read int from file as: " + i2);
         l = ((long) i2);
-        System.out.println("Converted int to long: " + l);
+        LogStream.out.println("Converted int to long: " + l);
         l = l & 0xFFFFFFFFL;
-        System.out.println("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
+        LogStream.out.println("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
 
 
     }

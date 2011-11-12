@@ -38,6 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.io.*;
 
@@ -200,7 +201,7 @@ public class BaseTypePrimitiveVector extends PrimitiveVector
      */
     public void externalize(DataOutputStream sink) throws IOException {
         for (int i = 0; i < vals.length; i++) {
-            // System.out.println("\t\t\tI AM THE WALRUS!");
+            // LogStream.out.println("\t\t\tI AM THE WALRUS!");
             ((ClientIO) vals[i]).externalize(sink);
         }
     }

@@ -1045,9 +1045,9 @@ public abstract class Table {
    * Table is a single StructureData, which is empty.
    * NestedTable looks for instance of this, and
    * 1) increments the nesting level
-   * 2) looks for coordinat variables at the top level.
+   * 2) looks for coordinate variables at the top level.
    * <p/>
-   * Essentialy adds a table at top of the tree, constisting only of coordinate variables
+   * Adds a table at top of the tree, consisting only of coordinate variables
    * <p/>
    * Used by:
    * CFpointObs

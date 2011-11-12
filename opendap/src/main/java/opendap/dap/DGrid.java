@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import opendap.servers.SDArray;
 import opendap.dap.parsers.DDSXMLParser;
@@ -583,10 +584,10 @@ public class DGrid extends DConstructor implements ClientIO {
             DArrayDimension mapDim = mapArray.getFirstDimension();
 
             if (thisDim.getSize() > 0) {
-                // System.out.println("Dimension Contains Data.");
+                // LogStream.out.println("Dimension Contains Data.");
 
                 if (mapArray.isProject()) { // This map vector better be projected!
-                    // System.out.println("Map Vector Projected, checking projection image...");
+                    // LogStream.out.println("Map Vector Projected, checking projection image...");
 
                     // Check the matching Map vector; the Map projection must equal
                     // the Array dimension projection
@@ -596,12 +597,12 @@ public class DGrid extends DConstructor implements ClientIO {
                     valid = valid && mapDim.getStop() == thisDim.getStop();
                     valid = valid && mapDim.getStride() == thisDim.getStride();
                 } else {
-                    // System.out.println("Map Vector not Projected.");
+                    // LogStream.out.println("Map Vector not Projected.");
                     valid = false;
                 }
 
             } else {
-                // System.out.println("Dimension empty. Verifing cooresponding Map vector not projected...");
+                // LogStream.out.println("Dimension empty. Verifing cooresponding Map vector not projected...");
                 // Corresponding Map vector must be excluded from the
                 // projection or it's not a grid.
                 valid = !mapArray.isProject();

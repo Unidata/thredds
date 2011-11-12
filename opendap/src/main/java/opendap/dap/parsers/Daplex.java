@@ -160,8 +160,8 @@ void
 backup()
 {
     if(next <= 0) next = 0;
-    int c = text.charAt(next);
-    if(next > 0) next--;
+    else
+        next--;
 }
 
 int

@@ -1,0 +1,9 @@
+Dataset {
+    Structure {
+        Float64 tamp[5][5][5][5];
+        Float64 x[10];
+        Float64 y[10];
+        Float64 z[10];
+        Float64 t[10];
+    } FourD;
+} SimpleGrids;

@@ -50,7 +50,7 @@ public class jscriptCore {
             + "// Please read the full copyright statement in the file COPYRIGHT.\n"
             + "//\n"
             + "// Authors:\n"
-            + "//	jhrg,jimg	James Gallagher (jgallagher@gso.uri.edu)\n"
+            + "//	jhrg,jimg	James Gallagher (jgallagher@gso.url.edu)\n"
             + "\n"
             + "var reflection_cgi = \"http://unidata.ucar.edu/cgi-bin/dods/posturl.pl\";\n"
             + "\n"

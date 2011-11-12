@@ -1,0 +1,202 @@
+
+# expect/tcl code to test the das scanner
+# jhrg
+#
+# $Log: scanner.b.exp,v $
+# Revision 1.1  2003/08/11 20:50:09  ndp
+# Initial revision
+#
+# Revision 1.3  2002/05/31 17:09:18  jimg
+# Updated tests from C++. This includes some changes for the Java code.
+#
+# Revision 1.1.54.1  2001/11/01 00:43:52  jimg
+# Fixes to the scanners and parsers so that dataset variable names may
+# start with digits. I've expanded the set of characters that may appear
+# in a variable name and made it so that all except `#' may appear at
+# the start. Some characters are not allowed in variables that appear in
+# a DDS or CE while they are allowed in the DAS. This makes it possible
+# to define containers with names like `COARDS:long_name.' Putting a colon
+# in a variable name makes the CE parser much more complex. Since the set
+# of characters that people want seems pretty limited (compared to the
+# complete ASCII set) I think this is an OK approach. If we have to open
+# up the expr.lex scanner completely, then we can but not without adding
+# lots of action clauses to teh parser. Note that colon is just an example,
+# there's a host of characters that are used in CEs that are not allowed
+# in IDs.
+#
+# Revision 1.1  1996/07/16 16:54:42  jimg
+# Added.
+#
+#
+
+global comp_output		# contains output from das-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+
+set test_name scanner.b
+
+set prompt "das-test:"
+set timeout 2
+set pass 1
+
+das-test_start s
+
+expect {
+    "${prompt} " { 
+    }
+    timeout { 
+	send_user "Timeout\n"
+	set pass 0
+    }
+}
+
+if {$pass} {
+    set thing "0\r\n"
+    send $thing
+
+    expect {
+	-re ".*WORD=${thing}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "01\r\n"
+    send $thing
+
+    expect {
+	-re ".*WORD=${thing}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "0123456789\r\n"
+    send $thing
+
+    expect {
+	-re ".*WORD=${thing}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "0123456789123456789123456789\r\n"
+    send $thing
+
+    expect {
+	-re ".*WORD=${thing}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "+999\r\n"
+    set thing2 "\\+999\r\n" 
+    send $thing
+
+    expect {
+	-re ".*WORD=${thing2}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "-999\r\n"
+    send -- $thing
+
+    expect {
+	-re ".*WORD=${thing}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "+256\r\n"
+    set thing2 "\\+256\r\n"
+    send $thing
+
+    expect {
+	-re ".*WORD=${thing2}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "-256\r\n"
+    send -- $thing
+
+    expect {
+	-re ".*WORD=${thing}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "+255\r\n"
+    set thing2 "\\+255\r\n"
+    send $thing
+
+    expect {
+	-re ".*WORD=${thing2}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "-255\r\n"
+    send -- $thing
+
+    expect {
+	-re ".*WORD=${thing}${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    pass $test_name
+} else {
+    fail $test_name
+}
+
+das-test_exit

@@ -130,6 +130,9 @@
                 PrefixDBException,
                 UnitSystemException
         {
+            if(spec == null)
+                throw new UnitParseException(spec);
+
             ReInit(new StringReader(spec.trim()));
 
             try

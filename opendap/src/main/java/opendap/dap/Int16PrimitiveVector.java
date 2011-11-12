@@ -40,6 +40,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.io.*;
 

@@ -1033,7 +1033,7 @@ public class InvDatasetImpl extends InvDataset {
         if ((inline != null) && (inline.length() > 0))
           buff.append(" <li>").append(type).append(StringUtil2.quoteHtmlContent(inline)).append("</li>\n");
         if (doc.hasXlink()) {
-          // buff.append(" <li>" + type + makeHrefResolve(ds, uri.toString(), doc.getXlinkTitle()) + "</a>\n");
+          // buff.append(" <li>" + type + makeHrefResolve(ds, url.toString(), doc.getXlinkTitle()) + "</a>\n");
           buff.append(" <li>").append(type).append(makeHref(doc.getXlinkHref(), doc.getXlinkTitle())).append("</li>\n");
         }
       }

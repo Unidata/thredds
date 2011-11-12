@@ -1,0 +1,9 @@
+
+# -*- Perl -*-
+# byte values that should not parse, in various ways...
+
+Attributes {
+    test {
+	Float64 f 2.55E400;
+    }
+}

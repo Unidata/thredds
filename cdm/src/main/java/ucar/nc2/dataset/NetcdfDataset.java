@@ -354,8 +354,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Make NetcdfFile into NetcdfDataset with given enhance mode
    *
-   * @param ncfile      wrap this
-   * @param mode using this enhance mode (may be null)
+   * @param ncfile wrap this
+   * @param mode   using this enhance mode (may be null)
    * @return NetcdfDataset wrapping the given ncfile
    * @throws IOException on io error
    */
@@ -451,19 +451,18 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     //if (ds.isEnhanceProcessed) return;
     if (mode == null) return null;
 
-     // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
+    // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
     CoordSysBuilderIF builder = null;
     if (mode.contains(Enhance.CoordSystems) && !ds.enhanceMode.contains(Enhance.CoordSystems)) {
       builder = ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
-      builder.augmentDataset( ds, cancelTask);
+      builder.augmentDataset(ds, cancelTask);
       ds.convUsed = builder.getConventionUsed();
     }
 
     // now enhance scale/offset, using augmented dataset
-    if ( ( mode.contains(Enhance.ConvertEnums) && ! ds.enhanceMode.contains( Enhance.ConvertEnums) )
-        || ( mode.contains(Enhance.ScaleMissing) && ! ds.enhanceMode.contains(Enhance.ScaleMissing ) )
-        || ( mode.contains(Enhance.ScaleMissingDefer) && ! ds.enhanceMode.contains( Enhance.ScaleMissingDefer ) ) )
-    {
+    if ((mode.contains(Enhance.ConvertEnums) && !ds.enhanceMode.contains(Enhance.ConvertEnums))
+            || (mode.contains(Enhance.ScaleMissing) && !ds.enhanceMode.contains(Enhance.ScaleMissing))
+            || (mode.contains(Enhance.ScaleMissingDefer) && !ds.enhanceMode.contains(Enhance.ScaleMissingDefer))) {
       for (Variable v : ds.getVariables()) {
         VariableEnhanced ve = (VariableEnhanced) v;
         ve.enhance(mode);
@@ -473,7 +472,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // now find coord systems which may change some Variables to axes, etc
     if (builder != null) {
-       builder.buildCoordinateSystems(ds);
+      builder.buildCoordinateSystems(ds);
     }
 
     ds.finish(); // recalc the global lists
@@ -654,13 +653,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     location = StringUtil2.replace(location, '\\', "/");
 
     if (location.startsWith("dods:")) {
-        return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
-
-    } else if ( location.startsWith("file:") && (
-               location.endsWith(".dds")
-               || location.endsWith(".das")
-               || location.endsWith(".dods"))) {
-               return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
+      return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
+    } else if (location.startsWith("file:") && (
+            location.endsWith(".dds")
+                    || location.endsWith(".das")
+                    || location.endsWith(".dods"))) {
+      return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
 
       // cdmremote:
     } else if (location.startsWith(CdmRemote.SCHEME)) {
@@ -675,21 +673,18 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         throw new IOException(log.toString());
       return ncfile;
 
-      // http: may be dods or cdmremote or HttpService
+    } else if (location.endsWith(".xml") || location.endsWith(".ncml")) { //open as a NetcdfDataset through NcML
+      if (!location.startsWith("http:") && !location.startsWith("file:"))
+        location = "file:" + location;
+      return acquireNcml(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
+
     } else if (location.startsWith("http:")) {
       ServiceType stype = disambiguateHttp(location);
       if (stype == ServiceType.OPENDAP)
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject); // try as a dods file
       else if (stype == ServiceType.CdmRemote)
         return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through CDM remote
-    // else fall through for HttpService
-    }
-
-    // ncml file
-    if (location.endsWith(".xml") || location.endsWith(".ncml")) { //open as a NetcdfDataset through NcML
-      if (!location.startsWith("http:") && !location.startsWith("file:"))
-        location = "file:" + location;
-      return acquireNcml(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
+      // else fall through for HttpService
     }
 
     if (cache != null) {
@@ -716,7 +711,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     HTTPSession session = new HTTPSession(location);
 
     // have to do dods first
-    ServiceType result = checkIfDods(session,location);
+    ServiceType result = checkIfDods(session, location);
     if (result != null)
       return result;
 
@@ -749,22 +744,22 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private ServiceType checkIfDods(HTTPSession session, String location) throws IOException {
     HTTPMethod method = null;
     // Strip off any trailing constraints
-    if(location.indexOf('?') >= 0) {
-        location = location.substring(0,location.indexOf('?'));
+    if (location.indexOf('?') >= 0) {
+      location = location.substring(0, location.indexOf('?'));
     }
     // Strip off any trailing .dds, .das, or .dods
-    if(location.endsWith(".dds"))
-        location = location.substring(0,location.length()-".dds".length());
-    if(location.endsWith(".das"))
-      location = location.substring(0,location.length()-".das".length());
-    if(location.endsWith(".dods"))
-      location = location.substring(0,location.length()-".dods".length());
+    if (location.endsWith(".dds"))
+      location = location.substring(0, location.length() - ".dds".length());
+    if (location.endsWith(".das"))
+      location = location.substring(0, location.length() - ".das".length());
+    if (location.endsWith(".dods"))
+      location = location.substring(0, location.length() - ".dods".length());
     // Must encode the URL before sending
     location = EscapeStrings.escapeURL(location);
     try {
       // For some reason, the head method is not using credentials
       // method = session.newMethodHead(location + ".dds");
-      method = HTTPMethod.Get(session,location + ".dds");
+      method = HTTPMethod.Get(session, location + ".dds");
 
       int status = method.execute();
       if (status == 200) {
@@ -824,26 +819,28 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
-  static private NetcdfFile openDodsByReflection( String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+  static private NetcdfFile openDodsByReflection(String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    Constructor con = null;
+    Class c = null;
+    NetcdfFile file = null;
     try {
-      Class c = NetcdfDataset.class.getClassLoader().loadClass("ucar.nc2.dods.DODSNetcdfFile");
-      Constructor con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
-      return (NetcdfFile) con.newInstance(location, cancelTask);
-
+      c = NetcdfDataset.class.getClassLoader().loadClass("ucar.nc2.dods.DODSNetcdfFile");
+      con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
     } catch (ClassNotFoundException e) {
-      log.info("opendap.jar is not on class path");
-
-    } catch (NoSuchMethodException e) {
-      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
-    } catch (InvocationTargetException e) {
+      log.info("opendap.jar is not on class path or is incorrect version");
+      throw new IOException("opendap.jar is not on classpath or is incorrect version");
+    } catch (Throwable e) {
+      log.error("Error openDodsByReflection: ", e);
+      throw new IOException("opendap.jar is not on classpath or is incorrect version");
+    }
+    try {
+      file = (NetcdfFile) con.newInstance(location, cancelTask);
+      return file;
+    } catch (Exception e) {
+      log.error("Error openDodsByReflection: ", e.getCause());
       throw new IOException(e.getCause());
-    } catch (InstantiationException e) {
-      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
-    } catch (IllegalAccessException e) {
-      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
     }
 
-    throw new IOException("opendap.jar is not on classpath or is incorrect version");
   }
 
 
@@ -1152,7 +1149,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Write the NcML representation.
    *
    * @param os  write to this Output Stream.
-   * @param uri use this for the uri attribute; if null use getLocation().
+   * @param uri use this for the url attribute; if null use getLocation().
    * @throws IOException
    */
   public void writeNcML(java.io.OutputStream os, String uri) throws IOException {
@@ -1164,7 +1161,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param os         write to this Output Stream.
    * @param showCoords shoe the values of coordinate axes
-   * @param uri        use this for the uri attribute; if null use getLocation().
+   * @param uri        use this for the url attribute; if null use getLocation().
    * @throws IOException on write error
    */
   public void writeNcMLG(java.io.OutputStream os, boolean showCoords, String uri) throws IOException {
@@ -1220,7 +1217,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       g.addEnumeration(et);
 
     for (Dimension d : from.getDimensions())
-      g.addDimension( new Dimension(d.getName(), d));
+      g.addDimension(new Dimension(d.getName(), d));
 
     for (Attribute a : from.getAttributes())
       g.addAttribute(a);
@@ -1240,7 +1237,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (v instanceof Sequence) {
       newVar = new SequenceDS(g, (Sequence) v);
     } else if (v instanceof Structure) {
-        newVar = new StructureDS(g, (Structure) v);
+      newVar = new StructureDS(g, (Structure) v);
     } else {
       newVar = new VariableDS(g, v, false); // enhancement done later
     }
@@ -1435,8 +1432,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * recalc enhancement info - use default enhance mode
    *
-   * @throws java.io.IOException on error
    * @return the CoordSysBuilder used, for debugging. do not modify or retain a reference
+   * @throws java.io.IOException on error
    */
   public CoordSysBuilderIF enhance() throws IOException {
     return enhance(this, defaultEnhanceMode, null);
@@ -1457,8 +1454,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * is this enhancement already done ?
    *
    * @param want enhancements wanted
-   * @throws java.io.IOException on error
    * @return true if wanted enhancement is not done
+   * @throws java.io.IOException on error
    */
   public boolean enhanceNeeded(Set<Enhance> want) throws IOException {
     if (want == null) return false;
@@ -1612,7 +1609,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public static void debugDump(PrintStream out, NetcdfDataset ncd) {
     String referencedLocation = ncd.orgFile == null ? "(null)" : ncd.orgFile.getLocation();
-    out.println("\nNetcdfDataset dump = " + ncd.getLocation() + " uri= " + referencedLocation + "\n");
+    out.println("\nNetcdfDataset dump = " + ncd.getLocation() + " url= " + referencedLocation + "\n");
     ncd.dumpClasses(ncd.getRootGroup(), out);
   }
 
@@ -1632,7 +1629,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   public void check(Formatter f) {
     for (Variable v : getVariables()) {
-      VariableDS vds =  (VariableDS) v;
+      VariableDS vds = (VariableDS) v;
       if (vds.getOriginalDataType() != vds.getDataType()) {
         f.format("Variable %s has type %s, org = %s%n", vds.getFullName(), vds.getOriginalDataType(), vds.getDataType());
       }

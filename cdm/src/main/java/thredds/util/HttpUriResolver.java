@@ -56,7 +56,7 @@ public class HttpUriResolver
           org.slf4j.LoggerFactory.getLogger( HttpUriResolver.class );
 
   private URI uri;
-  private long connectionTimeout;
+  private int connectionTimeout;
   private int socketTimeout;
   private String contentEncoding = "gzip,deflate";
   private boolean allowContentEncoding;
@@ -66,7 +66,7 @@ public class HttpUriResolver
   private HTTPSession session = null;
   private Map<String,String> respHeaders;
 
-  HttpUriResolver( URI uri, long connectionTimeout, int socketTimeout,
+  HttpUriResolver( URI uri, int connectionTimeout, int socketTimeout,
                           boolean allowContentEncoding,
                           boolean followRedirects )
   {
@@ -167,7 +167,7 @@ public class HttpUriResolver
   {
     if(session == null)
         session = new HTTPSession(uri.toString());
-    session.setConnectionManagerTimeout( this.connectionTimeout );
+    session.setConnectionTimeout( this.connectionTimeout );
     session.setSoTimeout( this.socketTimeout );
     HTTPMethod method = HTTPMethod.Get(session,uri.toString() );
     method.setFollowRedirects( this.followRedirects );

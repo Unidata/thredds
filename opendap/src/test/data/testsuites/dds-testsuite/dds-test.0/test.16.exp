@@ -1,0 +1,61 @@
+#
+# expect/tcl code to test the dds parser and scanner
+# jhrg
+#
+# $Id: test.16.exp 15901 2007-02-28 23:57:28Z jimg $
+
+global comp_output		# contains output from dds-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+
+# The variable `test_name' is the name of the das input file for this test.
+
+set test_name test.16
+
+# The variable `test_out' is a string that contains the text that should be
+# stored in comp_output by das-test_start. The two strings should match
+# exactly.
+
+set test_out "DDS past semantic check
+DDS past full semantic check
+Dataset {
+    Int32 i.x\[10\];
+    Int32 j.x\[20\];
+    Byte b.x;
+    String name.x;
+    Structure {
+        Float64 f;
+        Float64 g;
+        Float64 h.x;
+    } x;
+    Grid {
+     ARRAY:
+        Byte temp\[100\]\[7\];
+     MAPS:
+        Float64 steps\[100\];
+        String colors\[7\];
+    } oddTemp.y;
+} data2;"
+
+dds-test_start p $srcdir/$test_name
+
+if ![string compare $test_out $comp_output] { # check comp_output
+    pass "$test_name"
+} else {
+    fail "$test_name"
+}
+
+# $Log: test.16.exp,v $
+# Revision 1.1  2003/08/11 20:50:10  ndp
+# Initial revision
+#
+# Revision 1.1  2002/05/23 01:43:33  jimg
+# Added/Updated using stuff from C++.
+#
+# Revision 1.2  2000/10/03 22:18:04  jimg
+# Fixes to the tests to accomodate debugging fixes in DDS.cc
+#
+# Revision 1.1  2000/08/16 18:30:22  jimg
+# Added tests for dots in variable names and fancier error messages
+#
+

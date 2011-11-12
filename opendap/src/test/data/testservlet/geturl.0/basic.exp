@@ -1,0 +1,79 @@
+# Basic java server tests.
+# These test retrieve complete DDS's and DODS datasets from the
+# Java test server. Constraints are evaluated in constrained.exp
+
+global comp_output		# contains output from geturl
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+global host
+
+set testdir ${TESTDIR}
+
+set test_name "basic"
+
+geturl_all "${testdir}" "test.01"
+geturl_all "${testdir}" "test.02"
+geturl_all "${testdir}" "test.03"
+geturl_all "${testdir}" "test.04"
+geturl_all "${testdir}" "test.05"
+geturl_all "${testdir}" "test.06"
+geturl_all "${testdir}" "test.07"
+geturl_all "${testdir}" "test.08"
+
+geturl_all "${testdir}" "test.21"
+geturl_all "${testdir}" "test.22"
+geturl_all "${testdir}" "test.23"
+
+geturl_all "${testdir}" "test.31"
+geturl_all "${testdir}" "test.32"
+
+geturl_all "${testdir}" "test.40"
+geturl_all "${testdir}" "test.41"
+geturl_all "${testdir}" "test.42"
+
+geturl_all "${testdir}" "test.50"
+geturl_all "${testdir}" "test.51"
+geturl_all "${testdir}" "test.52"
+geturl_all "${testdir}" "test.53"
+
+geturl_all "${testdir}" "test.60"
+geturl_all "${testdir}" "test.61"
+geturl_all "${testdir}" "test.62"
+geturl_all "${testdir}" "test.63"
+geturl_all "${testdir}" "test.64"
+geturl_all "${testdir}" "test.65"
+geturl_all "${testdir}" "test.66"
+geturl_all "${testdir}" "test.67"
+geturl_all "${testdir}" "test.68"
+geturl_all "${testdir}" "test.69"
+
+geturl_all "${testdir}" "test.80"
+geturl_all "${testdir}" "test.81"
+geturl_all "${testdir}" "test.82"
+
+
+geturl_all "${testdir}" "test.GridFile"
+geturl_all "${testdir}" "test.PointFile"
+geturl_all "${testdir}" "test.SwathFile"
+geturl_all "${testdir}" "test.an1"
+geturl_all "${testdir}" "test.dfp1"
+geturl_all "${testdir}" "test.dfr1"
+geturl_all "${testdir}" "test.dfr2"
+geturl_all "${testdir}" "test.dfr3"
+geturl_all "${testdir}" "test.gr1"
+geturl_all "${testdir}" "test.gr2"
+geturl_all "${testdir}" "test.gr3"
+geturl_all "${testdir}" "test.gr4"
+geturl_all "${testdir}" "test.gr5"
+geturl_all "${testdir}" "test.sds1"
+geturl_all "${testdir}" "test.sds2"
+geturl_all "${testdir}" "test.sds3"
+geturl_all "${testdir}" "test.sds4"
+geturl_all "${testdir}" "test.sds5"
+geturl_all "${testdir}" "test.sds6"
+geturl_all "${testdir}" "test.sds7"
+geturl_all "${testdir}" "test.vs1"
+geturl_all "${testdir}" "test.vs2"
+geturl_all "${testdir}" "test.vs3"
+geturl_all "${testdir}" "test.vs4"
+geturl_all "${testdir}" "test.vs5"

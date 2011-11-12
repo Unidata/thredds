@@ -1,0 +1,5 @@
+Dataset {
+    Sequence {
+        Byte b;
+    } types[2];
+} ArrayOfSequences;

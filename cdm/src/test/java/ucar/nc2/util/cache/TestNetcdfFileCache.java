@@ -172,7 +172,8 @@ public class TestNetcdfFileCache extends TestCase {
   int count = 0;
 
   void loadFiles(File dir, FileCache cache) {
-    for (File f : dir.listFiles()) {
+    if(dir.listFiles() != null)
+    for (File f : dir.listFiles())
       if (f.isDirectory())
         loadFiles(f, cache);
 
@@ -187,8 +188,8 @@ public class TestNetcdfFileCache extends TestCase {
           System.out.println(" *** failed on " + f.getPath());
         }
       }
-    }
   }
+
 
   /////////////////////////////////////////////////////////////////////////////////
 

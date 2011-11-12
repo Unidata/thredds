@@ -1,0 +1,166 @@
+
+# Tcl/Expect code for the geturl test. This really is designed to test the
+# various servers (hdf, dsp, netcdf, matlab, ...) on serveral different
+# platforms. 
+# 
+# $Id: unix.exp 15901 2007-02-28 23:57:28Z jimg $
+
+# Make sure the global var GETURL is set correctly.
+
+global GETURL
+if ![info exists GETURL] then {
+    #set GETURL "java dods.client.Geturl"
+    set GETURL "geturl"
+}
+
+# Compare $expected to the global $comp_output. Run `pass' if they match,
+# `fail' otherwise unless `xfailp' is true in which case run `xfail' if they
+# do not match. $msg is the name of the test to print when calling pass, fail
+# or xfail.
+# 
+# NB: $expected may be either a string or a file name. If it is the latter,
+# read the file and compare its contents to $comp_output.
+
+proc compare_stdout {expected msg {xfailp 0}} {
+    global comp_output
+    global verbose
+
+    # If $expected is the name of a file, read that file's contents and store
+    # in $expected, then procede to compare $expected to $comp_output.
+
+    if {[file exists $expected] && [file isfile $expected]} {
+	if {$verbose >= 1} {
+	    send_user "PWD: [pwd]\n"
+	    send_user "Reading file: $expected\n"
+	}
+	set fd [open $expected r]
+	set expected [read $fd]
+	close $fd
+    }
+
+
+    # Trim is used here to remove trailing `\n's from files of data.
+    set expected [string trim $expected]
+    set comp_output [string trim $comp_output]
+
+    if ![string compare $expected $comp_output] {
+	pass "$msg"
+	send_user "PASS: $msg\n"
+    } elseif {$xfailp == 1} {
+	xfail "$msg"
+	send_user "XFAIL: $msg\n"
+    } else {
+	fail "$msg"
+    }
+
+    if {$verbose >= 1} {
+	send_user "Comp output:$comp_output\n"
+	send_user "Expected output:$expected\n"
+    }
+}
+
+# The four `required' procs are _start, _load, _exit and _version.
+
+proc geturl_start { {switches ""} {urls ""} {file ""}} {
+    global verbose
+    global GETURL
+    global comp_output
+    global spawn_id
+
+    if ![string compare $file ""] {
+	send_user "Trap file not used...\n"
+	if {$verbose >= 1} {
+	    send_user "Testing geturl $switches $urls ...\n"
+	    exp_internal 1
+	}
+	catch "exec $GETURL $switches {$urls}" comp_output
+    } else {
+	send_user "Trap file: ${file}\n"
+	if {$verbose >= 1} {
+	    send_user "Testing geturl $switches $urls >& $file ...\n"
+	    exp_internal 1
+	}
+	catch "exec $GETURL {$switches} {$urls} > $file" comp_output
+    }
+}
+
+proc geturl_load {} {
+}
+
+proc geturl_exit {} {
+    send -raw ""
+}
+
+proc geturl_version {} {
+    send_user "geturl test suite 1.0\n"
+}
+
+proc geturl_all {path dataset {constraint ""}} {
+
+#    geturl_das  "${path}" "${dataset}"
+
+     geturl_dds  ${path} ${dataset} ${constraint}
+     geturl_dods ${path} ${dataset} ${constraint}
+
+
+}
+
+proc geturl_das {path dataset} {
+    geturl_start "-a" "${path}/${dataset}"
+    compare_stdout "sdds-testsuite/data/${dataset}.das" "${dataset} DAS"
+}
+
+proc geturl_dds {path dataset {constraint ""} {suffix ""}} {
+    global test_name
+
+    # build the URL here. If geturl builds the URL the 
+    # dds request won't come back constrained.
+
+
+
+    set url  ${path}/${dataset}.dds\?$constraint
+    send_user "URL: $url\n"
+
+    geturl_start  "" $url ""
+
+
+#-----
+#    set switches 	"-d -c \"${constraint}\" "
+#    set URL 		"${path}/${dataset}"
+#    send_user "Switches: $switches\n"
+#    send_user "URL: ${URL}\n"
+#    geturl_start $switches ${URL}
+#-----
+
+
+
+    if [string compare $suffix ""] {
+    	send_user "Suffix: $suffix\n"
+    	compare_stdout "sdds-testsuite/data/${test_name}/${dataset}.${suffix}.dds" "${dataset} DDS"
+    } else {
+     	send_user "No Suffix\n"
+   	compare_stdout "sdds-testsuite/data/${test_name}/${dataset}.dds"           "${dataset} DDS"
+    }
+
+}
+
+proc geturl_dods {path dataset {constraint ""} {suffix ""}} {
+
+    global test_name
+
+    set switches 	"-D -c \"${constraint}\" "
+    set URL 		"${path}/${dataset}"
+	
+    send_user "Switches: $switches\n"
+    send_user "URL: ${URL}\n"
+
+    geturl_start $switches ${URL}
+
+    if [string compare $suffix ""] {
+    	send_user "Suffix: $suffix\n"
+    	compare_stdout "sdds-testsuite/data/${test_name}/${dataset}.${suffix}.dods" "${dataset} Data"
+    } else {
+     	send_user "No Suffix\n"
+    	compare_stdout "sdds-testsuite/data/${test_name}/${dataset}.dods"           "${dataset} Data"
+    }
+}

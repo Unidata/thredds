@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import java.io.*;
 
@@ -144,7 +145,7 @@ public class DString extends BaseType implements ClientIO {
             throws IOException, EOFException, DataReadException {
         int dap_len = source.readInt();
 
-        //System.out.println("DString deserialize string dap_length: "+ dap_len);
+        //LogStream.out.println("DString deserialize string dap_length: "+ dap_len);
 
         if (dap_len < 0)
             throw new DataReadException("Negative string length (dap_length: "+ dap_len +") read.");

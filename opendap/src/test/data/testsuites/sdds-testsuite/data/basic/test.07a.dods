@@ -1,0 +1,10 @@
+The data:
+Structure {
+    String name;
+    Int32 age;
+} person1 = { "This is a data test string (pass 0).", 1 };
+Structure {
+    String name;
+    Int32 age;
+} person2 = { "This is a data test string (pass 1).", 2 };
+

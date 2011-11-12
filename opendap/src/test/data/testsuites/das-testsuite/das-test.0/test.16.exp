@@ -1,0 +1,88 @@
+# expect/tcl code to test the das parser and scanner
+# jhrg
+#
+# $Log: test.16.exp,v $
+# Revision 1.1  2003/08/11 20:50:09  ndp
+# Initial revision
+#
+# Revision 1.3  2003/03/05 00:02:48  ndp
+# *** empty log message ***
+#
+# Revision 1.2  2002/05/31 17:09:18  jimg
+# Updated tests from C++. This includes some changes for the Java code.
+#
+# Revision 1.8  2001/01/26 19:48:10  jimg
+# Merged with release-3-2-3.
+#
+# Revision 1.7.4.1  2000/11/30 05:20:19  jimg
+# Added
+#
+# Revision 1.7  2000/09/22 02:52:59  jimg
+# Fixes to the tests to recognize some of the new error messages. Also,
+# the test drivers were modified to catch the exceptions now thrown by
+# some of the parsers.
+#
+# Revision 1.6  2000/06/16 18:15:01  jimg
+# Merged with 3.1.7
+#
+# Revision 1.5.38.1  2000/06/15 02:24:57  jimg
+# Fixed the tests: problems with PATH, etc. broke the tests on my new machine
+#
+# Revision 1.5  1997/05/13 23:29:17  jimg
+# *** empty log message ***
+#
+# Revision 1.4  1997/03/27 18:19:57  jimg
+# Update for version 2.13
+#
+# Revision 1.3  1996/08/12 22:22:17  jimg
+# Changed for the new error message text from the parser.
+#
+# Revision 1.2  1996/05/14 15:40:47  jimg
+# These changes have already been checked in once before. However, I
+# corrupted the source repository and restored it from a 5/9/96 backup
+# tape. The previous version's log entry should cover the changes.
+#
+# Revision 1.1  1995/02/16  15:34:51  jimg
+# Added these tests. See comments in files in parent directory.
+#
+
+global comp_output		# contains output from das-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+
+# The variable `test_name' is the name of the das input file for this test.
+
+set test_name test.16
+
+# The variable `test_out' is a string that contains the text that should be
+# stored in comp_output by das-test_start. The two strings should match
+# exactly.
+
+set test_out "The Attribute `i' was previously defined with a different type.*"
+
+
+
+
+das-test_start p $srcdir/$test_name
+
+
+if {$verbose >= 1} {
+    send_user "\n----- Expected output -----\n"
+    send_user "$test_out"
+    send_user "\n---------------------------\n";
+}
+
+
+set result [string match $test_out $comp_output]
+
+
+if {$verbose >= 1} {
+   send_user "Result: $result\n"
+}
+
+
+if {$result==1} { # check comp_output
+    pass "$test_name"
+} else {
+    fail "$test_name"
+}

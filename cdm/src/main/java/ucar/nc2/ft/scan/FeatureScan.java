@@ -31,6 +31,8 @@
  */
 package ucar.nc2.ft.scan;
 
+import ucar.nc2.Attribute;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.iosp.IOServiceProvider;
@@ -105,7 +107,7 @@ public class FeatureScan {
         String name = f.getName();
         String stem = stem(name);
         if (name.endsWith(".gbx") || name.endsWith(".gbx8") || name.endsWith(".pdf") || name.endsWith(".xml") || name.endsWith(".gbx9")
-                || name.endsWith(".ncx")) {
+                || name.endsWith(".ncx")  || name.endsWith(".txt")) {
           files2.remove(f);
 
         } else if (prev != null) {
@@ -153,11 +155,12 @@ public class FeatureScan {
   public class Bean {
     public File f;
     String fileType;
-    IOServiceProvider iosp;
+    //IOServiceProvider iosp;
     String coordMap;
     FeatureType featureType;
     String ftype;
     String info;
+    String coordSysBuilder;
     String ftImpl;
     Throwable problem;
 
@@ -174,8 +177,9 @@ public class FeatureScan {
         if (debug) System.out.printf(" featureScan=%s%n", f.getPath());
         ds = NetcdfDataset.openDataset(f.getPath());
         fileType = ds.getFileTypeId();
-        iosp = ds.getIosp();
+        //iosp = ds.getIosp();
         setCoordMap(ds.getCoordinateSystems());
+        coordSysBuilder = ds.findAttValueIgnoreCase(null, _Coordinate._CoordSysBuilder, "none");
 
         Formatter errlog = new Formatter();
         try {
@@ -218,12 +222,16 @@ public class FeatureScan {
       return fileType;
     }
 
-    public String getIosp() {
+    /* public String getIosp() {
       return (iosp == null) ? "none" : iosp.getClass().getName();
-    }
+    } */
 
     public String getCoordMap() {
       return coordMap;
+    }
+
+    public String getCoordSysBuilder() {
+      return coordSysBuilder;
     }
 
     public void setCoordMap(java.util.List<CoordinateSystem> csysList) {

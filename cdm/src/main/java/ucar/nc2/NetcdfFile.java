@@ -97,7 +97,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<IOServiceProvider>();
   static protected boolean debugSPI = false, debugCompress = false, showRequest = false;
   static boolean debugStructureIterator = false;
-  static boolean loadWarnings = false;
+  static boolean loadWarnings = true;
 
   static private boolean userLoads = false;
 
@@ -802,7 +802,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /**
    * Read a remote CDM file into memory. All reads are then done from memory.
    *
-   * @param uri location of CDM file, must be accessible through uri.toURL().openStream().
+   * @param uri location of CDM file, must be accessible through url.toURL().openStream().
    * @return a NetcdfFile, which is completely in memory
    * @throws IOException if error reading file
    */
@@ -1285,7 +1285,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Write the NcML representation: dont show coodinate values
    *
    * @param os  : write to this Output Stream.
-   * @param uri use this for the uri attribute; if null use getLocation(). // ??
+   * @param uri use this for the url attribute; if null use getLocation(). // ??
    * @throws IOException if error
    * @see NCdumpW#writeNcML
    */
@@ -1297,7 +1297,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * Write the NcML representation: dont show coodinate values
    *
    * @param writer : write to this Writer, should have encoding of UTF-8 if applicable
-   * @param uri    use this for the uri attribute; if null use getLocation().
+   * @param uri    use this for the url attribute; if null use getLocation().
    * @throws IOException if error
    * @see NCdumpW#writeNcML
    */

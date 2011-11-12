@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 import opendap.dap.parsers.DDSXMLParser;
 
@@ -165,7 +166,7 @@ public abstract class BaseType extends DAPNode
     public void printDecl(PrintWriter os, String space,
                           boolean print_semi, boolean constrained) {
 
-        //System.out.println("BaseType.printDecl()...");
+        //LogStream.out.println("BaseType.printDecl()...");
         os.print(space + getTypeName() + " " + getEncodedName());
         if (print_semi)
             os.println(";");
@@ -580,21 +581,21 @@ public abstract class BaseType extends DAPNode
     {
         BaseType parent = (BaseType)getParent();
         BaseType array =  null;
-	if(parent != null) {
-	    if(parent instanceof DArray) {
-		array = parent;	
-		parent = (BaseType)parent.getParent();
-	    }
-	}	   
-	if(array != null)
-	    array.printConstraint(os);
-        else  {
-            if(parent != null && !(parent instanceof DDS)) {
-	        parent.printConstraint(os);
-	        os.print(".");
-	    }
-            os.print(getEncodedName());
+        if(parent != null) {
+            if(parent instanceof DArray) {
+            array = parent;
+            parent = (BaseType)parent.getParent();
+            }
         }
+        if(array != null)
+            array.printConstraint(os);
+            else  {
+                if(parent != null && !(parent instanceof DDS)) {
+                parent.printConstraint(os);
+                os.print(".");
+            }
+                os.print(getEncodedName());
+            }
     }
 
 

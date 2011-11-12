@@ -40,6 +40,7 @@
 
 
 package opendap.dap;
+import opendap.log.LogStream;
 
 /**
  * Used to indicate that one of the dimension sizes is incorrect.

@@ -1,0 +1,54 @@
+
+
+#  -*- C++ -*-
+#
+#    This is a test of the das scanner and parser software. This file tests
+#    comments, attribute lists with missing parts, and multiple attribute
+#    lists (they should all coalesce into one attribute table.
+
+attributes {# weird
+    var1 {#test
+    	string name bob;	# bob is the only name allowed
+	string type human;	# for people ... 
+	int32 age 19;
+    }
+    var2 {
+	string name joe;
+	string type dog;   
+	int32 age 8;
+    }
+}   
+
+# This is a C++ type comment.
+# The scanner and parser should handle a text file with several
+# attribute-definintion sections.
+
+Attributes {
+    var3 {
+    	int32 size 8;
+	string color red;
+	string type art;
+    }
+    var4 {
+    }
+}
+
+ATTRIBUTES {
+    var5 {
+    	string height 5.0in.;
+	string units inches;
+	float64 max 5.0;
+    }
+}
+
+attributes {
+}
+
+attributes {
+    var5 {
+	string weight 100lbs;
+	string color red;
+    }
+}
+#
+# EOF must be at the end of this line (not on the line after)

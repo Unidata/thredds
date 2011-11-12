@@ -545,7 +545,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testVerticalAxis() throws Exception {
-    //String uri="dods://www.gri.msstate.edu/rsearch_data/nopp/bora_feb.nc";
+    //String url="dods://www.gri.msstate.edu/rsearch_data/nopp/bora_feb.nc";
     //String varName = "temp";
 
     String uri = TestAll.cdmUnitTestDir + "ncml/nc/cg/CG2006158_120000h_usfc.nc";

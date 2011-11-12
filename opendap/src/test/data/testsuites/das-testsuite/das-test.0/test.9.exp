@@ -1,0 +1,87 @@
+# expect/tcl code to test the das parser and scanner
+# jhrg
+#
+# $Log: test.9.exp,v $
+# Revision 1.1  2003/08/11 20:50:10  ndp
+# Initial revision
+#
+# Revision 1.3  2003/03/05 00:02:48  ndp
+# *** empty log message ***
+#
+# Revision 1.2  2002/05/31 17:09:18  jimg
+# Updated tests from C++. This includes some changes for the Java code.
+#
+# Revision 1.4  2000/06/16 18:15:01  jimg
+# Merged with 3.1.7
+#
+# Revision 1.3.38.1  2000/06/15 02:24:57  jimg
+# Fixed the tests: problems with PATH, etc. broke the tests on my new machine
+#
+# Revision 1.3  1997/05/13 23:29:32  jimg
+# *** empty log message ***
+#
+# Revision 1.2  1996/05/14 15:40:57  jimg
+# These changes have already been checked in once before. However, I
+# corrupted the source repository and restored it from a 5/9/96 backup
+# tape. The previous version's log entry should cover the changes.
+#
+# Revision 1.1  1995/02/16  15:34:55  jimg
+# Added these tests. See comments in files in parent directory.
+#
+# Revision 1.4  1994/10/05  16:51:45  jimg
+# Added TYPE to each of the DAS test files.
+# The `expect' files correcly check for that in the output.
+#
+# Revision 1.3  1994/09/27  23:14:13  jimg
+# Changed expected outcomes to match new das.print() mfunc.
+#
+# Revision 1.2  1994/09/09  16:15:20  jimg
+# Fixed namign of the test (was given as $srcdir/$test_name, should have been
+# $srcdir$test_name).
+#
+# Revision 1.1  1994/08/29  19:57:19  jimg
+# Test procedures for the DAS parser, scanner and C++ class.
+#
+
+global comp_output		# contains output from das-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+
+# The variable `test_name' is the name of the das input file for this test.
+
+set test_name test.9
+
+# The variable `test_out' is a string that contains the text that should be
+# stored in comp_output by das-test_start. The two strings should match
+# exactly.
+
+set test_out "Attributes {
+    var1 {
+        String month Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Nov, Dec;
+    }
+    var2 {
+        String day Monday, Tuesday, Wed;
+        String month Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Nov, Dec;
+        String name bob;
+        Int32 num 10;
+        String irrational 3.1415, 2.718, 1.414;
+        Float64 irrational_numbers 3.1415, 2.718, 1.414;
+    }
+}"
+
+das-test_start p $srcdir/$test_name
+
+if {$verbose >= 1} {
+    send_user "\n----- Expected output -----\n"
+    send_user "$test_out"
+    send_user "\n---------------------------\n";
+}
+
+
+if ![string compare $test_out $comp_output] { # check comp_output
+    pass "$test_name"
+} else {
+    fail "$test_name"
+}
+
+

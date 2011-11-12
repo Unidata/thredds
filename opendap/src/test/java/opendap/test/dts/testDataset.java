@@ -47,8 +47,10 @@ import java.io.*;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
+import opendap.servlet.AbstractServlet;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
+import opendap.log.LogStream;
 import opendap.util.Debug;
 
 
@@ -187,8 +189,9 @@ public class testDataset implements GuardedDataset {
 
         String cacheDir = rs.getDDXCache(rs.getRootPath());
         if (Debug.isSet("probeRequest")) {
-            System.out.println("DDXCache: " + cacheDir);
-            System.out.println("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
+            LogStream.out.println("DDXCache: " + cacheDir);
+            LogStream.out.println("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
+	    LogStream.out.flush();
         }
 
         try {
@@ -237,8 +240,9 @@ public class testDataset implements GuardedDataset {
         String cacheDir = rs.getDDSCache(rs.getRootPath());
 
         if (Debug.isSet("probeRequest")) {
-            System.out.println("DDSCache: " + cacheDir);
-            System.out.println("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
+            LogStream.out.println("DDSCache: " + cacheDir);
+            LogStream.out.println("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
+	    LogStream.out.flush();
         }
 
 
@@ -340,31 +344,30 @@ public class testDataset implements GuardedDataset {
                 // Then parse the DDS
                 if((gotDDS = myDDS.parse(dds_source))) {
                     //myDDS.setBlobURL(rs.getDodsBlobURL());
-                    System.out.println("Got DDS.");
+                    LogStream.out.println("Got DDS.");
                 }
             }
-               System.out.println("-------------");
-                    System.out.flush();
+            LogStream.out.println("-------------");
             myDAS = new DAS();
 
             try {
                 is = openCachedDAS(rs);
 
                 if((gotDAS = myDAS.parse(is)))
-                    System.out.println("Got DAS.");
+                    LogStream.out.println("Got DAS.");
 
                 if (gotDAS && gotDDS) {
-                    System.out.println("-------------");
-                    myDAS.print(System.out);
-                    System.out.println("-------------");
-                    System.out.flush();
+                    LogStream.out.println("-------------");
+                    myDAS.print(LogStream.out);
+                    LogStream.out.println("-------------");
+                    LogStream.out.flush();
                     myDDS.ingestDAS(myDAS);
-                    System.out.println("DDS ingested DAS.");
+                    LogStream.out.println("DDS ingested DAS.");
                     myDAS = myDDS.getDAS();
-                    System.out.println("-------------");
-                    myDAS.print(System.out);
-                    System.out.println("-------------");
-                    System.out.flush();
+                    LogStream.out.println("-------------");
+                    myDAS.print(LogStream.out);
+                    LogStream.out.println("-------------");
+                    LogStream.out.flush();
                 }
 
             } catch (FileNotFoundException fnfe) { // Ok, no DAS. It's a bum reference.
@@ -387,16 +390,17 @@ public class testDataset implements GuardedDataset {
 
         if (gotDAS) {
             if (gotDDX)
-                System.out.println("Got DAS from DDX for dataset: " + rs.getDataSet());
+                LogStream.out.println("Got DAS from DDX for dataset: " + rs.getDataSet());
             else if (gotDDS)
-                System.out.println("Got DAS, popped it into a DDS, and got back a complete DAS for dataset: " + rs.getDataSet());
+                LogStream.out.println("Got DAS, popped it into a DDS, and got back a complete DAS for dataset: " + rs.getDataSet());
             else
-                System.out.println("Successfully opened and parsed DAS cache for dataset: " + rs.getDataSet());
+                LogStream.out.println("Successfully opened and parsed DAS cache for dataset: " + rs.getDataSet());
         } else if (gotDDS)
-            System.out.println("No DAS! Got a DDS, and sent a complete (but empty) DAS for dataset: " + rs.getDataSet());
+            LogStream.out.println("No DAS! Got a DDS, and sent a complete (but empty) DAS for dataset: " + rs.getDataSet());
         else
-            System.out.println("No DAS or DDS present for dataset: " + rs.getDataSet());
+            LogStream.out.println("No DAS or DDS present for dataset: " + rs.getDataSet());
 
+        LogStream.out.flush();
         return (myDAS);
 
     }
@@ -431,8 +435,9 @@ public class testDataset implements GuardedDataset {
         String cacheDir = rs.getDASCache(rs.getRootPath());
 
         if (Debug.isSet("probeRequest")) {
-            System.out.println("DASCache: " + cacheDir);
-            System.out.println("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
+            LogStream.out.println("DASCache: " + cacheDir);
+            LogStream.out.println("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
+	    LogStream.out.flush();
         }
 
         // go get a file stream that points to the requested DASfile.
