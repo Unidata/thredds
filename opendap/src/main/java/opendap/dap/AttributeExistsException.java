@@ -39,7 +39,7 @@
 
 
 package opendap.dap;
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 
 /**
  * Thrown by <code>AttributeTable</code> when an attempt is made to create an

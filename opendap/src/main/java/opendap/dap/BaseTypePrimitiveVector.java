@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 
 import java.io.*;
 

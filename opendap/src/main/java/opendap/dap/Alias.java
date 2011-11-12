@@ -44,7 +44,7 @@ import java.io.PrintWriter;
 
 import opendap.dap.parsers.DDSXMLParser;
 import opendap.util.Debug;
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 
 /**
  * The Alias type is a special attribute. It is simply a reference

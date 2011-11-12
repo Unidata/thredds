@@ -47,8 +47,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import opendap.dap.*;
-import opendap.log.DTSLog;
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 import opendap.servlet.*;
@@ -312,7 +311,6 @@ public class TestServlet extends AbstractServlet
    * @throws DAP2Exception
    * @throws IOException
    * @throws ParseException
-   * @see opendap.server.ServerDDS
    */
     protected GuardedDataset getDataset(ReqState rs)
 	throws DAP2Exception, IOException, ParseException

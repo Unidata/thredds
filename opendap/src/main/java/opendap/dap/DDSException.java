@@ -39,7 +39,7 @@
 
 
 package opendap.dap;
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 
 /**
  * DDS exception. This is the root of all the DDS exception classes.

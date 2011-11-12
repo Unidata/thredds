@@ -43,7 +43,7 @@
  * a Common log file
  */
 
-package opendap.log;
+package opendap.servlet;
 
 public class DAPLog
 {

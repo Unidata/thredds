@@ -39,7 +39,7 @@
 
 
 package opendap.dap;
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 
 /**
  * This interface is implemented by OPeNDAP client user interfaces which give

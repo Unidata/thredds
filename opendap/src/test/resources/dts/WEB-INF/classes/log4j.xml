@@ -2,14 +2,21 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
-  <appender name="logdap" class="org.apache.log4j.DailyRollingFileAppender">
-<!--
-    <param name="File" value="${tds.log.dir}/dap.log"/>
--->
-    <param name="File" value="./logs/dap.log"/>
+  <appender name="logdts" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="${tds.log.dir}/dts.log"/>
     <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd' 'HH:mm:ss.SSS} %-5p - %c%n%m%n"/>
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
+    </layout>
+  </appender>
+
+  <appender name="logdap" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="${tds.log.dir}/dap.log"/>
+    <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
     </layout>
   </appender>
 
@@ -19,8 +26,13 @@
     </layout>
   </appender>
 
-  <root>
+  <logger name="opendap.servlet">
     <level value="DEBUG"/>
+    <appender-ref ref="logdts"/>
+  </logger>
+
+  <root>
+    <level value="INFO"/>
     <appender-ref ref="logdap"/>
   </root>
 

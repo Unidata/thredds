@@ -145,6 +145,7 @@
             <element id="module-output" name="opendap" />
             <element id="module-output" name="visad" />
             <element id="module-test-output" name="opendap" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../opendap/src/test/resources/dts/log4j.xml" />
           </element>
           <element id="directory" name="lib">
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/junit-4.5.jar" />
@@ -161,6 +162,8 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.4.0a.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-1.7.3.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/visad.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-log4j12-1.6.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/log4j-1.2.16.jar" />
           </element>
           <element id="directory" name="resources">
             <element id="directory" name="testdatasets">

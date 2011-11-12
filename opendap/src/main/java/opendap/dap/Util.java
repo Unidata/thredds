@@ -43,7 +43,7 @@ package opendap.dap;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 /**
  * The Util class holds static methods used by this package.
  *

@@ -39,7 +39,7 @@
 
 
 package opendap.dap;
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 
 import opendap.servers.SDArray;
 import opendap.dap.parsers.DDSXMLParser;

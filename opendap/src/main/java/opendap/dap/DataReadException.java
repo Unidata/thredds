@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 
 /**
  * Thrown when OPeNDAP encounters an exception while reading from a data set.

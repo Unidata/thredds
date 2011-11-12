@@ -15,9 +15,78 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/dataset/TestJustRead.java" afterPath="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/dataset/TestJustRead.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../lib/release/netcdf-4.3.jar" afterPath="$PROJECT_DIR$/../../lib/release/netcdf-4.3.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../lib/release/opendap-4.3.jar" afterPath="$PROJECT_DIR$/../../lib/release/opendap-4.3.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.ipr" afterPath="$PROJECT_DIR$/thredds.ipr" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/log/LogStream.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/log/LogStream.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeBadValueException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeBadValueException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeExistsException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeExistsException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeTable.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeTable.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BadSemanticsException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BadSemanticsException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseType.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseType.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseTypeFactory.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseTypeFactory.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseTypePrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BaseTypePrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BooleanPrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BooleanPrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BytePrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/BytePrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ClientIO.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ClientIO.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ConstraintException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ConstraintException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAP2Exception.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAP2Exception.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAPNode.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAPNode.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAS.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAS.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DASException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DASException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DArray.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DArray.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DArrayDimension.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DArrayDimension.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DByte.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DByte.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConstructor.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConstructor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDSException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDSException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DFloat32.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DFloat32.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DFloat64.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DFloat64.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DGrid.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DGrid.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DInt16.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DInt16.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DInt32.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DInt32.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DList.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DList.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DSequence.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DSequence.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DString.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DString.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DStructure.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DStructure.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DUInt16.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DUInt16.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DUInt32.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DUInt32.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DURL.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DURL.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataDDS.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataDDS.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataReadException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataReadException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DefaultFactory.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DefaultFactory.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Float32PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Float32PrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Float64PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Float64PrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/HeaderInputStream.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/HeaderInputStream.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Int16PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Int16PrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Int32PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Int32PrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/InvalidDimensionException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/InvalidDimensionException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/MalformedAliasException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/MalformedAliasException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchAttributeException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchAttributeException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchFunctionException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchFunctionException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchTypeException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchTypeException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchVariableException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/NoSuchVariableException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/PrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ServerVersion.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/ServerVersion.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/StatusUI.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/StatusUI.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UInt16PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UInt16PrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UInt32PrimitiveVector.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UInt32PrimitiveVector.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UIntTest.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UIntTest.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UnresolvedAliasException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/UnresolvedAliasException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Util.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Util.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DAPLog.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DAPLog.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DTSLog.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DTSLog.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/Logx.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/Logx.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/ReqState.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/ReqState.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/WEB-INF/classes/log4j.xml" afterPath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/WEB-INF/classes/log4j.xml" />
     </list>
     <ignored path="thredds.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -81,19 +150,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TestJustRead.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/dataset/TestJustRead.java">
+      <file leaf-file-name="build.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../opendap/build.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="61" column="78" selection-start="2707" selection-end="2707" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestAuth.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="13" selection-start="528" selection-end="528" vertical-scroll-proportion="0.057793345">
+            <state line="167" column="88" selection-start="7124" selection-end="7124" vertical-scroll-proportion="0.53400505">
               <folding />
             </state>
           </provider>
@@ -113,7 +173,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolver.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolverFactory.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java" />
@@ -123,12 +182,13 @@
         <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/SDTest.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java" />
         <option value="$PROJECT_DIR$/../../ui/src/main/java/ucar/nc2/ui/GribFilesPanel.java" />
-        <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/LogStream.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java" />
-        <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/dataset/TestJustRead.java" />
+        <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" />
+        <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" />
+        <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" />
       </list>
     </option>
   </component>
@@ -171,37 +231,7 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thredds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thredds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="opendap" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="Favorites" />
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="thredds" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="Scope">
         <subPane subId="Project Files">
           <PATH>
@@ -300,20 +330,51 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="thredds" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="thredds" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="thredds" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="opendap" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
+    <property name="recentsLimit" value="5" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../opendap" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="MemberChooser.sorted" value="false" />
-    <property name="recentsLimit" value="5" />
     <property name="MemberChooser.showClasses" value="true" />
-    <property name="project.structure.side.proportion" value="0.2" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
@@ -322,7 +383,7 @@
       <recent name="ucar.nc2.util.net" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.TestDODS">
+  <component name="RunManager" selected="Tomcat Server.dts">
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -722,6 +783,68 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
+    <configuration default="false" name="TestSequence" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="ucar.nc2.dods.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="opendap" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="PACKAGE_NAME" value="ucar.nc2.dods" />
+      <option name="MAIN_CLASS_NAME" value="ucar.nc2.dods.TestSequence" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/../../" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="TestAuth" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="ucar.nc2.util.net.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="cdm" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="PACKAGE_NAME" value="ucar.nc2.util.net" />
+      <option name="MAIN_CLASS_NAME" value="ucar.nc2.util.net.TestAuth" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-Xmx1024m -ea" />
+      <option name="PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/../../cdm" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="22207" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
     <configuration default="false" name="Server" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 6">
       <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8080/thredds/" />
       <option name="COMMON_VM_ARGUMENTS" value="-Xmx1028m -server -ea -Dtds.content.root.path=$PROJECT_DIR$/../../tds/src/test/data" />
@@ -839,69 +962,8 @@
         <option name="BuildArtifacts" enabled="true">
           <artifact name="opendap:war exploded" />
         </option>
+        <option name="Make" enabled="false" />
       </method>
-    </configuration>
-    <configuration default="false" name="TestSequence" type="JUnit" factoryName="JUnit">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="ucar.nc2.dods.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="opendap" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="PACKAGE_NAME" value="ucar.nc2.dods" />
-      <option name="MAIN_CLASS_NAME" value="ucar.nc2.dods.TestSequence" />
-      <option name="METHOD_NAME" value="" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/../../" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="TestAuth" type="JUnit" factoryName="JUnit">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="ucar.nc2.util.net.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="cdm" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="PACKAGE_NAME" value="ucar.nc2.util.net" />
-      <option name="MAIN_CLASS_NAME" value="ucar.nc2.util.net.TestAuth" />
-      <option name="METHOD_NAME" value="" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" value="-Xmx1024m -ea" />
-      <option name="PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/../../cdm" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="22207" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
     </configuration>
     <list size="13">
       <item index="0" class="java.lang.String" itemvalue="Application.ToolsUI" />
@@ -913,10 +975,10 @@
       <item index="6" class="java.lang.String" itemvalue="JUnit.TestHTTP" />
       <item index="7" class="java.lang.String" itemvalue="JUnit.TestTdsLocal" />
       <item index="8" class="java.lang.String" itemvalue="JUnit.TestCdmRemoteServer" />
-      <item index="9" class="java.lang.String" itemvalue="Tomcat Server.Server" />
-      <item index="10" class="java.lang.String" itemvalue="Tomcat Server.dts" />
-      <item index="11" class="java.lang.String" itemvalue="JUnit.TestSequence" />
-      <item index="12" class="java.lang.String" itemvalue="JUnit.TestAuth" />
+      <item index="9" class="java.lang.String" itemvalue="JUnit.TestSequence" />
+      <item index="10" class="java.lang.String" itemvalue="JUnit.TestAuth" />
+      <item index="11" class="java.lang.String" itemvalue="Tomcat Server.Server" />
+      <item index="12" class="java.lang.String" itemvalue="Tomcat Server.dts" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -955,13 +1017,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1298" height="818" extended-state="6" />
+    <frame x="-9" y="-9" width="1298" height="818" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.5281583" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.5327245" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.42242992" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -969,15 +1031,15 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4672755" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.66210043" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.6818874" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39933994" sideWeight="0.5281583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.325723" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31811264" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.52663624" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31811264" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4733638" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4733638" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1073,7 +1135,7 @@
       <treeView value="true" />
       <verbose value="true" />
       <viewClosedWhenNoErrors value="false" />
-      <expanded value="true" />
+      <expanded value="false" />
     </buildFile>
     <buildFile url="file://$PROJECT_DIR$/../../tds/build.xml">
       <antCommandLine value="" />
@@ -1143,7 +1205,7 @@
       <treeView value="true" />
       <verbose value="true" />
       <viewClosedWhenNoErrors value="false" />
-      <expanded value="true" />
+      <expanded value="false" />
     </buildFile>
     <buildFile url="file://$PROJECT_DIR$/../../grib/build.xml">
       <antCommandLine value="" />
@@ -1166,7 +1228,7 @@
       <treeView value="true" />
       <verbose value="true" />
       <viewClosedWhenNoErrors value="false" />
-      <expanded value="true" />
+      <expanded value="false" />
     </buildFile>
     <buildFile url="file://$PROJECT_DIR$/../../opendap/build.xml">
       <antCommandLine value="" />
@@ -1196,26 +1258,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../ui/src/main/java/ucar/nc2/ui/GribFilesPanel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="0" selection-start="1967" selection-end="1967" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../ui/src/test/java/ucar/nc2/thredds/server/TestMotherlodeModels.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="88" selection-start="3700" selection-end="3700" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1715" column="17" selection-start="61004" selection-end="61004" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/SDTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="183" column="21" selection-start="6069" selection-end="6069" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="44" column="74" selection-start="1987" selection-end="1987" vertical-scroll-proportion="0.0" />
@@ -1246,11 +1288,6 @@
         <state line="85" column="91" selection-start="3358" selection-end="3358" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="359" column="86" selection-start="12303" selection-end="12303" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../docs/web/thredds/tech/tds4.1/tutorial/TDSMonitoringAndDebugging.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="478" column="35" selection-start="16829" selection-end="16829" vertical-scroll-proportion="-7.6153846" />
@@ -1262,29 +1299,52 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="261" column="50" selection-start="8349" selection-end="8349" vertical-scroll-proportion="-2.6650486" />
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
+        <state />
       </provider>
       <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorProvider">
         <state />
       </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="261" column="50" selection-start="8349" selection-end="8349" vertical-scroll-proportion="-2.6650486" />
+      </provider>
       <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorReferencesProvider">
         <state />
       </provider>
-      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
-        <state />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="313" column="0" selection-start="11014" selection-end="11014" vertical-scroll-proportion="0.25925925" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/dataset/TestJustRead.java">
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="78" selection-start="2707" selection-end="2707" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="53" column="35" selection-start="2295" selection-end="2295" vertical-scroll-proportion="0.12592593" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="7" selection-start="2096" selection-end="2096" vertical-scroll-proportion="0.5117057" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DUInt32.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="40" column="34" selection-start="1968" selection-end="1995" vertical-scroll-proportion="0.16346154" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/net/TestAuth.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="13" selection-start="528" selection-end="528" vertical-scroll-proportion="0.057793345">
+        <state line="16" column="13" selection-start="528" selection-end="528" vertical-scroll-proportion="0.05685619" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/dataset/TestJustRead.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="61" column="78" selection-start="2707" selection-end="2707" vertical-scroll-proportion="0.05448718" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/build.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="167" column="88" selection-start="7124" selection-end="7124" vertical-scroll-proportion="0.53400505">
           <folding />
         </state>
       </provider>
@@ -1343,11 +1403,12 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>dts|opendap</last-edited>
+          <last-edited>opendap</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
                 <option value="0.2" />
+                <option value="0.5" />
               </list>
             </option>
           </splitter-proportions>

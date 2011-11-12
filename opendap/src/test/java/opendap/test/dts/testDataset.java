@@ -50,7 +50,7 @@ import opendap.servers.*;
 import opendap.servlet.AbstractServlet;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
-import opendap.log.LogStream;
+import ucar.nc2.util.net.LogStream;
 import opendap.util.Debug;
 
 
