@@ -15,10 +15,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/dts.log4j.xml" />
+      <change type="DELETED" beforePath="F:\git\thredds\opendap\src\test\resources\dts\WEB-INF\classes\log4j.xml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../lib/release/netcdf-4.3.jar" afterPath="$PROJECT_DIR$/../../lib/release/netcdf-4.3.jar" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../lib/release/opendap-4.3.jar" afterPath="$PROJECT_DIR$/../../lib/release/opendap-4.3.jar" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.ipr" afterPath="$PROJECT_DIR$/thredds.ipr" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/build.xml" afterPath="$PROJECT_DIR$/../../opendap/build.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeBadValueException.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeBadValueException.java" />
@@ -86,7 +89,7 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/WEB-INF/classes/log4j.xml" afterPath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/WEB-INF/classes/log4j.xml" />
+      <change type="MOVED" beforePath="F:\git\thredds\opendap\src\test\resources\dts\WEB-INF\classes\log4j.xml" afterPath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/tds.log4j.xml" />
     </list>
     <ignored path="thredds.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -153,7 +156,7 @@
       <file leaf-file-name="build.xml" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../../opendap/build.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="167" column="88" selection-start="7124" selection-end="7124" vertical-scroll-proportion="0.53400505">
+            <state line="178" column="94" selection-start="7666" selection-end="7666" vertical-scroll-proportion="0.6196474">
               <folding />
             </state>
           </provider>
@@ -173,7 +176,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/../../cdm/src/main/java/thredds/util/HttpUriResolverFactory.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPMethod.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/util/TestDatasetURL.java" />
@@ -189,6 +191,7 @@
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" />
+        <option value="$PROJECT_DIR$/../../opendap/build.xml" />
       </list>
     </option>
   </component>
@@ -958,7 +961,7 @@
         </SHUTDOWN>
       </ConfigurationWrapper>
       <method>
-        <option name="AntTarget" enabled="false" antfile="file://$PROJECT_DIR$/../../opendap/build.xml" target="war" />
+        <option name="AntTarget" enabled="true" antfile="file://$PROJECT_DIR$/../../opendap/build.xml" target="dtswar" />
         <option name="BuildArtifacts" enabled="true">
           <artifact name="opendap:war exploded" />
         </option>
@@ -1017,8 +1020,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1298" height="818" extended-state="7" />
-    <editor active="true" />
+    <frame x="-9" y="-9" width="1298" height="818" extended-state="6" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1028,7 +1031,7 @@
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4672755" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4672755" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.6818874" order="1" side_tool="true" content_ui="tabs" />
@@ -1036,7 +1039,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39933994" sideWeight="0.5281583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.52663624" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.31811264" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31811264" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4733638" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1344,7 +1347,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/build.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="167" column="88" selection-start="7124" selection-end="7124" vertical-scroll-proportion="0.53400505">
+        <state line="178" column="94" selection-start="7666" selection-end="7666" vertical-scroll-proportion="0.6196474">
           <folding />
         </state>
       </provider>

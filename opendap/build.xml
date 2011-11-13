@@ -365,11 +365,19 @@
 	<copy file="${build.dir}/${warfile}" todir="${tomcat.webapps.dir}"/>
    </target>
 
-  <!--	    depends="opendap-lib" -->
-  <target name="war"
+  <target name="dtswar">
+    <copy file="${webapp.dir}/dts.log4j.xml" tofile="${war.dir}/WEB-INF/classes/log4j.xml" overwrite="true"/>
+    <ant target="war-build"/>
+  </target>
+
+  <target name="tdswar">
+    <copy file="${webapp.dir}/tds.log4j.xml" tofile="${war.dir}/WEB-INF/classes/log4j.xml" overwrite="true"/>
+    <ant target="war-build"/>
+  </target>
+
+  <target name="war-build"
           depends="dts"
           description="create a war file from the distribution directory">
-
     <!-- copy classes to war classes directory. -->
     <mkdir dir="${war.dir}/WEB-INF/classes"/>
     <copy todir="${war.dir}/WEB-INF/classes"
