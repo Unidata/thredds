@@ -36,7 +36,6 @@ import ucar.nc2.*;
 import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;

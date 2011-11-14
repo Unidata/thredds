@@ -153,7 +153,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 /////////////////////////////////////////
 
   private static WmoTables wmoTables = null;
-  private static final Version wmoTable = Version.GRIB2_6_0_1;
+  private static final Version wmoTable = Version.GRIB2_7_0_0;
 
   static public WmoTables getWmoStandard() throws IOException {
     if (wmoTables == null)
@@ -177,7 +177,8 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     InputStream ios = null;
     try {
       Class c = WmoCodeTable.class;
-      ios = c.getResourceAsStream(version.getResourceName());
+      String name = version.getResourceName();
+      ios = c.getResourceAsStream(name);
       if (ios == null) {
         logger.error("cant open WmoCodeTable=" + version.getResourceName());
         throw new IOException("cant open WmoCodeTable=" + version.getResourceName());

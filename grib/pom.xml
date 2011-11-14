@@ -24,13 +24,6 @@
   </description>
   <url>http://www.unidata.ucar.edu/software/decoders/</url>
 
-  <scm>
-    <url>http://svn.unidata.ucar.edu/repos/thredds/tags/netcdf-4.2.20/grib</url>
-    <connection>http://svn.unidata.ucar.edu/repos/thredds/tags/netcdf-4.2.20</connection>
-    <developerConnection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk/grib</developerConnection>
-  </scm>
-
-
   <!-- ===========================================================
            Developers and Contributors
        =========================================================== -->
@@ -63,14 +56,8 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>unidataCommon</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>edu.ucar</groupId>
       <artifactId>netcdf</artifactId>
-      <version>${project.version}</version>
+      <version>4.3.2</version>
     </dependency>
 
     <dependency>
@@ -98,11 +85,15 @@
 
   </dependencies>
 
-  <!-- ===========================================================
-           Build configuration
-       =========================================================== -->
+    <!-- ===========================================================
+            Build configuration
+
+            We declare a non-existant test directory as a dirty trick
+            for skiping completly the tests, including compilation.
+        =========================================================== -->
   <build>
     <!-- Skip tests, because they require the /share/testdata/cdmUnitTest/ directory. -->
+    <testSourceDirectory>void</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

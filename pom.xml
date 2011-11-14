@@ -47,9 +47,9 @@
   </mailingLists>
 
   <scm>
-    <url>http://svn.unidata.ucar.edu/repos/thredds/trunk</url>
-    <connection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk</connection>
-    <developerConnection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk</developerConnection>
+    <url>https://github.com/Unidata/thredds/</url>
+    <connection>scm:git:https://github.com/Unidata/thredds/</connection>
+    <developerConnection>scm:git:https://github.com/Unidata/thredds/</developerConnection>
   </scm>
 
   <!-- ===========================================================
@@ -84,16 +84,6 @@
       <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
       <roles>
         <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>ed</id>
-      <name>Ed Hartnett</name>
-      <email>ed@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>C Developer</role>
       </roles>
     </developer>
     <developer>
@@ -304,7 +294,6 @@
            Modules for the build in approximate dependency order
        =========================================================== -->
   <modules>
-    <module>common</module>
     <module>grib</module>
     <module>opendap</module>
     <module>cdm</module>
@@ -313,7 +302,6 @@
   </modules>
 
   <properties>
-    <common.version>4.3.2</common.version>
     <netcdf.version>4.3.2</netcdf.version>
     <grib.version>4.3.2</grib.version>
     <bufr.version>4.3.2</bufr.version>
