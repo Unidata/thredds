@@ -40,6 +40,11 @@
     <appender-ref ref="logdap" />
   </logger>
 
+  <logger name="opendap.servlet.LogStream" additivity="false">
+    <level value="debug" />
+    <appender-ref ref="stdout" />
+  </logger>
+
   <root>
     <level value="INFO"/>
     <appender-ref ref="logcdm"/>
