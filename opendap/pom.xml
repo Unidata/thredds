@@ -72,10 +72,10 @@
            Dependencies
        =========================================================== -->
   <dependencies>
-     <dependency>
+    <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>unidataCommon</artifactId>
-      <version>${project.version}</version>
+      <artifactId>netcdf</artifactId>
+      <version>4.3.2</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

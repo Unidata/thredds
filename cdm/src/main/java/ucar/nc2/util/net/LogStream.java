@@ -59,7 +59,7 @@ public class LogStream extends java.io.OutputStream
 
     static {
 	// Make sure that the printstreams are always defined
-	setLogger(CDMLog.class);
+	setLogger(LogStream.class);
     }
 
     static public void setLogger(Class cl)
