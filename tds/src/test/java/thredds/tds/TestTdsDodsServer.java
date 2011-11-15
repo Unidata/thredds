@@ -64,7 +64,7 @@ public class TestTdsDodsServer extends TestCase {
   //                http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1.ascii?Visibility[0:1:0][0:1:0][0:1:0]
   String dataset = "http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1";
   public void testGrid() {
-    String grid = dataset + ".ascii?Visibility[0:1:0][0:1:0][0:1:0]";
+    String grid = dataset + ".ascii?Visibility_surface[0:1:0][0:1:0][0:1:0]";
     System.out.println(" request= "+grid);
     try {
       String result = IO.readURLcontentsWithException(grid);
@@ -76,7 +76,7 @@ public class TestTdsDodsServer extends TestCase {
   }
 
   public void testGridArrayAsc() {
-     String array = dataset + ".asc?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
+     String array = dataset + ".asc?Visibility_surface.Visibility_surface[0:1:0][0:1:0][0:1:0]";
      System.out.println(" request= "+array);
      try {
        String result = IO.readURLcontentsWithException(array);
@@ -88,7 +88,7 @@ public class TestTdsDodsServer extends TestCase {
    }
 
   public void testGridArray() {
-     String array = dataset + ".dods?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
+     String array = dataset + ".dods?Visibility_surface.Visibility_surface[0:1:0][0:1:0][0:1:0]";
      System.out.println(" request= "+array);
      try {
        String result = IO.readURLcontentsWithException(array);
@@ -100,7 +100,7 @@ public class TestTdsDodsServer extends TestCase {
    }
 
   public void testGridArray2() {
-     String array = dataset + ".dods?Visibility.Visibility[0][0][0]";
+     String array = dataset + ".dods?Visibility_surface.Visibility_surface[0][0][0]";
      System.out.println(" request= "+array);
      try {
        String result = IO.readURLcontentsWithException(array);
@@ -112,7 +112,7 @@ public class TestTdsDodsServer extends TestCase {
    }
 
   public void testGridArray3() {
-     String array = dataset + ".dods?Visibility.Visibility[0:0][0:0][0:0]";
+     String array = dataset + ".dods?Visibility_surface.Visibility_surface[0:0][0:0][0:0]";
      System.out.println(" request= "+array);
      try {
        String result = IO.readURLcontentsWithException(array);
@@ -124,7 +124,7 @@ public class TestTdsDodsServer extends TestCase {
    }
 
   public void testGridArrayEsc() {
-     String array = dataset + ".dods?Visibility.Visibility" + encoder.encode("[0:1:0][0:1:0][0:1:0]");
+     String array = dataset + ".dods?Visibility_surface.Visibility_surface" + encoder.encode("[0:1:0][0:1:0][0:1:0]");
      System.out.println(" request= "+array);
      try {
        String result = IO.readURLcontentsWithException(array);
@@ -136,7 +136,7 @@ public class TestTdsDodsServer extends TestCase {
    }
 
   public void testGridArrayEsc2() {
-     String array = dataset + ".dods?Visibility.Visibility"  + encoder.encode("[0][0][0]");
+     String array = dataset + ".dods?Visibility_surface.Visibility_surface"  + encoder.encode("[0][0][0]");
      System.out.println(" request= "+array);
      try {
        String result = IO.readURLcontentsWithException(array);
@@ -148,7 +148,7 @@ public class TestTdsDodsServer extends TestCase {
    }
 
   public void testGridArrayEsc3() {
-     String array = dataset + ".dods?Visibility.Visibility"  + encoder.encode("[0:0][0:0][0:0]");
+     String array = dataset + ".dods?Visibility_surface.Visibility_surface"  + encoder.encode("[0:0][0:0][0:0]");
      System.out.println(" request= "+array);
      try {
        String result = IO.readURLcontentsWithException(array);

@@ -25,12 +25,6 @@
   </description>
   <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
-  <scm>
-    <url>http://svn.unidata.ucar.edu/repos/thredds/trunk/cdm</url>
-    <connection>http://svn.unidata.ucar.edu/repos/thredds/trunk/cdm</connection>
-    <developerConnection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk/netcdf</developerConnection>
-  </scm>
-
   <!-- ===========================================================
            Developers and Contributors
        =========================================================== -->
@@ -137,11 +131,6 @@
            his own pom.xml file if we want to read some formats.
        =========================================================== -->
   <dependencies>
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>unidataCommon</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
     <!-- HTTP client -->
     <dependency>
@@ -215,14 +204,8 @@
        <name>Geotoolkit binaries</name>
        <url>http://maven.geotoolkit.org/</url>
     </repository>
-</repositories>
+  </repositories>
 
-  <!-- ===========================================================
-           Build configuration
-
-           We declare a non-existant test directory as a dirty trick
-           for skiping completly the tests, including compilation.
-       =========================================================== -->
   <build>
     <testSourceDirectory>void</testSourceDirectory>
     <plugins>
