@@ -40,6 +40,7 @@
 package ucar.nc2.util.net;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
 public class LogStream extends java.io.OutputStream
@@ -47,15 +48,31 @@ public class LogStream extends java.io.OutputStream
 
     static enum Mode {error, info, warn, debug, trace};
 
+    // Add a PrintStream logflush function
+    static public class LogPrintStream extends PrintStream
+    {
+        LogStream logger = null;
+        public LogPrintStream(OutputStream os)
+        {
+            super(os);
+            logger = (LogStream)os;
+        }
+
+        // Add a logflush method
+        public void logflush() {if(logger != null) logger.logflush();}
+
+    }
+
+
     static public org.slf4j.Logger log;
 
     static LogStream outlog;
     static LogStream errlog;
     static LogStream dbglog;
 
-    static public PrintStream out;
-    static public PrintStream err;
-    static public PrintStream dbg;
+    static public LogPrintStream out;
+    static public LogPrintStream err;
+    static public LogPrintStream dbg;
 
     static Class currentlogclass;
 
@@ -86,11 +103,11 @@ public class LogStream extends java.io.OutputStream
 	    dbglog.setLogger(log);
 
         if(out == null)
-	    out = new PrintStream(outlog);
+	    out = new LogPrintStream(outlog);
 	if(err == null)
-	    err = new PrintStream(errlog);
+	    err = new LogPrintStream(errlog);
 	if(dbg == null)
-	    dbg = new PrintStream(dbglog);
+	    dbg = new LogPrintStream(dbglog);
     }
 
     static public org.slf4j.Logger getLog() {return log;}
@@ -122,6 +139,7 @@ public class LogStream extends java.io.OutputStream
     public Mode getMode() {return mode;}
     public LogStream setMode(Mode mode) {this.mode = mode; return this;}
 
+    // Since log output is nevere actually closed by us,
     // Use logflush to push to the logger
     public void logflush()
     {

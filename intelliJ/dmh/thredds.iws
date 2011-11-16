@@ -15,22 +15,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
-      <change type="DELETED" beforePath="F:\git\thredds\opendap\src\test\resources\dts\log4j.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/data/testsuites/sdds-testsuite/das/b31" afterPath="$PROJECT_DIR$/../../opendap/src/test/data/testsuites/sdds-testsuite/das/b31" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/EasySSLProtocolSocketFactory.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/EasySSLProtocolSocketFactory.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/LogStream.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/LogStream.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.ipr" afterPath="$PROJECT_DIR$/thredds.ipr" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAS.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAS.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataDDS.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DataDDS.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java" afterPath="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/dts.log4j.xml" afterPath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/dts.log4j.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/tds.log4j.xml" afterPath="$PROJECT_DIR$/../../opendap/src/test/resources/dts/tds.log4j.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../tds/src/test/java/thredds/TestServerSite.java" afterPath="$PROJECT_DIR$/../../tds/src/test/java/thredds/TestServerSite.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../docs/web/netcdf-java/site/reference/Session.html" afterPath="$PROJECT_DIR$/../../docs/web/netcdf-java/site/reference/Session.html" />
     </list>
     <ignored path="thredds.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -133,8 +121,8 @@
       <property name="field_breakpoints_groupByClasses" value="true" />
       <property name="method_breakpoints_groupByClasses" value="true" />
       <property name="exception_breakpoints_viewId" value="TABLE" />
-      <property name="exception_breakpoints_groupByClasses" value="true" />
       <property name="field_breakpoints_viewId" value="TABLE" />
+      <property name="exception_breakpoints_groupByClasses" value="true" />
       <property name="method_breakpoints_groupByMethods" value="false" />
     </ui_properties>
   </component>
@@ -143,91 +131,46 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="DAS.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DAS.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="185" column="27" selection-start="6924" selection-end="6924" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AttributeTable.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeTable.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="398" column="0" selection-start="14429" selection-end="14429" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="LogStream.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/LogStream.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="23" selection-start="2655" selection-end="2655" vertical-scroll-proportion="0.0">
+            <state line="74" column="72" selection-start="2910" selection-end="2910" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AbstractServlet.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java">
+      <file leaf-file-name="PrintStream.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://T:/jdk1.6/src.zip!/java/io/PrintStream.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="137" column="23" selection-start="5583" selection-end="5583" vertical-scroll-proportion="0.33275563">
+            <state line="37" column="13" selection-start="1401" selection-end="1401" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DTSLog.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DTSLog.java">
+      <file leaf-file-name="HTTPSession.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="17" selection-start="2051" selection-end="2051" vertical-scroll-proportion="0.0">
+            <state line="483" column="60" selection-start="15859" selection-end="15859" vertical-scroll-proportion="0.65745854">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestServlet.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
+      <file leaf-file-name="Attribute.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="358" column="7" selection-start="12257" selection-end="12257" vertical-scroll-proportion="0.0">
+            <state line="518" column="19" selection-start="15769" selection-end="15769" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DAPLog.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DAPLog.java">
+      <file leaf-file-name="OutputStream.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://T:/jdk1.6/src.zip!/java/io/OutputStream.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="15" selection-start="2049" selection-end="2049" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DDS.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="545" column="34" selection-start="20439" selection-end="20439" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Alias.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="313" column="12" selection-start="10980" selection-end="10980" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DConnect2.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="1275" column="6" selection-start="48173" selection-end="48173" vertical-scroll-proportion="0.0">
+            <state line="28" column="22" selection-start="870" selection-end="870" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -247,7 +190,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/TestStructureArray.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/ucar/nc2/dods/DodsV.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/Variable.java" />
         <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/Group.java" />
@@ -260,9 +202,10 @@
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Alias.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DConnect2.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java" />
-        <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/LogStream.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java" />
         <option value="$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java" />
+        <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java" />
+        <option value="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/LogStream.java" />
       </list>
     </option>
   </component>
@@ -432,18 +375,18 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="project.structure.last.edited" value="Artifacts" />
-    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="project.structure.proportion" value="0.15" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
+    <property name="recentsLimit" value="5" />
     <property name="MemberChooser.showClasses" value="true" />
-    <property name="GoToClass.includeLibraries" value="false" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="dynamic.classpath" value="false" />
+    <property name="GoToClass.includeLibraries" value="false" />
     <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -451,7 +394,7 @@
       <recent name="ucar.nc2.util.net" />
     </key>
   </component>
-  <component name="RunManager" selected="Tomcat Server.dts">
+  <component name="RunManager" selected="Tomcat Server.Server">
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -1217,29 +1160,29 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1298" height="818" extended-state="6" />
-    <editor active="true" />
+    <frame x="-9" y="-9" width="1298" height="818" extended-state="7" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32990655" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4718417" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.5281583" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4216134" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4672755" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25412542" sideWeight="0.5281583" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.67275494" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32975295" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39933994" sideWeight="0.5281583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.17199391" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32724506" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32724506" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4672755" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4718417" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1458,26 +1401,6 @@
     </buildFile>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/Variable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1108" column="0" selection-start="38837" selection-end="38837" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testEngine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="91" column="8" selection-start="2860" selection-end="2860" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/server/opendap/NcDDS.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="177" column="100" selection-start="6878" selection-end="6878" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/Dapparse.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="337" column="0" selection-start="9286" selection-end="9286" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/testDataset.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="361" column="0" selection-start="12845" selection-end="12845" vertical-scroll-proportion="0.0" />
@@ -1491,6 +1414,21 @@
     <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/AttributeTable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="398" column="0" selection-start="14429" selection-end="14429" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DTSLog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="47" column="17" selection-start="2051" selection-end="2051" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="358" column="7" selection-start="12257" selection-end="12257" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DAPLog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="47" column="15" selection-start="2049" selection-end="2049" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/DDS.java">
@@ -1508,44 +1446,51 @@
         <state line="1275" column="6" selection-start="48173" selection-end="48173" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="137" column="23" selection-start="5583" selection-end="5583" vertical-scroll-proportion="0.062962964">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://T:/jdk1.6/src.zip!/java/io/InputStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="22" selection-start="818" selection-end="818" vertical-scroll-proportion="0.6042003">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://T:/jdk1.6/src.zip!/java/io/OutputStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="22" selection-start="870" selection-end="870" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="jar://T:/jdk1.6/src.zip!/java/io/PrintStream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="40" selection-start="1428" selection-end="1428" vertical-scroll-proportion="0.0">
+        <state line="37" column="13" selection-start="1401" selection-end="1401" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/Attribute.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="518" column="19" selection-start="15769" selection-end="15769" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/LogStream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="23" selection-start="2655" selection-end="2655" vertical-scroll-proportion="0.0">
+        <state line="74" column="72" selection-start="2910" selection-end="2910" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DAPLog.java">
+    <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="15" selection-start="2049" selection-end="2049" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/DTSLog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="17" selection-start="2051" selection-end="2051" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/dts/TestServlet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="358" column="7" selection-start="12257" selection-end="12257" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/servlet/AbstractServlet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="137" column="23" selection-start="5583" selection-end="5583" vertical-scroll-proportion="0.33275563">
+        <state line="483" column="60" selection-start="15859" selection-end="15859" vertical-scroll-proportion="0.65745854">
           <folding />
         </state>
       </provider>
