@@ -37,6 +37,7 @@ package ucar.nc2.util;
  */
 public class Indent {
   private int nspaces = 0;
+
   private int level = 0;
   private StringBuilder blanks;
   private String indent = "";
@@ -60,6 +61,10 @@ public class Indent {
     level--;
     setIndentLevel(level);
     return this;
+  }
+
+  public int level() {
+    return level;
   }
 
   public String toString() {

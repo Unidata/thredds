@@ -53,13 +53,13 @@ import java.io.ByteArrayOutputStream;
  */
 public class CompareNetcdf {
 
-  static public void compareFiles(NetcdfFile org, NetcdfFile copy) {
-    compareFiles(org, copy, false, false, false);
+  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy) {
+    return compareFiles(org, copy, false, false, false);
   }
 
-  static public void compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare, boolean _showEach) {
+  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare, boolean _showEach) {
     CompareNetcdf tc = new CompareNetcdf(_showCompare, _showEach, _compareData);
-    tc.compare(org, copy, new Formatter(System.out));
+    return tc.compare(org, copy, new Formatter(System.out));
   }
 
   /////////

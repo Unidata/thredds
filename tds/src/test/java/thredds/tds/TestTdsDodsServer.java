@@ -226,7 +226,7 @@ public class TestTdsDodsServer extends TestCase {
 
         NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
         NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);
-        CompareNetcdf.compareFiles(org_ncfile, dods_file);
+        assert CompareNetcdf.compareFiles(org_ncfile, dods_file);
         return 1;
       }
     }, false);

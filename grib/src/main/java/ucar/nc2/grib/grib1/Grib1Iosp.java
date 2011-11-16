@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import org.jdom.Element;
 import thredds.inventory.CollectionManager;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -39,12 +40,13 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.tables.Grib1Parameter;
+import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,11 +132,11 @@ Notes:
       //if (param.getName() != null)
       //  f.format("%s", param.getName());
       //else
-        f.format("%s", Grib1Parameter.makeNameFromDescription(param.getDescription()));
+        f.format("%s", GribUtils.makeNameFromDescription(param.getDescription()));
     }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_%s", Grib1ParamLevel.getNameShort(vindex.levelType)); // code table 3
+      f.format("_%s", tables.getLevelNameShort(vindex.levelType)); // code table 3
       // if (vindex.isLayer) f.format("_layer"); LOOK ? assumes that cant have two variables on same vertical type, differeing only by isLayer
     }
 
@@ -166,7 +168,7 @@ Notes:
     }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", Grib1ParamLevel.getNameShort(vindex.levelType));
+      f.format(" @ %s", tables.getLevelNameShort(vindex.levelType));
       if (vindex.isLayer) f.format(" layer");
     }
 
@@ -212,6 +214,8 @@ Notes:
   }
 
   private String lookupTablePath, paramTablePath;
+  Element paramTable = null;
+
   @Override
   public Object sendIospMessage(Object special) {
     if (special instanceof String) {
@@ -230,6 +234,10 @@ Notes:
       System.out.printf("GRIB got IOSP message=%s%n", special);
       return null;
     }
+
+    if (special instanceof org.jdom.Element)
+      paramTable = (org.jdom.Element) special;
+
     return super.sendIospMessage(special);
   }
 
@@ -250,7 +258,10 @@ Notes:
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    tables = Grib1Tables.factory(paramTablePath, lookupTablePath);
+    if (paramTable != null) // so iosp message must be recieved before the open()
+      tables = Grib1Tables.factory(paramTable);
+    else
+      tables = Grib1Tables.factory(paramTablePath, lookupTablePath);
 
     boolean isGrib = Grib1RecordScanner.isValidFile(raf);
     if (isGrib) {

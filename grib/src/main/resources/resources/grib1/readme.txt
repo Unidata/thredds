@@ -153,3 +153,8 @@ Notes for grib-1 tables (global)
       forecast_time
       level
  - NCL describes their GRIB1 table handling : http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB1-built-in-parameter-tables
+
+11/14/2011
+ - from  http://www.weatheroffice.gc.ca/grib/what_is_GRIB_e.html:
+   "The parameters used in the type of levels used in GRIB from the CMC are compatible with tables published in the NCEP Note 388."
+   so we will use NCEP tables for center 54, for both grib1 and grib2.

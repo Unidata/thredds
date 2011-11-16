@@ -30,10 +30,11 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.grib1;
+package ucar.nc2.grib.grib1.tables;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.grib1.Grib1ParamLevel;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,7 +58,7 @@ public class Grib1Tables implements GribTables {
         throw new FileNotFoundException("cant read parameter table="+paramTablePath);
     }
     if (lookupTablePath != null) {
-      result.lookup = new Grib1ParamTable.Lookup();
+      result.lookup = new Grib1StandardTables.Lookup();
       if (!result.lookup.readLookupTable(lookupTablePath))
         throw new FileNotFoundException("cant read lookup table="+lookupTablePath);
     }
@@ -65,9 +66,18 @@ public class Grib1Tables implements GribTables {
     return result;
   }
 
+  static public Grib1Tables factory(org.jdom.Element paramTableElem) throws IOException {
+    if (paramTableElem == null) return new Grib1Tables();
+
+    Grib1Tables result = new Grib1Tables();
+    result.override = new Grib1ParamTable(paramTableElem);
+
+    return result;
+  }
+
   ///////////////////////////////////////////////////////////////////////////
 
-  private Grib1ParamTable.Lookup lookup;
+  private Grib1StandardTables.Lookup lookup;
   private Grib1ParamTable override;
 
   public Grib1Tables() {
@@ -85,16 +95,17 @@ public class Grib1Tables implements GribTables {
     if (param == null && lookup != null)
       param = lookup.getParameter(center, subcenter, tableVersion, param_number);
     if (param == null)
-      param = Grib1ParamTable.getParameter(center, subcenter, tableVersion, param_number); // standard tables
+      param = Grib1StandardTables.getParameter(center, subcenter, tableVersion, param_number); // standard tables
     return param;
   }
 
+  // mostly for debugging
   public Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {
     Grib1ParamTable result = null;
     if (lookup != null)
       result = lookup.getParameterTable(center, subcenter, tableVersion);
     if (result == null)
-      result = Grib1ParamTable.getParameterTable(center, subcenter, tableVersion); // standard tables
+      result = Grib1StandardTables.getParameterTable(center, subcenter, tableVersion); // standard tables
     return result;
   }
 

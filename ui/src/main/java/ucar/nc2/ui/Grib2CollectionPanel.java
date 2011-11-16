@@ -37,7 +37,8 @@ import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.grib1.Grib1Parameter;
+import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
@@ -1073,7 +1074,7 @@ public class Grib2CollectionPanel extends JPanel {
     ///////////////
 
     public String getName() {
-      return Grib1Parameter.makeNameFromDescription(tables.getVariableName(gr));
+      return GribUtils.makeNameFromDescription(tables.getVariableName(gr));
     }
 
     public String getOldName() {

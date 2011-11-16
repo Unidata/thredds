@@ -40,7 +40,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib1.Grib1Parameter;
+import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
@@ -73,7 +73,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     if (param == null) {
       f.format("VAR%d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
     } else {
-      f.format("%s", Grib1Parameter.makeNameFromDescription(param.getName()));
+      f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
     }
 
     /* if this uses any local tables, then we have to add the center id

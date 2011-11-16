@@ -35,6 +35,8 @@ package ucar.nc2.ui;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.*;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.ui.widget.*;
@@ -308,7 +310,7 @@ public class GribFilesPanel extends JPanel {
       this.m = m;
       this.first = first;
       pds = first.getPDSsection();
-      table = Grib1ParamTable.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
+      table = Grib1StandardTables.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
     }
 
     public final String getPath() {

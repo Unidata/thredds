@@ -34,6 +34,9 @@ package ucar.nc2.ui;
 
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.grib1.*;
+import ucar.nc2.grib.grib1.tables.Grib1Parameter;
+import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
+import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -360,7 +363,7 @@ public class Grib1RawPanel extends JPanel {
       pds = r.getPDSsection();
       header = new String(r.getHeader());
       records = new ArrayList<RecordBean>();
-      param = Grib1ParamTable.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
+      param = Grib1StandardTables.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
     }
 
     void addRecord(Grib1Record r) {

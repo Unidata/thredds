@@ -30,9 +30,10 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.grib1;
+package ucar.nc2.grib.grib1.tables;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.grib.GribUtils;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -43,46 +44,6 @@ import ucar.unidata.util.StringUtil2;
  */
 @Immutable
 public class Grib1Parameter {
-
-  static public String cleanupUnits(String unit) {
-    if (unit == null) return null;
-    if (unit.equalsIgnoreCase("-")) unit = "";
-    else {
-      if (unit.startsWith("/")) unit = "1" + unit;
-      unit = unit.trim();
-      unit = StringUtil2.remove(unit, "**");
-      StringBuilder sb = new StringBuilder(unit);
-      StringUtil2.remove(sb, "^[]");
-      StringUtil2.substitute(sb, " / ", "/");
-      StringUtil2.replace(sb, ' ', ".");
-      StringUtil2.replace(sb, '*', ".");
-      unit = sb.toString();
-    }
-    return unit;
-  }
-
-  static public String cleanupDescription(String desc) {
-    if (desc == null) return null;
-    int pos = desc.indexOf("(see");
-    if (pos > 0) desc = desc.substring(0, pos);
-
-    StringBuilder sb = new StringBuilder(desc.trim());
-    StringUtil2.remove(sb, ".;,=[]()/");
-    return sb.toString().trim();
-  }
-
-  static public String makeNameFromDescription(String desc) {
-    if (desc == null) return null;
-    int pos = desc.indexOf("(see");
-    if (pos > 0) desc = desc.substring(0, pos);
-
-    StringBuilder sb = new StringBuilder(desc.trim());
-    StringUtil2.remove(sb, ".;,=[]()/");
-    StringUtil2.replace(sb, ' ', "_");
-    return sb.toString();
-  }
-
-  ///////////////////////////////////////////////////////////////
 
   private final Grib1ParamTable table;  // which table did this come from ?
   private final int number;
@@ -149,11 +110,11 @@ public class Grib1Parameter {
   }
 
   private String setDescription(String description) {
-    return cleanupDescription(description);
+    return GribUtils.cleanupDescription(description);
   }
 
   private String setUnit(String unit) {
-    return cleanupUnits(unit);
+    return GribUtils.cleanupUnits(unit);
   }
 
   @Override
