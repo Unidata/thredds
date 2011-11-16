@@ -24,7 +24,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p>You must encode a center and subcenter id, in order for software to correctly match the tables used. If there is no subcenter in use,  use id =0 (&quot;no subcenter:), although 255 (&quot;missing&quot;) is acceptable but ambiguous. </p>
 <h3><strong>Encoding the version number (octet 4)</strong></h3>
 <p>If you are only using WMO standard tables (all parameter ids &lt; 128) then you should use version number = 1, 2, or 3, corresponding to the WMO standard table version.  The <a href="ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf">Current WMO GRIB-1 table version</a> is 3. Using only parameters from the standard tables is best practice for the <em>international exchange</em> of GRIB messages.</p>
-<p>If you are using non-standard (aka <em>local</em>) parameters, then you should use a version number in the range 128-254.</p>
+<p>If you are using non-standard (aka <em>local</em>) parameters, then you should use a version number in the range 128-254, which names your version of the tables. </p>
 <h3><strong>Using local tables</strong></h3>
 <p>If you  use local parameters, you must do the following:</p>
 <ol>
@@ -42,37 +42,54 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Unidata encourages the use of <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html#Database">udunit formatting</a> for expressing units.</li>
   <li>We need to be able to find your tables. Add enough metadata so that a google search on &quot;&lt;your center name&gt; GRIB tables&quot; finds you within the first 2 pages. Send a link to netcdf-java@unidata.ucar.edu and we will link to you (and use your tables in the CDM library).</li>
 </ol>
-<p>&nbsp;</p>
 <hr WIDTH="100%">
 <h2>Reading Grib-1<a name="ReadGrib1"></a> files with the CDM library version 4.3</h2>
 <h3>Homogeneity requirements for collections of GRIB records</h3>
-<p>The CDM library makes certain assumtions about collections of GRIB records, called <strong><em>homegeneity requirements</em></strong>:</p>
+<p>The CDM library makes certain assumptions about collections of GRIB records, called <strong><em>homegeneity requirements</em></strong>:</p>
 <ul>
-  <li>The center, subcenter ids are assumed constant for all records.</li>
+  <li>The center, subcenter ids are assumed constant for all records. This effects which  tables are used, and also global attributes added to the fikle.</li>
   <li>The table version may differ across records.</li>
   <li>The reference dates may differ across records.</li>
 </ul>
 <h3>Standard table mapping</h3>
+<p>A <em>standard table</em> is a GRIB parameter table that is automatically used by the CDM.  A <em>standard table map</em> is an association of a standard table with a center/subcenter/version id. The CDM internally loads several table maps, which are searched for a match in order. You can view all the standard tables used by the CDM in ToolsUI, using the <strong>IOSP/GRIB-1/GRIB1-TABLES</strong> tab. A standard table map looks  like this:</p>
+<blockquote>
+  <pre># resources\grib1\lookupTables.txt
+
+# cen sub version table
+  0:	-1:	   -1:	dss/WMO_GRIB1.xml
+  7:   -1:    -1:	wgrib/table2.htm
+  9:   -1:   128:  noaa_rfc/params9-128.tab
+ 57:   -1:     2:	local/afwa.tab
+ 58:   42:     2:	local/af_2.tab
+ 60:   255:    2:	local/wrf_amps.wrf</pre>
+</blockquote>
 <ol>
-  <li>See <em>resources/grib1/lookupTables.txt </em>in<strong> grib-&lt;version&gt;.jar</strong> or <em>grib/src/main/resources/resources/grib1/lookupTables.txt</em> from the source tree.</li>
-  <li>You can view the standard tables in ToolsUI, using the <strong>iosp/GRIB-1/GRIB1-TABLES</strong> tab.</li>
-  <li>The table that matches the center-subcenter-version is used. </li>
-  <li>Use a &quot;-1&quot; for the subcenter or version in order to match &quot;any&quot;. The order of the entries in the <em>grib1Tables.txt</em> file is therefore important.</li>
-  <li>If a table is not matched, the file will fail to open. You can change that in the <a href="../reference/RuntimeLoading.html#XML">RunTime configuration file</a> by adding<a name="strict"></a>
-    <blockquote>
-      <pre>&lt;grib1Table strict=&quot;false&quot;/&gt;</pre>
-    </blockquote>
-  In this case, the default WMO table will be used, but there's no way of knowing if the parameters have correct names or units.</li>
+  <li>Each row contains the center, subcenter and table version, and the table filename, with a colon (:) seperating the fields.</li>
+  <li>The  center, subcenter and table ids are read from each GRIB record, and the list of tables is searched for a match. The first match is used. </li>
+  <li>A &quot;-1&quot; for the subcenter or version id matches any id. </li>
+  <li>Center 0 is the WMO standard table for a given version. In the above example, all versions of the WMO table are mapped to a single table in the file <em>resources/grib1/dss/WMO_GRIB1.xml</em>. </li>
+  <li>If a table is not matched, the  WMO table with the matching version will be used. This effectively assumes that the GRIB file does not override any WMO parameter entries. You can change that  programatically via <strong>ucar.nc2.grib.grib1.Grib1ParamTable.setStrict(true); </strong>or in the <a href="../reference/RuntimeLoading.html#XML">RunTime configuration file</a> by adding<a name="strict"></a>
+    <pre>&lt;grib1Table strict=&quot;true&quot;/&gt;</pre>
+  If <strong>strict=true</strong>, when a table is not matched, the GRIB file will fail to open. At that point you will need to add the correct parameter table, as described below.</li>
+  <li>The CDM can read GRIB parameter tables in several formats:
+    <ul>
+      <li><strong>A file ending in .xml:</strong> an ad-hoc <a href="DefineGrib1Params">XML format</a> we made up.an ad-hoc <a href="DefineGrib1Params">XML format</a> we made up.</li>
+      <li><strong>A file ending in .tab:</strong> the <a href="ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/usertables.txt">format</a> that <a href="http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html">wgrib</a> uses.</li>
+      <li><strong>A file starting with &quot;table_2_&quot; or &quot;local_table_2_&quot;</strong> : the format the <a href="http://www.ecmwf.int/products/data/software/grib.html">ECMWF software</a> uses. </li>
+    </ul>
+  </li>
 </ol>
 <h3>Adding to the standard table mapping</h3>
+<p>When the CDM does not have a table for a  center, subcenter and table version that a GRIB file uses, you must track down the corrrect table and add it to the CDM at runtime. (Also, send it to us so we can include it in the next release). To add a table at runtime:</p>
 <ol>
-  <li>You can add your own table within your application, or to applications that support the <a href="../reference/RuntimeLoading.html#XML">RunTime configuration file</a>.</li>
-  <li>Tables that are user-added take precedence over the standard tables.</li>
+  <li>Use <a href="../reference/RuntimeLoading.html">Runtime Loading</a> to add your own table programmatically within your application, or by using the Runtime configuration file.</li>
+  <li>Tables that are added at runtime take precedence over the standard tables, and are searched first in the order of being added.</li>
   <li>Parameters that are not present in your table are taken from the default WMO table, if they exist.</li>
   <li>Missing parameters are marked &quot;unknown&quot; in the variable name and units.</li>
 </ol>
 <h3>Specifying a table for a particular dataset</h3>
-<p>A dataset that does not correctly encode the center/subcenter/version should be configured with the correct table at the dataset level. Do not override standard table mappings, as this is a global setting and may affect other datasets. </p>
+<p>Many  GRIB datasets have an incorrect center/subcenter/version id, which means that the CDM would read from a different table than the one used to write the file. In this case, you dont want to override the correct table in the table map, rather you want to fix the problem for just the incorrect dataset. Here are the ways that can be done:</p>
 <blockquote>
   <h4>Directly embed table in NcML</h4>
   <p>You must use the <a href="#DefineGrib1Params">XML Schema for declaring Grib-1 Parameters</a>:</p>
