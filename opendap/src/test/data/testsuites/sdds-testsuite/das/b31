@@ -1,14 +1,14 @@
 Attributes {
     b31 {
         class {
-            String long_name "class is dismissed";
+            String long%20name "class is dismissed";
         }
         text {
-            String long_name "textually yours";
+            String long%20name "textually yours";
         }
         foo {
-            String long_name "It is beyond all recognition";
-            String short_name "foobar";
+            String long%20name "It is beyond all recognition";
+            String short%20name "foobar";
         }
     }
     b32 {

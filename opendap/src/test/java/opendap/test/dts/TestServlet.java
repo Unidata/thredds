@@ -353,8 +353,8 @@ public class TestServlet extends AbstractServlet
    {
    }
 
-  public void init() throws ServletException
-  {
+   public void init() throws ServletException
+   {
     super.init();
     setLog(DTSLog.class);
     LogStream.out.println("**************** DTS INIT ***********************");

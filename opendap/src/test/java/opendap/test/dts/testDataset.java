@@ -353,8 +353,9 @@ public class testDataset implements GuardedDataset {
             try {
                 is = openCachedDAS(rs);
 
-                if((gotDAS = myDAS.parse(is)))
-                    LogStream.out.println("Got DAS.");
+                if((gotDAS = myDAS.parse(is)))  {
+                    LogStream.out.println("Got DAS");
+                }
 
                 if (gotDAS && gotDDS) {
                     LogStream.out.println("-------------");

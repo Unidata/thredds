@@ -232,7 +232,7 @@ public class DAS extends AttributeTable
 
             if (Debug.isSet("DAS")) {
 		LogStream.dbg.println("DAS.resolveAliases() - aName: " + aName);
-		LogStream.dbg.flush();
+		LogStream.dbg.logflush();
 	    }
 
             Attribute at = getAttribute(aName);
@@ -271,7 +271,7 @@ public class DAS extends AttributeTable
 
         if (Debug.isSet("DAS")) {
 		LogStream.dbg.println("DAS.resolveAliases(at=" + at + ")");
-		LogStream.dbg.flush();
+		LogStream.dbg.logflush();
 	    }
 
         //getall of the Attributes from the table.
@@ -281,14 +281,14 @@ public class DAS extends AttributeTable
             String aName = (String) aNames.nextElement();
             if (Debug.isSet("DAS")) {
 		LogStream.dbg.println("DAS.resolveAliases(at=" + at + ") - aName: " + aName);
-		LogStream.dbg.flush();
+		LogStream.dbg.logflush();
 	    }
 
             opendap.dap.Attribute thisA = currentAT.getAttribute(aName);
 
             if (Debug.isSet("DAS")) {
 		LogStream.dbg.println("thisA.getClass().getName(): " + thisA.getClass().getName());
-		LogStream.dbg.flush();
+		LogStream.dbg.logflush();
 	    }
 
             if (thisA.isAlias()) {
@@ -296,7 +296,7 @@ public class DAS extends AttributeTable
                 resolveAlias((Alias) thisA);
                 if (Debug.isSet("DAS")) {
 		LogStream.dbg.println("Resolved Alias: '" + thisA.getEncodedName() + "'\n");
-		LogStream.dbg.flush();
+		LogStream.dbg.logflush();
 	    }
             } else if (thisA.isContainer()) {
                 //Is AttributeTable (container)? Search it!
@@ -344,7 +344,7 @@ public class DAS extends AttributeTable
         if (Debug.isSet("DAS")) {
 		LogStream.dbg.println("\n\nFound: Alias " + name +
                     "  " + attribute);
-		LogStream.dbg.flush();
+		LogStream.dbg.logflush();
 	    }
 
         // Let's go
@@ -360,7 +360,7 @@ public class DAS extends AttributeTable
 
         if (Debug.isSet("DAS")) {
 		LogStream.dbg.println("Attribute: `" + attribute + "'");
-		LogStream.dbg.flush();
+		LogStream.dbg.logflush();
 	    }
 
         // Tokenize the attribute field.
@@ -374,7 +374,7 @@ public class DAS extends AttributeTable
                 String aname = (String) e.nextElement();
                 LogStream.dbg.println("name: " + aname);
             }
-	    LogStream.dbg.flush();
+	    LogStream.dbg.logflush();
         }
 
 

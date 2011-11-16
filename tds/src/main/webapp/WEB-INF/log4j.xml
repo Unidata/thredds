@@ -85,6 +85,15 @@
     </layout>
   </appender>
 
+  <!-- Separate log for LogStream -->
+  <appender name="logcdm" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="${tds.log.dir}/cdm.log"/>
+    <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd' 'HH:mm:ss.SSS} %-5p - %c%n%m%n"/>
+    </layout>
+  </appender>
+
   <!-- special loggers -->
   <logger name="cacheLogger" additivity="false">
     <level value="INFO"/>
@@ -229,6 +238,10 @@
   <logger name="thredds.dqc"/>
   <logger name="thredds.servlet"/>
 
+  <logger name="opendap.servlet.LogStream" additivity="false">
+    <level value="info" />
+    <appender-ref ref="logcdm"/>
+  </logger>
 
   <!-- debug
   <logger name="ucar.nc2.ncml.Aggregation" additivity="false">

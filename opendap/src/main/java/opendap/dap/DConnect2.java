@@ -480,7 +480,7 @@ private void checkHeaders(HTTPMethod method) {
             hasSession = true;
         }
       }
-  if (debugHeaders) LogStream.dbg.flush();
+  if (debugHeaders) LogStream.dbg.logflush();
 }
 
 private interface Command {
@@ -649,7 +649,7 @@ private String getCompleteCE(String CE) {
     LogStream.dbg.println("selString: '" + selString + "'");
     LogStream.dbg.println("localSelString: '" + localSelString + "'");
     LogStream.dbg.println("Complete CE: " + ce);
-    LogStream.dbg.flush();
+    LogStream.dbg.logflush();
   }
   return ce;   // escaping will happen elsewhere
 }
@@ -984,7 +984,7 @@ ParseException, DDSException, DAP2Exception {
 /* boolean dumpStreamErr = false; // opendap.util.util.Debug.isSet("dumpStreamErr");
 
 LogStream.dbg.println("dds.getBlobURL(): " + dds.getBlobContentID());
-LogStream.dbg.flush();
+LogStream.dbg.logflush();
 
 if (dds.getBlobContentID() == null) {
 throw new MalformedURLException("Blob URL was 'null'. " +
@@ -995,7 +995,7 @@ throw new MalformedURLException("Blob URL was 'null'. " +
 URL blobURL = new URL(dds.getBlobContentID());
 
 LogStream.dbg.println("Opening BLOB URL: " + blobURL);
-LogStream.dbg.flush();
+LogStream.dbg.logflush();
 
 InputStream is = openConnection(blobURL);
 
@@ -1007,7 +1007,7 @@ dds.readData(is, statusUI); // read the data!
 } catch (Throwable e) {
 LogStream.err.println("DConnect dds.readData problem with: " + blobURL + "\nStack Trace:");
 e.printStackTrace(LogStream.err);
-LogStream.err.flush();
+LogStream.err.logflush();
 
 throw new DAP2Exception("Connection problem when reading: " + blobURL + "\n" +
 "Error Message - " + e.toString());
@@ -1063,7 +1063,7 @@ throws IOException,
 ParseException, DDSException, DAP2Exception {
 
 LogStream.dbg.println("Opening DDX URL: " + url);
-LogStream.dbg.flush();
+LogStream.dbg.logflush();
 
 InputStream is = openConnection(url);
 DataDDS dds = new DataDDS(ver, btf);
@@ -1082,7 +1082,7 @@ dds.parseXML(is, false);    // read the DDX
 } catch (Throwable e) {
 LogStream.err.println("DConnect ddx.parse problem with: " + url + "\nStack Trace:");
 e.printStackTrace(LogStream.err);
-LogStream.err.flush();
+LogStream.err.logflush();
 
 throw new DAP2Exception("Connection problem when reading: " + url + "\n" +
 "Error Message - " + e.toString());
@@ -1273,7 +1273,7 @@ public static void main(String[] args) {
       dds = dc.getDDX();
       dds.printXML(LogStream.out);
 
-      LogStream.out.flush();
+      LogStream.out.logflush();
     }
     catch (Throwable t) {
       t.printStackTrace(LogStream.err);

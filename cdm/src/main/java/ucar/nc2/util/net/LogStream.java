@@ -57,6 +57,8 @@ public class LogStream extends java.io.OutputStream
     static public PrintStream err;
     static public PrintStream dbg;
 
+    static Class currentlogclass;
+
     static {
 	// Make sure that the printstreams are always defined
 	setLogger(LogStream.class);
@@ -64,6 +66,8 @@ public class LogStream extends java.io.OutputStream
 
     static public void setLogger(Class cl)
     {
+        currentlogclass = cl;
+
         log = org.slf4j.LoggerFactory.getLogger(cl);
 
 	if(outlog == null)
@@ -109,7 +113,7 @@ public class LogStream extends java.io.OutputStream
 
     public org.slf4j.Logger getLogger() {return this.log;}
 
-    public LogStream setLogger(org.slf4j.Logger logger)
+    LogStream setLogger(org.slf4j.Logger logger)
     {
 	this.log = logger;
 	return this;
@@ -139,7 +143,5 @@ public class LogStream extends java.io.OutputStream
     }
 
 
-    // Temporary
-    public void flush() { logflush(); }
 
 }

@@ -2,21 +2,10 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
-  <appender name="logcdm" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="File" value="logs/cdm.log"/>
+  <appender name="logdts" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="logs/dts.log"/>
 <!--
-    <param name="File" value="${tds.log.dir}/cdm.log"/>
--->
-    <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd' 'HH:mm:ss.SSS} %-5p - %c%n%m%n"/>
-    </layout>
-  </appender>
-
-  <appender name="logdap" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="File" value="logs/dap.log"/>
-<!--
-    <param name="File" value="${tds.log.dir}/dap.log"/>
+    <param name="File" value="${tds.log.dir}/dts.log"/>
 -->
     <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -30,24 +19,19 @@
     </layout>
   </appender>
 
-  <logger name="opendap.servlet.DAPLog" additivity="false">
-    <level value="debug" />
-    <appender-ref ref="logdap" />
-  </logger>
-
   <logger name="opendap.servlet.DTSLog" additivity="false">
     <level value="debug" />
-    <appender-ref ref="logdap" />
+    <appender-ref ref="logdts"/>
   </logger>
 
   <logger name="opendap.servlet.LogStream" additivity="false">
-    <level value="debug" />
-    <appender-ref ref="stdout" />
+    <level value="debug"/>
+    <appender-ref ref="logdts"/>
   </logger>
 
   <root>
     <level value="INFO"/>
-    <appender-ref ref="logcdm"/>
+    <appender-ref ref="stdout"/>
   </root>
 
 </log4j:configuration>

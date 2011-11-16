@@ -115,7 +115,7 @@ public class DataDDS extends DDS {
       /* ByteArrayOutputStream bout = new ByteArrayOutputStream(50 * 1000);
       copy(is, bout);
       LogStream.dbg.printf(" readData size=%d %n",bout.size());
-      LogStream.dbg.flush();
+      LogStream.dbg.logflush();
       ByteArrayInputStream bufferedIS = new ByteArrayInputStream( bout.toByteArray());  */
       //statusUI = new Counter();
 

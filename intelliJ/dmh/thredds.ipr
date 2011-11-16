@@ -145,7 +145,6 @@
             <element id="module-output" name="opendap" />
             <element id="module-output" name="visad" />
             <element id="module-test-output" name="opendap" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../opendap/src/test/resources/dts/log4j.xml" />
           </element>
           <element id="directory" name="lib">
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/junit-4.5.jar" />

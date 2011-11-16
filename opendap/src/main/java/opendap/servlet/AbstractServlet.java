@@ -133,12 +133,8 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
     // Define an overall logger for everyone to use
     // Start with a default logger, but allow an application to change it later
-    static public org.slf4j.Logger Log = null;
+    static public org.slf4j.Logger Log = LogStream.getLog();
 
-    static {
-	setLog(DAPLog.class);
-    }
-  
     static public void setLog(Class cl)
     {
 	LogStream.setLogger(cl);
@@ -210,8 +206,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
     public AbstractServlet()
     {
-	if(Log == null)
-	    setLog(DAPLog.class);
     }
 
     //////////////////////////////////////////////////////////
@@ -273,9 +267,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
   public void init() throws ServletException
   {
-    if(Log == null)
-	setLog(DAPLog.class);
-
     super.init();
 
     // debuggering

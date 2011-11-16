@@ -311,7 +311,7 @@ public class Alias extends Attribute
 
         if (Debug.isSet("Alias")) {
 	    LogStream.dbg.println("  Attribute \"" + getClearName() + "\" is an Alias.");
-	    LogStream.dbg.flush();
+	    LogStream.dbg.logflush();
 	}
 
         os.println(pad + "Alias " + getEncodedName() + " " + getAliasedToAttributeField() + ";");
