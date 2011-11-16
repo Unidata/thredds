@@ -507,6 +507,10 @@ public class NcMLReader {
     if ((addRecords != null) && addRecords.equalsIgnoreCase("true"))
       targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
+    // look for parameter tables being added
+    Element parameterMapElem = netcdfElem.getChild("parameterMap", ncNS); // LOOK namespace ??
+    if (parameterMapElem != null)
+      targetDS.sendIospMessage(parameterMapElem);
   }
 
   /* public void merge(NetcdfDataset targetDS, Element parentElem) throws IOException {

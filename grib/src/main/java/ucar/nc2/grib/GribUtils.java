@@ -30,52 +30,53 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.grib2.table;
+package ucar.nc2.grib;
 
-import java.util.*;
+import ucar.unidata.util.StringUtil2;
 
 /**
- * superclass for local table implementations
+ * General Utilities used by GRIB code.
  *
- * @author John
- * @since 6/22/11
+ * @author caron
+ * @since 11/16/11
  */
-public abstract class LocalTables extends Grib2Tables {
-  protected final Map<Integer, TableEntry> local = new HashMap<Integer, TableEntry>(100);
+public class GribUtils {
 
-  LocalTables(int center, int subCenter, int masterVersion, int localVersion) {
-    super(center, subCenter, masterVersion, localVersion);
-    initLocalTable();
+  static public String cleanupUnits(String unit) {
+    if (unit == null) return null;
+    if (unit.equalsIgnoreCase("-")) unit = "";
+    else {
+      if (unit.startsWith("/")) unit = "1" + unit;
+      unit = unit.trim();
+      unit = StringUtil2.remove(unit, "**");
+      StringBuilder sb = new StringBuilder(unit);
+      StringUtil2.remove(sb, "^[]");
+      StringUtil2.substitute(sb, " / ", "/");
+      StringUtil2.replace(sb, ' ', ".");
+      StringUtil2.replace(sb, '*', ".");
+      unit = sb.toString();
+    }
+    return unit;
   }
 
-  protected abstract void initLocalTable();
+  static public String cleanupDescription(String desc) {
+    if (desc == null) return null;
+    int pos = desc.indexOf("(see");
+    if (pos > 0) desc = desc.substring(0, pos);
 
-
-  @Override
-  public List getParameters() {
-    List<TableEntry> result = new ArrayList<TableEntry>();
-    for (TableEntry p : local.values()) result.add(p);
-    Collections.sort(result);
-    return result;
+    StringBuilder sb = new StringBuilder(desc.trim());
+    StringUtil2.remove(sb, ".;,=[]()/");
+    return sb.toString().trim();
   }
 
-  @Override
-  public String getVariableName(int discipline, int category, int parameter) {
-    if ((category <= 191) && (parameter <= 191))
-      return super.getVariableName(discipline, category, parameter);
+  static public String makeNameFromDescription(String desc) {
+    if (desc == null) return null;
+    int pos = desc.indexOf("(see");
+    if (pos > 0) desc = desc.substring(0, pos);
 
-    Grib2Tables.Parameter te = getParameter(discipline, category, parameter);
-    if (te == null)
-      return super.getVariableName(discipline, category, parameter);
-    else
-      return te.getName();
+    StringBuilder sb = new StringBuilder(desc.trim());
+    StringUtil2.remove(sb, ".;,=[]()/");
+    StringUtil2.replace(sb, ' ', "_");
+    return sb.toString();
   }
-
-  @Override
-  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191))
-      return WmoCodeTable.getParameterEntry(discipline, category, number);
-    return local.get(makeHash(discipline, category, number));
-  }
-
 }

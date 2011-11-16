@@ -1,4 +1,6 @@
 # resources\grib1\lookupTables.txt
+# cen sub version table
+#
   0:	-1:		 -1:	dss/WMO_GRIB1.xml
 #  7:    -1:       -1:	wgrib/table2.htm
   9:    -1:      128:   noaa_rfc/params9-128.tab
