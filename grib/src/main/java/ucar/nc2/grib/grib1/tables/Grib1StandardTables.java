@@ -222,7 +222,10 @@ public class Grib1StandardTables {
 
     public Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
       Grib1ParamTable pt = getParameterTable(center, subcenter, tableVersion);
-      return (pt == null) ? null : pt.getParameter(param_number);
+      Grib1Parameter param = null;
+      if (pt != null) param = pt.getParameter(param_number);
+      if (param == null) param = defaultTable.getParameter(param_number);
+      return param;
     }
 
     public Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {

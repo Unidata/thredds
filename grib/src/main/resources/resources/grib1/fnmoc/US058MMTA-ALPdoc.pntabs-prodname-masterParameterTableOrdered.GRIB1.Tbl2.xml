@@ -1,0 +1,2439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pnTable>
+  <name>Master Parameter Table</name>
+  <updatedDTG>201110110856</updatedDTG>
+  <tableStatus setDTG="2007050712">current</tableStatus>
+  <fnmocTable>
+    <entry>
+      <grib1Id>001</grib1Id>
+      <fnmocId>pres</fnmocId>
+      <name>pres</name>
+      <nameFull/>
+      <description>Commonly used for atmospheric pressure, the pressure exerted by the atmosphere as a consequence of
+        gravitational attraction exerted upon the "column" of air lying directly above the point in question.
+      </description>
+      <unitsFNMOC>pa</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>002</grib1Id>
+      <fnmocId>pres</fnmocId>
+      <name>pres</name>
+      <nameFull/>
+      <description>The conversion of an observed pressure value to the value it would theortically have at mean sea
+        level.
+      </description>
+      <unitsFNMOC>pa</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>003</grib1Id>
+      <fnmocId>pres_tend</fnmocId>
+      <name>pres_tend</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>Pa/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>005</grib1Id>
+      <fnmocId>icao_std_atmos</fnmocId>
+      <name>icao_std_atmos</name>
+      <nameFull/>
+      <description>A hypothetical vertical distribution of atmospheric tmeperature, pressure, and density that, by
+        internation agreement,
+        is taken to be representative of the atmosphere. (AMS glossary)
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>006</grib1Id>
+      <fnmocId>geop</fnmocId>
+      <name>geop</name>
+      <nameFull/>
+      <description>The potential energy of a unit mass relative to sea level, numerically equal to the work that would
+        be done in lifting the unit mass from sea level to the height at which the mass is located. (AMS glossary)
+      </description>
+      <unitsFNMOC>m2/s2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>007</grib1Id>
+      <fnmocId>geop_ht</fnmocId>
+      <name>geop_ht</name>
+      <nameFull/>
+      <description>The height of a given point in the atmosphere in units proportional to the potential energy of unit
+        mas (geopotential) at this height relative to sea level.
+      </description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>008</grib1Id>
+      <fnmocId>height</fnmocId>
+      <name>height</name>
+      <nameFull/>
+      <description>The geometric height of layer or surface.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>009</grib1Id>
+      <fnmocId>ht_std_dev</fnmocId>
+      <name>ht_std_dev</name>
+      <nameFull/>
+      <description>no description available.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>010</grib1Id>
+      <fnmocId>total_ozone</fnmocId>
+      <name>total_ozone</name>
+      <nameFull/>
+      <description>The total quantity of ozone integrated in a column from the top of the atmosphere to the surface.
+      </description>
+      <unitsFNMOC>dobson</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>011</grib1Id>
+      <fnmocId>air_temp</fnmocId>
+      <name>air_temp</name>
+      <nameFull/>
+      <description>The degree of hotness or coldness measured against a definite scale, in this case for the atmosphere.
+      </description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>012</grib1Id>
+      <fnmocId>virt_air_temp</fnmocId>
+      <name>virt_air_temp</name>
+      <nameFull/>
+      <description>Temperature that dry air would have if its pressure and density were equal to those of a given sample
+        of moist air.
+      </description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>013</grib1Id>
+      <fnmocId>ptnl_temp</fnmocId>
+      <name>ptnl_temp</name>
+      <nameFull/>
+      <description>The temperature an unsaturated parcel of dry air would have if brought adiabatically and reversibly
+        from its initial state to a standard pressure.
+      </description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>014</grib1Id>
+      <fnmocId>eq_ptnl_temp</fnmocId>
+      <name>eq_ptnl_temp</name>
+      <nameFull/>
+      <description>A thermodynamic quantity, with its natural logarithm proportional to the entropy of moist air, that
+        is conserved in a reversible moist adiabatic process. (AMS Glossary)
+      </description>
+      <unitsFNMOC>degK</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>015</grib1Id>
+      <fnmocId>max_air_temp</fnmocId>
+      <name>max_air_temp</name>
+      <nameFull/>
+      <description>The greatest air temperature in a given period of time.</description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>016</grib1Id>
+      <fnmocId>min_air_temp</fnmocId>
+      <name>min_air_temp</name>
+      <nameFull/>
+      <description>The lowest air temperature in a given period of time.</description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>017</grib1Id>
+      <fnmocId>dwpt_temp</fnmocId>
+      <name>dwpt_temp</name>
+      <nameFull/>
+      <description>The temperature to which a given parcel of air must be cooled at constant pressure and water vapor
+        content in order for saturation to occur.
+      </description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>018</grib1Id>
+      <fnmocId>dwpt_dprs</fnmocId>
+      <name>dwpt_dprs</name>
+      <nameFull/>
+      <description>The quantity of difference between the air temperature and the dewpoint temperature.</description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>019</grib1Id>
+      <fnmocId>temp_lapse_rate</fnmocId>
+      <name>temp_lapse_rate</name>
+      <nameFull/>
+      <description>The decrease of atmospheric temperature with height.</description>
+      <unitsFNMOC>deg_K/m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>020</grib1Id>
+      <fnmocId>visib</fnmocId>
+      <name>visib</name>
+      <nameFull/>
+      <description>The greatest distance in which it is just possible to see and identify with the unaided eye 1) in the
+        daytime, a prominent dark object against the sky at the horizon, and 2) at night, a known, preferably unfocused,
+        moderately intense light source.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>021</grib1Id>
+      <fnmocId>rad_spect_one</fnmocId>
+      <name>rad_spect_one</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>none</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>022</grib1Id>
+      <fnmocId>rad_spect_two</fnmocId>
+      <name>rad_spect_two</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>none</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>023</grib1Id>
+      <fnmocId>rad_spect_three</fnmocId>
+      <name>rad_spect_three</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>none</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>024</grib1Id>
+      <fnmocId>prcl_lift_indx</fnmocId>
+      <name>prcl_lift_indx</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>degK</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>025</grib1Id>
+      <fnmocId>temp_anom</fnmocId>
+      <name>temp_anom</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>degK</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>026</grib1Id>
+      <fnmocId>pres_anom</fnmocId>
+      <name>pres_anom</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>027</grib1Id>
+      <fnmocId>temp_dif</fnmocId>
+      <name>temp_dif</name>
+      <nameFull/>
+      <description>The difference between the standard atmosphere temperature (day) at a level and the measured air
+        temperature at the same level.
+      </description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>028</grib1Id>
+      <fnmocId>wav_spectra1</fnmocId>
+      <name>wav_spectra1</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>029</grib1Id>
+      <fnmocId>wav_spectra2</fnmocId>
+      <name>wav_spectra2</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>030</grib1Id>
+      <fnmocId>wav_spectra3</fnmocId>
+      <name>wav_spectra3</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>031</grib1Id>
+      <fnmocId>wnd_dir</fnmocId>
+      <name>wnd_dir</name>
+      <nameFull/>
+      <description>The angle, measured in a clockwise direction, between true north and the direction from which the
+        wind is blowing.
+      </description>
+      <unitsFNMOC>deg_true</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>032</grib1Id>
+      <fnmocId>wnd_spd</fnmocId>
+      <name>wnd_spd</name>
+      <nameFull/>
+      <description>The ratio of the distance covered by the air to the time taken to cover it.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>033</grib1Id>
+      <fnmocId>wnd_ucmp</fnmocId>
+      <name>wnd_ucmp</name>
+      <nameFull/>
+      <description>The east-west component of the wind which is relative to the east-west axis of the grid. (This is
+        true east for spherical and mercator but not for lambert conformal and others.)
+      </description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>033</grib1Id>
+      <fnmocId>wnd_ucmp_mn_trnc18</fnmocId>
+      <name>wnd_ucmp_mn_trnc18</name>
+      <nameFull/>
+      <description>The estimated mean rate of wind movement in the west-east direction, only spectral waves 0 to 18.
+      </description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>deprecated</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>034</grib1Id>
+      <fnmocId>wnd_vcmp</fnmocId>
+      <name>wnd_vcmp</name>
+      <nameFull/>
+      <description>The north-south componenet of the wind which is relative to the north-south axis of the grid. (This
+        is true east for spherical and mercator but not for lambert conformal and others.)
+      </description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>034</grib1Id>
+      <fnmocId>wnd_vcmp_mn_trnc18</fnmocId>
+      <name>wnd_vcmp_mn_trnc18</name>
+      <nameFull/>
+      <description>The estimated mean rate of wind movrement in the south-north direction, only spectral waves 0 to 18.
+      </description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>deprecated</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>035</grib1Id>
+      <fnmocId>strm_func</fnmocId>
+      <name>strm_func</name>
+      <nameFull/>
+      <description>The stream function of the geostrophic wind on a constant-pressure surface.</description>
+      <unitsFNMOC>m2/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>036</grib1Id>
+      <fnmocId>vel_ptnl</fnmocId>
+      <name>vel_ptnl</name>
+      <nameFull/>
+      <description>A scalar function with its gradient equal to the velocity vector u of an irrotational flow.
+      </description>
+      <unitsFNMOC>m2/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>037</grib1Id>
+      <fnmocId>montg_strm_func</fnmocId>
+      <name>montg_strm_func</name>
+      <nameFull/>
+      <description>The stream function of the geostrophic wind on an isentropic surface.</description>
+      <unitsFNMOC>m2/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>038</grib1Id>
+      <fnmocId>sigma_coord_vert_vel</fnmocId>
+      <name>sigma_coord_vert_vel</name>
+      <nameFull/>
+      <description>The stream function of the geostrophic wind on an isentropic surface.</description>
+      <unitsFNMOC>1/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>039</grib1Id>
+      <fnmocId>wnd_vert_vel</fnmocId>
+      <name>wnd_vert_vel</name>
+      <nameFull/>
+      <description>The estimated vertical rate of movement of air relative to pressure coordinates.</description>
+      <unitsFNMOC>pa/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>040</grib1Id>
+      <fnmocId>wnd_wcmp</fnmocId>
+      <name>wnd_wcmp</name>
+      <nameFull/>
+      <description>The estimated vertical rate of movement of air relative to geospatial coordinates.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>041</grib1Id>
+      <fnmocId>abs_vort</fnmocId>
+      <name>abs_vort</name>
+      <nameFull/>
+      <description>The rotation, usually around the vertical axis, of a fluid particle determined with respect to an
+        absolute coordinate system.
+      </description>
+      <unitsFNMOC>1/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>042</grib1Id>
+      <fnmocId>div</fnmocId>
+      <name>div</name>
+      <nameFull/>
+      <description>The estimated rate of horizontal expansion of the vector wind components, about an absolute refence
+        system.
+      </description>
+      <unitsFNMOC>1/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>043</grib1Id>
+      <fnmocId>rltv_vort</fnmocId>
+      <name>rltv_vort</name>
+      <nameFull/>
+      <description>The estimated rate of horizontal expansion of the vector wind components, measured in a system
+        relative to the earth's surface.
+      </description>
+      <unitsFNMOC>1/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>044</grib1Id>
+      <fnmocId>rel_div</fnmocId>
+      <name>rel_div</name>
+      <nameFull/>
+      <description>The stream function of the geostrophic wind on an isentropic surface.</description>
+      <unitsFNMOC>1/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>045</grib1Id>
+      <fnmocId>vert_ucmp_shr</fnmocId>
+      <name>vert_ucmp_shr</name>
+      <nameFull/>
+      <description>no defintion available.</description>
+      <unitsFNMOC>1/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>046</grib1Id>
+      <fnmocId>vert_vcmp_shr</fnmocId>
+      <name>vert_vcmp_shr</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>1/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>047</grib1Id>
+      <fnmocId>curr_dir</fnmocId>
+      <name>curr_dir</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>degTrue</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>048</grib1Id>
+      <fnmocId>curr_spd</fnmocId>
+      <name>curr_spd</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>049</grib1Id>
+      <fnmocId>curr_ucmp</fnmocId>
+      <name>curr_ucmp</name>
+      <nameFull/>
+      <description>The west-east (u) motion of an ocean current.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>050</grib1Id>
+      <fnmocId>curr_vcmp</fnmocId>
+      <name>curr_vcmp</name>
+      <nameFull/>
+      <description>The south-north (v) motion of an ocean current.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>051</grib1Id>
+      <fnmocId>spec_hum</fnmocId>
+      <name>spec_hum</name>
+      <nameFull/>
+      <description>In a system of moist air, the (dimensionless) ratio of the mass of water vapor to the total mass of
+        the system (AMS).
+      </description>
+      <unitsFNMOC>kg/kg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>052</grib1Id>
+      <fnmocId>rltv_hum</fnmocId>
+      <name>rltv_hum</name>
+      <nameFull/>
+      <description>The ratio of the vapor pressure to the staturation vapor pressure with respect to water (AMS).
+      </description>
+      <unitsFNMOC>%</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>053</grib1Id>
+      <fnmocId>mix_ratio</fnmocId>
+      <name>mix_ratio</name>
+      <nameFull/>
+      <description>The ratio of the mass of water vapor to the mass of dry air.</description>
+      <unitsFNMOC>kg/kg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>054</grib1Id>
+      <fnmocId>prcp_h2o</fnmocId>
+      <name>prcp_h2o</name>
+      <nameFull/>
+      <description>Total atmospheric water vapor in a vertical column unit cross-sectional area between two levels.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>055</grib1Id>
+      <fnmocId>vpr_pres</fnmocId>
+      <name>vpr_pres</name>
+      <nameFull/>
+      <description>The partial pressure of water vapor in the atmosphere.</description>
+      <unitsFNMOC>pa</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>056</grib1Id>
+      <fnmocId>sat_def</fnmocId>
+      <name>sat_def</name>
+      <nameFull/>
+      <description>The measure between the layer of saturation thickness and the actual thickness of a layer.
+      </description>
+      <unitsFNMOC>Pa</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>057</grib1Id>
+      <fnmocId>evap</fnmocId>
+      <name>evap</name>
+      <nameFull/>
+      <description>The rate of change from liquid water to the gaseous state over a time period.</description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>058</grib1Id>
+      <fnmocId>cld_ice</fnmocId>
+      <name>cld_ice</name>
+      <nameFull/>
+      <description>Column total of condensed frozen cloud water.</description>
+      <unitsFNMOC>mg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>059</grib1Id>
+      <fnmocId>rain_rate</fnmocId>
+      <name>rain_rate</name>
+      <nameFull/>
+      <description>The measure of the averate rate of rain occurring at a location.</description>
+      <unitsFNMOC>kg/m2/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>060</grib1Id>
+      <fnmocId>tstm_prob</fnmocId>
+      <name>tstm_prob</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>%</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>061</grib1Id>
+      <fnmocId>ttl_prcp</fnmocId>
+      <name>ttl_prcp</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that is forecast to accumulate in a
+        specified period of time (accumulation period), for all precipitation types and both convective and
+        non-convective. The accumulation period varies over the forecast period (taus). For NOGAPS: the accumulation
+        starts at the base time and every 12 hours the 'bucket' is emptied (a bucket tip) and the accumulation starts
+        again (12, 24, 36, ...). A grid is created at each bucket tip and at three hour intervals between them. The four
+        grids created over one bucket tip period have accumulation periods of 3, 6, 9 and 12 hours. To determine the
+        possible taus for a given accumulation period use taus = A + (n-1)B; where A is the accumulation period, B is
+        the bucket tip, and n is the number grids desired. For COAMPS: the accumulation starts at the base time and is
+        never emptied (infinite bucket tip). Grids are made at one hour intervals with the accumulation period equal to
+        the forecast period (tau).
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>061</grib1Id>
+      <fnmocId>ttl_prcp_01</fnmocId>
+      <name>ttl_prcp_01</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulates in one hour, for all
+        precipitation types and both convective and non-convective. Here the accumulation starts at the base time and
+        every hour the 'bucket' is
+        emptied and the accumulation starts again (1, 2, 3, ...). Grids are created at each bucket tip.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>061</grib1Id>
+      <fnmocId>ttl_prcp_03</fnmocId>
+      <name>ttl_prcp_03</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulates in three hours, for all
+        precipitation types and both convective and non-convective.
+        Here the accumulation starts at the base time and every three hours the 'bucket' is emptied and the accumulation
+        starts
+        again (3, 6, 9, ...). Grids are created at each bucket tip.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>061</grib1Id>
+      <fnmocId>ttl_prcp_06</fnmocId>
+      <name>ttl_prcp_06</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulates in six hours, for all
+        precipitation types and both convective and non-convective. Here the accumulation starts at the base time and
+        every
+        six hours the 'bucket' is emptied and the accumulation starts again (6, 12, 18, ...). Grids are created at each
+        bucket tip.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>061</grib1Id>
+      <fnmocId>ttl_prcp_12</fnmocId>
+      <name>ttl_prcp_12</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulates in twelve hours, for all
+        precipitation types and both convective and non-convective. Here the accumulation starts at the base time
+        and every twelve hours the 'bucket' is emptied and the accumulation starts again (12, 24, 36, ...). Grids are
+        created at each bucket tip, only.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>062</grib1Id>
+      <fnmocId>stab_prcp</fnmocId>
+      <name>stab_prcp</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
+        non-convective or stable precipitation source. Here the accumulation starts at the base time and every 12 hours
+        the 'bucket' is emptied and the accumulation starts again (0, 12, 24, 36, ...). A grid is created at each bucket
+        tip and at three hour intervals between them. (NOGAPS)
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>062</grib1Id>
+      <fnmocId>stab_prcp_03</fnmocId>
+      <name>stab_prcp_03</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
+        non-convective or stable precipitation source. Here the accumulation starts at the base time and every 3 hours
+        the 'bucket' is emptied and the accumulation starts again (0, 3, 6, 9, ...).
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>062</grib1Id>
+      <fnmocId>stab_prcp_06</fnmocId>
+      <name>stab_prcp_06</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
+        non-convective or stable precipitation source. Here the accumulation starts at the base time and every 6 hours
+        the 'bucket' is emptied and the accumulation starts again (0, 6, 12, 18, ...).
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>062</grib1Id>
+      <fnmocId>stab_prcp_12</fnmocId>
+      <name>stab_prcp_12</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
+        non-convective or stable precipitation source. Here the accumulation starts at the base time and every 12 hours
+        the 'bucket' is emptied and the accumulation starts again (0, 12, 24, 36, ...)
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>063</grib1Id>
+      <fnmocId>conv_prcp</fnmocId>
+      <name>conv_prcp</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
+        convective precipitation source. Here the accumulation starts at the base time and every 12 hours the 'bucket'
+        is emptied and the accumulation starts again (0, 12, 24, 36, ...). A grid is created at each bucket tip and at
+        three hour intervals between them. (NOGAPS)
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>063</grib1Id>
+      <fnmocId>conv_prcp_03</fnmocId>
+      <name>conv_prcp_03</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulated in three hours from a
+        convective precipitation source. Here the accumulation starts at the base time and every 3 hours the 'bucket' is
+        emptied and the accumulation starts again (0, 3, 6, 9, ...). A grid is created at each bucket tip.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>063</grib1Id>
+      <fnmocId>conv_prcp_06</fnmocId>
+      <name>conv_prcp_06</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulated in six hours from a
+        convective precipitation source. Here the accumulation starts at the base time and every 6 hours the 'bucket' is
+        emptied and the accumulation starts again (0, 6, 12, 18, ...). A grid is created at each bucket tip.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>063</grib1Id>
+      <fnmocId>conv_prcp_12</fnmocId>
+      <name>conv_prcp_12</name>
+      <nameFull/>
+      <description>The estimated depth of the precipitation (water equivalent) that accumulated in twelve hours from a
+        convective precipitation source. Here the accumulation starts at the base time and every 12 hours the 'bucket'
+        is emptied and the accumulation starts again (0, 12, 24, 36, ...). A grid is created at each bucket tip, only.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>064</grib1Id>
+      <fnmocId>snwfl_rt_wtr_eq</fnmocId>
+      <name>snwfl_rt_wtr_eq</name>
+      <nameFull/>
+      <description>The estimated snowfall rate in water equivalency.</description>
+      <unitsFNMOC>kg/m2/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>065</grib1Id>
+      <fnmocId>ttl_snow</fnmocId>
+      <name>ttl_snow</name>
+      <nameFull/>
+      <description>The estimated depth of the snow (water equivalent) that accumulated over a fixed period of time
+        (accumulation period). The accumulation period is the same
+        regardless of the forecast period. (When the accumulation period ends, a snap-shot is taken (grid made), and
+        then the accumulation is set to zero (the bucket tip). The accumulation
+        begins again for the next accumulation period.) The accumulation period and the bucket tip are exactly the same
+        for each grid. Grids are available at forecast hours that are multiples
+        of the accumulation period. One or more accumulation periods should be specified in the request. If no period
+        attribute is specified, the response will contain all grids for each
+        accumulation period for that forecast hour. If period attribute is specified, the response will contain data
+        only if the specified period matches one of the accumulation periods
+        for that forecast hour. For COAMPS, the accumulation period is every 3 hours. For NOGAPS/Ensemble, the
+        accumulation period is every 6 hours.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>066</grib1Id>
+      <fnmocId>snw_dpth</fnmocId>
+      <name>snw_dpth</name>
+      <nameFull/>
+      <description>The estimated depth of snow on the ground.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>067</grib1Id>
+      <fnmocId>pbl_depth</fnmocId>
+      <name>pbl_depth</name>
+      <nameFull/>
+      <description>1. (atmosphere) The height of the top of the lowest layer of the troposphere in contact with the
+        earth's surface (often capped by a temperature inversion). 2. (ocean) The mixed layer depth in the ocean.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>068</grib1Id>
+      <fnmocId>trans_thcln_dpth</fnmocId>
+      <name>trans_thcln_dpth</name>
+      <nameFull/>
+      <description>The depth of the layer of water that varies between the warmer surface zone and the colder deep zone
+        of a thermally stratified body of water. In the thermocline, temperature decreases rapidly with depth.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>069</grib1Id>
+      <fnmocId>main_thcln_dpth</fnmocId>
+      <name>main_thcln_dpth</name>
+      <nameFull/>
+      <description>The depth of the layer of water between the warmer surface zone and the colder deep zone of a
+        thermally stratified body of water. In the thermocline, temperature decreases rapidly with depth.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>070</grib1Id>
+      <fnmocId>main_thcln_anom</fnmocId>
+      <name>main_thcln_anom</name>
+      <nameFull/>
+      <description>The depth of changes in the layer of water between the warmer surface zone and the colder deep zone
+        of a thermally stratified body of water. In the thermocline, temperature decreases rapidly with depth.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>071</grib1Id>
+      <fnmocId>ttl_cld_cvr</fnmocId>
+      <name>ttl_cld_cvr</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>072</grib1Id>
+      <fnmocId>conv_cld</fnmocId>
+      <name>conv_cld</name>
+      <nameFull/>
+      <description>The estimated rate of the sky dome that is covered by convective clouds.</description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>073</grib1Id>
+      <fnmocId>low_cld_cvr</fnmocId>
+      <name>low_cld_cvr</name>
+      <nameFull/>
+      <description>The estimated percentage of the sky dome that is covered by all low level clouds.</description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>074</grib1Id>
+      <fnmocId>mid_cld_cvr</fnmocId>
+      <name>mid_cld_cvr</name>
+      <nameFull/>
+      <description>The estimated percentage of the sky dome that is covered by all middle level clouds.</description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>075</grib1Id>
+      <fnmocId>hi_cld_cvr</fnmocId>
+      <name>hi_cld_cvr</name>
+      <nameFull/>
+      <description>The estimated percentage of the sky dome that is covered by all high level clouds.</description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>076</grib1Id>
+      <fnmocId>cld_wtr</fnmocId>
+      <name>cld_wtr</name>
+      <nameFull/>
+      <description>Column total of condensed liquid cloud water.</description>
+      <unitsFNMOC>mg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>077</grib1Id>
+      <fnmocId>bst_lift_indx</fnmocId>
+      <name>bst_lift_indx</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>degK</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>078</grib1Id>
+      <fnmocId>snw_conv</fnmocId>
+      <name>snw_conv</name>
+      <nameFull/>
+      <description>The quantity of snow precipitation that is estimated to occur over a period of time due to a
+        convective precipitation source.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>079</grib1Id>
+      <fnmocId>snw_lge_scl</fnmocId>
+      <name>snw_lge_scl</name>
+      <nameFull/>
+      <description>The total measure of snow expected from a large scale precipitation source.</description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>080</grib1Id>
+      <fnmocId>sea_temp</fnmocId>
+      <name>sea_temp</name>
+      <nameFull/>
+      <description>The temperature of the water at the ocean surface.</description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>081</grib1Id>
+      <fnmocId>land_sea</fnmocId>
+      <name>land_sea</name>
+      <nameFull/>
+      <description>A representation of the earth's surface denoting if a point is land (1) or water (0).</description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>082</grib1Id>
+      <fnmocId>dev_sea_lvl_mn</fnmocId>
+      <name>dev_sea_lvl_mn</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>083</grib1Id>
+      <fnmocId>roughness_len</fnmocId>
+      <name>roughness_len</name>
+      <nameFull/>
+      <description>The height above the displacement plane at which the mean wind becomes zero when extrapolating the
+        logarithmic wind-speed profile downward through the surface layer. (AMS Glossary)
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>084</grib1Id>
+      <fnmocId>albedo</fnmocId>
+      <name>albedo</name>
+      <nameFull/>
+      <description>The ratio of reflected over incoming flux density.</description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>085</grib1Id>
+      <fnmocId>soil_temp</fnmocId>
+      <name>soil_temp</name>
+      <nameFull/>
+      <description>The temperature of the soil at a specific depth.</description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>087</grib1Id>
+      <fnmocId>veg_covr</fnmocId>
+      <name>veg_covr</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>%</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>088</grib1Id>
+      <fnmocId>sal</fnmocId>
+      <name>sal</name>
+      <nameFull/>
+      <description>A measure of the quantity of dissolved salts in seawater. (AMS GLOSSARY)</description>
+      <unitsFNMOC>kg/kg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>089</grib1Id>
+      <fnmocId>dens</fnmocId>
+      <name>dens</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>kg/m3</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>090</grib1Id>
+      <fnmocId>wtr_roff</fnmocId>
+      <name>wtr_roff</name>
+      <nameFull/>
+      <description>The quantity of water derived from precipitation that ultimately reaches stream channels.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>091</grib1Id>
+      <fnmocId>ice_cvrg</fnmocId>
+      <name>ice_cvrg</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>092</grib1Id>
+      <fnmocId>ice_thkn</fnmocId>
+      <name>ice_thkn</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>093</grib1Id>
+      <fnmocId>dir_ice_drft</fnmocId>
+      <name>dir_ice_drft</name>
+      <nameFull/>
+      <description>The angle, measured in a clockwise direction, between true north and the direction in which ice has
+        drifted on the water's surface during the previous 12 hours.
+      </description>
+      <unitsFNMOC>degTrue</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>094</grib1Id>
+      <fnmocId>spd_ice_drft</fnmocId>
+      <name>spd_ice_drft</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>095</grib1Id>
+      <fnmocId>ice_drft_ucmp</fnmocId>
+      <name>ice_drft_ucmp</name>
+      <nameFull/>
+      <description>The estimated rate of movement of the ice in the west-east direction.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>096</grib1Id>
+      <fnmocId>ice_drft_vcmp</fnmocId>
+      <name>ice_drft_vcmp</name>
+      <nameFull/>
+      <description>The estimated rate of movement of the ice in the south-north direction.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>097</grib1Id>
+      <fnmocId>ice_grth</fnmocId>
+      <name>ice_grth</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>098</grib1Id>
+      <fnmocId>ice_div</fnmocId>
+      <name>ice_div</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>1/s</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>099</grib1Id>
+      <fnmocId>snw_melt</fnmocId>
+      <name>snw_melt</name>
+      <nameFull/>
+      <description>The estimated melting rate of snow on the ground.</description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>100</grib1Id>
+      <fnmocId>sig_wav_ht</fnmocId>
+      <name>sig_wav_ht</name>
+      <nameFull/>
+      <description>(ocean wave forecasting) A fictitious wave with a height and period equal to the average height of
+        the highest third of the actual waves that pass a fixed point.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>101</grib1Id>
+      <fnmocId>wnd_wav_dir</fnmocId>
+      <name>wnd_wav_dir</name>
+      <nameFull/>
+      <description>The direction of wave spectra which is under the influence of the local wind.</description>
+      <unitsFNMOC>deg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>102</grib1Id>
+      <fnmocId>wnd_wav_ht</fnmocId>
+      <name>wnd_wav_ht</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>103</grib1Id>
+      <fnmocId>wnd_wav_per</fnmocId>
+      <name>wnd_wav_per</name>
+      <nameFull/>
+      <description>The mean direction of the frequency wave spectra which is under the influence of the local wind, then
+        take the inverse.
+      </description>
+      <unitsFNMOC>s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>104</grib1Id>
+      <fnmocId>swl_wav_dir</fnmocId>
+      <name>swl_wav_dir</name>
+      <nameFull/>
+      <description>The direction of waves that are not under the influence of the local wind (swell waves).
+      </description>
+      <unitsFNMOC>deg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>105</grib1Id>
+      <fnmocId>swl_wav_ht</fnmocId>
+      <name>swl_wav_ht</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>106</grib1Id>
+      <fnmocId>swl_wav_per</fnmocId>
+      <name>swl_wav_per</name>
+      <nameFull/>
+      <description>An averate time interval between successive crests of those waves that are not under the influence of
+        local wind (swell waves).
+      </description>
+      <unitsFNMOC>s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>107</grib1Id>
+      <fnmocId>pr_wav_dir</fnmocId>
+      <name>pr_wav_dir</name>
+      <nameFull/>
+      <description>The angle measured clockwise from true north to the direction from which the primary waves are
+        coming.
+      </description>
+      <unitsFNMOC>deg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>108</grib1Id>
+      <fnmocId>pr_wav_per</fnmocId>
+      <name>pr_wav_per</name>
+      <nameFull/>
+      <description>The quantity of time required for two successive primary wave crests to pass a fixed point.
+      </description>
+      <unitsFNMOC>s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>109</grib1Id>
+      <fnmocId>scdy_wav_dir</fnmocId>
+      <name>scdy_wav_dir</name>
+      <nameFull/>
+      <description>The angle measured clockwise from true north to the direction from which secondary waves are coming.
+      </description>
+      <unitsFNMOC>deg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>110</grib1Id>
+      <fnmocId>scdy_wav_per</fnmocId>
+      <name>scdy_wav_per</name>
+      <nameFull/>
+      <description>The quantity of time required for two successive secondary wave crests to pass a fixed point.
+      </description>
+      <unitsFNMOC>s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>111</grib1Id>
+      <fnmocId>sol_rad</fnmocId>
+      <name>sol_rad</name>
+      <nameFull/>
+      <description>The incoming instantaneous shortwave radiation from the sun.</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>112</grib1Id>
+      <fnmocId>ir_flux</fnmocId>
+      <name>ir_flux</name>
+      <nameFull/>
+      <description>Net infrared heat flux</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>113</grib1Id>
+      <fnmocId>net_shtwav_rad_flux_toa</fnmocId>
+      <name>net_shtwav_rad_flux_toa</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>114</grib1Id>
+      <fnmocId>net_lngwav_rad_flux_toa</fnmocId>
+      <name>net_lngwav_rad_flux_toa</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>115</grib1Id>
+      <fnmocId>lngwav_rad_flux</fnmocId>
+      <name>lngwav_rad_flux</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>116</grib1Id>
+      <fnmocId>shtwav_rad_flux</fnmocId>
+      <name>shtwav_rad_flux</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>117</grib1Id>
+      <fnmocId>global_rad_flux</fnmocId>
+      <name>global_rad_flux</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>118</grib1Id>
+      <fnmocId>bri_temp</fnmocId>
+      <name>bri_temp</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>K</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>121</grib1Id>
+      <fnmocId>ltnt_heat_flux</fnmocId>
+      <name>ltnt_heat_flux</name>
+      <nameFull/>
+      <description>The estimated rate of heat flow per unit mass for a system in a reversible, isobaric-isotheric change
+        of phase.
+      </description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>122</grib1Id>
+      <fnmocId>snsb_heat_flux</fnmocId>
+      <name>snsb_heat_flux</name>
+      <nameFull/>
+      <description>The estimated rate of the flow of heat between two bodies.</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>123</grib1Id>
+      <fnmocId>bdy_layer_diss</fnmocId>
+      <name>bdy_layer_diss</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>124</grib1Id>
+      <fnmocId>wnd_strs_ucmp</fnmocId>
+      <name>wnd_strs_ucmp</name>
+      <nameFull/>
+      <description>The drag force per unit area caused by the wind shear in the u component.</description>
+      <unitsFNMOC>Nt/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>125</grib1Id>
+      <fnmocId>wnd_strs_vcmp</fnmocId>
+      <name>wnd_strs_vcmp</name>
+      <nameFull/>
+      <description>The drag force per unit area caused by the wind shear in the v component.</description>
+      <unitsFNMOC>Nt/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>126</grib1Id>
+      <fnmocId>wnd_mix_energy</fnmocId>
+      <name>wnd_mix_energy</name>
+      <nameFull/>
+      <description>no definition available.</description>
+      <unitsFNMOC>J</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>128</grib1Id>
+      <fnmocId>duct_base_ht</fnmocId>
+      <name>duct_base_ht</name>
+      <nameFull/>
+      <description>The electromagnetic duct base (or lower) height.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>129</grib1Id>
+      <fnmocId>duct_strength</fnmocId>
+      <name>duct_strength</name>
+      <nameFull/>
+      <description>The difference between the modified refractivity (M units) at the top of a duct and the trapping
+        layer base height (M max).
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>130</grib1Id>
+      <fnmocId>qstar</fnmocId>
+      <name>qstar</name>
+      <nameFull/>
+      <description>Represents a potential, positive if surface has more moisture than air layer, negative if air layer
+        has more moisture than surface.
+      </description>
+      <unitsFNMOC>kg/kg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>131</grib1Id>
+      <fnmocId>tstar</fnmocId>
+      <name>tstar</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>132</grib1Id>
+      <fnmocId>grad_mod_refr</fnmocId>
+      <name>grad_mod_refr</name>
+      <nameFull/>
+      <description>The gradient of modified refractivity (dm/dz).</description>
+      <unitsFNMOC>1/ft</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>133</grib1Id>
+      <fnmocId>grnd_sea_temp</fnmocId>
+      <name>grnd_sea_temp</name>
+      <nameFull/>
+      <description>The temperature of the earth's skin, consisting of the ocean surface and land surface at the bottom
+        of the atmosphere.
+      </description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>134</grib1Id>
+      <fnmocId>geop_ht_mn</fnmocId>
+      <name>geop_ht_mn</name>
+      <nameFull/>
+      <description>The mean height of points in the atmsophere expressed in units proportional to the geopotential of
+        those heights.
+      </description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>134</grib1Id>
+      <fnmocId>geop_ht_mn_trnc18</fnmocId>
+      <name>geop_ht_mn_trnc18</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>deprecated</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>135</grib1Id>
+      <fnmocId>cld_base</fnmocId>
+      <name>cld_base</name>
+      <nameFull/>
+      <description>The estimated height, relative to mean sea level, of the lower surface of a cloud layer.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>136</grib1Id>
+      <fnmocId>cld_top_temp</fnmocId>
+      <name>cld_top_temp</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>137</grib1Id>
+      <fnmocId>aero_vis_rng</fnmocId>
+      <name>aero_vis_rng</name>
+      <nameFull/>
+      <description>The greatest distance in a given direction at which it is just possible to see an object with the
+        unaided eye in platform and target layers.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>138</grib1Id>
+      <fnmocId>clr_air_turb</fnmocId>
+      <name>clr_air_turb</name>
+      <nameFull/>
+      <description>Scaled Elrod clear air turbulence index.</description>
+      <unitsFNMOC>1/s2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>139</grib1Id>
+      <fnmocId>contrail_prbl</fnmocId>
+      <name>contrail_prbl</name>
+      <nameFull/>
+      <description>The contrail formation probability using critical temperature.</description>
+      <unitsFNMOC>%</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>144</grib1Id>
+      <fnmocId>geop_ht_24hr_dif</fnmocId>
+      <name>geop_ht_24hr_dif</name>
+      <nameFull/>
+      <description>The change in geopotential height over 24 hours at a given location.</description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>145</grib1Id>
+      <fnmocId>dynm_ht</fnmocId>
+      <name>dynm_ht</name>
+      <nameFull/>
+      <description>The height of a point in the atmosphere expressed in a unit proporation to the geopotential at that
+        point.
+      </description>
+      <unitsFNMOC>m2/s2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>147</grib1Id>
+      <fnmocId>duct_mexcess</fnmocId>
+      <name>duct_mexcess</name>
+      <nameFull/>
+      <description>The difference between the duct strength (modified refractivity or M units) and the magnitude
+        (M-units) of the layer whose value is obtained from the differenced of the modified refractivity from the
+        trapping layer base height and the value at the duct base height (or the surface in the case of surface-based
+        ducts).
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>148</grib1Id>
+      <fnmocId>duct_thickness</fnmocId>
+      <name>duct_thickness</name>
+      <nameFull/>
+      <description>The thickness of the electromagnetic duct from the base, which may be at the surface, to the top of
+        the layer.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>149</grib1Id>
+      <fnmocId>duct_top</fnmocId>
+      <name>duct_top</name>
+      <nameFull/>
+      <description>The height of the top of an electromagnetic duct.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>150</grib1Id>
+      <fnmocId>gale_wnd_prob</fnmocId>
+      <name>gale_wnd_prob</name>
+      <nameFull/>
+      <description>The probability of the near surface wind speed being equal to or greater than 34 knots (gale force
+        winds lower boundary).
+      </description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>152</grib1Id>
+      <fnmocId>abs_vort_ens_stdev</fnmocId>
+      <name>abs_vort_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the absolute vorticity of the ensemble members for a point in time.
+      </description>
+      <unitsFNMOC>1/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>153</grib1Id>
+      <fnmocId>air_temp_ens_stdev</fnmocId>
+      <name>air_temp_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the air temperature of the ensemble members for a point in time.
+      </description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>154</grib1Id>
+      <fnmocId>rltv_hum_ens_stdev</fnmocId>
+      <name>rltv_hum_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the relative humidity of the ensemble members for a point in time.
+      </description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>155</grib1Id>
+      <fnmocId>wcap_prbl</fnmocId>
+      <name>wcap_prbl</name>
+      <nameFull/>
+      <description>The percent of occurrence of white caps forming on the crest of waves due to wind.</description>
+      <unitsFNMOC>%</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>156</grib1Id>
+      <fnmocId>vrtx_wav</fnmocId>
+      <name>vrtx_wav</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>157</grib1Id>
+      <fnmocId>wnd_vect_dif_mgtd</fnmocId>
+      <name>wnd_vect_dif_mgtd</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>158</grib1Id>
+      <fnmocId>turb_ke</fnmocId>
+      <name>turb_ke</name>
+      <nameFull/>
+      <description>The mean kinetic energy per unit mass associated with eddies in turbulent flow.</description>
+      <unitsFNMOC>m2/s2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>159</grib1Id>
+      <fnmocId>dust_sfc_concen</fnmocId>
+      <name>dust_sfc_concen</name>
+      <nameFull/>
+      <description>The mass of dust particles in a cubic meter of air.</description>
+      <unitsFNMOC>mg/m3</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>160</grib1Id>
+      <fnmocId>tot_dust_optdep</fnmocId>
+      <name>tot_dust_optdep</name>
+      <nameFull/>
+      <description>The optical thickness measured vertically above some given altitude due to the extinction and
+        scattering by dust particles (integrated).
+      </description>
+      <unitsFNMOC>m/m</unitsFNMOC>
+      <productionStatus>deprecated</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>162</grib1Id>
+      <fnmocId>tot_dust_concen</fnmocId>
+      <name>tot_dust_concen</name>
+      <nameFull/>
+      <description>The estimated total density of particulate matter of dust.</description>
+      <unitsFNMOC>mg/m3</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>163</grib1Id>
+      <fnmocId>cape</fnmocId>
+      <name>cape</name>
+      <nameFull/>
+      <description>Maximum buoyant energy that an unstable air parcel can aquire.</description>
+      <unitsFNMOC>J/Kg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>164</grib1Id>
+      <fnmocId>cin</fnmocId>
+      <name>cin</name>
+      <nameFull/>
+      <description>Energy needed to overcome atmospheric stability for continued spontaneous convection.</description>
+      <unitsFNMOC>J/Kg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>165</grib1Id>
+      <fnmocId>frozen_rain</fnmocId>
+      <name>frozen_rain</name>
+      <nameFull/>
+      <description>An accumulation of rain that freezes before reaching the ground or transparent or translucent pellets
+        of ice less than or equal to 5mm in diameter.
+        Ice pellets usually bounce when hitting hard ground and make a sound upon impact.
+        These ice pellets can be 1) sleet or grains of ice, generally transparent, globular, solid grains of ice that
+        have formed from the freezing of raindrops or
+        the refreezing of largely melted snowflakes when falling though a below-freezing layer of air near the earth's
+        surface;
+        2) small hail, generally translucent particles, consisting of snow pellets
+        (white, opaque, approximately round ice particles having a snowlike structure, and about 2 - 5 mm in diameter)
+        encased in a thin layer of ice.
+        The ice layer may form either by the accretion of droplets upon the snow pellet or by the melting and refreezing
+        of the surface of the snow pellet (AMS).
+        The estimated depth of frozen rain or ice pellets (water equivalent) that accumulated over a fixed period of
+        time (accumulation period).
+        The accumulation period is the same regardless of the forecast period.
+        (When the accumulation period ends, a snap-shot is taken (grid made), and then the accumulation is set to zero
+        (the bucket tip). The accumulation begins again for the next accumulation period.)
+        The accumulation period and the bucket tip are exactly the same for each grid. Grids are available at forecast
+        hours that are multiples of the accumulation period.
+        FOR COAMPS the accumulation is over six hours.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>167</grib1Id>
+      <fnmocId>ocn_heat_cntnt</fnmocId>
+      <name>ocn_heat_cntnt</name>
+      <nameFull/>
+      <description>The vertically integrated heat content of the ocean above the reference isotherm (26 deg C).
+      </description>
+      <unitsFNMOC>kJ/cm2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>171</grib1Id>
+      <fnmocId>geop_ht_ens_stdev</fnmocId>
+      <name>geop_ht_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the geopotential height of the ensemble members for a point in time.
+      </description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>172</grib1Id>
+      <fnmocId>prob_sig_wav_ht_gt12ft</fnmocId>
+      <name>prob_sig_wav_ht_gt12ft</name>
+      <nameFull/>
+      <description>The probability that the significant wave height of ocean waves will be greater than 12 ft.
+      </description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>173</grib1Id>
+      <fnmocId>prob_sig_wav_ht_gt18ft</fnmocId>
+      <name>prob_sig_wav_ht_gt18ft</name>
+      <nameFull/>
+      <description>The probability that the significant wave height of ocean waves will be greater than 18 ft.
+      </description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>175</grib1Id>
+      <fnmocId>evap_duct_ht</fnmocId>
+      <name>evap_duct_ht</name>
+      <nameFull/>
+      <description>The estimated height of a duct formed from evaporation of seawater which begins at sea level and
+        rises to an elevation (duct height) corresponding to a change in the slope in the index of refraction.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>176</grib1Id>
+      <fnmocId>peak_wav_per_ens_stdev</fnmocId>
+      <name>peak_wav_per_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the peak wave period of the ensemble members for a point in time.
+      </description>
+      <unitsFNMOC>s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>177</grib1Id>
+      <fnmocId>pres_ens_stdev</fnmocId>
+      <name>pres_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the pressure of the ensemble members for a point in time.</description>
+      <unitsFNMOC>Pa</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>178</grib1Id>
+      <fnmocId>sig_wav_ht_ens_stdev</fnmocId>
+      <name>sig_wav_ht_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the significant wave height of the ensemble members for a point in time.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>179</grib1Id>
+      <fnmocId>swl_wav_ht_ens_stdev</fnmocId>
+      <name>swl_wav_ht_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the swell wave height of the ensemble members for a point in time.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>180</grib1Id>
+      <fnmocId>aero_optdep</fnmocId>
+      <name>aero_optdep</name>
+      <nameFull/>
+      <description>The optical thickness measured vertically above some given altitude due to the extinction by aerosol
+        particles.
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>181</grib1Id>
+      <fnmocId>aero_extinct_part</fnmocId>
+      <name>aero_extinct_part</name>
+      <nameFull/>
+      <description>A coded long integer representing the proportions of sulfate and dust and smoke extinction in the
+        layer.
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>182</grib1Id>
+      <fnmocId>ozone_mix_ratio</fnmocId>
+      <name>ozone_mix_ratio</name>
+      <nameFull/>
+      <description>The ratio of the mass of a variable atmospheric constituent (here ozone) to the mass of dry air.
+      </description>
+      <unitsFNMOC>kg/kg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>183</grib1Id>
+      <fnmocId>aero_extinct_uv</fnmocId>
+      <name>aero_extinct_uv</name>
+      <nameFull/>
+      <description>The removal by aerosol particles of long infrared radiant energy from an incident beam by the process
+        of absorption and scattering.
+      </description>
+      <unitsFNMOC>1/km</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>184</grib1Id>
+      <fnmocId>aero_extinct_vis</fnmocId>
+      <name>aero_extinct_vis</name>
+      <nameFull/>
+      <description>The removal by aerosol particles of long infrared radiant energy from an incident beam by the process
+        of absorption and scattering.
+      </description>
+      <unitsFNMOC>1/km</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>185</grib1Id>
+      <fnmocId>aero_extinct_nir</fnmocId>
+      <name>aero_extinct_nir</name>
+      <nameFull/>
+      <description>The removal by aerosol particles of long infrared radiant energy from an incident beam by the process
+        of absorption and scattering.
+      </description>
+      <unitsFNMOC>1/km</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>186</grib1Id>
+      <fnmocId>ttl_prcp_ens_stdev</fnmocId>
+      <name>ttl_prcp_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the total precipitation of the ensemble members for a point in time.
+      </description>
+      <unitsFNMOC>kg/m**2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>187</grib1Id>
+      <fnmocId>aero_extinct_mw</fnmocId>
+      <name>aero_extinct_mw</name>
+      <nameFull/>
+      <description>The removal by aerosol particles of long infrared radiant energy from an incident beam by the process
+        of absorption and scattering.
+      </description>
+      <unitsFNMOC>1/km</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>188</grib1Id>
+      <fnmocId>aero_extinct_lw</fnmocId>
+      <name>aero_extinct_lw</name>
+      <nameFull/>
+      <description>The removal by aerosol particles of long infrared radiant energy from an incident beam by the process
+        of absorption and scattering.
+      </description>
+      <unitsFNMOC>1/km</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>189</grib1Id>
+      <fnmocId>aero_asym_uv</fnmocId>
+      <name>aero_asym_uv</name>
+      <nameFull/>
+      <description>Asymmetry parameter (or asymmetry factor) in each layer at ultraviolet wavelengths. (Asymmetry factor
+        is a fundamental property of a scattering medium that affects the transfer of radiant energy)
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>190</grib1Id>
+      <fnmocId>aero_asym_vis</fnmocId>
+      <name>aero_asym_vis</name>
+      <nameFull/>
+      <description>Asymmetry parameter (or asymmetry factor) in each layer at visible wavelengths. (Asymmetry factor is
+        a fundamental property of a scattering medium that affects the transfer of radiant energy)
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>191</grib1Id>
+      <fnmocId>aero_asym_nir</fnmocId>
+      <name>aero_asym_nir</name>
+      <nameFull/>
+      <description>Asymmetry parameter (or asymmetry factor) in each layer at near infrared wavelengths. (Asymmetry
+        factor is a fundamental property of a scattering medium that affects the transfer of radiant energy)
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>192</grib1Id>
+      <fnmocId>aero_asym_mw</fnmocId>
+      <name>aero_asym_mw</name>
+      <nameFull/>
+      <description>Asymmetry parameter (or asymmetry factor) in each layer at mid infrared wavelengths. (Asymmetry
+        factor is a fundamental property of a scattering medium that affects the transfer of radiant energy)
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>193</grib1Id>
+      <fnmocId>aero_asym_lw</fnmocId>
+      <name>aero_asym_lw</name>
+      <nameFull/>
+      <description>Asymmetry parameter (or asymmetry factor) in each layer at long infrared wavelengths. (Asymmetry
+        factor is a fundamental property of a scattering medium that affects the transfer of radiant energy)
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>194</grib1Id>
+      <fnmocId>aero_scatter_uv</fnmocId>
+      <name>aero_scatter_uv</name>
+      <nameFull/>
+      <description>A measure of the extinction due to scattering of ultraviolet radiation as it traverses a medium
+        containing scattering particles (scattering coefficient).
+      </description>
+      <unitsFNMOC>1/km</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>195</grib1Id>
+      <fnmocId>aero_scatter_vis</fnmocId>
+      <name>aero_scatter_vis</name>
+      <nameFull/>
+      <description>A measure of the extinction due to scattering of visible radiation as it traverses a medium
+        containing scattering particles (scattering coefficient).
+      </description>
+      <unitsFNMOC>1/km</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>196</grib1Id>
+      <fnmocId>aero_scatter_nir</fnmocId>
+      <name>aero_scatter_nir</name>
+      <nameFull/>
+      <description>A measure of the extinction due to scattering of near infrared radiation as it traverses a medium
+        containing scattering particles (scattering coefficient).
+      </description>
+      <unitsFNMOC>1/km</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>198</grib1Id>
+      <fnmocId>aero_optdep_sm</fnmocId>
+      <name>aero_optdep_sm</name>
+      <nameFull/>
+      <description>The optical thickness measured vertically above some given altitude due to the extinction and
+        scattering by smoke particles (integrated).
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>199</grib1Id>
+      <fnmocId>aero_optdep_su</fnmocId>
+      <name>aero_optdep_su</name>
+      <nameFull/>
+      <description>The optical thickness measured vertically above some given altitude due to the extinction and
+        scattering by sulfate aerosols (integrated).
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>200</grib1Id>
+      <fnmocId>aero_optdep_sa</fnmocId>
+      <name>aero_optdep_sa</name>
+      <nameFull/>
+      <description>The optical thickness measured vertically above some given altitude due to the extinction and
+        scattering by salt particles (integrated).
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>201</grib1Id>
+      <fnmocId>aero_optdep_du</fnmocId>
+      <name>aero_optdep_du</name>
+      <nameFull/>
+      <description>The optical thickness measured vertically above some given altitude due to the extinction and
+        scattering by dust particles (integrated).
+      </description>
+      <unitsFNMOC>numeric</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>202</grib1Id>
+      <fnmocId>temp_grad</fnmocId>
+      <name>temp_grad</name>
+      <nameFull/>
+      <description>The rate of variation in temperature in a medium (salt water) over a specified distance (ocean
+        surface to bottom).
+      </description>
+      <unitsFNMOC>deg_K/m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>206</grib1Id>
+      <fnmocId>freezing_rain</fnmocId>
+      <name>freezing_rain</name>
+      <nameFull/>
+      <description>The estimated depth of mixed sleet (rain and snow) or rain (falls in liquid form) that freezes upon
+        impact to form a coating of glaze upon the ground and on exposed objects
+        (AMS Glossary, water equivalent) that accumulated over a fixed period of time (accumulation period).
+        The accumulation period is the same regardless of the forecast period. (When the accumulation period ends, a
+        snap-shot is taken (grid made),
+        and then the accumulation is set to zero (the bucket tip).
+        The accumulation begins again for the next accumulation period.)
+        The accumulation period and the bucket tip are exactly the same for each grid. Grids are available at forecast
+        hours that are multiples of the accumulation period.
+      </description>
+      <unitsFNMOC>kg/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>207</grib1Id>
+      <fnmocId>peak_wav_dir</fnmocId>
+      <name>peak_wav_dir</name>
+      <nameFull/>
+      <description>The angle measured clockwise from true north to the direction from which the peak waves are coming.
+      </description>
+      <unitsFNMOC>deg</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>208</grib1Id>
+      <fnmocId>peak_wav_per</fnmocId>
+      <name>peak_wav_per</name>
+      <nameFull/>
+      <description>The quantity of time required for two successive peak wave crests to pass a fixed point.
+      </description>
+      <unitsFNMOC>s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>210</grib1Id>
+      <fnmocId>shrt_wav</fnmocId>
+      <name>shrt_wav</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>211</grib1Id>
+      <fnmocId>rsdl_wav</fnmocId>
+      <name>rsdl_wav</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>212</grib1Id>
+      <fnmocId>lng_wav</fnmocId>
+      <name>lng_wav</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>213</grib1Id>
+      <fnmocId>mag_ditch_hdg</fnmocId>
+      <name>mag_ditch_hdg</name>
+      <nameFull/>
+      <description>The estimated angle, in a clockwise direction, between true north and the recommended direction of
+        ditching an aircraft in a body of water.
+      </description>
+      <unitsFNMOC>deg_+N</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>214</grib1Id>
+      <fnmocId>wnd_ucmp_mn</fnmocId>
+      <name>wnd_ucmp_mn</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>215</grib1Id>
+      <fnmocId>wnd_vcmp_mn</fnmocId>
+      <name>wnd_vcmp_mn</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>216</grib1Id>
+      <fnmocId>wnd_dif_ucmp_mn</fnmocId>
+      <name>wnd_dif_ucmp_mn</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>217</grib1Id>
+      <fnmocId>wnd_dif_vcmp_mn</fnmocId>
+      <name>wnd_dif_vcmp_mn</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>218</grib1Id>
+      <fnmocId>grnd_wet</fnmocId>
+      <name>grnd_wet</name>
+      <nameFull/>
+      <description>The estimated rate of ground coverage that is determined to be wet as compared to the entire surface.
+      </description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>219</grib1Id>
+      <fnmocId>pres_err</fnmocId>
+      <name>pres_err</name>
+      <nameFull/>
+      <description>The quantity of error in the estimated air pressure.</description>
+      <unitsFNMOC>pa</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>220</grib1Id>
+      <fnmocId>max_wav_ht</fnmocId>
+      <name>max_wav_ht</name>
+      <nameFull/>
+      <description>The mean height of the highest one tenth of the waves measured from trough to crest.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>221</grib1Id>
+      <fnmocId>snsb_ltnt_heat_flux</fnmocId>
+      <name>snsb_ltnt_heat_flux</name>
+      <nameFull/>
+      <description>The rate of transfer of sensible heat (enthalphy) plus latent heat from one region to another.
+      </description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>222</grib1Id>
+      <fnmocId>ttl_heat_flux</fnmocId>
+      <name>ttl_heat_flux</name>
+      <nameFull/>
+      <description>The estimated total rate of flow of heat in the atmosphere.</description>
+      <unitsFNMOC>W/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>223</grib1Id>
+      <fnmocId>geop_ht_err</fnmocId>
+      <name>geop_ht_err</name>
+      <nameFull/>
+      <description>The geopotential height of level or surface error estimate.</description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>224</grib1Id>
+      <fnmocId>frnt_anal</fnmocId>
+      <name>frnt_anal</name>
+      <nameFull/>
+      <description>The estimated rate of the psychometric parameters indicating the presence of a frontal boundary.
+      </description>
+      <unitsFNMOC>deg K/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>225</grib1Id>
+      <fnmocId>fog</fnmocId>
+      <name>fog</name>
+      <nameFull/>
+      <description>The rate of probability of the occurrence of fog.</description>
+      <unitsFNMOC>%</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>226</grib1Id>
+      <fnmocId>rltv_hum_err</fnmocId>
+      <name>rltv_hum_err</name>
+      <nameFull/>
+      <description>The quantity of error in the estimated ratio of measured vapor pressure to the computed saturation
+        vapor pressure at the temperature of the measurement.
+      </description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>227</grib1Id>
+      <fnmocId>wnd_ucmp_err</fnmocId>
+      <name>wnd_ucmp_err</name>
+      <nameFull/>
+      <description>Wind u component (east-west) error estimate.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>228</grib1Id>
+      <fnmocId>wnd_vcmp_err</fnmocId>
+      <name>wnd_vcmp_err</name>
+      <nameFull/>
+      <description>Wind v component (north-south) error estimate.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>229</grib1Id>
+      <fnmocId>wnd_spd_ens_stdev</fnmocId>
+      <name>wnd_spd_ens_stdev</name>
+      <nameFull/>
+      <description>The standard deviation of the wind speed of the ensemble members for a point in time.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>230</grib1Id>
+      <fnmocId>frz_ht</fnmocId>
+      <name>frz_ht</name>
+      <nameFull/>
+      <description>The vertical dimension above a vertical reference data where the air temperature is 0 degrees
+        Celsius.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>231</grib1Id>
+      <fnmocId>air_temp_err</fnmocId>
+      <name>air_temp_err</name>
+      <nameFull/>
+      <description>Analysis air temperature error from truth (observations).</description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>232</grib1Id>
+      <fnmocId>sea_sfc_ht_corr</fnmocId>
+      <name>sea_sfc_ht_corr</name>
+      <nameFull/>
+      <description>The sea height anomaly about a long term sea height mean.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>234</grib1Id>
+      <fnmocId>ceil_ht</fnmocId>
+      <name>ceil_ht</name>
+      <nameFull/>
+      <description>The height above ground level (AGL) of the lowest cloud or obscuring phenomena layer aloft with 5/8
+        or more summation total sky cover, which may be predominantly opaque, or the visibility into a surfaced-based
+        obscuration.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>235</grib1Id>
+      <fnmocId>wnd_strs</fnmocId>
+      <name>wnd_strs</name>
+      <nameFull/>
+      <description>The drag force per unit area caused by the wind shear.</description>
+      <unitsFNMOC>Nt/m2</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>236</grib1Id>
+      <fnmocId>snw_age</fnmocId>
+      <name>snw_age</name>
+      <nameFull/>
+      <description>The time difference between the data analysis and the date of the last measurable snow fall.
+      </description>
+      <unitsFNMOC>day</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>238</grib1Id>
+      <fnmocId>terr_ht</fnmocId>
+      <name>terr_ht</name>
+      <nameFull/>
+      <description>no definition available</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>239</grib1Id>
+      <fnmocId>latitude</fnmocId>
+      <name>latitude</name>
+      <nameFull/>
+      <description>Angular distance north or south from the earth's equator measure through 90 degrees. (Webster 1983)
+      </description>
+      <unitsFNMOC>deg_+N</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>240</grib1Id>
+      <fnmocId>longitude</fnmocId>
+      <name>longitude</name>
+      <nameFull/>
+      <description>The arc or portion of the earth's equator intersected between the meridian of a given place and the
+        prime meridian (as from Greenwich, England) and expressed either in degrees or time. (Webster 1983)
+      </description>
+      <unitsFNMOC>deg_+E</unitsFNMOC>
+      <productionStatus>listed</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>241</grib1Id>
+      <fnmocId>cld_top</fnmocId>
+      <name>cld_top</name>
+      <nameFull/>
+      <description>The estimated height of the upper surface of a cloud layer, ice or liquid.</description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>243</grib1Id>
+      <fnmocId>sea_temp_anom</fnmocId>
+      <name>sea_temp_anom</name>
+      <nameFull/>
+      <description>The difference between sea temperature analysis values and climatology.</description>
+      <unitsFNMOC>deg_K</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>245</grib1Id>
+      <fnmocId>stab_cld</fnmocId>
+      <name>stab_cld</name>
+      <nameFull/>
+      <description>The estimated rate of the sky dome that is covered by non-convective or stable clouds.</description>
+      <unitsFNMOC>fraction</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>246</grib1Id>
+      <fnmocId>lift_cdns_lvl</fnmocId>
+      <name>lift_cdns_lvl</name>
+      <nameFull/>
+      <description>The level at which a parcel of moist air lifted dry-adiabatically would become saturated.
+      </description>
+      <unitsFNMOC>m</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>247</grib1Id>
+      <fnmocId>thkn</fnmocId>
+      <name>thkn</name>
+      <nameFull/>
+      <description>The geometric thickness of layer.</description>
+      <unitsFNMOC>gpm</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>248</grib1Id>
+      <fnmocId>peak_wnd_spd</fnmocId>
+      <name>peak_wnd_spd</name>
+      <nameFull/>
+      <description>The highest instantaneous wind speed during a specified time period.</description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>249</grib1Id>
+      <fnmocId>cld_wtr_dnst</fnmocId>
+      <name>cld_wtr_dnst</name>
+      <nameFull/>
+      <description>The density of condensed liquid cloud water at a given level.</description>
+      <unitsFNMOC>g/m3</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>250</grib1Id>
+      <fnmocId>cld_ice_dnst</fnmocId>
+      <name>cld_ice_dnst</name>
+      <nameFull/>
+      <description>The density of condensed frozen cloud water.</description>
+      <unitsFNMOC>g/m3</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>251</grib1Id>
+      <fnmocId>wnd_utru</fnmocId>
+      <name>wnd_utru</name>
+      <nameFull/>
+      <description>The east-west wind component based on true east. (correct for lambert conformal projection)
+      </description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>252</grib1Id>
+      <fnmocId>wnd_vtru</fnmocId>
+      <name>wnd_vtru</name>
+      <nameFull/>
+      <description>The north-south wind component based on true north (correction for lambert conformal projection).
+      </description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+    <entry>
+      <grib1Id>253</grib1Id>
+      <fnmocId>ustar</fnmocId>
+      <name>ustar</name>
+      <nameFull/>
+      <description>Motion near the surface where the shearing stress is often assumed to be independent of height and
+        approximately proportional to the square of the mean velocity. The friction velocity is, therefore, exactly the
+        velocity for which this square law would be valid.
+      </description>
+      <unitsFNMOC>m/s</unitsFNMOC>
+      <productionStatus>current</productionStatus>
+    </entry>
+  </fnmocTable>
+</pnTable>

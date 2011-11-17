@@ -1,6 +1,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.GribResourceReader;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
 import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Utils;
@@ -436,6 +437,12 @@ public class Grib1TablesViewer extends JPanel {
 
     public String getCFname() {
       return param.getCFname();
+    }
+
+    public String getWMOdesc() {
+      Grib1ParamTable wmo = Grib1StandardTables.getDefaultTable();
+      Grib1Parameter p = wmo.getParameter(param.getNumber());
+      return p == null ? "" : p.getDescription();
     }
 
     public String getDescription() {

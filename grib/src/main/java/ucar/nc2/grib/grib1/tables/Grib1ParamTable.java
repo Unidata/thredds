@@ -63,6 +63,7 @@ public class Grib1ParamTable implements GribTables {
   private String name;  // name of the table
   private String path; // path of filename containing this table
   private Map<Integer, Grib1Parameter> parameters; // param number -> param
+  private boolean useName;
 
   /**
    * Read a dataset-specific table from a file
@@ -94,14 +95,15 @@ public class Grib1ParamTable implements GribTables {
   }
 
   /**
-   * Create a dataset-specific table from a jdom tree
+   * Create a dataset-specific table from a jdom tree using the DSS parser
    *
    * @param paramTableElem the jdom tree
    * @throws IOException on io error
    */
   public Grib1ParamTable(org.jdom.Element paramTableElem) throws IOException {
     this.name = paramTableElem.getChildText("title");
-    parseDssXml(paramTableElem);
+    DssParser p = new DssParser();
+    p.parseXml(paramTableElem);
   }
 
   public int getCenter_id() {
@@ -118,6 +120,10 @@ public class Grib1ParamTable implements GribTables {
 
   public String getName() {
     return name;
+  }
+
+  public boolean useParamName() {
+    return useName;
   }
 
   public int getKey() {
@@ -186,7 +192,11 @@ public class Grib1ParamTable implements GribTables {
   // reading
 
   private Map<Integer, Grib1Parameter> readParameterTable() {
-    if (name.endsWith(".tab"))
+    if (name.startsWith("table_2_") || name.startsWith("local_table_2_"))
+      readParameterTableEcmwf(); // ecmwf
+    else if (name.startsWith("US058"))
+      readParameterTableXml(new FnmocParser());// FNMOC
+     else if (name.endsWith(".tab"))
       readParameterTableTab();                               // wgrib format
     else if (name.endsWith(".wrf"))
       readParameterTableSplit("\\|", new int[]{0, 3, 1, 2}); // WRF AMPS
@@ -195,9 +205,7 @@ public class Grib1ParamTable implements GribTables {
     else if (name.endsWith(".dss"))
       readParameterTableSplit("\t", new int[]{0, -1, 1, 2}); // NCAR DSS
     else if (name.endsWith(".xml"))
-      readParameterTableXml();                               // NCAR DSS XML format
-    else if (name.startsWith("table_2_") || name.startsWith("local_table_2_"))
-      readParameterTableEcmwf(); // ecmwf
+      readParameterTableXml(new DssParser());// NCAR DSS XML format
     else
       logger.warn("Dont know how to read " + name + " file=" + path);
     return parameters;
@@ -398,13 +406,7 @@ TBLE2 cptec_254_params[] = {
 
   }
 
-  /* http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.60-1.3.xml
-   <parameter code="5">
-  <description>ICAO Standard Atmosphere reference height</description>
-  <units>m</units>
-  </parameter>
-  */
-  private boolean readParameterTableXml() {
+  private boolean readParameterTableXml(XmlTableParser parser) {
     InputStream is = null;
     try {
       is = GribResourceReader.getInputStream(path);
@@ -413,7 +415,7 @@ TBLE2 cptec_254_params[] = {
       SAXBuilder builder = new SAXBuilder();
       org.jdom.Document doc = builder.build(is);
       Element root = doc.getRootElement();
-      parseDssXml(root);
+      parameters = parser.parseXml(root);  // all at once - thread safe
       return true;
 
     } catch (IOException ioe) {
@@ -432,22 +434,83 @@ TBLE2 cptec_254_params[] = {
     }
   }
 
-  private void parseDssXml(Element root) {
-    HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
-    List<Element> params = root.getChildren("parameter");
-    for (Element elem1 : params) {
-      int code = Integer.parseInt(elem1.getAttributeValue("code"));
-      String desc = elem1.getChildText("description");
-      if (desc == null) continue;
-      String units = elem1.getChildText("units");
-      if (units == null) units = "";
-      String name = elem1.getChildText("shortName");
-      String cf = elem1.getChildText("CF");
-      Grib1Parameter parameter = new Grib1Parameter(this, code, name, desc, units, cf);
-      result.put(parameter.getNumber(), parameter);
-      if (debug) System.out.printf(" %s%n", parameter);
+  private interface XmlTableParser {
+    HashMap<Integer, Grib1Parameter> parseXml(Element root);
+  }
+
+  private class DssParser implements XmlTableParser {
+    /* http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.60-1.3.xml
+    <parameter code="5">
+    <description>ICAO Standard Atmosphere reference height</description>
+    <units>m</units>
+    </parameter>
+    */
+
+    public HashMap<Integer, Grib1Parameter> parseXml(Element root) {
+      HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
+      List<Element> params = root.getChildren("parameter");
+      for (Element elem1 : params) {
+        int code = Integer.parseInt(elem1.getAttributeValue("code"));
+        String desc = elem1.getChildText("description");
+        if (desc == null) continue;
+        String units = elem1.getChildText("units");
+        if (units == null) units = "";
+        String name = elem1.getChildText("shortName");
+        String cf = elem1.getChildText("CF");
+        Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTable.this, code, name, desc, units, cf);
+        result.put(parameter.getNumber(), parameter);
+        if (debug) System.out.printf(" %s%n", parameter);
+      }
+      return result;
     }
-    parameters = result; // all at once - thread safe
+  }
+
+  private class FnmocParser implements XmlTableParser {
+    /*
+    <pnTable>
+      <name>Master Parameter Table</name>
+      <updatedDTG>201110110856</updatedDTG>
+      <tableStatus setDTG="2007050712">current</tableStatus>
+      <fnmocTable>
+        <entry>
+          <grib1Id>001</grib1Id>
+          <fnmocId>pres</fnmocId>
+          <name>pres</name>
+          <nameFull/>
+          <description>Commonly used for atmospheric pressure, the pressure exerted by the atmosphere as a consequence of
+            gravitational attraction exerted upon the "column" of air lying directly above the point in question.
+          </description>
+          <unitsFNMOC>pa</unitsFNMOC>
+          <productionStatus>current</productionStatus>
+        </entry>
+    */
+
+    public HashMap<Integer, Grib1Parameter> parseXml(Element root) {
+      HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
+      Element fnmocTable = root.getChild("fnmocTable");
+      List<Element> params = fnmocTable.getChildren("entry");
+      for (Element elem1 : params) {
+        int code;
+        try {
+          code = Integer.parseInt(elem1.getChildText("grib1Id"));
+        } catch (NumberFormatException e) {
+          System.out.printf("BAD number= %s%n", elem1.getChildText("grib1Id"));
+          continue;
+        }
+        String desc = elem1.getChildText("description");
+        if (desc == null) continue;
+        //if (desc.startsWith("no definition")) continue; // skip; use standard def
+        desc = StringUtil2.collapseWhitespace(desc);
+        String units = elem1.getChildText("unitsFNMOC");
+        if (units == null) units = "";
+        String name = elem1.getChildText("name");
+        Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTable.this, code, name, desc, units, null);
+        result.put(parameter.getNumber(), parameter);
+        if (debug) System.out.printf(" %s%n", parameter);
+      }
+      useName = true;
+      return result;
+    }
   }
 
   // order: num, name, desc, unit

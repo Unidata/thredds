@@ -74,15 +74,19 @@ public class Grib1Parameter {
     return table;
   }
 
-  public final int getNumber() {
+  public int getNumber() {
     return number;
   }
 
-  public final String getName() {
+  public String getName() {
     return name;
   }
 
-  /**
+  public boolean useName() {
+    return (name != null) && table.useParamName();
+  }
+
+   /**
    * description of parameter.
    *
    * @return description

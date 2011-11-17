@@ -420,6 +420,29 @@ public class StringUtil2 {
     return sb.toString();
   }
 
+    /**
+   * Collapse continuous whitespace into one single " ".
+   *
+   * @param s operate on this string
+   * @return result with collapsed whitespace
+   */
+  static public String collapseWhitespace(String s) {
+    int len = s.length();
+    StringBuilder b = new StringBuilder(len);
+    for (int i = 0; i < len; i++) {
+      char c = s.charAt(i);
+      if (!Character.isWhitespace(c)) {
+        b.append(c);
+      } else {
+        b.append(' ');
+        while ((i + 1 < len) && Character.isWhitespace(s.charAt(i + 1))) {
+          i++;  /// skip further whitespace
+        }
+      }
+    }
+    return b.toString();
+  }
+
   /**
    * Replace any char "out" in s with "in".
    *

@@ -30,13 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/**
- * Performs operations related to loading level information from Table 3.
- * @author Capt Richard D. Gonzalez, rkambic, caron
- */
-
 package ucar.nc2.grib.grib1;
-
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
@@ -44,6 +38,8 @@ import ucar.nc2.grib.VertCoord;
 
 /**
  * Process level information from GRIB-1 Table 3: "TYPE AND VALUE OF LEVEL"
+ * Performs operations related to loading level information from Table 3.
+ * @author Capt Richard D. Gonzalez, rkambic, caron
  */
 @Immutable
 public class Grib1ParamLevel {
@@ -818,24 +814,6 @@ public class Grib1ParamLevel {
    */
   public int getLevelType() {
     return levelType;
-  }
-
-  /**
-   * Name of this level.
-   *
-   * @return name
-   */
-  public String getName() {
-    return getNameShort(levelType);
-  }
-
-  /**
-   * Description of this level.
-   *
-   * @return Description
-   */
-  public String getLevelDescription() {
-    return getLevelDescription(levelType);
   }
 
   /**

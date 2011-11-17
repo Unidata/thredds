@@ -88,6 +88,10 @@ public class Grib1Tables implements GribTables {
     return Grib1ParamLevel.getNameShort(code);
   }
 
+  public String getLevelDescription(int levelType) {
+    return Grib1ParamLevel.getLevelDescription(levelType);
+  }
+
   public Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
     Grib1Parameter param = null;
     if (override != null)
@@ -108,6 +112,5 @@ public class Grib1Tables implements GribTables {
       result = Grib1StandardTables.getParameterTable(center, subcenter, tableVersion); // standard tables
     return result;
   }
-
 
 }

@@ -363,7 +363,7 @@ public class Grib1RawPanel extends JPanel {
       pds = r.getPDSsection();
       header = new String(r.getHeader());
       records = new ArrayList<RecordBean>();
-      param = Grib1StandardTables.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
+      param = tables.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
     }
 
     void addRecord(Grib1Record r) {
@@ -374,12 +374,7 @@ public class Grib1RawPanel extends JPanel {
       return records;
     }
 
-    public String getCenter() {
-      return CommonCodeTable.getCenterName(pds.getCenter(), 1);
-    }
-
     public String getTableVersion() {
-
       return pds.getCenter() + "-" + pds.getSubCenter() + "-"+ pds.getTableVersion();
     }
 
@@ -395,8 +390,14 @@ public class Grib1RawPanel extends JPanel {
       return pds.getLevelType();
     }
 
-    public String getDesc() {
+    public String getParamDesc() {
       return (param == null) ? null : param.getDescription();
+    }
+
+    public String getName() {
+      if (param == null) return null;
+      return Grib1Utils.makeVariableName(tables, pds.getCenter(),pds.getSubCenter(),pds.getTableVersion(),pds.getParameterNumber(),
+          pds.getLevelType(), pds.getTimeType() );
     }
 
     public String getUnit() {
@@ -405,7 +406,7 @@ public class Grib1RawPanel extends JPanel {
 
     public final String getLevelName() {
       Grib1ParamLevel plevel = pds.getParamLevel();
-      return plevel.getName();
+      return tables.getLevelNameShort( plevel.getLevelType());
     }
 
     public int getN() {
