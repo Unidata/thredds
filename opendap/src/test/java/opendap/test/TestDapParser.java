@@ -38,7 +38,7 @@ import opendap.dap.*;
 
 import java.io.*;
 
-// Test that the DDS parsing is correct
+// Test that the dap.y parsing is correct
 
 public class TestDapParser extends TestFiles
 {
@@ -49,7 +49,7 @@ public class TestDapParser extends TestFiles
     static final int ISERR = 3;
 
     boolean debug = false;
-    String TITLE = "DAP DDS Parser Tests";
+    String TITLE = "DAP Parser Tests";
 
     String extension = null;
     int kind = ISUNKNOWN;
@@ -159,16 +159,20 @@ public class TestDapParser extends TestFiles
 
             try {
                 resultstream.close();
+		// Open the baseline file
+                String basefilepath = baselinedir + "/" + test + extension;
+                File basefile = new File(basefilepath);
+                FileOutputStream basestream = new FileOutputStream(basefile);
                 // Diff the two files
                 Diff diff = new Diff(test);
                 FileReader resultrdr = new FileReader(resultfile);
-                FileReader testrdr = new FileReader(testfile);
-                boolean pass = !diff.doDiff(testrdr, resultrdr);
+                FileReader baserdr = new FileReader(basefile);
+                boolean pass = !diff.doDiff(baserdr, resultrdr);
                 if (isxfail) {
                     pass = true;
                     System.err.println("***XFAIL: " + test);
                 }
-                testrdr.close();
+                baserdr.close();
                 resultrdr.close();
                 if (!pass) {
                     junit.framework.Assert.assertTrue(testname, pass);

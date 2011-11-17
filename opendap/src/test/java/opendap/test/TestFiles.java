@@ -50,6 +50,7 @@ public class TestFiles extends TestCase
 
     static String DFALTPREFIX = "src/test/data";
     static String testdata1dir = "testdata1";
+    static String baseline1dir = "baseline1";
 
     // Storage of test case outputs relative to root opendap directory
     static String resultspath = "target/results";
@@ -99,15 +100,21 @@ public class TestFiles extends TestCase
     }
 
     String testdir = null;
+    String baselinedir = null;
     String test = null;
     String testname = null;
 
-    public TestFiles(String name, String testdir)
+    public TestFiles(String name, String ignored)
     {
         super(name);
+
+        String testdir = null;
+        String baselinedir = null;
+
         if (testdir == null) {
             // Figure out if we are being run in cdm directory or opendap directory
-            if (testdir == null) testdir = DFALTPREFIX + "/" + testdata1dir;
+   	    testdir = DFALTPREFIX + "/" + testdata1dir;
+	    baselinedir = DFALTPREFIX + "/" + baseline1dir;
             // Check to see if we are in the correct working directory
             String userdir = System.getProperty( "user.dir" );
             if(userdir.endsWith("cdm")) {
@@ -116,11 +123,17 @@ public class TestFiles extends TestCase
             }
             File tmp = new File(testdir);
             if(!tmp.exists()) {
-                    System.err.println("Cannot locate testdata1 directory; path does not exist: "+tmp.getAbsolutePath());
+                System.err.println("Cannot locate testdata1 directory; path does not exist: "+tmp.getAbsolutePath());
+                    System.exit(1);
+            }
+            tmp = new File(baselinedir);
+            if(!tmp.exists()) {
+                System.err.println("Cannot locate baseline1 directory; path does not exist: "+tmp.getAbsolutePath());
                     System.exit(1);
             }
         }
         this.testdir = testdir;
+        this.baselinedir = baselinedir;
     }
 
     //////////////////////////////////////////////////

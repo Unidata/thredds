@@ -601,9 +601,9 @@ public abstract class Dapparse
         throw new ParseException("extractname: illegal object class: " + o);
     }
 
-    String clearName(String encodedname)
+    String unescapeDAPName(Object name)
     {
-        return EscapeStrings.unEscapeDAPIdentifier(encodedname);
+        return EscapeStrings.unEscapeDAPIdentifier((String)name);
     }
 
     String unescapeAttributeString(String s)
@@ -614,6 +614,14 @@ public abstract class Dapparse
             news += c;
         }
         return news;
+    }
+
+    // Because we fixed this in dap.y (name: rule),
+    // we do not need to do it again here.
+    String clearName(String name)
+    {
+        //OLD:return EscapeStrings.unEscapeDAPIdentifier(name);
+	return name;
     }
 
 }

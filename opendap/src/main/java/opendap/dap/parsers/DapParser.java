@@ -1022,7 +1022,7 @@ public class DapParser extends Dapparse
     
 /* Line 354 of lalr1.java  */
 /* Line 275 of "dap.y"  */
-    {yyval=((yystack.valueAt (1-(1))));};
+    {yyval=unescapeDAPName(((yystack.valueAt (1-(1)))));};
   break;
     
 

@@ -1,0 +1,3 @@
+Dataset {
+  Byte b[5];
+} OneDimensionalSimpleArrays;

@@ -37,7 +37,7 @@ import java.io.*;
     public boolean parse(String input) throws ParseException
     {
 	((Daplex)yylexer).reset(parsestate);
-	((Daplex)yylexer).setInput(input);
+	((Daplex)yylexer).setText(input);
 	return parse();
     }
 
@@ -272,7 +272,7 @@ errorprog : /*empty*/ {$$=null;} | SCAN_PROG    '=' SCAN_WORD ';' {$$=$3;}
    and are disambiguated by context
 */
 name:
-          SCAN_WORD      {$$=$1;}
+          SCAN_WORD      {$$=unescapeDAPName($1);}
 	| SCAN_ALIAS     {$$=strdup("alias");}
 	| SCAN_ARRAY     {$$=strdup("array");}
 	| SCAN_ATTR      {$$=strdup("attributes");}
