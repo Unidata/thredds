@@ -126,22 +126,6 @@ public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory
 {
 
 //////////////////////////////////////////////////
-// Decide if using AuthStore or not
-
-/**
- * If not using HTTPAuthStore, then use the
- * code to handle ESG authorization using keystore code
- * provided by Apache and Philip Kershaw and Jon Blower.
- */
-
-static private boolean UseAuthStore;
-
-{
-    String authstore = System.getenv("AUTHSTORE");
-    UseAuthStore = (authstore != null);
-}
-
-//////////////////////////////////////////////////
 
 private SSLContext sslcontext = null;
 
@@ -266,7 +250,6 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
 
     try {
 
-if(UseAuthStore) {
         // Get the HTTPAuthProvider
         HTTPAuthProvider provider;
 	provider =  (HTTPAuthProvider)params.getParameter(CredentialsProvider.PROVIDER);
@@ -287,14 +270,6 @@ if(UseAuthStore) {
         trustpassword = (String)sslprovider.getTruststore();
         trustpath = (String)sslprovider.getTrustpassword();
 
-} else {//!UseAuthStore
-
-        keypassword = getpassword("key");
-        keypath = getstorepath("key");
-        trustpassword = getpassword("trust");
-        trustpath = getstorepath("trust");
-
-}
         keystore = buildstore(keypath, keypassword, "key");
         if (keystore != null) {
             KeyManagerFactory kmfactory = KeyManagerFactory.getInstance("SunX509");
@@ -351,26 +326,5 @@ buildstore(String path, String password, String prefix) throws HTTPException
     return store;
 }
 
-static String
-getpassword(String prefix)
-{
-    String password = System.getProperty(prefix + "storepassword");
-    if(password != null) {
-        password = password.trim();
-        if(password.length() == 0) password = null;
-    }
-    return password;
-}
-
-static String
-getstorepath(String prefix)
-{
-    String path = System.getProperty(prefix + "store");
-    if(path != null) {
-        path = path.trim();
-        if(path.length() == 0) path = null;
-    }
-    return path;
-}
 
 }

@@ -43,7 +43,7 @@ and (2) method creation must specify a url
 <p>
 It is important to note that Session objects do NOT
 correspond with the HttpClient objects of the Apache
-httpclient library. A Session encapulates an instance of
+httpclient library. The Session described here encapulates an instance of
 an Apache HttpClient, but Sessions also wrap and control
 httpclient library methods such as GetMethod via the class
 <i><a href="#HTTPMethod">HTTPMethod</a></i>. This is so
@@ -161,8 +161,6 @@ public class Main
 	session.setUserAgent("agent");
 	session.setConnectionManagerTimeout(475);
 	session.setSoTimeout(475);
-	session.setProxy(); // Uses sytem properties "http.proxyHost"
-                            // and  "http.proxyPort".
 
         HTTPMethod method = HTTPMethod.Get(session);
         int status = method.execute();
@@ -249,6 +247,9 @@ the HTTP digest scheme based on encrypted user name and password.
 <b>Proxy</b>:
 a scheme for accessing a proxy server
 based on clear-text user name and password.
+Note that there is an alternate <a href="#simpleproxy">simple proxy"</a>
+that does not involve authentication, but only
+requires a host name and a port number.
 <p>
 <b>SSL</b>:
 a scheme that uses a client-side key to authenticate
@@ -341,7 +342,8 @@ should be referenced to see any modifications.
      <li> Set the max number of threads that will be supported.
      </ul>
 <li>static int getGlobalThreadCount()
-<li>static void setGlobalCredentialsProvider(CredentialsProvider)
+<li>static void
+setGlobalCredentialsProvider(CredentialsProvider)
      <ul>
      <li> For Backward compatibility; this methods will create a row
           in <i>HTTPAuthStore</i> and an instance of
@@ -353,14 +355,19 @@ should be referenced to see any modifications.
      <ul>
      <li> Returns the set of cookies available on a generic session.
      </ul>
-<li>void setGlobalAuthenticationPreemptive(boolean tf)
+<li>static void setGlobalAuthenticationPreemptive(boolean tf)
      <ul>
      <li> Specifies that all HTTPSession instances should use global preemption
      </ul>
-<li>void setGlobalCredentialsProvider(CredentialsProvider cp)
+<li>static void setGlobalCredentialsProvider(CredentialsProvider cp)
      <ul>
      <li> Last resort credentials provider.
      </ul>
+<li>static void 
+<a name="setGlobalSimpleProxy>setGlobalSimpleProxy(String host, int port)</a>
+     <ul>
+     <li> Force use of a proxy at host:port
+    </ul>
 </ul>
 
 <h4>Constructor(s)</h4>
@@ -376,6 +383,27 @@ should be referenced to see any modifications.
           with any url.
      </ul>
 </ul>
+Note that in both cases, selected command line parameters
+(specified by the java -D flag) are used for initialization.
+There are two such cases.
+<ol>
+<li> <a name="simpleproxy">Simple Proxy</a>:
+If defined, the values of the flags "-Dhttp.proxyHost" and "-Dhttp.proxyPort"
+are used as arguments to the
+<a href="#setGlobalSimpleProxy>setGlobalSimpleProxy()</a>
+method to establish a global simple proxy.
+Again, the simple proxy does not authentication
+and is distinct from the authenticating proxy information.
+<p> <a name="simpleproxy">SSL</a>:
+If defined, the values of the flags
+"-Dkeystore", "-Dkeystorepassword"
+and "-Dtruststore", "-Dtruststorepassword"
+are converted to an HTTPSSLProvider object
+that in turn is used as an argument to the
+<a href="#setGlobalCredentialsProvider#>setGlobalCredentialsProvider</a>
+method to establish client side key support.
+<li>
+</ol>
 
 <h4>Instance Get/Set Methods</h4>
 <ul>
@@ -387,10 +415,9 @@ should be referenced to see any modifications.
 <li>Cookie[] getCookies()
 <li>void setContext(HttpState cxt)
 <li>HttpState getContext()
-<li>void setProxy()
+<li>void setSimpleProxy(String host, int port)
      <ul>
-     <li> Set proxy authorization using the two system properties
-		"http.proxyHost" and "http.proxyPort".
+     <li> Force use of a proxy at host:port
     </ul>
 <li>void setCredentialsProvider(CredentialsProvider provider)
 </ul>

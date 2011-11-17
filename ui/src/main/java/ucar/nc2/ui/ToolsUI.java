@@ -36,7 +36,7 @@ package ucar.nc2.ui;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.grib.grib1.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.util.net.HTTPSession;
 import thredds.inventory.FeatureCollectionConfig;
@@ -951,7 +951,7 @@ public class ToolsUI extends JPanel {
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        Grib1ParamTable.setStrict(state);
+        Grib1StandardTables.setStrict(state);
       }
     };
     a.putValue(BAMutil.STATE, new Boolean(true));

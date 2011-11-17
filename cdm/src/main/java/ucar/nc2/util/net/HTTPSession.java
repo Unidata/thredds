@@ -96,6 +96,8 @@ static boolean globalauthpreemptive = false;
 static CredentialsProvider globalProvider = null;
 static int globalSoTimeout = 0;
 static int globalConnectionTimeout = 0;
+static String globalsimpleproxyhost = null;
+static int globalsimpleproxyport = 0;
 
 static {
     //fix: schemes = new SchemeRegistry();
@@ -108,6 +110,8 @@ static {
     sessionList = new ArrayList<HTTPSession>(); // see kill function
     setGlobalConnectionTimeout(DFALTTIMEOUT);
     setGlobalSoTimeout(DFALTTIMEOUT);
+    setGlobalSimpleProxy();
+    setGlobalKeyStore();
 }
 
 // ////////////////////////////////////////////////////////////////////////
@@ -257,8 +261,7 @@ protected void construct(String urlencoded)
 
         setAuthenticationPreemptive(globalauthpreemptive);
 
-        // H/T: nick.bower@metoceanengineers.com
-        setProxy();
+        setSimpleProxy();
 
         sessionList.add(this);
 
@@ -357,31 +360,6 @@ public void clearState()
     sessionClient.getState().clearCredentials();
 }
 
-// H/T: nick.bower@metoceanengineers.com
-
-public void setProxy()
-{
-    if (sessionClient == null) return;
-
-    String host = System.getProperty("http.proxyHost");
-    String port = System.getProperty("http.proxyPort");
-    if(host != null && port != null) {
-        host = host.trim();
-        if(host.length() == 0) host = null;
-        int portno = 0;
-        if(port != null) {
-            port = port.trim();
-            if(port.length() > 0) {
-                try {
-                    portno = Integer.parseInt(port);
-                } catch (NumberFormatException nfe) {portno = 0;}
-            }
-        }
-        if(host != null && portno > 0) {
-            sessionClient.getHostConfiguration().setProxy(host, portno);
-        }
-    }
-}
 
 // Define some utility functions
 
@@ -476,6 +454,78 @@ putUrlAsString(String content, String url) throws HTTPException
 }
 
 /////////////////////////////////////////////
+// Timeouts
+
+static public void setConnectionManagerTimeout(int timeout)
+{
+    setGlobalConnectionTimeout(timeout);
+}
+
+static public void setGlobalConnectionTimeout(int timeout)
+{
+    connmgr.getParams().setConnectionTimeout(timeout);
+
+}
+
+static public void setGlobalSoTimeout(int timeout)
+{
+    globalSoTimeout = timeout;
+}
+
+
+//////////////////////////////////////////////////
+// Simple (not authenticating proxy support)
+
+// For backward compatibility, provide
+// programmatic access for setting proxy info
+
+// Extract proxy info from command line -D parameters
+// H/T: nick.bower@metoceanengineers.com
+static void
+setGlobalSimpleProxy()
+{
+    String host = System.getProperty("http.proxyHost");
+    String port = System.getProperty("http.proxyPort");
+    if(host != null && port != null) {
+        host = host.trim();
+        if(host.length() == 0) host = null;
+        int portno = 0;
+        if(port != null) {
+            port = port.trim();
+            if(port.length() > 0) {
+                try {
+                    portno = Integer.parseInt(port);
+                } catch (NumberFormatException nfe) {portno = 0;}
+            }
+        }
+        setGlobalSimpleProxy(host,portno);
+    }
+}
+
+void
+setSimpleProxy()
+{
+    if(globalsimpleproxyhost == null) return;
+    setSimpleProxy(globalsimpleproxyhost,globalsimpleproxyport);
+}
+
+// These are externally visible
+
+static synchronized public void
+setGlobalSimpleProxy(String proxyhost, int proxyport)
+{
+    globalsimpleproxyhost = proxyhost;
+    globalsimpleproxyport = proxyport;
+}
+
+public void
+setSimpleProxy(String host, int port)
+{
+    if(sessionClient == null) return;
+    sessionClient.getHostConfiguration().setProxy(host, port);
+}
+
+//////////////////////////////////////////////////
 // Authorization
 
 static synchronized
@@ -513,22 +563,55 @@ setGlobalCredentialsProvider(CredentialsProvider provider)
     setCredentialsProvider(HTTPAuthScheme.ANY,HTTPAuthStore.ANY_URL,provider);
 }
 
-static public void setConnectionManagerTimeout(int timeout)
+
+// Provide for backward compatibility
+// through the -D properties
+
+static synchronized void
+setGlobalKeyStore()
 {
-    setGlobalConnectionTimeout(timeout);
+    String keypassword = cleanproperty("keystorepassword");
+    String keypath = cleanproperty("keystore");
+    String trustpassword = cleanproperty("truststorepassword");
+    String trustpath = cleanproperty("truststore");
+
+    HTTPSSLProvider sslprovider = new HTTPSSLProvider(keypath,keypassword,
+						      trustpath,trustpassword);
+
+    setGlobalCredentialsProvider(sslprovider);
 }
 
-static public void setGlobalConnectionTimeout(int timeout)
+static String
+cleanproperty(String property)
 {
-    connmgr.getParams().setConnectionTimeout(timeout);
-
+    String value = System.getProperty(property);
+    if(value != null) {
+        value = value.trim();
+        if(value.length() == 0) value = null;
+    }
+    return value;
 }
 
-static public void setGlobalSoTimeout(int timeout)
+static String
+getpassword(String prefix)
 {
-    globalSoTimeout = timeout;
+    String password = System.getProperty(prefix + "storepassword");
+    if(password != null) {
+        password = password.trim();
+        if(password.length() == 0) password = null;
+    }
+    return password;
 }
 
-
+static String
+getstorepath(String prefix)
+{
+    String path = System.getProperty(prefix + "store");
+    if(path != null) {
+        path = path.trim();
+        if(path.length() == 0) path = null;
+    }
+    return path;
+}
 
 }

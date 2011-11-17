@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import org.jdom.Element;
 import thredds.inventory.CollectionManager;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -39,12 +40,13 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.tables.Grib1Parameter;
+import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,119 +66,18 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Iosp.class);
   static private final boolean debugTime = false, debugRead = false;
 
- /*
-  http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB
-  The following section gives the algorithm NCL uses to assign names to GRIB1 variables.
-
-  GRIB1 data variable name encoding:
-
-    if entry matching parameter table version and parameter number is found (either in built-in or user-supplied table)
-      and entry contains a short name for the parameter:
-        if recognized as probability product:
-          <probability_parameter_short_name>_<subject_variable_short_name> (ex: PROB_A_PCP)
-        else:
-          <parameter_short_name> (ex: TMP)
-    else:
-       VAR_<parameter_number> (ex: VAR_179)
-
-    if pre-defined grid:
-       _<pre-defined_grid_number> (ex: TMP_6)
-    else if grid defined in GDS (Grid Description Section):
-       _GDS<grid_type_number> (ex: TMP_GDS4)
-
-    _<level_type_abbreviation> (ex: TMP_GDS4_ISBL)
-
-    if not statistically processed variable and not duplicate name the name is complete at this point.
-
-    if statistically-processed variable with constant specified statistical processing duration:
-          _<statistical_processing_type_abbreviation><statistical_processing_duration><duration_units> (ex: ACPCP_44_SFC_acc6h)
-    else if statistically-processed variable with no specified processing duration
-       _<statistical_processing_type_abbreviation> (ex: A_PCP_192_SFC_acc)
-
-    if variable name is duplicate of existing variable name (this should not normally occur):
-       _n (where n begins with 1 for first duplicate) (ex: TMP_GDS4_ISBL_1)
-
-Notes:
-  * Probability products are properly recognized in version 4.3.0 or later.
-  * NCL uses the generic construction VAR_<parameter_number> in two situations:
-    - The entry in the applicable published table contains no short name suitable for use as a component of an NCL variable name.
-      Users should expect that later revisions to the table may result in the parameter receiving a short name, causing the name to change.
-    - There is no recognized entry for the parameter number. In this case, NCL outputs a warning message. The parameter index
-      could be unrecognized for several reasons:
-        > No parameter table has been supplied for the originating center and the index is greater than 127. (The default GRIB parameter table
-          properly applies only to indexes less than 128.)
-        > The index is not present in the applicable parameter table, perhaps because the table is out of date or is otherwise incorrect.
-        > The GRIB file has been generated incorrectly, perhaps specifying a wrong parameter table or a non-existent index.
-
-  * Pre-defined grids are enumerated in Table B of the NCEP GRIB1 documentation.
-  * GDS Grids types are listed in Table 6 of the NCEP GRIB1 documentation.
-  * Level type abbreviations are taken from Table 3 of the NCEP GRIB1 documentation.
-  * The abbreviations corresponding to the supported statistical processing methods are:
-      ave - average
-      acc - accumulation
-      dif - difference
-  * Note that the duration period and units abbreviation were added in NCL version 4.2.0.a028 in order to handle GRIB files with
-    more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
-    names relative to earlier versions.
- */
-  static public String makeVariableName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    Formatter f = new Formatter();
-
-    Grib1Parameter param = tables.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
-
-    if (param == null) {
-      f.format("VAR%d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
-    } else {
-      //if (param.getName() != null)
-      //  f.format("%s", param.getName());
-      //else
-        f.format("%s", Grib1Parameter.makeNameFromDescription(param.getDescription()));
-    }
-
-    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_%s", Grib1ParamLevel.getNameShort(vindex.levelType)); // code table 3
-      // if (vindex.isLayer) f.format("_layer"); LOOK ? assumes that cant have two variables on same vertical type, differeing only by isLayer
-    }
-
-    if (vindex.intvType >= 0) {
-      Grib1ParamTime.StatType stype = Grib1ParamTime.getStatType(vindex.intvType);
-      if (stype != null)
-        f.format("_%s", stype.name());
-    }
-
-    return f.toString();
-  }
+ static public String makeVariableName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+   return Grib1Utils.makeVariableName(tables, gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter,
+           vindex.levelType, vindex.intvType);
+ }
 
   static public String makeVariableLongName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    Formatter f = new Formatter();
-
-    boolean isProb = (vindex.probabilityName != null && vindex.probabilityName.length() > 0);
-    if (isProb)
-      f.format("Probability ");
-
-    Grib1Parameter param = tables.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
-    if (param == null)
-      f.format("Unknown Parameter %d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
-    else
-      f.format("%s", param.getDescription());
-
-    if (vindex.intvType >= 0) {
-      Grib1ParamTime.StatType stat = Grib1ParamTime.getStatType(vindex.intvType);
-      if (stat != null) f.format(" (%s)", stat.name());
-    }
-
-    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", Grib1ParamLevel.getNameShort(vindex.levelType));
-      if (vindex.isLayer) f.format(" layer");
-    }
-
-    return f.toString();
+    return Grib1Utils.makeVariableLongName(tables, gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter,
+            vindex.levelType, vindex.intvType, vindex.isLayer, vindex.probabilityName);
   }
 
   static public String makeVariableUnits(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    Grib1Parameter gp = tables.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
-    String val = (gp == null) ? "" : gp.getUnit();
-    return (val == null) ? "" : val;
+    return Grib1Utils.makeVariableUnits(tables, gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,6 +113,8 @@ Notes:
   }
 
   private String lookupTablePath, paramTablePath;
+  Element paramTable = null;
+
   @Override
   public Object sendIospMessage(Object special) {
     if (special instanceof String) {
@@ -230,6 +133,10 @@ Notes:
       System.out.printf("GRIB got IOSP message=%s%n", special);
       return null;
     }
+
+    if (special instanceof org.jdom.Element)
+      paramTable = (org.jdom.Element) special;
+
     return super.sendIospMessage(special);
   }
 
@@ -250,7 +157,10 @@ Notes:
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    tables = Grib1Tables.factory(paramTablePath, lookupTablePath);
+    if (paramTable != null) // so iosp message must be recieved before the open()
+      tables = Grib1Tables.factory(paramTable);
+    else
+      tables = Grib1Tables.factory(paramTablePath, lookupTablePath);
 
     boolean isGrib = Grib1RecordScanner.isValidFile(raf);
     if (isGrib) {
@@ -492,7 +402,7 @@ Notes:
     ncfile.addDimension(g, new Dimension(vcName, n));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
     v.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
-    v.addAttribute(new Attribute(CF.LONG_NAME, Grib1ParamLevel.getLevelDescription(vc.getCode())));
+    v.addAttribute(new Attribute(CF.LONG_NAME, tables.getLevelDescription(vc.getCode())));
     v.addAttribute(new Attribute("positive", vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
 
     v.addAttribute(new Attribute("GRIB1_level_code", vc.getCode()));

@@ -37,9 +37,13 @@ package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1Parameter;
+import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
+
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -117,8 +121,9 @@ public final class Grib1SectionProductDefinition {
    * Grid Definition (octet 7).
    * "Number of grid used – from catalogue defined by originating centre". So this is center dependent.
    * "Where octet 7 defines a catalogued grid, that grid should also be defined in Section 2, provided the flag in octet 8
-      indicates inclusion of Section 2.
-      Octet 7 must be set to 255 to indicate a non-catalogued grid, in which case the grid will be defined in Section 2."
+   * indicates inclusion of Section 2.
+   * Octet 7 must be set to 255 to indicate a non-catalogued grid, in which case the grid will be defined in Section 2."
+   *
    * @return Grid Definition.
    */
   public final int getGridDefinition() {
@@ -173,6 +178,7 @@ public final class Grib1SectionProductDefinition {
   /**
    * Reference Date (octet 13-17).
    * Reference time of data – date and time of start of averaging or accumulation period.
+   *
    * @return Reference Date as CalendarDate.
    */
   public final CalendarDate getReferenceDate() {
@@ -198,8 +204,9 @@ public final class Grib1SectionProductDefinition {
 
   /**
    * Time value 1 (octet 19).
-   *  Period of time (number of time units) (0 for analyses or initialized analyses).
-   *  Units of time given by octet 18
+   * Period of time (number of time units) (0 for analyses or initialized analyses).
+   * Units of time given by octet 18
+   *
    * @return time value 1
    */
   public final int getTimeValue1() {
@@ -207,52 +214,55 @@ public final class Grib1SectionProductDefinition {
   }
 
   /**
-    * Time value 2 (octet 20).
-    * Period of time (number of time units); or Time interval between successive analyses,
+   * Time value 2 (octet 20).
+   * Period of time (number of time units); or Time interval between successive analyses,
    * initialized analyses or forecasts, undergoing averaging or accumulation.
    * Units of time given by octet 18
-    * @return time value 2
-    */
-   public final int getTimeValue2() {
-     return getOctet(20);
-   }
+   *
+   * @return time value 2
+   */
+  public final int getTimeValue2() {
+    return getOctet(20);
+  }
 
   /**
-    * Time range indicator (octet 21) - code table 5.
-    *
-    * @return Time range indicator
-    */
-   public final int getTimeType() {
-     return getOctet(21);
-   }
+   * Time range indicator (octet 21) - code table 5.
+   *
+   * @return Time range indicator
+   */
+  public final int getTimeType() {
+    return getOctet(21);
+  }
 
   /**
-    * Number included in statistics (octet 22-23).
-    *  Number included in calculation when octet 21 (Code table 5) refers to a statistical
+   * Number included in statistics (octet 22-23).
+   * Number included in calculation when octet 21 (Code table 5) refers to a statistical
    * process, such as average or accumulation; otherwise set to zero
-    * @return Number included in statistics
-    */
-   public final int getNincluded() {
-     return GribNumbers.int2(getOctet(22), getOctet(23));
-   }
+   *
+   * @return Number included in statistics
+   */
+  public final int getNincluded() {
+    return GribNumbers.int2(getOctet(22), getOctet(23));
+  }
 
   /**
-    * Number missing in statistics (octet 24).
-    * Number missing from calculation in case of statistical process
-    * @return Number missing in statistics
-    */
-   public final int getNmissing() {
-     return getOctet(24);
-   }
+   * Number missing in statistics (octet 24).
+   * Number missing from calculation in case of statistical process
+   *
+   * @return Number missing in statistics
+   */
+  public final int getNmissing() {
+    return getOctet(24);
+  }
 
   /**
-    * Century of reference (octet 25).
-    *
-    * @return Century of reference
-    */
-   public final int getReferenceCentury() {
-     return getOctet(25);
-   }
+   * Century of reference (octet 25).
+   *
+   * @return Century of reference
+   */
+  public final int getReferenceCentury() {
+    return getOctet(25);
+  }
 
   /**
    * Center (octet 26) common code C-12.
@@ -303,18 +313,19 @@ public final class Grib1SectionProductDefinition {
     return rawData[index - 1] & 0xff;
   }
 
- /**
-  * Get the time of the forecast.
-  *
-  * @return date and time
-  *
-  public final int[] getForecastTime() {
-    return new int[] {getTimeValue1(), getTimeValue2()};
-  } */
+  /**
+   * Get the time of the forecast.
+   *
+   * @return date and time
+   *         <p/>
+   *         public final int[] getForecastTime() {
+   *         return new int[] {getTimeValue1(), getTimeValue2()};
+   *         }
+   */
 
- public Grib1ParamLevel getParamLevel() {
-   return new Grib1ParamLevel(this);
- }
+  public Grib1ParamLevel getParamLevel() {
+    return new Grib1ParamLevel(this);
+  }
 
   public Grib1ParamTime getParamTime() {
     return new Grib1ParamTime(this);
@@ -325,37 +336,36 @@ public final class Grib1SectionProductDefinition {
     f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
     f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), Grib1Utils.getSubCenterName(getCenter(), getSubCenter()));
 
-    Grib1ParamTable ptable = tables.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
-    f.format("               Parameter_table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(), (ptable == null) ? "MISSING" : ptable.getPath());
-
     Grib1Parameter parameter = tables.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
     if (parameter != null) {
-        f.format("                Parameter Name : (%d) %s%n", getParameterNumber(), parameter.getName());
-        f.format("                Parameter Desc : %s%n", parameter.getDescription());
-        f.format("               Parameter Units : %s%n", parameter.getUnit());
-        f.format("               Parameter Table : %s%n", parameter.getTable().getName());
-      } else {
-        f.format("               Parameter %d not found%n", getParameterNumber());
-      }
-
-      f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), Grib1Utils.getTypeGenProcessName(getCenter(), getGenProcess()));
-
-      f.format("                Reference Time : %s%n", getReferenceDate());
-      f.format("                    Time Units : (%d) %s%n", getTimeUnit(), Grib1ParamTime.getCalendarPeriod(getTimeUnit()));
-      Grib1ParamTime ptime = getParamTime();
-      f.format("          Time Range Indicator : (%d) %s%n", getTimeType(), ptime.getTimeTypeName());
-      f.format("                   Time 1 (P1) : %d%n", getTimeValue1());
-      f.format("                   Time 2 (P2) : %d%n", getTimeValue2());
-      f.format("                   Time  coord : %s%n", ptime.getTimeCoord());
-      Grib1ParamLevel plevel = getParamLevel();
-      f.format("                    Level Type : (%d) %s%n", getLevelType(), plevel.getName());
-      f.format("             Level Description : %s%n", plevel.getLevelDescription());
-      f.format("                 Level Value 1 : %f%n", plevel.getValue1());
-      f.format("                 Level Value 2 : %f%n", plevel.getValue2());
-      f.format("               Grid Definition : %d%n", getGridDefinition());
-      f.format("                    GDS Exists : %s%n", gdsExists());
-      f.format("                    BMS Exists : %s%n", bmsExists());
+      Grib1ParamTable ptable = parameter.getTable();
+      f.format("               Parameter_table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(), (ptable == null) ? "MISSING" : ptable.getPath());
+      f.format("                Parameter Name : (%d) %s%n", getParameterNumber(), parameter.getName());
+      f.format("                Parameter Desc : %s%n", parameter.getDescription());
+      f.format("               Parameter Units : %s%n", parameter.getUnit());
+      f.format("               Parameter Table : %s%n", parameter.getTable().getName());
+    } else {
+      f.format("               Parameter %d not found%n", getParameterNumber());
     }
+
+    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), Grib1Utils.getTypeGenProcessName(getCenter(), getGenProcess()));
+
+    f.format("                Reference Time : %s%n", getReferenceDate());
+    f.format("                    Time Units : (%d) %s%n", getTimeUnit(), Grib1ParamTime.getCalendarPeriod(getTimeUnit()));
+    Grib1ParamTime ptime = getParamTime();
+    f.format("          Time Range Indicator : (%d) %s%n", getTimeType(), ptime.getTimeTypeName());
+    f.format("                   Time 1 (P1) : %d%n", getTimeValue1());
+    f.format("                   Time 2 (P2) : %d%n", getTimeValue2());
+    f.format("                   Time  coord : %s%n", ptime.getTimeCoord());
+    Grib1ParamLevel plevel = getParamLevel();
+    f.format("                    Level Type : (%d) %s%n", getLevelType(), tables.getLevelNameShort(plevel.getLevelType()));
+    f.format("             Level Description : %s%n", tables.getLevelDescription(plevel.getLevelType()));
+    f.format("                 Level Value 1 : %f%n", plevel.getValue1());
+    f.format("                 Level Value 2 : %f%n", plevel.getValue2());
+    f.format("               Grid Definition : %d%n", getGridDefinition());
+    f.format("                    GDS Exists : %s%n", gdsExists());
+    f.format("                    BMS Exists : %s%n", bmsExists());
+  }
 
   ////////////////////////////////////////////////////////////////////////////////////////
   // LOOK - from old
@@ -371,7 +381,7 @@ public final class Grib1SectionProductDefinition {
   public final int getPerturbationNumber() {
     return 0;
   }
- /*
+  /*
    * NCEP Appendix C Manual 388
    * http://www.nco.ncep.noaa.gov/pmb/docs/on388/appendixc.html
    * states that if the PDS is > 28 bytes and octet 41 == 1
