@@ -1,0 +1,4 @@
+Dataset {
+  Byte b[5];
+} OneDimensionalSimpleArrays;
+Byte /b[0..4] 1 3 5 7 9

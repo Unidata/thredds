@@ -20,7 +20,7 @@ Attributes {
         String hours_variable "GSO_AVHRR.hh";
         String minutes_variable "GSO_AVHRR.mm";
         String seconds_variable "GSO_AVHRR.ss";
-        String gmt_time true;
+        String gmt_time "true";
     }
     DODS_Date {
         String year_variable "GSO_AVHRR.year";

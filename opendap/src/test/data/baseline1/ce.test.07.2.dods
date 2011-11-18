@@ -1,0 +1,68 @@
+Dataset {
+  Sequence {
+    String name;
+    Int32 age;
+  } person;
+  Sequence {
+    Byte b;
+    Int32 i32;
+    UInt32 ui32;
+    Int16 i16;
+    UInt16 ui16;
+    Float32 f32;
+    Float64 f64;
+    String s;
+    Url u;
+  } types;
+} SimpleSequences;
+String /person[0]/name "This is a data test string (pass 2)."
+Int32 /person[0]/age 3
+String /person[1]/name "This is a data test string (pass 3)."
+Int32 /person[1]/age 5
+String /person[2]/name "This is a data test string (pass 4)."
+Int32 /person[2]/age 8
+Byte /types[0]/b 0
+Int32 /types[0]/i32 13
+UInt32 /types[0]/ui32 0
+Int16 /types[0]/i16 0
+UInt16 /types[0]/ui16 0
+Float32 /types[0]/f32 0
+Float64 /types[0]/f64 1000
+String /types[0]/s "This is a data test string (pass 5)."
+Url /types[0]/u "http://www.dods.org"
+Byte /types[1]/b 1
+Int32 /types[1]/i32 21
+UInt32 /types[1]/ui32 2
+Int16 /types[1]/i16 16
+UInt16 /types[1]/ui16 65520
+Float32 /types[1]/f32 0.999983
+Float64 /types[1]/f64 999.95
+String /types[1]/s "This is a data test string (pass 6)."
+Url /types[1]/u "http://www.dods.org"
+Byte /types[2]/b 2
+Int32 /types[2]/i32 34
+UInt32 /types[2]/ui32 6
+Int16 /types[2]/i16 32
+UInt16 /types[2]/ui16 65504
+Float32 /types[2]/f32 1.99987
+Float64 /types[2]/f64 999.8
+String /types[2]/s "This is a data test string (pass 7)."
+Url /types[2]/u "http://www.dods.org"
+Byte /types[3]/b 3
+Int32 /types[3]/i32 55
+UInt32 /types[3]/ui32 12
+Int16 /types[3]/i16 48
+UInt16 /types[3]/ui16 65488
+Float32 /types[3]/f32 2.99955
+Float64 /types[3]/f64 999.55
+String /types[3]/s "This is a data test string (pass 8)."
+Url /types[3]/u "http://www.dods.org"
+Byte /types[4]/b 4
+Int32 /types[4]/i32 89
+UInt32 /types[4]/ui32 20
+Int16 /types[4]/i16 64
+UInt16 /types[4]/ui16 65472
+Float32 /types[4]/f32 3.99893
+Float64 /types[4]/f64 999.2
+String /types[4]/s "This is a data test string (pass 9)."
+Url /types[4]/u "http://www.dods.org"

@@ -1,0 +1,20 @@
+String /Drifters[0]/instrument_id "This is a data test string (pass 0)."
+String /Drifters[0]/location "This is a data test string (pass 1)."
+Float64 /Drifters[0]/latitude 1000
+Float64 /Drifters[0]/longitude 999.95
+String /Drifters[1]/instrument_id "This is a data test string (pass 2)."
+String /Drifters[1]/location "This is a data test string (pass 3)."
+Float64 /Drifters[1]/latitude 999.8
+Float64 /Drifters[1]/longitude 999.55
+String /Drifters[2]/instrument_id "This is a data test string (pass 4)."
+String /Drifters[2]/location "This is a data test string (pass 5)."
+Float64 /Drifters[2]/latitude 999.2
+Float64 /Drifters[2]/longitude 998.75
+String /Drifters[3]/instrument_id "This is a data test string (pass 6)."
+String /Drifters[3]/location "This is a data test string (pass 7)."
+Float64 /Drifters[3]/latitude 998.201
+Float64 /Drifters[3]/longitude 997.551
+String /Drifters[4]/instrument_id "This is a data test string (pass 8)."
+String /Drifters[4]/location "This is a data test string (pass 9)."
+Float64 /Drifters[4]/latitude 996.802
+Float64 /Drifters[4]/longitude 995.953

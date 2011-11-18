@@ -1,0 +1,40 @@
+String /emolt_sensor[0]/SITE "This is a data test string (pass 0)."
+Int16 /emolt_sensor[0]/SERIAL_NUM 0
+Int16 /emolt_sensor[0]/PROBE_SETTING 16
+String /emolt_sensor[0]/TIME_LOCAL "This is a data test string (pass 1)."
+Float64 /emolt_sensor[0]/YRDAY0_LOCAL 1000
+Float64 /emolt_sensor[0]/TEMP 999.95
+Float64 /emolt_sensor[0]/SALT 999.8
+Float64 /emolt_sensor[0]/DEPTH_I 999.55
+String /emolt_sensor[1]/SITE "This is a data test string (pass 2)."
+Int16 /emolt_sensor[1]/SERIAL_NUM 32
+Int16 /emolt_sensor[1]/PROBE_SETTING 48
+String /emolt_sensor[1]/TIME_LOCAL "This is a data test string (pass 3)."
+Float64 /emolt_sensor[1]/YRDAY0_LOCAL 999.2
+Float64 /emolt_sensor[1]/TEMP 998.75
+Float64 /emolt_sensor[1]/SALT 998.201
+Float64 /emolt_sensor[1]/DEPTH_I 997.551
+String /emolt_sensor[2]/SITE "This is a data test string (pass 4)."
+Int16 /emolt_sensor[2]/SERIAL_NUM 64
+Int16 /emolt_sensor[2]/PROBE_SETTING 80
+String /emolt_sensor[2]/TIME_LOCAL "This is a data test string (pass 5)."
+Float64 /emolt_sensor[2]/YRDAY0_LOCAL 996.802
+Float64 /emolt_sensor[2]/TEMP 995.953
+Float64 /emolt_sensor[2]/SALT 995.004
+Float64 /emolt_sensor[2]/DEPTH_I 993.956
+String /emolt_sensor[3]/SITE "This is a data test string (pass 6)."
+Int16 /emolt_sensor[3]/SERIAL_NUM 96
+Int16 /emolt_sensor[3]/PROBE_SETTING 112
+String /emolt_sensor[3]/TIME_LOCAL "This is a data test string (pass 7)."
+Float64 /emolt_sensor[3]/YRDAY0_LOCAL 992.809
+Float64 /emolt_sensor[3]/TEMP 991.562
+Float64 /emolt_sensor[3]/SALT 990.216
+Float64 /emolt_sensor[3]/DEPTH_I 988.771
+String /emolt_sensor[4]/SITE "This is a data test string (pass 8)."
+Int16 /emolt_sensor[4]/SERIAL_NUM 128
+Int16 /emolt_sensor[4]/PROBE_SETTING 144
+String /emolt_sensor[4]/TIME_LOCAL "This is a data test string (pass 9)."
+Float64 /emolt_sensor[4]/YRDAY0_LOCAL 987.227
+Float64 /emolt_sensor[4]/TEMP 985.585
+Float64 /emolt_sensor[4]/SALT 983.844
+Float64 /emolt_sensor[4]/DEPTH_I 982.004

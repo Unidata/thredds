@@ -1,0 +1,45 @@
+Byte /Simple%20Point/LevelWritten[0]/LevelWritten/LevelWritten__0 0
+Byte /Simple%20Point/LevelWritten[1]/LevelWritten/LevelWritten__0 1
+Byte /Simple%20Point/LevelWritten[2]/LevelWritten/LevelWritten__0 2
+Byte /Simple%20Point/LevelWritten[3]/LevelWritten/LevelWritten__0 3
+Byte /Simple%20Point/LevelWritten[4]/LevelWritten/LevelWritten__0 4
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[0]/Time/Time__0 1000
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[0]/Concentration/Concentration__0 999.95
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[0]/Concentration/Concentration__1 999.8
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[0]/Concentration/Concentration__2 999.55
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[0]/Concentration/Concentration__3 999.2
+String /Simple%20Point/Data%20Vgroup/Sensor[0]/Species/Species__0 "This is a data test string (pass 0)."
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[1]/Time/Time__0 998.75
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[1]/Concentration/Concentration__0 998.201
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[1]/Concentration/Concentration__1 997.551
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[1]/Concentration/Concentration__2 996.802
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[1]/Concentration/Concentration__3 995.953
+String /Simple%20Point/Data%20Vgroup/Sensor[1]/Species/Species__0 "This is a data test string (pass 1)."
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[2]/Time/Time__0 995.004
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[2]/Concentration/Concentration__0 993.956
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[2]/Concentration/Concentration__1 992.809
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[2]/Concentration/Concentration__2 991.562
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[2]/Concentration/Concentration__3 990.216
+String /Simple%20Point/Data%20Vgroup/Sensor[2]/Species/Species__0 "This is a data test string (pass 2)."
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[3]/Time/Time__0 988.771
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[3]/Concentration/Concentration__0 987.227
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[3]/Concentration/Concentration__1 985.585
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[3]/Concentration/Concentration__2 983.844
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[3]/Concentration/Concentration__3 982.004
+String /Simple%20Point/Data%20Vgroup/Sensor[3]/Species/Species__0 "This is a data test string (pass 3)."
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[4]/Time/Time__0 980.067
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[4]/Concentration/Concentration__0 978.031
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[4]/Concentration/Concentration__1 975.897
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[4]/Concentration/Concentration__2 973.666
+Float64 /Simple%20Point/Data%20Vgroup/Sensor[4]/Concentration/Concentration__3 971.338
+String /Simple%20Point/Data%20Vgroup/Sensor[4]/Species/Species__0 "This is a data test string (pass 4)."
+Byte /FixedBuoy%20Point/LevelWritten[0]/LevelWritten/LevelWritten__0 5
+Byte /FixedBuoy%20Point/LevelWritten[1]/LevelWritten/LevelWritten__0 6
+Byte /FixedBuoy%20Point/LevelWritten[2]/LevelWritten/LevelWritten__0 7
+Byte /FixedBuoy%20Point/LevelWritten[3]/LevelWritten/LevelWritten__0 8
+Byte /FixedBuoy%20Point/LevelWritten[4]/LevelWritten/LevelWritten__0 9
+Byte /FloatBuoy%20Point/LevelWritten[0]/LevelWritten/LevelWritten__0 10
+Byte /FloatBuoy%20Point/LevelWritten[1]/LevelWritten/LevelWritten__0 11
+Byte /FloatBuoy%20Point/LevelWritten[2]/LevelWritten/LevelWritten__0 12
+Byte /FloatBuoy%20Point/LevelWritten[3]/LevelWritten/LevelWritten__0 13
+Byte /FloatBuoy%20Point/LevelWritten[4]/LevelWritten/LevelWritten__0 14

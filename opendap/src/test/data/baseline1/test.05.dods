@@ -1,0 +1,9 @@
+Byte /types/integers/b 0
+Int32 /types/integers/i32 1
+UInt32 /types/integers/ui32 0
+Int16 /types/integers/i16 0
+UInt16 /types/integers/ui16 0
+Float32 /types/floats/f32 0
+Float64 /types/floats/f64 1000
+String /types/strings/s "This is a data test string (pass 0)."
+Url /types/strings/u "http://www.dods.org"

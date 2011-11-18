@@ -1,0 +1,10 @@
+Dataset {
+  Sequence {
+    Int32 age;
+  } person;
+} SimpleSequences;
+Int32 /person[0]/age 1
+Int32 /person[1]/age 2
+Int32 /person[2]/age 3
+Int32 /person[3]/age 5
+Int32 /person[4]/age 8
