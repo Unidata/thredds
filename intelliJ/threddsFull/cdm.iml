@@ -21,8 +21,10 @@
       </library>
     </orderEntry>
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="library" exported="" name="ehcache" level="project" />
-    <orderEntry type="module" module-name="common" exported="" />
+    <orderEntry type="module" module-name="bufr" />
+    <orderEntry type="module" module-name="grib" />
+    <orderEntry type="module" module-name="opendap" />
+    <orderEntry type="module" module-name="visad" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -50,6 +52,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="jdom" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -59,15 +62,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/jdom.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" exported="" name="joda-time" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -80,7 +75,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/joda-time-2.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/protobuf-java-2.4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -98,7 +93,27 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/protobuf-java-2.4.0a.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.6.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.6.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" exported="" name="ehcache" level="project" />
+    <orderEntry type="module" module-name="common" exported="" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/easymock-2.5.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -113,37 +128,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/easymock-2.5.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.6.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.6.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module" module-name="bufr" />
-    <orderEntry type="module" module-name="grib" />
-    <orderEntry type="module" module-name="opendap" />
-    <orderEntry type="module" module-name="visad" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">

@@ -4,6 +4,12 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  2:(2011-xx-xx)
+  upgrade external libraries:
+    -jdom 1.1.2
+    -jna 3.4.0
+    -joda-time 2.0 - release 7/31/2011
+    -protobuf 2.4.1
+    -slf4j 1.6.4
   grib 1/2: dont use bytes for flags
   netcdfDataset.openOrAcquireFile(): check on http before ncml
   grib2: scale factor is signed
