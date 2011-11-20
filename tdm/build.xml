@@ -35,9 +35,9 @@
   <property name="spring-context.jar" value="org.springframework.context-3.0.5.RELEASE.jar"/>
   <property name="spring-core.jar" value="org.springframework.core-3.0.5.RELEASE.jar"/>
   <property name="spring-expression.jar" value="org.springframework.expression-3.0.5.RELEASE.jar"/>
-  <property name="slf4jImpl.jar" value="slf4j-log4j12-1.6.1.jar"/>
+  <property name="slf4jImpl.jar" value="slf4j-log4j12-1.6.4.jar"/>
   <property name="log4j.jar" value="log4j-1.2.16.jar"/>
-  <property name="commons-logging.jar" value="jcl-over-slf4j-1.6.1.jar"/>
+  <property name="commons-logging.jar" value="jcl-over-slf4j-1.6.4.jar"/>
 
   <!-- source -->
   <path id="sourcepath">

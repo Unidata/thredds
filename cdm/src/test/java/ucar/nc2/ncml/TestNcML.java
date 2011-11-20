@@ -36,7 +36,7 @@ import junit.framework.*;
 import ucar.nc2.TestAll;
 
 /**
- * TestSuite that runs all the sample tests
+ * TestSuite that runs all the sample tests   - data in TestAll.cdmLocalTestDataDir
  *
  */
 public class TestNcML {

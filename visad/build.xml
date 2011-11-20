@@ -29,7 +29,7 @@
 
   <property name="cdm.jar" value="netcdf-4.3.jar"/>
   <property name="visad.jar" value="visad.jar"/>
-  <property name="loggingAPI.jar" value="slf4j-api-1.6.1.jar"/>
+  <property name="loggingAPI.jar" value="slf4j-api-1.6.4.jar"/>
 
   <!-- source -->
   <path id="sourcepath">

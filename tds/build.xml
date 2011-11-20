@@ -96,7 +96,7 @@
   <property name="jcommon.jar" value="external/jcommon-1.0.15.jar"/>
   <property name="jfreechart.jar" value="external/jfreechart-1.0.12.jar"/>
   <property name="joda.jar" value="external/joda-time-2.0.jar"/>
-  <property name="protobuf.jar" value="external/protobuf-java-2.4.0a.jar"/>
+  <property name="protobuf.jar" value="external/protobuf-java-2.4.1.jar"/>
 
   <property name="spring-aop.jar" value="external/org.springframework.aop-3.0.5.RELEASE.jar"/>
   <property name="spring-asm.jar" value="external/org.springframework.asm-3.0.5.RELEASE.jar"/>
@@ -106,10 +106,10 @@
   <property name="spring-expression.jar" value="external/org.springframework.expression-3.0.5.RELEASE.jar"/>
   <property name="spring-web.jar" value="external/org.springframework.web-3.0.5.RELEASE.jar"/>
   <property name="spring-web.servlet.jar" value="external/org.springframework.web.servlet-3.0.5.RELEASE.jar"/>
-  <property name="slf4jAPI.jar" value="external/slf4j-api-1.6.1.jar"/>
-  <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.6.1.jar"/>
+  <property name="slf4jAPI.jar" value="external/slf4j-api-1.6.4.jar"/>
+  <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.6.4.jar"/>
   <property name="log4j.jar" value="external/log4j-1.2.16.jar"/>
-  <property name="commons-logging.jar" value="external/jcl-over-slf4j-1.6.1.jar"/>
+  <property name="commons-logging.jar" value="external/jcl-over-slf4j-1.6.4.jar"/>
 
   <!-- property name="nlog4j.jar" value="external/nlog4j-1.2.25.jar"/ -->
   <property name="quartz.jar" value="external/quartz-1.7.3.jar"/>
@@ -724,13 +724,6 @@
     <antcall target="deploy">
       <param name="server_url" value="http://motherlode.ucar.edu:8080"/>
       <param name="tomcat.password" value="${motherlode.password}"/>
-    </antcall>
-  </target>
-
-  <target name="deploy-lead1" description="Deploy web application to lead1 server">
-    <antcall target="deploy">
-      <param name="server_url" value="http://lead1.unidata.ucar.edu:8080"/>
-      <param name="tomcat.password" value="${lead1.password}"/>
     </antcall>
   </target>
 

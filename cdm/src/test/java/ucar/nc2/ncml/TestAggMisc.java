@@ -107,4 +107,20 @@ public class TestAggMisc extends TestCase {
  }
 
 
+  public void testNestedScan() throws IOException, InvalidRangeException, InterruptedException {
+    String filename = "file:./" + TestAll.cdmLocalTestDataDir+ "ncml/nested/TestNestedDirs.ncml";
+
+   NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
+
+   TestAll.readAllData(ncfile);
+
+    Variable v = ncfile.findVariable("time");
+    Array data = v.read();
+    assert data.getSize() == 3;
+    NCdumpW.printArray(data);
+
+   ncfile.close();
+ }
+
+
 }
