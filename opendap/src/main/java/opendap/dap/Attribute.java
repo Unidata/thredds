@@ -157,7 +157,7 @@ public class Attribute extends DAPNode
    *
    * @param type  the type of attribute to create.  Use one of the type
    *              constants defined by this class.
-   * @param name  the name of the attribute.
+   * @param clearname  the name of the attribute.
    * @param value the initial value of this attribute.  Use the
    *              <code>appendValue</code> method to create a vector of values.
    * @param check if true, check the value and throw
@@ -166,10 +166,10 @@ public class Attribute extends DAPNode
    * @throws AttributeBadValueException thrown if the value is not a legal
    *                                    member of type
    */
-  public Attribute(int type, String name, String value, boolean check)
+  public Attribute(int type, String clearname, String value, boolean check)
           throws AttributeBadValueException {
 
-    super(name);
+    super(clearname);
     if (check)
       dispatchCheckValue(type, value);
 
@@ -185,16 +185,16 @@ public class Attribute extends DAPNode
    *
    * @param type  the type of attribute to create.  Use one of the type
    *              constants defined by this class.
-   * @param name  the name of the attribute.
+   * @param clearname  the name of the attribute.
    * @param value the initial value of this attribute.  Use the
    *              <code>appendValue</code> method to create a vector of values.
    * @throws AttributeBadValueException thrown if the value is not a legal
    *                                    member of type
    */
-  public Attribute(int type, String name, String value)
+  public Attribute(int type, String clearname, String value)
           throws AttributeBadValueException {
 
-    super(name);
+    super(clearname);
     dispatchCheckValue(type, value);
 
     this.type = type;
@@ -207,8 +207,8 @@ public class Attribute extends DAPNode
    *
    * @param container the <code>AttributeTable</code> container.
    */
-  public Attribute(String name, AttributeTable container) {
-    super(name);
+  public Attribute(String clearname, AttributeTable container) {
+    super(clearname);
     type = CONTAINER;
     attr = container;
   }
@@ -224,8 +224,8 @@ public class Attribute extends DAPNode
    *                                  container attribute, first construct and empty AttributeTable and then
    *                                  use that to construct the Attribute.
    */
-  public Attribute(String name, int type) throws IllegalArgumentException {
-    super(name);
+  public Attribute(String clearname, int type) throws IllegalArgumentException {
+    super(clearname);
     this.type = type;
     if (type == CONTAINER)
       throw new IllegalArgumentException("Can't construct an Attribute(CONTAINER)");
@@ -721,12 +721,12 @@ public class Attribute extends DAPNode
 
     if (this.attr instanceof AttributeTable) {
 
-      if (_Debug) os.println("  Attribute \"" + _name + "\" is a Container.");
+      if (_Debug) os.println("  Attribute \"" + _nameClear + "\" is a Container.");
 
       ((AttributeTable) this.attr).print(os, pad);
 
     } else {
-      if (_Debug) os.println("    Printing Attribute \"" + _name + "\".");
+      if (_Debug) os.println("    Printing Attribute \"" + _nameClear + "\".");
 
       os.print(pad + getTypeString() + " " + getEncodedName() + " ");
 
@@ -853,12 +853,12 @@ public class Attribute extends DAPNode
 
     if (this.attr instanceof AttributeTable) {
 
-      if (_Debug) pw.println("  Attribute \"" + _name + "\" is a Container.");
+      if (_Debug) pw.println("  Attribute \"" + _nameClear + "\" is a Container.");
 
       ((AttributeTable) this.attr).printXML(pw, pad, constrained);
 
     } else {
-      if (_Debug) pw.println("    Printing Attribute \"" + _name + "\".");
+      if (_Debug) pw.println("    Printing Attribute \"" + _nameClear + "\".");
 
       pw.println(pad + "<Attribute name=\"" +
               DDSXMLParser.normalizeToXML(getEncodedName()) +

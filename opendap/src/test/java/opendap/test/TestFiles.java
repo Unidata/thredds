@@ -45,15 +45,11 @@ public class TestFiles extends TestCase
 
     static int debug = 0;
 
-    // Path from cdm to opendap directory
-    static String opendappath = "../opendap";
+    static final String TESTSUFFIX = "src/test/data";
+    static final String RESULTSUFFIX = "target/results";
 
-    static String DFALTPREFIX = "src/test/data";
-    static String testdata1dir = "testdata1";
-    static String baseline1dir = "baseline1";
-
-    // Storage of test case outputs relative to root opendap directory
-    static String resultspath = "target/results";
+    static final String TESTDATA1DIR = "testdata1";
+    static final String BASELINE1DIR = "baseline1";
 
     static enum TestPart
     {
@@ -101,6 +97,7 @@ public class TestFiles extends TestCase
 
     String testdir = null;
     String baselinedir = null;
+    String resultsdir = null;
     String test = null;
     String testname = null;
 
@@ -110,17 +107,32 @@ public class TestFiles extends TestCase
 
         String testdir = null;
         String baselinedir = null;
+        String opendapdir = null;
+        String resultsdir = null;
 
         if (testdir == null) {
-            // Figure out if we are being run in cdm directory or opendap directory
-   	    testdir = DFALTPREFIX + "/" + testdata1dir;
-	    baselinedir = DFALTPREFIX + "/" + baseline1dir;
-            // Check to see if we are in the correct working directory
-            String userdir = System.getProperty( "user.dir" );
-            if(userdir.endsWith("cdm")) {
-                // we are being run under TestAll or TestOpenDap
-                testdir = opendappath +"/" + testdir;
+            // Locate the opendap directory, which is presumably in
+            // one of my containing directories
+            String path = System.getProperty("user.dir");
+            path = path.replace('\\','/'); // only use forward slash
+            assert (path != null);
+            if(path.endsWith("/")) path = path.substring(0,path.length()-1);
+            while(path != null) {
+                // look for "opendap" in current directory
+                String od = path + "/opendap";
+                File tmp = new File(od);
+                if(tmp.exists()) {opendapdir = od; break; }
+                int index = path.lastIndexOf('/');
+                path = path.substring(0,index);
             }
+            if(opendapdir == null)  {
+                System.err.println("TestFiles: cannot locate opendap directory");
+                System.exit(1);
+            }
+   	    testdir = opendapdir + "/" +TESTSUFFIX + "/" + TESTDATA1DIR;
+	    baselinedir = opendapdir + "/" + TESTSUFFIX + "/" + BASELINE1DIR;
+            resultsdir = opendapdir + "/" + RESULTSUFFIX;
+
             File tmp = new File(testdir);
             if(!tmp.exists()) {
                 System.err.println("Cannot locate testdata1 directory; path does not exist: "+tmp.getAbsolutePath());
@@ -131,16 +143,34 @@ public class TestFiles extends TestCase
                 System.err.println("Cannot locate baseline1 directory; path does not exist: "+tmp.getAbsolutePath());
                     System.exit(1);
             }
+            tmp = new File(resultsdir);
+            try {
+                // wipe out the results dir
+                if(tmp.exists()) {
+                    for(File f: tmp.listFiles())
+                        f.delete();
+                    tmp.delete();
+                }
+                tmp.mkdirs(); // make sure it exists
+            } catch (Exception e) {
+                System.err.println("Cannot create: "+tmp.getAbsolutePath());
+                System.exit(1);
+            }
+            if(!tmp.canWrite()) {
+                System.err.println("Cannot write results directory: "+tmp.getAbsolutePath());
+                System.exit(1);
+            }
         }
         this.testdir = testdir;
         this.baselinedir = baselinedir;
+        this.resultsdir = resultsdir;
     }
 
     //////////////////////////////////////////////////
     // Define the test data basenames
     //////////////////////////////////////////////////
 
-    static String[] dastestfiles = {
+static String[] dastestfiles = {
 "123.nc", "123bears.nc", "bears.nc", "1990-S1700101.HDF.WVC_Lat", "1998-6-avhrr.dat", "D1",
 "Drifters", "EOSDB", "NestedSeq", "NestedSeq2", "OverideExample",
 "SimpleDrdsExample", "b31", "b31a", "ber-2002-10-01.nc",
@@ -159,7 +189,8 @@ public class TestFiles extends TestCase
 "whoi"
     };
 
-    static String[] ddstestfiles = {
+
+static String[] ddstestfiles = {
 "123.nc", "123bears.nc", "bears.nc", "1990-S1700101.HDF.WVC_Lat", "1998-6-avhrr.dat", "D1",
 "Drifters", "EOSDB", "NestedSeq", "NestedSeq2", "OverideExample",
 "SimpleDrdsExample", "b31", "b31a", "ber-2002-10-01.nc",
@@ -189,16 +220,6 @@ public class TestFiles extends TestCase
 
     // define the xfails
     static String[] dasxfails = {
-                // These failures come from way Printwriter handles backslash escapes
-		        "123.nc", "123bears.nc", "bears.nc",
-                "pbug0001b",
-                "1990-S1700101.HDF.WVC_Lat",                  
-                 "in1.nc", "in_2.nc", "in.nc", "in_v.nc", "in_no_three_double_dmn.nc",
-                "test.nc", "text.nc",
-                // These failures come from way Printwriter handles Attribute {}
-                "synth2","synth6", "synth7", "synth8",
-                "1998-6-avhrr.dat"
-
     };
 
     static String[] ddsxfails = {

@@ -188,7 +188,7 @@ public final class DArrayDimension extends DAPNode
              throw new InvalidDimensionException(msg + "stop < 0");
 
         if (start < decl.start)
-                   throw new InvalidDimensionException(msg + "start (" + start + ") < size (" + decl.size + ") for " + _name);
+                   throw new InvalidDimensionException(msg + "start (" + start + ") < size (" + decl.size + ") for " + _nameClear);
 
         if (stop >= decl.size)
             throw new InvalidDimensionException(msg + "stop >= size: "+stop+":"+decl.size);

@@ -66,10 +66,10 @@ public class TestDapParser extends TestFiles
     public void parse() throws Exception
     {
         // Check that resultsdir exists and is writeable
-        File resultsdir = new File(resultspath);
-        if (!resultsdir.exists() || !resultsdir.canWrite()) {
-            resultsdir.mkdirs();
-            if (!resultsdir.exists() || !resultsdir.canWrite()) {
+        File resultsfile = new File(resultsdir);
+        if (!resultsfile.exists() || !resultsfile.canWrite()) {
+            resultsfile.mkdirs();
+            if (!resultsfile.exists() || !resultsfile.canWrite()) {
                 System.err.println("TestDapParser: cannot write: " + resultsdir);
                 return;
             }
@@ -112,9 +112,9 @@ public class TestDapParser extends TestFiles
             FileInputStream teststream;
             FileOutputStream resultstream;
             String testfilepath = testdir + "/" + test + extension;
-            String resultpath = resultspath + "/" + test + extension;
+            String resultfilepath = resultsdir + "/" + test + extension;
             File testfile = new File(testfilepath);
-            File resultfile = new File(resultpath);
+            File resultfile = new File(resultfilepath);
             if (!testfile.canRead()) {
                 System.err.println("TestDapParser: cannot read: " + testfile.toString());
                 continue;
@@ -162,7 +162,7 @@ public class TestDapParser extends TestFiles
 		// Open the baseline file
                 String basefilepath = baselinedir + "/" + test + extension;
                 File basefile = new File(basefilepath);
-                FileOutputStream basestream = new FileOutputStream(basefile);
+                FileInputStream basestream = new FileInputStream(basefile);
                 // Diff the two files
                 Diff diff = new Diff(test);
                 FileReader resultrdr = new FileReader(resultfile);

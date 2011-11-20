@@ -364,7 +364,7 @@ public abstract class Dapparse
                     Attribute a = (Attribute) o;
                     Iterator it = a.getValuesIterator();
                     while (it.hasNext())
-                        attset.appendAttribute(a.getEncodedName(), a.getType(), (String) it.next());
+                        attset.appendAttribute(a.getClearName(), a.getType(), (String) it.next());
                 } else if (o instanceof AttributeTable) {
                     AttributeTable at = (AttributeTable) o;
                     attset.addContainer(at.getEncodedName(), at);

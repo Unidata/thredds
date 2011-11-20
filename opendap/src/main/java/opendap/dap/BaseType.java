@@ -92,25 +92,25 @@ public abstract class BaseType extends DAPNode
     /**
      * Constructs a new <code>BaseType</code> with name <code>n</code>.
      * Name is always assumed to be dap encoded
-     * @param n the name of the variable.
+     * @param clearname the name of the variable.
      */
-    public BaseType(String n)
+    public BaseType(String clearname)
     {
-	    super(n);
-        _attrTbl = new AttributeTable(_name);
-        _attr = new Attribute(_name, _attrTbl);
+	super(clearname);
+        _attrTbl = new AttributeTable(getClearName());
+        _attr = new Attribute(getClearName(), _attrTbl);
     }
 
     /**
      * Sets the unencoded name of the class instance.
      *
-     * @param n the unencoded name of the class instance.
+     * @param clearname the unencoded name of the class instance.
      */
     @Override
-    public void setClearName(String n) {
-	super.setClearName(n);
-        if(_attr != null) _attr.setClearName(n);
-        if(_attrTbl !=  null) _attrTbl.setClearName(n);
+    public void setClearName(String clearname) {
+	super.setClearName(clearname);
+        if(_attr != null) _attr.setClearName(clearname);
+        if(_attrTbl !=  null) _attrTbl.setClearName(clearname);
     }
 
 
@@ -364,7 +364,7 @@ public abstract class BaseType extends DAPNode
      */
     public void checkSemantics(boolean all)
             throws BadSemanticsException {
-        if (_name == null)
+        if (_nameClear == null)
             throw new BadSemanticsException("BaseType.checkSemantics(): Every variable must have a name");
     }
 
@@ -404,10 +404,10 @@ public abstract class BaseType extends DAPNode
 
         BaseType parent = (BaseType)getParent();
 
-        String longName = _name;
+        String longName = _nameEncoded;
 
         while (parent != null && !(parent instanceof DDS)) {
-            longName = parent.getClearName() + "." + longName;
+            longName = parent.getEncodedName() + "." + longName;
             parent = (BaseType)parent.getParent();
         }
         return (longName);
@@ -447,14 +447,14 @@ public abstract class BaseType extends DAPNode
         _attrTbl.addAlias(alias, attributeName);
     }
 
-    public void appendAttribute(String name, int type, String value, boolean check)
+    public void appendAttribute(String clearname, int type, String value, boolean check)
             throws DASException {
-        _attrTbl.appendAttribute(name, type, value, check);
+        _attrTbl.appendAttribute(clearname, type, value, check);
     }
 
-    public void appendAttribute(String name, int type, String value)
+    public void appendAttribute(String clearname, int type, String value)
             throws DASException {
-        _attrTbl.appendAttribute(name, type, value);
+        _attrTbl.appendAttribute(clearname, type, value);
     }
 
     public void addAttributeContainer(AttributeTable at)
@@ -462,20 +462,20 @@ public abstract class BaseType extends DAPNode
         _attrTbl.addContainer(at.getClearName(), at);
     }
 
-    public AttributeTable appendAttributeContainer(String name) {
-        return (_attrTbl.appendContainer(name));
+    public AttributeTable appendAttributeContainer(String clearname) {
+        return (_attrTbl.appendContainer(clearname));
     }
 
-    public void delAttribute(String name) {
-        _attrTbl.delAttribute(name);
+    public void delAttribute(String clearname) {
+        _attrTbl.delAttribute(clearname);
     }
 
-    public void delAttribute(String name, int i) throws DASException {
-        _attrTbl.delAttribute(name, i);
+    public void delAttribute(String clearname, int i) throws DASException {
+        _attrTbl.delAttribute(clearname, i);
     }
 
-    public Attribute getAttribute(String name) {
-        return (_attrTbl.getAttribute(name));
+    public Attribute getAttribute(String clearname) {
+        return (_attrTbl.getAttribute(clearname));
     }
 
     public Enumeration getAttributeNames() {
@@ -553,9 +553,9 @@ public abstract class BaseType extends DAPNode
     public void printXML(PrintWriter pw, String pad, boolean constrained) {
 
         pw.print(pad + "<" + getTypeName());
-        if (_name != null) {
+        if (_nameClear != null) {
             pw.print(" name=\"" +
-                    DDSXMLParser.normalizeToXML(_name) + "\"");
+                    DDSXMLParser.normalizeToXML(_nameClear) + "\"");
         }
 
         Enumeration e = getAttributeNames();
