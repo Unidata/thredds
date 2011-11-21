@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parameterMap>
-  <title>NCEP table 2</title>
+  <title>NCEP Table Version 2</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html</source>
-  <parameter code="0">
-    <shortName />
-    <description>Reserved</description>
-    <units />
-  </parameter>
   <parameter code="1">
     <shortName>PRES</shortName>
     <description>Pressure</description>
@@ -570,27 +565,27 @@
   <parameter code="113">
     <shortName>NSWRT</shortName>
     <description>Net short-wave radiation flux (top of atmosphere)</description>
-    <units>W/m2 </units>
+    <units>W/m2</units>
   </parameter>
   <parameter code="114">
     <shortName>NLWRT</shortName>
     <description>Net long wave radiation flux (top of atmosphere)</description>
-    <units>W/m2 </units>
+    <units>W/m2</units>
   </parameter>
   <parameter code="115">
     <shortName>LWAVR</shortName>
     <description>Long wave radiation flux</description>
-    <units>W/m2 </units>
+    <units>W/m2</units>
   </parameter>
   <parameter code="116">
     <shortName>SWAVR</shortName>
     <description>Short wave radiation flux</description>
-    <units>W/m2 </units>
+    <units>W/m2</units>
   </parameter>
   <parameter code="117">
     <shortName>G RAD</shortName>
     <description>Global radiation flux</description>
-    <units>W/m2 </units>
+    <units>W/m2</units>
   </parameter>
   <parameter code="118">
     <shortName>BRTMP</shortName>
@@ -610,27 +605,27 @@
   <parameter code="121">
     <shortName>LHTFL</shortName>
     <description>Latent heat net flux</description>
-    <units>W/m2 </units>
+    <units>W/m2</units>
   </parameter>
   <parameter code="122">
     <shortName>SHTFL</shortName>
     <description>Sensible heat net flux</description>
-    <units>W/m2 </units>
+    <units>W/m2</units>
   </parameter>
   <parameter code="123">
     <shortName>BLYDP</shortName>
     <description>Boundary layer dissipation</description>
-    <units>W/m2 </units>
+    <units>W/m2</units>
   </parameter>
   <parameter code="124">
     <shortName>U FLX</shortName>
     <description>Momentum flux, u component</description>
-    <units>N/m2 </units>
+    <units>N/m2</units>
   </parameter>
   <parameter code="125">
     <shortName>V FLX</shortName>
     <description>Momentum flux, v component</description>
-    <units>N/m2 </units>
+    <units>N/m2</units>
   </parameter>
   <parameter code="126">
     <shortName>WMIXE</shortName>
@@ -754,17 +749,17 @@
   </parameter>
   <parameter code="150">
     <shortName>COVMZ</shortName>
-    <description>Covariance between meridional and zonal components of the wind. Defined as [uv]-[u][v], where "[]" indicates the mean over the indicated time span. </description>
+    <description>Covariance between meridional and zonal components of the wind. Defined as [uv]-[u][v], where "[]" indicates the mean over the indicated time span.</description>
     <units>m2/s2</units>
   </parameter>
   <parameter code="151">
     <shortName>COVTZ</shortName>
-    <description>Covariance between temperature and zonal components of the wind. Defined as [uT]-[u][T], where "[]" indicates the mean over the indicated time span. </description>
+    <description>Covariance between temperature and zonal components of the wind. Defined as [uT]-[u][T], where "[]" indicates the mean over the indicated time span.</description>
     <units>K*m/s</units>
   </parameter>
   <parameter code="152">
     <shortName>COVTM</shortName>
-    <description>Covariance between temperature and meridional components of the wind. Defined as [vT]-[v][T], where "[]" indicates the mean over the indicated time span. </description>
+    <description>Covariance between temperature and meridional components of the wind. Defined as [vT]-[v][T], where "[]" indicates the mean over the indicated time span.</description>
     <units>K*m/s</units>
   </parameter>
   <parameter code="153">

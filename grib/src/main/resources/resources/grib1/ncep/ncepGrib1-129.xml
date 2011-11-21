@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <title>NCEP Table Version 129</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html</source>
+  <parameter code="128">
+    <shortName>PAOT</shortName>
+    <description>Probability anomaly of temperature</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="129">
+    <shortName>PAOP</shortName>
+    <description>Probability anomaly of precipitation</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="130">
+    <shortName>CWR</shortName>
+    <description>Probability of Wetting Rain, exceeding 0.10" in a given time period</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="131">
+    <shortName>FRAIN</shortName>
+    <description>Rain fraction of total liquid water</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="132">
+    <shortName>FICE</shortName>
+    <description>Ice fraction of total condensate</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="133">
+    <shortName>FRIME</shortName>
+    <description>Rime Factor</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="134">
+    <shortName>CUEFI</shortName>
+    <description>Convective cloud efficiency</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="135">
+    <shortName>TCOND</shortName>
+    <description>Total condensate</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="136">
+    <shortName>TCOLW</shortName>
+    <description>Total column-integrated cloud water</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="137">
+    <shortName>TCOLI</shortName>
+    <description>Total column-integrated cloud ice</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="138">
+    <shortName>TCOLR</shortName>
+    <description>Total column-integrated rain</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="139">
+    <shortName>TCOLS</shortName>
+    <description>Total column-integrated snow</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="140">
+    <shortName>TCOLC</shortName>
+    <description>Total column-integrated condensate</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="141">
+    <shortName>PLPL</shortName>
+    <description>Pressure of level from which parcel was lifted</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="142">
+    <shortName>HLPL</shortName>
+    <description>Height of level from which parcel was lifted</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="143">
+    <shortName>CEMS</shortName>
+    <description>Cloud Emissivity</description>
+    <units>Fraction 0-1</units>
+  </parameter>
+  <parameter code="144">
+    <shortName>COPD</shortName>
+    <description>Cloud Optical Depth</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="145">
+    <shortName>PSIZ</shortName>
+    <description>Effective Particle size</description>
+    <units>Microns</units>
+  </parameter>
+  <parameter code="146">
+    <shortName>TCWAT</shortName>
+    <description>Total Water Cloud</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="147">
+    <shortName>TCICE</shortName>
+    <description>Total Ice Cloud</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="148">
+    <shortName>WDIF</shortName>
+    <description>Wind difference</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="149">
+    <shortName>WSTP</shortName>
+    <description>Wave Steepness</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="150">
+    <shortName>PTAN</shortName>
+    <description>Probability of Temperature being above normal</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="151">
+    <shortName>PTNN</shortName>
+    <description>Probability of Temperature being near normal</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="152">
+    <shortName>PTBN</shortName>
+    <description>Probability of Temperature being below normal</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="153">
+    <shortName>PPAN</shortName>
+    <description>Probability of Precipitation being above normal</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="154">
+    <shortName>PPNN</shortName>
+    <description>Probability of Precipitation being near normal</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="155">
+    <shortName>PPBN</shortName>
+    <description>Probability of Precipitation being below normal</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="156">
+    <shortName>PMTC</shortName>
+    <description>Particulate matter (coarse)</description>
+    <units>g/m3</units>
+  </parameter>
+  <parameter code="157">
+    <shortName>PMTF</shortName>
+    <description>Particulate matter (fine)</description>
+    <units>g/m3</units>
+  </parameter>
+  <parameter code="158">
+    <shortName>AETMP</shortName>
+    <description>Analysis error of temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="159">
+    <shortName>AEDPT</shortName>
+    <description>Analysis error of dew point</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="160">
+    <shortName>AESPH</shortName>
+    <description>Analysis error of specific humidity</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="161">
+    <shortName>AEUWD</shortName>
+    <description>Analysis error of u-wind</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="162">
+    <shortName>AEVWD</shortName>
+    <description>Analysis error of v-wind</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="163">
+    <shortName>LPMTF</shortName>
+    <description>Particulate matter (fine)</description>
+    <units>log10(g/m3)</units>
+  </parameter>
+  <parameter code="164">
+    <shortName>LIPMF</shortName>
+    <description>Integrated column particulate matter (fine)</description>
+    <units>log10(g/m3)</units>
+  </parameter>
+  <parameter code="165">
+    <shortName>REFZR</shortName>
+    <description>Derived radar reflectivity backscatter from rain</description>
+    <units>mm6/m3</units>
+  </parameter>
+  <parameter code="166">
+    <shortName>REFZI</shortName>
+    <description>Derived radar reflectivity backscatter from ice</description>
+    <units>mm6/m3</units>
+  </parameter>
+  <parameter code="167">
+    <shortName>REFZC</shortName>
+    <description>Derived radar reflectivity backscatter from parameterized convection</description>
+    <units>mm6/m3</units>
+  </parameter>
+  <parameter code="168">
+    <shortName>TCLSW</shortName>
+    <description>Total column-integrated supercooled liquid water</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="169">
+    <shortName>TCOLM</shortName>
+    <description>Total column-integrated melting ice</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="170">
+    <shortName>ELRDI</shortName>
+    <description>Ellrod Index</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="171">
+    <shortName>TSEC</shortName>
+    <description>Seconds prior to initial reference time (defined in octects 18-20)</description>
+    <units>sec</units>
+  </parameter>
+  <parameter code="172">
+    <shortName>TSECA</shortName>
+    <description>Seconds after initial reference time (defined in octets 18-20)</description>
+    <units>sec</units>
+  </parameter>
+  <parameter code="173">
+    <shortName>NUM</shortName>
+    <description>Number of samples/observations</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="174">
+    <shortName>AEPRS</shortName>
+    <description>Analysis error of pressure</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="175">
+    <shortName>ICSEV</shortName>
+    <description>Icing severity</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="176">
+    <shortName>ICPRB</shortName>
+    <description>Icing probability</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="177">
+    <shortName>LAVNI</shortName>
+    <description>Low-level aviation interest</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="178">
+    <shortName>HAVNI</shortName>
+    <description>High-level aviation interest</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="179">
+    <shortName>FLGHT</shortName>
+    <description>Flight Category (See note 7 below)</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="180">
+    <shortName>OZCON</shortName>
+    <description>Ozone concentration</description>
+    <units>PPB</units>
+  </parameter>
+  <parameter code="181">
+    <shortName>OZCAT</shortName>
+    <description>Categorical ozone concentration</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="182">
+    <shortName>VEDH</shortName>
+    <description>Vertical eddy diffusivity heat exchange (Kh)</description>
+    <units>m2/s</units>
+  </parameter>
+  <parameter code="183">
+    <shortName>SIGV</shortName>
+    <description>Sigma level value</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="184">
+    <shortName>EWGT</shortName>
+    <description>Ensemble Weight</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="185">
+    <shortName>CICEL</shortName>
+    <description>Confidence indicator - Ceiling (See note 8 below)</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="186">
+    <shortName>CIVIS</shortName>
+    <description>Confidence indicator - Visibility (See note 8 below)</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="187">
+    <shortName>CIFLT</shortName>
+    <description>Confidence indicator - Flight Category (See note 8 below)</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="188">
+    <shortName>LAVV</shortName>
+    <description>Latitude of V wind component of velocity</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="189">
+    <shortName>LOVV</shortName>
+    <description>Longitude of V wind component of velocity</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="190">
+    <shortName>USCT</shortName>
+    <description>Scatterometer estimated U wind component</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="191">
+    <shortName>VSCT</shortName>
+    <description>Scatterometer estimated V wind component</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>LAUV</shortName>
+    <description>Latitude of U wind component of velocity</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>LOUV</shortName>
+    <description>Longitude of U wind component of velocity</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>TCHP</shortName>
+    <description>Tropical Cyclone Heat Potential</description>
+    <units>J/m2</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>DBSS</shortName>
+    <description>Geometric Depth Below Sea Surface</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>ODHA</shortName>
+    <description>Ocean Dynamic Height Anomaly</description>
+    <units>dynamic m</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>OHC</shortName>
+    <description>Ocean Heat Content</description>
+    <units>J/m2</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>SSHG</shortName>
+    <description>Sea Surface Height Relative to Geoid</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>SLTFL</shortName>
+    <description>Salt Flux</description>
+    <units>kg/m2s</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>DUVB</shortName>
+    <description>UV-B downward solar flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>CDUVB</shortName>
+    <description>Clear sky UV-B downward solar flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>THFLX</shortName>
+    <description>Total downward heat flux at surface (downward is positive)</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>UVAR</shortName>
+    <description>U velocity variance</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>VVAR</shortName>
+    <description>V velocity variance</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>UVVCC</shortName>
+    <description>UV Velocity Cross Correlation</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>MCLS</shortName>
+    <description>Meteorological Correlation Length Scale</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="207">
+    <shortName>LAPP</shortName>
+    <description>Latitude of pressure point</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="208">
+    <shortName>LOPP</shortName>
+    <description>Longitude of pressure point</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="210">
+    <shortName>REFO</shortName>
+    <description>Observed radar reflectivity</description>
+    <units>dbZ</units>
+  </parameter>
+  <parameter code="211">
+    <shortName>REFD</shortName>
+    <description>Derived radar reflectivity</description>
+    <units>dbZ</units>
+  </parameter>
+  <parameter code="212">
+    <shortName>REFC</shortName>
+    <description>Maximum/Composite radar reflectivity</description>
+    <units>dbZ</units>
+  </parameter>
+  <parameter code="213">
+    <shortName>SBT122</shortName>
+    <description>Simulated Brightness Temperature for GOES12, Channel 2</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="214">
+    <shortName>SBT123</shortName>
+    <description>Simulated Brightness Temperature for GOES12, Channel 3</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="215">
+    <shortName>SBT124</shortName>
+    <description>Simulated Brightness Temperature for GOES12, Channel 4</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="216">
+    <shortName>SBT126</shortName>
+    <description>Simulated Brightness Temperature for GOES12, Channel 6</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="217">
+    <shortName>MINRH</shortName>
+    <description>Minimum Relative Humidity</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="218">
+    <shortName>MAXRH</shortName>
+    <description>Maximum Relative Humidity</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="219">
+    <shortName>CEIL</shortName>
+    <description>Ceiling</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="220">
+    <shortName>PBLREG</shortName>
+    <description>Planetary boundary layer Regime</description>
+    <units />
+  </parameter>
+  <parameter code="221">
+    <shortName>SBC123</shortName>
+    <description>Simulated Brightness Counts for GOES12, Channel 3</description>
+    <units>Byte</units>
+  </parameter>
+  <parameter code="222">
+    <shortName>SBC124</shortName>
+    <description>Simulated Brightness Counts for GOES12, Channel 4</description>
+    <units>Byte</units>
+  </parameter>
+  <parameter code="223">
+    <shortName>RPRATE</shortName>
+    <description>Rain Precipitation Rate</description>
+    <units>kg/m2/s</units>
+  </parameter>
+  <parameter code="224">
+    <shortName>SPRATE</shortName>
+    <description>Snow Precipitation Rate</description>
+    <units>kg/m2/s</units>
+  </parameter>
+  <parameter code="225">
+    <shortName>FPRATE</shortName>
+    <description>Freezing Rain Precipitation Rate</description>
+    <units>kg/m2/s</units>
+  </parameter>
+  <parameter code="226">
+    <shortName>IPRATE</shortName>
+    <description>Ice Pellets Precipitation Rate</description>
+    <units>kg/m2/s</units>
+  </parameter>
+  <parameter code="227">
+    <shortName>UPHL</shortName>
+    <description>Updraft Helicity</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="228">
+    <shortName>SURGE</shortName>
+    <description>Storm Surge</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="229">
+    <shortName>ETSRG</shortName>
+    <description>Extra Tropical Storm Surge</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="230">
+    <shortName>RHPW</shortName>
+    <description>Relative Humidity with Respect to Precipitable Water</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="231">
+    <shortName>OZMAX1</shortName>
+    <description>Ozone Daily Max from 1-hour Average</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="232">
+    <shortName>OZMAX8</shortName>
+    <description>Ozone Daily Max from 8-hour Average</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="233">
+    <shortName>PDMAX1</shortName>
+    <description>PM 2.5 Daily Max from 1-hour Average</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="234">
+    <shortName>PDMAX24</shortName>
+    <description>PM 2.5 Daily Max from 24-hour Average</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="235">
+    <shortName>MAXREF</shortName>
+    <description>Hourly Maximum of Simulated Reflectivity at 1 km AGL</description>
+    <units>dbZ</units>
+  </parameter>
+  <parameter code="236">
+    <shortName>MXUPHL</shortName>
+    <description>Hourly Maximum of Updraft Helicity over layer 2km to 5 km AGL</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="237">
+    <shortName>MAXUVV</shortName>
+    <description>Hourly Maximum of Upward Vertical Velocity in the lowest 400hPa</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="238">
+    <shortName>MAXDVV</shortName>
+    <description>Hourly Maximum of Downward Vertical Velocity in the lowest 400hPa</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="239">
+    <shortName>MAXVIG</shortName>
+    <description>Hourly Maximum of Column Vertical Integrated Graupel</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="240">
+    <shortName>RETOP</shortName>
+    <description>Radar Echo Top (18.3 DBZ)</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="241">
+    <shortName>VRATE</shortName>
+    <description>Ventilation Rate</description>
+    <units>m2/s</units>
+  </parameter>
+  <parameter code="242">
+    <shortName>TCSRG20</shortName>
+    <description>20% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="243">
+    <shortName>TCSRG30</shortName>
+    <description>30% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="244">
+    <shortName>TCSRG40</shortName>
+    <description>40% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="245">
+    <shortName>TCSRG50</shortName>
+    <description>50% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="246">
+    <shortName>TCSRG60</shortName>
+    <description>60% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="247">
+    <shortName>TCSRG70</shortName>
+    <description>70% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="248">
+    <shortName>TCSRG80</shortName>
+    <description>80% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="249">
+    <shortName>TCSRG90</shortName>
+    <description>90% Tropical Cyclone Storm Surge Exceedance</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="250">
+    <shortName>HINDEX</shortName>
+    <description>Haines Index</description>
+    <units />
+  </parameter>
+  <parameter code="251">
+    <shortName>DIFTEN</shortName>
+    <description>Difference Between 2 States In Total Energy Norm</description>
+    <units>J/kg</units>
+  </parameter>
+  <parameter code="252">
+    <shortName>PSPCP</shortName>
+    <description>Pseudo-Precipitation</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="253">
+    <shortName>MAXUW</shortName>
+    <description>U Component of Hourly Maximum 10m Wind Speed</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="254">
+    <shortName>MAXVW</shortName>
+    <description>V Component of Hourly Maximum 10m Wind Speed</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="255">
+    <shortName />
+    <description>Missing</description>
+    <units />
+  </parameter>
+</parameterMap>
+

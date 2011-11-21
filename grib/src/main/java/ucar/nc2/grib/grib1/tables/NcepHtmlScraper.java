@@ -38,7 +38,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import ucar.nc2.dataset.CoordinateAxis;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,6 +54,9 @@ import java.util.List;
  * @since 11/21/11
  */
 public class NcepHtmlScraper {
+  private boolean debug = false;
+  private boolean show = false;
+  private int[] tableVersions = new int[]{2, 0, 128, 129, 130, 131, 133, 140, 0, 0, 141};
 
   //////////////////////////////////////////////////////////////////
   NcepHtmlScraper() throws IOException {
@@ -62,32 +65,46 @@ public class NcepHtmlScraper {
     Document doc = Jsoup.parse(input, "UTF-8", "http://www.nco.ncep.noaa.gov/pmb/docs/on388/");
     //System.out.printf("%s%n", doc);
 
-    Element body = doc.select("body").first();
-    Elements tables = doc.select("table");
-    Element table = doc.select("table").first();
-    //for (Element e : tables) System.out.printf("%s%n=%n", e.text());
-    //System.out.printf("%s%n=%n", table);
-    List<Param> params = readTable(table);
+    int count = 0;
+    for (Element e : doc.select("big"))
+      System.out.printf("%d == %s%n=%n", count++, e.text());
 
-    makeTableWgrib("NCEP table 2", source, "ncepGrib1.tab", params);
-    makeTableXml("NCEP table 2", source, "ncepGrib1.xml", params);
+    Element body = doc.select("body").first();
+    Elements tables = body.select("table");
+    for (int i = 0; i < tableVersions.length; i++) {
+      if (tableVersions[i] == 0) continue;
+      Element table = tables.select("table").get(i);
+      List<Param> params = readTable(table);
+
+      String name = "NCEP Table Version " + tableVersions[i];
+      String filename = "ncepGrib1-" + tableVersions[i];
+      makeTableWgrib(name, source, filename + ".tab", params);
+      makeTableXml(name, source, filename + ".xml", params);
+    }
   }
 
   private List<Param> readTable(Element table) {
-    List<Param> result = new ArrayList <Param>();
-     Elements rows = table.select("tr");
+    List<Param> result = new ArrayList<Param>();
+    Elements rows = table.select("tr");
     for (Element row : rows) {
       Elements cols = row.select("td");
-      System.out.printf(" %d=", cols.size());
-      for (Element col : cols)
-        System.out.printf("%s:", col.text());
-      System.out.printf("%n");
+      if (debug) {
+        System.out.printf(" %d=", cols.size());
+        for (Element col : cols)
+          System.out.printf("%s:", col.text());
+        System.out.printf("%n");
+      }
 
       if (cols.size() == 4) {
-        String snum = cols.get(0).text();
+        String snum = StringUtil2.cleanup(cols.get(0).text()).trim();
         try {
           int pnum = Integer.parseInt(snum);
-          result.add(new Param(pnum, cols.get(1).text(),cols.get(2).text(),cols.get(3).text()));
+          String desc = StringUtil2.cleanup(cols.get(1).text()).trim();
+          if (desc.startsWith("Reserved")) {
+            System.out.printf("*** Skip Reserved %s%n", row.text());
+            continue;
+          }
+          result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
         } catch (NumberFormatException e) {
           System.out.printf("*** Cant parse %s == %s%n", snum, row.text());
         }
@@ -105,36 +122,37 @@ public class NcepHtmlScraper {
     private Param(int pnum, String desc, String unit, String name) {
       this.pnum = pnum;
       this.desc = desc;
-      this.unit = unit;
-      this.name = name;
+      this.unit = StringUtil2.cleanup(unit);
+      this.name = StringUtil2.cleanup(name);
     }
   }
+
   /////////////////////////////////////////////////////////
-  String dirOut =  "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
+  String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
 
   private void makeTableXml(String name, String source, String filename, List<Param> params) throws IOException {
     org.jdom.Element rootElem = new org.jdom.Element("parameterMap");
     org.jdom.Document doc = new org.jdom.Document(rootElem);
-    rootElem.addContent( new org.jdom.Element("title").setText(name));
-    rootElem.addContent( new org.jdom.Element("source").setText(source));
+    rootElem.addContent(new org.jdom.Element("title").setText(name));
+    rootElem.addContent(new org.jdom.Element("source").setText(source));
 
     for (Param p : params) {
       org.jdom.Element paramElem = new org.jdom.Element("parameter");
       paramElem.setAttribute("code", Integer.toString(p.pnum));
-      paramElem.addContent( new org.jdom.Element("shortName").setText(p.name));
-      paramElem.addContent( new org.jdom.Element("description").setText(p.desc));
-      paramElem.addContent( new org.jdom.Element("units").setText(p.unit));
+      paramElem.addContent(new org.jdom.Element("shortName").setText(p.name));
+      paramElem.addContent(new org.jdom.Element("description").setText(p.desc));
+      paramElem.addContent(new org.jdom.Element("units").setText(p.unit));
       rootElem.addContent(paramElem);
     }
 
-    XMLOutputter fmt = new XMLOutputter( Format.getPrettyFormat());
-    String x = fmt.outputString( doc);
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    String x = fmt.outputString(doc);
 
-    FileOutputStream fout = new FileOutputStream(dirOut+filename);
+    FileOutputStream fout = new FileOutputStream(dirOut + filename);
     fout.write(x.getBytes());
     fout.close();
 
-    System.out.printf("%s%n", x);
+    if (show) System.out.printf("%s%n", x);
   }
 
   private void makeTableWgrib(String name, String source, String filename, List<Param> params) throws IOException {
@@ -144,11 +162,11 @@ public class NcepHtmlScraper {
     for (Param p : params)
       f.format("%3d:%s:%s [%s]%n", p.pnum, p.name, p.desc, p.unit); // 1:PRES:Pressure [Pa]
 
-    FileOutputStream fout = new FileOutputStream(dirOut+filename);
+    FileOutputStream fout = new FileOutputStream(dirOut + filename);
     fout.write(f.toString().getBytes());
     fout.close();
 
-    System.out.printf("%s%n", f);
+    if (show) System.out.printf("%s%n", f);
   }
 
   public static void main(String[] args) throws IOException {

@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <title>NCEP Table Version 141</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html</source>
+  <parameter code="128">
+    <shortName>EXTNC</shortName>
+    <description>Aerosol Extinction Coefficient</description>
+    <units>km-1</units>
+  </parameter>
+  <parameter code="129">
+    <shortName>AOD</shortName>
+    <description>Aerosol Optical Depth</description>
+    <units />
+  </parameter>
+  <parameter code="130">
+    <shortName>ASFTR</shortName>
+    <description>Aerosol Asymmetry Factor</description>
+    <units />
+  </parameter>
+  <parameter code="131">
+    <shortName>SSALBD</shortName>
+    <description>Aerosol Single Scatter Albedo</description>
+    <units />
+  </parameter>
+  <parameter code="132">
+    <shortName>BSCTRS</shortName>
+    <description>Aerosol Back Scattering</description>
+    <units>km-1sr-1</units>
+  </parameter>
+  <parameter code="140">
+    <shortName>NOy</shortName>
+    <description>Total Inorganic and Organic Nitrates</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="141">
+    <shortName>NO</shortName>
+    <description>Nitrogen Oxide</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="142">
+    <shortName>NO2</shortName>
+    <description>Nitrogen Dioxide</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="143">
+    <shortName>N2O5</shortName>
+    <description>Nitrogen Pentoxide</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="144">
+    <shortName>HNO3</shortName>
+    <description>Nitric Acid</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="145">
+    <shortName>NO3</shortName>
+    <description>Nitrogen Trioxide</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="146">
+    <shortName>PNA</shortName>
+    <description>Peroxynitric Acid</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="147">
+    <shortName>HONO</shortName>
+    <description>Nitrous Acid</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="148">
+    <shortName>CO</shortName>
+    <description>Carbon Monoxide</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="149">
+    <shortName>NH3</shortName>
+    <description>Ammonia</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="150">
+    <shortName>HCL</shortName>
+    <description>Hydrogen Chloride</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="159">
+    <shortName>PAR</shortName>
+    <description>Lumped Single-Bond Carbon Specie</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="160">
+    <shortName>ETHE</shortName>
+    <description>Ethene</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="161">
+    <shortName>OLE</shortName>
+    <description>Lumped Double-Bond Carbon Species Less Ethene</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="162">
+    <shortName>TOL</shortName>
+    <description>Toluene</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="163">
+    <shortName>XYL</shortName>
+    <description>Xylene</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="164">
+    <shortName>ISOP</shortName>
+    <description>Isoprene</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="166">
+    <shortName>FORM</shortName>
+    <description>Formaldehyde</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="167">
+    <shortName>ALD2</shortName>
+    <description>Acetaldehyde &amp; Higher Aldehydes</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="168">
+    <shortName>MGLY</shortName>
+    <description>Methyl Glyoxal</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="169">
+    <shortName>CRES</shortName>
+    <description>Cresol and Higher Molecular Weight Phenols</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="172">
+    <shortName>PAN</shortName>
+    <description>Peroxyacyl Nitrate</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="173">
+    <shortName>NTR</shortName>
+    <description>Lumped Gaseous Organic Nitrate</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="177">
+    <shortName>ROOH</shortName>
+    <description>Esters</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="178">
+    <shortName>ETHOH</shortName>
+    <description>Ethanol</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="179">
+    <shortName>METHOH</shortName>
+    <description>Methanol</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="186">
+    <shortName>H2O2</shortName>
+    <description>Hydrogen Peroxide</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="187">
+    <shortName>OH</shortName>
+    <description>Hydroxyl Radical</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="188">
+    <shortName>HO2</shortName>
+    <description>Hydroperoxyl Radical</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>ASO4</shortName>
+    <description>Sulfate (SO4) Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>ANH4</shortName>
+    <description>Ammonia (NH4) Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>ANO3</shortName>
+    <description>Nitrate (NO3) Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>AORGA</shortName>
+    <description>Organic Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>AORGPA</shortName>
+    <description>Primarily Organic Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>AORGB</shortName>
+    <description>Biogenically Originated Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>AEC</shortName>
+    <description>Elemental Carbon Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="207">
+    <shortName>A25</shortName>
+    <description>Unspecified Anthropogenic Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="208">
+    <shortName>AH2O</shortName>
+    <description>Water Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="209">
+    <shortName>ANA</shortName>
+    <description>Sodium Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="210">
+    <shortName>ACL</shortName>
+    <description>Chloride Particulates  ? 2.5 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="216">
+    <shortName>ASO4K</shortName>
+    <description>Sulfate (SO4) Particulates between 2.5 and 10 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="217">
+    <shortName>ANAK</shortName>
+    <description>Sodium (NA) Particulates between 2.5 and 10 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="218">
+    <shortName>ACLK</shortName>
+    <description>Chloride (CL) Particulates between 2.5 and 10 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="219">
+    <shortName>ASEAS</shortName>
+    <description>Sea Salt Originated Particulates between 2.5 and 10 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="220">
+    <shortName>ASOIL</shortName>
+    <description>Crustal Material Originated Particulates between 2.5 and 10 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="221">
+    <shortName>ACORS</shortName>
+    <description>Particulates between 2.5 and 10 ?m Diameter</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="222">
+    <shortName>NUMATKN</shortName>
+    <description>Number Concentration Particulates between 2.5 and 0.1 ?m Diameter</description>
+    <units>number/m3</units>
+  </parameter>
+  <parameter code="223">
+    <shortName>NUMACC</shortName>
+    <description>Number Concentration Particulates between 2.5 and 2.5 ?m Diameter</description>
+    <units>number/m3</units>
+  </parameter>
+  <parameter code="224">
+    <shortName>NUMCOR</shortName>
+    <description>Number Concentration Particulates between 2.5 and 10 ?m Diameter</description>
+    <units>number/m3</units>
+  </parameter>
+  <parameter code="228">
+    <shortName>SRFATKN</shortName>
+    <description>Surface Area Contributed by Particulates  ? 0.1 ?m Diameter</description>
+    <units>m2/m3</units>
+  </parameter>
+  <parameter code="229">
+    <shortName>SRFACC</shortName>
+    <description>Surface Area Contributed by Particulates between 0.1 and 2.5 ?m Diameter</description>
+    <units>m2/m3</units>
+  </parameter>
+  <parameter code="232">
+    <shortName>SO2</shortName>
+    <description>Sulfur Dioxide</description>
+    <units>ppbV</units>
+  </parameter>
+  <parameter code="233">
+    <shortName>MSA</shortName>
+    <description>Methanesulfonic Acid</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="234">
+    <shortName>TSO4</shortName>
+    <description>Total Sulfate Particulates (Fine and Coarse)</description>
+    <units>?g/m3</units>
+  </parameter>
+  <parameter code="235">
+    <shortName>DMS</shortName>
+    <description>Dimethylsulfide</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="240">
+    <shortName>DU1</shortName>
+    <description>Dust Particulates between 0.2 - 2.0 ?m Diameter</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="241">
+    <shortName>DU2</shortName>
+    <description>Dust Particulates between 2.0 - 3.6 ?m Diameter</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="242">
+    <shortName>DU3</shortName>
+    <description>Dust Particulates between 3.6 - 6.0 ?m Diameter</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="243">
+    <shortName>DU4</shortName>
+    <description>Dust Particulates between 6.0 - 12.0 ?m Diameter</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="244">
+    <shortName>DU5</shortName>
+    <description>Dust Particulates between 12.0 - 20.0 ?m Diameter</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="245">
+    <shortName>SS1</shortName>
+    <description>Sea Salt Particulates between 0.2 - 1.0 ?m Diameter</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="246">
+    <shortName>SS2</shortName>
+    <description>Sea Salt Particulates between 1.0 - 3.0 ?m Diameter</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="247">
+    <shortName>SS3</shortName>
+    <description>Sea Salt Particulates between 3.0 - 10.0 ?m Diameter</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="248">
+    <shortName>SS4</shortName>
+    <description>Sea Salt Particulates between 10.0 - 20.0 ?m Diameter</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="249">
+    <shortName>OCDRY</shortName>
+    <description>Hydrophobic Organic Carbon</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="250">
+    <shortName>OCWET</shortName>
+    <description>Hydrophilic Organic Carbon</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="251">
+    <shortName>BCDRY</shortName>
+    <description>Hydrophobic Black Carbon</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="252">
+    <shortName>BCWET</shortName>
+    <description>Hydrophilic Black Carbon</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="255">
+    <shortName />
+    <description>Missing</description>
+    <units />
+  </parameter>
+</parameterMap>
+
