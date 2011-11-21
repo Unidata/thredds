@@ -15,13 +15,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17ef78aa-6260-4282-b0c2-5271bce7308a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/dap.y.hdr" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/dap.y.hdr" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/dap.y" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/dap.y" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/dap.yc" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/dap.yc" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/test/data/testdata1/synth1.das" afterPath="$PROJECT_DIR$/../../opendap/src/test/data/testdata1/synth1.das" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/DapParser.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/DapParser.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/Dapparse.java" afterPath="$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/Dapparse.java" />
     </list>
     <ignored path="thredds.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -143,19 +137,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestDapParser.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="TestDapParser.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestDapParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="13" selection-start="2090" selection-end="2090" vertical-scroll-proportion="0.02746365">
+            <state line="40" column="47" selection-start="2077" selection-end="2077" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestFiles.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="TestFiles.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestFiles.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="13" selection-start="2105" selection-end="2105" vertical-scroll-proportion="0.0">
+            <state line="55" column="21" selection-start="2485" selection-end="2485" vertical-scroll-proportion="0.7">
               <folding />
             </state>
           </provider>
@@ -1145,8 +1139,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-9" y="-9" width="1298" height="818" extended-state="6" />
-    <editor active="false" />
+    <frame x="-9" y="-9" width="1938" height="1218" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32990655" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Phing Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1156,18 +1150,18 @@
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.46635514" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.8736682" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Structure" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32920793" sideWeight="0.44292238" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32867885" sideWeight="0.44299066" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32975295" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39933994" sideWeight="0.5281583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32920793" sideWeight="0.17199391" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.55707765" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.55700934" sideWeight="0.0" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4718417" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4672755" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1406,11 +1400,6 @@
         <state line="137" column="23" selection-start="5583" selection-end="5583" vertical-scroll-proportion="0.062962964" />
       </provider>
     </entry>
-    <entry file="jar://T:/jdk1.6/src.zip!/java/io/InputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="22" selection-start="818" selection-end="818" vertical-scroll-proportion="0.6042003" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/Dapparse.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="626" column="16" selection-start="18287" selection-end="18502" vertical-scroll-proportion="0.0" />
@@ -1421,11 +1410,6 @@
         <state line="518" column="19" selection-start="15769" selection-end="15769" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="jar://T:/jdk1.6/src.zip!/java/io/OutputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="22" selection-start="870" selection-end="870" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/main/java/opendap/dap/parsers/Daplex.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="6" selection-start="2178" selection-end="2178" vertical-scroll-proportion="0.0" />
@@ -1434,11 +1418,6 @@
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HTTPSession.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="483" column="60" selection-start="15859" selection-end="15859" vertical-scroll-proportion="0.029462738" />
-      </provider>
-    </entry>
-    <entry file="jar://T:/jdk1.6/src.zip!/java/io/PrintStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="13" selection-start="1401" selection-end="1401" vertical-scroll-proportion="0.02746365" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/LogStream.java">
@@ -1456,14 +1435,16 @@
         <state line="37" column="37" selection-start="2042" selection-end="2042" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestFiles.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="13" selection-start="2105" selection-end="2105" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestDapParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="13" selection-start="2090" selection-end="2090" vertical-scroll-proportion="0.02746365">
+        <state line="40" column="47" selection-start="2077" selection-end="2077" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../opendap/src/test/java/opendap/test/TestFiles.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="55" column="21" selection-start="2485" selection-end="2485" vertical-scroll-proportion="0.7">
           <folding />
         </state>
       </provider>
