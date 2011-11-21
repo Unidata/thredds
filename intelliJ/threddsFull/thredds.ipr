@@ -1744,6 +1744,17 @@
         <root url="jar://$PROJECT_DIR$/../../lib/external/source/ehcache-1.6.0-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="jdom">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/jdom-1.1.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/jdom-1.1.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/jdom-1.1.2-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="jetty">
       <CLASSES>
         <root url="file://F:/lib/jetty/jetty-distribution-7.2.0.v20101020/lib" />
@@ -1758,8 +1769,12 @@
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../../lib/external/joda-time-2.0.jar!/" />
       </CLASSES>
-      <JAVADOC />
-      <SOURCES />
+      <JAVADOC>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/joda-time-2.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/joda-time-2.0-sources.jar!/" />
+      </SOURCES>
     </library>
     <library name="JSTL">
       <CLASSES>

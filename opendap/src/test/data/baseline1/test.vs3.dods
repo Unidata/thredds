@@ -1,0 +1,50 @@
+Int32 /Vdata[0]/dINT32/dINT32__0 1
+UInt32 /Vdata[0]/dUINT32/dUINT32__0 0
+Int32 /Vdata[0]/dINT16/dINT16__0 2
+UInt32 /Vdata[0]/dUINT16/dUINT16__0 2
+Int32 /Vdata[0]/dINT8/dINT8__0 3
+Byte /Vdata[0]/dUINT8/dUINT8__0 0
+Float64 /Vdata[0]/dFLOAT32/dFLOAT32__0 1000
+Float64 /Vdata[0]/dFLOAT64/dFLOAT64__0 999.95
+String /Vdata[0]/dCHAR8/dCHAR8__0 "This is a data test string (pass 0)."
+String /Vdata[0]/dUCHAR8/dUCHAR8__0 "This is a data test string (pass 1)."
+Int32 /Vdata[1]/dINT32/dINT32__0 5
+UInt32 /Vdata[1]/dUINT32/dUINT32__0 6
+Int32 /Vdata[1]/dINT16/dINT16__0 8
+UInt32 /Vdata[1]/dUINT16/dUINT16__0 12
+Int32 /Vdata[1]/dINT8/dINT8__0 13
+Byte /Vdata[1]/dUINT8/dUINT8__0 1
+Float64 /Vdata[1]/dFLOAT32/dFLOAT32__0 999.8
+Float64 /Vdata[1]/dFLOAT64/dFLOAT64__0 999.55
+String /Vdata[1]/dCHAR8/dCHAR8__0 "This is a data test string (pass 2)."
+String /Vdata[1]/dUCHAR8/dUCHAR8__0 "This is a data test string (pass 3)."
+Int32 /Vdata[2]/dINT32/dINT32__0 21
+UInt32 /Vdata[2]/dUINT32/dUINT32__0 20
+Int32 /Vdata[2]/dINT16/dINT16__0 34
+UInt32 /Vdata[2]/dUINT16/dUINT16__0 30
+Int32 /Vdata[2]/dINT8/dINT8__0 55
+Byte /Vdata[2]/dUINT8/dUINT8__0 2
+Float64 /Vdata[2]/dFLOAT32/dFLOAT32__0 999.2
+Float64 /Vdata[2]/dFLOAT64/dFLOAT64__0 998.75
+String /Vdata[2]/dCHAR8/dCHAR8__0 "This is a data test string (pass 4)."
+String /Vdata[2]/dUCHAR8/dUCHAR8__0 "This is a data test string (pass 5)."
+Int32 /Vdata[3]/dINT32/dINT32__0 89
+UInt32 /Vdata[3]/dUINT32/dUINT32__0 42
+Int32 /Vdata[3]/dINT16/dINT16__0 144
+UInt32 /Vdata[3]/dUINT16/dUINT16__0 56
+Int32 /Vdata[3]/dINT8/dINT8__0 233
+Byte /Vdata[3]/dUINT8/dUINT8__0 3
+Float64 /Vdata[3]/dFLOAT32/dFLOAT32__0 998.201
+Float64 /Vdata[3]/dFLOAT64/dFLOAT64__0 997.551
+String /Vdata[3]/dCHAR8/dCHAR8__0 "This is a data test string (pass 6)."
+String /Vdata[3]/dUCHAR8/dUCHAR8__0 "This is a data test string (pass 7)."
+Int32 /Vdata[4]/dINT32/dINT32__0 377
+UInt32 /Vdata[4]/dUINT32/dUINT32__0 72
+Int32 /Vdata[4]/dINT16/dINT16__0 610
+UInt32 /Vdata[4]/dUINT16/dUINT16__0 90
+Int32 /Vdata[4]/dINT8/dINT8__0 987
+Byte /Vdata[4]/dUINT8/dUINT8__0 4
+Float64 /Vdata[4]/dFLOAT32/dFLOAT32__0 996.802
+Float64 /Vdata[4]/dFLOAT64/dFLOAT64__0 995.953
+String /Vdata[4]/dCHAR8/dCHAR8__0 "This is a data test string (pass 8)."
+String /Vdata[4]/dUCHAR8/dUCHAR8__0 "This is a data test string (pass 9)."

@@ -1,0 +1,4 @@
+Dataset {
+  Float64 f64;
+} SimpleTypes;
+Float64 /f64 1000

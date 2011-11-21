@@ -1,0 +1,25 @@
+Byte /ralph[0]/b 0
+Int32 /ralph[0]/foo/j 1
+Int32 /ralph[0]/foo/i[0..2] 0 2048 4096
+Int32 /ralph[0]/foo/data/i 2
+Float64 /ralph[0]/foo/data/f[0..9] 1 0.99995 0.9998 0.99955 0.9992 0.99875 0.998201 0.997551 0.996802 0.995953
+Byte /ralph[1]/b 1
+Int32 /ralph[1]/foo/j 3
+Int32 /ralph[1]/foo/i[0..2] 0 2048 4096
+Int32 /ralph[1]/foo/data/i 5
+Float64 /ralph[1]/foo/data/f[0..9] 1 0.99995 0.9998 0.99955 0.9992 0.99875 0.998201 0.997551 0.996802 0.995953
+Byte /ralph[2]/b 2
+Int32 /ralph[2]/foo/j 8
+Int32 /ralph[2]/foo/i[0..2] 0 2048 4096
+Int32 /ralph[2]/foo/data/i 13
+Float64 /ralph[2]/foo/data/f[0..9] 1 0.99995 0.9998 0.99955 0.9992 0.99875 0.998201 0.997551 0.996802 0.995953
+Byte /ralph[3]/b 3
+Int32 /ralph[3]/foo/j 21
+Int32 /ralph[3]/foo/i[0..2] 0 2048 4096
+Int32 /ralph[3]/foo/data/i 34
+Float64 /ralph[3]/foo/data/f[0..9] 1 0.99995 0.9998 0.99955 0.9992 0.99875 0.998201 0.997551 0.996802 0.995953
+Byte /ralph[4]/b 4
+Int32 /ralph[4]/foo/j 55
+Int32 /ralph[4]/foo/i[0..2] 0 2048 4096
+Int32 /ralph[4]/foo/data/i 89
+Float64 /ralph[4]/foo/data/f[0..9] 1 0.99995 0.9998 0.99955 0.9992 0.99875 0.998201 0.997551 0.996802 0.995953

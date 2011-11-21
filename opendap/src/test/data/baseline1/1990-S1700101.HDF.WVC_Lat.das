@@ -1,28 +1,28 @@
 Attributes {
     HDF_GLOBAL {
-        String Producer_Agency "NASA\\000";
-        String Producer_Institution "JPL\\000";
-        String Sensor_Name "NSCAT\\000";
-        String Project_ID "NSCAT\\000";
-        String SIS_ID "697-512-23/1994-08-29\\000";
-        String Build_ID "SciSim 3.0\\000";
-        String ADEOS_Data_Package_ID "SIMULATED DATA PRODUCT TEST\\000";
-        String ADEOS_Data_Package_Type "S\\000";
-        String Product_Creation_Time "1995-278T23:30:04.000\\000";
-        String Data_Type "L17\\000";
-        String Data_Status "COMPLETE\\000";
+        String Producer_Agency "NASA000";
+        String Producer_Institution "JPL000";
+        String Sensor_Name "NSCAT000";
+        String Project_ID "NSCAT000";
+        String SIS_ID "697-512-23/1994-08-29000";
+        String Build_ID "SciSim 3.0000";
+        String ADEOS_Data_Package_ID "SIMULATED DATA PRODUCT TEST000";
+        String ADEOS_Data_Package_Type "S000";
+        String Product_Creation_Time "1995-278T23:30:04.000000";
+        String Data_Type "L17000";
+        String Data_Status "COMPLETE000";
         Int32 First_Rev_Number 101;
-        String First_Rev_Eq_Crossing_Time "1996-215T01:31:07.223\\000";
+        String First_Rev_Eq_Crossing_Time "1996-215T01:31:07.223000";
         Float32 First_Rev_Eq_Crossing_Lon 54.952;
-        String First_Data_Time "1996-215T01:13:28.456\\000";
-        String Last_Data_Time "1996-215T02:40:22.631\\000";
+        String First_Data_Time "1996-215T01:13:28.456000";
+        String Last_Data_Time "1996-215T02:40:22.631000";
         Int32 Num_Expected_Output_Records 558;
         Int32 Num_Actual_Output_Records 558;
-        String HDF_Build_ID "JPL D-xxxxx 12/15/94\\000";
-        String HDF_SIS_ID "JPL D-12059 12/15/94\\000";
-        String HDF_Conversion_Organization "JPL PO.DAAC\\000";
+        String HDF_Build_ID "JPL D-xxxxx 12/15/94000";
+        String HDF_SIS_ID "JPL D-12059 12/15/94000";
+        String HDF_Conversion_Organization "JPL PO.DAAC000";
         String HDF_Conversion_Time "1996-047T11:13:05       ";
-        String Data_Format_Type "HDF\\000";
+        String Data_Format_Type "HDF000";
     }
     WVC_Lat {
         String long_name "latitude";

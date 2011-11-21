@@ -1,0 +1,50 @@
+Int32 /Vdata_DFNT_INT32[0]/Field_DFNT_INT32/Field_DFNT_INT32__0 1
+Int32 /Vdata_DFNT_INT32[1]/Field_DFNT_INT32/Field_DFNT_INT32__0 2
+Int32 /Vdata_DFNT_INT32[2]/Field_DFNT_INT32/Field_DFNT_INT32__0 3
+Int32 /Vdata_DFNT_INT32[3]/Field_DFNT_INT32/Field_DFNT_INT32__0 5
+Int32 /Vdata_DFNT_INT32[4]/Field_DFNT_INT32/Field_DFNT_INT32__0 8
+UInt32 /Vdata_DFNT_UINT32[0]/Field_DFNT_UINT32/Field_DFNT_UINT32__0 0
+UInt32 /Vdata_DFNT_UINT32[1]/Field_DFNT_UINT32/Field_DFNT_UINT32__0 2
+UInt32 /Vdata_DFNT_UINT32[2]/Field_DFNT_UINT32/Field_DFNT_UINT32__0 6
+UInt32 /Vdata_DFNT_UINT32[3]/Field_DFNT_UINT32/Field_DFNT_UINT32__0 12
+UInt32 /Vdata_DFNT_UINT32[4]/Field_DFNT_UINT32/Field_DFNT_UINT32__0 20
+Int32 /Vdata_DFNT_INT16[0]/Field_DFNT_INT16/Field_DFNT_INT16__0 13
+Int32 /Vdata_DFNT_INT16[1]/Field_DFNT_INT16/Field_DFNT_INT16__0 21
+Int32 /Vdata_DFNT_INT16[2]/Field_DFNT_INT16/Field_DFNT_INT16__0 34
+Int32 /Vdata_DFNT_INT16[3]/Field_DFNT_INT16/Field_DFNT_INT16__0 55
+Int32 /Vdata_DFNT_INT16[4]/Field_DFNT_INT16/Field_DFNT_INT16__0 89
+UInt32 /Vdata_DFNT_UINT16[0]/Field_DFNT_UINT16/Field_DFNT_UINT16__0 30
+UInt32 /Vdata_DFNT_UINT16[1]/Field_DFNT_UINT16/Field_DFNT_UINT16__0 42
+UInt32 /Vdata_DFNT_UINT16[2]/Field_DFNT_UINT16/Field_DFNT_UINT16__0 56
+UInt32 /Vdata_DFNT_UINT16[3]/Field_DFNT_UINT16/Field_DFNT_UINT16__0 72
+UInt32 /Vdata_DFNT_UINT16[4]/Field_DFNT_UINT16/Field_DFNT_UINT16__0 90
+Int32 /Vdata_DFNT_INT8[0]/Field_DFNT_INT8/Field_DFNT_INT8__0 144
+Int32 /Vdata_DFNT_INT8[1]/Field_DFNT_INT8/Field_DFNT_INT8__0 233
+Int32 /Vdata_DFNT_INT8[2]/Field_DFNT_INT8/Field_DFNT_INT8__0 377
+Int32 /Vdata_DFNT_INT8[3]/Field_DFNT_INT8/Field_DFNT_INT8__0 610
+Int32 /Vdata_DFNT_INT8[4]/Field_DFNT_INT8/Field_DFNT_INT8__0 987
+Byte /Vdata_DFNT_UINT8[0]/Field_DFNT_UINT8/Field_DFNT_UINT8__0 0
+Byte /Vdata_DFNT_UINT8[1]/Field_DFNT_UINT8/Field_DFNT_UINT8__0 1
+Byte /Vdata_DFNT_UINT8[2]/Field_DFNT_UINT8/Field_DFNT_UINT8__0 2
+Byte /Vdata_DFNT_UINT8[3]/Field_DFNT_UINT8/Field_DFNT_UINT8__0 3
+Byte /Vdata_DFNT_UINT8[4]/Field_DFNT_UINT8/Field_DFNT_UINT8__0 4
+Float64 /Vdata_DFNT_FLOAT32[0]/Field_DFNT_FLOAT32/Field_DFNT_FLOAT32__0 1000
+Float64 /Vdata_DFNT_FLOAT32[1]/Field_DFNT_FLOAT32/Field_DFNT_FLOAT32__0 999.95
+Float64 /Vdata_DFNT_FLOAT32[2]/Field_DFNT_FLOAT32/Field_DFNT_FLOAT32__0 999.8
+Float64 /Vdata_DFNT_FLOAT32[3]/Field_DFNT_FLOAT32/Field_DFNT_FLOAT32__0 999.55
+Float64 /Vdata_DFNT_FLOAT32[4]/Field_DFNT_FLOAT32/Field_DFNT_FLOAT32__0 999.2
+Float64 /Vdata_DFNT_FLOAT64[0]/Field_DFNT_FLOAT64/Field_DFNT_FLOAT64__0 998.75
+Float64 /Vdata_DFNT_FLOAT64[1]/Field_DFNT_FLOAT64/Field_DFNT_FLOAT64__0 998.201
+Float64 /Vdata_DFNT_FLOAT64[2]/Field_DFNT_FLOAT64/Field_DFNT_FLOAT64__0 997.551
+Float64 /Vdata_DFNT_FLOAT64[3]/Field_DFNT_FLOAT64/Field_DFNT_FLOAT64__0 996.802
+Float64 /Vdata_DFNT_FLOAT64[4]/Field_DFNT_FLOAT64/Field_DFNT_FLOAT64__0 995.953
+String /Vdata_DFNT_CHAR8[0]/Field_DFNT_CHAR8/Field_DFNT_CHAR8__0 "This is a data test string (pass 0)."
+String /Vdata_DFNT_CHAR8[1]/Field_DFNT_CHAR8/Field_DFNT_CHAR8__0 "This is a data test string (pass 1)."
+String /Vdata_DFNT_CHAR8[2]/Field_DFNT_CHAR8/Field_DFNT_CHAR8__0 "This is a data test string (pass 2)."
+String /Vdata_DFNT_CHAR8[3]/Field_DFNT_CHAR8/Field_DFNT_CHAR8__0 "This is a data test string (pass 3)."
+String /Vdata_DFNT_CHAR8[4]/Field_DFNT_CHAR8/Field_DFNT_CHAR8__0 "This is a data test string (pass 4)."
+String /Vdata_DFNT_UCHAR8[0]/Field_DFNT_UCHAR8/Field_DFNT_UCHAR8__0 "This is a data test string (pass 5)."
+String /Vdata_DFNT_UCHAR8[1]/Field_DFNT_UCHAR8/Field_DFNT_UCHAR8__0 "This is a data test string (pass 6)."
+String /Vdata_DFNT_UCHAR8[2]/Field_DFNT_UCHAR8/Field_DFNT_UCHAR8__0 "This is a data test string (pass 7)."
+String /Vdata_DFNT_UCHAR8[3]/Field_DFNT_UCHAR8/Field_DFNT_UCHAR8__0 "This is a data test string (pass 8)."
+String /Vdata_DFNT_UCHAR8[4]/Field_DFNT_UCHAR8/Field_DFNT_UCHAR8__0 "This is a data test string (pass 9)."

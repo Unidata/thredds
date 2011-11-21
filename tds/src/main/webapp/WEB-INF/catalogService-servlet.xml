@@ -53,13 +53,9 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /=anyHtmlController
+        /**/=anyHtmlController
         /**/*.xml=anyXmlController
         /**/*.html=anyHtmlController
-        /catalog/*.xml=catalogXmlController
-        /catalog/*.html=catalogHtmlController
-        /catalog/**/*.xml=catalogXmlController
-        /catalog/**/*.html=catalogHtmlController
         /remoteCatalogService=remoteCatalogController
         /catalogServices=remoteCatalogController <!-- For backwards compatibility only. -->
         /remoteCatalogValidation.html=remoteCatalogController

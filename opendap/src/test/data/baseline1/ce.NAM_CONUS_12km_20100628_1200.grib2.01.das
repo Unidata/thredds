@@ -796,7 +796,7 @@ Attributes {
         Float64 GRIB_param_Latin2 25.0;
         Float64 GRIB_param_Lo1 226.54099;
         Float64 GRIB_param_LoV 265.0;
-        String GRIB_param_NpProj true;
+        String GRIB_param_NpProj "true";
         Int32 GRIB_param_Nx 614;
         Int32 GRIB_param_Ny 428;
         Int32 GRIB_param_ProjFlag 0;
@@ -859,7 +859,7 @@ Attributes {
         String GRIB_level_type 103;
         String _CoordinateAxisType Height;
         String bounds height_above_ground_layer_bounds;
-        String _CoordinateZisLayer true;
+        String _CoordinateZisLayer "true";
     }
     height_above_ground_layer_bounds {
         String long_name "bounds for height_above_ground_layer";
@@ -900,7 +900,7 @@ Attributes {
         String GRIB_level_type 108;
         String _CoordinateAxisType Pressure;
         String bounds pressure_difference_layer_bounds;
-        String _CoordinateZisLayer true;
+        String _CoordinateZisLayer "true";
     }
     pressure_difference_layer_bounds {
         String long_name "bounds for pressure_difference_layer";
@@ -913,7 +913,7 @@ Attributes {
         String GRIB_level_type 108;
         String _CoordinateAxisType Pressure;
         String bounds pressure_difference_layer1_bounds;
-        String _CoordinateZisLayer true;
+        String _CoordinateZisLayer "true";
     }
     pressure_difference_layer1_bounds {
         String long_name "bounds for pressure_difference_layer1";
@@ -926,7 +926,7 @@ Attributes {
         String GRIB_level_type 108;
         String _CoordinateAxisType Pressure;
         String bounds pressure_difference_layer2_bounds;
-        String _CoordinateZisLayer true;
+        String _CoordinateZisLayer "true";
     }
     pressure_difference_layer2_bounds {
         String long_name "bounds for pressure_difference_layer2";
@@ -939,7 +939,7 @@ Attributes {
         String GRIB_level_type 100;
         String _CoordinateAxisType Pressure;
         String bounds pressure_layer_bounds;
-        String _CoordinateZisLayer true;
+        String _CoordinateZisLayer "true";
     }
     pressure_layer_bounds {
         String long_name "bounds for pressure_layer";

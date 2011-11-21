@@ -35,7 +35,7 @@ package ucar.nc2.ncml;
 import junit.framework.*;
 
 /**
- * TestSuite that runs all the sample tests
+ * TestSuite that runs all the sample tests - data in cdmUnitTest dir
  *
  */
 public class TestNcMLoffsite {

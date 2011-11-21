@@ -111,8 +111,8 @@ public class AttributeTable extends DAPNode
     /**
      * Create a new empty <code>AttributeTable</code>.
      */
-    public AttributeTable(String name) {
-        super(name);
+    public AttributeTable(String clearname) {
+        super(clearname);
         _attr = new SortedTable();
     }
 
@@ -141,31 +141,25 @@ public class AttributeTable extends DAPNode
     /**
      * Returns the <code>Attribute</code> which matches name.
      *
-     * @param name the name of the <code>Attribute</code> to return.
+     * @param clearname the name of the <code>Attribute</code> to return.
      * @return the <code>Attribute</code> with the specified name, or null
      *         if there is no matching <code>Attribute</code>.
      * @see Attribute
      */
-    public final Attribute getAttribute(String name) { //throws NoSuchAttributeException {
-        Attribute a = (Attribute) _attr.get(name);
-
-//        if(a == null){
-//            throw new NoSuchAttributeException("There is no Attribute named '" + name + "' "+
-//	                                       "in the AttributeTable '" + getName() + "'");
-//        }
-
+    public final Attribute getAttribute(String clearname) { //throws NoSuchAttributeException {
+        Attribute a = (Attribute) _attr.get(clearname);
         return (a);
     }
 
     /**
      * Returns the <code>Attribute</code> which matches name.
      *
-     * @param name the name of the <code>Attribute</code> to return.
+     * @param clearname the name of the <code>Attribute</code> to return.
      * @return True if an Attribute with named 'name' exists, False otherwise.
      * @see Attribute
      */
-    public final boolean hasAttribute(String name) {
-        Attribute a = (Attribute) _attr.get(name);
+    public final boolean hasAttribute(String clearname) {
+        Attribute a = (Attribute) _attr.get(clearname);
 
         if (a == null) {
             return (false);
@@ -186,7 +180,7 @@ public class AttributeTable extends DAPNode
      * is true.  Use the <code>appendContainer</code> method to add container
      * attributes.
      *
-     * @param name  The name of the attribute to add or modify.
+     * @param clearname  The name of the attribute to add or modify.
      * @param type  The type code of the attribute to add or modify.
      * @param value The value to add to the attribute table.
      * @param check Check the validity of the attribute's value?
@@ -196,15 +190,15 @@ public class AttributeTable extends DAPNode
      *                                    member of type
      * @see AttributeTable#appendContainer(String)
      */
-    public final void appendAttribute(String name, int type, String value,
+    public final void appendAttribute(String clearname, int type, String value,
                                       boolean check) throws DASException {
 
-        Attribute a = (Attribute) _attr.get(name);
+        Attribute a = (Attribute) _attr.get(clearname);
 
         if (a != null && (type != a.getType())) {
 
             // type mismatch error
-            throw new AttributeExistsException("The Attribute `" + name
+            throw new AttributeExistsException("The Attribute `" + clearname
                     + "' was previously defined with a different type.");
 
         } else if (a != null) {
@@ -213,8 +207,8 @@ public class AttributeTable extends DAPNode
 
         } else {
 
-            a = new Attribute(type, name, value, check);
-            _attr.put(name, a);
+            a = new Attribute(type, clearname, value, check);
+            _attr.put(clearname, a);
         }
     }
 
@@ -230,7 +224,7 @@ public class AttributeTable extends DAPNode
      * existing attribute's type.  Use the <code>appendContainer</code>
      * method to add container attributes.
      *
-     * @param name  The name of the attribute to add or modify.
+     * @param clearname  The name of the attribute to add or modify.
      * @param type  The type code of the attribute to add or modify.
      * @param value The value to add to the attribute table.
      * @throws AttributeExistsException   thrown if an Attribute with the same
@@ -239,28 +233,28 @@ public class AttributeTable extends DAPNode
      *                                    member of type
      * @see AttributeTable#appendContainer(String)
      */
-    public final void appendAttribute(String name, int type, String value)
+    public final void appendAttribute(String clearname, int type, String value)
             throws DASException {
-        appendAttribute(name, type, value, true);
+        appendAttribute(clearname, type, value, true);
     }
 
     /**
      * Create and append an attribute container to the table.
      * A container is another <code>AttributeTable</code> object.
      *
-     * @param name the name of the container to add.
+     * @param clearname the name of the container to add.
      * @return A pointer to the new <code>AttributeTable</code> object, or null
      *         if a container by that name already exists.
      */
-    public final AttributeTable appendContainer(String name) {
-        // return null if name already exists
+    public final AttributeTable appendContainer(String clearname) {
+        // return null if clearname already exists
         // FIXME! THIS SHOULD RETURN AN EXCEPTION!
-        if (_attr.get(name) != null)
+        if (_attr.get(clearname) != null)
             return null;
 
-        AttributeTable at = new AttributeTable(name);
-        Attribute a = new Attribute(name, at);
-        _attr.put(name, a);
+        AttributeTable at = new AttributeTable(clearname);
+        Attribute a = new Attribute(clearname, at);
+        _attr.put(clearname, a);
         return at;
     }
 
@@ -268,20 +262,20 @@ public class AttributeTable extends DAPNode
      * Create and append an attribute container to the table.
      * A container is another <code>AttributeTable</code> object.
      *
-     * @param name the name of the container to add.
+     * @param clearname the name of the container to add.
      *             if a container by that name already exists.
      */
-    public final void addContainer(String name, AttributeTable at) throws AttributeExistsException {
+    public final void addContainer(String clearname, AttributeTable at) throws AttributeExistsException {
 
         // return null if name already exists
-        if (_attr.get(name) != null) {
-            throw new AttributeExistsException("The Attribute '" + name +
+        if (_attr.get(clearname) != null) {
+            throw new AttributeExistsException("The Attribute '" + clearname +
                     "' already exists in the container '" +
                     getEncodedName() + "'");
         }
 
-        Attribute a = new Attribute(name, at);
-        _attr.put(name, a);
+        Attribute a = new Attribute(clearname, at);
+        _attr.put(clearname, a);
     }
 
     /**
@@ -311,7 +305,7 @@ public class AttributeTable extends DAPNode
                     "It is a duplicat name in this AttributeTable");
         }
         if (Debug.isSet("AttributTable")) {
-            LogStream.out.println("Adding alias '" + alias + "' to AttributeTable '" + _name + "'");
+            LogStream.out.println("Adding alias '" + alias + "' to AttributeTable '" + getClearName() + "'");
         }
 
         Alias newAlias = new Alias(alias, attributeName);
@@ -321,39 +315,39 @@ public class AttributeTable extends DAPNode
     /**
      * Delete the attribute named <code>name</code>.
      *
-     * @param name The name of the attribute to delete.  This can be an
+     * @param clearname The name of the attribute to delete.  This can be an
      *             attribute of any type, including containers.
      */
-    public final void delAttribute(String name) {
-        _attr.remove(name);
+    public final void delAttribute(String clearname) {
+        _attr.remove(clearname);
     }
 
     /**
      * Delete the attribute named <code>name</code>.  If the attribute has a
      * vector value, delete the <code>i</code>'th element of the vector.
      *
-     * @param name The name of the attribute to delete.  This can be an
+     * @param clearname The name of the attribute to delete.  This can be an
      *             attribute of any type, including containers.
      * @param i    If the named attribute is a vector, and <code>i</code> is
      *             non-negative, the <code>i</code>'th entry in the vector is deleted.
      *             If <code>i</code> equals -1, the entire attribute is deleted.
      * @see AttributeTable#delAttribute(String)
      */
-    public final void delAttribute(String name, int i) throws DASException {
+    public final void delAttribute(String clearname, int i) throws DASException {
 
         if (i == -1) {  // delete the whole attribute
 
-            _attr.remove(name);
+            _attr.remove(clearname);
 
         } else {
 
-            Attribute a = (Attribute) _attr.get(name);
+            Attribute a = (Attribute) _attr.get(clearname);
 
             if (a != null) {
 
                 if (a.isContainer()) {
 
-                    _attr.remove(name);  // delete the entire container
+                    _attr.remove(clearname);  // delete the entire container
 
                 } else {
 

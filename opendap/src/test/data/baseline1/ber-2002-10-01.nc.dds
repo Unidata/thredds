@@ -22,4 +22,4 @@ Dataset {
         Float64 time[time = 2];
         Int32 nv[nv = 2];
     } time_bnds;
-} ber-2002-10-01%2enc;
+} ber-2002-10-01.nc;

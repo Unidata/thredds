@@ -1,0 +1,95 @@
+String /Drifters[0]/Drifter_ID "This is a data test string (pass 0)."
+String /Drifters[0]/Date_Sampled "This is a data test string (pass 1)."
+Float64 /Drifters[0]/Latitude 1000
+Float64 /Drifters[0]/Longitude 999.95
+Float64 /Drifters[0]/SST 999.8
+Float64 /Drifters[0]/Ed_490 999.55
+Float64 /Drifters[0]/Lu_412 999.2
+Float64 /Drifters[0]/Lu_443 998.75
+Float64 /Drifters[0]/Lu_490 998.201
+Float64 /Drifters[0]/Lu_510 997.551
+Float64 /Drifters[0]/Lu_555 996.802
+Float64 /Drifters[0]/Lu_670 995.953
+Float64 /Drifters[0]/Lu_683 995.004
+Float64 /Drifters[0]/CHL 993.956
+Float64 /Drifters[0]/FLH 992.809
+String /Drifters[0]/Region "This is a data test string (pass 2)."
+Float64 /Drifters[0]/Decimal_Day 991.562
+String /Drifters[0]/Calibration_File "This is a data test string (pass 3)."
+String /Drifters[0]/Drifter_Type "This is a data test string (pass 4)."
+String /Drifters[1]/Drifter_ID "This is a data test string (pass 5)."
+String /Drifters[1]/Date_Sampled "This is a data test string (pass 6)."
+Float64 /Drifters[1]/Latitude 990.216
+Float64 /Drifters[1]/Longitude 988.771
+Float64 /Drifters[1]/SST 987.227
+Float64 /Drifters[1]/Ed_490 985.585
+Float64 /Drifters[1]/Lu_412 983.844
+Float64 /Drifters[1]/Lu_443 982.004
+Float64 /Drifters[1]/Lu_490 980.067
+Float64 /Drifters[1]/Lu_510 978.031
+Float64 /Drifters[1]/Lu_555 975.897
+Float64 /Drifters[1]/Lu_670 973.666
+Float64 /Drifters[1]/Lu_683 971.338
+Float64 /Drifters[1]/CHL 968.912
+Float64 /Drifters[1]/FLH 966.39
+String /Drifters[1]/Region "This is a data test string (pass 7)."
+Float64 /Drifters[1]/Decimal_Day 963.771
+String /Drifters[1]/Calibration_File "This is a data test string (pass 8)."
+String /Drifters[1]/Drifter_Type "This is a data test string (pass 9)."
+String /Drifters[2]/Drifter_ID "This is a data test string (pass 10)."
+String /Drifters[2]/Date_Sampled "This is a data test string (pass 11)."
+Float64 /Drifters[2]/Latitude 961.055
+Float64 /Drifters[2]/Longitude 958.244
+Float64 /Drifters[2]/SST 955.336
+Float64 /Drifters[2]/Ed_490 952.334
+Float64 /Drifters[2]/Lu_412 949.235
+Float64 /Drifters[2]/Lu_443 946.042
+Float64 /Drifters[2]/Lu_490 942.755
+Float64 /Drifters[2]/Lu_510 939.373
+Float64 /Drifters[2]/Lu_555 935.897
+Float64 /Drifters[2]/Lu_670 932.327
+Float64 /Drifters[2]/Lu_683 928.665
+Float64 /Drifters[2]/CHL 924.909
+Float64 /Drifters[2]/FLH 921.061
+String /Drifters[2]/Region "This is a data test string (pass 12)."
+Float64 /Drifters[2]/Decimal_Day 917.121
+String /Drifters[2]/Calibration_File "This is a data test string (pass 13)."
+String /Drifters[2]/Drifter_Type "This is a data test string (pass 14)."
+String /Drifters[3]/Drifter_ID "This is a data test string (pass 15)."
+String /Drifters[3]/Date_Sampled "This is a data test string (pass 16)."
+Float64 /Drifters[3]/Latitude 913.089
+Float64 /Drifters[3]/Longitude 908.966
+Float64 /Drifters[3]/SST 904.752
+Float64 /Drifters[3]/Ed_490 900.447
+Float64 /Drifters[3]/Lu_412 896.052
+Float64 /Drifters[3]/Lu_443 891.568
+Float64 /Drifters[3]/Lu_490 886.995
+Float64 /Drifters[3]/Lu_510 882.333
+Float64 /Drifters[3]/Lu_555 877.583
+Float64 /Drifters[3]/Lu_670 872.745
+Float64 /Drifters[3]/Lu_683 867.819
+Float64 /Drifters[3]/CHL 862.807
+Float64 /Drifters[3]/FLH 857.709
+String /Drifters[3]/Region "This is a data test string (pass 17)."
+Float64 /Drifters[3]/Decimal_Day 852.525
+String /Drifters[3]/Calibration_File "This is a data test string (pass 18)."
+String /Drifters[3]/Drifter_Type "This is a data test string (pass 19)."
+String /Drifters[4]/Drifter_ID "This is a data test string (pass 20)."
+String /Drifters[4]/Date_Sampled "This is a data test string (pass 21)."
+Float64 /Drifters[4]/Latitude 847.255
+Float64 /Drifters[4]/Longitude 841.901
+Float64 /Drifters[4]/SST 836.463
+Float64 /Drifters[4]/Ed_490 830.941
+Float64 /Drifters[4]/Lu_412 825.336
+Float64 /Drifters[4]/Lu_443 819.648
+Float64 /Drifters[4]/Lu_490 813.878
+Float64 /Drifters[4]/Lu_510 808.028
+Float64 /Drifters[4]/Lu_555 802.096
+Float64 /Drifters[4]/Lu_670 796.084
+Float64 /Drifters[4]/Lu_683 789.992
+Float64 /Drifters[4]/CHL 783.822
+Float64 /Drifters[4]/FLH 777.573
+String /Drifters[4]/Region "This is a data test string (pass 22)."
+Float64 /Drifters[4]/Decimal_Day 771.246
+String /Drifters[4]/Calibration_File "This is a data test string (pass 23)."
+String /Drifters[4]/Drifter_Type "This is a data test string (pass 24)."

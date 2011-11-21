@@ -31,8 +31,8 @@
   <property name="cdm.jar" value="netcdf-4.3.jar"/>
   <property name="jdom.jar" value="jdom.jar"/>
   <property name="joda.jar" value="joda-time-2.0.jar"/>
-  <property name="loggingAPI.jar" value="slf4j-api-1.6.1.jar"/>
-  <property name="protobuf.jar" value="protobuf-java-2.4.0a.jar"/>
+  <property name="loggingAPI.jar" value="slf4j-api-1.6.4.jar"/>
+  <property name="protobuf.jar" value="protobuf-java-2.4.1.jar"/>
 
   <!-- source -->
   <path id="sourcepath">

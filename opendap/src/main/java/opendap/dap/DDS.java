@@ -39,6 +39,7 @@
 
 
 package opendap.dap;
+import ucar.nc2.util.net.EscapeStrings;
 import ucar.nc2.util.net.LogStream;
 
 import java.util.Enumeration;
@@ -283,7 +284,7 @@ import org.jdom.Document;
 public class DDS extends DStructure
 {
 
-    private static final boolean _Debug = true;
+    private static final boolean _Debug = false;
 
     // Used by resolveAliases()
     private BaseType currentBT;
@@ -321,11 +322,11 @@ public class DDS extends DStructure
     /**
      * Creates an empty <code>DDS</code> with the given dataset name.
      *
-     * @param n the dataset name
+     * @param clearname the dataset name
      */
-    public DDS(String n)
+    public DDS(String clearname)
     {
-        this(n, new DefaultFactory());
+        this(clearname, new DefaultFactory());
     }
 
     /**
@@ -347,12 +348,12 @@ public class DDS extends DStructure
      * need to construct subclasses of the various <code>BaseType</code> objects
      * to hold additional server-side information.
      *
-     * @param n       the dataset name
+     * @param clearname       the dataset name
      * @param factory the server <code>BaseTypeFactory</code> object.
      */
-    public DDS(String n, BaseTypeFactory factory)
+    public DDS(String clearname, BaseTypeFactory factory)
     {
-        this(n, factory, defaultSchemaLocation);
+        this(clearname, factory, defaultSchemaLocation);
     }
 
     /**
@@ -361,15 +362,15 @@ public class DDS extends DStructure
      * need to construct subclasses of the various <code>BaseType</code> objects
      * to hold additional server-side information.
      *
-     * @param n       the dataset name
+     * @param clearname       the dataset name
      * @param factory the server <code>BaseTypeFactory</code> object.
      * @param schema  the URL where the parser can find an instance of the
      *                OPeNDAP namespace schema.
      * @opendap.ddx.experimental
      */
-    public DDS(String name, BaseTypeFactory factory, String schema)
+    public DDS(String clearname, BaseTypeFactory factory, String schema)
     {
-        super(name);
+        super(clearname);
         vars = new Vector();
         this.factory = factory;
         schemaLocation = schema;
@@ -489,27 +490,26 @@ public class DDS extends DStructure
             while (e.hasMoreElements()) {
                 String aName = (String) e.nextElement();
                 Attribute a = atTbl.getAttribute(aName);
+                String clearname = a.getClearName();
 
                 if (a.isAlias()) { // copy an alias.
-                    String name = a.getEncodedName();
 
                     String attribute = ((Alias) a).getAliasedToAttributeFieldAsClearString();
 
-                    looseEnds.addAlias(name, convertDDSAliasFieldsToDASAliasFields(attribute));
+                    looseEnds.addAlias(clearname, convertDDSAliasFieldsToDASAliasFields(attribute));
                     countLooseAttributes++;
 
                 } else if (a.isContainer()) {
                     // A reference copy. This is why we are working with a clone.
-                    myDAS.addAttributeTable(a.getEncodedName(), a.getContainer());
+                    myDAS.addAttributeTable(clearname, a.getContainer());
                 } else { // copy an Attribute and it's values...
 
-                    String name = a.getEncodedName();
                     int type = a.getType();
 
                     Enumeration vals = a.getValues();
                     while (vals.hasMoreElements()) {
                         String value = (String) vals.nextElement();
-                        looseEnds.appendAttribute(name, type, value, true);
+                        looseEnds.appendAttribute(clearname, type, value, true);
                     }
                     countLooseAttributes++;
 
@@ -629,8 +629,9 @@ public class DDS extends DStructure
      * @see #getLooseEndsTableName
      * @see #getDAS
      */
-    private String checkLooseEndsTableNameConflict(String name, int attempt)
+    private String checkLooseEndsTableNameConflict(String encodedname, int attempt)
     {
+	String clearname = EscapeStrings.unEscapeDAPIdentifier(encodedname);
         Enumeration e = getVariables();
         while (e.hasMoreElements()) {
             BaseType bt = (BaseType) e.nextElement();
@@ -638,9 +639,9 @@ public class DDS extends DStructure
 
             //LogStream.out.println("bt: '"+btName+"'  dataset: '"+name+"'");
 
-            if (btName.equals(name)) {
-                name = repairLooseEndsTableConflict(name, attempt++);
-                name = checkLooseEndsTableNameConflict(name, attempt);
+            if (btName.equals(encodedname)) {
+                encodedname = repairLooseEndsTableConflict(encodedname, attempt++);
+                encodedname = checkLooseEndsTableNameConflict(encodedname, attempt);
             }
         }
 
@@ -648,13 +649,12 @@ public class DDS extends DStructure
         e = at.getNames();
         while (e.hasMoreElements()) {
             String aName = (String) e.nextElement();
-
-            if (aName.equals(name)) {
-                name = repairLooseEndsTableConflict(name, attempt++);
-                name = checkLooseEndsTableNameConflict(name, attempt);
+            if (aName.equals(clearname)) {
+                encodedname = repairLooseEndsTableConflict(encodedname, attempt++);
+                encodedname = checkLooseEndsTableNameConflict(encodedname, attempt);
             }
         }
-        return (name);
+        return (encodedname);
     }
 
     /**

@@ -8,4 +8,4 @@ Dataset {
         Int32 ss;
         String DODS_URL;
     } GSO_AVHRR;
-} 1998%2d6%2davhrr.dat;
+} 1998-6-avhrr.dat;
