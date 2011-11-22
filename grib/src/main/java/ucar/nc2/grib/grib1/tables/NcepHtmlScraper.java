@@ -100,7 +100,7 @@ public class NcepHtmlScraper {
 
       }
     }
-    writeTableBXml("NCEP Table B", source, "ncepTableB.xml", stuff);
+    writeTableAXml("NCEP GRIB-1 Table A", source, "ncepTableA.xml", stuff);
   }
 
   private class Stuff {
@@ -113,8 +113,8 @@ public class NcepHtmlScraper {
     }
   }
 
-  private void writeTableBXml(String name, String source, String filename, List<Stuff> stuff) throws IOException {
-    org.jdom.Element rootElem = new org.jdom.Element("tableB");
+  private void writeTableAXml(String name, String source, String filename, List<Stuff> stuff) throws IOException {
+    org.jdom.Element rootElem = new org.jdom.Element("tableA");
     org.jdom.Document doc = new org.jdom.Document(rootElem);
     rootElem.addContent(new org.jdom.Element("title").setText(name));
     rootElem.addContent(new org.jdom.Element("source").setText(source));

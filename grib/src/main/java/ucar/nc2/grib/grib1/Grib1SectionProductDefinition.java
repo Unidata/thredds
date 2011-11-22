@@ -349,7 +349,7 @@ public final class Grib1SectionProductDefinition {
       f.format("               Parameter %d not found%n", getParameterNumber());
     }
 
-    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), Grib1Utils.getTypeGenProcessName(getCenter(), getGenProcess()));
+    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), tables.getTypeGenProcessName(getCenter(), getGenProcess()));
 
     f.format("                Reference Time : %s%n", getReferenceDate());
     f.format("                    Time Units : (%d) %s%n", getTimeUnit(), Grib1ParamTime.getCalendarPeriod(getTimeUnit()));

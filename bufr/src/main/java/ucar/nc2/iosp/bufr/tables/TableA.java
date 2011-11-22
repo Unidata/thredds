@@ -34,7 +34,6 @@ package ucar.nc2.iosp.bufr.tables;
 
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import ucar.nc2.util.TableParser;
 
 import java.io.IOException;
 import java.io.InputStream;
