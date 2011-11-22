@@ -43,6 +43,7 @@ import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.cert.PolicyNode;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -56,10 +57,91 @@ import java.util.List;
 public class NcepHtmlScraper {
   private boolean debug = false;
   private boolean show = false;
-  private int[] tableVersions = new int[]{2, 0, 128, 129, 130, 131, 133, 140, 0, 0, 141};
+
 
   //////////////////////////////////////////////////////////////////
-  NcepHtmlScraper() throws IOException {
+  // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
+
+  void parseTableA() throws IOException {
+    String source = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html";
+    String base = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/";
+    File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\ON388.TableA.htm");
+    Document doc = Jsoup.parse(input, "UTF-8", base);
+    System.out.printf("%s%n", doc);
+
+    Element table = doc.select("table").first();
+    List<Stuff> stuff = new ArrayList<Stuff>();
+    Elements rows = table.select("tr");
+    for (Element row : rows) {
+      Elements cols = row.select("td");
+      if (debug) {
+        System.out.printf(" %d=", cols.size());
+        for (Element col : cols)
+          System.out.printf("%s:", col.text());
+        System.out.printf("%n");
+      }
+
+      if (cols.size() == 2) {
+        String snum = StringUtil2.cleanup(cols.get(0).text()).trim();
+        try {
+          int pnum = Integer.parseInt(snum);
+          String desc = StringUtil2.cleanup(cols.get(1).text()).trim();
+          if (desc.startsWith("Reserved")) {
+            System.out.printf("*** Skip Reserved %s%n", row.text());
+            continue;
+          } else {
+            System.out.printf("%d == %s%n", pnum, desc);
+            stuff.add(new Stuff(pnum, desc));
+          }
+          //result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
+        } catch (NumberFormatException e) {
+          System.out.printf("*** Cant parse %s == %s%n", snum, row.text());
+        }
+
+      }
+    }
+    writeTableBXml("NCEP Table B", source, "ncepTableB.xml", stuff);
+  }
+
+  private class Stuff {
+    int no;
+    String desc;
+
+    private Stuff(int no, String desc) {
+      this.no = no;
+      this.desc = desc;
+    }
+  }
+
+  private void writeTableBXml(String name, String source, String filename, List<Stuff> stuff) throws IOException {
+    org.jdom.Element rootElem = new org.jdom.Element("tableB");
+    org.jdom.Document doc = new org.jdom.Document(rootElem);
+    rootElem.addContent(new org.jdom.Element("title").setText(name));
+    rootElem.addContent(new org.jdom.Element("source").setText(source));
+
+    for (Stuff p : stuff) {
+      org.jdom.Element paramElem = new org.jdom.Element("parameter");
+      paramElem.setAttribute("code", Integer.toString(p.no));
+      paramElem.addContent(new org.jdom.Element("description").setText(p.desc));
+      rootElem.addContent(paramElem);
+    }
+
+    XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+    String x = fmt.outputString(doc);
+
+    FileOutputStream fout = new FileOutputStream(dirOut + filename);
+    fout.write(x.getBytes());
+    fout.close();
+
+    if (show) System.out.printf("%s%n", x);
+  }
+
+
+
+  //////////////////////////////////////////////////////////////////
+  private int[] tableVersions = new int[]{2, 0, 128, 129, 130, 131, 133, 140, 0, 0, 141};
+
+  void parseTable2() throws IOException {
     String source = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html";
     File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\on388.2011-11-18.htm");
     Document doc = Jsoup.parse(input, "UTF-8", "http://www.nco.ncep.noaa.gov/pmb/docs/on388/");
@@ -74,16 +156,16 @@ public class NcepHtmlScraper {
     for (int i = 0; i < tableVersions.length; i++) {
       if (tableVersions[i] == 0) continue;
       Element table = tables.select("table").get(i);
-      List<Param> params = readTable(table);
+      List<Param> params = readTable2(table);
 
       String name = "NCEP Table Version " + tableVersions[i];
       String filename = "ncepGrib1-" + tableVersions[i];
-      makeTableWgrib(name, source, filename + ".tab", params);
-      makeTableXml(name, source, filename + ".xml", params);
+      writeTable2Wgrib(name, source, filename + ".tab", params);
+      writeTable2Xml(name, source, filename + ".xml", params);
     }
   }
 
-  private List<Param> readTable(Element table) {
+  private List<Param> readTable2(Element table) {
     List<Param> result = new ArrayList<Param>();
     Elements rows = table.select("tr");
     for (Element row : rows) {
@@ -130,7 +212,7 @@ public class NcepHtmlScraper {
   /////////////////////////////////////////////////////////
   String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
 
-  private void makeTableXml(String name, String source, String filename, List<Param> params) throws IOException {
+  private void writeTable2Xml(String name, String source, String filename, List<Param> params) throws IOException {
     org.jdom.Element rootElem = new org.jdom.Element("parameterMap");
     org.jdom.Document doc = new org.jdom.Document(rootElem);
     rootElem.addContent(new org.jdom.Element("title").setText(name));
@@ -155,7 +237,7 @@ public class NcepHtmlScraper {
     if (show) System.out.printf("%s%n", x);
   }
 
-  private void makeTableWgrib(String name, String source, String filename, List<Param> params) throws IOException {
+  private void writeTable2Wgrib(String name, String source, String filename, List<Param> params) throws IOException {
     Formatter f = new Formatter();
     f.format("# %s%n", name);
     f.format("# %s%n", source);
@@ -170,6 +252,7 @@ public class NcepHtmlScraper {
   }
 
   public static void main(String[] args) throws IOException {
-    new NcepHtmlScraper();
+    NcepHtmlScraper scraper = new NcepHtmlScraper();
+    scraper.parseTableA();
   }
 }
