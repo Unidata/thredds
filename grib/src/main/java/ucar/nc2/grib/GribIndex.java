@@ -50,7 +50,7 @@ import java.util.Formatter;
  */
 public abstract class GribIndex {
   public static final String IDX_EXT = ".gbx9";
-  public static final boolean debug = true;
+  public static final boolean debug = false;
 
   public GribCollection makeCollection(RandomAccessFile raf, CollectionManager.Force force, Formatter f, int edition) throws IOException {
     boolean write = false, rewrite = false;

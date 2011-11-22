@@ -47,7 +47,7 @@ import java.io.InputStreamReader;
  */
 public class DssLocalTables extends LocalTables {
   private static final String tableName = "resources/grib2/local/cfsr.txt";
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   DssLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
