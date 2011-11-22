@@ -117,7 +117,6 @@ public class Grib1DataReader {
 
   static private final boolean staticMissingValueInUse = true;
   static private final float staticMissingValue = Float.NaN;
-  private static final int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
 
   ///////////////////////////////////// Grib1BinaryDataSection
 
@@ -179,7 +178,7 @@ public class Grib1DataReader {
       BitReader reader = new BitReader(raf, startPos+11);
       values = new float[nx * ny];
       for (int i = 0; i <nx * ny; i++) {
-        if ((bitmap[i / 8] & bitmask[i % 8]) != 0) {
+        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
           if (!isConstant) {
             values[i] = ref + scale * reader.bits2UInt(numbits);
           } else {  // rdg - added this to handle a constant valued parameter
