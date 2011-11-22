@@ -83,14 +83,19 @@ public class Grib2SectionBitMap {
    * Get bit map.
    *
    * @param raf read from here
-   * @param numberOfPoints size of bitmap
-   * @return bit map as array of boolean values
+   * @return bit map as array of byte values
    * @throws java.io.IOException on read error
    */
-  public boolean[] getBitmap(RandomAccessFile raf, int numberOfPoints) throws IOException {
+  byte[] getBitmap(RandomAccessFile raf) throws IOException {
     // no bitMap
-    if (bitMapIndicator != 0)
+    if (bitMapIndicator == 255)
       return null;
+
+    // LOOK: bitMapIndicator=254 == previously defined bitmap
+
+    if (bitMapIndicator != 0) {
+      throw new UnsupportedOperationException("Grib2 Bit map section pre-defined (provided by center) = " + bitMapIndicator);
+    }
 
     raf.seek(startingPosition);
     int length = GribNumbers.int4(raf);
@@ -99,13 +104,15 @@ public class Grib2SectionBitMap {
     byte[] data = new byte[length - 6];
     raf.readFully(data);
 
-    // create new bit map when it is first asked for
+    return data;
+
+    /* create new bit map when it is first asked for
     boolean[] bitmap = new boolean[numberOfPoints];
     int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
     for (int i = 0; i < bitmap.length; i++) {
       bitmap[i] = (data[i / 8] & bitmask[i % 8]) != 0;
     }
-    return bitmap;
+    return bitmap; */
   }
 
 }

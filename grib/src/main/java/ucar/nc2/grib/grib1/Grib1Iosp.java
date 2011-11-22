@@ -219,9 +219,9 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
     ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
 
-    val = Grib1Utils.getTypeGenProcessName(gribCollection.getCenter(), gribCollection.getGenProcessId());
+    val = tables.getTypeGenProcessName(gribCollection.getCenter(), gribCollection.getGenProcessId());
     if (val != null)
-      ncfile.addAttribute(null, new Attribute("Type of generating process", val));
+      ncfile.addAttribute(null, new Attribute("Generating process or model", val));
 
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.6"));
     ncfile.addAttribute(null, new Attribute("history", "Read using CDM IOSP Grib1Collection"));
@@ -831,7 +831,11 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
         for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
           int dataIdx = y * nx + x;
-          dataArray.setFloat(start + count, data[dataIdx]);
+          try {
+            dataArray.setFloat(start + count, data[dataIdx]);
+          } catch (ArrayIndexOutOfBoundsException t) {
+            throw t;
+          }
           count++;
         }
       }

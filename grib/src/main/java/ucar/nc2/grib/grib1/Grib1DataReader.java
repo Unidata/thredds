@@ -118,7 +118,6 @@ public class Grib1DataReader {
   static private final boolean staticMissingValueInUse = true;
   static private final float staticMissingValue = Float.NaN;
 
-
   ///////////////////////////////////// Grib1BinaryDataSection
 
   private final int decimalScale;
@@ -142,7 +141,7 @@ public class Grib1DataReader {
     this.startPos = startPos;
   }
 
-  public float[] getData(RandomAccessFile raf, boolean[] bitmap) throws IOException {
+  public float[] getData(RandomAccessFile raf, byte[] bitmap) throws IOException {
     raf.seek(startPos); // go to the data section
 
     // octets 1-3 (section length)
@@ -172,10 +171,14 @@ public class Grib1DataReader {
     float[] values;
 
     if (bitmap != null) {
+      if (8 * bitmap.length < nx * ny) {
+        System.out.printf("Bitmap section length = %d != grid length %d (%d,%d)", bitmap.length, nx * ny, nx, ny);
+        throw new IllegalStateException("Bitmap section length!= grid length %");
+      }
       BitReader reader = new BitReader(raf, startPos+11);
-      values = new float[bitmap.length];
-      for (int i = 0; i < bitmap.length; i++) {
-        if (bitmap[i]) {
+      values = new float[nx * ny];
+      for (int i = 0; i <nx * ny; i++) {
+        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
           if (!isConstant) {
             values[i] = ref + scale * reader.bits2UInt(numbits);
           } else {  // rdg - added this to handle a constant valued parameter
@@ -187,7 +190,7 @@ public class Grib1DataReader {
       }
       scanningModeCheck(values, scanMode, nx);
 
-    } else {  // bms is null
+    } else {  // bitmap is null
       if (!isConstant) {
         if (nx != -1 && ny != -1) {
           values = new float[nx * ny];

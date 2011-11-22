@@ -55,3 +55,5 @@ NCL GRIB1 table notes
    Upward longwave radiation flux
    Upward long wave radiation flux
 
+11/21/2011 remove ncep 128-141 from table, use screen scrape
+

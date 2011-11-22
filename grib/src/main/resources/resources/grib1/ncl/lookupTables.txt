@@ -39,13 +39,6 @@
    59:     1:     0: fsl1_gtb.h
    59:     2:     0: fsl2_gtb.h
    34:     0:     3: jma_3_gtb.h
-    7:     0:   128: ncep_128_gtb.h
-    7:     0:   129: ncep_129_gtb.h
-    7:     0:   130: ncep_130_gtb.h
-    7:     0:   131: ncep_131_gtb.h
-    7:     0:   133: ncep_133_gtb.h
-    7:     0:   140: ncep_140_gtb.h
-    7:     0:   141: ncep_141_gtb.h
     7:     0:     0: ncep_opn_gtb.h
     7:     1:     0: ncep_reanal_gtb.h
 

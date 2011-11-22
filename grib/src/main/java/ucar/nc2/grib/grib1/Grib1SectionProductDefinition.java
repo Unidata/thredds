@@ -335,6 +335,7 @@ public final class Grib1SectionProductDefinition {
 
     f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
     f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), Grib1Utils.getSubCenterName(getCenter(), getSubCenter()));
+    f.format("                 Table Version : %d%n", getTableVersion());
 
     Grib1Parameter parameter = tables.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
     if (parameter != null) {
@@ -348,7 +349,7 @@ public final class Grib1SectionProductDefinition {
       f.format("               Parameter %d not found%n", getParameterNumber());
     }
 
-    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), Grib1Utils.getTypeGenProcessName(getCenter(), getGenProcess()));
+    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), tables.getTypeGenProcessName(getCenter(), getGenProcess()));
 
     f.format("                Reference Time : %s%n", getReferenceDate());
     f.format("                    Time Units : (%d) %s%n", getTimeUnit(), Grib1ParamTime.getCalendarPeriod(getTimeUnit()));

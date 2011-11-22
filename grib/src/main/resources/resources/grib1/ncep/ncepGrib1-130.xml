@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <title>NCEP Table Version 130</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html</source>
+  <parameter code="144">
+    <shortName>SOILW</shortName>
+    <description>Volumetric soil moisture (frozen + liquid)</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="145">
+    <shortName>PEVPR</shortName>
+    <description>Potential latent heat flux (potential evaporation)</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="146">
+    <shortName>VEGT</shortName>
+    <description>Vegetation canopy temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="147">
+    <shortName>BARET</shortName>
+    <description>Bare soil surface skin temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="148">
+    <shortName>AVSFT</shortName>
+    <description>Average surface skin temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="149">
+    <shortName>RADT</shortName>
+    <description>Effective radiative skin temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="150">
+    <shortName>SSTOR</shortName>
+    <description>Surface water storage</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="151">
+    <shortName>LSOIL</shortName>
+    <description>Liquid soil moisture content (non-frozen)</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="152">
+    <shortName>EWATR</shortName>
+    <description>Open water evaporation (standing water)</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="154">
+    <shortName>LSPA</shortName>
+    <description>Land Surface Precipitation Accumulation (LSPA)</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="155">
+    <shortName>GFLUX</shortName>
+    <description>Ground Heat Flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="156">
+    <shortName>CIN</shortName>
+    <description>Convective inhibition (CIN)</description>
+    <units>J/kg</units>
+  </parameter>
+  <parameter code="157">
+    <shortName>CAPE</shortName>
+    <description>Convective available potential energy (CAPE)</description>
+    <units>J/kg</units>
+  </parameter>
+  <parameter code="158">
+    <shortName>TKE</shortName>
+    <description>Turbulent Kinetic Energy</description>
+    <units>J/kg</units>
+  </parameter>
+  <parameter code="159">
+    <shortName>MXSALB</shortName>
+    <description>Maximum snow albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="160">
+    <shortName>SOILL</shortName>
+    <description>Liquid volumetric soil moisture (non-frozen)</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="161">
+    <shortName>ASNOW</shortName>
+    <description>Frozen precipitation (e.g. snowfall)</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="162">
+    <shortName>ARAIN</shortName>
+    <description>Liquid precipitation (rainfall)</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="163">
+    <shortName>GWREC</shortName>
+    <description>Groundwater recharge</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="164">
+    <shortName>QREC</shortName>
+    <description>Flood plain recharge</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="165">
+    <shortName>SNOWT</shortName>
+    <description>Snow temperature, depth-avg</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="166">
+    <shortName>VBDSF</shortName>
+    <description>Visible beam downward solar flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="167">
+    <shortName>VDDSF</shortName>
+    <description>Visible diffuse downward solar flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="168">
+    <shortName>NBDSF</shortName>
+    <description>Near IR beam downward solar flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="169">
+    <shortName>NDDSF</shortName>
+    <description>Near IR diffuse downward solar flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="170">
+    <shortName>SNFALB</shortName>
+    <description>Snow-free albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="171">
+    <shortName>RLYRS&gt;</shortName>
+    <description>Number of soil layers in root zone</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="172">
+    <shortName>M FLX</shortName>
+    <description>Momentum flux</description>
+    <units>N/m2</units>
+  </parameter>
+  <parameter code="176">
+    <shortName>NLAT</shortName>
+    <description>Latitude (-90 to +90)</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="177">
+    <shortName>ELON</shortName>
+    <description>East longitude (0-360)</description>
+    <units>deg</units>
+  </parameter>
+  <parameter code="178">
+    <shortName>FLDCAP</shortName>
+    <description>Field Capacity (soil moisture)</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="179">
+    <shortName>ACOND</shortName>
+    <description>Aerodynamic conductance</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="180">
+    <shortName>SNOAG</shortName>
+    <description>Snow age</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="181">
+    <shortName>CCOND</shortName>
+    <description>Canopy conductance</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="182">
+    <shortName>LAI</shortName>
+    <description>Leaf area index (0-9)</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="183">
+    <shortName>SFCRH</shortName>
+    <description>Roughness length for heat</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="184">
+    <shortName>SALBD</shortName>
+    <description>Snow albedo (over snow cover area only)</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="187">
+    <shortName>NDVI</shortName>
+    <description>Normalized Difference Vegetation Index (NDVI)</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="188">
+    <shortName>DRIP</shortName>
+    <description>Canopy drip</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="189">
+    <shortName>VBSALB</shortName>
+    <description>Visible, Black Sky Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="190">
+    <shortName>VWSALB</shortName>
+    <description>Visible, White Sky Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="191">
+    <shortName>NBSALB</shortName>
+    <description>Near IR, Black Sky Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>NWSALB</shortName>
+    <description>Near IR, White Sky Albedo</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>FRZR</shortName>
+    <description>Freezing Rain</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>FROZR</shortName>
+    <description>Frozen Rain</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>TSNOW</shortName>
+    <description>Total Snow</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>MTERH</shortName>
+    <description>Model Terrain Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>SBSNO</shortName>
+    <description>Sublimation (evaporation from snow)</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="199">
+    <shortName>EVBS</shortName>
+    <description>Direct evaporation from bare soil</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="200">
+    <shortName>EVCW</shortName>
+    <description>Canopy water evaporation</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>VTCIN</shortName>
+    <description>Virtual Temperature Based Convective Inhibition</description>
+    <units>J/Kg</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>VTCAPE</shortName>
+    <description>Virtual Temperature Based Convective Available Potential Energy</description>
+    <units>J/Kg</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>RSMIN</shortName>
+    <description>Minimal stomatal resistance</description>
+    <units>s/m</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>DSWRF</shortName>
+    <description>Downward shortwave radiation flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>DLWRF</shortName>
+    <description>Downward longwave radiation flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>VIL</shortName>
+    <description>Vertically Integrated Liquid</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="207">
+    <shortName>MSTAV</shortName>
+    <description>Moisture availability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="208">
+    <shortName>SFEXC</shortName>
+    <description>Exchange coefficient</description>
+    <units>(kg/m3)(m/s)</units>
+  </parameter>
+  <parameter code="210">
+    <shortName>TRANS</shortName>
+    <description>Transpiration</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="211">
+    <shortName>USWRF</shortName>
+    <description>Upward short wave radiation flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="212">
+    <shortName>ULWRF</shortName>
+    <description>Upward long wave radiation flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="219">
+    <shortName>WILT</shortName>
+    <description>Wilting point</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="220">
+    <shortName>FLDCP</shortName>
+    <description>Field Capacity</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="221">
+    <shortName>HPBL</shortName>
+    <description>Planetary boundary layer height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="222">
+    <shortName>SLTYP</shortName>
+    <description>Surface slope type</description>
+    <units>Index</units>
+  </parameter>
+  <parameter code="223">
+    <shortName>CNWAT</shortName>
+    <description>Plant canopy surface water</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="224">
+    <shortName>SOTYP</shortName>
+    <description>Soil type</description>
+    <units>Index (0-9)</units>
+  </parameter>
+  <parameter code="225">
+    <shortName>VGTYP</shortName>
+    <description>Vegetation type</description>
+    <units>Index (0-13)</units>
+  </parameter>
+  <parameter code="226">
+    <shortName>BMIXL</shortName>
+    <description>Blackadar's mixing length scale</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="227">
+    <shortName>AMIXL</shortName>
+    <description>Asymptotic mixing length scale</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="228">
+    <shortName>PEVAP</shortName>
+    <description>Potential evaporation</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="229">
+    <shortName>SNOHF</shortName>
+    <description>Snow phase-change heat flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="230">
+    <shortName>SMREF</shortName>
+    <description>Transpiration stress-onset (soil moisture)</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="231">
+    <shortName>SMDRY</shortName>
+    <description>Direct evaporation cease (soil moisture)</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="234">
+    <shortName>BGRUN</shortName>
+    <description>Subsurface runoff (baseflow)</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="235">
+    <shortName>SSRUN</shortName>
+    <description>Surface runoff (non-infiltrating)</description>
+    <units>kg/m2</units>
+  </parameter>
+  <parameter code="238">
+    <shortName>SNOWC</shortName>
+    <description>Snow cover</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="239">
+    <shortName>SNOT</shortName>
+    <description>Snow temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="240">
+    <shortName>POROS</shortName>
+    <description>Soil porosity</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="241">
+    <shortName>SBT112</shortName>
+    <description>Simulated Brightness Temperature for GOES11, Channel 2</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="242">
+    <shortName>SBT113</shortName>
+    <description>Simulated Brightness Temperature for GOES11, Channel 3</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="243">
+    <shortName>SBT114</shortName>
+    <description>Simulated Brightness Temperature for GOES11, Channel 4</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="244">
+    <shortName>SBT115</shortName>
+    <description>Simulated Brightness Temperature for GOES11, Channel 5</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="246">
+    <shortName>RCS</shortName>
+    <description>Solar parameter in canopy conductance</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="247">
+    <shortName>RCT</shortName>
+    <description>Temperature parameter in canopy conductance</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="248">
+    <shortName>RCQ</shortName>
+    <description>Humidity parameter in canopy conductance</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="249">
+    <shortName>RCSOL</shortName>
+    <description>Soil moisture parameter in canopy conductance</description>
+    <units>fraction</units>
+  </parameter>
+  <parameter code="252">
+    <shortName>CD</shortName>
+    <description>Surface drag coefficient</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="253">
+    <shortName>FRICV</shortName>
+    <description>Surface friction velocity</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="254">
+    <shortName>RI</shortName>
+    <description>Richardson number</description>
+    <units>non-dim</units>
+  </parameter>
+  <parameter code="255">
+    <shortName />
+    <description>Missing</description>
+    <units />
+  </parameter>
+</parameterMap>
+

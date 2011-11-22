@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <title>NCEP Table Version 140</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html</source>
+  <parameter code="168">
+    <shortName>MEIP</shortName>
+    <description>Mean Icing Potential</description>
+    <units />
+  </parameter>
+  <parameter code="169">
+    <shortName>MAIP</shortName>
+    <description>Maximum Icing Potential</description>
+    <units />
+  </parameter>
+  <parameter code="170">
+    <shortName>MECTP</shortName>
+    <description>Mean in-Cloud Turbulence Potential</description>
+    <units />
+  </parameter>
+  <parameter code="171">
+    <shortName>MACTP</shortName>
+    <description>Max in-Cloud Turbulence Potential</description>
+    <units />
+  </parameter>
+  <parameter code="172">
+    <shortName>MECAT</shortName>
+    <description>Mean Cloud Air Turbulence Potential</description>
+    <units />
+  </parameter>
+  <parameter code="173">
+    <shortName>MACAT</shortName>
+    <description>Maximum Cloud Air Turbulence Potential</description>
+    <units />
+  </parameter>
+  <parameter code="174">
+    <shortName>CBHE</shortName>
+    <description>Cumulonimbus Horizontal Extent</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="175">
+    <shortName>PCBB</shortName>
+    <description>Pressure at Cumulonimbus Base</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="176">
+    <shortName>PCBT</shortName>
+    <description>Pressure at Cumulonimbus Top</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="177">
+    <shortName>PECBB</shortName>
+    <description>Pressure at Embedded Cumulonimbus Base</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="178">
+    <shortName>PECBT</shortName>
+    <description>Pressure at Embedded Cumulonimbus Top</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="179">
+    <shortName>HCBB</shortName>
+    <description>ICAO Height at Cumulonimbus Base</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="180">
+    <shortName>HCBT</shortName>
+    <description>ICAO Height at Cumulonimbus Top</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="181">
+    <shortName>HECBB</shortName>
+    <description>ICAO Height at Embedded Cumulonimbus Base</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="182">
+    <shortName>HECBT</shortName>
+    <description>ICAO Height at Embedded Cumulonimbus Top</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="255">
+    <shortName />
+    <description>Missing</description>
+    <units />
+  </parameter>
+</parameterMap>
+

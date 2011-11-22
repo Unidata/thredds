@@ -50,6 +50,7 @@ public final class GribNumbers {
    */
   public static final int UNDEFINED = -9999;
   public static final double UNDEFINEDD = -9999.0;
+  public static final int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
 
   /**
    * Grib uses this internal to mean missing
