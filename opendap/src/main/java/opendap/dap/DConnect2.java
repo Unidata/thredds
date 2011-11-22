@@ -583,9 +583,6 @@ private class DDSCommand implements Command {
   String url = null;
   public void setURL(String url)
   {
-      if(url.equals("dods://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_22km_20100504_0000.grib1")) {
-          int x = 0;
-      }
       this.url = url;
       if(dds != null && url != null) dds.setURL(url);
   }
