@@ -502,8 +502,8 @@ public abstract class GribCollection {
   }
 
   public static class Record {
-    public int fileno;
-    public long pos;
+    public int fileno; // which file
+    public long pos;   // offset on file where data starts
 
     public Record(int fileno, long pos, boolean missing) {
       this.fileno = fileno;

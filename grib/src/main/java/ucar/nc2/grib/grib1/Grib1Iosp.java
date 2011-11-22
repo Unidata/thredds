@@ -831,7 +831,11 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
         for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
           int dataIdx = y * nx + x;
-          dataArray.setFloat(start + count, data[dataIdx]);
+          try {
+            dataArray.setFloat(start + count, data[dataIdx]);
+          } catch (ArrayIndexOutOfBoundsException t) {
+            throw t;
+          }
           count++;
         }
       }

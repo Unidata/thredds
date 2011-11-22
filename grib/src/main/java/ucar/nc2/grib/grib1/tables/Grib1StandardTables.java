@@ -44,7 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manage Grib-1 standard parameter tables (table 2).
- *
  */
 public class Grib1StandardTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1StandardTables.class);
@@ -236,7 +235,9 @@ public class Grib1StandardTables {
         return table;
 
       // match from lookup tables(s)
-      table = findParameterTable(center, subcenter, tableVersion);
+      table = findParameterTableExact(center, subcenter, tableVersion);
+      if (table == null)
+        table = findParameterTable(center, subcenter, tableVersion);
       if (table == null) {
         if (warn)
           logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
@@ -247,6 +248,27 @@ public class Grib1StandardTables {
       return table;
     }
 
+    private Grib1ParamTable findParameterTableExact(int center, int subcenter, int version) {
+      List<Grib1ParamTable> localCopy = tables; // thread safe
+      for (Grib1ParamTable table : localCopy) {
+        // look for a match
+        if (center == table.getCenter_id() && subcenter == table.getSubcenter_id() && version == table.getVersion()) {  // match
+          if (table.getParameters() == null) //  see if the parameters for this table have been read in yet.
+            continue; // failed - maybe theres another entry table that matches
+
+          // success - initialize other tables with the same path
+          for (Grib1ParamTable table2 : localCopy) {
+            if (table2.getPath().equals(table.getPath()))
+              table2.setParameters(table.getParameters());
+          }
+          return table;
+        }
+      }
+
+      return null;
+    }
+
+    // wildcard match
     private Grib1ParamTable findParameterTable(int center, int subcenter, int version) {
       List<Grib1ParamTable> localCopy = tables; // thread safe
       for (Grib1ParamTable table : localCopy) {
@@ -257,12 +279,12 @@ public class Grib1StandardTables {
             if ((table.getVersion() == -1) || version == table.getVersion()) {  // match
               //  see if the parameters for this table have been read in yet.
               if (table.getParameters() == null)
-                 continue; // failed - maybe theres another entry table that matches
+                continue; // failed - maybe theres another entry table that matches
 
               // success - initialize other tables with the same path
               for (Grib1ParamTable table2 : localCopy) {
                 if (table2.getPath().equals(table.getPath()))
-                  table2.setParameters( table.getParameters());
+                  table2.setParameters(table.getParameters());
               }
               return table;
             }

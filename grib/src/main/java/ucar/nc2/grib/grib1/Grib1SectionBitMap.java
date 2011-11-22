@@ -68,7 +68,7 @@ public class Grib1SectionBitMap {
   /**
    * Read the bitmap array when needed
    */
-  public boolean[] getBitmap(RandomAccessFile raf) throws IOException {
+  byte[] getBitmap(RandomAccessFile raf) throws IOException {
     if (startingPosition <= 0) return null;
 
     raf.seek(startingPosition);
@@ -82,29 +82,30 @@ public class Grib1SectionBitMap {
     // octets 5-6
     int bm = raf.readShort();
     if (bm != 0) {
-      System.out.println("BMS pre-defined BM provided by center");
-      if ((length - 6) == 0) {
-        return null; // LOOK
-      }
-      byte[] data = new byte[length - 6];
-      raf.read(data);
-      return null; // LOOK
+      throw new UnsupportedOperationException("Grib1 Bit map section pre-defined (provided by center)");
     }
 
     // read the bits as integers
-    byte[] data = new byte[length - 6];
+    int n = length - 6;
+    byte[] data = new byte[n];
     raf.read(data);
+    return data;
 
     // create new bit map, octet 4 contains number of unused bits at the end
-    boolean[] bitmap = new boolean[(length - 6) * 8 - unused];
+    /* boolean[] bitmap = new boolean[n * 8 - unused];  // should be
+    boolean[] bitmap = new boolean[n * 8];  //
 
     // fill bit map
+    int count = 0;
     int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
     for (int i = 0; i < bitmap.length; i++) {
       bitmap[i] = (data[i / 8] & bitmask[i % 8]) != 0;
+      if (bitmap[i]) count++;
     }
+    float r = (float) count / 8 / n;
+    System.out.printf("bitmap count = %d / %d (%f)%n", count, 8*n,  r);
 
-    return bitmap;
+    return bitmap;  */
   }
 
 }

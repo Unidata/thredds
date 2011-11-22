@@ -213,7 +213,7 @@ public class Grib1Record {
   public float[] readData(RandomAccessFile raf) throws IOException {
     Grib1Gds gds = gdss.getGDS();
     Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), dataSection.getStartingPosition());
-    boolean[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
+    byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     float[] data = reader.getData(raf, bm);
 
     if (gdss.isThin()) {

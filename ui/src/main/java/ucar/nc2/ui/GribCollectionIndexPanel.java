@@ -291,14 +291,17 @@ public class GribCollectionIndexPanel extends JPanel {
   private void showFiles(Formatter f) {
     if (gc == null) return;
     int count = 0;
+    f.format("In order:%n");
     for (String file : gc.getFilenames())
       f.format("%5d %s%n", count++, file);
 
-    f.format("%n");
+    f.format("%nsorted:%n");
     List<String> fs = new ArrayList<String>(gc.getFilenames());
     Collections.sort(fs);
     for (String file : fs)
       f.format("%5d %s%n", count++, file);
+
+    f.format("============%n%s%n", gc);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -370,18 +373,47 @@ public class GribCollectionIndexPanel extends JPanel {
 
       try {
         if (tcoord.isInterval()) {
-            showRecords2Dintv(f, vcoord, tcoord.getIntervals());
+          showRecords2Dintv(f, vcoord, tcoord.getIntervals());
         } else {
-          showRecords(f, vcoord, tcoord.getCoords());
+          if (vcoord == null)
+            showRecordsNoVert(f, tcoord.getCoords());
+          else
+            showRecords(f, vcoord, tcoord.getCoords());
         }
       } catch (IOException ioe) {
         ioe.printStackTrace();
       }
     }
 
+    void showRecordsNoVert(Formatter f, List<Integer> values) throws IOException {
+      f.format("Variable %s%n", v.toStringComplete());
+      f.format(" Show records (file,pos)%n");
+      f.format(" time (down)%n");
+
+      GribCollection.Record[] records = v.getRecords();
+      for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+        f.format("%10s = ", values.get(timeIdx));
+        int idx = GribCollection.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
+        GribCollection.Record r = records[idx];
+        if (r == null) f.format("null");
+        else f.format("(%d,%8d) ", r.fileno, r.pos);
+        f.format("%n");
+      }
+
+      f.format("%n Show records in order%n");
+      int count = 0;
+      for (GribCollection.Record r : records) {
+        if (r == null) f.format("null%n");
+        else f.format("%5d = (%d,%8d)%n", count, r.fileno, r.pos);
+        count++;
+      }
+      f.format("%n");
+
+    }
+
     void showRecords(Formatter f, VertCoord vcoord, List<Integer> values) throws IOException {
       if (vcoord == null) {
-        f.format("vcoord is null%n");
+        f.format("VertCoord is null%n");
         return;
       }
       f.format("Variable %s%n", v.toStringComplete());
