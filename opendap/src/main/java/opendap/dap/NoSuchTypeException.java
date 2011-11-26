@@ -39,7 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
 
 /**
  * Thrown when an attempt is made to access a variable that does not exist.

@@ -36,7 +36,7 @@
  * by line basis.
  */
 
-package ucar.nc2.util.net;
+package ucar.nc2.util.log;
 
 import java.io.IOException;
 import java.io.OutputStream;

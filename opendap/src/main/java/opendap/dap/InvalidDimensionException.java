@@ -40,7 +40,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
 
 /**
  * Used to indicate that one of the dimension sizes is incorrect.

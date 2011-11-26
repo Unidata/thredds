@@ -26,6 +26,8 @@
 package ucar.nc2.util.net;
 
 
+import ucar.nc2.util.log.LogStream;
+
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;

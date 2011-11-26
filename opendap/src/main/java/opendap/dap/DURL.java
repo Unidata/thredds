@@ -39,10 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
-
-import java.io.InputStream;
-import java.io.PrintWriter;
 
 /**
  * Holds a OPeNDAP <code>URL</code> value.

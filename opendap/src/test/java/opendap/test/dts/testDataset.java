@@ -47,10 +47,9 @@ import java.io.*;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
-import opendap.servlet.AbstractServlet;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
-import ucar.nc2.util.net.LogStream;
+import ucar.nc2.util.log.LogStream;
 import opendap.util.Debug;
 
 

@@ -39,7 +39,7 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
+import ucar.nc2.util.log.LogStream;
 
 import java.util.Enumeration;
 

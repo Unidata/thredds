@@ -45,6 +45,7 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.*;
 
+import ucar.nc2.util.log.LogStream;
 import ucar.unidata.util.Urlencoded;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////

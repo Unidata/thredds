@@ -39,10 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
-
-import java.io.DataInputStream;
-import java.io.PrintWriter;
 
 /**
  * This class implements a simple list of OPeNDAP data

@@ -39,7 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
 
 /**
  * Thrown by <code>Attribute</code> when a bad value

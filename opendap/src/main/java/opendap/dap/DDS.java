@@ -39,8 +39,8 @@
 
 
 package opendap.dap;
+import ucar.nc2.util.log.LogStream;
 import ucar.nc2.util.net.EscapeStrings;
-import ucar.nc2.util.net.LogStream;
 
 import java.util.Enumeration;
 import java.util.Vector;

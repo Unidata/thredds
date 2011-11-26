@@ -33,6 +33,8 @@
 
 package ucar.nc2.util.net;
 
+import ucar.nc2.util.log.LogStream;
+
 /**
  * Provides a method to encode any string into a URL-safe
  * form.

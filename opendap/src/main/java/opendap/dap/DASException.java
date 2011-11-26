@@ -39,7 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
 
 /**
  * DAS exception. This is the root of all the DAS exception classes.

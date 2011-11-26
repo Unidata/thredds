@@ -35,7 +35,7 @@
  * a Common log file
  */
 
-package ucar.nc2.util.net;
+package ucar.nc2.util.log;
 
 public class CDMLog
 {

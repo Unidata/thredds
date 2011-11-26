@@ -47,13 +47,10 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import opendap.dap.*;
-import ucar.nc2.util.net.LogStream;
+import ucar.nc2.util.log.LogStream;
 import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 import opendap.servlet.*;
-import opendap.test.dts.testDataset;
-import opendap.test.dts.testEngine;
-import opendap.test.dts.test_SDArray;
 import opendap.util.Debug;
 import ucar.nc2.util.net.EscapeStrings;
 

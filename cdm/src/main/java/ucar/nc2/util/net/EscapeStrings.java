@@ -40,6 +40,8 @@
 
 package ucar.nc2.util.net;
 
+import ucar.nc2.util.log.LogStream;
+
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;

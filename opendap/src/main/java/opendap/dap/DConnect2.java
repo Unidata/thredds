@@ -39,7 +39,7 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
+import ucar.nc2.util.log.LogStream;
 
 import java.net.*;
 import java.io.*;
@@ -54,7 +54,6 @@ import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
-import ucar.nc2.util.net.HTTPException;
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
 
