@@ -39,7 +39,7 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
+import ucar.nc2.util.log.LogStream;
 
 import java.net.*;
 import java.io.*;
@@ -54,7 +54,6 @@ import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
-import ucar.nc2.util.net.HTTPException;
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
 
@@ -583,9 +582,6 @@ private class DDSCommand implements Command {
   String url = null;
   public void setURL(String url)
   {
-      if(url.equals("dods://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_22km_20100504_0000.grib1")) {
-          int x = 0;
-      }
       this.url = url;
       if(dds != null && url != null) dds.setURL(url);
   }

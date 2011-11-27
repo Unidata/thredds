@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib2;
 
 import ucar.jpeg.jj2000.j2k.decoder.Grib2JpegDecoder;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -64,7 +65,7 @@ public class Grib2DataReader {
   private final long startPos;
   private final int dataLength;
 
-  private boolean[] bitmap;
+  private byte[] bitmap;
 
   public Grib2DataReader(int dataTemplate, int totalNPoints, int dataNPoints, int scanMode, int nx, long startPos, int dataLength) {
     this.dataTemplate = dataTemplate;
@@ -76,8 +77,16 @@ public class Grib2DataReader {
     this.dataLength = dataLength;
   }
 
-  public float[] getData(RandomAccessFile raf, boolean[] bitmap, Grib2Drs gdrs) throws IOException {
+  public float[] getData(RandomAccessFile raf, byte[] bitmap, Grib2Drs gdrs) throws IOException {
     this.bitmap = bitmap;
+
+    if (bitmap != null) { // is bitmap ok ?
+      if (bitmap.length * 8 < totalNPoints) { // gdsNumberPoints == nx * ny ??
+        System.out.printf("Bitmap section length = %d != grid length %d (%d,%d)", bitmap.length, totalNPoints, nx, totalNPoints/nx);
+        throw new IllegalStateException("Bitmap section length!= grid length %");
+      }
+    }
+
     raf.seek(startPos+5); // skip past first 5 bytes in data section, now ready to read
 
     float[] data;
@@ -152,8 +161,8 @@ public class Grib2DataReader {
         data[i] = (R + reader.bits2UInt(nb) * EE) / DD;
       }
     } else {
-      for (int i = 0; i < bitmap.length; i++) {
-        if (bitmap[i]) {
+      for (int i = 0; i < totalNPoints; i++) {
+        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
           data[i] = (R + reader.bits2UInt(nb) * EE) / DD;
         } else {
           data[i] = staticMissingValue;  // LOOK ??
@@ -258,7 +267,7 @@ public class Grib2DataReader {
       int idx = 0;
       float[] tmp = new float[totalNPoints];
       for (int i = 0; i < totalNPoints; i++) {
-        if (bitmap[i]) {
+        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
           tmp[i] = data[idx++];
         } else {
           tmp[i] = mv;
@@ -530,7 +539,7 @@ public class Grib2DataReader {
       int idx = 0;
       float[] tmp = new float[totalNPoints];
       for (int i = 0; i < totalNPoints; i++) {
-        if (bitmap[i]) {
+        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
           tmp[i] = data[idx++];
         } else {
           tmp[i] = mv;
@@ -597,8 +606,8 @@ public class Grib2DataReader {
           data[i] = (R + g2j.data[i] * EE) / DD;
         }
       } else {  // use bitmap
-        for (int i = 0, j = 0; i < bitmap.length; i++) {
-          if (bitmap[i]) {
+        for (int i = 0, j = 0; i < totalNPoints; i++) {
+          if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
             data[i] = (R + g2j.data[j++] * EE) / DD;
           } else {
             data[i] = staticMissingValue;  // LOOK ??

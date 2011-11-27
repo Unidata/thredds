@@ -39,6 +39,8 @@ import java.util.*;
 import java.io.*;
 
 import org.apache.commons.httpclient.auth.*;
+import ucar.nc2.util.log.LogStream;
+
 import javax.crypto.*;
 import javax.crypto.spec.*;
 

@@ -38,11 +38,10 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.params.*;
 import org.apache.commons.httpclient.protocol.Protocol;
+import ucar.nc2.util.log.LogStream;
 import ucar.unidata.util.Urlencoded;
 
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;

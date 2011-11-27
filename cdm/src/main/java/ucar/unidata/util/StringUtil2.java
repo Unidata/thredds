@@ -118,6 +118,11 @@ public class StringUtil2 {
     return new String(bb, 0, count);
   }
 
+  public static String cleanup(String s) {
+    return cleanup(s.getBytes());
+  }
+
+
   /**
    * Remove any char not alphanumeric or in okChars.
    *

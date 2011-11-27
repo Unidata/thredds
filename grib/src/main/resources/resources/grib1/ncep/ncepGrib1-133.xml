@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <title>NCEP Table Version 133</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html</source>
+  <parameter code="139">
+    <shortName>POZT</shortName>
+    <description>Ozone production from temperature term</description>
+    <units>kg/kg/s</units>
+  </parameter>
+  <parameter code="154">
+    <shortName>OMGALF</shortName>
+    <description>Omega (Dp/Dt) divide by density</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="164">
+    <shortName>COVZZ</shortName>
+    <description>Covariance between zonal and zonal components of the wind. Defined as [uu]-[u][u], where "[]" indicates the mean over the indicated time span.</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="165">
+    <shortName>COVMM</shortName>
+    <description>Covariance between meridional and meridional components of the wind. Defined as [vv]-[v][v], where "[]" indicates the mean over the indicated time span.</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="166">
+    <shortName>COVQZ</shortName>
+    <description>Covariance between specific humidity and zonal components of the wind. Defined as [uq]-[u][q], where "[]" indicates the mean over the indicated time span.</description>
+    <units>kg/kg*m/s</units>
+  </parameter>
+  <parameter code="167">
+    <shortName>COVQM</shortName>
+    <description>Covariance between specific humidity and meridional components of the wind. Defined as [vq]-[v][q], where "[]" indicates the mean over the indicated time span.</description>
+    <units>kg/kg*m/s</units>
+  </parameter>
+  <parameter code="168">
+    <shortName>COVTVV</shortName>
+    <description>Covariance between temperature and vertical components of the wind. Defined as [?T]-[?][T], where "[]" indicates the mean over the indicated time span.</description>
+    <units>K*Pa/s</units>
+  </parameter>
+  <parameter code="169">
+    <shortName>COVQVV</shortName>
+    <description>Covariance between specific humidity and vertical components of the wind. Defined as [?q]-[?][q], where "[]" indicates the mean over the indicated time span.</description>
+    <units>kg/kg*Pa/s</units>
+  </parameter>
+  <parameter code="173">
+    <shortName>LRGMR</shortName>
+    <description>Large scale moistening rate</description>
+    <units>kg/kg/s</units>
+  </parameter>
+  <parameter code="174">
+    <shortName>VDFOZ</shortName>
+    <description>Ozone vertical diffusion</description>
+    <units>kg/kg/s</units>
+  </parameter>
+  <parameter code="175">
+    <shortName>POZ</shortName>
+    <description>Ozone production</description>
+    <units>kg/kg/s</units>
+  </parameter>
+  <parameter code="176">
+    <shortName>AMSRE9</shortName>
+    <description>Simulated Brightness Temperature for AMSRE on Aqua, Channel 9</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="177">
+    <shortName>AMSRE10</shortName>
+    <description>Simulated Brightness Temperature for AMSRE on Aqua, Channel 10</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="178">
+    <shortName>AMSRE11</shortName>
+    <description>Simulated Brightness Temperature for AMSRE on Aqua, Channel 11</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="179">
+    <shortName>AMSRE12</shortName>
+    <description>Simulated Brightness Temperature for AMSRE on Aqua, Channel 12</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="181">
+    <shortName>GWDU</shortName>
+    <description>Gravity wave drag zonal acceleration</description>
+    <units>m/s2</units>
+  </parameter>
+  <parameter code="182">
+    <shortName>GWDV</shortName>
+    <description>Gravity wave drag meridional acceleration</description>
+    <units>m/s2</units>
+  </parameter>
+  <parameter code="183">
+    <shortName>CNVU</shortName>
+    <description>Convective zonal momentum mixing acceleration</description>
+    <units>m/s2</units>
+  </parameter>
+  <parameter code="184">
+    <shortName>CNVV</shortName>
+    <description>Convective meridional momentum mixing acceleration</description>
+    <units>m/s2</units>
+  </parameter>
+  <parameter code="185">
+    <shortName>AKHS</shortName>
+    <description>Surface exchange coefficients for T and Q divided by delta z</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="186">
+    <shortName>AKMS</shortName>
+    <description>Surface exchange coefficients for U and V divided by delta z</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="188">
+    <shortName>TOZ</shortName>
+    <description>Ozone tendency</description>
+    <units>kg/kg/s</units>
+  </parameter>
+  <parameter code="191">
+    <shortName>SUNSD</shortName>
+    <description>Sunshine Duration</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>MOSF</shortName>
+    <description>Meridional Overturning Stream Function</description>
+    <units>106m3s-1</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>EPSR</shortName>
+    <description>Radiative emissivity</description>
+    <units />
+  </parameter>
+  <parameter code="195">
+    <shortName>QZ0</shortName>
+    <description>Specific humidity at top of viscous sublayer</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>CNGWDU</shortName>
+    <description>Convective Gravity wave drag zonal acceleration</description>
+    <units>m/s2</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>CNGWDV</shortName>
+    <description>Convective Gravity wave drag meridional acceleration</description>
+    <units>m/s2</units>
+  </parameter>
+  <parameter code="201">
+    <shortName>THZ0</shortName>
+    <description>Potential temperature at top of viscous sublayer</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="202">
+    <shortName>CNVUMF</shortName>
+    <description>Convective updraft mass flux</description>
+    <units>kg/m2/s</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>COVPSPS</shortName>
+    <description>Covariance between surface pressure and surface pressure. Defined as [Psfc]-[Psfc][Psfc], where "[]" indicates the mean over the indicated time span.</description>
+    <units>Pa*Pa</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>QMAX</shortName>
+    <description>Maximum specific humidity at 2m</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>QMIN</shortName>
+    <description>Minimum specific humidity at 2m</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>COVQQ</shortName>
+    <description>Covariance between specific humidity and specific humidy. Defined as [qq]-[q][q], where "[]" indicates the mean over the indicated time span.</description>
+    <units>kg/kg*kg/kg</units>
+  </parameter>
+  <parameter code="209">
+    <shortName>CNVDMF</shortName>
+    <description>Convective downdraft mass flux</description>
+    <units>kg/m2/s</units>
+  </parameter>
+  <parameter code="219">
+    <shortName>CNVDEMF</shortName>
+    <description>Convective detrainment mass flux</description>
+    <units>kg/m2/s</units>
+  </parameter>
+  <parameter code="220">
+    <shortName>COVVVVV</shortName>
+    <description>Covariance between vertical and vertical components of the wind. Defined as [??]-[?][?], where "[]" indicates the mean over the indicated time span.</description>
+    <units>Pa2/s2</units>
+  </parameter>
+  <parameter code="234">
+    <shortName>COVTT</shortName>
+    <description>Covariance between temperature and temperature. Defined as [TT]-[T][T], where "[]" indicates the mean over the indicated time span.</description>
+    <units>K*K</units>
+  </parameter>
+  <parameter code="236">
+    <shortName>WTEND</shortName>
+    <description>Tendency of vertical velocity</description>
+    <units>m/s2</units>
+  </parameter>
+  <parameter code="239">
+    <shortName>POZO</shortName>
+    <description>Ozone production from col ozone term</description>
+    <units>kg/kg/s</units>
+  </parameter>
+  <parameter code="255">
+    <shortName />
+    <description>Missing</description>
+    <units />
+  </parameter>
+</parameterMap>
+

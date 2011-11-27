@@ -67,7 +67,7 @@ public class TestJni extends TestCase {
     super(name);
   }
 
-  String testDir = TestAll.testdataDir + "netcdf4/";
+  String testDir = TestAll.cdmUnitTestDir + "netcdf4/";
 
   public void testReadAll() throws IOException {
     int count = 0;

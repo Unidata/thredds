@@ -1343,14 +1343,18 @@ public class JniIosp extends AbstractIOServiceProvider {
   private NCLibrary load() {
     if (nc4 == null) {
       //String dir = "C:/cdev/libpath/";
-      String dir = "C:/dev/tds/thredds/lib/binary/win32/";
+      //String dir = "C:/dev/tds/thredds/lib/binary/win32/";
+      String dir = "C:/cdev/netcdf-4.1.3-win-dev/bin/x64/";
       System.setProperty("jna.library.path", dir);
 
       System.load(dir + "zlib1.dll");
-      System.load(dir + "szlibdll.dll");
+      System.load(dir + "sz.dll");
+
+      System.load(dir + "libifcoremd.dll");
+      System.load(dir + "libmmd.dll");
       System.load(dir + "hdf5dll.dll");
       System.load(dir + "hdf5_hldll.dll");
-      //System.load(dir + "netcdf.dll");
+      System.load(dir + "netcdf.dll");
 
       Native.setProtected(true);
       nc4 = (NCLibrary) Native.loadLibrary("netcdf", NCLibrary.class);

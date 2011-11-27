@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <title>NCEP Table Version 128</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html</source>
+  <parameter code="128">
+    <shortName>AVDEPTH</shortName>
+    <description>Ocean depth - mean</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="129">
+    <shortName>DEPTH</shortName>
+    <description>Ocean depth - instantaneous</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="130">
+    <shortName>ELEV</shortName>
+    <description>Ocean surface elevation relative to geoid</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="131">
+    <shortName>MXEL24</shortName>
+    <description>Max ocean surface elevation in last 24 hours</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="132">
+    <shortName>MNEL24</shortName>
+    <description>Min ocean surface elevation in last 24 hours</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="135">
+    <shortName>O2</shortName>
+    <description>Oxygen (O2 (aq))</description>
+    <units>Mol/kg</units>
+  </parameter>
+  <parameter code="136">
+    <shortName>PO4</shortName>
+    <description>PO4</description>
+    <units>Mol/kg</units>
+  </parameter>
+  <parameter code="137">
+    <shortName>NO3</shortName>
+    <description>NO3</description>
+    <units>Mol/kg</units>
+  </parameter>
+  <parameter code="138">
+    <shortName>SIO4</shortName>
+    <description>SiO4</description>
+    <units>Mol/kg</units>
+  </parameter>
+  <parameter code="139">
+    <shortName>CO2AQ</shortName>
+    <description>CO2 (aq)</description>
+    <units>Mol/kg</units>
+  </parameter>
+  <parameter code="140">
+    <shortName>HCO3</shortName>
+    <description>HCO3</description>
+    <units>Mol/kg</units>
+  </parameter>
+  <parameter code="141">
+    <shortName>CO3</shortName>
+    <description>CO3</description>
+    <units>Mol/kg</units>
+  </parameter>
+  <parameter code="142">
+    <shortName>TCO2</shortName>
+    <description>TCO2</description>
+    <units>Mol/kg</units>
+  </parameter>
+  <parameter code="143">
+    <shortName>TALK</shortName>
+    <description>TALK</description>
+    <units>Mol/kg</units>
+  </parameter>
+  <parameter code="146">
+    <shortName>S11</shortName>
+    <description>S11 - 1,1 component of ice stress tensor</description>
+    <units />
+  </parameter>
+  <parameter code="147">
+    <shortName>S12</shortName>
+    <description>S12 - 1,2 component of ice stress tensor</description>
+    <units />
+  </parameter>
+  <parameter code="148">
+    <shortName>S22</shortName>
+    <description>S22 - 2,2 component of ice stress tensor</description>
+    <units />
+  </parameter>
+  <parameter code="149">
+    <shortName>INV1</shortName>
+    <description>T1 - First invariant of stress tensor</description>
+    <units />
+  </parameter>
+  <parameter code="150">
+    <shortName>INV2</shortName>
+    <description>T2 - Second invariant of stress tensor</description>
+    <units />
+  </parameter>
+  <parameter code="155">
+    <shortName>WVRGH</shortName>
+    <description>Wave roughness</description>
+    <units />
+  </parameter>
+  <parameter code="156">
+    <shortName>WVSTRS</shortName>
+    <description>Wave stresses</description>
+    <units />
+  </parameter>
+  <parameter code="157">
+    <shortName>WHITE</shortName>
+    <description>Whitecap coverage</description>
+    <units />
+  </parameter>
+  <parameter code="158">
+    <shortName>SWDIRWID</shortName>
+    <description>Swell direction width</description>
+    <units />
+  </parameter>
+  <parameter code="159">
+    <shortName>SWFREWID</shortName>
+    <description>Swell frequency width</description>
+    <units />
+  </parameter>
+  <parameter code="160">
+    <shortName>WVAGE</shortName>
+    <description>Wave age</description>
+    <units />
+  </parameter>
+  <parameter code="161">
+    <shortName>PWVAGE</shortName>
+    <description>Physical Wave age</description>
+    <units />
+  </parameter>
+  <parameter code="165">
+    <shortName>LTURB</shortName>
+    <description>Master length scale (turbulence)</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="170">
+    <shortName>AIHFLX</shortName>
+    <description>Net air-ice heat flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="171">
+    <shortName>AOHFLX</shortName>
+    <description>Net air-ocean heat flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="172">
+    <shortName>IOHFLX</shortName>
+    <description>Net ice-ocean heat flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="173">
+    <shortName>IOSFLX</shortName>
+    <description>Net ice-ocean salt flux</description>
+    <units>kg/s</units>
+  </parameter>
+  <parameter code="175">
+    <shortName>OMLT</shortName>
+    <description>Ocean mixed layer temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="176">
+    <shortName>OMLS</shortName>
+    <description>Ocean mixed layer salinity</description>
+    <units>kg/kg</units>
+  </parameter>
+  <parameter code="177">
+    <shortName>P2OMLT</shortName>
+    <description>Ocean mixed layer potential density (Referenced to 2000m)</description>
+    <units>kg/m3</units>
+  </parameter>
+  <parameter code="178">
+    <shortName>OMLU</shortName>
+    <description>Ocean mixed layer u velocity</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="179">
+    <shortName>OMLV</shortName>
+    <description>Ocean mixed layer v velocity</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="180">
+    <shortName>ASHFL</shortName>
+    <description>Assimilative heat flux</description>
+    <units>W/m2</units>
+  </parameter>
+  <parameter code="181">
+    <shortName>ASSFL</shortName>
+    <description>Assimilative salt flux</description>
+    <units>mm/day</units>
+  </parameter>
+  <parameter code="182">
+    <shortName>BOTLD</shortName>
+    <description>Bottom layer depth</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="183">
+    <shortName>UBARO</shortName>
+    <description>Barotropic U velocity</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="184">
+    <shortName>VBARO</shortName>
+    <description>Barotropic V velocity</description>
+    <units>m/s</units>
+  </parameter>
+  <parameter code="185">
+    <shortName>INTFD</shortName>
+    <description>Interface depths</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="186">
+    <shortName>WTMPC</shortName>
+    <description>3-D temperature</description>
+    <units>deg c</units>
+  </parameter>
+  <parameter code="187">
+    <shortName>SALIN</shortName>
+    <description>3-D Salinity</description>
+    <units>psu</units>
+  </parameter>
+  <parameter code="188">
+    <shortName>EMNP</shortName>
+    <description>Evaporation - precipitation</description>
+    <units>cm/day</units>
+  </parameter>
+  <parameter code="190">
+    <shortName>KENG</shortName>
+    <description>Kinetic energy</description>
+    <units>J/kg</units>
+  </parameter>
+  <parameter code="191">
+    <shortName>BKENG</shortName>
+    <description>Barotropic Kinetic energy</description>
+    <units>J/kg</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>LAYTH</shortName>
+    <description>Layer Thickness</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>SSTT</shortName>
+    <description>Surface temperature trend</description>
+    <units>deg/day</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>SSST</shortName>
+    <description>Surface salinity trend</description>
+    <units>psu/day</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>OVHD</shortName>
+    <description>Ocean Vertical Heat Diffusivity</description>
+    <units>m2s-1</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>OVSD</shortName>
+    <description>Ocean Vertical Salt Diffusivity</description>
+    <units>m2s-1</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>OVMD</shortName>
+    <description>Ocean Vertical Momentum Diffusivity</description>
+    <units>m2s-1</units>
+  </parameter>
+  <parameter code="254">
+    <shortName>REV</shortName>
+    <description>Relative error variance</description>
+    <units>non-dim</units>
+  </parameter>
+</parameterMap>
+

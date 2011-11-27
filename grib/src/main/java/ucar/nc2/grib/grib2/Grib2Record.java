@@ -246,7 +246,7 @@ public class Grib2Record {
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
             gds.scanMode, gds.nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    boolean[] bitmap = bms.getBitmap(raf, gdss.getNumberPoints());
+    byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
 
     return reader.getData(raf, bitmap, gdrs);
@@ -259,7 +259,7 @@ public class Grib2Record {
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
             gds.scanMode, gds.nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    boolean[] bitmap = bms.getBitmap(raf, gdss.getNumberPoints());
+    byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
     if (gdrs instanceof Grib2Drs.Type40) {
       reader.getData(raf, bitmap, gdrs);
@@ -286,7 +286,7 @@ public class Grib2Record {
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
             gds.scanMode, gds.nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    boolean[] bitmap = bms.getBitmap(raf, gdss.getNumberPoints());
+    byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
 
     return reader.getData(raf, bitmap, gdrs);
@@ -312,7 +312,7 @@ public class Grib2Record {
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
             scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
-    boolean[] bitmap = bms.getBitmap(raf, gdsNumberPoints);
+    byte[] bitmap = bms.getBitmap(raf);
     Grib2Drs gdrs = drs.getDrs(raf);
 
     return reader.getData(raf, bitmap, gdrs);

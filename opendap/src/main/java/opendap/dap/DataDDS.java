@@ -39,7 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
 
 import opendap.dap.parsers.ParseException;
 

@@ -40,7 +40,7 @@
 
 package opendap.servlet;
 
-import ucar.nc2.util.net.LogStream;
+import ucar.nc2.util.log.LogStream;
 
 import ucar.nc2.util.net.HTTPSession;
 

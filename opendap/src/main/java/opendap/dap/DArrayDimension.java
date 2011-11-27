@@ -38,11 +38,9 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
 
 import java.io.*;
 import java.util.Formatter;
-import java.util.Stack;
 
 /**
  * This class holds information about each dimension in a <code>DArray</code>.

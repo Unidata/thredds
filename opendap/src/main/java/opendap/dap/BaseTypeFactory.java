@@ -38,7 +38,6 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
-import ucar.nc2.util.net.LogStream;
 
 /**
  * A Factory for BaseType objects. The DDS parser must implement this
