@@ -44,6 +44,8 @@ import junit.framework.TestSuite;
 public class TestOpenDap
 {
 
+  static {RC.loadDefaults();}
+
   public static long startTime;
 
   public static junit.framework.Test suite ( ) {
