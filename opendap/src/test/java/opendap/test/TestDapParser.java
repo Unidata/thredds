@@ -48,8 +48,6 @@ public class TestDapParser extends TestFiles
     static final int ISDDS = 2;
     static final int ISERR = 3;
 
-    boolean debug = false;
-    String TITLE = "DAP Parser Tests";
 
     String extension = null;
     int kind = ISUNKNOWN;
@@ -58,9 +56,9 @@ public class TestDapParser extends TestFiles
 
     public TestDapParser(String name, String testdir, String ext)
     {
-        super(name, testdir);
+        super(name,testdir);
+        setTitle("DAP Parser Tests");
         this.extension = ext;
-
     }
 
     public void parse() throws Exception

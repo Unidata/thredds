@@ -51,7 +51,7 @@ public class RC
 //////////////////////////////////////////////////
 // Predefined flags
 
-static public boolean useGroups = false;
+static public boolean useGroups = true;
 
 //////////////////////////////////////////////////
 
@@ -160,8 +160,9 @@ static {
 static public void
 setWellKnown()
 {
-   Triple triple = dfaltRC.lookup("usegroups");
-   useGroups = booleanize(triple);
+   Triple triple = dfaltRC.lookup("unidata.cdm.usegroups");
+   if(triple != null)
+       useGroups = booleanize(triple);
 }
 
 static boolean

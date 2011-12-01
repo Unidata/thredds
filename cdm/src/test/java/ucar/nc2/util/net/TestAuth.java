@@ -8,20 +8,21 @@ import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.Credentials;
 import org.junit.Test;
-import ucar.nc2.iosp.uamiv.UAMIVServiceProvider;
 
 import java.io.*;
 import java.util.List;
 import java.io.Serializable;
 
-public class TestAuth extends TestCase
+public class TestAuth extends ucar.nc2.util.TestCommon
 {
     // TODO: add proxy and digest tests
 
-    static boolean debug = false;
+    static final String CLIENTKEY = "client.crt";
+    static final String CLIENTPWD = "changeit";
 
-    final String TITLE = "DAP Authorization Mechanism Tests";
+    static final String DATAPATH = "cdm/src/test/data";
 
+    //////////////////////////////////////////////////
     // Provide a non-interactive CredentialsProvider to hold
     // the user+pwd; used in several places
     static class BasicProvider implements CredentialsProvider, Serializable
@@ -53,10 +54,10 @@ public class TestAuth extends TestCase
         }
     }
 
-//////////////////////////////////////////////////
-//////////////////////////////////////////////////
+    //////////////////////////////////////////////////
+    //////////////////////////////////////////////////
 
-// Define the test sets
+    // Define the test sets
 
     int passcount = 0;
     int xfailcount = 0;
@@ -64,9 +65,13 @@ public class TestAuth extends TestCase
     boolean verbose = true;
     boolean pass = false;
 
+    String datadir = null;
+    String threddsroot = null;
+
     public TestAuth(String name, String testdir)
     {
         super(name);
+	setTitle("DAP Authorization tests");
     }
 
     public TestAuth(String name)
@@ -75,14 +80,13 @@ public class TestAuth extends TestCase
     }
 
 
-    static String[] sshurls = {
-            "https://motherlode.ucar.edu:8443/thredds/fileServer/station/profiler/wind/1hr/20110919/PROFILER_wind_01hr_20110919_2000.nc"
-    };
-
-    @Test
     public void
     testSSH() throws Exception
     {
+        String[] sshurls = {
+            "https://motherlode.ucar.edu:8443/dts/b31.dds"
+        };
+
         System.out.println("*** Testing: Simple Https");
         for(String url: sshurls) {
             System.out.println("*** URL: " + url);
@@ -95,6 +99,7 @@ public class TestAuth extends TestCase
         }
     }
 
+    //////////////////////////////////////////////////
     static class AuthDataBasic
     {
         String url;
@@ -108,14 +113,14 @@ public class TestAuth extends TestCase
         }
     }
 
-    static AuthDataBasic[] basictests = {
-            new AuthDataBasic("http://motherlode.ucar.edu/thredds/dodsC/restrict/testdata/testData.nc.html","tiggeUser","tigge")
-    };
-
     @Test
     public void
     testBasic() throws Exception
     {
+        AuthDataBasic[] basictests = {
+            new AuthDataBasic("http://motherlode.ucar.edu/thredds/dodsC/restrict/testdata/testData.nc.html","tiggeUser","tigge")
+        };
+
         System.out.println("*** Testing: Http Basic Password Authorization");
 
         for(AuthDataBasic data: basictests) {
@@ -149,21 +154,28 @@ public class TestAuth extends TestCase
     }
 
 
+    @Test
     public boolean
     testKeystore() throws Exception
     {
-        String url = "http://ceda.ac.uk/dap/neodc/casix/seawifs_plankton/data/monthly/PSC_monthly_1998.nc.dds";
-        String keystore = "c:/Users/dmh/IdeaProjects/MyProxyLogon/esgkeystore";
-        String password = "anonymous";
-        String truststore = "c:/Users/dmh/IdeaProjects/MyProxyLogon/esgtruststore";
+	String url = "hydro2.unidata.ucar.edu/b31.dds";
 
-        System.out.println("*** Testing: ESG Keystore-based Authorization");
+	// See if the client keystore exists
+	String keystore = threddsRoot + "/" + DATAPATH + "/" + CLIENTKEY;
+	File tmp = new File(keystore);
+	if(!tmp.exists() || !tmp.canRead())
+	    throw new Exception("Cannot read client key: "+keystore);
+
+        System.out.println("*** Testing: Client-side Key based Authorization");
         System.out.println("*** URL: " + url);
 
 
         HTTPSession session = new HTTPSession(url);
+        CredentialsProvider provider = new HTTPSSLProvider(keystore,CLIENTPWD);
+	session.setCredentialsProvider(provider);
+
         HTTPMethod method = HTTPMethod.Get(session);
-        CredentialsProvider provider = new HTTPSSLProvider(keystore,password,truststore,password);
+
         int status = method.execute();
         System.out.printf("Execute: status code = %d\n", status);
         pass = (status == 200);
@@ -228,5 +240,6 @@ block:          {
         }
         junit.framework.Assert.assertTrue("test(De-)Serialize", ok);
     }
+
 }
 

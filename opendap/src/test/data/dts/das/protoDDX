@@ -1,0 +1,53 @@
+Attributes {
+   testdata{
+        String stuff "Stuff looks good to me", silly;
+        String stuff2 More, stuff;
+        Alias cruise .somearray.CruiseNumber;
+        Alias james .wormbutt.foo.barf.jimmy;
+   }
+   somearray {
+        PrincipleInvestigator {
+            String Title Dr.;
+            String FirstName Mark;
+            String LastName Abbott;
+        }
+        String CruiseNumber WE030702;
+    }
+    wormbutt {
+        nested01 {
+            nested02 {
+                nested03 {
+                    nested04 {
+                        Float64 leaf04a 141.87567;
+                        Float64 leaf04b 141.87567;
+                    }
+                    Byte leaf3a 221;
+                    Byte leaf03b 131;
+                    Alias l4 nested04;
+                }
+                Int16 leaf2a 1234;
+                Int16 leaf02b 4321;
+            }
+            String leaf1a Cowabunga;
+            String leaf01b Supercalifragilisticexpialidocous;
+        }
+        foo {
+            Alias james barf.jimmy;
+            barf {
+                Int16 jimmy 154;
+                Alias james jimmy;
+            }
+        }
+    }
+    testSeq {
+        jday {
+            Alias jman .moo.Thumping.John;
+        }
+    }
+    moo {
+        Thumping {
+            String John Has;
+            String Sally No;
+        }
+    }
+}

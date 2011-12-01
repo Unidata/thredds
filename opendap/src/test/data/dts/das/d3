@@ -1,0 +1,97 @@
+Attributes {
+    testdata {
+        String stuff "Stuff about this stuff", Silly, Repitious, "testing of stuff";
+        String stuff2 "More Stuff about this stuff";
+        Alias cruise  .somearray.CruiseNumber;
+        Alias james  .bunghole.foo.barf.jimmy;
+    }
+    somearray {
+        PrincipleInvestigator {
+            String Title Dr.;
+            String FirstName Mark;
+            String LastName Abbott;
+        }
+        String CruiseNumber WE030702;
+    }
+    structarray {
+    }
+    gridarray {
+    }
+    bunghole {
+        nested01 {
+            nested02 {
+                nested03 {
+                    nested04 {
+                        Float64 leaf04a 1451.87567;
+                        Float64 leaf04b 141.87567;
+                    }
+                    Byte leaf3a 221;
+                    Byte leaf03b 131;
+                    Alias l4  .bunghole.nested01.nested02.nested03.nested04;
+                }
+                Int16 leaf2a 1234;
+                Int16 leaf02b 4321;
+            }
+            String leaf1a Cowabunga;
+            String leaf01b Supercalifragilisticexpialidocous;
+        }
+        amp {
+        }
+        JulianDay {
+        }
+        InstrumentNumber {
+        }
+        foo {
+            Alias james  .bunghole.foo.barf.jimmy;
+            arf {
+            }
+            barf {
+                Int16 jimmy 154;
+                Alias james  .bunghole.foo.barf.jimmy;
+            }
+        }
+    }
+    sst {
+        sst {
+        }
+        latitude {
+        }
+        longitude {
+        }
+    }
+    testSeq {
+        jday {
+            Alias jman  .ragtop.Thumping.John;
+        }
+        latitude {
+        }
+        longitude {
+        }
+        SurfaceIrradiance {
+        }
+        CTDProfile {
+            depth {
+            }
+            temperature {
+            }
+            conductivity {
+            }
+            fluoresence {
+            }
+        }
+    }
+    ragtop {
+        Thumping {
+            String John "Has Too Much Fun";
+            String Sally "Has No Fun";
+        }
+        diggle {
+        }
+        piggle {
+        }
+        wiggle {
+        }
+        doo {
+        }
+    }
+}

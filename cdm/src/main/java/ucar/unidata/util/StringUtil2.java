@@ -32,6 +32,8 @@
 
 package ucar.unidata.util;
 
+import ucar.nc2.util.rc.RC;
+
 import java.util.StringTokenizer;
 
 /**
@@ -190,7 +192,7 @@ public class StringUtil2 {
     for (int i = 0, len = name.length(); i < len; i++) {
       int c = name.charAt(i);
       if (c == 0x2f)
-        sbuff.append('_');
+        sbuff.append(RC.useGroups?c:'_');
       else if (c >= 0x20)
         sbuff.append((char) c);
     }

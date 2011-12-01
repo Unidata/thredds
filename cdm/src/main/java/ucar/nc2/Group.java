@@ -58,6 +58,7 @@ public class Group {
   protected List<Attribute> attributes = new ArrayList<Attribute>();
   protected List<EnumTypedef> enumTypedefs = new ArrayList<EnumTypedef>();
   private boolean immutable = false;
+  private int hashCode = 0;
 
   /**
    * Get the full name, starting from the root Group.
@@ -571,5 +572,37 @@ public class Group {
     }
     return hashCode;
   }
-  private int hashCode = 0;
+
+  /**
+   * Create groups to ensure path is defined
+   * @param ncf the containing netcdf file object
+   * @param path the path to the desired group
+   * @param ignorelast true => ignore last element in the path
+   * @return the Group, or null if not found
+   */
+   public Group makeRelativeGroup(NetcdfFile ncf, String path, boolean ignorelast)
+   {
+      path = path.trim();
+      path = path.replace("//","/");
+      boolean isabsolute = (path.charAt(0) == '/');
+      if(isabsolute)
+          path = path.substring(1);
+
+      // iteratively create path
+      String pieces[] = path.split("/");
+      if(ignorelast) pieces[pieces.length-1] = null;
+
+      Group current = (isabsolute?ncfile.getRootGroup():this);
+      for(String name: pieces) {
+          if(name == null) continue;
+          String clearname = NetcdfFile.unescapeName(name);  //??
+          Group next = current.findGroup(clearname);
+          if(next == null) {
+                 next = new Group(ncf,current,clearname);
+                 current.addGroup(next);
+          }
+          current = next;
+      }
+      return current;
+   }
 }

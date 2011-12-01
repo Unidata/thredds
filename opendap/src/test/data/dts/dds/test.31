@@ -1,0 +1,24 @@
+dataset {
+
+    Sequence {
+
+	Structure {
+		int32 i;
+		float64 f[2][5];
+	} data;
+
+	float32 lat;
+	float32 lng;
+		
+	Grid {
+		Array:
+			float64 fluor[10];
+		Maps:
+			float64 depth[10];
+	} profile;
+
+
+
+    } CS01;
+
+} ComplexSequence01;

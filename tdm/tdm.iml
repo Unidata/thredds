@@ -22,6 +22,15 @@
     <orderEntry type="module" module-name="grib" exported="" />
     <orderEntry type="library" exported="" name="Logging" level="project" />
     <orderEntry type="library" exported="" name="Spring" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/external/slf4j-api-1.6.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

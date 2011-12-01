@@ -1,0 +1,42 @@
+#!/bin/csh
+
+# Makes test html file...
+
+
+set ddsDir = "../dds"
+set dodsServer = "http://dods.oce.orst.edu:8080/dods/servlet/dts"
+set target = "testList.html"
+
+
+echo '<html>' >! $target
+echo '<head>' >> $target
+echo '<title>Test List</title>' >> $target
+echo '<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">' >> $target
+echo '</head>' >> $target
+echo "" >> $target
+echo '<body bgcolor="#FFFFFF">' >> $target
+echo '<h2>&nbsp;</h2>' >> $target
+echo '<h2>DODS Test DDS List </h2>' >> $target
+echo '<hr>' >> $target
+
+
+
+foreach i ($ddsDir/*)
+
+    if( -f $i) then
+       set name = `basename $i`
+       echo "$name" >> $target
+
+       foreach tst (dds das info asc html)
+          echo "<a href='$dodsServer/$name.$tst'   target='result'> $tst  </a>" >> $target
+       end
+       echo '<br>' >> $target
+
+    endif
+end
+
+
+echo '</body>' >> $target
+echo '</html>' >> $target
+
+
