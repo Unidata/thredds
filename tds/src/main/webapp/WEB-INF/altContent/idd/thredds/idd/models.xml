@@ -25,12 +25,14 @@
       <dataFormat>GRIB-1</dataFormat>
       <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html"
                      xlink:title="NCEP Model documentation"/>
+      <documentation xlink:href="http://www.dtcenter.org/com-GSI/users/docs/"
+                     xlink:title="NCEP Analysis documentation / tutorial"/>
+      <documentation xlink:href="http://mag.ncep.noaa.gov/"
+                     xlink:title="NCEP Model Analyses and Guidance Page"/>
+
       <documentation type="rights">Freely available</documentation>
       <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
       <documentation type="processing_level">Read by CDM Forecast Model Run Collection.</documentation>
-      <documentation xlink:href="http://www.nco.ncep.noaa.gov/pmb/nwprod/analysis/"
-                     xlink:title="NCEP/NWS Model Analyses and Forecasts Page"/>
-
       <creator>
         <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
         <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
@@ -310,8 +312,10 @@
     <dataset ID="FMRC/NCEP/NAM" name="North American Model (NAM) ">
 
       <metadata inherited="true">
-        <documentation type="summary">NCEP Nonhydrostatic Mesoscale Model (NMM) and Gridpoint Statistical Interpolation
-          (GSI) analysis, running in the Weather Research and Forecasting (WRF) infrastructure.
+        <documentation type="summary">
+          NCEP Nonhydrostatic Multiscale Model on B-grid (NMMB) running in the
+          NOAA Environmental Modeling System (NEMS) infrastructure, and
+          Gridpoint Statistical Interpolation (GSI) analysis
         </documentation>
         <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/NAMWRFjun2006.htm"
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
