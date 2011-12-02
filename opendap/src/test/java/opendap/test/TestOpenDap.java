@@ -45,7 +45,6 @@ import ucar.nc2.util.rc.RC;
 public class TestOpenDap
 {
 
-  static {RC.loadDefaults();}
 
   public static long startTime;
 

@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import ucar.nc2.util.net.EscapeStrings;
 import ucar.ma2.*;
+import ucar.nc2.util.rc.RC;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
@@ -103,6 +104,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   // IOSPs are loaded by reflection
   static {
+      // Make sure RC gets loaded
+    RC.initialize();
+
     try {
       registerIOProvider("ucar.nc2.stream.NcStreamIosp");
     } catch (Throwable e) {
@@ -1274,7 +1278,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (name.endsWith(".cdl")) name = name.substring(0, name.length() - 4);
     }
     pw.print("netcdf " + name + " {\n");
-    rootGroup.writeCDL(pw, "", strict);
+    rootGroup.writ
+      eCDL(pw, "", strict);
   }
 
   protected void toStringEnd(PrintWriter pw) {
