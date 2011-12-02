@@ -9,4 +9,5 @@
 Dataset {
   int32   g1/i32;
   float32 g2/f32;
-} Groups;
+} Group.test1;
+
