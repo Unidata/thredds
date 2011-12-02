@@ -1278,8 +1278,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (name.endsWith(".cdl")) name = name.substring(0, name.length() - 4);
     }
     pw.print("netcdf " + name + " {\n");
-    rootGroup.writ
-      eCDL(pw, "", strict);
+    rootGroup.writeCDL(pw, "", strict);
   }
 
   protected void toStringEnd(PrintWriter pw) {

@@ -155,7 +155,7 @@ static {
     RC.initialize();
 }
 
-static void initialize ()
+static public void initialize ()
 {
     if(!initialized) {
         RC.loadDefaults();
