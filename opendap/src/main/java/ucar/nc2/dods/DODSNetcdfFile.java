@@ -42,6 +42,7 @@ import ucar.nc2.util.*;
 
 import opendap.dap.*;
 import opendap.dap.parsers.*;
+import ucar.nc2.util.rc.RC;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -190,9 +191,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     super();
     long start = System.currentTimeMillis();
 
-    if(datasetURL.indexOf("://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1") >= 0) {
-        int x = 0;
-    }
     // canonicalize name
     String urlName = datasetURL; // actual URL uses http:
     this.location = datasetURL; // canonical name uses "dods:"
@@ -608,7 +606,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     List<DodsV> topVariables = rootDodsV.children;
     for (DodsV dodsV : topVariables) {
       if (dodsV.bt instanceof DConstructor) continue;
-
       addVariable(rootGroup, null, dodsV);
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
@@ -638,11 +635,12 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     Variable v = makeVariable(parentGroup, parentStructure, dodsV);
     if (v != null) {
       addAttributes(v, dodsV);
+/*Done in DODSVariable constructor
       if (parentStructure == null)
         parentGroup.addVariable(v);
       else
         parentStructure.addMemberVariable(v);
-
+*/
       dodsV.isDone = true;
     }
     return v;
@@ -957,6 +955,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         myd = new Dimension("", dad.getSize(), false);
 
       } else { // see if shared
+	if(RC.useGroups) {
+              if(name.indexOf('/') >= 0) {// place dimension in proper group
+                  int index= name.indexOf('/');
+                  group = group.makeRelativeGroup(this,name,true);
+                  // change our name
+                  name = name.substring(name.lastIndexOf('/')+1);
+	      }
+        }
         myd = group.findDimension(name);
         if (myd == null) { // add as shared
           myd = new Dimension(name, dad.getSize());

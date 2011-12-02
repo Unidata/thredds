@@ -51,8 +51,6 @@ import java.util.*;
 
 public class NcDDS extends ServerDDS {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
-  static private String DODScharset = "_!~*'-\""; // Chars (other than alphanum)
-                                                  // that are legal in opendap names
 
   //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordiinate variables
   // Track various subsets of the variables
@@ -225,7 +223,7 @@ public class NcDDS extends ServerDDS {
   /*
   public static String escapeName(String vname) {
     // vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until opendap code fixed
-    String newname = StringUtil.escape(vname, NcDDS.DODScharset);
+    String newname = EscapeStrings.escapeDAPIdentifier(vname);
       return newname;
   }
   */

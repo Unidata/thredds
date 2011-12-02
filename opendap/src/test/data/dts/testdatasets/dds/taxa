@@ -1,0 +1,8 @@
+Dataset{
+        Sequence{
+                String var_name;
+                Float32 lon;
+                Float32 lat;
+                Float64 pourc;
+        }taxa;
+}taxa;

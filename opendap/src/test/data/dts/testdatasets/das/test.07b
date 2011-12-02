@@ -1,0 +1,44 @@
+
+Attributes {
+
+
+    Facility {
+        String PrincipleInvestigator "Mark Abbott","Ph.D";
+        String DataCenter "COAS Environmental Computer Facility";
+        String DrifterType "MetOcean WOCE/OCM";
+
+    }
+
+    person {
+        name {
+        }
+        age {
+        }
+    }
+    types {
+        b {
+            String Description  "A test byte";
+            String units        "unknown";
+        }
+        i32 {
+            String Description  "A 32 bit test server int";
+            String units        "unknown";
+        }
+        ui32 {
+        }
+        i16 {
+        }
+        ui16 {
+        }
+        f32 {
+        }
+        f64 {
+        }
+        s {
+        }
+        u {
+        }
+    }
+
+
+}

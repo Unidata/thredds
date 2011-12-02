@@ -119,8 +119,7 @@
   <property name="lib.dir" location="lib"/>
   <!--property name="bin.dir"          location="bin"/ -->
   <!--property name="dist.dir"         location="dist"/ -->
-  <property name="resources.dir" location="${src.main.dir}/resources"/>
-  <property name="schema.dir" location="schema"/>
+  <property name="resources.dir" location="${src.test.dir}/resources"/>
   <property name="testsuites.dir" location="${src.test.dir}/testsuites"/>
   <property name="buildfiles.dir" location="target"/>
 
@@ -353,6 +352,8 @@
   -
   -->
 
+   <target name="intellij" depends="cdm,dtswar"/>
+
    <target name="war-clean">
 	<delete dir="${tomcat.webapps.dir}/${war.name}"/>
 	<delete file="${tomcat.webapps.dir}/${warfile}"/>
@@ -366,20 +367,41 @@
    </target>
 
   <target name="dtswar">
-    <copy file="${webapp.dir}/dts.log4j.xml" tofile="${war.dir}/WEB-INF/classes/log4j.xml" overwrite="true"/>
-    <ant target="war-build"/>
+    <ant target="war-build">
+	<property name="logfile" value="logs/cdm.log"/>
+    </ant>
   </target>
 
   <target name="tdswar">
-    <copy file="${webapp.dir}/tds.log4j.xml" tofile="${war.dir}/WEB-INF/classes/log4j.xml" overwrite="true"/>
-    <ant target="war-build"/>
+    <ant target="war-build">
+	<property name="logfile" value="$${tds.log.dir}/cdm.log"/>
+    </ant>
   </target>
 
   <target name="war-build"
           depends="dts"
           description="create a war file from the distribution directory">
-    <!-- copy classes to war classes directory. -->
+
+    <!-- make sure that WEB-INF and subdirs exist -->
+    <mkdir dir="${war.dir}/WEB-INF"/>
     <mkdir dir="${war.dir}/WEB-INF/classes"/>
+    <mkdir dir="${war.dir}/WEB-INF/resources"/>
+    <mkdir dir="${war.dir}/WEB-INF/resources/testdatasets"/>
+    <mkdir dir="${war.dir}/WEB-INF/lib"/>
+
+    <!-- Fill in WEB-INF -->
+
+    <!-- web.xml -->
+    <copy file="${webapp.dir}/WEB-INF/web.xml" todir="${war.dir}/WEB-INF"
+          preservelastmodified="true"
+          overwrite="true"/>
+
+    <!-- log4j.xml -->
+    <copy file="${webapp.dir}/log4j.xml" tofile="${war.dir}/WEB-INF/classes/log4j.xml" overwrite="true"/>
+    <replace file="${war.dir}/WEB-INF/classes/log4j.xml"
+	     token="LOGFILE" value="${logfile}"/>
+
+    <!-- copy classes to war classes directory. -->
     <copy todir="${war.dir}/WEB-INF/classes"
           preservelastmodified="true"
           overwrite="true">
@@ -387,7 +409,6 @@
     </copy>
 
     <!-- copy libraries to war lib directory. -->
-    <mkdir dir="${war.dir}/WEB-INF/lib"/>
     <copy todir="${war.dir}/WEB-INF/lib"
           flatten="true"
           overwrite="true"
@@ -396,20 +417,11 @@
       <fileset refid="libs.release"/>
     </copy>
 
-    <!-- Copy webapps dir  -->
-    <copy todir="${war.dir}"
-          overwrite="true"
-          preservelastmodified="true">
-      <fileset dir="${webapp.dir}"/>
-    </copy>
-
     <!-- Copy testdatasets -->
-    <mkdir dir="${war.dir}/WEB-INF/resources"/>
     <copy todir="${war.dir}/WEB-INF/resources/testdatasets"
           preservelastmodified="true"
           overwrite="true">
-      <fileset dir="${test.dir}/data/testsuites/sdds-testsuite"
-               includes="**/*"/>
+      <fileset dir="${test.dir}/data/dts/testdatasets" includes="**/*"/>
     </copy>
 
     <jar destfile="${build.dir}/${warfile}">

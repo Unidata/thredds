@@ -40,14 +40,13 @@ import java.io.*;
 // WARNING: assumes we are operating inside cdm directory
 // when invoked
 
-public class TestFiles extends TestCase
+public class TestFiles extends ucar.nc2.util.TestCommon
 {
+    // Following are with respect to threddsRoot
+    static final String TESTSUFFIX = "opendap/src/test/data";
+    static final String RESULTSUFFIX = "opendap/target/results";
 
-    static int debug = 0;
-
-    static final String TESTSUFFIX = "src/test/data";
-    static final String RESULTSUFFIX = "target/results";
-
+    // With respect to TESTSUFFIX
     static final String TESTDATA1DIR = "testdata1";
     static final String BASELINE1DIR = "baseline1";
 
@@ -75,7 +74,6 @@ public class TestFiles extends TestCase
     static String
     accessTestData(String testprefix, String basename, TestPart part) throws Exception
     {
-
         String fname = testprefix + "/" + basename + partext(part);
 
         String result = null;
@@ -107,59 +105,37 @@ public class TestFiles extends TestCase
 
         String testdir = null;
         String baselinedir = null;
-        String opendapdir = null;
         String resultsdir = null;
 
-        if (testdir == null) {
-            // Locate the opendap directory, which is presumably in
-            // one of my containing directories
-            String path = System.getProperty("user.dir");
-            path = path.replace('\\','/'); // only use forward slash
-            assert (path != null);
-            if(path.endsWith("/")) path = path.substring(0,path.length()-1);
-            while(path != null) {
-                // look for "opendap" in current directory
-                String od = path + "/opendap";
-                File tmp = new File(od);
-                if(tmp.exists()) {opendapdir = od; break; }
-                int index = path.lastIndexOf('/');
-                path = path.substring(0,index);
-            }
-            if(opendapdir == null)  {
-                System.err.println("TestFiles: cannot locate opendap directory");
-                System.exit(1);
-            }
-   	    testdir = opendapdir + "/" +TESTSUFFIX + "/" + TESTDATA1DIR;
-	    baselinedir = opendapdir + "/" + TESTSUFFIX + "/" + BASELINE1DIR;
-            resultsdir = opendapdir + "/" + RESULTSUFFIX;
+   	testdir = threddsRoot + "/" +TESTSUFFIX + "/" + TESTDATA1DIR;
+	baselinedir = threddsRoot + "/" + TESTSUFFIX + "/" + BASELINE1DIR;
+        resultsdir = threddsRoot + "/" + RESULTSUFFIX;
 
-            File tmp = new File(testdir);
-            if(!tmp.exists()) {
-                System.err.println("Cannot locate testdata1 directory; path does not exist: "+tmp.getAbsolutePath());
-                    System.exit(1);
-            }
-            tmp = new File(baselinedir);
-            if(!tmp.exists()) {
-                System.err.println("Cannot locate baseline1 directory; path does not exist: "+tmp.getAbsolutePath());
-                    System.exit(1);
-            }
-            tmp = new File(resultsdir);
-            try {
-                // wipe out the results dir
-                if(tmp.exists()) {
-                    for(File f: tmp.listFiles())
-                        f.delete();
-                    tmp.delete();
-                }
-                tmp.mkdirs(); // make sure it exists
-            } catch (Exception e) {
-                System.err.println("Cannot create: "+tmp.getAbsolutePath());
+        File tmp = new File(testdir);
+        if(!tmp.exists()) {
+            System.err.println("Cannot locate testdata1 directory; path does not exist: "+tmp.getAbsolutePath());
                 System.exit(1);
-            }
-            if(!tmp.canWrite()) {
-                System.err.println("Cannot write results directory: "+tmp.getAbsolutePath());
+        }
+        tmp = new File(baselinedir);
+        if(!tmp.exists()) {
+            System.err.println("Cannot locate baseline1 directory; path does not exist: "+tmp.getAbsolutePath());
                 System.exit(1);
+        }
+        tmp = new File(resultsdir);
+        try {
+            // wipe out the results dir
+            if(tmp.exists()) {
+                clearDir(tmp,true);
+                tmp.delete();
             }
+            tmp.mkdirs(); // make sure it exists
+        } catch (Exception e) {
+            System.err.println("Cannot create: "+tmp.getAbsolutePath());
+            System.exit(1);
+        }
+        if(!tmp.canWrite()) {
+            System.err.println("Cannot write results directory: "+tmp.getAbsolutePath());
+            System.exit(1);
         }
         this.testdir = testdir;
         this.baselinedir = baselinedir;

@@ -35,6 +35,7 @@ package opendap.test;
 import junit.extensions.TestSetup;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import ucar.nc2.util.rc.RC;
 
 
 /**
@@ -44,7 +45,6 @@ import junit.framework.TestSuite;
 public class TestOpenDap
 {
 
-  static {RC.loadDefaults();}
 
   public static long startTime;
 

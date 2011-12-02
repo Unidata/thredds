@@ -51,7 +51,7 @@ public class RC
 //////////////////////////////////////////////////
 // Predefined flags
 
-static public boolean useGroups = false;
+static public boolean useGroups = true;
 
 //////////////////////////////////////////////////
 
@@ -149,9 +149,19 @@ static class Triple implements Comparable
 // Define a singlton RC instance for general global use
 static RC dfaltRC = null;
 
+static private boolean initialized = false;
+
 static {
-    RC.loadDefaults();
-    RC.setWellKnown();
+    RC.initialize();
+}
+
+static void initialize ()
+{
+    if(!initialized) {
+        RC.loadDefaults();
+        RC.setWellKnown();
+    }
+    initialized = true;
 }
 
 /**
@@ -160,8 +170,9 @@ static {
 static public void
 setWellKnown()
 {
-   Triple triple = dfaltRC.lookup("usegroups");
-   useGroups = booleanize(triple);
+   Triple triple = dfaltRC.lookup("unidata.cdm.usegroups");
+   if(triple != null)
+       useGroups = booleanize(triple);
 }
 
 static boolean

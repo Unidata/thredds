@@ -52,6 +52,7 @@ static final int CONTEXTLEN = 20; // yyerror shows last CONTEXTLEN characters of
 
 /* First character in DDS and DAS TOKEN_IDENTifier or number */
 
+// Add '/' to support group ids.
 static final String wordchars1 =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%.\\*";
 static final String worddelims =
