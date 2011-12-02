@@ -49,7 +49,8 @@ dl {margin: 10px 5px 5px 15px;)
 <h3>Homogeneity requirements for collections of GRIB records</h3>
 <p>The CDM library makes certain assumptions about collections of GRIB records, called <strong><em>homegeneity requirements</em></strong>:</p>
 <ul>
-  <li>The center, subcenter ids are assumed constant for all records. This effects which  tables are used, and also global attributes added to the fikle.</li>
+  <li>The center, subcenter ids are assumed constant for all records. This effects which  tables are used, and also global attributes added to the file.</li>
+  <li>Records that are on different coordinate reference systems (CRS) are put in a seperate group.</li>
   <li>The table version may differ across records.</li>
   <li>The reference dates may differ across records.</li>
 </ul>
@@ -150,11 +151,12 @@ dl {margin: 10px 5px 5px 15px;)
 <hr WIDTH="100%">
 <h2>Reading Grib-2<a name="ReadGrib2" id="ReadGrib2"></a> files with the CDM library version 4.3 (incomplete)</h2>
 <h3>Homogeneity requirements for collections of GRIB records</h3>
-<p>The CDM library makes certain assumtions about collections of GRIB records, called <strong><em>homegeneity requirements</em></strong>:</p>
+<p>The CDM library makes certain assumptions about collections of GRIB records, called <strong><em>homegeneity requirements</em></strong>:</p>
 <ul>
   <li>The center, subcenter ids are assumed constant for all records.</li>
   <li>The table version may differ across records.</li>
   <li>The reference dates may differ across records.</li>
+  <li>Records that are on different coordinate reference systems (CRS) are put in a seperate group.</li>
 </ul>
 <h3>Constructing CDM Variables from collections of GRIB records</h3>
 <p>The CDM library takes unordered collections of GRIB records and groups them into 3D or 4D CDM Variables with a time and optional vertical dimension. It uses the following GRIB fields to construct a unique variable:</p>
