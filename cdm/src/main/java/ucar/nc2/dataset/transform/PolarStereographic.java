@@ -76,7 +76,7 @@ public class PolarStereographic extends AbstractCoordTransBuilder {
         // double sin = Math.sin( Math.toRadians( stdpar));
         // scale = (lat0 > 0) ? (1.0 + sin)/2 : (1.0 - sin)/2;
 
-        double sin = Math.abs(Math.sin( Math.toRadians( stdpar)));
+        double sin = Math.abs(Math.sin( Math.toRadians( Math.abs(stdpar))));
         scale = (1.0 + sin)/2;
         latD = stdpar;
 

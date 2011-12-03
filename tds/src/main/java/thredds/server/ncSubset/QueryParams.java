@@ -166,7 +166,12 @@ public class QueryParams {
    * @throws java.io.IOException if I/O error
    */
   public boolean parseQuery(HttpServletRequest req, HttpServletResponse res, String[] acceptOK) throws IOException {
-    queryString = URLDecoder.decode(req.getQueryString(), "UTF-8");
+    queryString = req.getQueryString();
+    if (queryString == null) {
+      writeErr(req, res, "Must have a quey string", HttpServletResponse.SC_BAD_REQUEST);
+      return false;
+    }
+    queryString = URLDecoder.decode(queryString, "UTF-8"); // unescape
 
     accept = parseList(req, "accept", QueryParams.validAccept, acceptOK[0]);
     for (String ok : acceptOK) {

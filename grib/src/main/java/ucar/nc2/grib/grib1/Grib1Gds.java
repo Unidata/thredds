@@ -604,7 +604,7 @@ Grid definition –   polar stereographic
       if (Double.isNaN(lad)) { // LOOK ??
         scale = 0.9330127018922193;
       } else {
-        scale = (1.0 + Math.sin(Math.toRadians(lad))) / 2;
+        scale = (1.0 + Math.sin(Math.toRadians( Math.abs(lad)))) / 2;
       }
 
       ProjectionImpl proj = null;

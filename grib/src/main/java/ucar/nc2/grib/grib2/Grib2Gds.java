@@ -642,7 +642,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       if (Double.isNaN(lad)) { // LOOK ??
         scale = 0.9330127018922193;
       } else {
-        scale = (1.0 + Math.sin(Math.toRadians(lad))) / 2;
+        scale = (1.0 + Math.sin(Math.toRadians( Math.abs( Math.abs(lad))))) / 2;
       }
 
       ProjectionImpl proj = null;
@@ -1212,11 +1212,12 @@ Octet	Contents
     System.out.printf("%d, %d = %s%n", a, b, (a == b));
   }
   public static void main(String[] args) {
-    check(20192000, 20191999);
-    check(238446000,238445999);
-    check(5079360, 5079361);
-    check(5079360, 5079362);
-    check(5079361, 5079362);
+    double lad = 60;
+    double ladr =  Math.toRadians(lad);
+    double lads = Math.sin(ladr);
+    double scale = (1.0 + Math.sin(Math.toRadians(lad))) / 2;
+    double scale2 = (1.0 + lads) / 2;
+    System.out.println("HEY");
   }
 
 }
