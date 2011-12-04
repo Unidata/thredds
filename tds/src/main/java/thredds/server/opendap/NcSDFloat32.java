@@ -56,7 +56,7 @@ public class NcSDFloat32 extends SDFloat32 implements HasNetcdfVariable {
    * @param v : the netcdf Variable
    */
   NcSDFloat32(Variable v) {
-      super((v.getShortName()));
+      super(Variable.getDAPName(v));
     this.ncVar = v;
   }
 

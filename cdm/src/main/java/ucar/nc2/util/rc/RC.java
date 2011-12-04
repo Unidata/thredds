@@ -206,7 +206,7 @@ loadDefaults()
 	}
     }
     if(!found1)
-        LogStream.getLog().warn("CDM: No .rc file found");
+        LogStream.getLog().info("No .rc file found");
     dfaltRC = rc0;
 }
 

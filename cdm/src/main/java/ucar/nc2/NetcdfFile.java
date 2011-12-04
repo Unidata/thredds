@@ -1833,7 +1833,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     finishGroup(rootGroup);
   }
 
-  private void finishGroup(Group g) {
+  private void finishGroup(Group g)
+  {
 
     variables.addAll(g.variables);
 

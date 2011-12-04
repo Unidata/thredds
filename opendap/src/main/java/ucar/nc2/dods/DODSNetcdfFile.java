@@ -212,7 +212,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     try {
       dds = dodsConnection.getDDS();
       if (debugServerCall) System.out.println("DODSNetcdfFile readDDS");
-      if (debugOpenResult) {
+      if (debugOpenResult)
+      {
         System.out.println("DDS = ");
         dds.print(System.out);
       }

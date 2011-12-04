@@ -67,7 +67,7 @@ public class NcSDStructure extends SDStructure  {
    */
   public NcSDStructure( Structure s, List<BaseType> list) {
       //super( NcDDS.escapeName(s.getShortName()));
-      super((s.getShortName()));
+      super(Variable.getDAPName(s));
     this.ncVar = s;
 
     for (BaseType aList : list) addVariable(aList, 0);
@@ -75,7 +75,7 @@ public class NcSDStructure extends SDStructure  {
   }
 
   public NcSDStructure( NcSDStructure org, StructureData sdata) {
-    super( org.getEncodedName());
+    super(org.getEncodedName());
     this.org = org;
     this.sdata = sdata;
   }
