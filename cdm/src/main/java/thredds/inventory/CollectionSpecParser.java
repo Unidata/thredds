@@ -89,9 +89,12 @@ public class CollectionSpecParser {
       subdirs = true;
 
     } else {
-      posFilter = collectionSpec.lastIndexOf('/');
-      rootDir = collectionSpec.substring(0, posFilter);
       subdirs = false;
+      posFilter = collectionSpec.lastIndexOf('/');
+      if (posFilter > 0)
+        rootDir = collectionSpec.substring(0, posFilter);
+      else
+        rootDir = System.getProperty("user.dir"); // working directory
     }
 
     File locFile = new File(rootDir);

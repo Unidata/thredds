@@ -347,7 +347,10 @@ TBLE2 cptec_254_params[] = {
     InputStream is = null;
     try {
       is = GribResourceReader.getInputStream(path);
-      if (is == null) return false;
+      if (is == null) {
+        logger.error("Cant open "+path);
+        return false;
+      }
 
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
       String line = br.readLine();

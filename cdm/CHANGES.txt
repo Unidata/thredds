@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
+ 3:(2011-12-xx)
+  CollectionSpecParser: allow reletive filenames (use working directory)
+
  2:(2011-11-22)
   upgrade external libraries:
     -jdom 1.1.2

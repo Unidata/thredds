@@ -1,11 +1,10 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.GribResourceReader;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
 import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Utils;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
 import ucar.nc2.ui.dialog.Grib1TableCompareDialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -107,7 +106,7 @@ public class Grib1TablesViewer extends JPanel {
       }
     });
 
-    varPopup.addAction("Compare to all tables", new AbstractAction() {
+    varPopup.addAction("Compare to all non-local tables", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         TableBean bean = (TableBean) codeTable.getSelectedBean();
         if (bean == null) return;
@@ -325,7 +324,7 @@ public class Grib1TablesViewer extends JPanel {
   }
 
   private void compareAll(Grib1ParamTable t1, Grib1TableCompareDialog.Data data, Formatter out) {
-    out.format("CompareAll %s%n", t1.toString());
+    out.format("Compare All non-local Tables%s%n", t1.toString());
     Map<Integer, Grib1Parameter> h1 = t1.getParameters();
     List<Integer> keys = new ArrayList<Integer>(h1.keySet());
     Collections.sort(keys);
@@ -336,6 +335,8 @@ public class Grib1TablesViewer extends JPanel {
 
       for (Object bean : codeTable.getBeans()) {
         TableBean tbean = (TableBean) bean;
+        if (tbean.getVersion() > 127) continue;
+
         Grib1Parameter d2 = tbean.table.getLocalParameter(d1.getNumber());
         if (d2 != null) {
           boolean descDiff = data.compareDesc &&  !equiv(d1.getDescription(), d2.getDescription());
@@ -354,9 +355,12 @@ public class Grib1TablesViewer extends JPanel {
               }
           }
 
-          if (descDiff || namesDiff || unitsDiff || cunitsDiff || udunitsDiff ) {
-            out.format("    %s from %s%n", d2, tbean.table.getName());
-          }
+          if (descDiff)
+            out.format("    desc=%s from %s%n", d2.getDescription(), tbean.table.getPath());
+          if (namesDiff)
+            out.format("    name=%s from %s%n", d2.getName(), tbean.table.getPath());
+          if (unitsDiff || cunitsDiff || udunitsDiff )
+            out.format("    units=%s from %s%n", d2.getUnit(), tbean.table.getPath());
         }
       }
     }

@@ -44,6 +44,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manage Grib-1 standard parameter tables (table 2).
+ * These are the tables that are loaded at runtime, matching center and versions.
+ * @author caron
+ * @since 11/16/11
  */
 public class Grib1StandardTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1StandardTables.class);
@@ -51,10 +54,10 @@ public class Grib1StandardTables {
   static private final Object lock = new Object();
   static private int standardTablesStart = 0; // heres where the standard tables start - keep track to user additions can go first
 
-  static private final boolean debug = false, warn = false;
+  static private final boolean warn = false;
 
-  static private Lookup standardLookup;
-  static private Grib1ParamTable defaultTable;
+  static private final Lookup standardLookup;
+  static private final Grib1ParamTable defaultTable;
 
   // This is a mapping from (center,subcenter,version)-> Param table for any data that has been loaded
   //static private Map<Integer, Grib1ParamTable> tableMap = new ConcurrentHashMap<Integer, Grib1ParamTable>();
@@ -73,7 +76,7 @@ public class Grib1StandardTables {
       standardLookup.readLookupTable("resources/grib1/wrf/lookupTables.txt"); // */
       // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt");  // too many problems - must check every one !
       standardLookup.tables = new CopyOnWriteArrayList<Grib1ParamTable>(standardLookup.tables); // in case user adds tables
-      defaultTable = getParameterTable(0, -1, -1);
+      defaultTable = getParameterTable(0, -1, -1); // user cannot override default
 
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
@@ -86,6 +89,14 @@ public class Grib1StandardTables {
     return strict;
   }
 
+  /**
+   * Set strict mode.
+   * <li>If strict:
+   *   <ol>Must find a match in the tables. Otherwise, use default</ol>
+   *   <ol>Tables cannot override standard WMO parameters. Thus param_no < 128 and version < 128 must use default table</ol>
+   * </li>
+   * @param strict true for strict mode.
+   */
   public static void setStrict(boolean strict) {
     Grib1StandardTables.strict = strict;
   }
@@ -220,11 +231,15 @@ public class Grib1StandardTables {
     }
 
     public Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
+      if (strict && param_number < 128 && tableVersion < 128)
+        return defaultTable.getParameter(param_number);
+
       Grib1ParamTable pt = getParameterTable(center, subcenter, tableVersion);
       Grib1Parameter param = null;
       if (pt != null) param = pt.getParameter(param_number);
-      if (param == null) param = defaultTable.getParameter(param_number);
+      if (!strict && param == null) param = defaultTable.getParameter(param_number);
       return param;
+
     }
 
     public Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {
@@ -239,9 +254,11 @@ public class Grib1StandardTables {
       if (table == null)
         table = findParameterTable(center, subcenter, tableVersion);
       if (table == null) {
-        if (warn)
+        if (strict) {
           logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
-        return (strict) ? null : defaultTable;
+          throw new UnsupportedOperationException("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
+        }
+        return defaultTable;
       }
 
       tableMap.put(key, table);

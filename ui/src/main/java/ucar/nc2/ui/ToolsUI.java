@@ -954,8 +954,9 @@ public class ToolsUI extends JPanel {
         Grib1StandardTables.setStrict(state);
       }
     };
-    a.putValue(BAMutil.STATE, new Boolean(true));
-    BAMutil.setActionPropertiesToggle(a, null, "strict", true, 'S', -1);
+    boolean strictMode = Grib1StandardTables.isStrict();
+    a.putValue(BAMutil.STATE, new Boolean(strictMode));
+    BAMutil.setActionPropertiesToggle(a, null, "strict", strictMode, 'S', -1);
     BAMutil.addActionToMenu(ncMenu, a);
 
     ncMenu = new JMenu("FMRC");
