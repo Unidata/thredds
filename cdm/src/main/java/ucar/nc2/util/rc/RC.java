@@ -179,12 +179,14 @@ static public void initialize ()
  * @param value
  * @param url  null => not url specific
  */
-static public void
+static synchronized public void
 add(String key, String value, String url)
 {
     if(key == null) return;
     Triple t = new Triple(key,value,url);
     dfaltRC.insert(t);
+    // recompute well-knowns
+    setWellKnown();
 }
 
 /**
@@ -193,7 +195,7 @@ add(String key, String value, String url)
  * @param url  null => not url specific
  * @return value corresponding to key+url, or null if does not exist
  */
-static public String
+static synchronized public String
 find(String key, String url)
 {
     if(key == null) return null;
