@@ -62,7 +62,7 @@ import java.util.Formatter;
  */
 public class Grib2Iosp extends AbstractIOServiceProvider {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
-  static private final boolean debugTime = false, debugRead = false;
+  static private final boolean debugTime = false, debugRead = false, debugName = false;
 
   static public String makeVariableName(Grib2Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
@@ -71,7 +71,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
 
     if (param == null) {
-      f.format("VAR%d-%d-%d-%d", gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+      f.format("VAR%d-%d-%d_FROM%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter, gribCollection.center, gribCollection.subcenter, vindex.tableVersion);
     } else {
       f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
     }
@@ -487,7 +487,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       String vname = makeVariableName(tables, gribCollection, vindex);
       Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dims.toString());
       ncfile.addVariable(g, v);
-      //System.out.printf("added %s%n",vname);
+      if (debugName) System.out.printf("added %s%n",vname);
 
       String desc = makeVariableLongName(tables, vindex);
       v.addAttribute(new Attribute(CF.LONG_NAME, desc));

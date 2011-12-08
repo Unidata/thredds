@@ -43,11 +43,11 @@ public class GribWmoCodesPanel extends JPanel {
   public GribWmoCodesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTableSorted(CodeBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
+    codeTable = new BeanTableSorted(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        CodeBean csb = (CodeBean) codeTable.getSelectedBean();
-        setEntries(csb.code);
+        CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
+        setEntries(csb.codeTable);
       }
     });
 
@@ -55,7 +55,7 @@ public class GribWmoCodesPanel extends JPanel {
     varPopup.addAction("Show table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        CodeBean csb = (CodeBean) codeTable.getSelectedBean();
+        CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
         csb.showTable(out);
         compareTA.setText(out.toString());
         compareTA.gotoTop();
@@ -125,9 +125,9 @@ public class GribWmoCodesPanel extends JPanel {
     try {
       WmoCodeTable.WmoTables wmo = WmoCodeTable.readGribCodes(v);
       List<WmoCodeTable> codes = wmo.list;
-      List<CodeBean> dds = new ArrayList<CodeBean>(codes.size());
+      List<CodeTableBean> dds = new ArrayList<CodeTableBean>(codes.size());
       for (WmoCodeTable code : codes) {
-        dds.add(new CodeBean(code));
+        dds.add(new CodeTableBean(code));
       }
       codeTable.setBeans(dds);
       currTable = v;
@@ -164,7 +164,7 @@ public class GribWmoCodesPanel extends JPanel {
     f.format("WMO parameter table %s%n", currTable);
     f.format("%nDuplicates Names%n");
     for (Object t : codeTable.getBeans()) {
-      WmoCodeTable gt = ((CodeBean) t).code;
+      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
       if (!gt.isParameter) continue;
       for (WmoCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.equalsIgnoreCase("Reserved")) continue;
@@ -188,7 +188,7 @@ public class GribWmoCodesPanel extends JPanel {
     dups = 0;
     f.format("Names with parenthesis%n");
     for (Object t : codeTable.getBeans()) {
-      WmoCodeTable gt = ((CodeBean) t).code;
+      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
       if (!gt.isParameter) continue;
       for (WmoCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.indexOf('(') > 0) {
@@ -204,7 +204,7 @@ public class GribWmoCodesPanel extends JPanel {
     dups = 0;
     f.format("non-udunits%n");
     for (Object t : codeTable.getBeans()) {
-      WmoCodeTable gt = ((CodeBean) t).code;
+      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
       if (!gt.isParameter) continue;
       for (WmoCodeTable.TableEntry p : gt.entries) {
         if (p.unit == null) continue;
@@ -241,7 +241,7 @@ public class GribWmoCodesPanel extends JPanel {
     f.format("DIFFERENCES of %s with 4.2 standard parameter table%n", currTable);
     List tables = codeTable.getBeans();
     for (Object t : tables) {
-      WmoCodeTable gt = ((CodeBean) t).code;
+      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
       if (!gt.isParameter) continue;
       for (WmoCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.equalsIgnoreCase("Reserved")) continue;
@@ -290,7 +290,7 @@ public class GribWmoCodesPanel extends JPanel {
     f.format("DIFFERENCES of %s with standard WMO table%n", currTable);
     List tables = codeTable.getBeans();
     for (Object t : tables) {
-      WmoCodeTable gt = ((CodeBean) t).code;
+      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
       if (!gt.isParameter) continue;
       for (WmoCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.equalsIgnoreCase("Reserved")) continue;
@@ -427,49 +427,49 @@ public class GribWmoCodesPanel extends JPanel {
     infoWindow.show();
   }
 
-  public class CodeBean {
-    WmoCodeTable code;
+  public class CodeTableBean {
+    WmoCodeTable codeTable;
 
     // no-arg constructor
-    public CodeBean() {
+    public CodeTableBean() {
     }
 
     // create from a dataset
-    public CodeBean(WmoCodeTable code) {
-      this.code = code;
+    public CodeTableBean(WmoCodeTable code) {
+      this.codeTable = code;
     }
 
     public String getTitle() {
-      return code.tableName;
+      return codeTable.tableName;
     }
 
     public int getDiscipline() {
-      return code.discipline;
+      return codeTable.discipline;
     }
 
     public String getTableNo() {
       Formatter f = new Formatter();
-      f.format("%d.%d",code.m1, code.m2);
+      f.format("%d.%d", codeTable.m1, codeTable.m2);
 
-      if (code.discipline >= 0)
-        f.format(".%d",code.discipline);
-      if (code.category >= 0)
-        f.format(".%d",code.category);
+      if (codeTable.discipline >= 0)
+        f.format(".%d", codeTable.discipline);
+      if (codeTable.category >= 0)
+        f.format(".%d", codeTable.category);
 
       return f.toString();
     }
 
     public int getCategory() {
-      return code.category;
+      return codeTable.category;
     }
     
     public boolean isParameter() {
-      return code.isParameter;
+      return codeTable.isParameter;
     }
 
     void showTable(Formatter f) {
-      f.format("Code Table %s (%s)%n", code.getTableName(), code.getTableId());
-      for (WmoCodeTable.TableEntry entry : code.entries) {
+      f.format("Code Table %s (%s)%n", codeTable.getTableName(), codeTable.getTableId());
+      for (WmoCodeTable.TableEntry entry : codeTable.entries) {
         f.format("  %3d: %s%n", entry.number, entry.meaning);
       }
     }

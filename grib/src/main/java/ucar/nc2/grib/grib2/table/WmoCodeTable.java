@@ -49,7 +49,7 @@ import java.util.*;
  */
 
 public class WmoCodeTable implements Comparable<WmoCodeTable> {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
 
   public enum Version {
     GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0;
@@ -261,6 +261,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   String id;
 
   public List<TableEntry> entries = new ArrayList<TableEntry>();
+  public Map<Integer, TableEntry> entryMap;
 
   WmoCodeTable(String name) {
     this.tableName = name;
@@ -304,10 +305,14 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   TableEntry get(int value) {
-    for (TableEntry p : entries) {
-      if (p.start == value) return p;
+    if (entryMap == null) {
+      entryMap = new HashMap<Integer, TableEntry>(2*entries.size());
+      for (TableEntry p : entries) {
+        if (p.start == p.stop) // skip ranges
+          entryMap.put(p.start, p);
+      }
     }
-    return null;
+    return entryMap.get(value);
   }
 
   @Override

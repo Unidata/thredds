@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  3:(2011-12-xx)
+  Make WMOCodeTable.get() into a hash map
+  GRIB2: Unknown names were not formed correctly
   FileWriter: handle anon dimensions
   N3iosp.createValidNetcdf3ObjectName() : convert "/" to "_"
   CollectionSpecParser: allow reletive filenames (use working directory)

@@ -66,7 +66,8 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables {
       if (dssTables == null ) dssTables = new DssLocalTables(center, subCenter, masterVersion, localVersion);
       return dssTables;
 
-    } else */ if ((center == 7) || (center == 9)) { // just guessing (!)
+    } else */
+    if ((center == 7) || (center == 9) || (center == 54) || (center == 59)) { // canadian met, FSL
         if (ncepTables == null ) ncepTables = new NcepLocalTables(center, subCenter, masterVersion, localVersion);
         return ncepTables;
 
@@ -213,6 +214,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables {
     return WmoCodeTable.getParameterEntry(discipline, category, number);
   }
 
+  // debugging
   public List getParameters() {
     try {
       WmoCodeTable.WmoTables wmo = WmoCodeTable.getWmoStandard();

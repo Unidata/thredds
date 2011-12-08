@@ -1079,7 +1079,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public String getOldName() {
       String oldName = ucar.grib.grib2.ParameterTable.getParameterName(discipline, pds.getParameterCategory(), pds.getParameterNumber());
-      boolean diff = !oldName.equals(getName());
+      boolean diff = !oldName.equalsIgnoreCase(getName());
       return diff ? "*"+oldName : oldName;
     }
 
