@@ -6,7 +6,7 @@ import opendap.util.InvalidSwitch;
 
 import java.io.*;
 
-public class TestDConnect2 extends TestSources {
+public class TestDConnect2 extends TestFiles {
 
     static boolean debug = false;
     static boolean createbaseline = true;
