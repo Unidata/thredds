@@ -333,15 +333,7 @@ public class DiskCache2 {
     if (!want.exists())
       want.createNewFile();
     System.out.println(" canRead= " + want.canRead() + " canWrite = " + want.canWrite() + " lastMod = " + new Date(want.lastModified()));
-
-    String enc = EscapeStrings.urlEncode(filename);
-    System.out.println(" original=" + EscapeStrings.urlDecode(enc));
-    /* try {
-      String enc = java.net.URLEncoder.encode(filename, "UTF8");
-      System.out.println(" original=" + java.net.URLDecoder.decode(enc, "UTF8"));
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace(); 
-    } */
+    System.out.println(" original=" + EscapeStrings.urlDecode(filename));
   }
 
   /** debug */

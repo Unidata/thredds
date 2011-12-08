@@ -30,7 +30,7 @@
 // PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
 // HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
 // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
-// TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, O
 // PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 // LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
@@ -45,6 +45,8 @@ import ucar.nc2.util.log.LogStream;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * User: ndp
@@ -53,137 +55,77 @@ import java.util.List;
  */
 public class EscapeStrings {
 
+    // Sets of ascii characters
+    static private final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static private final String numeric = "0123456789";
+    static private final String alphaNumeric = alpha + numeric;
 
-    /**
-     * This method is used to normalize strings prior
-     * to their inclusion in XML documents. XML has certain parsing requirements
-     * around reserved characters. These reserved characters must be replaced with
-     * symbols recognized by the XML parser as place holder for the actual symbol.
-     * <p/>
-     * The rule for this normalization is as follows:
-     * <p/>
-     * <ul>
-     * <li> The &lt; (less than) character is replaced with &amp;lt;
-     * <li> The &gt; (greater than) character is replaced with &amp;gt;
-     * <li> The &amp; (ampersand) character is replaced with &amp;amp;
-     * <li> The ' (apostrophe) character is replaced with &amp;apos;
-     * <li> The &quot; (double quote) character is replaced with &amp;quot;
-     * </ul>
-     *
-     * @param s The String to be normalized.
-     * @return The normalized String.
-     */
-    public static String normalizeToXML(String s) {
+    // Set of all ascii printable non-alphanumeric (aka nan) characters
+    static private final String nonAlphaNumeric = " !\"#$%&'()*+,-./:;<=>?@[]\\^_`|{}~" ;
 
-        // Some handy definitons.
-        String xmlGT = "&gt;";
-        String xmlLT = "&lt;";
-        String xmlAmp = "&amp;";
-        String xmlApos = "&apos;";
-        String xmlQuote = "&quot;";
+    static private final String queryReserved = " ?&=,+;#"; // special parsing meaning in queries
+    static private final String urlReserved = ":/#?"; // special parsing meaning in url
 
-        StringBuffer sb = new StringBuffer(s);
+    // We assume that whoever constructs a url (minus the query)
+    // has properly percent encoded whatever characters need to be encoded.
+    // Sets of characters absolutely DIS-allowed in url.
+    static private final String urlDisallowed
+                                = stringUnion(urlReserved+""); // what else?
+    // Complement of urlDisallowed
+    static private final String urlAllowed = stringDiff(nonAlphaNumeric,urlDisallowed);
 
-        for (int offset = 0; offset < sb.length(); offset++) {
+    // This is set of legal characters that can appear unescaped in a url
+    static private final String _allowableInUrl= alphaNumeric + urlAllowed;
 
-            char c = sb.charAt(offset);
+    // Sets of characters absolutely DIS-allowed in query string identifiers.
+    // Basically, this set is determined by what kind of query parsing needs to occur.
+    static private final String queryIdentDisallowed
+                                = stringUnion(queryReserved+"\"\\^`|<>[]{}");
 
-            switch (c) {
-
-                case '>': // GreaterThan
-                    sb.replace(offset, offset + 1, xmlGT);
-                    break;
-
-                case '<': // Less Than
-                    sb.replace(offset, offset + 1, xmlLT);
-                    break;
-
-                case '&': // Ampersand
-                    sb.replace(offset, offset + 1, xmlAmp);
-                    break;
-
-                case '\'': // Single Quote
-                    sb.replace(offset, offset + 1, xmlApos);
-                    break;
-
-                case '\"': // Double Quote
-                    sb.replace(offset, offset + 1, xmlQuote);
-                    break;
-
-                default:
-                    break;
-            }
-
-        }
-
-        return (sb.toString());
-
-    }
-
-    // Set of all ascii printable alphanumeric characters
-    public static String asciiAlphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    // Set of all ascii printable non-alphanumeric characters
-    public static String asciiNonAlphaNumeric =
-            " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" ;
-
-    // Non-alphanumeric (nan) allowed lists
-    private static String _nanAllowedInURL = "!#$&'()*+,-./:;=?@_~" ;
-    private static String _nanAllowedInURLQuery = "!#$&'()*+,-./:;=?@_~[]" ;
-    private static String _nanAllowedInURLPath = "!#$&'()*+,-./:;=?@_~" ;
-
-    // Non-alphanumeric disallowed lists
-    private static String _disallowedInUrlQuery = " \"<>[\\]^`{|}%";   //Determined by experiment
-    private static String _disallowedInUrl      = " \"<>[\\]^`{|}%";   //Determined by experiment
+    // Complement of queryIdentDisallowed
+    static private final String queryIdentAllowed = stringDiff(nonAlphaNumeric,queryIdentDisallowed);
 
     // This is set of legal characters that can appear unescaped in a url query.
-    public static String _allowableInUrlQuery =   asciiAlphaNumeric +_nanAllowedInURLQuery;
-                                                //+ "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrlQuery
+    static private final String _allowableInUrlQuery = alphaNumeric + queryIdentAllowed;
 
-    // This is set of legal characters that can appear unescaped in a url.
-                                        public static String _allowableInUrl =   asciiAlphaNumeric + _nanAllowedInURL;
-                                         //+ "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrl
-
-    // This is set of legal characters that can appear unescaped in a url path
-    public static String _allowableInUrlPath =   asciiAlphaNumeric + _nanAllowedInURLPath;
+    // Define the set of characters allowable in DAP Identifiers
+    static private final String dapSpecAllowed = "_!~*'-\"" ; //as specified in dap2 spec
+    static private final String _namAllowedInDAP = dapSpecAllowed
+                                                   + "./"; // for groups and structure names
+    static private final String _allowableInDAP = alphaNumeric + _namAllowedInDAP;
 
     // This is set of legal characters that can appear unescaped in an OGC query.
-    private static String _disallowedInOGC = stringUnion(" ?&=,+", //OGC Web Services Common 2.0.0 section 11.3
-                                                         stringDiff(asciiNonAlphaNumeric,"-_.!~*'()"));
-    private static String _namAllowedInOGC = "-_.!~*'()";
+    // See OGC Web Services Common 2.0.0 section 11.3
+    static private final String _namAllowedInOGC = "-_.!~*'()";
+    static private final String _disallowedInOGC
+			        = stringUnion(queryReserved+stringDiff(nonAlphaNumeric,_namAllowedInOGC));
+    static private final String _allowableInOGC = alphaNumeric + _namAllowedInOGC;
 
-    public static String _allowableInOGC =   asciiAlphaNumeric + _namAllowedInOGC;
-
-    private static char _URIEscape = '%';
-
-    //<obsolete>
-    // This appears to be incorrect wrt dap spec: private static String _allowableInURI = asciiAlphaNumeric + "-+_/.\\*";
-    private static String _allowableInURI =
-		asciiAlphaNumeric + "-+_\\*!~";  // plus: '"?
-    // This appears to be incorrect wrt dap spec: private static String _allowableInURI_CE = asciiAlphaNumeric + "-+_/.\\,";
-    private static String _allowableInURI_CE = asciiAlphaNumeric + "-+_\\,="; // plus "?
-    //</obsolete>
+    static private final char _URIEscape = '%';
 
     // These are the DEFINITIVE set of non-alphanumeric characters that are legal
     // in opendap identifiers (according to DAP2 protocol spec).
     // Add '/' to support group names
-    public static String opendap_identifier_special_characters = "./_!~*-\"";
+
+    static private String opendap_identifier_special_characters = "_!~*'-\"" // see dap spec.
+                                                                  + "./" ; // less strict
 
     // The complete set of legal opendap identifier characters
-    public static String opendap_identifier_characters =
-		          asciiAlphaNumeric
-                + opendap_identifier_special_characters;
-
+    public static String opendap_identifier_characters
+	 	         = alphaNumeric + opendap_identifier_special_characters;
 
     /*
      * s1 union s2
      */
-    static private String stringUnion(String s1, String s2)
+    static private String stringUnion(String s)
     {
-        String union = s1;
-        for(char c: s2.toCharArray()) {
-            if(union.indexOf(c) < 0) union += c;
+        StringBuilder union = new StringBuilder();
+        for(int i=0;i<s.length();i++) {
+            char c = s.charAt(i);
+            if(s.indexOf(c,i+1) >= 0) continue; // later occurrence
+            union.append(c);
         }
-        return union;
+        return union.toString();
     }
 
     /*
@@ -214,80 +156,48 @@ public class EscapeStrings {
      */
 
     // Useful constants
-    static byte blank = ((byte)' ');
-    static byte plus = ((byte)'+');
+    static final byte blank = ((byte)' ');
+    static final byte plus = ((byte)'+');
 
-    private static String escapeString(String in, String allowable, char esc, boolean spaceplus) throws Exception {
-        StringBuffer out = new StringBuffer();
-        int i;
-/*
-final int length = s.length();
-for (int offset = 0; offset < length; ) {
-   final int codepoint = s.codePointAt(offset);
-
-   // do something with the codepoint
-
-   offset += Character.charCount(codepoint);
-}
-
- */
-        if (in == null) return null;
-
-        byte[] utf8 = in.getBytes("UTF-8");
-        byte[] allow8 = allowable.getBytes("UTF-8");
-
-        for(byte b: utf8) {
-            if(b == blank && spaceplus) {
-               out.append('+');
-            } else {
-                // search allow8
-                boolean found = false;
-                for(byte a: allow8) {
-                    if(a == b) {found = true; break;}
-                }
-                if(found) {out.append((char)b);}
-                else {
-                    String c = Integer.toHexString(b);
-                    out.append(esc);
-                    if (c.length() < 2) out.append('0');
-                    out.append(c);
+    private static String xescapeString(String in, String allowable, char esc, boolean spaceplus)
+    {
+        try {
+            StringBuffer out = new StringBuffer();
+            int i;
+            if (in == null) return null;
+            byte[] utf8 = in.getBytes("UTF-8");
+            byte[] allow8 = allowable.getBytes("UTF-8");
+            for(byte b: utf8) {
+                if(b == blank && spaceplus) {
+                   out.append('+');
+                } else {
+                    // search allow8
+                    boolean found = false;
+                    for(byte a: allow8) {
+                        if(a == b) {found = true; break;}
+                    }
+                    if(found) {out.append((char)b);}
+                    else {
+                        String c = Integer.toHexString(b);
+                        out.append(esc);
+                        if (c.length() < 2) out.append('0');
+                        out.append(c);
+                    }
                 }
             }
+
+            return out.toString();
+
+        } catch (Exception e) {
+            return in;
         }
-        /*
-        StringBuilder buf = new StringBuilder(in);
-        if(spaceplus) {
-            for(i=0;(i=in.indexOf(' ',i)) >= 0; i++) {
-                buf.setCharAt(i,'+');
-                i++;
-            }
-            in = buf.toString();
-        }
-
-        if (allowable.indexOf(esc) >= 0) {//isEscAllowed(allowable, esc)) 
-            throw new Exception("Escape character MAY NOT be in the list of allowed characters!");
-        }
-
-        char[] inca = in.toCharArray();
-        String c;
-
-        boolean isAllowed;
-        for (char candidate : inca) {
-            isAllowed = allowable.indexOf(candidate) >= 0 || (candidate == '+' && spaceplus);
-            if (isAllowed) {
-                out += candidate;
-            } else {
-                c = Integer.toHexString(candidate);
-                if (c.length() < 2)
-                    c = "0" + c;
-                out += esc + c;
-            }
-
-        }
-        */
-        return out.toString();
-
     }
+
+    private static String escapeString(String in, String allowable)
+   {return xescapeString(in,allowable,_URIEscape,false);}
+
+   private static String escapeString(String in, String allowable, char esc)
+   {return xescapeString(in,allowable,esc,false);}
 
     /**
      * Given a string that contains WWW escape sequences, translate those escape
@@ -302,68 +212,43 @@ for (int offset = 0; offset < length; ) {
      * @param spaceplus True if spaces should be replaced by '+'.
      * @return The modified string.
      */
-    private static String unescapeString(String in, char escape, boolean spaceplus) throws Exception
+
+    private static String xunescapeString(String in, char escape, boolean spaceplus)
     {
-        if (in == null) return null;
+        try {
+            if (in == null) return null;
 
-        byte[] utf8 = in.getBytes("UTF-8");
-        byte escape8 = (byte)escape;
-        byte[] out = new byte[utf8.length]; // Should be max we need
+            byte[] utf8 = in.getBytes("UTF-8");
+            byte escape8 = (byte)escape;
+            byte[] out = new byte[utf8.length]; // Should be max we need
 
-        int index8 = 0;
-        for(int i=0;i<utf8.length;) {
-            byte b = utf8[i++];
-            if(b == plus && spaceplus) {
-               out[index8++] = blank;
-            } else if(b == escape8) {
-                // check to see if there are enough characters left
-                if(i+2 <= utf8.length) {
-                    b = (byte)(fromHex(utf8[i])<<4 | fromHex(utf8[i + 1]));
-                    i += 2;
+            int index8 = 0;
+            for(int i=0;i<utf8.length;) {
+                byte b = utf8[i++];
+                if(b == plus && spaceplus) {
+                   out[index8++] = blank;
+                } else if(b == escape8) {
+                    // check to see if there are enough characters left
+                    if(i+2 <= utf8.length) {
+                        b = (byte)(fromHex(utf8[i])<<4 | fromHex(utf8[i + 1]));
+                        i += 2;
+                    }
                 }
+                out[index8++] = b;
             }
-            out[index8++] = b;
+            return new String(out,0,index8,"UTF-8");
+        } catch(Exception e) {
+            return in;
         }
-        /*
-        String esc = String.valueOf(escape);
-        String replacement;
-        int i;
-
-        if(spaceplus) {
-            StringBuilder escaped = new StringBuilder();
-            for(i=0;(i=in.indexOf('+',i)) >= 0; i++) {
-                escaped.setCharAt(i,' ');
-            }
-            in = escaped.toString();
-        }
-
-        String out = in;
-        i = 0;
-        while ((i = out.indexOf(esc, i)) != -1) {
-
-            String candidate = out.substring(i, i + 3);
-
-            if (candidate.equals(except)) {
-                i += 3;
-
-            } else {
-                //out = out.substring(0,i) + " + [esc]" + out.substring(i+1,i+3) + " + " + out.substring(i+3,out.length());
-
-                replacement = Character.toString((char) Integer.valueOf(out.substring(i + 1, i + 3), 16).intValue());
-
-                out = out.substring(0, i) +
-                        replacement +
-                        out.substring(i + 3, out.length());
-
-                if (replacement.equals(esc))
-                    i++;
-
-            }
-        }
-        */
-        return new String(out,0,index8,"UTF-8");
 
     }
+
+    private static String unescapeString(String in)
+    {return xunescapeString(in, _URIEscape,false);}
+
+    private static String unescapeString(String in, char escape)
+    {return xunescapeString(in, escape,false);}
+
 
     static final byte hexa = (byte)'a';
     static final byte hexf = (byte)'f';
@@ -382,57 +267,82 @@ for (int offset = 0; offset < length; ) {
         throw new NumberFormatException("Illegal hex character: "+b);
     }
 
-    /**
-     * Split a url into the base plus the query
-     *
-     * @param url The expression to unescape.
-     * @return The base and url as a 2 element string array.
-     */
-     public static String[] splitURL(String url)
-     {
-         String[] pair = new String[2];
-         int index = url.indexOf('?');
-         if(index >= 0) {
-             pair[0] = url.substring(0,index);
-             pair[1] = url.substring(index+1,url.length());
-         } else {
-             pair[0] = url;
-             pair[1] = null;
-         }
-         return pair;
-     }
-
-    /**
-     * Define the DEFINITIVE opendap identifier escape function.
-     * @param id The identifier to modify.
-     * @return The escaped identifier.
-     */
-    public static String escapeDAPIdentifier(String id)
-    {
-       String s;
-       try {
-           s = escapeString(id, opendap_identifier_characters, _URIEscape, false);
-       } catch (Exception e) {
-            s = null;
-       }
-       return s;
-    }
 
     /**
     * Define the DEFINITIVE opendap identifier unescape function.
     * @param id The identifier to unescape.
     * @return The unescaped identifier.
     */
-    public static String unEscapeDAPIdentifier(String id)
+    public static String unescapeDAPIdentifier(String id)
     {
         String s;
         try {
-            s = unescapeString(id, _URIEscape, false);
+            s = unescapeString(id);
         } catch (Exception e) {
             s = null;
         }
         return s;
     }
+
+    /**
+     * Define the DEFINITIVE URL escape function.
+     * Beware, this is a rather complex operation
+     *
+     * @param url The url string
+     * @return The escaped expression.
+     */
+     static private final Pattern p
+            = Pattern.compile("([\\w]+)://([.\\w]+(:[\\d]+)?)([/][^?#])?([?][^#]*)?([#].*)?");
+     public static String escapeURL(String url)
+     {
+        String protocol = null;
+        String authority = null;
+        String path = null;
+        String query = null;
+        String fragment = null;
+        if(false) {
+            // We split the url ourselves to minimize character dependencies
+            Matcher m = p.matcher(url);
+            boolean match = m.matches();
+            if(!match) return null;
+            protocol = m.group(1);
+            authority = m.group(2);
+            path = m.group(3);
+            query = m.group(4);
+            fragment = m.group(5);
+        } else {// faster, but may not work quite right
+            URL u = null;
+            try {u = new URL(url);} catch (MalformedURLException e) {return null;}
+            protocol = u.getProtocol();
+            authority = u.getAuthority();
+            path = u.getPath();
+            query = u.getQuery();
+            fragment = u.getRef();
+        }
+        // Reassemble
+        url = protocol + "://" + authority;
+        if(path != null && path.length() > 0) {
+            // Encode pieces between '/'
+            String pieces[] = path.split("[/]+");
+            for(String p: pieces)  {
+                if(p == null || p.length() == 0) continue;
+                url += ("/"+urlEncode(p));
+            }
+        }
+        if(query != null && query.length() > 0)
+            url += ("?"+escapeURLQuery(query));
+        if(fragment != null && fragment.length() > 0)
+            url += ("#"+urlEncode(fragment));
+        return url;
+     }
+
+     static int nextpiece(String s, int index, String sep)
+     {
+         index = s.indexOf(sep,index);
+         if(index < 0)
+             index = s.length();
+         return index;
+     }
 
     /**
      * Define the DEFINITIVE URL constraint expression escape function.
@@ -442,9 +352,9 @@ for (int offset = 0; offset < length; ) {
      */
      public static String escapeURLQuery(String ce)
      {
-	try {
-	    ce = escapeString(ce, _allowableInUrlQuery, _URIEscape, false);
-	} catch(Exception e) {ce = null;}
+        try {
+            ce = escapeString(ce, _allowableInUrlQuery);
+        } catch(Exception e) {ce = null;}
         return ce;
      }
 
@@ -457,7 +367,7 @@ for (int offset = 0; offset < length; ) {
      public static String unescapeURLQuery(String ce)
      {
         try {
-            ce = unescapeString(ce, _URIEscape, false);
+            ce = unescapeString(ce);
         } catch(Exception e) {ce = null;}
         return ce;
      }
@@ -470,12 +380,10 @@ for (int offset = 0; offset < length; ) {
      * @param s The string to modify.
      * @return The escaped expression.
      */
-     public static String urlEncode(String s)
+     private static String urlEncode(String s)
      {
-        try {
-            //s = escapeString(s, _allowableInUrl, _URIEscape, false);
-            s = URLEncoder.encode(s,"UTF-8");
-        } catch(Exception e) {s = null;}
+        //try {s = URLEncoder.encode(s,"UTF-8");} catch(Exception e) {s = null;}
+        s = escapeString(s, _allowableInUrl);
         return s;
      }
 
@@ -494,51 +402,6 @@ for (int offset = 0; offset < length; ) {
         return s;
      }
 
-   /**
-     *  Decompose a url and piecemeal encode all of its parts, including query and fragment
-     * @param u  the url to encode
-     */
-     public static String escapeURL(String u)
-     {
-        String newurl = null;
-        try {
-            URL url = new URL(u);  // use instead of url() because url does no decoding
-            String protocol = url.getProtocol();
-            String principal = url.getUserInfo();
-            String host = url.getHost();
-            int port = url.getPort();
-            String path = url.getPath();
-            String query = url.getQuery();
-            String ref = url.getRef();
-            if(principal != null && principal.length() == 0) principal = null;
-            if(path != null && path.length() == 0) path = null;
-            if(query != null && query.length() == 0) query = null;
-            if(ref != null && ref.length() == 0) ref = null;
-
-
-            // Encode certain fields
-            if(path != null)
-                try {
-                    String tmp = escapeString(path, _allowableInUrlPath, _URIEscape, false);
-                    path = tmp;
-                } catch(Exception e) {}
-;
-            if(query != null) query = urlEncode(query);
-            if(ref != null) ref = urlEncode(ref);
-
-            // add delimiters
-            protocol = protocol + "://";
-            principal = (principal == null ? "" : (principal + "@"));
-            String sport = (port <= 0 ? "" : (":"+port));
-            path = (path ==  null ? "" : path);
-            query = (query == null ? "" : "?" + query);
-            ref = (ref == null ? "" : "#" + ref);
-
-            // rebuild the url
-            newurl =   protocol + principal + host + sport + path + query + ref;
-        } catch (MalformedURLException use) {newurl=u;}
-        return newurl;
-     }
     /**
      *  Decode all of the parts of the url including query and fragment
      * @param url  the url to encode
@@ -552,6 +415,17 @@ for (int offset = 0; offset < length; ) {
 
 
     /**
+     * Define the DAP escape identifier function.
+     *
+     * @param s The string to encode.
+     * @return The escaped string.
+     */
+     public static String escapeDAPIdentifier(String s)
+     {
+        return escapeString(s, _allowableInDAP);
+     }
+
+    /**
      * Define the OGC Web Services escape function.
      *
      * @param s The string to encode.
@@ -559,8 +433,16 @@ for (int offset = 0; offset < length; ) {
      */
      public static String escapeOGC(String s)
      {
-        return urlEncode(s);
+        return escapeString(s, _allowableInOGC);
      }
+
+    static public void testOGC()
+    {
+        for (char c : (alphaNumeric + " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~").toCharArray()) {
+            String encoded = EscapeStrings.escapeOGC("" + c);
+            System.err.printf("|%c|=|%s|\n", c, encoded);
+        }
+    }
 
     /**
      * Define the OGC unescape function.
@@ -624,7 +506,7 @@ for (int offset = 0; offset < length; ) {
     for (int pos = 0; pos < x.length(); pos++) {
       char c = x.charAt(pos);
       if (c == '\\') {
-        c = x.charAt(++pos); // skip backslash, get next char
+        c = x.charAt(++pos); // skip backslash, get next cha
       }
       sb.append(c);
     }
@@ -659,7 +541,7 @@ for (int offset = 0; offset < length; ) {
   /**
    * Find first occurence of char c in escapedName, excluding escaped c.
    * @param escapedName search in this string
-   * @param c for this char but not \\char
+   * @param c for this char but not \\cha
    * @return  pos in string, or -1
    */
   public static int indexOf(String escapedName, char c) {
@@ -705,5 +587,60 @@ for (int offset = 0; offset < length; ) {
     }
 
 
+
+/**
+ * This method is used to normalize strings prio
+ * to their inclusion in XML documents. XML has certain parsing requirements
+ * around reserved characters. These reserved characters must be replaced with
+ * symbols recognized by the XML parser as place holder for the actual symbol.
+ * <p/>
+ * The rule for this normalization is as follows:
+ * <p/>
+ * <ul>
+ * <li> The &lt; (less than) character is replaced with &amp;lt;
+ * <li> The &gt; (greater than) character is replaced with &amp;gt;
+ * <li> The &amp; (ampersand) character is replaced with &amp;amp;
+ * <li> The ' (apostrophe) character is replaced with &amp;apos;
+ * <li> The &quot; (double quote) character is replaced with &amp;quot;
+ * </ul>
+ *
+ * @param s The String to be normalized.
+ * @return The normalized String.
+ */
+
+    // Some handy definitons.
+    static final String xmlGT = "&gt;";
+    static final String xmlLT = "&lt;";
+    static final String xmlAmp = "&amp;";
+    static final String xmlApos = "&apos;";
+    static final String xmlQuote = "&quot;";
+
+public static String normalizeToXML(String s)
+{
+    StringBuffer sb = new StringBuffer(s);
+    for (int offset = 0; offset < sb.length(); offset++) {
+        char c = sb.charAt(offset);
+        switch (c) {
+            case '>': // GreaterThan
+                sb.replace(offset, offset + 1, xmlGT);
+                break;
+            case '<': // Less Than
+                sb.replace(offset, offset + 1, xmlLT);
+                break;
+            case '&': // Ampersand
+                sb.replace(offset, offset + 1, xmlAmp);
+                break;
+            case '\'': // Single Quote
+                sb.replace(offset, offset + 1, xmlApos);
+                break;
+            case '\"': // Double Quote
+                sb.replace(offset, offset + 1, xmlQuote);
+                break;
+            default: break;
+        }
+    }
+    return (sb.toString());
+
 }
 
+}

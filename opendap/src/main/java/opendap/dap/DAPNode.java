@@ -193,9 +193,8 @@ public class DAPNode implements Cloneable, Serializable
      */
     public final void setEncodedName(String n)
     {
-	 _nameEncoded = n;
-        _nameClear = EscapeStrings.unEscapeDAPIdentifier(n);
-        //setClearName(EscapeStrings.www2id(n));
+	     _nameEncoded = n;
+         _nameClear = EscapeStrings.unescapeDAPIdentifier(n);
     }
 
     /**
@@ -205,6 +204,9 @@ public class DAPNode implements Cloneable, Serializable
      */
     public  void setClearName(String n) {
         _nameClear = n;
+        if(n != null && n.indexOf(":") >= 0) {
+            int x = 0;
+        }
        _nameEncoded = EscapeStrings.escapeDAPIdentifier(n);
     }
 

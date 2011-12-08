@@ -47,14 +47,16 @@ import java.io.File;
  */
 public class URLnaming {
 
+@Deprecated
   public static String escapeQuery(String urlString) {
-    urlString = urlString.trim();
-     String[] split = EscapeStrings.splitURL(urlString);
-     return  (split[0] == null ? "" : EscapeStrings.escapeURL(split[0]))
+     urlString = urlString.trim();
+     String[] split = urlString.split("[?]");
+     return  (split[0] == null ? "" : split[0])
               + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
   }
 
-  public static String escapeQueryNew(String urlString) {
+@Deprecated
+  private static String escapeQueryNew(String urlString) {
     urlString = urlString.trim();
     URI uri = null;
     try {
@@ -66,7 +68,8 @@ public class URLnaming {
     }
   }
 
-  public static String escapeQueryURIUtil(String urlString) {
+@Deprecated
+private   static String escapeQueryURIUtil(String urlString) {
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ > 0) && (posQ < urlString.length() - 2)) {
@@ -83,7 +86,8 @@ public class URLnaming {
     return urlString;
   }
 
-  public static String escapeQueryEncoder(String urlString) {
+@Deprecated
+private   static String escapeQueryEncoder(String urlString) {
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ > 0) && (posQ < urlString.length() - 2)) {
@@ -100,7 +104,8 @@ public class URLnaming {
     return urlString;
   }
 
-  public static String unescapeQueryDODS(String urlString) {
+@Deprecated
+private   static String unescapeQueryDODS(String urlString) {
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ >= 0) && (posQ < urlString.length() - 2)) {
@@ -112,7 +117,8 @@ public class URLnaming {
   }
 
 
-  public static String unescapeQueryDecoder(String urlString) {
+@Deprecated
+private   static String unescapeQueryDecoder(String urlString) {
 
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
@@ -126,6 +132,19 @@ public class URLnaming {
       }
     }
     return urlString;
+  }
+
+
+  /// try to figure out if we need to add file: to the location when writing
+  static public String canonicalizeWrite(String location) {
+    try {
+      URI refURI = URI.create(location);
+      if (refURI.isAbsolute())
+        return location;
+    } catch (Exception e) {
+      //return "file:" + location;
+    }
+    return "file:" + location;
   }
 
   /**
@@ -159,8 +178,8 @@ public class URLnaming {
       // the case where the reletiveURL is absolute.
       // unfortunately, we may get an Exception
       try {
-        URI reletiveURI = URI.create(relativeUri);
-        if (reletiveURI.isAbsolute())
+        URI uriRelative = URI.create(relativeUri);
+        if (uriRelative.isAbsolute())
           return relativeUri;
       } catch (Exception e) {
         // empty
@@ -203,17 +222,6 @@ public class URLnaming {
     return location;
   }
 
-  /// try to figure out if we need to add file: to the location when writing
-  static public String canonicalizeWrite(String location) {
-    try {
-      URI refURI = URI.create(location);
-      if (refURI.isAbsolute())
-        return location;
-    } catch (Exception e) {
-      //return "file:" + location;
-    }
-    return "file:" + location;
-  }
 
   public static String resolveFile(String baseDir, String filepath) {
     if (baseDir == null) return filepath;

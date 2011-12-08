@@ -121,10 +121,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       int statusCode = method.execute();
 
       if (statusCode == 404)
-        throw new FileNotFoundException(method.getURI() + " " + method.getStatusLine());
+        throw new FileNotFoundException(method.getURL() + " " + method.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(method.getURI() + " " + method.getStatusLine());
+        throw new IOException(method.getURL() + " " + method.getStatusLine());
 
       InputStream is = method.getResponseAsStream();
       NcStreamReader reader = new NcStreamReader();
@@ -282,10 +282,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       int statusCode = method.execute();
 
       if (statusCode == 404)
-        throw new FileNotFoundException(method.getURI() + " " + method.getStatusLine());
+        throw new FileNotFoundException(method.getURL() + " " + method.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(method.getURI() + " " + method.getStatusLine());
+        throw new IOException(method.getURL() + " " + method.getStatusLine());
 
       InputStream is = method.getResponseBodyAsStream();
       size += IO.copyB(is, fos, IO.default_socket_buffersize);

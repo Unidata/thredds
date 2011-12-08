@@ -57,6 +57,7 @@ public class TestOpenDap
     suite.addTest(new TestSuite(opendap.test.TestERR.class));
     suite.addTest(new TestSuite(opendap.test.TestClone.class));
     suite.addTest(new TestSuite(opendap.test.TestCeParser.class));
+    suite.addTest(new TestSuite(opendap.test.TestGroups.class));
 
    // TestDConnect2 does access external data
    //suite.addTest(new TestSuite(opendap.test.TestDConnect2.class));

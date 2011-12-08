@@ -193,7 +193,7 @@ static public class Entry implements Serializable, Comparable
         if(e1 == null && e2 != null) return -1;
         int cmp = e1.scheme.compareTo(e2.scheme);
         if(cmp != 0) return cmp;
-        if(compatibleURI(e1.url,e2.url))
+        if(compatibleURL(e1.url,e2.url))
             return e2.url.compareTo(e1.url);
         return e1.url.compareTo(e2.url);
     }
@@ -220,7 +220,7 @@ static public class Entry implements Serializable, Comparable
            && e1.scheme != e2.scheme)
             return false;
 
-	if(!compatibleURI(e1.url,e2.url))
+	if(!compatibleURL(e1.url,e2.url))
             return false;
         
         return true;
@@ -279,7 +279,7 @@ static {
 /**
  * Define URI compatibility.
  */
-static protected boolean compatibleURI(String u1, String u2)
+static protected boolean compatibleURL(String u1, String u2)
 {   
     if(u1 == u2) return true;
     if(u1 == null) return false;
