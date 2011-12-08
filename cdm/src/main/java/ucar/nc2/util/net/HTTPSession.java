@@ -39,7 +39,6 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.params.*;
 import org.apache.commons.httpclient.protocol.Protocol;
 import ucar.nc2.util.log.LogStream;
-import ucar.unidata.util.Urlencoded;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -190,7 +189,7 @@ boolean closed = false;
 String identifier = "Session";
 String useragent = null;
 CredentialsProvider sessionProvider = null;
-String urlencoded = null;
+String legalurl = null;
 
 /**
  * A session is encapsulated in an instance of the class HTTPSession.
@@ -223,15 +222,18 @@ String urlencoded = null;
  * of the url given to HTTPMethod.Get. This maintains the semantics of the Session but allows flexibility
  * in accessing data from the server.
  *
- * Note that if the session was created with no url,
+ * Note that if the session was created with no url
  * then all method constructions must specify a url.
+ *
+ * Note: the term legalurl means that the url has reserved characters
+ * within identifieers in escaped form. This is particularly and issue
+ * for queries. Especially: ?x[0:5] is legal and the square brackets
+ * need not be encoded.
  */
 
-@Urlencoded  // Note: this a user-defined annotation for tracking which url parameters
-             // are expected to be encoded.
-public HTTPSession(String uri) throws ucar.nc2.util.net.HTTPException
+public HTTPSession(String legalurl) throws ucar.nc2.util.net.HTTPException
 {
-    construct(uri);
+    construct(legalurl);
 }
 
 public HTTPSession()
@@ -240,11 +242,10 @@ public HTTPSession()
     construct(null);
 }
 
-@Urlencoded
-protected void construct(String urlencoded)
+protected void construct(String legalurl)
     throws HTTPException
 {
-    this.urlencoded = urlencoded;
+    this.legalurl = legalurl;
     try {
         sessionClient = new HttpClient(connmgr);
         HttpClientParams clientparams = sessionClient.getParams();
@@ -269,10 +270,7 @@ protected void construct(String urlencoded)
     }
 }
 
-public String getURI()
-{
-    return this.urlencoded;
-}
+public String getURL() { return this.legalurl;} // alias function
 
 public void setUserAgent(String agent)
 {
@@ -362,15 +360,15 @@ public void clearState()
 
 // Define some utility functions
 
-static public String getCanonicalURI(String urlencoded)
+static public String getCanonicalURL(String legalurl)
 {
-    if(urlencoded == null) return null;
-    int index = urlencoded.indexOf('?');
-    if(index >= 0) urlencoded = urlencoded.substring(0,index);
+    if(legalurl == null) return null;
+    int index = legalurl.indexOf('?');
+    if(index >= 0) legalurl = legalurl.substring(0,index);
     // remove any trailing extension
-    //index = urlencoded.lastIndexOf('.');
-    //if(index >= 0) urlencoded = urlencoded.substring(0,index);
-    return canonicalpath(urlencoded);
+    //index = legalurl.lastIndexOf('.');
+    //if(index >= 0) legalurl = legalurl.substring(0,index);
+    return canonicalpath(legalurl);
 }
 /**
  * Convert path to use '/' consistently and
@@ -552,7 +550,7 @@ public void
 setCredentialsProvider(CredentialsProvider provider)
 {
     sessionProvider = provider;
-    setCredentialsProvider(HTTPAuthScheme.ANY,urlencoded,provider);
+    setCredentialsProvider(HTTPAuthScheme.ANY,legalurl,provider);
 }
 
 static synchronized public void

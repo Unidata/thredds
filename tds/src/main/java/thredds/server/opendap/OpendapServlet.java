@@ -775,13 +775,16 @@ public class OpendapServlet extends AbstractServlet
   protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response)
   {
       ReqState rs = null;
-      // The url and query strings will come to us in encoded form
-      // (see HTTPmethod.newMethod())
+
+      // Assume url was encoded
       String baseurl = request.getRequestURL().toString();
-      //baseurl = EscapeStrings.unescapeURL(baseurl) ;
-  
+      baseurl = EscapeStrings.unescapeURL(baseurl);
+
+      // Assume query  was encoded
       String query = request.getQueryString();
       query = EscapeStrings.unescapeURLQuery(query);
+
+      log.info(String.format("OpendapServlet: nominal url: %s?%s",baseurl,query));
 
       try {
         rs = new ReqState(request, response, this, getServerName(), baseurl, query);

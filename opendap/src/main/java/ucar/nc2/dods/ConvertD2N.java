@@ -234,7 +234,7 @@ public class ConvertD2N {
       }
     }
 
-    String mess = "Unknown baseType "+dataV.bt.getClass().getName()+" name="+ dataV.getName();
+    String mess = "Unknown baseType "+dataV.bt.getClass().getName()+" name="+ dataV.getEncodedName();
     logger.error(mess);
     throw new IllegalStateException(mess);
   }
@@ -263,9 +263,9 @@ public class ConvertD2N {
   private ArrayStructure makeArrayNestedSequence(DodsV dataV) {
 
     // make the members
-    StructureMembers members = new StructureMembers(dataV.getName());
+    StructureMembers members = new StructureMembers(dataV.getClearName());
     for (DodsV dodsV : dataV.children) {
-      members.addMember(dodsV.getNetcdfShortName(), null, null, dodsV.getDataType(), dodsV.getShape());
+      members.addMember(dodsV.getClearName(), null, null, dodsV.getDataType(), dodsV.getShape());
     }
 
     // make the ArraySequence
@@ -275,12 +275,12 @@ public class ConvertD2N {
     ArraySequenceNested aseq = new ArraySequenceNested( members, outerLength);
 
     // tell it how long each one is
-    String name = dataV.getName();
+    String name = dataV.getClearName();
     for (int row=0; row < outerLength; row++) {
       Vector dv = outerSeq.getRow(row);
       for (int j = 0; j < dv.size(); j++) {
         BaseType bt = (BaseType) dv.elementAt(j);
-        if (bt.getEncodedName().equals(name)) {
+        if (bt.getClearName().equals(name)) {
           DSequence innerSeq = (DSequence) bt;
           int innerLength = innerSeq.getRowCount();
           aseq.setSequenceLength(row, innerLength);

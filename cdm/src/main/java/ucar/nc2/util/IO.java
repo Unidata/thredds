@@ -552,9 +552,6 @@ public class IO {
     URL url;
     java.io.InputStream is = null;
 
-    // url must be encoded
-    urlString = EscapeStrings.escapeURL(urlString);
-
     try {
       url = new URL(urlString);
     } catch (MalformedURLException e) {
@@ -655,9 +652,6 @@ public class IO {
     long count;
     URL url;
     java.io.InputStream is = null;
-
-    // url must be encoded
-    urlString = EscapeStrings.escapeURL(urlString);
 
     try {
       url = new URL(urlString);

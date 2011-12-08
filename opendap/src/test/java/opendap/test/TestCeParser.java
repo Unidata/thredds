@@ -43,7 +43,7 @@ import java.io.*;
 
 // Test that the Constraint parsing is correct
 
-public class TestCeParser extends TestCase
+public class TestCeParser extends ucar.nc2.util.TestCommon
 {
     static boolean generate = true;
 

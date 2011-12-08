@@ -288,7 +288,7 @@ class DodsV implements Comparable {
   }
 
   void show( PrintStream out, String space) {
-    out.print(space+"DodsV.show "+getName()+" "+getType());
+    out.print(space+"DodsV.show "+getEncodedName()+" "+getType());
     out.print("(");
     int count = 0;
     for (DArrayDimension dim : dimensionsAll) {
@@ -304,7 +304,21 @@ class DodsV implements Comparable {
     }
   }
 
-  String getName() { return bt == null ? " root" : bt.getEncodedName(); }
+  //String getName() { return bt == null ? " root" : bt.getEncodedName(); }
+
+  String getClearName() { return bt == null ? "root" : bt.getClearName(); }
+  String getEncodedName() { return bt == null ? "root" : bt.getEncodedName(); }
+
+  String getFullName() {
+    if (parent != null && parent.bt != null)
+      return ( parent.getFullName() + "."+bt.getEncodedName());
+    return (bt == null) ? "root" : bt.getEncodedName();
+  }
+
+  String getNetcdfShortName() {
+    return DODSNetcdfFile.makeNetcdfName( getClearName());
+  }
+
   String getType() { return bt == null ? "" : bt.getTypeName(); }
 
   DataType getDataType() {
@@ -346,15 +360,6 @@ class DodsV implements Comparable {
     dimensionsAll.addAll( dimensions);
   }
 
-  String getFullName() {
-    if (parent != null && parent.bt != null)
-      return ( parent.getFullName() + "."+bt.getEncodedName());
-    return (bt == null) ? "root" : bt.getEncodedName();
-  }
-
-  String getNetcdfShortName() {
-    return DODSNetcdfFile.makeNetcdfName( getName());
-  }
 
   // assign depth first sequence number
   private int nextInSequence = 0;
@@ -469,7 +474,7 @@ class DodsV implements Comparable {
 
   DodsV findByDodsShortName(String dodsname) {
     for (DodsV child : children) {
-      if (dodsname.equals(child.getName()))
+      if (dodsname.equals(child.getClearName()))
         return child;
     }
 

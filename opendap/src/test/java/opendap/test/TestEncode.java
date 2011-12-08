@@ -60,11 +60,8 @@ public class TestEncode extends TestCase {
     }
   }
 
-  public void testOGC() throws Exception {
-    for (char c : (EscapeStrings.asciiAlphaNumeric + " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~").toCharArray()) {
-      String encoded = EscapeStrings.escapeOGC("" + c);
-      System.err.printf("|%c|=|%s|\n", c, encoded);
-    }
+  public void testOGC() {
+      EscapeStrings.testOGC();
   }
 
 

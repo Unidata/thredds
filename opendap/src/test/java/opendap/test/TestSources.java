@@ -7,15 +7,12 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
-class TestSources extends TestCase {
-///////////////////////////////////////////////////////////////////////////////////////////////////
+class TestSources extends ucar.nc2.util.TestCommon
+{
+//////////////////////////////////////////////////
 // Remote test info
-////////////////////////////////////////////////////////////////////////////////////////////////////
 
-       // Path from cdm to opendap directory
-    static String opendappath = "../opendap";
-
-    static final String DFALTPREFIX = "src/test/data";
+    static final String TESTPREFIX = "src/test/data";
 
     static final String TESTDATA = "testdata1";
 
@@ -151,21 +148,17 @@ class TestSources extends TestCase {
 
     static int debug = 0;
 
+    String opendapdir = null;
     String testdir = null;
     String testprefix = null;
 
     public TestSources(String name, String testdir) {
         super(name);
-        if (testdir == null) testdir = DFALTPREFIX;
-        // Check to see if we are in the correct working directory
-        String userdir = System.getProperty( "user.dir" );
-        if(userdir.endsWith("cdm")) {
-            // we are being run under TestAll
-            testdir = "../opendap/" +  testdir;
-        }
-        this.testdir = testdir;
-        // Compute the prefix name
-        testprefix = testdir + File.separator + TESTDATA;
+	opendapdir = threddsRoot+"/opendap";
+
+   	testprefix = opendapdir + "/" +TESTSUFFIX ;
+   	testdir = testprefix + "/" + TESTDATA1DIR;
+
     }
 
 }

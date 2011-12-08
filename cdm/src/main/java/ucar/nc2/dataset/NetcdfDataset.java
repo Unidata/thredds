@@ -754,8 +754,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       location = location.substring(0, location.length() - ".das".length());
     if (location.endsWith(".dods"))
       location = location.substring(0, location.length() - ".dods".length());
-    // Must encode the URL before sending
-    location = EscapeStrings.escapeURL(location);
+    // Opendap assumes that the caller has properly escaped the url
     try {
       // For some reason, the head method is not using credentials
       // method = session.newMethodHead(location + ".dds");

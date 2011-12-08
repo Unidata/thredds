@@ -383,6 +383,7 @@ public class DDS extends DStructure
     {
         try {
             String text = DConnect2.captureStream(stream);
+            //System.err.println("----------"+text+"\n----------------"); System.err.flush();
             return parse(text);
         } catch (IOException ioe) {
             throw new ParseException("Cannot read DDS",ioe);
@@ -615,7 +616,7 @@ public class DDS extends DStructure
     private String getLooseEndsTableName()
     {
 
-        return (checkLooseEndsTableNameConflict(this.getEncodedName(), 0));
+        return (checkLooseEndsTableNameConflict(this.getClearName(), 0));
     }
 
     /**
@@ -623,15 +624,14 @@ public class DDS extends DStructure
      * insures that there are no naming conflicts when creating a looseEnds
      * <code>AttributeTable</code>
      *
-     * @param name
+     * @param clearname
      * @param attempt
      * @return
      * @see #getLooseEndsTableName
      * @see #getDAS
      */
-    private String checkLooseEndsTableNameConflict(String encodedname, int attempt)
+    private String checkLooseEndsTableNameConflict(String clearname, int attempt)
     {
-	String clearname = EscapeStrings.unEscapeDAPIdentifier(encodedname);
         Enumeration e = getVariables();
         while (e.hasMoreElements()) {
             BaseType bt = (BaseType) e.nextElement();
@@ -639,9 +639,9 @@ public class DDS extends DStructure
 
             //LogStream.out.println("bt: '"+btName+"'  dataset: '"+name+"'");
 
-            if (btName.equals(encodedname)) {
-                encodedname = repairLooseEndsTableConflict(encodedname, attempt++);
-                encodedname = checkLooseEndsTableNameConflict(encodedname, attempt);
+            if (btName.equals(clearname)) {
+                clearname = repairLooseEndsTableConflict(clearname, attempt++);
+                clearname = checkLooseEndsTableNameConflict(clearname, attempt);
             }
         }
 
@@ -650,11 +650,11 @@ public class DDS extends DStructure
         while (e.hasMoreElements()) {
             String aName = (String) e.nextElement();
             if (aName.equals(clearname)) {
-                encodedname = repairLooseEndsTableConflict(encodedname, attempt++);
-                encodedname = checkLooseEndsTableNameConflict(encodedname, attempt);
+                clearname = repairLooseEndsTableConflict(clearname, attempt++);
+                clearname = checkLooseEndsTableNameConflict(clearname, attempt);
             }
         }
-        return (encodedname);
+        return (clearname);
     }
 
     /**
