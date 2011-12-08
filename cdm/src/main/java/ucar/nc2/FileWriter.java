@@ -152,7 +152,6 @@ public class FileWriter {
       if (debug) System.out.println("add gatt= " + useAtt);
     }
 
-    // copy dimensions LOOK anon dimensions
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : fileIn.getDimensions()) {
       String useName = N3iosp.makeValidNetcdfObjectName(oldD.getName());
@@ -163,18 +162,26 @@ public class FileWriter {
     }
 
     // Variables
+    int anonCount = 0;
     List<Variable> varlist = fileIn.getVariables();
     for (Variable oldVar : varlist) {
-      // copy dimensions LOOK what about anon dimensions
       List<Dimension> dims = new ArrayList<Dimension>();
       List<Dimension> dimvList = oldVar.getDimensions();
       for (Dimension oldD : dimvList) {
-        String useName = N3iosp.makeValidNetcdfObjectName(oldD.getName());
-        Dimension dim = dimHash.get(useName);
-        if (dim != null)
-          dims.add(dim);
-        else
-          throw new IllegalStateException("Unknown dimension= " + oldD.getName());
+        if (!oldD.isShared()) {
+          String anonName = "anon" + anonCount;
+          anonCount++;
+          Dimension newD = ncfile.addDimension(anonName, oldD.getLength()); // make it shared
+          dims.add(newD);
+
+        } else {
+          String useName = N3iosp.makeValidNetcdfObjectName(oldD.getName());
+          Dimension dim = dimHash.get(useName);
+          if (dim != null)
+            dims.add(dim);
+          else
+            throw new IllegalStateException("Unknown dimension= " + oldD.getName());
+        }
       }
 
       DataType newType = oldVar.getDataType();
@@ -212,8 +219,10 @@ public class FileWriter {
         else
           ncfile.addVariableAttribute(varName, useName, att.getNumericValue());
       }
-
     }
+
+    if (anonCount > 0)
+      ncfile.finish();
 
     // create the file
     ncfile.create();
