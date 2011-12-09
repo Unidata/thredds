@@ -12,9 +12,9 @@ class TestSources extends ucar.nc2.util.TestCommon
 //////////////////////////////////////////////////
 // Remote test info
 
-    static final String TESTPREFIX = "src/test/data";
+    static final String TESTSUFFIX = "src/test/data";
 
-    static final String TESTDATA = "testdata1";
+    static final String TESTDATA1DIR = "testdata1";
 
     /* Use this for experimenting with new URLS */
     static final String XURL1 =

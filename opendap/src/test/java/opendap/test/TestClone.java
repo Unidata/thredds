@@ -40,7 +40,7 @@ import java.io.*;
 
 // Test that the DDS parsing is correct
 
-public class TestClone extends ucar.nc2.util.TestCommon
+public class TestClone extends TestFiles
 {
     static final int ISUNKNOWN = 0;
     static final int ISDAS = 1;
@@ -59,7 +59,8 @@ public class TestClone extends ucar.nc2.util.TestCommon
     String[] xfailtests = null;
 
     public TestClone(String name) {
-        super(name, null);
+        super(name,null);
+        setTitle(TITLE);
     }
 
     public void test() throws Exception
