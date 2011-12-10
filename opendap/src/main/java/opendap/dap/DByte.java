@@ -49,7 +49,7 @@ import java.io.*;
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class DByte extends BaseType implements ClientIO {
+public class DByte extends DPrimitive implements ClientIO {
     /**
      * Constructs a new <code>DByte</code>.
      */

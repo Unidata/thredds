@@ -49,7 +49,7 @@ import java.io.*;
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class DInt32 extends BaseType implements ClientIO {
+public class DInt32 extends DPrimitive implements ClientIO {
     /**
      * Constructs a new <code>DInt32</code>.
      */

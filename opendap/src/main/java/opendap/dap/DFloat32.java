@@ -49,7 +49,7 @@ import java.io.*;
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class DFloat32 extends BaseType implements ClientIO {
+public class DFloat32 extends DPrimitive implements ClientIO {
     /**
      * Constructs a new <code>DFloat32</code>.
      */
