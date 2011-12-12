@@ -50,7 +50,7 @@ import java.io.*;
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class DInt16 extends BaseType implements ClientIO {
+public class DInt16 extends DPrimitive implements ClientIO {
 
     /**
      * The value of this <code>DInt16</code>.

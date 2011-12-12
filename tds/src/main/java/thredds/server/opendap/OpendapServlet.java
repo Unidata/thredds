@@ -33,9 +33,7 @@
 
 package thredds.server.opendap;
 
-import opendap.dap.DAP2Exception;
-import opendap.dap.DAS;
-import opendap.dap.BaseType;
+import opendap.dap.*;
 import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 
@@ -795,61 +793,111 @@ public class OpendapServlet extends AbstractServlet
       return rs;
   }
 
-  private void checkSize(ServerDDS dds, boolean isAscii) throws Exception {
-    //try {
-
-      long size = 0;
-      Enumeration vars = dds.getVariables();
-      while (vars.hasMoreElements()) {
-        BaseType bt = (BaseType) vars.nextElement();
-        if (((ServerMethods) bt).isProject()) {
-
-          if (bt instanceof SDArray) {
-            SDArray da = (SDArray) bt;
-            BaseType base = da.getPrimitiveVector().getTemplate();
-            DataType dtype = DODSNetcdfFile.convertToNCType(base);
-            int elemSize = dtype.getSize();
-            int n = da.numDimensions();
-            List<Range> ranges = new ArrayList<Range>(n);
-            for (int i = 0; i < n; i++)
-              ranges.add(new Range(da.getStart(i), da.getStop(i), da.getStride(i)));
-
-            Section s = new Section(ranges);
-            size += s.computeSize() * elemSize;
-
-          } else if (bt instanceof SDGrid) {
-            SDGrid grid = (SDGrid) bt;
-            SDArray da = (SDArray) grid.getVar(0);
-            BaseType base = da.getPrimitiveVector().getTemplate();
-            DataType dtype = DODSNetcdfFile.convertToNCType(base);
-            int elemSize = dtype.getSize();
-            int n = da.numDimensions();
-            List<Range> ranges = new ArrayList<Range>(n);
-            for (int i = 0; i < n; i++)
-              ranges.add(new Range(da.getStart(i), da.getStop(i), da.getStride(i)));
-            Section s = new Section(ranges);
-            size += s.computeSize() * elemSize;
-
-          } /* else if (!(bt instanceof SDString)) {
-            System.out.printf("OpendapServlet didnt count %s type= %s in size limit%n", bt.getName(), bt.getClass().getName());
-          }  */
-        }
-      }
-      log.debug("total size={}", size);
+  private void
+  checkSize(ServerDDS dds, boolean isAscii)
+    throws Exception
+  {
+      long size = computeSize(dds,isAscii);
+      //System.err.printf("total (constrained) size=%s\n", size);
+      log.debug("total (constrained) size={}", size);
       double dsize = size / (1000 * 1000);
       double maxSize = isAscii ? ascLimit : binLimit; // Mbytes
       if (dsize > maxSize) {
         log.info("Reject request size = {} Mbytes", dsize);
         throw new UnsupportedOperationException("Request too big=" + dsize + " Mbytes, max=" + maxSize);
       }
+  }
 
-    /* } catch (InvalidRangeException e) {
-      e.printStackTrace();
-    } catch (InvalidParameterException e) {
-      e.printStackTrace();
-    } catch (NoSuchVariableException e) {
-      e.printStackTrace();
-    }   */
+  // Recursively compute size of the dds to be returned
+  private long
+  computeSize(DConstructor ctor, boolean isAscii)
+    throws Exception
+  {
+      long projectsize = 0; // accumulate size of projected variables
+      long othersize = 0;  // accumulate size of non-projected variables
+      long fieldsize = 0;
+      int projectedcount = 0;
+      int fieldcount = 0;
+      Enumeration vars = ctor.getVariables();
+      while (vars.hasMoreElements()) {
+        fieldcount++;
+        BaseType field = (BaseType) vars.nextElement();
+        fieldsize = computeFieldSize(field,isAscii);
+	// accumulate the field sizes
+	if(field.isProject()) {
+	  projectsize += fieldsize;
+	  projectedcount++;
+	} else {
+	  othersize += fieldsize;
+	}	  
+      }
+      // Cases to consider:
+      // 1. If all of the fields of this ctor are projected,
+      //    then return projectsize
+      // 2. If none of the fields of this ctor are projected,
+      //    then return othersize
+      // 3. otherwise, at least one field, but not all, is projected,
+      //    => return projectsize;
+      if(projectedcount == fieldcount)
+	return projectsize;
+      else if(projectedcount == 0)
+	return othersize;
+      else {
+	assert(projectedcount > 0 && projectedcount < fieldcount);
+	return projectsize;
+      }
+  }
+
+  long computeFieldSize(BaseType bt, boolean isAscii)
+    throws Exception
+  {
+    long fieldsize = 0;
+    // Figure out what this field is (e.g. primitive or not)
+    // Somewhat convoluted.
+    if(bt instanceof DConstructor) {
+      // simple struct, seq, or grid => recurse
+      fieldsize = computeSize((DConstructor)bt,isAscii);
+    } else if(bt instanceof DArray) {
+      SDArray da = (SDArray)bt;
+      // Separate structure arrays from primitive arrays
+      if(da.getContainerVar() instanceof DPrimitive) {
+        fieldsize = computeArraySize(da);
+      } else if(da.getContainerVar() instanceof DStructure) {
+        fieldsize = computeSize((DStructure)da.getContainerVar(),isAscii); // recurse
+      } else { // Some kind of problem
+        throw new NoSuchTypeException("Computesize: unexpected type for "+bt.getLongName());
+      }
+    } else if(bt instanceof DPrimitive) {
+      DPrimitive dp = (DPrimitive)bt;
+      if(dp instanceof DString) {
+          fieldsize = ((DString)dp).getValue().length();
+      } else {
+          DataType dtype = DODSNetcdfFile.convertToNCType(bt);
+          fieldsize = dtype.getSize();
+      }
+    } else { // Some kind of problem
+      throw new NoSuchTypeException("Computesize: unknown type for "+bt.getLongName());
+    }
+    return fieldsize;
+  }
+
+  long
+  computeArraySize(SDArray da)
+    throws Exception
+  {
+    assert(da.getContainerVar() instanceof DPrimitive);
+    BaseType base = da.getPrimitiveVector().getTemplate();
+    DataType dtype = DODSNetcdfFile.convertToNCType(base);
+    int elemSize = dtype.getSize();
+    int n = da.numDimensions();
+    List<Range> ranges = new ArrayList<Range>(n);
+    long size = 0;
+    for (int i = 0; i < n; i++) {
+      ranges.add(new Range(da.getStart(i), da.getStop(i), da.getStride(i)));
+      Section s = new Section(ranges);
+      size += s.computeSize() * elemSize;
+    }
+    return size;
   }
 
   /*
