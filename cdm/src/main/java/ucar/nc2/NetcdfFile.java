@@ -59,6 +59,7 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 
 /**
+ * HI TOM!
  * Read-only scientific datasets that are accessible through the netCDF API.
  * Immutable after setImmutable() is called. However, reading data is not thread-safe.
  * <p> Be sure to close the file when done, best practice is to enclose in a try/finally block:
