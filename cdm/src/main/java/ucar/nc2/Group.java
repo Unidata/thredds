@@ -49,6 +49,17 @@ import java.io.PrintWriter;
  * @author caron
  */
 public class Group {
+
+  static List<Group> collectPath(Group g)
+  {
+    List<Group> list = new ArrayList<Group>();
+    while(g != null) {
+        list.add(0,g);
+	g = g.getParentGroup();
+    }
+    return list;    
+  }
+
   protected NetcdfFile ncfile;
   protected Group parent;
   protected String shortName;

@@ -46,7 +46,6 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.*;
 
 import ucar.nc2.util.log.LogStream;
-import ucar.unidata.util.Urlencoded;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -70,16 +69,16 @@ static public HTTPMethod Post(HTTPSession session) throws HTTPException
 static public HTTPMethod Options(HTTPSession session) throws HTTPException
     {return new HTTPMethod(HTTPSession.Methods.Options,session,null);}
 
-static public HTTPMethod Get(HTTPSession session, String urlencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Get,session,urlencoded);}
-static public HTTPMethod Head(HTTPSession session,String urlencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Head,session,urlencoded);}
-static public HTTPMethod Put(HTTPSession session, String urlencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Put,session,urlencoded);}
-static public HTTPMethod Post(HTTPSession session, String urlencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Post,session,urlencoded);}
-static public HTTPMethod Options(HTTPSession session, String urlencoded) throws HTTPException
-    {return new HTTPMethod(HTTPSession.Methods.Options,session,urlencoded);}
+static public HTTPMethod Get(HTTPSession session, String legalurl) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Get,session,legalurl);}
+static public HTTPMethod Head(HTTPSession session,String legalurl) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Head,session,legalurl);}
+static public HTTPMethod Put(HTTPSession session, String legalurl) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Put,session,legalurl);}
+static public HTTPMethod Post(HTTPSession session, String legalurl) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Post,session,legalurl);}
+static public HTTPMethod Options(HTTPSession session, String legalurl) throws HTTPException
+    {return new HTTPMethod(HTTPSession.Methods.Options,session,legalurl);}
 
 static private org.slf4j.Logger LOG = null;
 
@@ -124,7 +123,7 @@ static public synchronized void setGlobalParameter(String name, Object value)
 
 HTTPSession session = null;
 HttpMethodBase method = null; // Current method
-String urlencoded = null;
+String legalurl = null;
 List<Header> headers = new ArrayList<Header>();
 HashMap<String, Object> params = new HashMap<String, Object>();
 HttpState context = null;
@@ -153,23 +152,26 @@ Part[] multiparts = null;
  * in accessing data from the server.
  */
 
-@Urlencoded
-public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String urlencoded)
+public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String url)
         throws HTTPException
 {
     if (session == null)
         throw new HTTPException("HTTPMethod: no session object specified");
     this.session = session;
 
-    if(urlencoded == null)
-        urlencoded = session.getURI();
-    if(urlencoded == null)
+    if(url == null)
+        url = session.getURL();
+    if(url == null)
         throw new HTTPException("HTTPMethod: no url specified");
-    urlencoded = HTTPSession.removeprincipal(urlencoded);
-    this.urlencoded = urlencoded;
-    if(!sessionCompatible(urlencoded))
-        throw new HTTPException("HTTPMethod: session incompatible urlencoded");
+    url = HTTPSession.removeprincipal(url);
+    this.legalurl = url;
+    if(!sessionCompatible(url))
+        throw new HTTPException("HTTPMethod: session incompatible url");
     this.session.addMethod(this);
+
+    // Unfortunately, the apache httpclient 3 code has a restrictive
+    // notion of a legal url, so we need to encode it before use
+    String urlencoded = EscapeStrings.escapeURL(this.legalurl);
 
     this.methodclass = m;
     switch (this.methodclass) {
@@ -226,7 +228,7 @@ public int execute() throws HTTPException
 {
     if (executed)
         throw new HTTPException("Method instance already executed");
-    if (urlencoded == null)
+    if (legalurl == null)
         throw new HTTPException("No url specified");
 
     try {
@@ -553,7 +555,7 @@ public String getName()
     return method == null ? null : method.getName();
 }
 
-public String getURI()
+public String getURL()
 {
     return method == null ? null : method.getPath().toString();
 }
@@ -627,7 +629,7 @@ getMethod()
  * Test that the given url is "compatible" with the
  * session specified dataset. Compatible means:
  * 1. remove any query
- * 2. HTTPAuthStore.compatibleURI must return true;
+ * 2. HTTPAuthStore.compatibleURL must return true;
  *
  *  * @param url  to test for compatibility
  * @return
@@ -635,10 +637,10 @@ getMethod()
 boolean sessionCompatible(String other)
 {
     // Remove any trailing constraint
-    String sessionuri = HTTPSession.getCanonicalURI(this.session.getURI());
-    if(sessionuri == null) return true; // always compatible
-    other = HTTPSession.getCanonicalURI(other);
-    return HTTPAuthStore.compatibleURI(sessionuri,other);
+    String sessionurl = HTTPSession.getCanonicalURL(this.session.getURL());
+    if(sessionurl == null) return true; // always compatible
+    other = HTTPSession.getCanonicalURL(other);
+    return HTTPAuthStore.compatibleURL(sessionurl,other);
 }
 
 /**
@@ -652,11 +654,11 @@ boolean sessionCompatible(String other)
 static synchronized private void
 setAuthentication(HTTPSession session, HTTPMethod method)
 {
-    String uri = session.getURI();
-    if(uri == null) uri = HTTPAuthStore.ANY_URL;
+    String url = session.getURL();
+    if(url == null) url = HTTPAuthStore.ANY_URL;
 
     // Provide a credentials (provider) to enact the process
-    CredentialsProvider cp  = new HTTPAuthProvider(uri);
+    CredentialsProvider cp  = new HTTPAuthProvider(url);
 
     // Since we not know where this will get called, do everywhere
     session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,cp);

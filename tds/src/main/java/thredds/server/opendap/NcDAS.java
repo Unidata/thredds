@@ -129,7 +129,7 @@ public class NcDAS extends opendap.dap.DAS {
 
      // The variable names as taken from the variable,
      // are not dap escaped, so we need to make sure that happens.
-     String name = v.getShortName();
+     String name = Variable.getDAPName(v);
 
      opendap.dap.AttributeTable table;
 

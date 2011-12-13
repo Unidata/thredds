@@ -62,6 +62,9 @@ public class DODSVariable extends ucar.nc2.Variable {
   {
     this.dodsfile = dodsfile;
     this.dodsShortName = dodsShortName;
+      if(dodsShortName.equals("time")) {
+          int x = 0;
+      }
     if(RC.useGroups) {
         // If the shortname has '/' in it, then we need to insert
         // this variable into the proper group and rename it

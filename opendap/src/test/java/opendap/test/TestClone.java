@@ -59,7 +59,8 @@ public class TestClone extends TestFiles
     String[] xfailtests = null;
 
     public TestClone(String name) {
-        super(name, null);
+        super(name,null);
+        setTitle(TITLE);
     }
 
     public void test() throws Exception

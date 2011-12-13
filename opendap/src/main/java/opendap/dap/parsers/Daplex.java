@@ -44,23 +44,35 @@ import java.io.*;
 class Daplex implements DapParser.Lexer
 {
 
-static final boolean URLCVT = false;
-
 static final boolean DAP2STRING = true;
 
 static final int CONTEXTLEN = 20; // yyerror shows last CONTEXTLEN characters of input
 
-/* First character in DDS and DAS TOKEN_IDENTifier or number */
+// Define some charsets
+static final String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static final String numeric = "0123456789";
 
-// Add '/' to support group ids.
-static final String wordchars1 =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%.\\*";
-static final String worddelims =
-    "{}[]:;=,";
-static final String ddswordcharsn =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%.\\*#";
-static final String daswordcharsn =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%.\\*:#";
+static final String dapSpecLegal = "_!~*'-\""; // legal id chars as defined in dap2 spec
+                                               // In practice, people abuse this abominably
+
+// First character in SCAN_WORD => larger character set than dapSpecLegal.
+static final String wordchars1 = alpha + numeric + dapSpecLegal
+                                 + "-+."   // possible numeric characters
+                                 + "_"   // less strict allows _ in identifiers
+                                 + "\\"   // why?  maybe because some old codes use \\ escaping
+                                 + "%"    // for escaped characters
+                                 + "/" ;  // Add '/' to support group ids.
+
+// First and non-first legal characters for dds identifier
+static final String ddswordchars1 = wordchars1 + "#"; // why sharp?
+static final String ddswordcharsn = ddswordchars1;
+
+// Non-first legal characters for das identifiers
+static final String daswordcharsn = ddswordcharsn
+                                    + ":()"; // Experimentally observed
+
+
+static final String worddelims = "{}[]:;=,";
 
 /**
  * **********************************************
@@ -137,12 +149,20 @@ int len = 0;
 public TextStream()
 {
 }
+public String around()
+{
+   String prefix = text.substring(mark-10,mark);
+   String suffix = text.substring(mark,mark+10);
+   return prefix + "|"+suffix;
+}
 
 public void setText(String text)
 {
     this.text = text;
     this.len = text.length();
 }
+
+public String toString() {return text;}
 
 boolean isEof()
 {
@@ -287,9 +307,10 @@ yylex()
                             c = text.read();
                             if (c < 0) more = false;
                             break;
+                        case '(':
                         default: break;
                         }
-                    } else {// Ignore: Implement an alternative for string encoding
+                    } else {// not used : Implement a more java/c like alternative for string encoding
                         switch (c) {
                         case '"':
                             more = false;
@@ -337,42 +358,21 @@ yylex()
                     if (more) yytext.append((char) c);
                 }
                 token = SCAN_WORD;
+
             } else if (wordchars1.indexOf(c) >= 0) {
                 yytext.append((char) c);
-                /* we have a SCAN_WORD */
+                /* we have a SCAN_WORD (== identifier | number) */
                 while ((c = text.read()) > 0) {
-                    if (URLCVT) {
-                        int c1 = text.read();
-                        int c2 = text.read();
-                        ;
-                        if (c == '%' && c1 != '\0'
-                                && c2 != '\0'
-                                && hexdigits.indexOf(c1) >= 0
-                                && hexdigits.indexOf(c2) >= 0) {
-                            int d1, d2;
-                            d1 = tohex(c1);
-                            d2 = tohex(c2);
-                            if (d1 >= 0 || d2 >= 0) {
-                                c = ((d1) << 4) | d2;
-                            }
-                        } else {
-                            text.backup();
-                            text.backup();
-                            if (wordcharsn.indexOf(c) < 0) {
-                                text.backup();
-                                break;
-                            }
-                        }
-                        yytext.append((char) c);
-                    } else {
-                        if (wordcharsn.indexOf(c) < 0) {
-                            text.backup();
-                            break;
-                        }
-                        yytext.append((char) c);
-                    } /*URLCVT*/
+                    if (wordcharsn.indexOf(c) < 0) {
+                        text.backup();
+                        break;
+                    }
+                    yytext.append((char) c);
                 }
                 token = SCAN_WORD; /* assume */
+                if("GRIB%20table%20version%20".equals(yytext.toString())) {
+                    int x = 0;
+                }
                 /* check for keyword */
                 String tmp = yytext.toString();
                 for (int i = 0; ; i++) {
@@ -397,7 +397,8 @@ yylex()
         } else {
             lval = (yytext.length() == 0 ? (String) null : yytext.toString());
         }
-        if (parsestate.getDebugLevel() > 0) dumptoken(token, (String) lval);
+        if (parsestate.getDebugLevel() > 0)
+            dumptoken(token, (String) lval);
 
         return token;       /* Return the type of the token.  */
 
@@ -472,7 +473,7 @@ dumptoken(int token, String lval)
             stoken = "X" + Integer.toString(token);
         }
     System.err.println("TOKEN = |" + stoken + "|");
-    if (stoken.length() == 1) System.err.println("TOKEN = " + ((int) stoken.charAt(0)));
+    if(stoken != null && stoken.length() == 1) System.err.println("TOKEN = " + ((int) stoken.charAt(0)));
 
 }
 

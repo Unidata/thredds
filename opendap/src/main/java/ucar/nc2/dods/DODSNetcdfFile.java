@@ -212,7 +212,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     try {
       dds = dodsConnection.getDDS();
       if (debugServerCall) System.out.println("DODSNetcdfFile readDDS");
-      if (debugOpenResult) {
+      if (debugOpenResult)
+      {
         System.out.println("DDS = ");
         dds.print(System.out);
       }
@@ -1038,7 +1039,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   static String
   makeNetcdfName(String name) {
-    return EscapeStrings.unEscapeDAPIdentifier(name);
+    return EscapeStrings.unescapeDAPIdentifier(name);
   }
 
   /**
@@ -1229,8 +1230,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         DodsV dodsV = reqDodsVlist.get(i);
         requestString.append(i == 0 ? "?" : ",");
         // requestString.append(makeDODSname(dodsV));
-        requestString.append(dodsV.getName());
+        requestString.append(dodsV.getEncodedName());
       }
+      String s = requestString.toString();
 
       try {
         dataDDS = readDataDDSfromServer(requestString.toString());

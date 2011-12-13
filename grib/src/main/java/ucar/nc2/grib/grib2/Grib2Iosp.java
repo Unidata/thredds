@@ -284,7 +284,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     val = tables.getTableValue("ProcessId", gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Analysis or forecast generating process identifier (defined by originating centre)", val));
-    val = tables.getTableValue("ProcessId", gribCollection.getGenProcessId());
+    val = tables.getTableValue("ProcessId", gribCollection.getBackProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Background generating process identifier (defined by originating centre)", val));
 

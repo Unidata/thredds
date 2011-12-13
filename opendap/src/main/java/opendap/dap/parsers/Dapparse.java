@@ -196,8 +196,9 @@ public abstract class Dapparse
         for (Object o : (List<Object>) decls)
             ddsobject.addVariable((BaseType) o);
         if (dapdebug > 0) {
-            System.err.println("datasetbody:");
+            System.err.println("datasetbody: |");
             ddsobject.print(System.err);
+            System.err.println("|");
         }
         return null;
     }
@@ -603,7 +604,7 @@ public abstract class Dapparse
 
     String unescapeDAPName(Object name)
     {
-        return EscapeStrings.unEscapeDAPIdentifier((String)name);
+        return EscapeStrings.unescapeDAPIdentifier((String)name);
     }
 
     String unescapeAttributeString(String s)

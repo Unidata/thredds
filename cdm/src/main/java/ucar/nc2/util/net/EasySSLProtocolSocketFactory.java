@@ -265,10 +265,10 @@ private SSLContext createSSLContext(HttpConnectionParams params, String host, in
 						    null,0,false);
 	HTTPSSLProvider sslprovider = (HTTPSSLProvider)creds;
 
-        keypassword = (String)sslprovider.getKeystore();
-        keypath = (String)sslprovider.getKeypassword();
-        trustpassword = (String)sslprovider.getTruststore();
-        trustpath = (String)sslprovider.getTrustpassword();
+        keypath = (String)sslprovider.getKeystore();
+        keypassword = (String)sslprovider.getKeypassword();
+        trustpath = (String)sslprovider.getTruststore();
+        trustpassword = (String)sslprovider.getTrustpassword();
 
         keystore = buildstore(keypath, keypassword, "key");
         if (keystore != null) {

@@ -35,6 +35,7 @@ package ucar.nc2;
 import ucar.ma2.*;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.rc.RC;
 
 import java.util.*;
 import java.io.IOException;
@@ -53,11 +54,39 @@ import java.nio.channels.WritableByteChannel;
  */
 
 public class Variable implements VariableIF, ProxyReader {
+
   static public final int defaultSizeToCache = 4000; // bytes  cache any variable whose size() < defaultSizeToCache
   static public final int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() < defaultSizeToCache
 
   static protected boolean debugCaching = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
+
+  static public String getDAPName(String name, Variable context)
+  {
+    if(RC.useGroups) {
+         // leave off leading '/' for root entries
+        if(!context.getParentGroup().isRoot()) {
+            // Get the list of parent groups
+            List<Group> path = Group.collectPath(context.getParentGroup());
+            StringBuilder dapname = new StringBuilder();
+            for(int i=1;i<path.size();i++) {   // start at 1 to skip root group
+                Group g = path.get(i);
+                dapname.append("/"+g.getShortName());
+            }
+            dapname.append("/" + name);
+            name = dapname.toString();
+        }
+    }
+    return name;
+  }
+
+  static public String getDAPName(Variable v)
+  {
+	return Variable.getDAPName(v.getShortName(),v);
+  }
+
+  //////////////////////////////////////////////////
+  // Instance data and methods
 
   protected NetcdfFile ncfile; // physical container for this Variable; where the I/O happens. may be null if Variable is self contained.
   protected Group group; // logical container for this Variable. may not be null.

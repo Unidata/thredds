@@ -108,16 +108,25 @@ urlMatch(URL pattern, URL url)
     return true;
 }
 
-static class Triple implements Comparable
+static public class Triple implements Comparable
 {
     public String key; // also sort key
     public String value;
     public URL url;
 
+    public Triple(String key, String value, String url)
+    {
+       URL u = null;
+       try {u = new URL(url);} catch (MalformedURLException e) {u=null;}
+       this.key = key; this.value = value; this.url = u;
+    }
+    public Triple(String key, String value, URL url)
+    {this.key = key; this.value = value; this.url = url;}
+
     public boolean equals(Object o)
     {
-	if(o == null || !(o instanceof Triple)) return false;
-	return (compareTo((Triple)o) == 0);
+	    if(o == null || !(o instanceof Triple)) return false;
+	    return (compareTo((Triple)o) == 0);
     }
 
     public int compareTo(Object o)
@@ -155,13 +164,43 @@ static {
     RC.initialize();
 }
 
-static void initialize ()
+static public void initialize ()
 {
     if(!initialized) {
         RC.loadDefaults();
         RC.setWellKnown();
     }
     initialized = true;
+}
+
+/**
+ * Allow users to add to the default rc
+ * @param key
+ * @param value
+ * @param url  null => not url specific
+ */
+static synchronized public void
+add(String key, String value, String url)
+{
+    if(key == null) return;
+    Triple t = new Triple(key,value,url);
+    dfaltRC.insert(t);
+    // recompute well-knowns
+    setWellKnown();
+}
+
+/**
+ * Allow users to search the default rc
+ * @param key
+ * @param url  null => not url specific
+ * @return value corresponding to key+url, or null if does not exist
+ */
+static synchronized public String
+find(String key, String url)
+{
+    if(key == null) return null;
+    Triple t = dfaltRC.lookup(key,url);
+    return (t==null?null:t.value);
 }
 
 /**
@@ -206,7 +245,7 @@ loadDefaults()
 	}
     }
     if(!found1)
-        LogStream.getLog().warn("CDM: No .rc file found");
+        LogStream.getLog().info("No .rc file found");
     dfaltRC = rc0;
 }
 
@@ -231,7 +270,7 @@ public RC()
 //////////////////////////////////////////////////
 // Loaders
 
-// Load this triple store from an rc file 
+// Load this triple store from an rc file
 // overwrite existing entries
 
 public boolean
@@ -279,16 +318,13 @@ load(String abspath)
             String[] pieces = line.split("\\s*=\\s*");
             assert(pieces.length == 1 || pieces.length == 2);
             // Create the triple
-            Triple triple = new Triple();
-            triple.url = url;
-            triple.key = pieces[0].trim();
-            if(pieces.length == 2) {
-                triple.value = pieces[1].trim();
-            } else {
-                triple.value = "1";
-            }
-            List<Triple> prev = triplestore.get(triple.key);
-            triplestore.put(triple.key,addtriple(prev,triple));
+            String value = "1";
+            if(pieces.length == 2) value = pieces[1].trim();
+            Triple triple = new Triple(pieces[0].trim(), value, url);
+            List<Triple> list = triplestore.get(triple.key);
+            if(list == null) list = new ArrayList<Triple>();
+            Triple prev = addtriple(list,triple);
+            triplestore.put(triple.key,list);
         }
         rdr.close();
         frdr.close();
@@ -299,19 +335,7 @@ load(String abspath)
     return true;
 }
 
-List<Triple>
-addtriple(List<Triple> list, Triple triple)
-{
-    if(list == null) list = new ArrayList<Triple>();
-    // Look for duplicates    
-    int prev = list.indexOf(triple);
-    if(prev >= 0) list.remove(prev);
-    list.add(triple);
-    Collections.sort(list);
-    return list;
-}
-
-public Set<String> keySet() {return triplestore.keySet();}
+    public Set<String> keySet() {return triplestore.keySet();}
 
 public List<Triple> getTriples(String key)
 {
@@ -346,6 +370,31 @@ public Triple lookup(String key, URL url)
     return null;
 }
 
+Triple
+addtriple(List<Triple> list, Triple triple)
+{
+    Triple prev = null;
+    assert(list != null);
+    // Look for duplicates
+    int i = list.indexOf(triple);
+    if(i >= 0) {prev = list.remove(i); }
+    list.add(triple);
+    Collections.sort(list);
+    return prev;
+}
+
+// Allow for external loading
+public Triple
+insert(Triple t)
+{
+    if(t.key == null) return null;
+    List<Triple> list = triplestore.get(t.key);
+    if(list == null) list = new ArrayList<Triple>();
+    Triple prev = addtriple(list,t);
+    triplestore.put(t.key,list);
+    return prev;
+}
+
 // Output in .rc form
 public String
 toString()
@@ -353,8 +402,8 @@ toString()
     StringBuilder rc = new StringBuilder();
     for(String key: keySet()) {
 	List<Triple> list = getTriples(key);
-	for(Triple triple: list) {	
-	    String line = triple.toString();    
+	for(Triple triple: list) {
+	    String line = triple.toString();
 	    rc.append(line);
 	    rc.append("\n");
 	}

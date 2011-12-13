@@ -50,7 +50,6 @@ import java.nio.charset.Charset;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 
-import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
@@ -83,7 +82,6 @@ static public synchronized void setAllowSessions(boolean b) {
 
 
 private String urlString; // The current DODS URL without Constraint Expression
-private String urlStringEncoded; // encoded form of urlString
 private String filePath = null; // if url is file://
 private InputStream stream = null; //if reading from a stream
 
@@ -161,8 +159,6 @@ public DConnect2(String urlString, boolean acceptCompress) throws FileNotFoundEx
     this.projString = this.selString = "";
   }
   this.acceptCompress = acceptCompress;
-  // capture encoded url
-  this.urlStringEncoded = EscapeStrings.escapeURL(this.urlString);
   // Check out the URL to see if it is file://
   try {
     URL testURL = new URL(urlString);
@@ -236,7 +232,7 @@ public final String URL() {
 /**
  * Open a connection to the DODS server.
  *
- * @param urlString the URL to open.
+ * @param urlString the URL to open; assume already properly encoded
  * @param command   execute this command on the input stream
  * @throws IOException    if an IO exception occurred.
  * @throws DAP2Exception  if the DODS server returned an error.
@@ -246,13 +242,10 @@ private void openConnection(String urlString, Command command) throws IOExceptio
   HTTPMethod method = null;
   InputStream is = null;
 
-  //Encode: temp: encode urlstring query.
-  String urlencoded = URLnaming.escapeQueryURIUtil(urlString);
-
   HTTPSession _session = null;
 
   try {
-    _session = new HTTPSession(urlencoded);
+    _session = new HTTPSession(urlString);
     method = HTTPMethod.Get(_session);
 
     if (acceptCompress)
@@ -325,7 +318,7 @@ private void openConnection(String urlString, Command command) throws IOExceptio
 public void closeSession() {
   try {
     if (allowSessions && hasSession) {
-      openConnection(urlStringEncoded + ".close", new Command() {
+      openConnection(urlString + ".close", new Command() {
         public void process(InputStream is) throws IOException {
           String buffer = captureStream(is);
         }
@@ -511,7 +504,7 @@ public DAS getDAS() throws IOException, ParseException, DAP2Exception {
     command.process(stream);
   } else { // assume url is remote
     try {
-        openConnection(urlStringEncoded + ".das" + projString + selString, command);
+        openConnection(urlString + ".das" + projString + selString, command);
     } catch (DAP2Exception de) {
         //if(de.getErrorCode() != DAP2Exception.NO_SUCH_FILE)
             //throw de;  // rethrow
@@ -572,7 +565,7 @@ public DDS getDDS(String CE) throws IOException, ParseException, DAP2Exception {
   } else if (stream != null) {
     command.process(stream);
   } else { // must be a remote url
-    openConnection(urlStringEncoded + ".dds" + EscapeStrings.escapeURLQuery(getCompleteCE(CE)), command);
+    openConnection(urlString + ".dds" + (getCompleteCE(CE)), command);
   }
   return command.dds;
 }
@@ -691,7 +684,7 @@ public DDS getDDX() throws IOException, ParseException, DAP2Exception {
  */
 public DDS getDDX(String CE) throws IOException, ParseException, DDSException, DAP2Exception {
   DDXCommand command = new DDXCommand();
-  openConnection(urlStringEncoded + ".ddx" + EscapeStrings.escapeURLQuery(getCompleteCE(CE)), command);
+  openConnection(urlString + ".ddx" + (getCompleteCE(CE)), command);
   return command.dds;
 }
 
@@ -773,7 +766,7 @@ public DataDDS getDataDDX(String CE, BaseTypeFactory btf) throws MalformedURLExc
         ParseException, DDSException, DAP2Exception {
 
   DataDDXCommand command = new DataDDXCommand(btf);
-  openConnection(urlStringEncoded + ".ddx" + EscapeStrings.escapeURLQuery(getCompleteCE(CE)), command);
+  openConnection(urlString + ".ddx" + (getCompleteCE(CE)), command);
   return command.dds;
 }
 
@@ -835,7 +828,7 @@ public DataDDS getData(String CE, StatusUI statusUI, BaseTypeFactory btf) throws
   } else if (stream != null) {
     command.process(stream);
   } else {
-    String urls = urlStringEncoded + ".dods" + EscapeStrings.escapeURLQuery(getCompleteCE(CE));
+    String urls = urlString + ".dods" + (getCompleteCE(CE));
     openConnection(urls, command);
   }
   return command.dds;

@@ -48,6 +48,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * This is the interface to manage GRIB-1 Code and Param Tables.
+ *
+ * Allow different table versions in the same file.
  * Allow overriding standard grib1 tables on the dataset level.
  *
  * @author caron
@@ -57,6 +60,13 @@ import java.util.Map;
 public class Grib1Tables implements GribTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTable.class);
 
+  /**
+   * Get a Grib1Tables object, optionally specifiying a parameter table or lookup table specific to this dataset.
+   * @param paramTablePath path to a parameter table, in format Grib1ParamTable can read.
+   * @param lookupTablePath path to a lookup table, in format Grib1StandardTables.Lookup.readLookupTable() can read.
+   * @return Grib1Tables
+   * @throws IOException on read error
+   */
   static public Grib1Tables factory(String paramTablePath, String lookupTablePath) throws IOException {
     if (paramTablePath == null && lookupTablePath == null) return new Grib1Tables();
 
@@ -75,6 +85,12 @@ public class Grib1Tables implements GribTables {
     return result;
   }
 
+  /**
+   * Get a Grib1Tables object, optionally specifiying a parameter table in XML specific to this dataset.
+   * @param paramTableElem parameter table in XML
+   * @return Grib1Tables
+   * @throws IOException on read error
+   */
   static public Grib1Tables factory(org.jdom.Element paramTableElem) throws IOException {
     if (paramTableElem == null) return new Grib1Tables();
 
@@ -86,8 +102,8 @@ public class Grib1Tables implements GribTables {
 
   ///////////////////////////////////////////////////////////////////////////
 
-  private Grib1StandardTables.Lookup lookup;
-  private Grib1ParamTable override;
+  private Grib1StandardTables.Lookup lookup; // if lookup table was set
+  private Grib1ParamTable override; // if parameter table was set
 
   public Grib1Tables() {
   }
@@ -112,7 +128,9 @@ public class Grib1Tables implements GribTables {
     return param;
   }
 
-  // mostly for debugging
+  /**
+   * Debugging only
+   */
   public Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {
     Grib1ParamTable result = null;
     if (lookup != null)
@@ -199,8 +217,8 @@ GRIB1 - PDS Octet 6
     InputStream is = null;
     try {
       is = GribResourceReader.getInputStream(path);
-      logger.error("Cant find NCEP Table 1 = " + path);
       if (is == null) {
+        logger.error("Cant find NCEP Table 1 = " + path);
         return;
       }
 

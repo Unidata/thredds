@@ -8,6 +8,7 @@ package opendap.servers.parsers;
 import opendap.dap.*;
 import opendap.servers.*;
 import opendap.dap.parsers.*;
+import ucar.nc2.util.net.EscapeStrings;
 
 
 import static opendap.servers.parsers.CeParser.*;
@@ -386,11 +387,15 @@ public abstract class Ceparse implements ExprParserConstants
     }
 
     //////////////////////////////////////////////////
-    // Convert AST to CeEval
+    // Utils
 
+    String unescapeDAPName(Object name)
+    {
+        return EscapeStrings.unescapeDAPIdentifier((String) name);
+    }
 
-    /**************************************************/
-    /* Misc functions from original expr.jj */
+    //////////////////////////////////////////////////
+    // Misc functions from original expr.jj
 
     /**
      * Run the named projection function. Projection functions are run for

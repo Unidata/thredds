@@ -16,7 +16,7 @@ WRF GRIB1 table notes
 
 9/12/2011
  - wrf7-129 agrees mostly with ncl/ncep_129_gtb.h, execpt latter has more entries. entry 142 seems to be an exception
- - wrf2 agrees mostly with local/wrf_amps.wrf (from amps group), execpt:
+ - wrf2 agrees mostly with local/wrf_amps.wrf (from amps group), except:
      248 udunits
         kg/m2/s
         m
@@ -392,7 +392,7 @@ SCNTR = 0
    OTOH, if users change the center/subcenter then WTF?
 
 09/13/2011
- - somewhere they are mapping the WRF variables to these GRIB tables. In fisrt table in gribmap.txt, there are some extra columns
+ - somewhere they are mapping the WRF variables to these GRIB tables. In first table in gribmap.txt, there are some extra columns
 
     1:PRES:Pressure [Pa]:PRES,P,PSFC:2
     2:PRMSL:Pressure reduced to MSL [Pa]:PMSL:2
@@ -523,6 +523,15 @@ built-in tables.  This will probably change when sub-centers start using
 their own parameter tables.
 
  - so probably wrong in interpreting 255 as -1 (match any)
+
+12/05/2011 run strict=true scan on Q:/cdmUnitTest/formats/grib1
+ - fail:
+  Q:\cdmUnitTest\formats\grib1\wrf.grib  ERR: Could not find a table for GRIB file with center: 60 subCenter: 0 version: 2
+  center 60 = NCAR.
+  real WRF output uses center = 7 (!)
+  so WTF?
+
+
 
 
 

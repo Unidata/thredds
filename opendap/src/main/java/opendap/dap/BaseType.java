@@ -95,9 +95,10 @@ public abstract class BaseType extends DAPNode
      */
     public BaseType(String clearname)
     {
-	super(clearname);
+	    super();
         _attrTbl = new AttributeTable(getClearName());
         _attr = new Attribute(getClearName(), _attrTbl);
+        setClearName(clearname);
     }
 
     /**
@@ -106,8 +107,9 @@ public abstract class BaseType extends DAPNode
      * @param clearname the unencoded name of the class instance.
      */
     @Override
-    public void setClearName(String clearname) {
-	super.setClearName(clearname);
+    public void setClearName(String clearname)
+    {
+	    super.setClearName(clearname);
         if(_attr != null) _attr.setClearName(clearname);
         if(_attrTbl !=  null) _attrTbl.setClearName(clearname);
     }

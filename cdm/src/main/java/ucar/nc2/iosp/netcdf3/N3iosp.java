@@ -319,7 +319,7 @@ public String NC_check_name(String name) {
     int i = 1;
     while (i < sb.length()) {
       char c = sb.charAt(i);
-      if (c == ' ')
+      if ((c == ' ') || (c == '/'))
         sb.setCharAt(i, '_');
       else {
         boolean ok = Character.isLetterOrDigit(c) || (c == '-') || (c == '_') ||

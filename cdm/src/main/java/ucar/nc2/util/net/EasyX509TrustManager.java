@@ -111,7 +111,7 @@ public class EasyX509TrustManager implements X509TrustManager {
 
     if ((certificates != null) && (certificates.length == 1)) {
       X509Certificate certificate = certificates[0];
-        certificate.checkValidity();
+//FIX        certificate.checkValidity();
     } else {
       this.standardTrustManager.checkServerTrusted(certificates, authType);
     }

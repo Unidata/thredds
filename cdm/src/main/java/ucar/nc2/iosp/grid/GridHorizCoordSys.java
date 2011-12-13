@@ -726,7 +726,7 @@ public class GridHorizCoordSys {
     if (Double.isNaN(lad)) {
       scale = .933;
     } else {
-      scale = (1.0+Math.sin( Math.toRadians(lad) ))/2;
+      scale = (1.0+Math.sin( Math.toRadians( Math.abs(lad)) ))/2;
     }
 
     proj = new Stereographic(latOrigin, gds.getDouble(GridDefRecord.LOV), scale);

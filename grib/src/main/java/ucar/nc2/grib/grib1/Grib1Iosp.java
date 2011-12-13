@@ -213,11 +213,11 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     }
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
-    ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
+    ncfile.addAttribute(null, new Attribute("Originating or generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
     val = Grib1Utils.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
-    ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
-    ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
-    ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
+    ncfile.addAttribute(null, new Attribute("Originating or generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
+    //ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
+    //ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
 
     val = tables.getTypeGenProcessName(gribCollection.getCenter(), gribCollection.getGenProcessId());
     if (val != null)
@@ -379,7 +379,12 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute(CF.MISSING_VALUE, MISSING_VALUE));
       v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
 
+      // Grib attributes
       v.addAttribute(new Attribute("Grib_Parameter", vindex.parameter));
+      Grib1Parameter param = tables.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+      if (param != null && param.getName() != null)
+        v.addAttribute(new Attribute("Grib_Parameter_Name", param.getName()));
+
       v.addAttribute(new Attribute("Grib_Level_Type", vindex.levelType));
       if (vindex.intvType >= 0) {
         v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));

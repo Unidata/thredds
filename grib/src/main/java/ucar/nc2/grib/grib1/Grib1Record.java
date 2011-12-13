@@ -167,24 +167,6 @@ public class Grib1Record {
       if (ptime.isInterval() && ptime.getStatType() != null)  // an interval must have a statProcessType
         result += result * 37 + ptime.getStatType().ordinal();
 
-      /* int ensDerivedType = -1;
-      if (pdss.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
-        Grib1Pds.PdsEnsembleDerived pdsDerived = (Grib1Pds.PdsEnsembleDerived) pdss;
-        ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
-        result += result * 37 + ensDerivedType;
-
-      } else if (pdss.isEnsemble()) {
-        result += result * 37 + 1;
-      } */
-
-      /* each probability interval generates a separate variable; could be a dimension instead
-      int probType = -1;
-      if (pdss.isProbability()) {
-        Grib1Pds.PdsProbability pdsProb = (Grib1Pds.PdsProbability) pdss;
-        probType = pdsProb.getProbabilityType();
-        result += result * 37 + pdsProb.getProbabilityHashcode();
-      } */
-
       // if this uses any local tables, then we have to add the center id, and subcenter if present
       if (pdss.getParameterNumber() > 127) {
         result += result * 37 + pds.getCenter();

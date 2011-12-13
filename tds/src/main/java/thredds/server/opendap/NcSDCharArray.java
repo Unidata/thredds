@@ -63,7 +63,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
    * @param v : netcdf Variable
    */
   NcSDCharArray(Variable v) {
-      super((v.getShortName()));
+      super(Variable.getDAPName(v));
     this.ncVar = v;
     if (v.getRank() < 1)
       throw new IllegalArgumentException("NcSDCharArray: rank must be > 1, var = " + v.getFullName());
@@ -79,7 +79,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
     }
 
     // set String type
-    addVariable(new NcSDString(v.getShortName(), null));
+    addVariable(new NcSDString(Variable.getDAPName(v), null));
   }
 
   public Variable getVariable() { return ncVar; }

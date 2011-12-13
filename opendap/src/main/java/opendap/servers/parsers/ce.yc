@@ -203,7 +203,7 @@ ident:  word
 	;
 
 word:  SCAN_WORD
-	    {$$ = $1;}
+	    {$$=unescapeDAPName($1);}
 	;
 
 number:  SCAN_NUMBERCONST

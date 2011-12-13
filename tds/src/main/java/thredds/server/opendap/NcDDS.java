@@ -74,8 +74,7 @@ public class NcDDS extends ServerDDS {
    */
   public NcDDS(String name, NetcdfFile ncfile) {
      super((name));
-
-    // dup the variable set
+  // dup the variable set
     for (Object o : ncfile.getVariables()) {
       Variable v = (Variable) o;
       ddsvars.add(v);
@@ -125,6 +124,7 @@ public class NcDDS extends ServerDDS {
       Variable cv = (Variable) o1;
       BaseType bt = null;
 
+
       if (false && cv.isCoordinateVariable()) {
         if ((cv.getDataType() == DataType.CHAR))
           bt = (cv.getRank() > 1) ? new NcSDCharArray(cv) : new NcSDString(cv);
@@ -141,7 +141,6 @@ public class NcDDS extends ServerDDS {
 
   private BaseType createVariable(NetcdfFile ncfile, Variable v) {
     BaseType bt;
-
     if (v.getRank() == 0)  // scalar
       bt = createScalarVariable(ncfile, v);
 

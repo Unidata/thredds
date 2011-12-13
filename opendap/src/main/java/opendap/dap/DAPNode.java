@@ -71,7 +71,6 @@ public class DAPNode implements Cloneable, Serializable
     // Define a singleton value for which we can test with ==
     static DAPNode NULLNODE = new DAPNode("null");
 
-
     /**
      * The name of this variable - not www enccoded
      */
@@ -87,15 +86,6 @@ public class DAPNode implements Cloneable, Serializable
      * Track if this variable is being used as part of a projection.
      */
     private boolean projected = false;
-
-
-    /**
-     * The Attribute Table used to contain attributes specific to this
-     * instance of a BaseType variable. This is the repository for
-     * "Semantic Metadata"
-     */
-    private Attribute _attr;
-    private AttributeTable _attrTbl;
 
     /**
      * Constructs a new <code>DAPNode</code> with no name.
@@ -203,9 +193,8 @@ public class DAPNode implements Cloneable, Serializable
      */
     public final void setEncodedName(String n)
     {
-	 _nameEncoded = n;
-        _nameClear = EscapeStrings.unEscapeDAPIdentifier(n);
-        //setClearName(EscapeStrings.www2id(n));
+	     _nameEncoded = n;
+         _nameClear = EscapeStrings.unescapeDAPIdentifier(n);
     }
 
     /**
@@ -215,9 +204,10 @@ public class DAPNode implements Cloneable, Serializable
      */
     public  void setClearName(String n) {
         _nameClear = n;
+        if(n != null && n.indexOf(":") >= 0) {
+            int x = 0;
+        }
        _nameEncoded = EscapeStrings.escapeDAPIdentifier(n);
-        if(_attr != null) _attr.setClearName(n);
-        if(_attrTbl !=  null) _attrTbl.setClearName(n);
     }
 
     /**

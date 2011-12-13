@@ -50,6 +50,8 @@ public class TestDConnect2 extends TestSources {
 
     public TestDConnect2(String name, String testdir) {
         super(name, testdir);
+        setTitle("DAP DConnect2 Tests");
+
     }
 
     public TestDConnect2(String name) {

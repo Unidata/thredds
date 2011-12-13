@@ -69,7 +69,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
    * @param bt : DODS element type
    */
   NcSDArray(Variable v, BaseType bt) {
-    super((v.getShortName()));
+    super(Variable.getDAPName(v));
     this.ncVar = v;
 
     // set dimensions
@@ -172,7 +172,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
       IndexIterator ii = data.getIndexIterator();
       int count = 0;
       while (ii.hasNext()) {
-        dodsBT[count++] = new NcSDString(ncVar.getShortName(), (String) ii.getObjectNext());
+        dodsBT[count++] = new NcSDString(Variable.getDAPName(ncVar), (String) ii.getObjectNext());
       }
       pv.setInternalStorage(dodsBT);
 

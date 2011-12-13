@@ -37,6 +37,7 @@ package thredds.server.opendap;
 import opendap.servers.*;
 import opendap.dap.BaseType;
 import opendap.dap.NoSuchVariableException;
+import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class NcSDGrid extends SDGrid {
    *  @param list of the variables, first data then maps
    */
   public NcSDGrid( String name, ArrayList list) {
-      super((name));
+      super(name);
     addVariable( (BaseType) list.get(0), ARRAY);
 
     for (int i=1; i<list.size(); i++)

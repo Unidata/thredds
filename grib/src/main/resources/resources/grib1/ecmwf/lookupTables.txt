@@ -28,3 +28,10 @@
  98:     -1:       228:    local_table_2_version_228
  98:     -1:       230:    local_table_2_version_230
  98:     -1:       234:    local_table_2_version_234
+#
+ 0:     -1:        1:      wmostd/table_2_version_001
+ 0:     -1:        2:      wmostd/table_2_version_002
+ 0:     -1:        3:      wmostd/table_2_version_003
+ 0:     -1:        3:      wmostd/table_2_version_003.ecmwf
+ 0:     -1:        3:      wmostd/table_2_version_003.mf
+

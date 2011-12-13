@@ -49,7 +49,7 @@ import java.io.*;
  * @version $Revision: 21071 $
  * @see BaseType
  */
-public class DString extends BaseType implements ClientIO {
+public class DString extends DPrimitive implements ClientIO {
 
     // Track if a value has been set
     private boolean hasValue = false;

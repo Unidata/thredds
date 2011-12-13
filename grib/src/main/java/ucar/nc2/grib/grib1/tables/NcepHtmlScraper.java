@@ -43,13 +43,12 @@ import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.cert.PolicyNode;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * Read  NCEP html files to extract the GRIB tables.
  *
  * @author caron
  * @since 11/21/11

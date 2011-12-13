@@ -136,6 +136,7 @@ public class DAS extends AttributeTable
    {
         try {
             String text = DConnect2.captureStream(stream);
+            //System.err.println("---------"+text+"\n----------------"); System.err.flush();
             return parse(text);
         } catch (IOException ioe) {
             throw new ParseException("Cannot read DAS",ioe);

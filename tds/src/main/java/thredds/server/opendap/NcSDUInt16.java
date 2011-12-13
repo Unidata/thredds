@@ -56,7 +56,7 @@ public class NcSDUInt16 extends SDUInt16 implements HasNetcdfVariable {
    * @param v : the netcdf Variable
    */
   NcSDUInt16(Variable v) {
-      super((v.getShortName()));
+      super(Variable.getDAPName(v));
     this.ncVar = v;
   }
 
