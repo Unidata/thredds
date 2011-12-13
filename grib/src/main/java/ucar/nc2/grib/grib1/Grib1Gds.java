@@ -335,6 +335,13 @@ public abstract class Grib1Gds {
 
       deltaLon = getOctet2(24);
       if (deltaLon != GribNumbers.UNDEFINED) deltaLon *= scale3; // undefined for thin grids
+      else  deltaLon = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
+
+      float calcDelta = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
+      if (!Misc.closeEnough(deltaLon, calcDelta)) {
+        log.debug("deltaLon != calcDeltaLon");
+        deltaLon = calcDelta;
+      }
 
       deltaLat = getOctet2(26);
       if (deltaLat != GribNumbers.UNDEFINED) { // undefined for thin grids
@@ -473,12 +480,15 @@ public abstract class Grib1Gds {
     GaussianLatLon(byte[] data, int template) {
       super(data, template);
       nparellels = getOctet2(26);
-      latSouthPole = getOctet3(33) * scale3;
-      lonSouthPole = getOctet3(36) * scale3;
-      rotAngle = getOctet4(39) * scale3;
-      latPole = getOctet3(43) * scale3;
-      lonPole = getOctet3(46) * scale3;
-      stretchFactor = getOctet4(49) * scale3;
+
+      if (data.length > 32) {
+        latSouthPole = getOctet3(33) * scale3;
+        lonSouthPole = getOctet3(36) * scale3;
+        rotAngle = getOctet4(39) * scale3;
+        latPole = getOctet3(43) * scale3;
+        lonPole = getOctet3(46) * scale3;
+        stretchFactor = getOctet4(49) * scale3;
+      }
 
       lastOctet = 52;
     }
