@@ -870,7 +870,8 @@ public class OpendapServlet extends AbstractServlet
     } else if(bt instanceof DPrimitive) {
       DPrimitive dp = (DPrimitive)bt;
       if(dp instanceof DString) {
-          fieldsize = ((DString)dp).getValue().length();
+          String v = ((DString)dp).getValue();
+          fieldsize = (v==null?0:v.length());
       } else {
           DataType dtype = DODSNetcdfFile.convertToNCType(bt);
           fieldsize = dtype.getSize();
