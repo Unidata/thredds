@@ -12,7 +12,7 @@ dl {margin: 10px 5px 5px 15px;)
 </head>
 
 <body>
-<h1>Netcdf-Java FAQ</h1>
+<h1>  Netcdf-Java FAQ</h1>
 <hr />
 <ul>
   <li><a href="#Arrays">Arrays</a></li>
@@ -22,6 +22,7 @@ dl {margin: 10px 5px 5px 15px;)
   <li><a href="#Multithreading">Multithreading</a></li>
   <li><a href="#ncml">NcML</a></li>
   <li><a href="#Unsigned">Unsigned types</a></li>
+  <li><a href="#Reading">Reading</a></li>
   <li><a href="#Writing">Writing</a></li>
 </ul>
 <h3><a name="Arrays" id="Arrays"></a>Arrays</h3>
@@ -43,7 +44,6 @@ dl {margin: 10px 5px 5px 15px;)
 <blockquote>
   <p>See <a href="Caching.html">Disk Caching</a>.</p>
 </blockquote>
-</blockquote> 
 <h3><a name="IOSP" id="IOSP"></a>I/O Service Provider</h3>
 <p><strong>Q: I have lots of data in a proprietary format. How do I  read it into the CDM?</strong></p>
 <blockquote>
@@ -66,7 +66,6 @@ dl {margin: 10px 5px 5px 15px;)
 <p><strong>Q: What about the &quot;O&quot; in IOServiceProvider? How does that work?</strong></p>
 <blockquote>
   <p>If you look at <strong>ucar.nc2.iosp.IOServiceProviderWriter</strong>, you can see the start of a possible standard mechanism for writing to different file formats. But it isnt used anywhere that would likely be useful to you. You probably just want to write your own class that takes a NetcdfFile object, and writes it to your file format, in whatever way suits you best. You might find the code at <strong>ucar.nc2.FileWriter </strong>useful to look at.</p>
-  <p>&nbsp;</p>
 </blockquote>
 <h3><a name="Logging" id="Logging"></a>Logging</h3>
 <p><strong>Q: How do I  control  the error messages coming out of the library?</strong></p>
@@ -79,10 +78,9 @@ dl {margin: 10px 5px 5px 15px;)
   <pre wrap="">
     org.apache.log4j.BasicConfigurator.configure();
     org.apache.log4j.Logger logger = org.apache.log4j.Logger.getRootLogger();
-    logger.setLevel(org.apache.log4j.Level.OFF)</pre>
+    logger.setLevel(org.apache.log4j.Level.OFF)
+</pre>
 </blockquote>
-<p>&nbsp;</p>
-<blockquote>&nbsp;</blockquote>
 <h3><a name="Multithreading" id="Multithreading"></a>Multithreading</h3>
 <p><strong>Q: Is the Netcdf-Java library thread-safe?</strong></p>
 <blockquote>
@@ -120,6 +118,39 @@ dl {margin: 10px 5px 5px 15px;)
   <p>When accessing a file through the &quot;dataset interface&quot;, by opening the file through <em>NetcdfDataset.openDataset(),</em> if there is a scale/offset attribute set on a Variable, the variable will be widended to the type of the scale/offset attribute, typically a float. In this case the unsigned data will be correctly handled, and doesnt need special handling.</p>
   <p>Classic netCDF-3 format has only signed bytes. The CDM library often sees unsigned bytes coming from other data formats, and we made the decision not to automatically widen unsigned bytes to shorts. The data is delivered using Java integer types, which are signed, so its up to the application to check <em>Variable.isUnsigned()</em> and do the right thing when doing computations with the data. The library handles the conversion correctly when the scale/offset attributes are being used.</p>
 </blockquote>
+<h3><a name="Reading" id="Reading"></a>Reading</h3>
+<p><strong>Q: What files can the library read?</strong></p>
+<blockquote>
+  <p>See <a href="../formats/FileTypes.html">File Types</a>.</p>
+</blockquote>
+<p><strong>Q: Can files be compressed and still be read? How does that work?</strong></p>
+<blockquote>
+  <p> If the URL ends with a with &quot;.Z&quot;, &quot;.zip&quot;, &quot;.gzip&quot;, &quot;.gz&quot;, or &quot;.bz2&quot;, the file is assumed to be <em><strong>compressed</strong></em>. </p>
+  <table width="223" border="1">
+    <tr>
+      <th width="64" scope="col">file suffix</th>
+      <th width="143" scope="col">compression type</th>
+    </tr>
+    <tr>
+      <td><div align="center">.Z</div></td>
+      <td>unix <a href="http://en.wikipedia.org/wiki/Compress">compress</a> (  LZW ) </td>
+    </tr>
+    <tr>
+      <td><div align="center">.zip</div></td>
+      <td><a href="http://en.wikipedia.org/wiki/Zip_(file_format)">zip files</a></td>
+    </tr>
+    <tr>
+      <td><div align="center">.gzip, .gz</div></td>
+      <td><a href="http://en.wikipedia.org/wiki/Gzip">deflate</a></td>
+    </tr>
+
+    <tr>
+      <td><div align="center">.bz2</div></td>
+      <td><a href="http://en.wikipedia.org/wiki/Bzip2" title="Burrows–Wheeler transform">Burrows–Wheeler</a></td>
+    </tr>
+  </table>
+  <p>The netCDF-Java library will uncompress/unzip and write a new file without the suffix, then read from the uncompressed file. Generally it prefers to place the uncompressed file in the same directory as the original file. If it does not have write permission on that directory, it will use the <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/Caching.html">cache directory</a> defined by <strong>ucar.nc2.util.DiskCache.</strong> </p>
+</blockquote>
 <h3><a name="Writing" id="Writing2"></a>Writing</h3>
 <p><strong>Q: Ok, so you read a lot of files, what about writing?</strong></p>
 <blockquote>
@@ -150,7 +181,7 @@ dl {margin: 10px 5px 5px 15px;)
 </blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Nov 2011
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 2011
 </address>
 </body>
 </html>

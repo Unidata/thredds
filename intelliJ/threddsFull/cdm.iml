@@ -109,7 +109,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="ehcache" level="project" />
-    <orderEntry type="module" module-name="common" exported="" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>

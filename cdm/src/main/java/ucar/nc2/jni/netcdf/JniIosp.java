@@ -1344,14 +1344,16 @@ public class JniIosp extends AbstractIOServiceProvider {
     if (nc4 == null) {
       //String dir = "C:/cdev/libpath/";
       //String dir = "C:/dev/tds/thredds/lib/binary/win32/";
-      String dir = "C:/cdev/netcdf-4.1.3-win-dev/bin/x64/";
+      //String dir = "C:/cdev/netcdf-4.1.3-win-dev/bin/x32/"; // -Djava.library.path3="c:/program files/python2.7.1/lib/site-packages/"
+      String dir = "c:\\program files\\python2.7.1\\lib\\site-packages\\";
       System.setProperty("jna.library.path", dir);
+
 
       System.load(dir + "zlib1.dll");
       System.load(dir + "sz.dll");
 
-      System.load(dir + "libifcoremd.dll");
-      System.load(dir + "libmmd.dll");
+      //System.load(dir + "libifcoremd.dll");
+      //System.load(dir + "libmmd.dll");
       System.load(dir + "hdf5dll.dll");
       System.load(dir + "hdf5_hldll.dll");
       System.load(dir + "netcdf.dll");

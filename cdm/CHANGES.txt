@@ -3,7 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 3:(2011-12-xx)
+ 3:(2011-12-12)
+  opendap checkSize() fix.
   Make WMOCodeTable.get() into a hash map
   GRIB2: Unknown names were not formed correctly
   FileWriter: handle anon dimensions
