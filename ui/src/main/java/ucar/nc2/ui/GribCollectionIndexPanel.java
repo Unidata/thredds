@@ -366,17 +366,20 @@ public class GribCollectionIndexPanel extends JPanel {
       return v.discipline + "-" + v.category + "-" + v.parameter;
     }
 
-    void showRecords(Formatter f) {
+    private void showRecords(Formatter f) {
       TimeCoord tcoord = v.getTimeCoord();
       VertCoord vcoord = v.getVertCoord();
       EnsCoord ecoord = v.getEnsCoord();
 
       try {
         if (tcoord.isInterval()) {
-          showRecords2Dintv(f, vcoord, tcoord.getIntervals());
+          if (vcoord == null)
+            showRecords2Dintv(f, tcoord.getIntervals());
+          else
+            showRecords2Dintv(f, vcoord, tcoord.getIntervals());
         } else {
           if (vcoord == null)
-            showRecordsNoVert(f, tcoord.getCoords());
+            showRecords(f, tcoord.getCoords());
           else
             showRecords(f, vcoord, tcoord.getCoords());
         }
@@ -385,7 +388,7 @@ public class GribCollectionIndexPanel extends JPanel {
       }
     }
 
-    void showRecordsNoVert(Formatter f, List<Integer> values) throws IOException {
+    private void showRecords(Formatter f, List<Integer> values) throws IOException {
       f.format("Variable %s%n", v.toStringComplete());
       f.format(" Show records (file,pos)%n");
       f.format(" time (down)%n");
@@ -411,11 +414,7 @@ public class GribCollectionIndexPanel extends JPanel {
 
     }
 
-    void showRecords(Formatter f, VertCoord vcoord, List<Integer> values) throws IOException {
-      if (vcoord == null) {
-        f.format("VertCoord is null%n");
-        return;
-      }
+    private void showRecords(Formatter f, VertCoord vcoord, List<Integer> values) throws IOException {
       f.format("Variable %s%n", v.toStringComplete());
       f.format(" Show records (file,pos)%n");
       f.format(" time (down) x vert (across) %n");
@@ -466,6 +465,18 @@ public class GribCollectionIndexPanel extends JPanel {
           //f.format("%3d %10d ", r.fileno, r.drsPos);
           f.format("%6d ", (r == null ? -1 : r.fileno));
         }
+        f.format("%n");
+      }
+    }
+
+    void showRecords2Dintv(Formatter f, List<TimeCoord.Tinv> tinvs) throws IOException {
+      GribCollection.Record[] records = v.getRecords();
+      for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {
+        f.format("%10s = ", tinvs.get(timeIdx));
+        int idx = GribCollection.calcIndex(timeIdx, 0, 0, v.nens, v.nverts);
+        GribCollection.Record r = records[idx];
+        //f.format("%3d %10d ", r.fileno, r.drsPos);
+        f.format("%6d ", (r == null ? -1 : r.fileno));
         f.format("%n");
       }
     }

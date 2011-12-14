@@ -183,4 +183,36 @@ public class Misc {
     return testdataDirPath;
   }
 
+  static public void compare(byte[] raw1, byte[] raw2, Formatter f) {
+    if (raw1.length != raw2.length) {
+      f.format("length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+    }
+    int len = Math.min(raw1.length, raw2.length);
+
+    int ndiff = 0;
+    for (int i = 0; i < len; i++) {
+      if (raw1[i] != raw2[i]) {
+        f.format(" %3d : %3d != %3d%n", i + 1, raw1[i], raw2[i]);
+        ndiff++;
+      }
+    }
+    f.format("tested %d bytes  diff = %d %n", len, ndiff);
+  }
+
+  static public void compare(float[] raw1, float[] raw2, Formatter f) {
+    if (raw1.length != raw2.length) {
+      f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+    }
+    int len = Math.min(raw1.length, raw2.length);
+
+    int ndiff = 0;
+    for (int i = 0; i < len; i++) {
+      if (!Misc.closeEnough(raw1[i], raw2[i]) && !Double.isNaN(raw1[i]) && !Double.isNaN(raw2[i])) {
+        f.format(" %5d : %3f != %3f%n", i, raw1[i], raw2[i]);
+        ndiff++;
+      }
+    }
+    f.format("tested %d floats diff = %d %n", len, ndiff);
+  }
+
 }

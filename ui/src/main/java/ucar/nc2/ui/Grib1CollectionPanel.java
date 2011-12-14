@@ -32,7 +32,10 @@
 
 package ucar.nc2.ui;
 
+import thredds.inventory.DatasetCollectionMFiles;
+import thredds.inventory.MFile;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
@@ -64,8 +67,7 @@ import java.util.List;
  * @author John
  * @since 9/3/11
  */
-public class Grib1RawPanel extends JPanel {
-  private static final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
+public class Grib1CollectionPanel extends JPanel {
 
   private PreferencesExt prefs;
 
@@ -75,8 +77,9 @@ public class Grib1RawPanel extends JPanel {
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private Grib1Tables tables = new Grib1Tables(); // default
+  private FileManager fileChooser;
 
-  public Grib1RawPanel(PreferencesExt prefs) {
+  public Grib1CollectionPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     PopupMenu varPopup;
@@ -108,7 +111,7 @@ public class Grib1RawPanel extends JPanel {
         ParameterBean pb = (ParameterBean) param1BeanTable.getSelectedBean();
         if (pb != null) {
           Formatter f = new Formatter();
-          showProcessedPds(pb.pds, f);
+          showProcessedPds(pb, f);
           infoPopup3.setText(f.toString());
           infoPopup3.gotoTop();
           infoWindow3.showIfNotIconified();
@@ -132,15 +135,45 @@ public class Grib1RawPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Show Processed Grib1Record", new AbstractAction() {
+    varPopup.addAction("Show Processed Grib1 Record", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showProcessedPds(bean.pds, f);
+          showProcessedRecord(bean, f);
           infoPopup3.setText(f.toString());
           infoPopup3.gotoTop();
           infoWindow3.showIfNotIconified();
+        }
+      }
+    });
+
+    varPopup.addAction("Compare Grib1 Records", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         List list = record1BeanTable.getSelectedBeans();
+         if (list.size() == 2) {
+           RecordBean bean1 = (RecordBean) list.get(0);
+           RecordBean bean2 = (RecordBean) list.get(1);
+           Formatter f = new Formatter();
+           compare(bean1, bean2, f);
+           infoPopup2.setText(f.toString());
+           infoPopup2.gotoTop();
+           infoWindow2.showIfNotIconified();
+         }
+       }
+     });
+
+    varPopup.addAction("Compare Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = record1BeanTable.getSelectedBeans();
+        if (list.size() == 2) {
+          RecordBean bean1 = (RecordBean) list.get(0);
+          RecordBean bean2 = (RecordBean) list.get(1);
+          Formatter f = new Formatter();
+          compareData(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.showIfNotIconified();
         }
       }
     });
@@ -212,6 +245,12 @@ public class Grib1RawPanel extends JPanel {
     infoWindow3.setBounds((Rectangle) prefs.getBean("InfoWindowBounds3", new Rectangle(300, 300, 500, 300)));
 
     setLayout(new BorderLayout());
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, param1BeanTable, record1BeanTable);
+    split2.setDividerLocation(prefs.getInt("splitPos2", 800));
+
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, gds1Table);
+    split.setDividerLocation(prefs.getInt("splitPos", 500));
+    add(split, BorderLayout.CENTER);
   }
 
 
@@ -228,44 +267,205 @@ public class Grib1RawPanel extends JPanel {
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
+  public boolean writeIndex(Formatter f) throws IOException {
+    DatasetCollectionMFiles dcm = scanCollection(spec, f);
+
+    if (fileChooser == null)
+      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+    String name = dcm.getCollectionName();
+    int pos = name.lastIndexOf('/');
+    if (pos < 0) pos = name.lastIndexOf('\\');
+    if (pos > 0) name = name.substring(pos+1);
+    File def = new File(dcm.getRoot(), name + GribCollection.IDX_EXT);
+    String filename = fileChooser.chooseFilename(def);
+    if (filename == null) return false;
+    if (!filename.endsWith(GribCollection.IDX_EXT))
+      filename += GribCollection.IDX_EXT;
+    File idxFile = new File(filename);
+
+    Grib1CollectionBuilder.writeIndexFile(idxFile, dcm, f);
+    return true;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+
+  private void compare(RecordBean bean1, RecordBean bean2, Formatter f) {
+    String h1 = bean1.getHeader();
+    String h2 = bean2.getHeader();
+    if (!h1.equals(h2))
+      f.format("WMO headers differ %s != %s %n", h1, h2);
+
+
+    /* Grib2SectionIndicator is1 = bean1.gr.getIs();
+    Grib2SectionIndicator is2 = bean2.gr.getIs();
+    f.format("Indicator Section%n");
+    if (is1.getDiscipline() != is2.getDiscipline())
+      f.format("getDiscipline differs %d != %d %n", is1.getDiscipline(), is2.getDiscipline());
+    if (is1.getMessageLength() != is2.getMessageLength())
+      f.format("getGribLength differs %d != %d %n", is1.getMessageLength(), is2.getMessageLength());
+
+    f.format("%nId Section%n");
+    Grib2SectionIdentification id1 = bean1.gr.getId();
+    Grib2SectionIdentification id2 = bean2.gr.getId();
+    if (id1.getCenter_id() != id2.getCenter_id())
+      f.format("Center_id differs %d != %d %n", id1.getCenter_id(), id2.getCenter_id());
+    if (id1.getSubcenter_id() != id2.getSubcenter_id())
+      f.format("Subcenter_id differs %d != %d %n", id1.getSubcenter_id(), id2.getSubcenter_id());
+    if (id1.getMaster_table_version() != id2.getMaster_table_version())
+      f.format("Master_table_version differs %d != %d %n", id1.getMaster_table_version(), id2.getMaster_table_version());
+    if (id1.getLocal_table_version() != id2.getLocal_table_version())
+      f.format("Local_table_version differs %d != %d %n", id1.getLocal_table_version(), id2.getLocal_table_version());
+    if (id1.getProductionStatus() != id2.getProductionStatus())
+      f.format("ProductionStatus differs %d != %d %n", id1.getProductionStatus(), id2.getProductionStatus());
+    if (id1.getTypeOfProcessedData() != id2.getTypeOfProcessedData())
+      f.format("TypeOfProcessedData differs %d != %d %n", id1.getTypeOfProcessedData(), id2.getTypeOfProcessedData());
+    if (!id1.getReferenceDate().equals(id2.getReferenceDate()))
+      f.format("ReferenceDate differs %s != %s %n", id1.getReferenceDate(), id2.getReferenceDate());
+    if (id1.getSignificanceOfRT() != id2.getSignificanceOfRT())
+      f.format("getSignificanceOfRT differs %d != %d %n", id1.getSignificanceOfRT(), id2.getSignificanceOfRT());
+
+
+    Grib2SectionLocalUse lus1 = bean1.gr.getLocalUseSection();
+    Grib2SectionLocalUse lus2 = bean2.gr.getLocalUseSection();
+    if (lus1 == null || lus2 == null) {
+      if (lus1 == lus2)
+        f.format("%nLus are both null%n");
+      else
+        f.format("%nLus are different %s != %s %n", lus1, lus2);
+    } else {
+      f.format("%nCompare LocalUseSection%n");
+      Misc.compare(lus1.getRawBytes(), lus2.getRawBytes(), f);
+    }   */
+
+    compare(bean1.gr.getPDSsection(), bean2.gr.getPDSsection(), f);
+    compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
+  }
+
   private void compare(Grib1SectionGridDefinition gds1, Grib1SectionGridDefinition gds2, Formatter f) {
     f.format("%nCompare Gds%n");
     byte[] raw1 = gds1.getRawBytes();
     byte[] raw2 = gds2.getRawBytes();
-    compare( raw1, raw2, f);
+    Misc.compare( raw1, raw2, f);
   }
 
   private void compare(Grib1SectionProductDefinition pds1, Grib1SectionProductDefinition pds2, Formatter f) {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getRawBytes();
     byte[] raw2 = pds2.getRawBytes();
-    compare( raw1, raw2, f);
+    Misc.compare( raw1, raw2, f);
   }
 
-  static public void compare(byte[] raw1, byte[] raw2, Formatter f) {
-    if (raw1.length != raw2.length) {
-      f.format("length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+  void compareData(RecordBean bean1, RecordBean bean2, Formatter f) {
+    float[] data1 = null, data2 = null;
+    try {
+      data1 = bean1.readData();
+      data2 = bean2.readData();
+    } catch (IOException e) {
+      f.format("IOException %s", e.getMessage());
+      return;
     }
-    int len = Math.min(raw1.length, raw2.length);
 
-    for (int i = 0; i < len; i++) {
-      if (raw1[i] != raw2[i])
-        f.format(" %3d : %3d != %3d%n", i + 1, raw1[i], raw2[i]);
-    }
-    f.format("tested %d bytes %n", len);
+    Misc.compare(data1, data2, f);
   }
 
-  static public void compare(float[] raw1, float[] raw2, Formatter f) {
-    if (raw1.length != raw2.length) {
-      f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+  void showData(RecordBean bean1, Formatter f) {
+    float[] data;
+    try {
+      data = bean1.readData();
+    } catch (IOException e) {
+      f.format("IOException %s", e.getMessage());
+      return;
     }
-    int len = Math.min(raw1.length, raw2.length);
 
-    for (int i = 0; i < len; i++) {
-      if ( !Misc.closeEnough(raw1[i], raw2[i]) && !Double.isNaN(raw1[i]) && !Double.isNaN(raw2[i]))
-        f.format(" %5d : %3f != %3f%n", i, raw1[i], raw2[i]);
+    for (float fd : data)
+      f.format("%f%n", fd);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////
+  private String spec;
+  private DatasetCollectionMFiles dcm;
+  private List<MFile> fileList;
+
+  public void setCollection(String spec) throws IOException {
+    this.spec = spec;
+    //this.tables = null;
+
+    Formatter f = new Formatter();
+    this.dcm = scanCollection(spec, f);
+    if (dcm == null) {
+      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n"+f.toString());
+      return;
     }
-    f.format("tested %d floats %n", len);
+
+    Map<Integer, ParameterBean> pdsSet = new HashMap<Integer, ParameterBean>();
+    Map<Integer, Grib1SectionGridDefinition> gdsSet = new HashMap<Integer, Grib1SectionGridDefinition>();
+
+    java.util.List<ParameterBean> params = new ArrayList<ParameterBean>();
+    java.util.List<Gds1Bean> gdsList = new ArrayList<Gds1Bean>();
+
+    int fileno = 0;
+    for (MFile mfile : fileList) {
+      f.format("%n %s%n", mfile.getPath());
+      processGribFile(mfile, fileno++, pdsSet, gdsSet, params, f);
+    }
+    param1BeanTable.setBeans(params);
+
+    for (Grib1SectionGridDefinition gds : gdsSet.values())
+      gdsList.add(new Gds1Bean( gds));
+
+    Collections.sort(gdsList);
+    gds1Table.setBeans(gdsList);
+  }
+
+  private DatasetCollectionMFiles scanCollection(String spec, Formatter f) {
+    DatasetCollectionMFiles dc = null;
+    try {
+      dc = DatasetCollectionMFiles.open(spec, null, f);
+      dc.scan();
+      fileList = (List<MFile>) Misc.getList(dc.getFiles());
+      return dc;
+
+    } catch (Exception e) {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      e.printStackTrace(new PrintStream(bos));
+      f.format("%s", bos.toString());
+      return null;
+    }
+  }
+
+    private void processGribFile(MFile mfile, int fileno,
+                               Map<Integer, ParameterBean> pdsSet,
+                               Map<Integer, Grib1SectionGridDefinition> gdsSet,
+                               List<ParameterBean> params, Formatter f) throws IOException {
+
+    Grib1Index index = new Grib1Index();
+    if (!index.readIndex(mfile.getPath(), mfile.getLastModified())) {
+      index.makeIndex(mfile.getPath(), f);
+    }
+
+    for (Grib1SectionGridDefinition gds : index.getGds()) {
+      int hash = gds.getGDS().hashCode();
+      if (gdsSet.get(hash) == null)
+        gdsSet.put(hash, gds);
+    }
+
+    for (Grib1Record gr : index.getRecords()) {
+      gr.setFile(fileno);
+
+      //if (tables == null) {
+      //  Grib1SectionIdentification ids = gr.getId();
+      //  tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+      //}
+
+      int id = gr.cdmVariableHash(0);
+      ParameterBean bean = pdsSet.get(id);
+      if (bean == null) {
+        bean = new ParameterBean(gr);
+        pdsSet.put(id, bean);
+        params.add(bean);
+      }
+      bean.addRecord(gr);
+    }
   }
 
   public void setGribFile(RandomAccessFile raf) throws IOException {
@@ -342,8 +542,13 @@ public class Grib1RawPanel extends JPanel {
    }
 
 
-  public void showProcessedPds(Grib1SectionProductDefinition pds, Formatter f) {
-    pds.showPds(tables, f);
+  public void showProcessedRecord(RecordBean rbean, Formatter f) {
+    f.format("Header = %s%n", new String(rbean.gr.getHeader()));
+    rbean.pds.showPds(tables, f);
+  }
+
+  public void showProcessedPds(ParameterBean pbean, Formatter f) {
+    pbean.pds.showPds(tables, f);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -496,27 +701,25 @@ public class Grib1RawPanel extends JPanel {
       return (stype == null) ? null : stype.name();
     }
 
-    /* public final boolean isEnsemble() {
-      return pds.isEnsemble();
+    float[] readData() throws IOException {
+      int fileno = gr.getFile();
+      MFile mfile = fileList.get(fileno);
+      ucar.unidata.io.RandomAccessFile raf = null;
+      try {
+        raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
+        raf.order( ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+        return gr.readData(raf);
+      } finally {
+        if (raf != null)
+          raf.close();
+      }
     }
-
-    public final int getNForecasts() {
-      return pds.getNumberEnsembleForecasts();
-    }
-
-    public final int getPerturbationType() {
-      return pds.getPerturbationType();
-    }
-
-    public final String getProbLimit() {
-      return pds.getProbabilityLowerLimit() + "-" + pdsv.getProbabilityUpperLimit();
-    } */
 
   }
 
     ////////////////////////////////////////////////////////////////////////////
 
-  public class Gds1Bean {
+  public class Gds1Bean implements Comparable<Gds1Bean> {
     Grib1SectionGridDefinition gdss;
      Grib1Gds gds;
     // no-arg constructor
@@ -585,5 +788,9 @@ public class Grib1RawPanel extends JPanel {
        return gds.getNyRaw();
      }
 
-   }
+    @Override
+    public int compareTo(Gds1Bean o) {
+      return getGridName().compareTo(o.getGridName());
+    }
+  }
 }
