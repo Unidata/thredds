@@ -56,21 +56,32 @@ import java.util.regex.Pattern;
 public class EscapeStrings {
 
     // Sets of ascii characters
-    static private final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    static private final String numeric = "0123456789";
-    static private final String alphaNumeric = alpha + numeric;
+    static final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static final String numeric = "0123456789";
+    static final String alphaNumeric = alpha + numeric;
+
+    // Experimentally determined url and query
+    // legal and illegal chars as defined by apache httpclient3
+    // Sets are larger than strictly necessary
+    static final String httpclient_urllegal   = " !#$&'()*+,-./:;=?@_~";
+    static final String httpclient_querylegal = " !#$&'()*+,-./:;=?@_~%"; // % is difference
+    static final String httpclient_urlillegal   = "\"<>[\\]^`{|}%";
+    static final String httpclient_queryillegal = "\"<>[\\]^`{|}";  // % is difference
+
 
     // Set of all ascii printable non-alphanumeric (aka nan) characters
     static private final String nonAlphaNumeric = " !\"#$%&'()*+,-./:;<=>?@[]\\^_`|{}~" ;
 
-    static private final String queryReserved = " ?&=,+;#"; // special parsing meaning in queries
-    static private final String urlReserved = ":/#?"; // special parsing meaning in url
+    static private final String queryReserved
+        = httpclient_queryillegal; // " ?&=,+;#"; // special parsing meaning in queries
+    static private final String urlReserved
+        = httpclient_urlillegal; // ":/#?"; // special parsing meaning in url
 
     // We assume that whoever constructs a url (minus the query)
     // has properly percent encoded whatever characters need to be encoded.
     // Sets of characters absolutely DIS-allowed in url.
     static private final String urlDisallowed
-                                = stringUnion(urlReserved+""); // what else?
+                                = stringUnion(urlReserved); // what else?
     // Complement of urlDisallowed
     static private final String urlAllowed = stringDiff(nonAlphaNumeric,urlDisallowed);
 

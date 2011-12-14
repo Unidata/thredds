@@ -49,16 +49,41 @@ public class TestEncode extends TestCase {
     super(name);
   }
 
-  public void testEncode() throws Exception {
-    for (char c : " !\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~".toCharArray()) {
+public void testURLEncode() throws Exception {
+    String legal = "";
+    String illegal = "";
+    // Check for url legal/illegal characters
+    for (char c : " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".toCharArray()) {
       String url = "http://localhost:8080/thredds/" + c;
       try {
         HttpMethodBase cmd = new GetMethod(url);
+        legal += c;
       } catch (Exception e) {
-        System.err.printf("fail: c=|%c|\t%s\n", c, e.toString());
+        //System.err.printf("fail: c=|%c|\t%s\n", c, e.toString());
+        illegal += c;
       }
     }
+      System.out.println("legal url characters = |"+legal+"|");
+      System.out.println("illegal url characters = |"+illegal+"|");
   }
+
+  public void testQueryEncode() throws Exception {
+    String legal = "";
+    String illegal = "";
+    // Check for url legal/illegal characters
+    for (char c : " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".toCharArray()) {
+      String url = "http://localhost:8080/thredds/?" + c;
+      try {
+        HttpMethodBase cmd = new GetMethod(url);
+        legal += c;
+      } catch (Exception e) {
+        //System.err.printf("fail: c=|%c|\t%s\n", c, e.toString());
+        illegal += c;
+      }
+    }
+      System.out.println("legal query characters = |"+legal+"|");
+      System.out.println("illegal query characters = |"+illegal+"|");
+    }
 
   public void testOGC() {
       EscapeStrings.testOGC();
