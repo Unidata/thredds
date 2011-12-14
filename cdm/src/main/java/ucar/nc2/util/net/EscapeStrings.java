@@ -63,10 +63,10 @@ public class EscapeStrings {
     // Experimentally determined url and query
     // legal and illegal chars as defined by apache httpclient3
     // Sets are larger than strictly necessary
-    static final String httpclient_urllegal   = " !#$&'()*+,-./:;=?@_~";
-    static final String httpclient_querylegal = " !#$&'()*+,-./:;=?@_~%"; // % is difference
-    static final String httpclient_urlillegal   = "\"<>[\\]^`{|}%";
-    static final String httpclient_queryillegal = "\"<>[\\]^`{|}";  // % is difference
+    static final String httpclient_urllegal   = "!#$&'()*+,-./:;=?@_~";
+    static final String httpclient_querylegal = "!#$&'()*+,-./:;=?@_~%"; // % is difference
+    static final String httpclient_urlillegal   = " \"<>[\\]^`{|}%";
+    static final String httpclient_queryillegal = " \"<>[\\]^`{|}";  // % is difference
 
 
     // Set of all ascii printable non-alphanumeric (aka nan) characters

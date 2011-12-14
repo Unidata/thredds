@@ -78,7 +78,7 @@ public class DODSVariable extends ucar.nc2.Variable {
             setName(dodsShortName);
             // change variable's group
             setParentGroup(parentGroup);
-	}
+        }
     }
     parentGroup.addVariable(this);
     return parentGroup;

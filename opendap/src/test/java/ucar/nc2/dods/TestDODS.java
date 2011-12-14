@@ -33,7 +33,9 @@
 package ucar.nc2.dods;
 
 import junit.framework.*;
+import opendap.test.TestDuplicates;
 import opendap.test.TestEncode;
+import opendap.test.TestGroups;
 import opendap.test.TestOpenDap;
 import ucar.nc2.util.net.TestAuth;
 
@@ -80,6 +82,12 @@ public class TestDODS {
     suite.addTest(new TestSuite(TestDODSnestedSequence.class)); // nestedSeq   */
     // suite.addTest(new TestSuite(TestDODSStructureForSequence.class)); // read sequence using DODSStructure
     //
+
+    // Structure duplicate name test
+    suite.addTest(new TestSuite(TestDuplicates.class));
+
+    // Group support
+    suite.addTest(new TestSuite(TestGroups.class));
 
     return suite;
   }

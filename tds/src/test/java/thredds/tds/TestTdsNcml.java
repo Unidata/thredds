@@ -160,7 +160,7 @@ public class TestTdsNcml extends TestCase {
     ncfile.close();
   }
 
-  public void utestAggNew() throws IOException, InvalidRangeException {
+  public void testAggNew() throws IOException, InvalidRangeException {
     NetcdfFile ncd = NetcdfDataset.openFile("http://localhost:8080/thredds/dodsC/aggNewTest/SUPER-NATIONAL_8km_WV.gini", null);
     assert ncd != null;
 
