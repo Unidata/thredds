@@ -146,6 +146,25 @@
 
            Reference: http://repo1.maven.org/maven2/
        =========================================================== -->
+  <distributionManagement>
+    <repository>
+      <id>thredds-releases</id>
+      <name>THREDDS Releases</name>
+      <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds-releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>thredds-snapshots</id>
+      <name>THREDDS Snapshots</name>
+      <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <repositories>
+    <repository>
+      <id>thredds</id>
+      <name>THREDDS</name>
+      <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds/</url>
+    </repository>
+  </repositories>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -258,14 +277,10 @@
         <artifactId>oro</artifactId>
         <version>2.0.8</version>
       </dependency>
-      <!-- 
-        to install, run followin command from directory containing this file with tds.version property replaced...
-        mvn install:install-file -DgroupId=ncwms -DartifactId=ncwms -Dversion=local-${tds.version} -Dpackaging=jar -Dfile=lib/release/ncwms.jar
-      -->
       <dependency>
-        <groupId>ncwms</groupId>
+        <groupId>uk.ac.rdg.rersc</groupId>
         <artifactId>ncwms</artifactId>
-        <version>local-${project.version}</version>
+        <version>1.0.tds.4.2.20110419.2059</version>
       </dependency>
       <dependency>
         <groupId>org.geotoolkit</groupId>
@@ -381,13 +396,13 @@
   <!-- ====================================================
            Deployment to public servers
        ==================================================== -->
-  <distributionManagement>
+  <!--distributionManagement>
     <repository>
       <id>sonatype-nexus-staging</id>
       <name>Sonatype OSS Hosting, synced to Maven Central</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
-  </distributionManagement>
+  </distributionManagement-->
 
 
   <!-- ===========================================================

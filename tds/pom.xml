@@ -227,10 +227,10 @@
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
         </dependency>
-        <dependency>
-            <groupId>ncwms</groupId>
-            <artifactId>ncwms</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>uk.ac.rdg.rersc</groupId>
+        <artifactId>ncwms</artifactId>
+      </dependency>
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
