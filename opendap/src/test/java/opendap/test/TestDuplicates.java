@@ -75,49 +75,57 @@ public class TestDuplicates extends ucar.nc2.util.TestCommon
        if(testserver == null) testserver = DFALTTESTSERVER;
 
        List<Result> results = new ArrayList<Result>();
-       if(true) {
-           results.add(new Result("TestTDSLocal Failure",
+       if(false) {
+           results.add(new Result("TOp and field same names",
                    "http://"+testserver+"/dts/structdupname",
-                   ""));
+                   "netcdf dods://"+testserver+"/dts/structdupname {\n" +
+                           " variables:\n" +
+                           "   int time;\n" +
+                           "}"));
        }
-        for(Result result: results) {
+       if(true) {
+           results.add(new Result("TestFailure",
+                   "http://"+testserver+"/dts/simplestruct",
+                   "netcdf dods://"+testserver+"/dts/simplestruct {\n" +
+                           " variables:\n" +
+                           "   int i32;\n" +
+                           "}"));
+       }
+       boolean pass = true;
+       for(Result result: results) {
             System.out.println("TestDuplicates: "+result.url);
-            boolean pass = true;
-	    try {
-            DODSNetcdfFile ncfile = new DODSNetcdfFile(result.url);
-	        if(ncfile == null)
-	            throw new Exception("Cannot read: "+result.url);
-if(false) {// currently read will fail, so do not bother with this
-            StringWriter ow = new StringWriter();
-            PrintWriter pw = new PrintWriter(ow);
-	    ncfile.writeCDL(pw, false);
-            try {pw.close(); ow.close();} catch (IOException ioe) {};
-            StringReader baserdr = new StringReader(result.cdl);
-            String captured = ow.toString();
-            StringReader resultrdr = new StringReader(captured);
-            // Diff the two files
-            Diff diff = new Diff("Testing "+result.title);
-            pass = !diff.doDiff(baserdr, resultrdr);
-            baserdr.close(); resultrdr.close();
-	        // Dump the output for visual comparison
-            if(System.getProperty("visual") != null) {
-                System.out.println("Testing "+result.title+" visual:");
-                System.out.println("---------------");
-                System.out.print(captured);
-                System.out.println("---------------");
+            boolean localpass = true;
+            try {
+                DODSNetcdfFile ncfile = new DODSNetcdfFile(result.url);
+                if(ncfile == null)
+                    throw new Exception("Cannot read: "+result.url);
+                StringWriter ow = new StringWriter();
+                PrintWriter pw = new PrintWriter(ow);
+                ncfile.writeCDL(pw, false);
+                try {pw.close(); ow.close();} catch (IOException ioe) {};
+                StringReader baserdr = new StringReader(result.cdl);
+                String captured = ow.toString();
+                StringReader resultrdr = new StringReader(captured);
+                // Diff the two files
+                Diff diff = new Diff("Testing "+result.title);
+                localpass = !diff.doDiff(baserdr, resultrdr);
+                baserdr.close(); resultrdr.close();
+                // Dump the output for visual comparison
+                if(System.getProperty("visual") != null) {
+                    System.out.println("Testing "+result.title+" visual:");
+                    System.out.println("---------------");
+                    System.out.print(captured);
+                    System.out.println("---------------");
+                }
+            } catch (IllegalArgumentException e) {
+                    localpass = false;
             }
-}
-        } catch (IllegalArgumentException e) {
-                pass = true; // temporarily
-                System.out.println("Structure duplicate problem still unsolved");
-        }
-        if (!pass) {
-            junit.framework.Assert.assertTrue("Testing "+result.title, pass);
-        }
-
+            if(!localpass)
+              pass = false;
         }
         System.out.flush();
         System.err.flush();
+        junit.framework.Assert.assertTrue("Testing "+getTitle(), pass);
     }
 
 

@@ -204,9 +204,6 @@ public class DAPNode implements Cloneable, Serializable
      */
     public  void setClearName(String n) {
         _nameClear = n;
-        if(n != null && n.indexOf(":") >= 0) {
-            int x = 0;
-        }
        _nameEncoded = EscapeStrings.escapeDAPIdentifier(n);
     }
 

@@ -58,26 +58,27 @@ public class DODSVariable extends ucar.nc2.Variable {
   protected String dodsShortName;
 
   // Common code for all constructors
-  Group common(DODSNetcdfFile dodsfile, Group parentGroup, String dodsShortName)
+  Group common(DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName)
   {
     this.dodsfile = dodsfile;
     this.dodsShortName = dodsShortName;
-      if(dodsShortName.equals("time")) {
-          int x = 0;
-      }
-    if(RC.useGroups) {
-        // If the shortname has '/' in it, then we need to insert
-        // this variable into the proper group and rename it
-        int sindex = dodsShortName.indexOf('/');
-        if(sindex >= 0) {
-            assert(parentGroup != null);
-            Group g = parentGroup.makeRelativeGroup(dodsfile,dodsShortName,true/*ignorelast*/);
-            parentGroup = g;
-            // change variable's name
-            dodsShortName = dodsShortName.substring(dodsShortName.lastIndexOf('/')+1);
-            setName(dodsShortName);
-            // change variable's group
-            setParentGroup(parentGroup);
+    if (parentStructure != null) {
+        parentStructure.addMemberVariable(this);
+    } else {
+        if(RC.useGroups) {
+            // If the shortname has '/' in it, then we need to insert
+            // this variable into the proper group and rename it
+            int sindex = dodsShortName.indexOf('/');
+            if(sindex >= 0) {
+                assert(parentGroup != null);
+                Group g = parentGroup.makeRelativeGroup(dodsfile,dodsShortName,true/*ignorelast*/);
+                parentGroup = g;
+                // change variable's name
+                dodsShortName = dodsShortName.substring(dodsShortName.lastIndexOf('/')+1);
+                setName(dodsShortName);
+                // change variable's group
+                setParentGroup(parentGroup);
+            }
         }
     }
     parentGroup.addVariable(this);
@@ -88,14 +89,14 @@ public class DODSVariable extends ucar.nc2.Variable {
   // used by subclasses and the other constructors
   DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DodsV dodsV) {
     super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
-    parentGroup = common(dodsfile, parentGroup, dodsShortName);
+    parentGroup = common(dodsfile, parentGroup, parentStructure, dodsShortName);
     setSPobject(dodsV);
   }
 
     // use when a dods variable is a scalar
   DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, opendap.dap.BaseType dodsScalar, DodsV dodsV) {
     super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
-    parentGroup = common(dodsfile, parentGroup, dodsShortName);
+    parentGroup = common(dodsfile, parentGroup, parentStructure, dodsShortName);
     setDataType( DODSNetcdfFile.convertToNCType( dodsScalar));
     if (DODSNetcdfFile.isUnsigned( dodsScalar)) {
       addAttribute(new Attribute("_Unsigned", "true"));
@@ -124,7 +125,7 @@ public class DODSVariable extends ucar.nc2.Variable {
 
     // name is already properly decoded: super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
     super(dodsfile, parentGroup, parentStructure,dodsShortName);
-    parentGroup = common(dodsfile, parentGroup, dodsShortName);
+    parentGroup = common(dodsfile, parentGroup, parentStructure, dodsShortName);
 
     setDataType( DODSNetcdfFile.convertToNCType( elemType));
     if (DODSNetcdfFile.isUnsigned( elemType)) {

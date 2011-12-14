@@ -1124,8 +1124,8 @@ public class Variable implements VariableIF, ProxyReader {
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     this.ncfile = ncfile;
-    this.group = (group == null) ? ncfile.getRootGroup() : group;
-    this.parent = parent;
+    setParentGroup((group == null) ? ncfile.getRootGroup() : group);
+    setParentStructure(parent);
     this.shortName = shortName;
   }
 
@@ -1141,8 +1141,8 @@ public class Variable implements VariableIF, ProxyReader {
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
     this.ncfile = ncfile;
-    this.group = (group == null) ? ncfile.getRootGroup() : group;
-    this.parent = parent;
+    setParentGroup((group == null) ? ncfile.getRootGroup() : group);
+    setParentStructure(parent);
     this.shortName = shortName;
     setDataType( dtype);
     setDimensions( dims);
@@ -1164,11 +1164,11 @@ public class Variable implements VariableIF, ProxyReader {
     this.dimensions = new ArrayList<Dimension>(from.dimensions); // dimensions are shared
     this.elementSize = from.getElementSize();
     this.enumTypedef = from.enumTypedef;
-    this.group = from.group;
+    setParentGroup(from.group);
+    setParentStructure(from.parent);
     this.isMetadata = from.isMetadata;
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
-    this.parent = from.parent;
     this.shape = from.getShape();
     this.shortName = from.shortName;
     this.sizeToCache = from.sizeToCache;

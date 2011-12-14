@@ -225,10 +225,14 @@ public class Structure extends Variable {
   /** Set the parent group of this Structure, and all member variables. */
   @Override
   public void setParentGroup(Group group) {
-    if (isImmutable()) throw new IllegalStateException("Cant modify");
+    if (isImmutable())
+        throw new IllegalStateException("Cant modify");
     super.setParentGroup(group);
-    for (Variable v : members) {
-      v.setParentGroup(group);
+    if(members != null)
+    {
+        for (Variable v : members) {
+          v.setParentGroup(group);
+        }
     }
   }
 

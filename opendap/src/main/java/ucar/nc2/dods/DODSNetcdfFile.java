@@ -336,7 +336,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
 
     finish();
-    if (showNCfile) System.out.println("DODS nc file = " + this);
+    if (showNCfile)
+        System.out.println("DODS nc file = " + this);
     long took = System.currentTimeMillis() - start;
     if (debugOpenTime) System.out.printf(" took %d msecs %n", took);
   }

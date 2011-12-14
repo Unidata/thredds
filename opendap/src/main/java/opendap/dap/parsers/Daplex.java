@@ -370,9 +370,6 @@ yylex()
                     yytext.append((char) c);
                 }
                 token = SCAN_WORD; /* assume */
-                if("GRIB%20table%20version%20".equals(yytext.toString())) {
-                    int x = 0;
-                }
                 /* check for keyword */
                 String tmp = yytext.toString();
                 for (int i = 0; ; i++) {
