@@ -47,9 +47,9 @@
   </mailingLists>
 
   <scm>
-    <url>https://github.com/Unidata/thredds/</url>
-    <connection>scm:git:https://github.com/Unidata/thredds/</connection>
-    <developerConnection>scm:git:https://github.com/Unidata/thredds/</developerConnection>
+    <url>https://github.com/ethanrd/thredds/</url>
+    <connection>scm:git:https://github.com/ethanrd/thredds/</connection>
+    <developerConnection>scm:git:https://ethanrd@github.com/ethanrd/thredds/</developerConnection>
   </scm>
 
   <!-- ===========================================================
