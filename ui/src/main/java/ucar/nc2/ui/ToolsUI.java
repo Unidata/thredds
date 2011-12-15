@@ -143,7 +143,7 @@ public class ToolsUI extends JPanel {
   private Grib1IndexPanel gribIndexPanel;
   private GribIdxPanel gribIdxPanel;
   // private GribRawPanel gribRawPanel;
-  private Grib1RawPanel grib1RawPanel;
+  private Grib1CollectionPanel grib1RawPanel;
   private Grib1ReportPanel grib1ReportPanel;
   private Grib2ReportPanel grib2ReportPanel;
   private GribCodePanel gribCodePanel;
@@ -485,7 +485,7 @@ public class ToolsUI extends JPanel {
       c = cdmremotePanel;
 
     } else if (title.equals("GRIB1-RAW")) {
-      grib1RawPanel = new Grib1RawPanel((PreferencesExt) mainPrefs.node("grib1raw"));
+      grib1RawPanel = new Grib1CollectionPanel((PreferencesExt) mainPrefs.node("grib1raw"));
       c = grib1RawPanel;
 
     } else if (title.equals("GRIB-FILES")) {
@@ -608,9 +608,9 @@ public class ToolsUI extends JPanel {
       stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
       c = stationRadialPanel;
 
-    /* } else if (title.equals("Trajectory")) {
-      trajTablePanel = new TrajectoryTablePanel((PreferencesExt) mainPrefs.node("trajectory"));
-      c = trajTablePanel;  */
+      /* } else if (title.equals("Trajectory")) {
+  trajTablePanel = new TrajectoryTablePanel((PreferencesExt) mainPrefs.node("trajectory"));
+  c = trajTablePanel;  */
 
     } else if (title.equals("THREDDS")) {
       threddsUI = new ThreddsUI(ToolsUI.this.parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
@@ -855,7 +855,7 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionProperties(logoAction, null, "Logo", false, 'L', 0);
     BAMutil.addActionToMenu(helpMenu, logoAction);
   }
-  
+
   public void setDebugFlags() {
     if (debug) System.out.println("checkDebugFlags ");
     NetcdfFile.setDebugFlags(debugFlags);
@@ -1246,7 +1246,7 @@ public class ToolsUI extends JPanel {
 
     } else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
       makeComponent(ftTabPane, "StationRadial");
-      stationRadialPanel.setStationRadialDataset( threddsData.featureDataset);
+      stationRadialPanel.setStationRadialDataset(threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(stationRadialPanel);
 
@@ -1879,23 +1879,23 @@ public class ToolsUI extends JPanel {
       ta.setText("\nParse CalendarDateUnit: <" + command + ">\n");
       try {
         CalendarDateUnit cd = CalendarDateUnit.of(null, command);
-        ta.appendLine( "CalendarDateUnit = " + cd);
-        ta.appendLine( " Calendar        = " + cd.getCalendar());
-        ta.appendLine( " PeriodField     = " + cd.getTimeUnit().getField());
-        ta.appendLine( " PeriodValue     = " + cd.getTimeUnit().getValue());
-        ta.appendLine( " Base            = " + cd.getBaseCalendarDate());
-        ta.appendLine( " isCalendarField = " + cd.isCalendarField());
+        ta.appendLine("CalendarDateUnit = " + cd);
+        ta.appendLine(" Calendar        = " + cd.getCalendar());
+        ta.appendLine(" PeriodField     = " + cd.getTimeUnit().getField());
+        ta.appendLine(" PeriodValue     = " + cd.getTimeUnit().getValue());
+        ta.appendLine(" Base            = " + cd.getBaseCalendarDate());
+        ta.appendLine(" isCalendarField = " + cd.isCalendarField());
 
       } catch (Exception e) {
-        ta.appendLine("not a CalendarDateUnit= "+e.getMessage());
+        ta.appendLine("not a CalendarDateUnit= " + e.getMessage());
 
         try {
           String[] s = command.split("%");
           if (s.length == 2) {
             Double val = Double.parseDouble(s[0].trim());
-            ta.appendLine("\nval= "+ val + " unit=" + s[1]);
+            ta.appendLine("\nval= " + val + " unit=" + s[1]);
             CalendarDateUnit cdu = CalendarDateUnit.of(null, s[1].trim());
-            ta.appendLine( "CalendarDateUnit= " + cdu);
+            ta.appendLine("CalendarDateUnit= " + cdu);
             CalendarDate cd = cdu.makeCalendarDate(val);
             ta.appendLine(" CalendarDate = " + cd);
             Date d = cd.toDate();
@@ -1904,7 +1904,7 @@ public class ToolsUI extends JPanel {
             ta.appendLine(" DateFormatter= " + format.toDateTimeString(cd.toDate()));
           }
         } catch (Exception ee) {
-          ta.appendLine("Failed on CalendarDateUnit "+ee.getMessage());
+          ta.appendLine("Failed on CalendarDateUnit " + ee.getMessage());
         }
       }
 
@@ -2518,7 +2518,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-   /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
   // GRIB2 new
   private class Grib2CollectionPanel extends OpPanel {
     ucar.nc2.ui.Grib2CollectionPanel gribTable;
@@ -2530,6 +2530,7 @@ public class ToolsUI extends JPanel {
       super(p, "collection:", true, false);
       gribTable = new ucar.nc2.ui.Grib2CollectionPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
+
       gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib2n")) {
@@ -2607,28 +2608,28 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(collateButton); */
 
-     AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
-     writeButton.addActionListener(new ActionListener() {
-       public void actionPerformed(ActionEvent e) {
-         Formatter f = new Formatter();
-         try {
-           if (!gribTable.writeIndex(f)) return;
-         } catch (IOException e1) {
-           e1.printStackTrace();
-         }
-         detailTA.setText(f.toString());
-         detailTA.gotoTop();
-         detailWindow.show();
-       }
-     });
-     buttPanel.add(writeButton);
-   }
+      AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+      writeButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            if (!gribTable.writeIndex(f)) return;
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(writeButton);
+    }
 
-     void setCollection(String collection) {
+    void setCollection(String collection) {
       if (process(collection)) {
         if (!defer) cb.addItem(collection);
       }
-     }
+    }
 
     boolean process(Object o) {
       String command = (String) o;
@@ -2790,31 +2791,42 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   // raw grib access - dont go through the IOSP
-  private class Grib1RawPanel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf = null;
-    ucar.nc2.ui.Grib1RawPanel gribTable;
+  private class Grib1CollectionPanel extends OpPanel {
+    //ucar.unidata.io.RandomAccessFile raf = null;
+    ucar.nc2.ui.Grib1CollectionPanel gribTable;
 
     void closeOpenFiles() throws IOException {
-      if (raf != null) raf.close();
-      raf = null;
     }
 
-    Grib1RawPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
-      gribTable = new ucar.nc2.ui.Grib1RawPanel(prefs);
+    Grib1CollectionPanel(PreferencesExt p) {
+      super(p, "collection:", true, false);
+      gribTable = new ucar.nc2.ui.Grib1CollectionPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
-      /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-      infoButton.addActionListener(new ActionListener() {
+      AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+      writeButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
-          gribTable.checkProblems(f);
+          try {
+            if (!gribTable.writeIndex(f)) return;
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
         }
       });
-      buttPanel.add(infoButton); */
+      buttPanel.add(writeButton);
+
+      gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("openGrib1n")) {
+            String collectionName = (String) e.getNewValue();
+            openGrib1Raw(collectionName);
+          }
+        }
+      });
     }
 
     boolean process(Object o) {
@@ -2823,12 +2835,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        if (raf != null)
-          raf.close();
-        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
-        raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-        gribTable.setGribFile(raf);
-        cb.addItem(command);
+        gribTable.setCollection(command);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
@@ -2956,7 +2963,7 @@ public class ToolsUI extends JPanel {
     }
 
     boolean process(Object o) {
-      return gribReport.setCollection( (String) o);
+      return gribReport.setCollection((String) o);
     }
 
     boolean process() {
@@ -2989,7 +2996,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-    /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
 
   private class Grib1ReportPanel extends OpPanel {
     ucar.nc2.ui.Grib1ReportPanel gribReport;
@@ -3027,7 +3034,7 @@ public class ToolsUI extends JPanel {
     }
 
     boolean process(Object o) {
-      return gribReport.setCollection( (String) o);
+      return gribReport.setCollection((String) o);
     }
 
     boolean process() {
@@ -3139,7 +3146,8 @@ public class ToolsUI extends JPanel {
       super.save();
     }
 
-    void closeOpenFiles() {}
+    void closeOpenFiles() {
+    }
   }
 
   /////////////////////////////////////////////////////////////////////
@@ -3203,6 +3211,7 @@ public class ToolsUI extends JPanel {
 
   private class Grib2TablePanel extends OpPanel {
     Grib2TablesViewer codeTable;
+
     Grib2TablePanel(PreferencesExt p) {
       super(p, "table:", false, false);
       codeTable = new Grib2TablesViewer(prefs, buttPanel);
@@ -3218,7 +3227,8 @@ public class ToolsUI extends JPanel {
       super.save();
     }
 
-    void closeOpenFiles() {}
+    void closeOpenFiles() {
+    }
 
   }
 
@@ -5465,7 +5475,7 @@ public class ToolsUI extends JPanel {
       }
 
       radarCollectionDataset = dataset;
-      radialViewer.setDataset( radarCollectionDataset);
+      radialViewer.setDataset(radarCollectionDataset);
       setSelectedItem(radarCollectionDataset.getLocation());
       return true;
     }

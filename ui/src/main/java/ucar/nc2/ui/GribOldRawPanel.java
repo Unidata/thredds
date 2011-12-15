@@ -547,7 +547,7 @@ public class GribOldRawPanel extends JPanel {
         f.format("%nLus are different %s != %s %n", lus1, lus2);
     } else {
       f.format("%nCompare LocalUseSection%n");
-      compare( lus1, lus2, f);
+      Misc.compare( lus1, lus2, f);
     }
     
     compare( bean1.pdsv, bean2.pdsv, f);
@@ -561,7 +561,7 @@ public class GribOldRawPanel extends JPanel {
     f.format("%nCompare Gds%n");
     byte[] raw1 = gdsv1.getGDSBytes();
     byte[] raw2 = gdsv2.getGDSBytes();
-    compare( raw1, raw2, f);
+    Misc.compare( raw1, raw2, f);
   }
 
   private void compare(Grib1GridDefinitionSection gds1, Grib1GridDefinitionSection gds2, Formatter f) {
@@ -571,40 +571,14 @@ public class GribOldRawPanel extends JPanel {
     f.format("%nCompare Gds%n");
     byte[] raw1 = gdsv1.getGDSBytes();
     byte[] raw2 = gdsv2.getGDSBytes();
-    compare( raw1, raw2, f);
+    Misc.compare( raw1, raw2, f);
   }
 
   private void compare(GribPds pds1, GribPds pds2, Formatter f) {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getPDSBytes();
     byte[] raw2 = pds2.getPDSBytes();
-    compare( raw1, raw2, f);
-  }
-
-  static public void compare(byte[] raw1, byte[] raw2, Formatter f) {
-    if (raw1.length != raw2.length) {
-      f.format("length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
-    }
-    int len = Math.min(raw1.length, raw2.length);
-
-    for (int i = 0; i < len; i++) {
-      if (raw1[i] != raw2[i])
-        f.format(" %3d : %3d != %3d%n", i + 1, raw1[i], raw2[i]);
-    }
-    f.format("tested %d bytes %n", len);
-  }
-
-  static public void compare(float[] raw1, float[] raw2, Formatter f) {
-    if (raw1.length != raw2.length) {
-      f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
-    }
-    int len = Math.min(raw1.length, raw2.length);
-
-    for (int i = 0; i < len; i++) {
-      if ( !Misc.closeEnough(raw1[i], raw2[i]) && !Double.isNaN(raw1[i]) && !Double.isNaN(raw2[i]))
-        f.format(" %5d : %3f != %3f%n", i, raw1[i], raw2[i]);
-    }
-    f.format("tested %d floats %n", len);
+    Misc.compare( raw1, raw2, f);
   }
 
   void compareData(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {
@@ -625,9 +599,8 @@ public class GribOldRawPanel extends JPanel {
       return;
     }
 
-    compare(data1, data2, f);
+    Misc.compare(data1, data2, f);
   }
-
 
 
    public void setGribFile(RandomAccessFile raf) throws Exception {
