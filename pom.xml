@@ -14,7 +14,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>netcdf-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.3.2</version>
+  <version>4.3.3-SNAPSHOT</version>
   <name>Unidata parent</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
