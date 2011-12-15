@@ -355,7 +355,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   static private void appendGroupName(StringBuilder sbuff, Group g, String reserved) {
-    boolean isRoot = g.getParentGroup() == null;
+    boolean isRoot = (g==null?true:(g.getParentGroup() == null));
     if (isRoot) return;
 
     if (g.getParentGroup() != null)
