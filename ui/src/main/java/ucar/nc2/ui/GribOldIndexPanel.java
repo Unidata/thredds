@@ -50,6 +50,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.iosp.grid.GridVariable;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -356,7 +357,7 @@ public class GribOldIndexPanel extends JPanel {
       return;
     }
 
-    GribOldRawPanel.compare(data1, data2, f);
+    Misc.compare(data1, data2, f);
   }
 
   void showData(GribGridRecordBean bean, Formatter f) {
@@ -497,7 +498,7 @@ public class GribOldIndexPanel extends JPanel {
     f.format("Compare PDS bytes %n");
     byte[] raw1 = ggr1.getPds().getPDSBytes();
     byte[] raw2 = ggr2.getPds().getPDSBytes();
-    GribOldRawPanel.compare(raw1, raw2, f);
+    Misc.compare(raw1, raw2, f);
     return;
   }
 

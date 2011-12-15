@@ -298,7 +298,7 @@
       </fileset>
     </unzip>
 
-    <jar jarfile="${build.dir}/${jarMainComplete}" index="true" duplicate="preserve">
+    <jar jarfile="${build.dir}/${jarMainComplete}" index="false" duplicate="preserve">
       <fileset dir="${main.dir}"/>
 
       <manifest>
@@ -506,7 +506,6 @@
     <include name="external/${logging-minimal.jar}"/>
     <include name="external/${spring-aop.jar}"/>
     <include name="external/${spring-asm.jar}"/>
-    <include name="external/${spring-context.jar}"/>
     <include name="external/${spring-expression.jar}"/>
   </fileset>
 
@@ -644,7 +643,7 @@
       <fileset file="${lib.dir}/release/${resourcesOptional.jar}"/>
     </unzip>
 
-    <jar jarfile="${build.dir}/${toolsUI}" index="true" duplicate="preserve">
+    <jar jarfile="${build.dir}/${toolsUI}" index="false" duplicate="preserve">
       <fileset dir="${build.dir}" includes="README"/>
       <fileset dir="${build.dir}" includes="CHANGES"/>
       <fileset dir="${uiZip.dir}"/>

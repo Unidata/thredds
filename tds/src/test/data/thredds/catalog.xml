@@ -62,8 +62,24 @@
   </dataset>
 
   <!-- test NcML in dataset -->
-  <dataset name="Example NcML Modified" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
+  <dataset name="Example NcML Modified - DODS" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
     <serviceName>odap</serviceName>
+    <dataType>Grid</dataType>
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="Q:/cdmUnitTest/tds/example1.nc"
+            addRecords="true">
+      <attribute name="name" value="value"/>
+      <variable name="Temperature" orgName="T"/>
+      <variable name="ReletiveHumidity" orgName="rh">
+        <attribute name="long_name" value="relatively humid"/>
+        <attribute name="units" value="percent (%)"/>
+        <remove type="attribute" name="description"/>
+      </variable>
+    </netcdf>
+  </dataset>
+
+  <!-- test NcML in dataset -->
+  <dataset name="Example NcML Modified - cdmremote" ID="ExampleNcMLModified2" urlPath="ExampleNcML2/Modified.nc">
+    <serviceName>cdmremote</serviceName>
     <dataType>Grid</dataType>
     <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="Q:/cdmUnitTest/tds/example1.nc"
             addRecords="true">
