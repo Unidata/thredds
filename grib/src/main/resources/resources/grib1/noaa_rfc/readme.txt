@@ -156,5 +156,27 @@ but the other variable just has 1 hour intervals out 24 hours:
 
 3) They also have mixed reference dates. perhaps they are misusing this?
 
+12/14/2011 checking IDD pqact:
+    # Other ZETA assorted binary products
+                   1      2           3               4
+    HRS     ZETA98 (....) ([0-3][0-9])([0-2][0-9]).*/m(.......)
+            FILE    -metadata
+    data/pub/native/grid/RFC/zeta/\1/ZETA_\1_\4_(\2:yyyy)(\2:mm)\2_\300.grib1
+
+     example:
+            1    2 3            1
+     ZETA98 KALR 310700 -> ZETA_KALR_NWS_152_20111031_0700.grib1
+     123456 CCCC DDHHMM
+
+     ZETA98 KALR 300035 -> ZETA_KALR_NWS_152_20111030_0000.grib1
 
 
+    should be:
+
+     data/pub/native/grid/RFC/zeta/\1/ZETA_\1_\4_(\2:yyyy)(\2:mm)\2_\300.grib1
+     data/pub/native/grid/RFC/\1/RFC_\1_(\2:yyyy)(\2:mm)\2.grib1
+
+     NPVU_RFC_KALR_20111030.grib1
+
+12/16/2011
+  - wasnt getting all of the center 9 subcenters from bldparm.f read correctly
