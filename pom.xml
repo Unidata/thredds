@@ -14,19 +14,19 @@
            Project description (including license)
        ==================================================== -->
   <groupId>edu.ucar</groupId>
-  <artifactId>netcdf-parent</artifactId>
+  <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
   <version>4.3.5-SNAPSHOT</version>
-  <name>Unidata parent</name>
+  <name>Unidata THREDDS parent</name>
   <description>
-    The NetCDF-Java Library is a Java interface to NetCDF files,
-    as well as to many other types of scientific data formats.
+    The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
+    the THREDDS Data Server (TDS).
   </description>
   <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
   <organization>
     <name>UCAR/Unidata</name>
-    <url>http://www.ucar.edu/</url>
+    <url>http://www.unidata.ucar.edu/</url>
   </organization>
   <inceptionYear>1999</inceptionYear>
 
@@ -47,9 +47,9 @@
   </mailingLists>
 
   <scm>
-    <url>https://github.com/ethanrd/thredds/</url>
-    <connection>scm:git:https://github.com/ethanrd/thredds/</connection>
-    <developerConnection>scm:git:git@github.com:ethanrd/thredds.git</developerConnection>
+    <url>https://github.com/Unidata/thredds/</url>
+    <connection>scm:git:https://github.com/Unidata/thredds/</connection>
+    <developerConnection>scm:git:git@github.com:Unidata/thredds.git</developerConnection>
   </scm>
 
   <!-- ===========================================================
@@ -422,6 +422,7 @@
     <module>grib</module>
     <module>opendap</module>
     <module>tds</module>
+    <module>visad</module>
   </modules>
 
   <properties>
