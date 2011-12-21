@@ -426,7 +426,7 @@
   </modules>
 
   <properties>
-    <visad.version>2010-08-09</visad.version>
+    <visad.version>2011-08-22</visad.version>  <!-- was 2010-08-09, other options 2011-05-12 or 2011-08-22 -->
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- TODO: Use <sourceEncoding>UTF-8</sourceEncoding> with Maven 3 -->
