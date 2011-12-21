@@ -24,7 +24,7 @@ dl {margin: 10px 5px 5px 15px;)
   <li>The <strong><em>scientific feature type</em></strong> layer identifies specific types of data, such as <em>grids</em>, <em>radial</em>, and <em>point data</em>, adding specialized methods for each kind of data.</li>
 </ol>
 <hr WIDTH="100%">
-<h2>Data Access Layer Object Model </h2>
+<h2><a name="dataAccess"></a>Data Access Layer Object Model </h2>
 <p><img src="CDM-UML.png" alt="CDM UML" width="627" height="598"></p>
 <p>&nbsp;</p>
 <p><strong>A Dataset </strong>may be a netCDF, HDF5, GRIB, etc. file, an OPeNDAP dataset, a collection of files, or anything else which can be accessed through the netCDF API. We sometimes use the term <em><strong>CDM dataset</strong></em> to mean any of these possibilities, and to emphasize that a dataset does not have to be a file in netCDF format.</p>
@@ -81,7 +81,7 @@ dl {margin: 10px 5px 5px 15px;)
 </ul>
 <p>Please send file examples if you find  a problem with the CDM reading HDF5 files, other than the ones listed above.</p>
 <hr WIDTH="100%">
-<h2>Coordinate System Object Model</h2>
+<h2><a name="CoordSys"></a>Coordinate System Object Model</h2>
 <p><img src="../images/CoordSys.png" alt="CoordSys Object model" width="610" height="341"></p>
 <p>&nbsp;</p>
 <p>A <em><strong>Variable</strong></em> can have zero or more Coordinate Systems containing one or more CoordinateAxis. A CoordinateAxis can only be part of a Variable's CoordinateSystem if the CoordinateAxis' 

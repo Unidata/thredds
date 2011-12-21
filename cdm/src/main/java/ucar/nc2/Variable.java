@@ -212,12 +212,15 @@ public class Variable implements VariableIF, ProxyReader {
   }
 
   /**
-   * Get the containing Group.
-   * @return the containing Group.
-   */
-  public Group getParentGroup() {
-    return group;
-  }
+  * Get the parent group.
+  *
+  * @return group of this variable; if null return rootgroup
+  */
+  public Group getParentGroup()
+  {
+   if(this.group == null) this.group = ncfile.getRootGroup();
+   return this.group;
+ }
 
   /**
    * Is this variable metadata?. True if its values need to be included explicitly in NcML output.
@@ -1124,8 +1127,10 @@ public class Variable implements VariableIF, ProxyReader {
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName) {
     this.ncfile = ncfile;
-    this.group = (group == null) ? ncfile.getRootGroup() : group;
-    this.parent = parent;
+    if(parent == null)
+        setParentGroup((group == null) ? ncfile.getRootGroup() : group);
+    else
+        setParentStructure(parent);
     this.shortName = shortName;
   }
 
@@ -1140,10 +1145,7 @@ public class Variable implements VariableIF, ProxyReader {
    * @param dims      space delimited list of dimension names. may be null or "" for scalars.
    */
   public Variable(NetcdfFile ncfile, Group group, Structure parent, String shortName, DataType dtype, String dims) {
-    this.ncfile = ncfile;
-    this.group = (group == null) ? ncfile.getRootGroup() : group;
-    this.parent = parent;
-    this.shortName = shortName;
+    this(ncfile,group,parent,shortName);
     setDataType( dtype);
     setDimensions( dims);
   }
@@ -1164,11 +1166,11 @@ public class Variable implements VariableIF, ProxyReader {
     this.dimensions = new ArrayList<Dimension>(from.dimensions); // dimensions are shared
     this.elementSize = from.getElementSize();
     this.enumTypedef = from.enumTypedef;
-    this.group = from.group;
+    setParentGroup(from.group);
+    setParentStructure(from.parent);
     this.isMetadata = from.isMetadata;
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
-    this.parent = from.parent;
     this.shape = from.getShape();
     this.shortName = from.shortName;
     this.sizeToCache = from.sizeToCache;
@@ -1201,15 +1203,16 @@ public class Variable implements VariableIF, ProxyReader {
     return this.shortName;
   }
 
-  /**
-   * Set the parent group.
-   *
-   * @param group set to this value
-   */
-  public void setParentGroup(Group group) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    this.group = group;
-  }
+    /**
+       * Set the parent group.
+       *
+       * @param group set to this value
+       */
+      public void setParentGroup(Group group) {
+        if (immutable) throw new IllegalStateException("Cant modify");
+        this.group = group;
+      }
+
 
   /**
    * Set the element size. Usually elementSize is determined by the dataType,
@@ -1330,7 +1333,7 @@ public class Variable implements VariableIF, ProxyReader {
     StringTokenizer stoke = new StringTokenizer(dimString);
     while (stoke.hasMoreTokens()) {
       String dimName = stoke.nextToken();
-      Dimension d = dimName.equals("*") ? Dimension.VLEN : group.findDimension(dimName);
+      Dimension d = dimName.equals("*") ? Dimension.VLEN : getParentGroup().findDimension(dimName);
       if (d == null) {
         // if numeric - then its anonymous dimension
         try {
@@ -1358,7 +1361,7 @@ public class Variable implements VariableIF, ProxyReader {
 
     for (Dimension dim : dimensions) {
       if (dim.isShared()) {
-        Dimension newD = group.findDimension(dim.getName());
+        Dimension newD = getParentGroup().findDimension(dim.getName());
         if (newD == null)
           throw new IllegalArgumentException("Variable " + getFullName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
         newDimensions.add(newD);

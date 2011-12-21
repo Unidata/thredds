@@ -39,10 +39,10 @@ import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
+import ucar.nc2.wmo.CommonCodeTable;
+import ucar.unidata.util.StringUtil2;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,6 +140,8 @@ public class Grib1Tables implements GribTables {
     return result;
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////
+
   private Map<Integer, String> ncepGenProcess;
 
   /**
@@ -152,11 +154,9 @@ public class Grib1Tables implements GribTables {
   public String getTypeGenProcessName(int center, int genProcess) {
     /*
     ON388 - TABLE A
-
-Generating Process or Model
-from Originating Center 7 (USNWS NCEP)
-
-GRIB1 - PDS Octet 6
+    Generating Process or Model
+    from Originating Center 7 (USNWS NCEP)
+    GRIB1 - PDS Octet 6
      */
     if (center == 7) {
       if (ncepGenProcess == null) readNcepGenProcess("resources/grib1/ncep/ncepTableA.xml");
@@ -165,7 +165,7 @@ GRIB1 - PDS Octet 6
     }
 
     // TABLE A - GENERATING PROCESS OR MODEL - ORIGINATING CENTER 9
-    //        * from John Halquist <John.Halquist@noaa.gov> 9/12/2011
+    //        * from bdgparm.f John Halquist <John.Halquist@noaa.gov> 9/12/2011
     if (center == 9) {
       switch (genProcess) {
         case 150:
@@ -253,4 +253,67 @@ GRIB1 - PDS Octet 6
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////
+
+  private static Map<Integer, String> nwsoSubCenter;
+
+  /* TABLE C - SUB-CENTERS FOR CENTER 9  US NWS FIELD STATIONS
+  * from bdgparm.f John Halquist <John.Halquist@noaa.gov> 9/12/2011
+  */
+  public static String getSubCenterName(int center, int subcenter) {
+    if (center == 9) {
+      if (nwsoSubCenter == null) readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
+      if (nwsoSubCenter == null) return null;
+      return nwsoSubCenter.get(subcenter);
+    }
+
+    return CommonCodeTable.getSubCenterName(center, subcenter);
+  }
+
+  // order: num, name, desc, unit
+  private static void readNwsoSubCenter(String path) {
+    HashMap<Integer, String> result = new HashMap<Integer, String>();
+
+    InputStream is = null;
+    try {
+      is = ucar.nc2.grib.GribResourceReader.getInputStream(path);
+      if (is == null) return;
+
+      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+      // rdg - added the 0 line length check to cover the case of blank lines at
+      //       the end of the parameter table file.
+      while (true) {
+        String line = br.readLine();
+        if (line == null) break;
+        if ((line.length() == 0) || line.startsWith("#")) continue;
+
+        StringBuilder lineb =  new StringBuilder(line);
+        StringUtil2.remove(lineb,"'+,/");
+        String[] flds = lineb.toString().split("[:]");
+
+        int val = Integer.parseInt(flds[0].trim()); // must have a number
+        String name = flds[1].trim() + ": " + flds[2].trim();
+
+        result.put(val, name);
+        if (true) System.out.printf(" %d == %s%n", val, name);
+      }
+
+      nwsoSubCenter = result; // all at once - thread safe
+
+    } catch (IOException ioError) {
+      logger.warn("An error occurred in Grib1Tables while trying to open the table " + path + " : " + ioError);
+
+    } finally {
+      if (is != null) try {
+        is.close();
+      } catch (IOException e) {
+      }
+    }
+
+  }
+
+  public static void main(String[] args) {
+     readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
+  }
 }

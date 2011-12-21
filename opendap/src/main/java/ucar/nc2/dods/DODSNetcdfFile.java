@@ -336,7 +336,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
 
     finish();
-    if (showNCfile) System.out.println("DODS nc file = " + this);
+    if (showNCfile)
+        System.out.println("DODS nc file = " + this);
     long took = System.currentTimeMillis() - start;
     if (debugOpenTime) System.out.printf(" took %d msecs %n", took);
   }
@@ -636,18 +637,39 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     Variable v = makeVariable(parentGroup, parentStructure, dodsV);
     if (v != null) {
       addAttributes(v, dodsV);
-/*Done in DODSVariable constructor
-      if (parentStructure == null)
-        parentGroup.addVariable(v);
-      else
-        parentStructure.addMemberVariable(v);
-*/
+      if (parentStructure != null)
+          parentStructure.addMemberVariable(v);
+      else {
+          parentGroup = computeGroup(v,parentGroup);
+          parentGroup.addVariable(v);
+      }
       dodsV.isDone = true;
     }
     return v;
   }
 
-  private Variable makeVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException {
+  Group computeGroup(Variable v, Group parentGroup/*Ostensibly*/)
+  {
+      if(parentGroup == null)
+          parentGroup = getRootGroup();
+      if(RC.useGroups) {
+          // If the shortname has '/' in it, then we need to insert
+          // this variable into the proper group and rename it
+          String name = v.getShortName();
+          int sindex = name.indexOf('/');
+          if(sindex >= 0) {
+              assert(parentGroup != null);
+              Group g = parentGroup.makeRelativeGroup(this,name,true/*ignorelast*/);
+              parentGroup = g;
+              // change variable's name
+              name = name.substring(name.lastIndexOf('/')+1);
+              v.setName(name);   // change name
+          }
+      }
+      return parentGroup;
+  }
+
+    private Variable makeVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException {
 
     opendap.dap.BaseType dodsBT = dodsV.bt;
     String dodsShortName = dodsBT.getClearName();

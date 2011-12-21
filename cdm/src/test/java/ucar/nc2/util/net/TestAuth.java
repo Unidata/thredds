@@ -188,9 +188,9 @@ public class TestAuth extends ucar.nc2.util.TestCommon
     }
 
 
-    @Test
+    //Disable for now
     public void
-    testKeystore() throws Exception
+    xtestKeystore() throws Exception
     {
 	String url = "hydro2.unidata.ucar.edu/b31.dds";
 

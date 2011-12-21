@@ -261,7 +261,7 @@ public class FileCache {
           needHard = true;
           hasScheduled.getAndSet(true); // tell other threads not to schedule another cleanup
 
-        } else if ((count > softLimit)) { // && (softLimit > 0)) {
+        } else if ((count > softLimit) && (exec != null)) { // && (softLimit > 0)) {
           hasScheduled.getAndSet(true); // tell other threads not to schedule another cleanup
           needSoft = true;
         }

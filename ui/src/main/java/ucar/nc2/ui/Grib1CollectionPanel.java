@@ -135,12 +135,12 @@ public class Grib1CollectionPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Show Processed Grib1 Record", new AbstractAction() {
+    varPopup.addAction("Show Complete Grib1 Record", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showProcessedRecord(bean, f);
+          showCompleteRecord(bean, f);
           infoPopup3.setText(f.toString());
           infoPopup3.gotoTop();
           infoWindow3.showIfNotIconified();
@@ -149,19 +149,19 @@ public class Grib1CollectionPanel extends JPanel {
     });
 
     varPopup.addAction("Compare Grib1 Records", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         List list = record1BeanTable.getSelectedBeans();
-         if (list.size() == 2) {
-           RecordBean bean1 = (RecordBean) list.get(0);
-           RecordBean bean2 = (RecordBean) list.get(1);
-           Formatter f = new Formatter();
-           compare(bean1, bean2, f);
-           infoPopup2.setText(f.toString());
-           infoPopup2.gotoTop();
-           infoWindow2.showIfNotIconified();
-         }
-       }
-     });
+      public void actionPerformed(ActionEvent e) {
+        List list = record1BeanTable.getSelectedBeans();
+        if (list.size() == 2) {
+          RecordBean bean1 = (RecordBean) list.get(0);
+          RecordBean bean2 = (RecordBean) list.get(1);
+          Formatter f = new Formatter();
+          compare(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.showIfNotIconified();
+        }
+      }
+    });
 
     varPopup.addAction("Compare Data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -182,53 +182,46 @@ public class Grib1CollectionPanel extends JPanel {
 
     varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
     varPopup.addAction("Show raw GDS", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         List list = gds1Table.getSelectedBeans();
-         Formatter f = new Formatter();
-         for (Object bo : list) {
-           Gds1Bean bean = (Gds1Bean) bo;
-           showRawGds(bean.gdss, f);
-         }
-         infoPopup.setText(f.toString());
-         infoWindow.setVisible(true);
-       }
-     });
+      public void actionPerformed(ActionEvent e) {
+        List list = gds1Table.getSelectedBeans();
+        Formatter f = new Formatter();
+        for (Object bo : list) {
+          Gds1Bean bean = (Gds1Bean) bo;
+          showRawGds(bean.gdss, f);
+        }
+        infoPopup.setText(f.toString());
+        infoWindow.setVisible(true);
+      }
+    });
 
-     varPopup.addAction("Compare GDS", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         List list = gds1Table.getSelectedBeans();
-         if (list.size() == 2) {
-           Gds1Bean bean1 = (Gds1Bean) list.get(0);
-           Gds1Bean bean2 = (Gds1Bean) list.get(1);
-           Formatter f = new Formatter();
-           compare(bean1.gdss, bean2.gdss, f);
-           infoPopup2.setText(f.toString());
-           infoPopup2.gotoTop();
-           infoWindow2.showIfNotIconified();
-         }
-       }
-     });
+    varPopup.addAction("Compare GDS", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = gds1Table.getSelectedBeans();
+        if (list.size() == 2) {
+          Gds1Bean bean1 = (Gds1Bean) list.get(0);
+          Gds1Bean bean2 = (Gds1Bean) list.get(1);
+          Formatter f = new Formatter();
+          compare(bean1.gdss, bean2.gdss, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.showIfNotIconified();
+        }
+      }
+    });
 
     varPopup.addAction("Show GDS", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         ByteArrayOutputStream os = new ByteArrayOutputStream();
-         List list = gds1Table.getSelectedBeans();
-         Formatter f = new Formatter();
-         for (Object bo : list) {
-           Gds1Bean bean = (Gds1Bean) bo;
-           f.format("Grib1SectionGridDefinition = %s", bean.gdss);
-           f.format("Grib1GDS = %s", bean.gds);
-           GdsHorizCoordSys gdsHc = bean.gds.makeHorizCoordSys();
-           f.format("%n%n%s", gdsHc);
-           ProjectionImpl proj = gdsHc.proj;
-           f.format("%n%nProjection %s%n", proj.getName());
-           for (Parameter p : proj.getProjectionParameters())
-             f.format("  %s == %s%n", p.getName(), p.getStringValue());
-         }
-         infoPopup.setText(f.toString());
-         infoWindow.setVisible(true);
-       }
-     });
+      public void actionPerformed(ActionEvent e) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        List list = gds1Table.getSelectedBeans();
+        Formatter f = new Formatter();
+        for (Object bo : list) {
+          Gds1Bean bean = (Gds1Bean) bo;
+          showGds(bean.gdss, bean.gds, f);
+        }
+        infoPopup.setText(f.toString());
+        infoWindow.setVisible(true);
+      }
+    });
 
     /////////////////////////////////////////
     // the info windows
@@ -275,7 +268,7 @@ public class Grib1CollectionPanel extends JPanel {
     String name = dcm.getCollectionName();
     int pos = name.lastIndexOf('/');
     if (pos < 0) pos = name.lastIndexOf('\\');
-    if (pos > 0) name = name.substring(pos+1);
+    if (pos > 0) name = name.substring(pos + 1);
     File def = new File(dcm.getRoot(), name + GribCollection.IDX_EXT);
     String filename = fileChooser.chooseFilename(def);
     if (filename == null) return false;
@@ -345,14 +338,14 @@ public class Grib1CollectionPanel extends JPanel {
     f.format("%nCompare Gds%n");
     byte[] raw1 = gds1.getRawBytes();
     byte[] raw2 = gds2.getRawBytes();
-    Misc.compare( raw1, raw2, f);
+    Misc.compare(raw1, raw2, f);
   }
 
   private void compare(Grib1SectionProductDefinition pds1, Grib1SectionProductDefinition pds2, Formatter f) {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getRawBytes();
     byte[] raw2 = pds2.getRawBytes();
-    Misc.compare( raw1, raw2, f);
+    Misc.compare(raw1, raw2, f);
   }
 
   void compareData(RecordBean bean1, RecordBean bean2, Formatter f) {
@@ -393,7 +386,7 @@ public class Grib1CollectionPanel extends JPanel {
     Formatter f = new Formatter();
     this.dcm = scanCollection(spec, f);
     if (dcm == null) {
-      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n"+f.toString());
+      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f.toString());
       return;
     }
 
@@ -411,7 +404,7 @@ public class Grib1CollectionPanel extends JPanel {
     param1BeanTable.setBeans(params);
 
     for (Grib1SectionGridDefinition gds : gdsSet.values())
-      gdsList.add(new Gds1Bean( gds));
+      gdsList.add(new Gds1Bean(gds));
 
     Collections.sort(gdsList);
     gds1Table.setBeans(gdsList);
@@ -433,7 +426,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
   }
 
-    private void processGribFile(MFile mfile, int fileno,
+  private void processGribFile(MFile mfile, int fileno,
                                Map<Integer, ParameterBean> pdsSet,
                                Map<Integer, Grib1SectionGridDefinition> gdsSet,
                                List<ParameterBean> params, Formatter f) throws IOException {
@@ -534,17 +527,29 @@ public class Grib1CollectionPanel extends JPanel {
   }
 
   public void showRawGds(Grib1SectionGridDefinition gds, Formatter f) {
-     byte[] raw = gds.getRawBytes();
+    byte[] raw = gds.getRawBytes();
     f.format("%n");
     for (int i = 0; i < raw.length; i++) {
       f.format(" %3d : %3d%n", i + 1, raw[i]);
     }
-   }
+  }
 
+  public void showGds(Grib1SectionGridDefinition gdss, Grib1Gds gds, Formatter f) {
+    f.format("Grib1SectionGridDefinition = %s", gdss);
+    f.format("Grib1GDS = %s", gds);
+    GdsHorizCoordSys gdsHc = gds.makeHorizCoordSys();
+    f.format("%n%n%s", gdsHc);
+    ProjectionImpl proj = gdsHc.proj;
+    f.format("%n%nProjection %s%n", proj.getName());
+    for (Parameter p : proj.getProjectionParameters())
+      f.format("  %s == %s%n", p.getName(), p.getStringValue());
+  }
 
-  public void showProcessedRecord(RecordBean rbean, Formatter f) {
+  public void showCompleteRecord(RecordBean rbean, Formatter f) {
     f.format("Header = %s%n", new String(rbean.gr.getHeader()));
+    f.format("file = %d %s%n", rbean.gr.getFile(), fileList.get(rbean.gr.getFile()).getPath());
     rbean.pds.showPds(tables, f);
+    showGds(rbean.gds, rbean.gds.getGDS(), f);
   }
 
   public void showProcessedPds(ParameterBean pbean, Formatter f) {
@@ -580,7 +585,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getTableVersion() {
-      return pds.getCenter() + "-" + pds.getSubCenter() + "-"+ pds.getTableVersion();
+      return pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
     }
 
     public final CalendarDate getReferenceDate() {
@@ -601,8 +606,8 @@ public class Grib1CollectionPanel extends JPanel {
 
     public String getName() {
       if (param == null) return null;
-      return Grib1Utils.makeVariableName(tables, pds.getCenter(),pds.getSubCenter(),pds.getTableVersion(),pds.getParameterNumber(),
-          pds.getLevelType(), pds.getTimeType() );
+      return Grib1Utils.makeVariableName(tables, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
+              pds.getLevelType(), pds.getTimeType());
     }
 
     public String getUnit() {
@@ -611,7 +616,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     public final String getLevelName() {
       Grib1ParamLevel plevel = pds.getParamLevel();
-      return tables.getLevelNameShort( plevel.getLevelType());
+      return tables.getLevelNameShort(plevel.getLevelType());
     }
 
     public int getN() {
@@ -672,7 +677,7 @@ public class Grib1CollectionPanel extends JPanel {
     public String getTimeCoord() {
       if (ptime.isInterval()) {
         int[] intv = ptime.getInterval();
-        return intv[0]+"-"+intv[1];
+        return intv[0] + "-" + intv[1];
       }
       return Integer.toString(ptime.getForecastTime());
     }
@@ -691,9 +696,17 @@ public class Grib1CollectionPanel extends JPanel {
 
     public String getLevel() {
       if (plevel.isLayer()) {
-        return plevel.getValue1()+"-"+plevel.getValue2();
+        return plevel.getValue1() + "-" + plevel.getValue2();
       }
       return Float.toString(plevel.getValue1());
+    }
+
+    public long getPos() {
+      return gr.getDataSection().getStartingPosition();
+    }
+
+    public final int getFile() {
+      return gr.getFile();
     }
 
     public final String getStatType() {
@@ -707,7 +720,7 @@ public class Grib1CollectionPanel extends JPanel {
       ucar.unidata.io.RandomAccessFile raf = null;
       try {
         raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
-        raf.order( ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+        raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
         return gr.readData(raf);
       } finally {
         if (raf != null)
@@ -717,11 +730,11 @@ public class Grib1CollectionPanel extends JPanel {
 
   }
 
-    ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
 
   public class Gds1Bean implements Comparable<Gds1Bean> {
     Grib1SectionGridDefinition gdss;
-     Grib1Gds gds;
+    Grib1Gds gds;
     // no-arg constructor
 
     public Gds1Bean() {
@@ -729,7 +742,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     public Gds1Bean(Grib1SectionGridDefinition m) {
       this.gdss = m;
-       gds = gdss.getGDS();
+      gds = gdss.getGDS();
     }
 
     public long getCRC() {
@@ -744,7 +757,7 @@ public class Grib1CollectionPanel extends JPanel {
       return gdss.hasVerticalCoordinateParameters();
     }
 
-     public String getGridName() {
+    public String getGridName() {
       return gds.getNameShort();
     }
 
@@ -773,20 +786,20 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public int getNx() {
-       return gds.getNx();
-     }
+      return gds.getNx();
+    }
 
-     public int getNy() {
-       return gds.getNy();
-     }
+    public int getNy() {
+      return gds.getNy();
+    }
 
     public int getNxRaw() {
-       return gds.getNxRaw();
-     }
+      return gds.getNxRaw();
+    }
 
-     public int getNyRaw() {
-       return gds.getNyRaw();
-     }
+    public int getNyRaw() {
+      return gds.getNyRaw();
+    }
 
     @Override
     public int compareTo(Gds1Bean o) {

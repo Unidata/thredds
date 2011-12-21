@@ -91,6 +91,11 @@ public class TestGroups extends ucar.nc2.util.TestCommon
                    "http://motherlode.ucar.edu:8080/thredds/dodsC/ExampleNcML/Agg.nc",
                    ""));
        }
+       if(false) {
+           results.add(new Result("TestTDSLocal Failure",
+                   "http://localhost:8080/dts/structdupname",
+                   ""));
+       }
 
         if(!RC.useGroups)   {
             System.out.println("Groups not supported; continuing");
@@ -105,7 +110,7 @@ public class TestGroups extends ucar.nc2.util.TestCommon
 	        throw new Exception("Cannot read: "+result.url);
             StringWriter ow = new StringWriter();
             PrintWriter pw = new PrintWriter(ow);
-	    ncfile.writeCDL(pw, false);
+	        ncfile.writeCDL(pw, false);
             try {pw.close(); ow.close();} catch (IOException ioe) {};
             StringReader baserdr = new StringReader(result.cdl);
             String captured = ow.toString();

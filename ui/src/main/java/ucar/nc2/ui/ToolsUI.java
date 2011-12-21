@@ -323,7 +323,7 @@ public class ToolsUI extends JPanel {
 
     // nested-2 tab - grib old
     //griboTabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
-    grib1TabPane.addTab("GRIB1-RAW", new JLabel("GRIB1-RAW"));
+    grib1TabPane.addTab("GRIB1collection", new JLabel("GRIB1collection"));
     //grib1TabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
     //grib1TabPane.addTab("GRIB1-INDEX", new JLabel("GRIB1-INDEX"));
     grib1TabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
@@ -484,7 +484,7 @@ public class ToolsUI extends JPanel {
       cdmremotePanel = new CdmremotePanel((PreferencesExt) mainPrefs.node("cdmremote"));
       c = cdmremotePanel;
 
-    } else if (title.equals("GRIB1-RAW")) {
+    } else if (title.equals("GRIB1collection")) {
       grib1RawPanel = new Grib1CollectionPanel((PreferencesExt) mainPrefs.node("grib1raw"));
       c = grib1RawPanel;
 

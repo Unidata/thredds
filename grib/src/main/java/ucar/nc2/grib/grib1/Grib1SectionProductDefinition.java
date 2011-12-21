@@ -334,17 +334,16 @@ public final class Grib1SectionProductDefinition {
   public void showPds(Grib1Tables tables, Formatter f) {
 
     f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
-    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), Grib1Utils.getSubCenterName(getCenter(), getSubCenter()));
+    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), tables.getSubCenterName(getCenter(), getSubCenter()));
     f.format("                 Table Version : %d%n", getTableVersion());
 
     Grib1Parameter parameter = tables.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
     if (parameter != null) {
       Grib1ParamTable ptable = parameter.getTable();
-      f.format("               Parameter_table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(), (ptable == null) ? "MISSING" : ptable.getPath());
+      f.format("               Parameter Table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(), (ptable == null) ? "MISSING" : ptable.getPath());
       f.format("                Parameter Name : (%d) %s%n", getParameterNumber(), parameter.getName());
       f.format("                Parameter Desc : %s%n", parameter.getDescription());
       f.format("               Parameter Units : %s%n", parameter.getUnit());
-      f.format("               Parameter Table : %s%n", parameter.getTable().getName());
     } else {
       f.format("               Parameter %d not found%n", getParameterNumber());
     }

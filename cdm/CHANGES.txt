@@ -3,6 +3,12 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
+ 4: (2011-12-xx)
+  StringUtil2.remove(StringBuilder sb, String out) had error
+  Grib1: wasnt getting all of the center 9 subcenters from bldparm.f read correctly
+  Grib1CollectionPanel: improve various context menu functionalities
+  opendap groups: fix handling of duplicate names between top-level and structure fields; also fix nullpointer exceptions with null group; add tests
+
  3:(2011-12-14)
   fix spring config schema versions
   http url encoding - dont encode '='

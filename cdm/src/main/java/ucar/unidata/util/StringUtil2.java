@@ -692,19 +692,24 @@ public class StringUtil2 {
   // StringBuilder
 
   /**
-   * Remove any of the characters from out
+   * Remove any of the characters in out from sb
    *
    * @param sb  the StringBuilder
    * @param out get rid of any of these characters
    */
   static public void remove(StringBuilder sb, String out) {
-    for (int i = 0; i < sb.length(); i++) {
+    int i = 0;
+    while (i < sb.length()) {
       int c = sb.charAt(i);
+      boolean ok = true;
       for (int j = 0; j < out.length(); j++) {
         if (out.charAt(j) == c) {
           sb.delete(i, i + 1);
+          ok = false;
+          break;
         }
       }
+      if (ok) i++;
     }
   }
 

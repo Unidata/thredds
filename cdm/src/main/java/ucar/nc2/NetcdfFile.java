@@ -49,6 +49,7 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.GZIPInputStream;
 import java.net.URL;
@@ -355,7 +356,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   static private void appendGroupName(StringBuilder sbuff, Group g, String reserved) {
-    boolean isRoot = g.getParentGroup() == null;
+    boolean isRoot = (g==null?true:(g.getParentGroup() == null));
     if (isRoot) return;
 
     if (g.getParentGroup() != null)
@@ -708,9 +709,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
         if (debugCompress) System.out.println("uncompressed " + filename + " to " + uncompressedFile);
 
       } else if (suffix.equalsIgnoreCase("zip")) {
-        in = new ZipInputStream(new FileInputStream(filename));
-        copy(in, fout, 100000);
-        if (debugCompress) System.out.println("unzipped " + filename + " to " + uncompressedFile);
+        ZipInputStream zin = new ZipInputStream(new FileInputStream(filename));
+        ZipEntry ze = zin.getNextEntry();
+        if (ze != null) {
+          in = zin;
+          copy(in, fout, 100000);
+          if (debugCompress) System.out.println("unzipped " + filename + " entry " + ze.getName() + " to " + uncompressedFile);
+        }
 
       } else if (suffix.equalsIgnoreCase("bz2")) {
         in = new CBZip2InputStream(new FileInputStream(filename), true);
