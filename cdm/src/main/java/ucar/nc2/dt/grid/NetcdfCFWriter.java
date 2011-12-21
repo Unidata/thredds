@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dt.grid;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -181,7 +182,7 @@ public class NetcdfCFWriter {
     for (Attribute att : gds.getGlobalAttributes())
       writer.writeGlobalAttribute(att);
 
-    writer.writeGlobalAttribute(new Attribute("Conventions", "CF-1.0"));
+    writer.writeGlobalAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.0"));
     writer.writeGlobalAttribute(new Attribute("History",
             "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
                     "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
@@ -208,7 +209,7 @@ public class NetcdfCFWriter {
       }
       if (addLatLon)
         sbuff.append("lat lon");
-      newV.addAttribute(new Attribute("coordinates", sbuff.toString()));
+      newV.addAttribute(new Attribute(CF.COORDINATES, sbuff.toString()));
 
       // looking for coordinate transform variables
       for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
@@ -222,14 +223,14 @@ public class NetcdfCFWriter {
       Variable newV = root.findVariable(axis.getShortName()); // LOOK ???
       if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
         if (null != axis.getPositive())
-          newV.addAttribute(new Attribute("positive", axis.getPositive()));
+          newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
       }
       if (axis.getAxisType() == AxisType.Lat) {
-        newV.addAttribute(new Attribute("units", "degrees_north"));
+        newV.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
         newV.addAttribute(new Attribute("standard_name", "latitude"));
       }
       if (axis.getAxisType() == AxisType.Lon) {
-        newV.addAttribute(new Attribute("units", "degrees_east"));
+        newV.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
         newV.addAttribute(new Attribute("standard_name", "longitude"));
       }
       if (axis.getAxisType() == AxisType.GeoX) {
@@ -293,16 +294,16 @@ public class NetcdfCFWriter {
     Variable latVar = new Variable(ncfile, null, null, "lat");
     latVar.setDataType(DataType.DOUBLE);
     latVar.setDimensions(dims);
-    latVar.addAttribute(new Attribute("units", "degrees_north"));
-    latVar.addAttribute(new Attribute("long_name", "latitude coordinate"));
+    latVar.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+    latVar.addAttribute(new Attribute(CDM.LONG_NAME, "latitude coordinate"));
     latVar.addAttribute(new Attribute("standard_name", "latitude"));
     latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
     Variable lonVar = new Variable(ncfile, null, null, "lon");
     lonVar.setDataType(DataType.DOUBLE);
     lonVar.setDimensions(dims);
-    lonVar.addAttribute(new Attribute("units", "degrees_east"));
-    lonVar.addAttribute(new Attribute("long_name", "longitude coordinate"));
+    lonVar.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+    lonVar.addAttribute(new Attribute(CDM.LONG_NAME, "longitude coordinate"));
     lonVar.addAttribute(new Attribute("standard_name", "longitude"));
     lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 

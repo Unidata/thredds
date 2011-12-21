@@ -4,6 +4,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -532,7 +533,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     makeMember(dataSeq, STNID, DataType.LONG, null, "station stnId", null, null, null);
     makeMember(dataSeq, YEAR, DataType.INT, null, "year of the station record", null, null, null);
     v = makeMember(dataSeq, VALUE, DataType.FLOAT, DIM_NAME, "monthly mean temperature", "Celsius", null, null);
-    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
+    v.addAttribute(new Attribute(CDM.MISSING_VALUE, -9999));
     dataParser.getField(3).setScale(.01f);
     makeMember(dataSeq, DMFLAG, DataType.CHAR, DIM_NAME, "data management flag", null, null, null);
     makeMember(dataSeq, QCFLAG, DataType.CHAR, DIM_NAME, "quality control flag", null, null, null);
@@ -540,7 +541,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
     // synthetic time variable
     v = makeMember(dataSeq, TIME, DataType.STRING, null, "starting time of the record", null, null, AxisType.Time);
-    v.addAttribute(new Attribute(CF.MISSING_VALUE, "missing"));
+    v.addAttribute(new Attribute(CDM.MISSING_VALUE, "missing"));
 
     StructureMembers dataSm = dataSeq.makeStructureMembers();
     dataSm.findMember(STNID).setDataObject(dataParser.getField(0));
@@ -587,7 +588,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     ncfile.addVariable(null, stnSeq);
 
     v = makeMember(stnSeq, STNID, DataType.LONG, null, "station id", null, null, null);
-    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_ID));
+    v.addAttribute(new Attribute(CF.CF_ROLE, CF.TIMESERIES_ID));
     makeMember(stnSeq, LAT, DataType.FLOAT, null, "latitude", "degrees_north", null, null);
     makeMember(stnSeq, LON, DataType.FLOAT, null, "longitude", "degrees_east", null, null);
     makeMember(stnSeq, STELEV, DataType.FLOAT, null, "elevation", "m", null, null);
@@ -596,15 +597,15 @@ public class Ghcnm extends AbstractIOServiceProvider {
     makeMember(stnSeq, GRELEV, DataType.INT, null, "elevation estimated from gridded digital terrain data", "m", null, null);
     makeMember(stnSeq, POPCLS, DataType.CHAR, null, "population class", null, null, null);
     v = makeMember(stnSeq, POPSIZ, DataType.INT, null, "population of the city or town the station is located in", "thousands of persons", null, null);
-    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9));
+    v.addAttribute(new Attribute(CDM.MISSING_VALUE, -9));
     makeMember(stnSeq, TOPO, DataType.STRING, null, "type of topography in the environment surrounding the station", null, null, null);
     makeMember(stnSeq, STVEG, DataType.STRING, null, "type of vegetation in environment of station", null, null, null);
     makeMember(stnSeq, STLOC, DataType.STRING, null, "station is near lake or ocean", null, null, null);
     v = makeMember(stnSeq, OCNDIS, DataType.INT, null, "distance to nearest ocean/lake", "km", null, null);
-    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9));
+    v.addAttribute(new Attribute(CDM.MISSING_VALUE, -9));
     makeMember(stnSeq, AIRSTN, DataType.CHAR, null, "airport station indicator", null, null, null);
     v = makeMember(stnSeq, TOWNDIS, DataType.INT, null, "distance from airport to center of associated city or town", "km", null, null);
-    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9));
+    v.addAttribute(new Attribute(CDM.MISSING_VALUE, -9));
     makeMember(stnSeq, GRVEG, DataType.STRING, null, "vegetation type at nearest 0.5 deg x 0.5 deg gridded data point of vegetation dataset", null, null, null);
     makeMember(stnSeq, POPCSS, DataType.CHAR, null, "population class as determined by satellite night lights", null, null, null);
 
@@ -613,9 +614,9 @@ public class Ghcnm extends AbstractIOServiceProvider {
     stnSeq.addMemberVariable(nestedSeq);
 
     v = makeMember(nestedSeq, YEAR, DataType.INT, null, "year", null, null, null);
-    v.addAttribute(new Attribute(CF.UNITS, "years since 0000-01-01T00:00"));
+    v.addAttribute(new Attribute(CDM.UNITS, "years since 0000-01-01T00:00"));
     v = makeMember(nestedSeq, VALUE, DataType.FLOAT, DIM_NAME, "monthly mean temperature", "Celsius", null, null);
-    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
+    v.addAttribute(new Attribute(CDM.MISSING_VALUE, -9999));
     dataParser.getField(3).setScale(.01f);
     makeMember(nestedSeq, DMFLAG, DataType.CHAR, DIM_NAME, "data management flag", null, null, null);
     makeMember(nestedSeq, QCFLAG, DataType.CHAR, DIM_NAME, "quality control flag", null, null, null);
@@ -623,7 +624,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
     // synthetic time variable in nested seq
     v = makeMember(nestedSeq, TIME, DataType.STRING, null, "starting time of the record", null, null, AxisType.Time);
-    v.addAttribute(new Attribute(CF.MISSING_VALUE, "missing"));
+    v.addAttribute(new Attribute(CDM.MISSING_VALUE, "missing"));
 
     StructureMembers nestedSm = nestedSeq.makeStructureMembers();
     nestedSm.findMember(YEAR).setDataObject(dataParser.getField(1));
@@ -648,7 +649,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
     // synthetic wmo variable in station
     v = makeMember(stnSeq, WMO, DataType.INT, null, "WMO station id", null, null, null);
-    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
+    v.addAttribute(new Attribute(CDM.MISSING_VALUE, -9999));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_WMOID));
 
     StructureMembers stnSm = stnSeq.makeStructureMembers();
@@ -675,7 +676,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
     //// global attribites
     ncfile.addAttribute(null, new Attribute("title", "Version 3 of the GHCN-Monthly dataset of land surface mean temperatures"));
-    ncfile.addAttribute(null, new Attribute("Conventions", "CDM"));
+    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CDM"));
     ncfile.addAttribute(null, new Attribute("CF:featureType", "timeSeries"));
     ncfile.addAttribute(null, new Attribute("see", "http://www.ncdc.noaa.gov/ghcnm, ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3"));
     ncfile.finish();
@@ -692,12 +693,12 @@ public class Ghcnm extends AbstractIOServiceProvider {
                               AxisType atype) {
 
     Variable v = new Variable(ncfile, null, s, shortName, dataType, dims);
-    v.addAttribute(new Attribute("long_name", longName));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, longName));
     if (cfName != null)
       v.addAttribute(new Attribute(CF.STANDARD_NAME, cfName));
 
     if (units != null)
-      v.addAttribute(new Attribute(CF.UNITS, units));
+      v.addAttribute(new Attribute(CDM.UNITS, units));
 
     if (atype != null)
       v.addAttribute(new Attribute(_Coordinate.AxisType, atype.toString()));

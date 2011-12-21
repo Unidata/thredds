@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
@@ -103,7 +104,7 @@ public class ADASConvention extends CoordSysBuilder {
 
     Variable coord_var = ds.findVariable("x_stag");
     if (!Double.isNaN(false_easting) || !Double.isNaN(false_northing)) {
-      String units = ds.findAttValueIgnoreCase(coord_var, "units", null);
+      String units = ds.findAttValueIgnoreCase(coord_var, CDM.UNITS, null);
       double scalef = 1.0;
       try {
         scalef = SimpleUnit.getConversionFactor(units, "km");
@@ -279,7 +280,7 @@ public class ADASConvention extends CoordSysBuilder {
     }
 
     DataType dtype = DataType.getType(data.getElementType());
-    String units = ds.findAttValueIgnoreCase(stagV, "units", "m");
+    String units = ds.findAttValueIgnoreCase(stagV, CDM.UNITS, "m");
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, dtype, axisName, units, "synthesized non-staggered " + axisName + " coordinate");
     v.setCachedData(data, true);
     return v;

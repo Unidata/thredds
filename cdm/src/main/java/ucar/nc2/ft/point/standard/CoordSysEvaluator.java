@@ -33,6 +33,8 @@
 
 package ucar.nc2.ft.point.standard;
 
+import ucar.nc2.Attribute;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -124,6 +126,15 @@ public class CoordSysEvaluator {
   static public CoordinateAxis findCoordByType(NetcdfDataset ds, AxisType atype) {
     CoordinateSystem use = findBestCoordinateSystem(ds);
     if (use != null) {
+      // first look for matching AxisType and "CF axis" attribute
+      for (CoordinateAxis axis : use.getCoordinateAxes()) {
+        if (axis.getAxisType() == atype) {
+          Attribute att = axis.findAttribute(CF.AXIS);
+          if (att != null && att.getStringValue().equals(atype.getCFAxisName()))
+            return axis;
+        }
+      }
+      // now match on just the AxisType
       for (CoordinateAxis axis : use.getCoordinateAxes()) {
         if (axis.getAxisType() == atype)
           return axis;
@@ -183,7 +194,7 @@ public class CoordSysEvaluator {
   }
 
   /**
-   * Dind the CoordinateSystem with the most number of CoordinateAxes
+   * Find the CoordinateSystem with the most number of CoordinateAxes
    * @param ds look in this dataset
    * @return CoordinateSystem or null if none
    */

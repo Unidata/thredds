@@ -38,6 +38,7 @@ import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 
@@ -353,7 +354,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         Variable timeVar = new Variable(ncfile, null, null, TIME_VAR,
                                         DataType.DOUBLE, TIME_VAR);
         timeVar.addAttribute(
-            new Attribute("units", "seconds since 1970-01-01 00:00:00"));
+            new Attribute(CDM.UNITS, "seconds since 1970-01-01 00:00:00"));
         timeVar.addAttribute(new Attribute("long_name", TIME_VAR));
         varArray = new ArrayDouble.D1(numTimes);
         int i = 0;
@@ -375,9 +376,8 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         structName = structName + "Sounding";
         Structure sVar = new Structure(ncfile, null, null, structName);
         sVar.setDimensions(stationTime);
-        sVar.addAttribute(new Attribute("coordinates",
-                                        "time SLAT SLON SELV"));
-        List<String> sequenceNames;
+        sVar.addAttribute(new Attribute(CF.COORDINATES, "time SLAT SLON SELV"));
+      List<String> sequenceNames;
         if (isMerged) {
             sequenceNames = new ArrayList<String>();
             sequenceNames.add(GempakSoundingFileReader.SNDT);

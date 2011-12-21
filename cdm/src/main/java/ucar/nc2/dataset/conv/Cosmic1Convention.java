@@ -41,6 +41,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
@@ -135,7 +136,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
                 DataType.DOUBLE, dim.getName(),
                 timeUnits, null);
         ds.addVariable(null, timeVar);
-        timeVar.addAttribute(new Attribute("units", timeUnits));
+        timeVar.addAttribute(new Attribute(CDM.UNITS, timeUnits));
         timeVar.addAttribute(new Attribute(_Coordinate.AxisType,
                 AxisType.Time.toString()));
         int dir = ds.readAttributeInteger(null, "irs", 1);
@@ -229,8 +230,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
       Variable tVar = ds.findVariable("time");
       String timeUnits = "seconds since 1980-01-06 00:00:00";  //dtime.getUnit().toString();
       tVar.removeAttributeIgnoreCase("valid_range");
-      tVar.removeAttributeIgnoreCase("units");
-      tVar.addAttribute(new Attribute("units", timeUnits));
+      tVar.removeAttributeIgnoreCase(CDM.UNITS);
+      tVar.addAttribute(new Attribute(CDM.UNITS, timeUnits));
       tVar.addAttribute(new Attribute(_Coordinate.AxisType,
               AxisType.Time.toString()));
 

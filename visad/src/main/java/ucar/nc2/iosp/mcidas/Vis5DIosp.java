@@ -38,6 +38,7 @@ import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 
@@ -264,7 +265,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         timeVar.setDataType(DataType.DOUBLE);
         timeVar.setDimensions(TIME);
         timeVar.addAttribute(
-            new Attribute("units", "seconds since 1900-01-01 00:00:00"));
+            new Attribute(CDM.UNITS, "seconds since 1900-01-01 00:00:00"));
         timeVar.addAttribute(new Attribute("long_name", TIME));
         timeVar.addAttribute(new Attribute(_Coordinate.AxisType,
                                            AxisType.Time.toString()));
@@ -338,10 +339,10 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             Variable v = new Variable(ncfile, null, null, varnames[i]);
             if (n_levels[i] > 1) {
                 v.setDimensions(dim3D);
-                v.addAttribute(new Attribute("coordinates", coords3D));
+                v.addAttribute(new Attribute(CF.COORDINATES, coords3D));
             } else {
                 v.setDimensions(dim2D);
-                v.addAttribute(new Attribute("coordinates", coords2D));
+                v.addAttribute(new Attribute(CF.COORDINATES, coords2D));
             }
             v.setDataType(DataType.FLOAT);
             String units = varunits[i].trim();
@@ -350,7 +351,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                 units = unitTable.get(key);
             }
             if (units != null) {
-                v.addAttribute(new Attribute(CF.UNITS, units));
+                v.addAttribute(new Attribute(CDM.UNITS, units));
             }
             // TODO: do two vars with the same name have different values?
             // check agaist duplicat variable names
@@ -594,7 +595,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         vertVar.setDimensions(LEVEL);
         vertVar.setDataType(DataType.FLOAT);
         if (vert_unit != null) {
-            vertVar.addAttribute(new Attribute(CF.UNITS, vert_unit));
+            vertVar.addAttribute(new Attribute(CDM.UNITS, vert_unit));
         }
         if (axisType != null) {
             vertVar.addAttribute(new Attribute(_Coordinate.AxisType,
@@ -669,7 +670,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             lat.setDimensions(COLUMN + " " + ROW);
             lat.setDataType(DataType.DOUBLE);
             lat.addAttribute(new Attribute("long_name", "latitude"));
-            lat.addAttribute(new Attribute(CF.UNITS, "degrees_north"));
+            lat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
             lat.addAttribute(new Attribute(CF.STANDARD_NAME, "latitude"));
             lat.addAttribute(new Attribute(_Coordinate.AxisType,
                                            AxisType.Lat.toString()));
@@ -678,7 +679,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             Variable lon = new Variable(ncfile, null, null, LON);
             lon.setDimensions(COLUMN + " " + ROW);
             lon.setDataType(DataType.DOUBLE);
-            lon.addAttribute(new Attribute(CF.UNITS, "degrees_east"));
+            lon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
             lon.addAttribute(new Attribute("long_name", "longitude"));
             lon.addAttribute(new Attribute(CF.STANDARD_NAME, "longitude"));
             lon.addAttribute(new Attribute(_Coordinate.AxisType,

@@ -34,6 +34,7 @@
 
 package ucar.nc2.iosp.misc;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
@@ -98,7 +99,7 @@ public class UspLightning2  extends AbstractIOServiceProvider {
     date.setDimensions("record");
     date.setDataType(DataType.INT);
     String timeUnit = "seconds since 1970-01-01 00:00:00";
-    date.addAttribute( new Attribute("long_name", "date of strike"));
+    date.addAttribute( new Attribute(CDM.LONG_NAME, "date of strike"));
     date.addAttribute( new Attribute("units", timeUnit));
     date.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     ncfile.addVariable( null, date);
@@ -107,7 +108,7 @@ public class UspLightning2  extends AbstractIOServiceProvider {
     Variable lat = new Variable(ncfile, null, null, "lat");
     lat.setDimensions("record");
     lat.setDataType(DataType.DOUBLE);
-    lat.addAttribute( new Attribute("long_name", "latitude"));
+    lat.addAttribute( new Attribute(CDM.LONG_NAME, "latitude"));
     lat.addAttribute( new Attribute("units", "degrees_north"));
     lat.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     ncfile.addVariable( null, lat);
@@ -116,7 +117,7 @@ public class UspLightning2  extends AbstractIOServiceProvider {
     Variable lon = new Variable(ncfile, null, null, "lon");
     lon.setDimensions("record");
     lon.setDataType(DataType.DOUBLE);
-    lon.addAttribute( new Attribute("long_name", "longitude"));
+    lon.addAttribute( new Attribute(CDM.LONG_NAME, "longitude"));
     lon.addAttribute( new Attribute("units", "degrees_east"));
     lon.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     ncfile.addVariable( null, lon);
@@ -125,24 +126,24 @@ public class UspLightning2  extends AbstractIOServiceProvider {
     Variable amp = new Variable(ncfile, null, null, "strikeAmplitude");
     amp.setDimensions("record");
     amp.setDataType(DataType.DOUBLE);
-    amp.addAttribute( new Attribute("long_name", "amplitude of strike"));
+    amp.addAttribute( new Attribute(CDM.LONG_NAME, "amplitude of strike"));
     amp.addAttribute( new Attribute("units", "kAmps"));
-    amp.addAttribute( new Attribute("missing_value", new Double(999)));
+    amp.addAttribute( new Attribute(CDM.MISSING_VALUE, new Double(999)));
     ncfile.addVariable( null, amp);
     amp.setSPobject( new IospData(3));
 
     Variable nstrokes = new Variable(ncfile, null, null, "strokeCount");
     nstrokes.setDimensions("record");
     nstrokes.setDataType(DataType.INT);
-    nstrokes.addAttribute( new Attribute("long_name", "number of strokes per flash"));
+    nstrokes.addAttribute( new Attribute(CDM.LONG_NAME, "number of strokes per flash"));
     nstrokes.addAttribute( new Attribute("units", ""));
     ncfile.addVariable( null, nstrokes);
     nstrokes.setSPobject( new IospData(4));
 
     ncfile.addAttribute(null, new Attribute("title", "USPN Lightning Data"));
-    ncfile.addAttribute(null, new Attribute("history","Read directly by Netcdf Java IOSP"));
+    ncfile.addAttribute(null, new Attribute(CDM.HISTORY,"Read directly by Netcdf Java IOSP"));
 
-    ncfile.addAttribute(null, new Attribute("Conventions","Unidata Observation Dataset v1.0"));
+    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "Unidata Observation Dataset v1.0"));
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.POINT.toString()));
     ncfile.addAttribute(null, new Attribute("observationDimension","record"));
 

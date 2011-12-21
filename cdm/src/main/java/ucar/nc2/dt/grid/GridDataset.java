@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dt.grid;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -190,14 +191,14 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
   // stuff to satisfy ucar.nc2.dt.TypedDataset
   public String getTitle() {
-    String title = ds.findAttValueIgnoreCase(null, "title", null);
+    String title = ds.findAttValueIgnoreCase(null, CDM.TITLE, null);
     return (title == null) ? getName() : title;
   }
 
   public String getDescription() {
     String desc = ds.findAttValueIgnoreCase(null, "description", null);
     if (desc == null)
-      desc = ds.findAttValueIgnoreCase(null, "history", null);
+      desc = ds.findAttValueIgnoreCase(null, CDM.HISTORY, null);
     return (desc == null) ? getName() : desc;
   }
 

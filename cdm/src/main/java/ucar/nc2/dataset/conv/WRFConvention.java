@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.units.SimpleUnit;
@@ -166,10 +167,10 @@ map_proj =  1: Lambert Conformal
     // kludge in fixing the units
     List<Variable> vlist = ds.getVariables();
     for (Variable v : vlist) {
-      Attribute att = v.findAttributeIgnoreCase("units");
+      Attribute att = v.findAttributeIgnoreCase(CDM.UNITS);
       if (att != null) {
         String units = att.getStringValue();
-        v.addAttribute(new Attribute("units", normalize(units))); // removes the old
+        v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
       }
     }
 
@@ -192,7 +193,7 @@ map_proj =  1: Lambert Conformal
         glat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
         glat.setDimensions("south_north west_east");
         glat.setCachedData(convertToDegrees(glat), false);
-        glat.addAttribute(new Attribute("units", "degrees_north"));
+        glat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
       }
 
       Variable glon = ds.findVariable("GLON");
@@ -202,7 +203,7 @@ map_proj =  1: Lambert Conformal
         glon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
         glon.setDimensions("south_north west_east");
         glon.setCachedData(convertToDegrees(glon), false);
-        glon.addAttribute(new Attribute("units", "degrees_east"));
+        glon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
       }
 
       VariableDS v = new VariableDS(ds, null, null, "LatLonCoordSys", DataType.CHAR, "", null, null);
@@ -615,11 +616,11 @@ map_proj =  1: Lambert Conformal
       return (VariableDS) coordVar;
     }
 
-    String units = ds.findAttValueIgnoreCase(coordVar, "units", "");
+    String units = ds.findAttValueIgnoreCase(coordVar, CDM.UNITS, "");
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, "soilDepth", DataType.DOUBLE, soilDim.getName(), units, "soil depth");
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
-    v.addAttribute(new Attribute("units", "units"));
+    v.addAttribute(new Attribute(CDM.UNITS, CDM.UNITS));
     if (!v.getShortName().equals(soilDim.getName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, soilDim.getName()));
 

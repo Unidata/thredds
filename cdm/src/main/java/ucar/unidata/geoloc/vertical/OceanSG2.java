@@ -26,6 +26,7 @@ package ucar.unidata.geoloc.vertical;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
@@ -101,7 +102,7 @@ public class OceanSG2 extends VerticalTransformImpl {
         depthCVar = ds.findVariable(depthCName);
         cVar = ds.findVariable(cName);
 
-        units     = ds.findAttValueIgnoreCase(depthVar, "units", "none");
+        units     = ds.findAttValueIgnoreCase(depthVar, CDM.UNITS, "none");
     }
 
     /**

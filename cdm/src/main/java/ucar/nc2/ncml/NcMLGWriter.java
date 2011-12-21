@@ -34,6 +34,8 @@ package ucar.nc2.ncml;
 
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.ma2.*;
 
@@ -287,13 +289,13 @@ public class NcMLGWriter {
       varElem.addContent( makeValues( var));
 
     // coordinate axis
-    varElem.setAttribute("units", var.getUnitsString());
+    varElem.setAttribute(CDM.UNITS, var.getUnitsString());
     if (var.getAxisType() != null)
       varElem.setAttribute("axisType", var.getAxisType().toString());
 
     String positive = var.getPositive();
     if (positive != null)
-      varElem.setAttribute("positive", positive);
+      varElem.setAttribute(CF.POSITIVE, positive);
 
     String boundaryRef = var.getBoundaryRef();
     if (boundaryRef != null)

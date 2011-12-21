@@ -33,6 +33,7 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
@@ -74,10 +75,10 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
        loc = ds.findGroup("All_Data/VIIRS-CLD-AGG-GEO_All");
 
     Variable lat = loc.findVariable("Latitude");
-    lat.addAttribute(new Attribute("units", "degrees_north"));
+    lat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
     lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     Variable lon = loc.findVariable("Longitude");
-    lon.addAttribute(new Attribute("units", "degrees_east"));
+    lon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
     lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     int[] shape = lat.getShape();

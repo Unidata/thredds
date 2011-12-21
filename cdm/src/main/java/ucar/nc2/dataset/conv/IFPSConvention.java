@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
@@ -77,11 +78,11 @@ public class IFPSConvention extends CoordSysBuilder {
 
    // Figure out projection info. Assume the same for all variables
     Variable lonVar = ds.findVariable("longitude");
-    lonVar.addAttribute( new Attribute("units", "degrees_east"));
+    lonVar.addAttribute( new Attribute(CDM.UNITS, "degrees_east"));
     lonVar.addAttribute( new Attribute(_Coordinate.AxisType, "Lon"));
     Variable latVar = ds.findVariable("latitude");
     latVar.addAttribute( new Attribute(_Coordinate.AxisType, "Lat"));
-    latVar.addAttribute( new Attribute("units", "degrees_north"));
+    latVar.addAttribute( new Attribute(CDM.UNITS, "degrees_north"));
 
     projVar = latVar;
     String projName = ds.findAttValueIgnoreCase(projVar, "projectionType", null);
@@ -100,8 +101,8 @@ public class IFPSConvention extends CoordSysBuilder {
             createTimeCoordinate(ds, ncvar);
         } else if (ncvar.getShortName().equals("Topo")){
             //Deal with Topography variable
-            ncvar.addAttribute(new Attribute("long_name", "Topography"));
-            ncvar.addAttribute(new Attribute("units", "ft"));
+            ncvar.addAttribute(new Attribute(CDM.LONG_NAME, "Topography"));
+            ncvar.addAttribute(new Attribute(CDM.UNITS, "ft"));
         }
     }
 
@@ -150,8 +151,8 @@ public class IFPSConvention extends CoordSysBuilder {
 
     CoordinateAxis1D timeCoord = new CoordinateAxis1D( ds, null, dimName, dtype, dimName, units, desc);
     timeCoord.setCachedData(timesArray, true);
-    timeCoord.addAttribute(new Attribute("long_name",  desc));
-    timeCoord.addAttribute(new Attribute("units",  units));
+    timeCoord.addAttribute(new Attribute(CDM.LONG_NAME,  desc));
+    timeCoord.addAttribute(new Attribute(CDM.UNITS,  units));
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
     ds.addCoordinateAxis(timeCoord);
 
@@ -168,10 +169,10 @@ public class IFPSConvention extends CoordSysBuilder {
     // fix the attributes
     Attribute att = ncVar.findAttribute("fillValue");
     if (att != null)
-      ncVar.addAttribute(new Attribute("_FillValue", att.getNumericValue()));
+      ncVar.addAttribute(new Attribute(CDM.FILL_VALUE, att.getNumericValue()));
     att = ncVar.findAttribute("descriptiveName");
     if (null != att)
-      ncVar.addAttribute(new Attribute("long_name", att.getStringValue()));
+      ncVar.addAttribute(new Attribute(CDM.LONG_NAME, att.getStringValue()));
 
     // ncVar.enhance();
   }
@@ -235,13 +236,13 @@ public class IFPSConvention extends CoordSysBuilder {
     }
 
     VariableDS xaxis = new VariableDS(ds, null, null, "xCoord", DataType.FLOAT, x_dim.getName(), "km", "x on projection");
-    xaxis.addAttribute(new Attribute("units", "km"));
-    xaxis.addAttribute(new Attribute("long_name", "x on projection"));
+    xaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
+    xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "x on projection"));
     xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
     VariableDS yaxis = new VariableDS(ds, null, null, "yCoord", DataType.FLOAT, y_dim.getName(), "km", "y on projection");
-    yaxis.addAttribute(new Attribute("units", "km"));
-    yaxis.addAttribute(new Attribute("long_name", "y on projection"));
+    yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
+    yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "y on projection"));
     yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
 
     xaxis.setCachedData( xData, true);

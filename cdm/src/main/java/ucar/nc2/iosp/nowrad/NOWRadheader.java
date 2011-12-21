@@ -42,6 +42,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.DateFormatter;
@@ -400,7 +401,7 @@ public class NOWRadheader {
 
         taxis.setDataType(DataType.DOUBLE);
         taxis.setDimensions("time");
-        taxis.addAttribute(new Attribute("long_name", "time since base date"));
+        taxis.addAttribute(new Attribute(CDM.LONG_NAME, "time since base date"));
         taxis.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
         double[] tdata = new double[1];
@@ -413,7 +414,7 @@ public class NOWRadheader {
 
         DateFormatter formatter = new DateFormatter();
 
-        taxis.addAttribute(new Attribute("units", "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
+        taxis.addAttribute(new Attribute(CDM.UNITS, "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
         ncfile.addVariable(null, taxis);
         dims.add(dimT);
 
@@ -432,8 +433,8 @@ public class NOWRadheader {
         v.setDataType(DataType.BYTE);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
-        v.addAttribute(new Attribute("long_name", ctitle));
-        v.addAttribute(new Attribute("units", cunit));
+        v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle));
+        v.addAttribute(new Attribute(CDM.UNITS, cunit));
         v.setSPobject(new Vinfo(numX, numY, hoff, false));
         v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
@@ -443,7 +444,7 @@ public class NOWRadheader {
         xaxis.setDataType(DataType.DOUBLE);
         xaxis.setDimensions("x");
         xaxis.addAttribute(new Attribute("standard_name", "projection x coordinate"));
-        xaxis.addAttribute(new Attribute("units", "km"));
+        xaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
         xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
         double[]       data1      = new double[numX];
@@ -473,7 +474,7 @@ public class NOWRadheader {
         yaxis.setDataType(DataType.DOUBLE);
         yaxis.setDimensions("y");
         yaxis.addAttribute(new Attribute("standard_name", "projection y coordinate"));
-        yaxis.addAttribute(new Attribute("units", "km"));
+        yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
         yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
         data1 = new double[numY];
         double dy = (ptul.getY() - ptlr.getY())/(numY-1);
@@ -530,7 +531,7 @@ public class NOWRadheader {
 
         taxis.setDataType(DataType.DOUBLE);
         taxis.setDimensions("time");
-        taxis.addAttribute(new Attribute("long_name", "time since base date"));
+        taxis.addAttribute(new Attribute(CDM.LONG_NAME, "time since base date"));
         taxis.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
         double[] tdata = new double[1];
@@ -543,7 +544,7 @@ public class NOWRadheader {
 
         DateFormatter formatter = new DateFormatter();
 
-        taxis.addAttribute(new Attribute("units", "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
+        taxis.addAttribute(new Attribute(CDM.UNITS, "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
         ncfile.addVariable(null, taxis);
         dims.add(dimT);
 
@@ -562,8 +563,8 @@ public class NOWRadheader {
         v.setDataType(DataType.BYTE);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
-        v.addAttribute(new Attribute("long_name", ctitle));
-        v.addAttribute(new Attribute("units", cunit));
+        v.addAttribute(new Attribute(CDM.LONG_NAME, ctitle));
+        v.addAttribute(new Attribute(CDM.UNITS, cunit));
         v.setSPobject(new Vinfo(numX, numY, hoff, false));
         v.addAttribute(new Attribute(_Coordinate.Axes, coordinates));
 
@@ -571,8 +572,8 @@ public class NOWRadheader {
         Variable xaxis = new Variable(ncfile, null, null, "lon");
         xaxis.setDataType(DataType.DOUBLE);
         xaxis.setDimensions("lon");
-        xaxis.addAttribute(new Attribute("long_name", "longitude"));
-        xaxis.addAttribute(new Attribute("units", "degree"));
+        xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "longitude"));
+        xaxis.addAttribute(new Attribute(CDM.UNITS, "degree"));
         xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "Lon"));
 
         double[] data1 = new double[numX];
@@ -589,8 +590,8 @@ public class NOWRadheader {
         Variable yaxis = new Variable(ncfile, null, null, "lat");
         yaxis.setDataType(DataType.DOUBLE);
         yaxis.setDimensions("lat");
-        yaxis.addAttribute(new Attribute("long_name", "latitude"));
-        yaxis.addAttribute(new Attribute("units", "degree"));
+        yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "latitude"));
+        yaxis.addAttribute(new Attribute(CDM.UNITS, "degree"));
         yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "Lat"));
         data1 = new double[numY];
 

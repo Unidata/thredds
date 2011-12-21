@@ -35,6 +35,7 @@ package ucar.nc2.ft.point.writer;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ft.*;
@@ -308,9 +309,9 @@ public class FeatureDatasetPointXML {
       }
 
       for (Attribute att : atts) {
-        if (att.getName().equals("units"))
+        if (att.getName().equals(CDM.UNITS))
           units = att.getStringValue();
-        if (att.getName().equals("long_name"))
+        if (att.getName().equals(CDM.LONG_NAME))
           desc = att.getStringValue();
         if ((desc == null) && att.getName().equals("description"))
           desc = att.getStringValue();

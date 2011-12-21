@@ -38,13 +38,11 @@ import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-
-import java.io.IOException;
-
 
 /**
  * AbstractIOSP for lighting data.  Parameters for each stroke are held in
@@ -113,12 +111,12 @@ public abstract class AbstractLightningIOSP extends AbstractIOServiceProvider {
         Variable v = new Variable(ncfile, group, seq, name);
         v.setDataType(dataType);
         v.setDimensions(dims);
-        v.addAttribute(new Attribute("long_name", longName));
+        v.addAttribute(new Attribute(CDM.LONG_NAME, longName));
         if (cfName != null) {
             v.addAttribute(new Attribute(CF.STANDARD_NAME, cfName));
         }
         if (units != null) {
-            v.addAttribute(new Attribute(CF.UNITS, units));
+            v.addAttribute(new Attribute(CDM.UNITS, units));
         }
         if (type != null) {
             v.addAttribute(new Attribute(_Coordinate.AxisType,
@@ -133,8 +131,8 @@ public abstract class AbstractLightningIOSP extends AbstractIOServiceProvider {
      * @param ncfile  the file to add to
      */
     protected void addLightningGlobalAttributes(NetcdfFile ncfile) {
-        ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, CF.FeatureType.point.toString()));
-        ncfile.addAttribute( null, new Attribute("history", "Read directly by Netcdf Java IOSP"));
+        ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.toString()));
+        ncfile.addAttribute( null, new Attribute(CDM.HISTORY, "Read directly by Netcdf Java IOSP"));
     }
 
     /**

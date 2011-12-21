@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.util.CompareNetcdf2;
 
@@ -63,12 +64,12 @@ public class TestStandardVar extends TestCase {
 
     // case 1
     ncfile.addVariable("t1", DataType.DOUBLE, dims);
-    ncfile.addVariableAttribute("t1", "scale_factor", new Double(2.0));
+    ncfile.addVariableAttribute("t1", CDM.SCALE_FACTOR, new Double(2.0));
     ncfile.addVariableAttribute("t1", "add_offset", new Double(77.0));
 
     // case 2
     ncfile.addVariable("t2", DataType.BYTE, dims);
-    ncfile.addVariableAttribute("t2", "scale_factor", new Short( (short) 2));
+    ncfile.addVariableAttribute("t2", CDM.SCALE_FACTOR, new Short( (short) 2));
     ncfile.addVariableAttribute("t2", "add_offset", new Short( (short) 77));
 
     // case 3
@@ -77,17 +78,17 @@ public class TestStandardVar extends TestCase {
 
     // case 4
     ncfile.addVariable("t4", DataType.SHORT, dims);
-    ncfile.addVariableAttribute("t4", "missing_value", new Short( (short) -9999));
+    ncfile.addVariableAttribute("t4", CDM.MISSING_VALUE, new Short( (short) -9999));
 
     // case 5
     ncfile.addVariable("t5", DataType.SHORT, dims);
-    ncfile.addVariableAttribute("t5", "missing_value", new Short( (short) -9999));
-    ncfile.addVariableAttribute("t5", "scale_factor", new Short( (short) 2));
+    ncfile.addVariableAttribute("t5", CDM.MISSING_VALUE, new Short( (short) -9999));
+    ncfile.addVariableAttribute("t5", CDM.SCALE_FACTOR, new Short( (short) 2));
     ncfile.addVariableAttribute("t5", "add_offset", new Short( (short) 77));
 
     // case 1
     ncfile.addVariable("m1", DataType.DOUBLE, dims);
-    ncfile.addVariableAttribute("m1", "missing_value", -999.99);
+    ncfile.addVariableAttribute("m1", CDM.MISSING_VALUE, -999.99);
 
 
     // create the file
@@ -165,7 +166,7 @@ public class TestStandardVar extends TestCase {
     assert(null != (t1 = ncfileRead.findVariable("t1")));
     assert( t1.getDataType() == DataType.DOUBLE);
 
-    Attribute att = t1.findAttribute("scale_factor");
+    Attribute att = t1.findAttribute(CDM.SCALE_FACTOR);
     assert( null != att);
     assert( !att.isArray());
     assert( 1 == att.getLength());
@@ -199,7 +200,7 @@ public class TestStandardVar extends TestCase {
       }
     }
 
-    assert( null == t1.findAttribute("scale_factor"));
+    assert( null == t1.findAttribute(CDM.SCALE_FACTOR));
     assert( null == t1.findAttribute("add_offset"));
 
     System.out.println( "**************TestStandardVar ReadDouble");
@@ -210,7 +211,7 @@ public class TestStandardVar extends TestCase {
     assert(null != (t2 = ncfileRead.findVariable("t2")));
     assert( t2.getDataType() == DataType.BYTE);
 
-    Attribute att = t2.findAttribute("scale_factor");
+    Attribute att = t2.findAttribute(CDM.SCALE_FACTOR);
     assert( null != att);
     assert( !att.isArray());
     assert( 1 == att.getLength());
@@ -285,7 +286,7 @@ public class TestStandardVar extends TestCase {
     VariableDS vs = (VariableDS) v;
     assert( vs.getDataType() == DataType.SHORT);
 
-    Attribute att = vs.findAttribute("missing_value");
+    Attribute att = vs.findAttribute(CDM.MISSING_VALUE);
     assert( null != att);
     assert( !att.isArray());
     assert( 1 == att.getLength());
@@ -388,9 +389,9 @@ public class TestStandardVar extends TestCase {
       }
     }
 
-    assert( null == vs.findAttribute("scale_factor"));
+    assert( null == vs.findAttribute(CDM.SCALE_FACTOR));
     assert( null == vs.findAttribute("add_offset"));
-    assert( null == vs.findAttribute("missing_value"));
+    assert( null == vs.findAttribute(CDM.MISSING_VALUE));
 
     System.out.println( "**************TestStandardVar Read readShort2FloatMissing");
   }

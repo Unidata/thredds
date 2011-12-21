@@ -33,6 +33,7 @@
 package thredds.server.cdmremote;
 
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
@@ -825,7 +826,7 @@ public class StationWriter {
               staxWriter.writeStartElement("data");
               staxWriter.writeAttribute("name", var.getShortName());
               if (var.getUnitsString() != null)
-                staxWriter.writeAttribute("units", var.getUnitsString());
+                staxWriter.writeAttribute(CDM.UNITS, var.getUnitsString());
 
               Array sdataArray = sdata.getArray(var.getShortName());
               String ss = sdataArray.toString();

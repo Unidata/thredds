@@ -36,6 +36,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
@@ -90,10 +91,10 @@ public class Suomi extends CoordSysBuilder {
     }
 
     Variable v = ds.findVariable("time_offset");
-    v.addAttribute(new Attribute( "units", "seconds since "+dfo.toDateTimeString(start)));
+    v.addAttribute(new Attribute( CDM.UNITS, "seconds since "+dfo.toDateTimeString(start)));
 
     Group root = ds.getRootGroup();
-    root.addAttribute(new Attribute( "Convention", "Suomi-Station-CDM"));    
+    root.addAttribute(new Attribute( CDM.CONVENTIONS, "Suomi-Station-CDM"));
     ds.finish();
   }
 

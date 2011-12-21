@@ -33,6 +33,8 @@
 
 package ucar.nc2.ncml;
 
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
@@ -141,8 +143,8 @@ public class AggregationExisting extends AggregationOuterDimension {
       aggVars.add(joinAggCoord);
       
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
-      joinAggCoord.addAttribute(new Attribute("long_name", "time coordinate"));
-      joinAggCoord.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
+      joinAggCoord.addAttribute(new Attribute(CDM.LONG_NAME, "time coordinate"));
+      joinAggCoord.addAttribute(new ucar.nc2.Attribute(CF.STANDARD_NAME, "time"));
     }
 
     if (timeUnitsChange) {
@@ -223,7 +225,7 @@ public class AggregationExisting extends AggregationOuterDimension {
       } catch (Exception e) {
         throw new IOException(e.getMessage());
       }
-      timeAxis.addAttribute(new Attribute("units", timeUnits));
+      timeAxis.addAttribute(new Attribute(CDM.UNITS, timeUnits));
 
       for (CalendarDate date : dateList) {
         double val = du.makeValue(date.toDate());
