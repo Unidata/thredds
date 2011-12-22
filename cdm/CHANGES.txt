@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  4: (2011-12-xx)
+  split CF and CDM constants, propagate them (incomplete)
+  upgrade CFpointObs to handle CF 1.6 final conventions
   StringUtil2.remove(StringBuilder sb, String out) had error
   Grib1: wasnt getting all of the center 9 subcenters from bldparm.f read correctly
   Grib1CollectionPanel: improve various context menu functionalities
