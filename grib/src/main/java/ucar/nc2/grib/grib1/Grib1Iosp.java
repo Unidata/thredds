@@ -94,6 +94,8 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     byte[] b = new byte[Grib1CollectionBuilder.MAGIC_START.length()];  // LOOK NOT also matches GribCollectionTimePartitioned
     raf.readFully(b);
     String magic = new String(b);
+
+    // check if its an ncx file
     if (magic.equals(Grib1CollectionBuilder.MAGIC_START)) return true;
 
     // check for GRIB1 file
@@ -138,33 +140,36 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     return super.sendIospMessage(special);
   }
 
-
   // public no-arg constructor for reflection
   public Grib1Iosp() {
   }
 
+  // called from GribCollection
   public Grib1Iosp(GribCollection.GroupHcs gHcs) {
     this.gHcs = gHcs;
     this.owned = true;
   }
 
+  // called from GribCollection
   public Grib1Iosp(GribCollection gc) {
     this.gribCollection = gc;
+    this.owned = true;
   }
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    if (paramTable != null) // so iosp message must be recieved before the open()
+    if (paramTable != null) // so an iosp message must be received before the open()
       tables = Grib1Tables.factory(paramTable);
     else
       tables = Grib1Tables.factory(paramTablePath, lookupTablePath);
 
-    boolean isGrib = Grib1RecordScanner.isValidFile(raf);
+    // create the gbx9 index file if not already there
+    boolean isGrib = (raf != null) && Grib1RecordScanner.isValidFile(raf);
     if (isGrib) {
       Grib1Index index = new Grib1Index();
       Formatter f= new Formatter();
-      this.gribCollection = index.makeCollection(raf, CollectionManager.Force.test, f, 1);
+      this.gribCollection = index.createFromSingleFile(raf, CollectionManager.Force.test, f, 1);
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor
@@ -184,7 +189,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
         addGroup(ncfile, g, useGroups);
 
-    } else { // read in entire collection
+    } else { // the raf is a collection index (ncx)
 
       raf.seek(0);
       byte[] b = new byte[TimePartitionBuilder.MAGIC_STARTP.length()];
@@ -451,8 +456,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
   @Override
   public void close() throws java.io.IOException {
-    //if (!owned && gribCollection != null) // klugerino
-    if (gribCollection != null)
+    if (!owned && gribCollection != null) // klugerino
       gribCollection.close();
   }
 

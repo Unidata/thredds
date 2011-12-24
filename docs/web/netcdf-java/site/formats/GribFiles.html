@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>GRIBCollection</title>
+</head>
+
+<body>
+<h1> GRIB Collection Processing</h1>
+<h3>Single Data File Mode</h3>
+<p>Pass the data file location to the IOSP.  Assumes its a File (ie not remote, etc). Call <strong>GribIndex.makeCollection() </strong></p>
+<ol><li>Check for grib index (<strong>gbx9</strong>).
+    <ol>
+      <li>If exists, check last modified against data file. </li>
+      <li>Read grib index. <strong>GribIndex.readIndex().</strong></li>
+      <li>(Re)write if needed.  <strong>GribIndex.makeIndex().</strong></li>
+      <li>Not using DiskCache</li>
+    </ol>
+</li>
+  <li>Check for collection index (<strong>ncx</strong>). <strong>GribCollectionBuilder.createFromSingleFile().</strong>
+    <ol>
+      <li>If exists, check last modified against data file. </li>
+      <li>Read collection index. <strong>GribCollectionBuilder.readIndex().</strong></li>
+      <li>(Re)write if needed. <strong>GribCollectionBuilder.createIndex()</strong></li>
+      <li>Not using DiskCache</li>
+    </ol>
+  </li>
+</ol>
+<h3>Collection Index Mode</h3>
+<p>Pass the <strong>ncx</strong> file to the IOSP. In this case, the collection is created from reading the ncx file with no checking against the original data file(s).</p>
+<p>You can create an <strong>ncx</strong> file based on a collection spec in: Tools UI?IOSP/GRIB1(2)/GribCollection. Enter the collection spec and hit Enter. To write the index file, hit the  &quot;Write Index&quot; button on the right. Give it a memorable name and hit Save.</p>
+<h3>File Collection Mode</h3>
+<p>&nbsp;</p>
+<hr width="100%" />
+<address>
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 23, 2011
+</address>
+</body>
+</html>

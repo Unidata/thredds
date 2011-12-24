@@ -34,8 +34,9 @@ package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.CollectionManager;
-import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
+import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -50,7 +51,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Manage a collection of grib files, and manage grib collection index (ncx)
+ * Manage a collection of grib files, and manage grib collection index (ncx).
  * Covers GribCollectionProto, which serializes and deserializes.
  * Rectilyse means to turn the collection into a multidimensional variable.
  * Concrete classes are for Grib1 and Grib2.
@@ -73,6 +74,7 @@ public abstract class GribCollection {
 
   // object cache for raf files
   private static FileCache fileCache;
+
   static public void initFileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     fileCache = new ucar.nc2.util.cache.FileCache("GribCollectionRafCache ", minElementsInMemory, maxElementsInMemory, -1, period);
   }
@@ -81,7 +83,7 @@ public abstract class GribCollection {
     return fileCache;
   }
 
-    private static final ucar.nc2.util.cache.FileFactory fileFactory = new FileFactory() {
+  private static final ucar.nc2.util.cache.FileFactory fileFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       return new RandomAccessFile(location, "r");
     }
@@ -100,11 +102,17 @@ public abstract class GribCollection {
     return new File(new File(dcm.getRoot()), dcm.getCollectionName() + IDX_EXT);
   }
 
+  static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, Formatter f) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.factory(dcm, force, f);
+    return Grib2CollectionBuilder.factory(dcm, force, f);
+  }
+
+
   ////////////////////////////////////////////////////////////////
 
   protected final String name;
   public final File directory;
-  private Set<String> groupNames = new HashSet<String>(5);
+  private final Set<String> groupNames = new HashSet<String>(5);
 
   // set by the builder
   public int center, subcenter, master, local;
@@ -114,7 +122,7 @@ public abstract class GribCollection {
   public List<Parameter> params;
 
   // need thread safety
-  public RandomAccessFile raf; // this is the raf of the index file
+  private RandomAccessFile raf; // this is the raf of the index file
   public String rafLocation;   // this is the raf of the index file
 
   public String getName() {
@@ -129,9 +137,18 @@ public abstract class GribCollection {
     return filenames;
   }
 
+  public RandomAccessFile getRaf() {
+    return raf;
+  }
+
+  public void setRaf(RandomAccessFile raf) {
+    this.raf = raf;
+  }
+
   private File indexFile;
+
   public File getIndexFile() {
-    if (indexFile == null)  {
+    if (indexFile == null) {
       File f = new File(directory, name + IDX_EXT);
       indexFile = DiskCache.getFile(f.getPath(), false);
     }
@@ -183,6 +200,7 @@ public abstract class GribCollection {
 
   // stuff for InvDatasetFcGrib
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException;
+
   public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException;
 
   public GroupHcs getGroup(int index) {
@@ -198,7 +216,7 @@ public abstract class GribCollection {
   }
 
   public int findGroupIdx(String name) {
-    for (int i=0; i < groups.size(); i++) {
+    for (int i = 0; i < groups.size(); i++) {
       GroupHcs g = groups.get(i);
       if (g.getGroupName().equals(name)) return i;
     }
@@ -210,8 +228,8 @@ public abstract class GribCollection {
 
   public RandomAccessFile getRaf(int fileno) throws IOException {
     String filename = filenames.get(fileno);
-    RandomAccessFile want = getRaf( filename);
-    want.order( RandomAccessFile.BIG_ENDIAN);
+    RandomAccessFile want = getRaf(filename);
+    want.order(RandomAccessFile.BIG_ENDIAN);
     return want;
   }
 
@@ -249,12 +267,12 @@ public abstract class GribCollection {
     }
 
     private void setName() {
-      String base = hcs.getName()+"-"+hcs.nx+"X"+hcs.ny;
+      String base = hcs.getName() + "-" + hcs.nx + "X" + hcs.ny;
       String tryit = base;
       int count = 1;
       while (groupNames.contains(tryit)) {
         count++;
-        tryit = base+"-"+count;
+        tryit = base + "-" + count;
       }
       this.name = tryit;
       groupNames.add(name);
@@ -286,13 +304,13 @@ public abstract class GribCollection {
       return result;
     }
 
-    public GribCollection.VariableIndex findAnyVariableWithTime( int usesTimeIndex) {
+    public GribCollection.VariableIndex findAnyVariableWithTime(int usesTimeIndex) {
       for (VariableIndex vi : varIndex)
         if (vi.timeIdx == usesTimeIndex) return vi;
       return null;
     }
 
-    public GribCollection.VariableIndex findVariableByHash( int cdmHash) {
+    public GribCollection.VariableIndex findVariableByHash(int cdmHash) {
       for (VariableIndex vi : varIndex)
         if (vi.cdmHash == cdmHash) return vi;
       return null;
@@ -354,12 +372,12 @@ public abstract class GribCollection {
   }   */
 
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int tableVersion,
-                         int discipline, int category, int parameter, int levelType, boolean isLayer,
-                         int intvType, int ensDerivedType, int probType, String probabilityName,
-                         int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
+                                                        int discipline, int category, int parameter, int levelType, boolean isLayer,
+                                                        int intvType, int ensDerivedType, int probType, String probabilityName,
+                                                        int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
     return new VariableIndex(g, tableVersion, discipline, category, parameter, levelType, isLayer,
-      intvType, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            intvType, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   public class VariableIndex implements Comparable<VariableIndex> {
@@ -526,7 +544,7 @@ public abstract class GribCollection {
         f.format("  %s%n", v);
 
       f.format("%nTimeCoords (%d)%n", g.timeCoords.size());
-      for (int i=0; i<g.timeCoords.size();i++) {
+      for (int i = 0; i < g.timeCoords.size(); i++) {
         TimeCoord tc = g.timeCoords.get(i);
         f.format(" %d: %s%n", i, tc);
       }
@@ -545,7 +563,7 @@ public abstract class GribCollection {
     }
   }
 
-  public static void main(String[] args)throws IOException {
+  public static void main(String[] args) throws IOException {
     System.out.printf("%d%n", Long.MAX_VALUE);
     System.out.printf("%d%n", Long.MIN_VALUE);
   }

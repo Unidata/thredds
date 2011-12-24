@@ -38,7 +38,6 @@ import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
@@ -210,17 +209,18 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
 
   public Grib2Iosp(GribCollection gc) {
     this.gribCollection = gc;
+    this.owned = true;
   }
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
 
-    boolean isGrib = Grib2RecordScanner.isValidFile(raf);
+    boolean isGrib = (raf != null) && Grib2RecordScanner.isValidFile(raf);
     if (isGrib) {
       Grib2Index index = new Grib2Index();
       Formatter f= new Formatter();
-      this.gribCollection = index.makeCollection(raf, CollectionManager.Force.test, f, 2);
+      this.gribCollection = index.createFromSingleFile(raf, CollectionManager.Force.test, f, 2);
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor
@@ -556,8 +556,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
 
   @Override
   public void close() throws java.io.IOException {
-    //if (!owned && gribCollection != null) // klugerino
-    if (gribCollection != null)
+    if (!owned && gribCollection != null) // klugerino
       gribCollection.close();
   }
 

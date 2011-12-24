@@ -290,8 +290,7 @@ public class TimePartition extends Grib2Collection {
   }
 
   public void close() throws java.io.IOException {
-    if (raf != null)
-      raf.close();
+    super.close();
     for (Partition part : getPartitions()) {
       if (part.gribCollection != null)
         part.gribCollection.close();

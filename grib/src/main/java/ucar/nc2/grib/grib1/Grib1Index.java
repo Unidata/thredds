@@ -88,20 +88,6 @@ public class Grib1Index extends GribIndex {
     private static final int version = 5;
     private static final boolean debug = false;
 
-    private static final CollectionManager.ChangeChecker Grib1CC = new CollectionManager.ChangeChecker() {
-      public boolean hasChangedSince(MFile file, long when) {
-        File idxFile = new File(file.getPath() + IDX_EXT); // LOOK need DiskCache for non-writeable directories
-        if (!idxFile.exists()) return true;
-        if (idxFile.lastModified() < file.getLastModified()) return true;
-        if (0 < when && when < idxFile.lastModified()) return true;
-        return false;
-      }
-    };
-
-    static public CollectionManager.ChangeChecker getChangeChecker() {
-      return Grib1CC;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     private List<Grib1SectionGridDefinition> gdsList;

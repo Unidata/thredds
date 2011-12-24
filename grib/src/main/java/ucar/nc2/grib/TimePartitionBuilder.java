@@ -167,7 +167,13 @@ public class TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // choose the "canonical" partition, aka prototype
     int n = tp.getPartitions().size();
-    TimePartition.Partition canon = tp.getPartitions().get(tpc.getProtoIndex(n));
+    if (n == 0) {
+      logger.error(" Nothing in this partition = "+tp.getName());
+      f.format(" FAIL Partition empty collection = %s%n", tp.getName());
+      return false;
+    }
+    int idx = tpc.getProtoIndex(n);
+    TimePartition.Partition canon = tp.getPartitions().get(idx);
     f.format(" Using canonical partition %s%n", canon.getDcm().getCollectionName());
 
     // check consistency across vert and ens coords

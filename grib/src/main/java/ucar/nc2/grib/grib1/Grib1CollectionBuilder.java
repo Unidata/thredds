@@ -34,19 +34,19 @@ package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.DatasetCollectionMFiles;
+import thredds.inventory.DatasetCollectionSingleFile;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
 
 /**
- * Build a GribCollection object. Rectilyse and manage grib collection index.
+ * Build a GribCollection object.
+ * Rectilyse and manage grib collection index.
  * Covers GribCollectionProto.
  *
  * @author caron
@@ -60,9 +60,9 @@ public class Grib1CollectionBuilder {
   private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist
-  static public GribCollection createFromSingleFile(File file, Formatter f) throws IOException {
+  static public GribCollection createFromSingleFile(File file, CollectionManager.Force force, Formatter f) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(file, f);
-    builder.init(CollectionManager.Force.nocheck, f);
+    builder.init(force, f);
     return builder.gc;
   }
 
@@ -74,9 +74,9 @@ public class Grib1CollectionBuilder {
   }
 
   // read in the index, index raf already open
-  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile raf) throws IOException {
+  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile indexRaf) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(name, directory);
-    if (builder.readIndex(raf))
+    if (builder.readIndex(indexRaf))
       return builder.gc;
     throw new IOException("Reading index failed");
   }
@@ -95,8 +95,8 @@ public class Grib1CollectionBuilder {
   // single file
   private Grib1CollectionBuilder(File file, Formatter f) throws IOException {
     try {
-      String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
-      CollectionManager dcm = DatasetCollectionMFiles.open(spec, null, f);
+      //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
+      CollectionManager dcm = new DatasetCollectionSingleFile(file);
       this.collections.add(dcm);
       this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()));
 
@@ -137,8 +137,8 @@ public class Grib1CollectionBuilder {
       logger.info("GribCollection createIndex {}", idx.getPath());
       createIndex(idx, ff, f);        // write out index
       gc.rafLocation = idx.getPath();
-      gc.raf = new RandomAccessFile(idx.getPath(), "r");
-      readIndex(gc.raf); // read back in index
+      gc.setRaf( new RandomAccessFile(idx.getPath(), "r"));
+      readIndex(gc.getRaf()); // read back in index
     }
   }
 
@@ -165,7 +165,7 @@ public class Grib1CollectionBuilder {
   }
 
   public boolean readIndex(RandomAccessFile raf) throws IOException {
-    gc.raf = raf; // LOOK leaving the raf open in the GribCollection
+    gc.setRaf(raf); // LOOK leaving the raf open in the GribCollection
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);

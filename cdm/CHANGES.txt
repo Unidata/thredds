@@ -3,7 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 4: (2011-12-xx)
+ 5: (2011-12-xx)
+  get GRIB collections working
+  GRIB: update ncx when data file changes
+
+ 4: (2011-12-22)
   split CF and CDM constants, propagate them (incomplete)
   upgrade CFpointObs to handle CF 1.6 final conventions
   StringUtil2.remove(StringBuilder sb, String out) had error

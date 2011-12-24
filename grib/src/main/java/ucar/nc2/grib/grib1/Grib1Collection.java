@@ -69,7 +69,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
       for (String file : filenames) { // LOOK linear lookup
         if (file.endsWith(filename)) {
           Formatter f = new Formatter();
-          GribCollection gc = Grib1CollectionBuilder.createFromSingleFile(new File(file), f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib1CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, f);  // LOOK thread-safety : creating ncx
 
           Grib1Iosp iosp = new Grib1Iosp(gc);
           NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
@@ -94,7 +94,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
       for (String file : filenames) {  // LOOK linear lookup
         if (file.endsWith(filename)) {
           Formatter f = new Formatter();
-          GribCollection gc = Grib1CollectionBuilder.createFromSingleFile(new File(file), f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib1CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, f);  // LOOK thread-safety : creating ncx
 
           Grib1Iosp iosp = new Grib1Iosp(gc);
           NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
