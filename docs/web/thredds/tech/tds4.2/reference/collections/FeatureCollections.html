@@ -110,7 +110,7 @@ The XML Schema:
   <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this example, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the reqular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. Each dataset is assigned a nominal time  by matching <em>yyyyMMdd_HHmm</em> to the portion of the filename following &quot;WEST-CONUS_4km_3.9_&quot;.</li>
   <li><strong>name</strong>: collection name <em><strong>must be unique in all of your TDS catalogs</strong></em>. This is used for external triggers and  as an easy to read identifier for indexing, logging and debugging. If missing, the spec string is used (not a good idea in the context of the TDS). </li>
   <li><strong>olderThan</strong>: (optional) Only files whose lastModified date is older than this are included. This excludes files that are in the process of being written.</li>
-  <li><strong>recheckAfter</strong>: (optional) This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed).</li>
+  <li><strong>recheckAfter</strong>: (optional) This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed). Generally, dont use this if you are using an <strong>&lt;update&gt;</strong> element.</li>
   <li><strong>dateFormatMark</strong>: the collection specification string can only extract dates from the file name, as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract the date from the full path.</li>
   <li><strong>timePartition</strong>: experimental, not complete yet.</li>
 </ol>
@@ -163,21 +163,29 @@ The XML Schema:
 </ol>
 <h3>update element</h3>
 <p>For collections that change, the <strong>update</strong> element provides options to update the collection in a background task. New collections are built in the background, so that requests do not wait.</p>
-<pre>&lt;update startup=&quot;true&quot; rescan=&quot;cron expr&quot;<strong> </strong>trigger=&quot;allow&quot; <strong></strong>/&gt;
+<pre>&lt;update startup=&quot;test&quot; rescan=&quot;cron expr&quot;<strong> </strong>trigger=&quot;allow&quot; <strong></strong>/&gt;
 </pre>
 The XML Schema definition for the update element:
 <pre>
-   &lt;xsd:complexType name=&quot;updateType&quot;&gt;<br /> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:boolean&quot;/&gt;<br /> 2)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br /> 3)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br />   &lt;/xsd:complexType&gt;<br /></pre>
+   &lt;xsd:complexType name=&quot;updateType&quot;&gt;<br /> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;forceEnumTypes&quot;/&gt;<br /> 2)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br /> 3)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br />   &lt;/xsd:complexType&gt;</pre>
+<pre>
+  &lt;xsd:simpleType name=&quot;forceEnumTypes&quot;&gt;<br />    &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;<br />      &lt;xsd:simpleType&gt;<br />        &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;<br />          &lt;xsd:enumeration value=&quot;always&quot;/&gt;<br />          &lt;xsd:enumeration value=&quot;test&quot;/&gt;<br />          &lt;xsd:enumeration value=&quot;nocheck&quot;/&gt;<br />        &lt;/xsd:restriction&gt;<br />      &lt;/xsd:simpleType&gt;<br />    &lt;/xsd:union&gt;<br />  &lt;/xsd:simpleType&gt;<br /></pre>
 <p> where: </p>
 <ol>
-  <li><strong>startup</strong>= if <em>true</em>, when the server starts up, rescan and create the collection. If = <em>nocheck</em> then assume the collection hasnt changed since before, and  just create the collection (in memory). If its the first time that the TDS is being run with this collection, the collection information is always created and in some cases cached.</li>
-  <li><strong>rescan</strong>= &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task.</li>
-  <li><strong><a name="trigger" id="trigger"></a>trigger</strong>= if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated only when needed, by an external program (or person) sending an explicit &quot;trigger&quot; URL to the server. 
+  <li><strong>startup</strong>:  Controls if the collection is rescanned on server startup. If you leave this attribute off, nothing is done at startup, but when the dataset is first accessed. 
+    <ol>
+      <li><strong>always</strong> : when the server starts up, rescan and create the collection.. This is the same as <strong>startup = &quot;true&quot;</strong> in 4.2.</li>
+      <li><strong>test</strong>: test if the collection has changed.</li>
+      <li><strong>nocheck</strong>: use the index if it exists, ie assume that the collection hasnt changed.</li>
+    </ol>
+  </li>
+  <li><strong>rescan</strong>:  uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task.</li>
+  <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated only when needed, by an external program (or person) sending an explicit &quot;trigger&quot; URL to the server. 
     This URL is protected by HTTPS, so you must <a href="http://www.unidata.ucar.edu/staff/caron/bufr/">enable remote access</a> for this to work.
     <ol>
       <li>The URL is &quot;<strong>https://server:port/thredds/admin/collection?trigger=true&amp;collection=&lt;name&gt;</strong>&quot;, where name is the featureCollection name.</li>
       <li>You can see a list of the FMRC datasets (and manually trigger a rescan) on the page &quot;<strong>https://server:port/thredds/admin/debug?Collections/triggerRescan</strong>&quot;.</li>
-      <li> You can see what datasets are currently cached in each collection on the page &quot;<strong>https://server:port/thredds/admin/debug?Collections/showFmrcCache&quot;</strong></li>
+      <li> You can see what datasets are currently cached in each collection on the page &quot;<strong>https://server:port/thredds/admin/debug?Collections/showFmrcCache</strong></li>
     </ol>
   </li>
 </ol>
@@ -274,7 +282,7 @@ The XML Schema definition for the update element:
 <p></p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  June 2011 
+<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Dec 24, 2011 
 </address>
 </body>
 </html>

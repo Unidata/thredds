@@ -191,15 +191,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/quartz-1.7.3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/release/threddsIso-1.2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -271,6 +262,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/org.springframework.beans-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/quartz-2.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

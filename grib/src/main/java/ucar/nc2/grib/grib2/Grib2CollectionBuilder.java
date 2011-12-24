@@ -61,14 +61,14 @@ public class Grib2CollectionBuilder {
   // from a single file, read in the index, create if it doesnt exist
   static public GribCollection createFromSingleFile(File file, CollectionManager.Force force, Formatter f) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, f);
-    builder.init(force, f);
+    builder.readOrCreateIndex(force, f);
     return builder.gc;
   }
 
   // from a collection, read in the index, create if it doesnt exist or is out of date
   static public GribCollection factory(CollectionManager dcm, CollectionManager.Force force, Formatter f) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm);
-    builder.init(force, f);
+    builder.readOrCreateIndex(force, f);
     return builder.gc;
   }
 
@@ -125,7 +125,7 @@ public class Grib2CollectionBuilder {
   }
 
   // read or create index
-  private void init(CollectionManager.Force ff, Formatter f) throws IOException {
+  private void readOrCreateIndex(CollectionManager.Force ff, Formatter f) throws IOException {
 
     // force new index or test for new index needed
     boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate()));
@@ -163,7 +163,7 @@ public class Grib2CollectionBuilder {
     return readIndex( new RandomAccessFile(filename, "r") );
   }
 
-  public boolean readIndex(RandomAccessFile raf) throws IOException {
+  public boolean readIndex(RandomAccessFile raf) {
     gc.setRaf( raf); // LOOK leaving the raf open in the GribCollection
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -172,7 +172,7 @@ public class Grib2CollectionBuilder {
      //// header message
       if (!NcStream.readAndTest(raf, MAGIC_START.getBytes())) {
         logger.error("GribCollection {} invalid index", gc.getName());
-        throw new IOException("GribCollection " + gc.getName() + " invalid index");
+        return false;
       }
 
       int v = raf.readInt();

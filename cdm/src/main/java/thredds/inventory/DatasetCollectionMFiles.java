@@ -46,12 +46,12 @@ import thredds.inventory.filter.*;
  * Manage Collections of MFiles.
  * Used in:
  * <ul>
- *  <li> replaces older version in ncml.Aggregation
- *  <li> ucar.nc2.ft.point.collection.TimedCollectionImpl (ucar.nc2.ft.point.collection.CompositeDatasetFactory)
- *  <li> ucar.nc2.ft.fmrc.Fmrc
- *  <li> ucar.nc2.grib.GribCollection
+ * <li> replaces older version in ncml.Aggregation
+ * <li> ucar.nc2.ft.point.collection.TimedCollectionImpl (ucar.nc2.ft.point.collection.CompositeDatasetFactory)
+ * <li> ucar.nc2.ft.fmrc.Fmrc
+ * <li> ucar.nc2.grib.GribCollection
  * </ul>
- *
+ * <p/>
  * we need to be thread safe, for InvDatasetFeatureCollection
  *
  * @author caron
@@ -66,6 +66,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
 
   /**
    * Set the MController used by scan. Defaults to thredds.filesystem.ControllerOS() if not set.
+   *
    * @param _controller use this MController
    */
   static public void setController(MController _controller) {
@@ -105,6 +106,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
   private Map<String, MFile> map; // current map of MFile in the collection
   private long lastScanned; // last time scanned
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
+  private boolean inProgress = false; // prevent recursion
 
   // simplified version called from DatasetCollectionManager.open()
   private DatasetCollectionMFiles(String collectionSpec, String olderThan, Formatter errlog, Object fake) {
@@ -132,7 +134,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != sp.getFilter())
-      filters.add( new WildcardMatchOnName(sp.getFilter()));
+      filters.add(new WildcardMatchOnName(sp.getFilter()));
     olderThanFilterInSecs = getOlderThanFilter(filters, config.olderThan);
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), sp.useName());
@@ -150,7 +152,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != sp.getFilter())
-      filters.add( new WildcardMatchOnName(sp.getFilter()));
+      filters.add(new WildcardMatchOnName(sp.getFilter()));
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), sp.useName());
     scanList.add(new MCollection(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
@@ -181,7 +183,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       try {
         TimeDuration tu = new TimeDuration(olderThan);
         double olderThanV = tu.getValueInSeconds();
-        filters.add( new LastModifiedLimit((long) (1000 * olderThanV)));
+        filters.add(new LastModifiedLimit((long) (1000 * olderThanV)));
         return olderThanV;
       } catch (Exception e) {
         logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderThan);
@@ -195,7 +197,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       try {
         return new TimeDuration(recheckS);
       } catch (Exception e) {
-        logger.error(collectionName+": Invalid time unit for recheckEvery = {}", recheckS);
+        logger.error(collectionName + ": Invalid time unit for recheckEvery = {}", recheckS);
       }
     }
     return null;
@@ -216,8 +218,9 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
   /**
    * For retrofitting to Aggregation
    * Must also call addDirectoryScan one or more times
+   *
    * @param recheckS a undunit time unit, specifying how often to rscan
-   * @param fake fakearoo
+   * @param fake     fakearoo
    */
   private DatasetCollectionMFiles(String recheckS, Object fake) {
     super(null);
@@ -227,33 +230,34 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     this.rootDir = null;
   }
 
-  public void setDateExtractor( DateExtractor dateExtractor) {
+  public void setDateExtractor(DateExtractor dateExtractor) {
     this.dateExtractor = dateExtractor;
   }
 
   /**
    * Add a directory scan to the collection
-   * @param dirName scan this directory
-   * @param suffix  require this suffix (overriddden by regexp), may be null
+   *
+   * @param dirName             scan this directory
+   * @param suffix              require this suffix (overriddden by regexp), may be null
    * @param regexpPatternString if present, use this reqular expression to filter files , may be null
-   * @param subdirsS if "true", descend into subdirectories, may be null
-   * @param olderS udunit time unit - files must be older than this amount of time (now - lastModified > olderTime), may be null
-   // * @param dateFormatString dateFormatMark string, may be null
-   * @param auxInfo attach this object to any MFile found by this scan
+   * @param subdirsS            if "true", descend into subdirectories, may be null
+   * @param olderS              udunit time unit - files must be older than this amount of time (now - lastModified > olderTime), may be null
+   *                            // * @param dateFormatString dateFormatMark string, may be null
+   * @param auxInfo             attach this object to any MFile found by this scan
    */
   public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, Object auxInfo) {
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != regexpPatternString)
       filters.add(new RegExpMatchOnName(regexpPatternString));
     else if (suffix != null)
-      filters.add(new WildcardMatchOnPath("*" + suffix+"$"));
+      filters.add(new WildcardMatchOnPath("*" + suffix + "$"));
 
     if (olderS != null) {
       try {
         TimeDuration tu = new TimeDuration(olderS);
         filters.add(new LastModifiedLimit((long) (1000 * tu.getValueInSeconds())));
       } catch (Exception e) {
-        logger.error(collectionName+": Invalid time unit for olderThan = {}", olderS);
+        logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderS);
       }
     }
 
@@ -307,16 +311,22 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
 
   /**
    * Compute if scan is needed.
+   *
    * @return true if rescan is needed
    */
   @Override
   public boolean isScanNeeded() {
+    if (inProgress) {
+      logger.debug("{}: scan in Progress", collectionName);
+      return false;
+    }
+
     if (!hasScans()) {
       logger.debug("{}: scan not needed, no scanners", collectionName);
       return false;
     }
 
-    if (map == null){
+    if (map == null) {
       logger.debug("{}: scan needed, never scanned", collectionName);
       return true;
     }
@@ -331,7 +341,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     Date lastCheckedDate = new Date(lastScanned);
     Date need = recheck.add(lastCheckedDate);
     if (now.before(need)) {
-      logger.debug("{}: scan not needed, last scanned={}, now={}", new Object[] {collectionName, lastCheckedDate, now} );
+      logger.debug("{}: scan not needed, last scanned={}, now={}", new Object[]{collectionName, lastCheckedDate, now});
       return false;
     }
 
@@ -360,14 +370,14 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       MFile oldFile = oldMap.get(path);
       if (oldFile != null) {
         if (newFile.getLastModified() > oldFile.getLastModified()) { // the file has changed since last time
-           nchange++;
-           logger.debug("{}: scan found Dataset changed= {}", collectionName, path);
+          nchange++;
+          logger.debug("{}: scan found Dataset changed= {}", collectionName, path);
 
         } else if (changeChecker != null && changeChecker.hasChangedSince(newFile, -1)) { // the ancilliary file has changed
-           nchange++;
-           logger.debug("{}: scan changeChecker found Dataset changed= {}", collectionName, path);
-         }
-       } else {
+          nchange++;
+          logger.debug("{}: scan changeChecker found Dataset changed= {}", collectionName, path);
+        }
+      } else {
         nnew++;
         logger.debug("{}: scan found new Dataset= {} ", collectionName, path);
       }
@@ -384,7 +394,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       }
     }
 
-    boolean changed = (nnew > 0) || (ndelete > 0)|| (nchange > 0);
+    boolean changed = (nnew > 0) || (ndelete > 0) || (nchange > 0);
 
     if (changed) {
       //if (logger.isInfoEnabled()) logger.info(collectionName+": rescan found changes new = "+nnew+" delete= "+ndelete);
@@ -394,15 +404,18 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
         this.lastChanged.set(this.lastScanned);
       }
     } else {
-       synchronized (this) {
-         this.lastScanned = System.currentTimeMillis();
+      synchronized (this) {
+        this.lastScanned = System.currentTimeMillis();
       }
     }
 
-    if (changed)
+    if (changed) {
+      inProgress = true;
       sendEvent(new TriggerEvent(this, TriggerType.update));  // watch out for infinite loop
+      inProgress = false;
+    }
 
-    logger.info("{}: scan at {} nnew={}, ndelete={}", new Object[] {collectionName, new Date(), nnew, ndelete});
+    logger.info("{}: scan at {} nnew={}, nchange={}, ndelete={}", new Object[]{collectionName, new Date(), nnew, nchange, ndelete});
     return changed;
   }
 
@@ -444,12 +457,13 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     scan(newMap);
     // deleteOld(newMap); // ?? hmmmmm LOOK this seems wrong; maintainence in background ?? generally collection doesnt exist
 
-    synchronized(this) {
+    synchronized (this) {
       map = newMap;
       this.lastScanned = System.currentTimeMillis();
       this.lastChanged.set(this.lastScanned);
     }
-    if (logger.isDebugEnabled()) logger.debug(collectionName+": initial scan found n datasets = "+map.keySet().size());
+    if (logger.isDebugEnabled())
+      logger.debug(collectionName + ": initial scan found n datasets = " + map.keySet().size());
     return map.keySet().size() > 0;
   }
 
@@ -462,7 +476,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
       Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);
       if (iter == null) {
-        logger.error(collectionName+": DatasetCollectionManager Invalid collection= " + mc);
+        logger.error(collectionName + ": DatasetCollectionManager Invalid collection= " + mc);
         continue;
       }
 

@@ -121,31 +121,31 @@ public class FeatureCollectionConfig {
 
   // <update startup="true" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
-    public boolean startup;
     public String rescan = null;
     public boolean triggerOk;
-    public CollectionManager.Force force = CollectionManager.Force.test;
+    public CollectionManager.Force startup = null;
     public String deleteAfter = null;
 
     public UpdateConfig() { // defaults
     }
 
-    public UpdateConfig(String startup, String rescan, String trigger, String forceS, String deleteAfter) {
+    public UpdateConfig(String startupS, String rescan, String triggerS, String deleteAfter) {
       this.rescan = rescan; // may be null
       this.deleteAfter = deleteAfter; // may be null
-      if (startup != null)
-        this.startup = startup.equalsIgnoreCase("true");
-      if (forceS != null)
-        force = CollectionManager.Force.valueOf(forceS);
-      if (trigger != null)
-        this.triggerOk = trigger.equalsIgnoreCase("allow");
+      if (startupS != null) {
+        if (startupS.equalsIgnoreCase("true"))
+          startup = CollectionManager.Force.always;
+        else
+          startup = CollectionManager.Force.valueOf(startupS);
+      }
+      if (triggerS != null)
+        this.triggerOk = triggerS.equalsIgnoreCase("allow");
     }
 
     @Override
     public String toString() {
       return "UpdateConfig{" +
               "startup=" + startup +
-              ", force=" + force +
               ", rescan='" + rescan + '\'' +
               ", triggerOk=" + triggerOk +
               ", deleteAfter=" + deleteAfter +

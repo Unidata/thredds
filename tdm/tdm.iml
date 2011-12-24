@@ -9,7 +9,7 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="file://$MODULE_DIR$/src/main/resources" />
@@ -18,19 +18,10 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="cdm" exported="" />
-    <orderEntry type="module" module-name="grib" exported="" />
-    <orderEntry type="library" exported="" name="Logging" level="project" />
-    <orderEntry type="library" exported="" name="Spring" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../lib/external/slf4j-api-1.6.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="Logging" level="project" />
+    <orderEntry type="module" module-name="cdm" />
+    <orderEntry type="module" module-name="grib" />
+    <orderEntry type="library" name="Spring" level="project" />
   </component>
 </module>
 

@@ -2,13 +2,15 @@ package thredds.inventory;
 
 import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 
-import java.text.ParseException;
 import java.util.Date;
 
 /**
  * Handle background tasks that rescan and reset proto, for collections.
  * Singleton, thread safe.
+ * Cover for quartz library.
+ * Only used in tds/tdm. so why is this in the cdm??
  *
  * @author caron
  * @since Nov 21, 2010
@@ -39,18 +41,16 @@ public enum CollectionUpdater {
     FeatureCollectionConfig.UpdateConfig useConfig = null;
     if (from == FROM.tds) {
       useConfig = config.updateConfig;
-      if (!useConfig.startup && (useConfig.rescan == null) && (config.protoConfig.change == null)) return;
     } else if (from == FROM.tdm) {
       useConfig = config.tdmConfig;
-      if (!useConfig.startup && (useConfig.rescan == null) && (config.protoConfig.change == null)) return;
     }
+    if (useConfig.startup == null && (useConfig.rescan == null) && (config.protoConfig.change == null)) return;
 
     // dont start a Scheduler thread unless we need it
     synchronized (this) {
       if (!failed && scheduler == null) {
-        SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
         try {
-          scheduler = schedFact.getScheduler();
+          scheduler = StdSchedulerFactory.getDefaultScheduler();
           scheduler.start();
         } catch (SchedulerException e) {
           failed = true;
@@ -59,16 +59,23 @@ public enum CollectionUpdater {
       }
     }
 
-    // updating the collection
-    JobDetail updateJob = new JobDetail(config.name, "UpdateCollection", UpdateCollectionJob.class);
+    // updating the collection Job
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(FC_NAME, manager);
-    updateJob.setJobDataMap(map);
+    JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
+            .withIdentity(config.name, "UpdateCollection")
+            .usingJobData(map)
+            .build();
 
-    if (useConfig.startup) {
+    if (useConfig.startup != null) {
       // wait 30 secs to trigger
       Date runTime = new Date(new Date().getTime() + startupWait);
-      Trigger trigger0 = new SimpleTrigger(config.name, "startup", runTime);
+      SimpleTrigger trigger0 = (SimpleTrigger) TriggerBuilder.newTrigger()
+        .withIdentity(config.name, "startup")
+        .startAt(runTime)
+        //.forJob(config.name, "UpdateCollection") // identify job with name, group strings
+        .build();
+
       try {
         scheduler.scheduleJob(updateJob, trigger0);
         logger.info("Schedule startup scan for {} at {}\n" ,config, runTime);
@@ -80,17 +87,25 @@ public enum CollectionUpdater {
 
     if (useConfig.rescan != null) {
       try {
-        Trigger trigger1 = new CronTrigger(config.spec, "rescan", useConfig.rescan);
-        if (useConfig.startup) {
+        CronTrigger trigger1 = TriggerBuilder.newTrigger()
+            .withIdentity(config.name, "rescan")
+            .withSchedule(CronScheduleBuilder.cronSchedule(useConfig.rescan))
+            .build();
+
+        scheduler.scheduleJob(updateJob, trigger1);
+
+        /* WTF ?
+        if (useConfig.startup != null) {
           trigger1.setJobName(updateJob.getName());
           trigger1.setJobGroup(updateJob.getGroup());
           scheduler.scheduleJob(trigger1);
+
         } else {
           scheduler.scheduleJob(updateJob, trigger1);
-        }
+        } */
+
         logger.info("Schedule recurring scan for {} cronExpr={}", config.spec, useConfig.rescan);
-      } catch (ParseException e) {
-        logger.error("cronExecutor failed: bad cron expression= "+ useConfig.rescan, e);
+
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule cron Job", e);
         // e.printStackTrace();
@@ -100,17 +115,21 @@ public enum CollectionUpdater {
     // updating the proto dataset
     FeatureCollectionConfig.ProtoConfig pconfig = config.protoConfig;
     if (pconfig.change != null) {
-      JobDetail protoJob = new JobDetail(config.name, "UpdateProto", ChangeProtoJob.class);
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
-      pmap.put(FC_NAME, manager);
-      protoJob.setJobDataMap(pmap);
+      map.put(FC_NAME, manager);
+      JobDetail protoJob = JobBuilder.newJob(ChangeProtoJob.class)
+              .withIdentity(config.name, "UpdateProto")
+              .usingJobData(pmap)
+              .build();
 
       try {
-        Trigger trigger2 = new CronTrigger(config.name, "rereadProto", pconfig.change);
+        CronTrigger trigger2 = TriggerBuilder.newTrigger()
+            .withIdentity(config.name, "rereadProto")
+            .withSchedule(CronScheduleBuilder.cronSchedule(pconfig.change))
+            .build();
         scheduler.scheduleJob(protoJob, trigger2);
         logger.info("Schedule Reread Proto for {}", config.name);
-      } catch (ParseException e) {
-        logger.error("cronExecutor failed: RereadProto has bad cron expression= "+ pconfig.change, e);
+
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule RereadProtoJob", e);
         // e.printStackTrace();

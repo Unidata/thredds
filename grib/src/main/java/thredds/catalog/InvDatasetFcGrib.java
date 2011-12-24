@@ -114,14 +114,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     this.format = getDataFormatType();
     try {
       if (config.timePartition != null) {
-        TimePartition previous = localState.timePartition;
-        localState.timePartition = TimePartitionBuilder.factory((TimePartitionCollection) this.dcm, config.updateConfig.force, new Formatter());
+        TimePartition previous = localState.timePartition;                                                         // LOOK!!
+        localState.timePartition = TimePartitionBuilder.factory((TimePartitionCollection) this.dcm, config.updateConfig.startup, new Formatter());
         localState.gribCollection = null;
         if (previous != null) previous.close(); // LOOK thread safety
 
       } else { // WTF? open and close every time (!)
         GribCollection previous = localState.gribCollection;
-        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, config.updateConfig.force, new Formatter());
+        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, config.updateConfig.startup, new Formatter());
         localState.timePartition = null;
         if (previous != null) previous.close(); // LOOK thread safety
       }

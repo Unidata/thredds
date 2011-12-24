@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  5: (2011-12-xx)
+  upgrade to quartz 2.1.1
   get GRIB collections working
   GRIB: update ncx when data file changes
 
