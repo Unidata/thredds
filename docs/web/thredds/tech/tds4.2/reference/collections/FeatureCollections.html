@@ -41,17 +41,17 @@ dl {margin: 10px 5px 5px 15px;}
 </pre>
 <p>Fully specify the options:</p>
 <pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot;
-          recheckAfter=&quot;15 min&quot; olderThan=&quot;5 min&quot;/&gt;
-  &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$&quot;<br />            name=&quot;NAM_Alaska_11km&quot;<br />            dateFormatMark=&quot;#NAM_Alaska_11km_#yyyyMMdd_HHmm&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;
+
+
+  &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; trugger=&quot;allow&quot;/&gt;
   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
   &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
 &lt;/featureCollection&gt;
 </pre>
 <p>  With NcML elements:</p>
 <pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot;
-          recheckAfter=&quot;15 min&quot;  olderThan=&quot;5 min&quot;/&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot; olderThan=&quot;5 min&quot;/&gt;
   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
     &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />      &lt;attribute name=&quot;History&quot; value=&quot;processed by Rectilyser 6.23a&quot;/&gt;<br />
@@ -96,25 +96,47 @@ Here is an example
   <li>This NcML wraps each dataset in the collection. This attribute overrides any existing one in the datasets; it tells the CDM  to parse the station information using the CF Conventions.</li>
 </ol>
 <h3>collection element</h3>
-<p>A <strong>collection</strong> element defines the collection of datasets. Takes the place of the <strong>scan</strong> and scanFmrc elements in an NcML aggregation.</p>
+<p>A <strong>collection</strong> element defines the collection of datasets. </p>
 <pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$&quot;
             <strong>name</strong>=&quot;WEST-CONUS_4km&quot; <strong>olderThan</strong>=&quot;1 min&quot; <strong></strong><strong>olderThan</strong>=&quot;15 min&quot; /&gt;
 </pre>
 
 The XML Schema:
 <pre>
-  &lt;xsd:complexType name=&quot;collectionType&quot;&gt;<br />1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;<br />3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;<br />4)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;<br />5)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;<br />6)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;<br />  &lt;/xsd:complexType&gt;<br />
-</pre>
+  &lt;xsd:complexType name=&quot;collectionType&quot;&gt;<br />1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;<br />3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;<br />4)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;<br />5)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;<br />6)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;<br />  &lt;/xsd:complexType&gt;<br /></pre>
 <p>where</p>
 <ol>
   <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this example, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the reqular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. Each dataset is assigned a nominal time  by matching <em>yyyyMMdd_HHmm</em> to the portion of the filename following &quot;WEST-CONUS_4km_3.9_&quot;.</li>
   <li><strong>name</strong>: collection name <em><strong>must be unique in all of your TDS catalogs</strong></em>. This is used for external triggers and  as an easy to read identifier for indexing, logging and debugging. If missing, the spec string is used (not a good idea in the context of the TDS). </li>
-  <li><strong>olderThan</strong>: (optional) Only files whose lastModified date is older than this are included. This excludes files that are in the process of being written.</li>
-  <li><strong>recheckAfter</strong>: (optional) This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed). Generally, dont use this if you are using an <strong>&lt;update&gt;</strong> element.</li>
-  <li><strong>dateFormatMark</strong>: the collection specification string can only extract dates from the file name, as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract the date from the full path.</li>
-  <li><strong>timePartition</strong>: experimental, not complete yet.</li>
+  <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included. This excludes files that are in the process of being written. However, it only applies to newly found files, that is, once a file is in the collection it is not removed because it got updated.</li>
+  <li><strong>recheckAfter</strong> (optional): This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed). <em>Do not use this if you are using an <strong>&lt;update scan=&quot;cron&quot;&gt;</strong> element.</em></li>
+  <li><strong>dateFormatMark</strong> (optional): the collection specification string can only extract dates from the file name, as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract the date from the full path. <em>Use this OR a date extrator in the specification string, but not both.</em></li>
+  <li><strong>timePartition</strong> (optional):: experimental, not complete yet.</li>
 </ol>
-<p>Feature Collections  need to know how to sort the collection of files, so its recommended that you have a date in the filename, and to specify a date extractor in the specification string or include a dateFormatMark attribute. Otherwise, files will be sorted by filename.</p>
+<h3>Date Extractor</h3>
+<p>Feature Collections  need to know how to sort the collection of files, so it is strongly recommended that you have a date in the filename, and to specify a date extractor in the specification string or include a dateFormatMark attribute. Otherwise, files will be sorted by filename.</p>
+<p>1. If the date is in the filename only, you can use  the <a href="CollectionSpecification.html">collection specification</a> string, eg a spec:</p>
+<blockquote>
+  <pre> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.nc$ 
+</pre>
+  <p>applied to  the file <em>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20111226_1200.grib1 </em>would extract the date <em>2011-11-26T12:00:00.</em> </p>
+  <p>In this case,  <em>#yyyyMMdd_HHmm# </em>is <strong>positional</strong>: it counts the charactors before the '#' and then extracts the charactors in the filename (here at position 17 though 30) and applies the <a href="SimpleDateFormat.html">SimpleDateFormat</a> <em>yyyyMMdd_HHmm</em> pattern to them.</p>
+</blockquote>
+<p>2. When the date is in the directory name and not completely in the filename, you must use the <strong>dateFormatMark</strong>. For example  with a file path</p>
+<blockquote>
+  <p><em>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20111226/Run_1200.grib1</em></p>
+  <p>Use </p>
+  <pre>dateFormatMark=&quot;#Alaska_191km/#yyyyMMdd'/Run_'HHmm&quot;</pre>
+  <p>In this case, the <em>'#' </em>characters delineate the <strong>substring match</strong> on the entire pathname. Immediately following the match comes the string to be given to <a href="SimpleDateFormat.html">SimpleDateFormat</a>, in this example:</p>
+  <pre>yyyyMMdd'/Run_'HHmm</pre>
+  <p>Note that the<em> /Run_</em> is enclosed in single quotes. This tells SimpleDateFormat to interpret these characters literally, and they must match chanracters in the filename exactly. </p>
+  <p>You might also need to put the SimpleDateFormat before the substring match, eg in the following, <em>stuff</em> differs for each subdirectory, so you cant match on it:</p>
+  <p><em>/dataroot/stuff/20111226/Experiment-02387347.grib1</em></p>
+  <p>However, you can match on <em>Experiment</em> so you can use:</p>
+  <pre>
+dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
+  <p>Note that whatever you match on must be unique in the pathname.</p>
+</blockquote>
 <h3>protoDataset element</h3>
 <p>Provides control over the choice of the <strong><em>prototype dataset</em></strong> for the collection. The protype dataset is used to populate the metadata for the feature collection.</p>
 <pre>&lt;protoDataset <strong>choice</strong>=&quot;Penultimate&quot; param=&quot;0&quot; <strong>change</strong>=&quot;expr&quot;&gt;
@@ -172,10 +194,10 @@ The XML Schema definition for the update element:
   &lt;xsd:simpleType name=&quot;forceEnumTypes&quot;&gt;<br />    &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;<br />      &lt;xsd:simpleType&gt;<br />        &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;<br />          &lt;xsd:enumeration value=&quot;always&quot;/&gt;<br />          &lt;xsd:enumeration value=&quot;test&quot;/&gt;<br />          &lt;xsd:enumeration value=&quot;nocheck&quot;/&gt;<br />        &lt;/xsd:restriction&gt;<br />      &lt;/xsd:simpleType&gt;<br />    &lt;/xsd:union&gt;<br />  &lt;/xsd:simpleType&gt;<br /></pre>
 <p> where: </p>
 <ol>
-  <li><strong>startup</strong>:  Controls if the collection is rescanned on server startup. If you leave this attribute off, nothing is done at startup, but when the dataset is first accessed. 
+  <li><strong>startup</strong>:  Controls if the collection is rescanned on server startup. If you leave this attribute off, nothing is done at startup.
     <ol>
-      <li><strong>always</strong> : when the server starts up, rescan and create the collection.. This is the same as <strong>startup = &quot;true&quot;</strong> in 4.2.</li>
-      <li><strong>test</strong>: test if the collection has changed.</li>
+      <li><strong>always</strong>: when the server starts up, rescan and create the collection.. This is the same as <strong>startup = &quot;true&quot;</strong> in 4.2.</li>
+      <li><strong>test</strong>: test if the collection has changed, and recreate the index if needed.</li>
       <li><strong>nocheck</strong>: use the index if it exists, ie assume that the collection hasnt changed.</li>
     </ol>
   </li>

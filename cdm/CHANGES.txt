@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  5: (2011-12-xx)
+  DatasetCollectionMFiles: olderThan applies only to newly found files.
+  DatasetCollectionMFiles: use dateFormatMark if present.
+  CollectionSpecParser: Remove seperate dateMatch string, forName.
   upgrade to quartz 2.1.1
   get GRIB collections working
   GRIB: update ncx when data file changes

@@ -68,7 +68,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
 
     if (param == null) {
-      f.format("VAR%d-%d-%d_FROM%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter, gribCollection.center, gribCollection.subcenter, vindex.tableVersion);
+      f.format("VAR%d-%d-%d_FROM%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion);
     } else {
       f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
     }

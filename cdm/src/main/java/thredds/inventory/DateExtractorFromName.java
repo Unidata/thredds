@@ -54,7 +54,7 @@ public class DateExtractorFromName implements DateExtractor {
   /**
    * Ctor
    * @param dateFormatMark DemarkatedCount or DemarkatedMatch
-   * @param useName use name if ture, else use path
+   * @param useName use name if true, else use path
    */
   public DateExtractorFromName(String dateFormatMark, boolean useName) {
     this.dateFormatMark = dateFormatMark;
@@ -93,11 +93,14 @@ public class DateExtractorFromName implements DateExtractor {
   }
 
 
-  static public void main(String args[]) {
-    String name = "/san4/work/jcaron/cfsrr/198507";
-    String dateFormatMark="#cfsrr/#yyyyMM";
+  static public void doit(String name, String dateFormatMark) {
     DateExtractorFromName de = new DateExtractorFromName(dateFormatMark, false);
     CalendarDate d = de.getDate(name);
     System.out.printf("%s == %s%n", name , d);
+  }
+
+  static public void main(String args[]) {
+    doit("/san4/work/jcaron/cfsrr/198507", "#cfsrr/#yyyyMM");
+    doit("/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20111226/Run_1200.grib1", "#Alaska_191km/#yyyyMMdd'/Run_'HHmm");
   }
 }

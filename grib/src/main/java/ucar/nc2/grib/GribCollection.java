@@ -102,17 +102,25 @@ public abstract class GribCollection {
     return new File(new File(dcm.getRoot()), dcm.getCollectionName() + IDX_EXT);
   }
 
+  /**
+   * Create a GribCollection from a collection of grib files
+   * @param isGrib1 true if files are grib1, else grib2
+   * @param dcm the file collection : assume its been scanned
+   * @param force should index file be used or remade?
+   * @param f  error messages here
+   * @return  GribCollection
+   * @throws IOException  on io error
+   */
   static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, Formatter f) throws IOException {
     if (isGrib1) return Grib1CollectionBuilder.factory(dcm, force, f);
     return Grib2CollectionBuilder.factory(dcm, force, f);
   }
 
-
   ////////////////////////////////////////////////////////////////
 
   protected final String name;
-  public final File directory;
-  private final Set<String> groupNames = new HashSet<String>(5);
+  protected final File directory;
+  protected final Set<String> groupNames = new HashSet<String>(5);
 
   // set by the builder
   public int center, subcenter, master, local;
@@ -122,7 +130,7 @@ public abstract class GribCollection {
   public List<Parameter> params;
 
   // need thread safety
-  private RandomAccessFile raf; // this is the raf of the index file
+  protected RandomAccessFile raf; // this is the raf of the index file
   public String rafLocation;   // this is the raf of the index file
 
   public String getName() {

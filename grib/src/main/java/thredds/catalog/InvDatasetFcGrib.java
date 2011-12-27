@@ -34,6 +34,7 @@ package thredds.catalog;
 
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
+import thredds.inventory.CollectionManager;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.TimePartitionCollection;
@@ -61,7 +62,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @ThreadSafe
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
-  static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcFmrc.class);
+  static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
 
   /////////////////////////////////////////////////////////////////////////////
@@ -87,6 +88,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
     super(parent, name, path, featureType, config);
+    this.gribConfig = config.gribConfig;
 
     Formatter errlog = new Formatter();
     if (config.useIndexOnly)
@@ -95,66 +97,60 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       this.dcm = TimePartitionCollection.factory(config, errlog);
     } else {
       this.dcm = new DatasetCollectionMFiles(config, errlog);
-      this.dcm.setChangeChecker(GribIndex.getChangeChecker());
+      this.dcm.setChangeChecker(GribIndex.getChangeChecker());   // LOOK needed?
     }
 
     String errs = errlog.toString();
-    if (errs.length() > 0) logger.debug("CollectionManager parse error = {} ", errs);
+    if (errs.length() > 0) logger.debug("{}: CollectionManager parse error = {} ", name, errs);
 
     tmi.setDataType(FeatureType.GRID); // override GRIB
     finish(); // ??
-    this.gribConfig = config.gribConfig;
 
-  }
-
-  // deferred init
-  // but it should be cheap
-  // only called from lock
-  private void init(StateGrib localState) {
-    this.format = getDataFormatType();
-    try {
-      if (config.timePartition != null) {
-        TimePartition previous = localState.timePartition;                                                         // LOOK!!
-        localState.timePartition = TimePartitionBuilder.factory((TimePartitionCollection) this.dcm, config.updateConfig.startup, new Formatter());
-        localState.gribCollection = null;
-        if (previous != null) previous.close(); // LOOK thread safety
-
-      } else { // WTF? open and close every time (!)
-        GribCollection previous = localState.gribCollection;
-        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, config.updateConfig.startup, new Formatter());
-        localState.timePartition = null;
-        if (previous != null) previous.close(); // LOOK thread safety
-      }
-    } catch (IOException e) {
-      logger.error("Cant init " + dcm, e);
-    }
-    logger.info("Collection was recreated=" + getName());
   }
 
   @Override
   public void update() {
     needsUpdate.set(true);
+
+    // use checkState to do the actual work, for the locking
+    try {
+      checkState();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
   public void updateProto() {
     needsProto.set(true);
+
+    // no actual work, wait until dataset is called (??)
   }
 
   @Override
   protected StateGrib checkState() throws IOException {
     synchronized (lock) {
 
+      boolean updateNeeded = false;
       if (state == null) {
         firstInit();
-      } else if (!needsUpdate.get()) {
-        return (StateGrib) state;
+        updateNeeded = dcm.scanIfNeeded();
+      } else {
+        if (needsUpdate.get()) { // external trigger
+          updateNeeded = true;
+        } else {
+          updateNeeded = dcm.scanIfNeeded(); // the case where recheckEvery is used
+        }
       }
+
+      if (!updateNeeded) return (StateGrib) state;
+
+      // in all cases the dcm has been rescanned
 
       // update local copy of state, then switch all at once
       // i think this is "copy on write"
       StateGrib localState = new StateGrib((StateGrib) state);
-      init(localState);
+      updateCollection(localState);
 
       makeTopDatasets(localState);
       localState.lastInvChange = System.currentTimeMillis();
@@ -166,13 +162,34 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
+  private void updateCollection(StateGrib localState) {
+    this.format = getDataFormatType();
+    try {
+      if (config.timePartition != null) {
+        TimePartition previous = localState.timePartition;
+        localState.timePartition = TimePartitionBuilder.factory((TimePartitionCollection) this.dcm, CollectionManager.Force.test, new Formatter());
+        localState.gribCollection = null;
+        if (previous != null) previous.close(); // LOOK thread safety
+
+      } else { // WTF? open and close every time (!)
+        GribCollection previous = localState.gribCollection;
+        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.test, new Formatter());
+        localState.timePartition = null;
+        if (previous != null) previous.close(); // LOOK thread safety
+      }
+    } catch (IOException e) {
+      logger.error("Cant updateCollection " + dcm, e);
+    }
+    logger.info("{}: Collection was recreated", getName());
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
   // LOOK maybe we should ehcache some or all of this ??
   @Override
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {
-    logger.debug("FcGrib make catalog for " + match + " " + baseURI);
+    //logger.debug("{}: make catalog for {} {}", name, match, baseURI);
     StateGrib localState = null;
     try {
       localState = (StateGrib) checkState();

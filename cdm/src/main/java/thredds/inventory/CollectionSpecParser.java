@@ -41,24 +41,23 @@ import ucar.unidata.util.StringUtil2;
 /**
  * Parses the collection specification string.
  * <p>the idea  is that one copies the full path of an example dataset, then edits it</p>
- * <p>Example: "/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/** /GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"</p>
+ * <p>Example: "/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/** /GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib1$"</p>
  * <ul>
  * <li> rootDir ="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km"/</li>
- * <li>    subdirs=yes (because ** is present) </li>
+ * <li>    subdirs=true (because ** is present) </li>
  * <li>    dateFormatMark="GFS_Alaska_191km_#yyyyMMdd_HHmm"</li>
- * <li>    useName=yes</li>
- * <li>    regexp= "GFS_Alaska_191km.........\.grib1"</li>
+ * <li>    regExp='GFS_Alaska_191km_.............\.grib1$</li>
  * </ul>
  * <p>Example: "Q:/grid/grib/grib1/data/agg/.*\.grb"</p>
  * <ul>
  * <li> rootDir ="Q:/grid/grib/grib1/data/agg/"/</li>
- * <li>    subdirs=no</li>
+ * <li>    subdirs=false</li>
  * <li>    dateFormatMark=null</li>
  * <li>    useName=yes</li>
  * <li>    regexp= ".*\.grb" (anything ending with .grb)</li>
  * </ul>
  *
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/collections/CollectionSpecification.html"
+ * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/collections/CollectionSpecification.html"
  * @author caron
  * @since Jul 7, 2009
  */
@@ -69,7 +68,7 @@ public class CollectionSpecParser {
   private final boolean subdirs; // recurse into subdirectories under the root dir
   private final java.util.regex.Pattern filter; // regexp filter
   private final String dateFormatMark;
-  private final boolean useName; // true = use name, false = use path for dateFormatMark
+  //private final boolean useName; // true = use name, false = use path for dateFormatMark
 
   /**
    * Single spec : "/topdir/** /#dateFormatMark#regExp"
@@ -80,7 +79,7 @@ public class CollectionSpecParser {
    */
   public CollectionSpecParser(String collectionSpec, Formatter errlog) {
     this.spec = collectionSpec.trim();
-    int posFilter = -1;
+    int posFilter;
 
     int posGlob = collectionSpec.indexOf("/**/");
     if (posGlob > 0) {
@@ -137,20 +136,20 @@ public class CollectionSpecParser {
       dateFormatMark = null;
       this.filter = null;
     }
-    useName = true;
+    //useName = true;
   }
 
-  /**
+  /*
    * Seperate the spec, with no dateMatcher, and a seperate string with a dateMatcher
    * This only allows the dateFormatMark to be in the file name, not anywhere else in the filename path
    * @param collectionSpec the collection Spec, no dateMatcher
    * @param dateMatcher regexp the dateMatcher regular expression
    * @param errlog put error messages here
-   */
+   *
   public CollectionSpecParser(String collectionSpec, String dateMatcher, Formatter errlog) {
     this.spec = collectionSpec.trim();
 
-    int posGlob = collectionSpec.indexOf("/**/");
+    int posGlob = collectionSpec.indexOf("/** /");
     if (posGlob > 0) {
       rootDir = collectionSpec.substring(0, posGlob);
       int posFilter = posGlob + 3;
@@ -188,10 +187,10 @@ public class CollectionSpecParser {
     } else  { // no hashes
       errlog.format(" No DateMatcher specified in '%s'%n", dateMatcher);
       dateFormatMark = null;
-    }  */
+    }
 
     useName = false;
-  }
+  } */
 
   public String getSpec() {
     return spec;
@@ -205,9 +204,9 @@ public class CollectionSpecParser {
     return subdirs;
   }
 
-  public boolean useName() {
-    return useName;
-  }
+  //public boolean useName() {
+  //  return true;
+  //}
 
   public Pattern getFilter() {
     return filter;
@@ -224,14 +223,14 @@ public class CollectionSpecParser {
             "\n   subdirs=" + subdirs +
             "\n   regExp='" + filter + '\'' +
             "\n   dateFormatMark='" + dateFormatMark + '\'' +
-            "\n   useName=" + useName +
+  //          "\n   useName=" + useName +
             "\n}";
   }
 
   /////////////////////////////////////////////////////////
   // debugging
 
-  private static void doit2(String spec, String timePart, Formatter errlog) {
+  /* private static void doit2(String spec, String timePart, Formatter errlog) {
     CollectionSpecParser specp = new CollectionSpecParser(spec, timePart, errlog);
     System.out.printf("spec= %s timePart=%s%n%s%n", spec, timePart, specp);
     String err = errlog.toString();
@@ -239,6 +238,13 @@ public class CollectionSpecParser {
       System.out.printf("%s%n", err);
     System.out.printf("-----------------------------------%n");
   }
+
+
+  public static void main(String arg[]) {
+    doit2("G:/nomads/cfsr/timeseries/** /.*grb2$", "G:/nomads/cfsr/#timeseries/#yyyyMM", new Formatter());
+    //doit("C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", new Formatter());
+    // doit("Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc", new Formatter());
+  }  */
 
   private static void doit(String spec, Formatter errlog) {
     CollectionSpecParser specp = new CollectionSpecParser(spec, errlog);
@@ -249,13 +255,10 @@ public class CollectionSpecParser {
     System.out.printf("-----------------------------------%n");
   }
 
-  public static void main(String arg[]) {
-    doit2("G:/nomads/cfsr/timeseries/**/.*grb2$", "G:/nomads/cfsr/#timeseries/#yyyyMM", new Formatter());
-    //doit("C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", new Formatter());
-    // doit("Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc", new Formatter());
-  }
 
-  public static void main2(String arg[]) {
+  public static void main(String arg[]) {
+    doit("/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#\\.grib1$", new Formatter());
+    doit("Q:/grid/grib/grib1/data/agg/.*\\.grb", new Formatter());
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#\\.nc", new Formatter());
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc", new Formatter());
     doit("/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm", new Formatter());

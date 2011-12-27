@@ -7,10 +7,10 @@ import org.quartz.impl.StdSchedulerFactory;
 import java.util.Date;
 
 /**
- * Handle background tasks that rescan and reset proto, for collections.
+ * Handle background tasks for updating collections.
  * Singleton, thread safe.
  * Cover for quartz library.
- * Only used in tds/tdm. so why is this in the cdm??
+ * Only used in tds/tdm.
  *
  * @author caron
  * @since Nov 21, 2010
@@ -90,19 +90,16 @@ public enum CollectionUpdater {
         CronTrigger trigger1 = TriggerBuilder.newTrigger()
             .withIdentity(config.name, "rescan")
             .withSchedule(CronScheduleBuilder.cronSchedule(useConfig.rescan))
+            .forJob(updateJob)
             .build();
 
-        scheduler.scheduleJob(updateJob, trigger1);
-
-        /* WTF ?
+        // if startup, then add trigger, else schedule job with this trigger
         if (useConfig.startup != null) {
-          trigger1.setJobName(updateJob.getName());
-          trigger1.setJobGroup(updateJob.getGroup());
           scheduler.scheduleJob(trigger1);
 
         } else {
           scheduler.scheduleJob(updateJob, trigger1);
-        } */
+        }
 
         logger.info("Schedule recurring scan for {} cronExpr={}", config.spec, useConfig.rescan);
 
@@ -156,7 +153,7 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
         CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(FC_NAME);
-        logger.info("Update rescan for {}", manager.getCollectionName());
+        logger.debug("Update rescan for {}", manager.getCollectionName());
         manager.scan();
       } catch (Throwable e) {
         logger.error("InitFmrcJob failed", e);
@@ -169,7 +166,7 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
         CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(FC_NAME);
-        logger.info("Update resetProto for {}", manager.getCollectionName());
+        logger.debug("Update resetProto for {}", manager.getCollectionName());
         manager.resetProto();
       } catch (Throwable e) {
         logger.error("RereadProtoJob failed", e);

@@ -65,17 +65,17 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   static private final boolean debugTime = false, debugRead = false;
 
  static public String makeVariableName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-   return Grib1Utils.makeVariableName(tables, gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter,
+   return Grib1Utils.makeVariableName(tables, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
            vindex.levelType, vindex.intvType);
  }
 
   static public String makeVariableLongName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return Grib1Utils.makeVariableLongName(tables, gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter,
+    return Grib1Utils.makeVariableLongName(tables, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
             vindex.levelType, vindex.intvType, vindex.isLayer, vindex.probabilityName);
   }
 
   static public String makeVariableUnits(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return Grib1Utils.makeVariableUnits(tables, gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+    return Grib1Utils.makeVariableUnits(tables, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -384,7 +384,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
       // Grib attributes
       v.addAttribute(new Attribute("Grib_Parameter", vindex.parameter));
-      Grib1Parameter param = tables.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+      Grib1Parameter param = tables.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
       if (param != null && param.getName() != null)
         v.addAttribute(new Attribute("Grib_Parameter_Name", param.getName()));
 

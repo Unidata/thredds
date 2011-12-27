@@ -77,7 +77,7 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionMFiles implem
   }
 
   @Override
-  protected void scan(java.util.Map<String, MFile> map) throws IOException {
+  protected void reallyScan(java.util.Map<String, MFile> map) throws IOException {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     InvCatalogImpl cat = catFactory.readXML(catalogUrl);
     StringBuilder buff = new StringBuilder();

@@ -78,7 +78,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     return controller;
   }
 
-  // called from Aggregation, Fmrc, single file
+  // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
   static public DatasetCollectionMFiles open(String collection, String olderThan, Formatter errlog) throws IOException {
     if (collection.startsWith(CATALOG))
       return new DatasetCollectionFromCatalog(collection);
@@ -86,6 +86,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       return new DatasetCollectionMFiles(collection, olderThan, errlog, null);
   }
 
+  // retrofit to Aggregation
   static public DatasetCollectionMFiles openWithRecheck(String recheckS) {
     return new DatasetCollectionMFiles(recheckS, null);
   }
@@ -98,7 +99,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
 
   // these are final
   private final List<MCollection> scanList = new ArrayList<MCollection>(); // an MCollection is a collection of managed files
-  private final double olderThanFilterInSecs;
+  private final long olderThanInMsecs;
   private final String rootDir;
   protected FeatureCollectionConfig config;
 
@@ -119,12 +120,13 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     List<MFileFilter> filters = new ArrayList<MFileFilter>(2);
     if (null != sp.getFilter())
       filters.add(new WildcardMatchOnName(sp.getFilter()));
-    olderThanFilterInSecs = getOlderThanFilter(filters, olderThan);
+    olderThanInMsecs = parseOlderThanFilter(olderThan);
 
-    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), sp.useName());
+    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
   }
 
+  // this is the full featured constructor, using FeatureCollectionConfig for config.
   public DatasetCollectionMFiles(FeatureCollectionConfig config, Formatter errlog) {
     super(config.name != null ? config.name : config.spec);
     this.config = config;
@@ -135,9 +137,14 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != sp.getFilter())
       filters.add(new WildcardMatchOnName(sp.getFilter()));
-    olderThanFilterInSecs = getOlderThanFilter(filters, config.olderThan);
+    olderThanInMsecs = parseOlderThanFilter(config.olderThan);
 
-    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), sp.useName());
+    if (config.dateFormatMark != null)
+      dateExtractor = new DateExtractorFromName(config.dateFormatMark, false);
+    else if (sp.getDateFormatMark() != null)
+      dateExtractor = new DateExtractorFromName(sp.getDateFormatMark(), true);
+    else
+      dateExtractor = new DateExtractorNone();
 
     scanList.add(new MCollection(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
 
@@ -145,46 +152,12 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     protoChoice = config.protoConfig.choice;
   }
 
-  public DatasetCollectionMFiles(String name, String spec, Formatter errlog) {
-    super(name);
-    CollectionSpecParser sp = new CollectionSpecParser(spec, errlog);
-    this.rootDir = sp.getRootDir();
 
-    List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
-    if (null != sp.getFilter())
-      filters.add(new WildcardMatchOnName(sp.getFilter()));
-
-    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), sp.useName());
-    scanList.add(new MCollection(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
-
-    this.recheck = null;
-    this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
-    this.olderThanFilterInSecs = -1;
-  }
-
-  public DatasetCollectionMFiles(String name, MCollection mc, CalendarDate startPartition) {
-    super(name);
-    this.startPartition = startPartition;
-    this.scanList.add(mc);
-
-    this.rootDir = mc.getDirectoryName();
-    this.recheck = null;
-    this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
-    this.olderThanFilterInSecs = -1;
-  }
-
-  @Override
-  public CalendarDate getStartCollection() {
-    return startPartition;
-  }
-
-  private double getOlderThanFilter(List<MFileFilter> filters, String olderThan) {
+  private long parseOlderThanFilter(String olderThan) {
     if (olderThan != null) {
       try {
         TimeDuration tu = new TimeDuration(olderThan);
-        double olderThanV = tu.getValueInSeconds();
-        filters.add(new LastModifiedLimit((long) (1000 * olderThanV)));
-        return olderThanV;
+        return (long) (1000 * tu.getValueInSeconds());
       } catch (Exception e) {
         logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderThan);
       }
@@ -207,9 +180,44 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
   protected DatasetCollectionMFiles(String name) {
     super(name);
     this.recheck = null;
-    this.olderThanFilterInSecs = -1;
+    this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.rootDir = null;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // Time Partition - experimental
+  public DatasetCollectionMFiles(String name, String spec, Formatter errlog) {
+    super(name);
+    CollectionSpecParser sp = new CollectionSpecParser(spec, errlog);
+    this.rootDir = sp.getRootDir();
+
+    List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
+    if (null != sp.getFilter())
+      filters.add(new WildcardMatchOnName(sp.getFilter()));
+
+    dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
+    scanList.add(new MCollection(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
+
+    this.recheck = null;
+    this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
+    this.olderThanInMsecs = -1;
+  }
+
+  public DatasetCollectionMFiles(String name, MCollection mc, CalendarDate startPartition) {
+    super(name);
+    this.startPartition = startPartition;
+    this.scanList.add(mc);
+
+    this.rootDir = mc.getDirectoryName();
+    this.recheck = null;
+    this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
+    this.olderThanInMsecs = -1;
+  }
+
+  @Override
+  public CalendarDate getStartCollection() {
+    return startPartition;
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -225,7 +233,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
   private DatasetCollectionMFiles(String recheckS, Object fake) {
     super(null);
     this.recheck = makeRecheck(recheckS);
-    this.olderThanFilterInSecs = -1;
+    this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;
     this.rootDir = null;
   }
@@ -291,8 +299,8 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
   }
 
   @Override
-  public double getOlderThanFilterInSecs() {
-    return olderThanFilterInSecs;
+  public long getOlderThanFilterInMSecs() {
+    return olderThanInMsecs;
   }
 
   @Override
@@ -357,15 +365,19 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       return changed;
     }
 
+    long olderThan = (olderThanInMsecs <= 0) ? -1 : System.currentTimeMillis() - olderThanInMsecs; // new files must be older than this.
+
     // rescan
     Map<String, MFile> oldMap = map;
     Map<String, MFile> newMap = new HashMap<String, MFile>();
-    scan(newMap);
+    reallyScan(newMap);
 
     // replace with previous datasets if they exist
     int nnew = 0;
     int nchange = 0;
-    for (MFile newFile : newMap.values()) {
+    Iterator<MFile> iter = newMap.values().iterator(); // need iterator so we can remove()
+    while (iter.hasNext()) {
+      MFile newFile = iter.next();
       String path = newFile.getPath();
       MFile oldFile = oldMap.get(path);
       if (oldFile != null) {
@@ -377,9 +389,14 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
           nchange++;
           logger.debug("{}: scan changeChecker found Dataset changed= {}", collectionName, path);
         }
-      } else {
-        nnew++;
-        logger.debug("{}: scan found new Dataset= {} ", collectionName, path);
+      } else { // oldFile doesnt exist
+        if (olderThan > 0 && newFile.getLastModified() > olderThan) { // the file is too new
+          iter.remove();
+          logger.debug("{}: scan found new Dataset but its too recently modified = {}", collectionName, path);
+        } else {
+          nnew++;
+          logger.debug("{}: scan found new Dataset= {} ", collectionName, path);
+        }
       }
     }
 
@@ -395,6 +412,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     }
 
     boolean changed = (nnew > 0) || (ndelete > 0) || (nchange > 0);
+    logger.info("{}: scan at {} nnew={}, nchange={}, ndelete={}", new Object[]{collectionName, new Date(), nnew, nchange, ndelete});
 
     if (changed) {
       //if (logger.isInfoEnabled()) logger.info(collectionName+": rescan found changes new = "+nnew+" delete= "+ndelete);
@@ -415,7 +433,6 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       inProgress = false;
     }
 
-    logger.info("{}: scan at {} nnew={}, nchange={}, ndelete={}", new Object[]{collectionName, new Date(), nnew, nchange, ndelete});
     return changed;
   }
 
@@ -454,8 +471,22 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       return false;
     }
 
-    scan(newMap);
+    reallyScan(newMap);
     // deleteOld(newMap); // ?? hmmmmm LOOK this seems wrong; maintainence in background ?? generally collection doesnt exist
+
+    // implement olderThan
+    if (olderThanInMsecs > 0) {
+      long olderThan = System.currentTimeMillis() - olderThanInMsecs; // new files must be older than this.
+      Iterator<MFile> iter = newMap.values().iterator(); // need iterator so we can remove()
+      while (iter.hasNext()) {
+        MFile newFile = iter.next();
+        String path = newFile.getPath();
+        if (newFile.getLastModified() > olderThan) { // the file is too new
+          iter.remove();
+          logger.debug("{}: scan found new Dataset but its too recently modified = {}", collectionName, path);
+        }
+      }
+    }
 
     synchronized (this) {
       map = newMap;
@@ -467,7 +498,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     return map.keySet().size() > 0;
   }
 
-  protected void scan(java.util.Map<String, MFile> map) throws IOException {
+  protected void reallyScan(java.util.Map<String, MFile> map) throws IOException {
     getController(); // make sure a controller is instantiated
 
     // run through all scanners and collect MFile instances into the Map
