@@ -324,6 +324,12 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
    */
   @Override
   public boolean isScanNeeded() {
+    // see if we need to recheck
+    if (recheck == null) {
+      logger.debug("{}: scan not needed, recheck null", collectionName);
+      return false;
+    }
+
     if (inProgress) {
       logger.debug("{}: scan in Progress", collectionName);
       return false;
@@ -337,12 +343,6 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     if (map == null) {
       logger.debug("{}: scan needed, never scanned", collectionName);
       return true;
-    }
-
-    // see if we need to recheck
-    if (recheck == null) {
-      logger.debug("{}: scan not needed, recheck null", collectionName);
-      return false;
     }
 
     Date now = new Date();
@@ -428,7 +428,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     }
 
     if (changed) {
-      inProgress = true;
+      inProgress = true;  // LOOK needed ??
       sendEvent(new TriggerEvent(this, TriggerType.update));  // watch out for infinite loop
       inProgress = false;
     }

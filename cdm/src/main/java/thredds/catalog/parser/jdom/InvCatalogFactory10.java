@@ -352,6 +352,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return null;
     }
     String specName = collElem.getAttributeValue("name");
+    if (specName == null) specName = name; // If missing, the Feature Collection name is used.
     String spec = collElem.getAttributeValue("spec");
     String timePartition = collElem.getAttributeValue("timePartition");
     String dateFormatMark = collElem.getAttributeValue("dateFormatMark");
