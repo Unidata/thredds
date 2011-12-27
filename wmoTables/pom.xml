@@ -1,30 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- =======================================================================
-        Maven Project Configuration File
-     ======================================================================= -->
-  <project xmlns="http://maven.apache.org/POM/4.0.0"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                               http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
-    <artifactId>netcdf-parent</artifactId>
-    <version>4.2.5</version>
+    <artifactId>thredds-parent</artifactId>
+    <version>4.3.5-SNAPSHOT</version>
   </parent>
-
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
   <groupId>edu.ucar</groupId>
-  <artifactId>bufrTables</artifactId>
-  <packaging>jar</packaging>
-  <version>${bufrTables.version}</version>
-  <name>BUFR tables</name>
+  <artifactId>wmoTables</artifactId>
+  <packaging>war</packaging>
+  <name>WMO tables</name>
   <description>
-    BUFR tables for the NetCDF library.
+    WMO tables for the NetCDF library.
   </description>
   <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
@@ -39,9 +33,64 @@
     </developer>
   </developers>
 
-
   <!-- ===========================================================
            Dependencies
        =========================================================== -->
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>wmotables</finalName>
+    <testSourceDirectory>void</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.1.1</version>
+        <configuration>
+          <attachClasses>true</attachClasses>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Built-On>${maven.build.timestamp}</Built-On>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <version>1.1.1</version>
+        <configuration>
+          <container>
+            <containerId>${cargo.containerId}</containerId>
+            <type>remote</type>
+          </container>
+          <configuration>
+            <type>runtime</type>
+            <properties>
+              <cargo.server.settings>${cargo.server.settings}</cargo.server.settings>
+            </properties>
+          </configuration>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

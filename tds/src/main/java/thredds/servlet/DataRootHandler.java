@@ -32,7 +32,9 @@
  */
 package thredds.servlet;
 
-import org.quartz.*;
+import org.quartz.JobKey;
+import org.quartz.TriggerKey;
+import org.quartz.impl.matchers.GroupMatcher;
 import thredds.catalog.*;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
@@ -325,8 +327,7 @@ public class DataRootHandler {
         }
         fin.close();
 
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         logCatalogInit.error("Error on getExtraCatalogs ", e);
       }
     }
@@ -345,6 +346,7 @@ public class DataRootHandler {
 
   // @TODO Should pull the init construction of hashes and such out of synchronization and only synchronize the change over to the constructed hashes. (How would that work with ConfigListeners?)
   // @TODO This method is synchronized seperately from actual initialization which means that requests in between the two calls will fail.
+
   /**
    * Reinitialize lists of static catalogs, data roots, dataset Ids.
    */
@@ -354,8 +356,8 @@ public class DataRootHandler {
     for (ConfigListener cl : configListeners)
       cl.configStart();
 
-    logCatalogInit.info( "\n**************************************\n**************************************\nStarting TDS config catalog reinitialization\n["
-            + CalendarDate.present() + "]" );
+    logCatalogInit.info("\n**************************************\n**************************************\nStarting TDS config catalog reinitialization\n["
+            + CalendarDate.present() + "]");
 
     // cleanup 
     thredds.inventory.bdb.MetadataManager.closeAll();
@@ -369,8 +371,8 @@ public class DataRootHandler {
 
     isReinit = false;
 
-    logCatalogInit.info( "\n**************************************\n**************************************\nDone with TDS config catalog reinitialization\n["
-            + CalendarDate.present() + "]" );
+    logCatalogInit.info("\n**************************************\n**************************************\nDone with TDS config catalog reinitialization\n["
+            + CalendarDate.present() + "]");
   }
 
   volatile boolean isReinit = false;
@@ -392,7 +394,7 @@ public class DataRootHandler {
     isReinit = false;
 
     staticCache = ThreddsConfig.getBoolean("Catalog.cache", true);  // user can turn off static catalog caching
-    startupLog.info("DataRootHandler: staticCache= "+staticCache);
+    startupLog.info("DataRootHandler: staticCache= " + staticCache);
 
     this.staticCatalogNames = new HashSet<String>();
     this.staticCatalogHash = new HashMap<String, InvCatalogImpl>();
@@ -419,7 +421,7 @@ public class DataRootHandler {
    *
    * @param path    file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
    * @param recurse if true, look for catRefs in this catalog
-   * @param cache if true, always cache
+   * @param cache   if true, always cache
    * @throws IOException if reading catalog fails
    */
   private void initCatalog(String path, boolean recurse, boolean cache) throws IOException {
@@ -500,8 +502,7 @@ public class DataRootHandler {
     URI uri;
     try {
       uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
-    }
-    catch (URISyntaxException e) {
+    } catch (URISyntaxException e) {
       logCatalogInit.error("readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
@@ -530,8 +531,7 @@ public class DataRootHandler {
       if (ios != null) {
         try {
           ios.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
           logCatalogInit.error("  error closing" + catalogFullPath);
         }
       }
@@ -713,7 +713,7 @@ public class DataRootHandler {
 
   public List<InvDatasetFeatureCollection> getFeatureCollections() {
     List<InvDatasetFeatureCollection> result = new ArrayList<InvDatasetFeatureCollection>();
-    Iterator iter =  pathMatcher.iterator();
+    Iterator iter = pathMatcher.iterator();
     while (iter.hasNext()) {
       DataRoot droot = (DataRoot) iter.next();
       if (droot.featCollection != null)
@@ -723,7 +723,7 @@ public class DataRootHandler {
   }
 
   public InvDatasetFeatureCollection getFeatureCollection(String want) {
-    Iterator iter =  pathMatcher.iterator();
+    Iterator iter = pathMatcher.iterator();
     while (iter.hasNext()) {
       DataRoot droot = (DataRoot) iter.next();
       if ((droot.featCollection != null) && droot.featCollection.getName().equals(want))
@@ -731,7 +731,6 @@ public class DataRootHandler {
     }
     return null;
   }
-
 
 
   // Only called by synchronized methods
@@ -894,7 +893,7 @@ public class DataRootHandler {
 
     // debug
     public String toString2() {
-      return path+","+dirLocation;
+      return path + "," + dirLocation;
     }
 
     /**
@@ -1053,8 +1052,7 @@ public class DataRootHandler {
     CrawlableDataset crDs;
     try {
       crDs = getCrawlableDataset(path);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return null;
     }
     if (crDs == null) return null;
@@ -1085,8 +1083,7 @@ public class DataRootHandler {
     CrawlableDataset crDs;
     try {
       crDs = getCrawlableDataset(path);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return null;
     }
     if (crDs == null) return null;
@@ -1132,9 +1129,9 @@ public class DataRootHandler {
     if (reqDataRoot.scan != null)
       scan = reqDataRoot.scan;
     else if (reqDataRoot.fmrc != null)  // TODO refactor UGLY FMRC HACK
-       scan = reqDataRoot.fmrc.getRawFileScan();
+      scan = reqDataRoot.fmrc.getRawFileScan();
     else if (reqDataRoot.featCollection != null)  // TODO refactor UGLY FMRC HACK
-       scan = reqDataRoot.featCollection.getRawFileScan();
+      scan = reqDataRoot.featCollection.getRawFileScan();
 
     return scan;
   }
@@ -1181,8 +1178,7 @@ public class DataRootHandler {
     URI baseURI;
     try {
       baseURI = new URI(baseUriString);
-    }
-    catch (URISyntaxException e) {
+    } catch (URISyntaxException e) {
       String resMsg = "Request URL <" + baseUriString + "> not a valid URI: " + e.getMessage();
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
       log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
@@ -1440,7 +1436,7 @@ public class DataRootHandler {
       File catFile = this.tdsContext.getConfigFileSource().getFile(workPath);
       if (catFile != null) {
         String catalogFullPath = catFile.getPath();
-        logCatalogInit.info( "**********\nReading catalog {} at {}\n",catalogFullPath, CalendarDate.present());
+        logCatalogInit.info("**********\nReading catalog {} at {}\n", catalogFullPath, CalendarDate.present());
 
         InvCatalogFactory factory = getCatalogFactory(true);
         InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
@@ -1509,8 +1505,7 @@ public class DataRootHandler {
     try {
       if (getCrawlableDataset(workPath) == null)
         return null;
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       log.error("makeDynamicCatalog(): I/O error on request <" + path + ">: " + e.getMessage(), e);
       return null;
     }
@@ -1522,7 +1517,8 @@ public class DataRootHandler {
     }
 
     InvDatasetScan dscan = match.dataRoot.scan;
-    if (log.isDebugEnabled()) log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
+    if (log.isDebugEnabled())
+      log.debug("makeDynamicCatalog(): Calling makeCatalogForDirectory( " + baseURI + ", " + path + ").");
     InvCatalogImpl cat = dscan.makeCatalogForDirectory(path, baseURI);
 
     if (null == cat) {
@@ -1680,8 +1676,7 @@ public class DataRootHandler {
     URI reqBaseURI;
     try {
       reqBaseURI = new URI(reqBase);
-    }
-    catch (URISyntaxException e) {
+    } catch (URISyntaxException e) {
       String resMsg = "Request base URL <" + reqBase + "> not valid URI (???): " + e.getMessage();
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
       log.error("processReqForLatestDataset(): " + resMsg);
@@ -1856,7 +1851,7 @@ public class DataRootHandler {
           while (iter.hasNext()) {
             DataRoot ds = (DataRoot) iter.next();
             if ((ds.dirLocation == null) && (ds.fmrc != null)) continue;
-            
+
             try {
               File f = new File(ds.dirLocation);
               if (!f.exists()) {
@@ -1897,29 +1892,25 @@ public class DataRootHandler {
         if (scheduler == null) return;
 
         try {
-           e.pw.println(scheduler.getMetaData());
-          String[] groups = scheduler.getJobGroupNames();
-          for (String groupName : groups) {
-            e.pw.println("Group "+groupName);
-            String[] names = scheduler.getJobNames(groupName);
-            for (String name : names) {
-              e.pw.println("  Job "+name);
-              e.pw.println("    "+ scheduler.getJobDetail(name, groupName));
+          e.pw.println(scheduler.getMetaData());
 
-              Trigger[] triggers =  scheduler.getTriggersOfJob(name, groupName);
-              for (Trigger t : triggers)
-                e.pw.println("  Trigger "+t);
+          // enumerate each job group
+          for (String group : scheduler.getJobGroupNames()) {
+            e.pw.println("Group " + group);
+
+            // enumerate each job in group
+            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.<JobKey> groupEquals(group))) {
+              e.pw.println("  Job " + jobKey.getName());
+              e.pw.println("    " + scheduler.getJobDetail(jobKey));
+            }
+
+            // enumerate each trigger in group
+            for (TriggerKey triggerKey : scheduler.getTriggerKeys(GroupMatcher.<TriggerKey> groupEquals(group))) {
+              e.pw.println("  Trigger " + triggerKey.getName());
+              e.pw.println("    " + scheduler.getTrigger(triggerKey));
             }
           }
 
-          String[] triggerGroups = scheduler.getTriggerGroupNames();
-          for (String groupName : triggerGroups) {
-              e.pw.println("Group: " + groupName + " contains the following triggers");
-              String[]  triggersInGroup = scheduler.getTriggerNames(groupName);
-             for (String name : triggersInGroup) {
-                 e.pw.println("- " + name);
-             }
-          }
 
         } catch (Exception e1) {
           e.pw.println("Error on scheduler " + e1.getMessage());

@@ -39,6 +39,7 @@ package ucar.nc2.iosp.gempak;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 
 import ucar.nc2.iosp.IOServiceProvider;
@@ -475,7 +476,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         Variable timeVar = new Variable(ncfile, null, null, TIME_VAR,
                                         DataType.DOUBLE, TIME_VAR);
         timeVar.addAttribute(
-            new Attribute("units", "seconds since 1970-01-01 00:00:00"));
+            new Attribute(CDM.UNITS, "seconds since 1970-01-01 00:00:00"));
         timeVar.addAttribute(new Attribute("long_name", TIME_VAR));
         varArray = new ArrayDouble.D1(numTimes);
         int i = 0;
@@ -496,9 +497,8 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         if (sfData == null) {
             return;
         }
-        sfData.addAttribute(new Attribute("coordinates",
-                                          "time SLAT SLON SELV"));
-        ncfile.addVariable(null, sfData);
+        sfData.addAttribute(new Attribute(CF.COORDINATES, "time SLAT SLON SELV"));
+      ncfile.addVariable(null, sfData);
         ncfile.addAttribute(
             null,
             new Attribute(
@@ -526,7 +526,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         Variable timeVar = new Variable(ncfile, null, null, TIME_VAR,
                                         DataType.DOUBLE, null);
         timeVar.addAttribute(
-            new Attribute("units", "seconds since 1970-01-01 00:00:00"));
+            new Attribute(CDM.UNITS, "seconds since 1970-01-01 00:00:00"));
         timeVar.addAttribute(new Attribute("long_name", TIME_VAR));
 
         ncfile.addDimension(null, DIM_LEN8);
@@ -560,7 +560,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         if (hasElevation) {
             coords = coords + " Obs.SELV";
         }
-        sVar.addAttribute(new Attribute("coordinates", coords));
+        sVar.addAttribute(new Attribute(CF.COORDINATES, coords));
         ncfile.addVariable(null, sVar);
         ncfile.addAttribute(null,
                             new Attribute("CF:featureType",

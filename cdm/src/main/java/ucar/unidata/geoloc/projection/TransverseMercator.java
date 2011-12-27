@@ -34,6 +34,7 @@
 package ucar.unidata.geoloc.projection;
 
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
@@ -124,7 +125,7 @@ public class TransverseMercator extends ProjectionImpl {
     if ((falseEasting != 0.0) || (falseNorthing != 0.0)) {
       addParameter(CF.FALSE_EASTING, falseEasting);
       addParameter(CF.FALSE_NORTHING, falseNorthing);
-      addParameter(CF.UNITS, "km");
+      addParameter(CDM.UNITS, "km");
     }
   }
 

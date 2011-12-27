@@ -35,6 +35,7 @@ package ucar.nc2.iosp.hdf4;
 import ucar.ma2.DataType;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
 
 /**
  * @author caron
@@ -121,7 +122,7 @@ public class H4type {
     if (v != null) {
       v.setDataType(dt);
       if (unsigned)
-         v.addAttribute(new Attribute("_Unsigned", "true"));
+         v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
     }
 
     return dt;
@@ -433,8 +434,8 @@ public class H4type {
 
 /* For SD interface
 #define _FillValue      "_FillValue" /* name of an attribute to set fill value for an SDS
-#define _HDF_LongName "long_name" /* data/dimension label string
-#define _HDF_Units    "units"     /* data/dimension unit string
+#define _HDF_LongName CDM.LONG_NAME /* data/dimension label string
+#define _HDF_Units    CDM.UNITS     /* data/dimension unit string
 #define _HDF_Format   "format"    /* data/dimension format string
 #define _HDF_CoordSys "coordsys"  /* data coordsys string
 #define _HDF_ValidRange     "valid_range" /* valid range of data values

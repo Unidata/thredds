@@ -69,7 +69,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   }
 
   @Override
-  public double getOlderThanFilterInSecs() {
+  public long getOlderThanFilterInMSecs() {
     return -1;
   }
 

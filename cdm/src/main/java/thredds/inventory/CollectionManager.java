@@ -158,10 +158,11 @@ public interface CollectionManager {
   /**
    * The "olderThan" amount in seconds.
    * Files are excluded if they have been modified within this amount of time.
+   * However once in the collection they are not removed.
    * Really this is handled by the manager, but this is exposed so that others (eg DatasetScan) can be consistent.
    * @return olderThan" amount in seconds, or < 0 to mean this filter is not present
    */
-  public double getOlderThanFilterInSecs();
+  public long getOlderThanFilterInMSecs();
 
 
   ////////////////////////////////////////////////////

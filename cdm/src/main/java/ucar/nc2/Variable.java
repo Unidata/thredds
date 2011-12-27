@@ -33,6 +33,8 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.rc.RC;
@@ -253,7 +255,7 @@ public class Variable implements VariableIF, ProxyReader {
    * @return true if Variable is unsigned
    */
   public boolean isUnsigned() {
-    Attribute att = findAttributeIgnoreCase("_Unsigned");
+    Attribute att = findAttributeIgnoreCase(CDM.UNSIGNED);
     return (att != null) && att.getStringValue().equalsIgnoreCase("true");
   }
 
@@ -380,14 +382,14 @@ public class Variable implements VariableIF, ProxyReader {
 
   /**
    * Get the description of the Variable.
-   * Default is to use "long_name" attribute value. If not exist, look for "description", "title", or
+   * Default is to use CDM.LONG_NAME attribute value. If not exist, look for "description", "title", or
    * "standard_name" attribute value (in that order).
    *
    * @return description, or null if not found.
    */
   public String getDescription() {
     String desc = null;
-    Attribute att = findAttributeIgnoreCase("long_name");
+    Attribute att = findAttributeIgnoreCase(CDM.LONG_NAME);
     if ((att != null) && att.isString())
       desc = att.getStringValue();
 
@@ -398,13 +400,13 @@ public class Variable implements VariableIF, ProxyReader {
     }
 
     if (desc == null) {
-      att = findAttributeIgnoreCase("title");
+      att = findAttributeIgnoreCase(CDM.TITLE);
       if ((att != null) && att.isString())
         desc = att.getStringValue();
     }
 
     if (desc == null) {
-      att = findAttributeIgnoreCase("standard_name");
+      att = findAttributeIgnoreCase(CF.STANDARD_NAME);
       if ((att != null) && att.isString())
         desc = att.getStringValue();
     }
@@ -414,13 +416,13 @@ public class Variable implements VariableIF, ProxyReader {
 
   /**
    * Get the Unit String for the Variable.
-   * Looks for the "units" attribute value
+   * Looks for the CDM.UNITS attribute value
    *
    * @return unit string, or null if not found.
    */
   public String getUnitsString() {
     String units = null;
-    Attribute att = findAttributeIgnoreCase("units");
+    Attribute att = findAttributeIgnoreCase(CDM.UNITS);
     if ((att != null) && att.isString()) {
       units = att.getStringValue();
       if (units != null) units = units.trim();

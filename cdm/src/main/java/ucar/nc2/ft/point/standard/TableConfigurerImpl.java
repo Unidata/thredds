@@ -69,14 +69,14 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
   private String convName, convUsed;
 
   protected String findNameVariableWithStandardNameAndDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
-    Variable v = findVariableWithStandardNameAndDimension(ds, standard_name, outer, errlog);
+    Variable v = findVariableWithAttributeAndDimension(ds, CF.STANDARD_NAME, standard_name, outer, errlog);
     return (v == null) ? null : v.getShortName();
   }
 
-  protected Variable findVariableWithStandardNameAndDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {
+  protected Variable findVariableWithAttributeAndDimension(NetcdfDataset ds, String att_name, String att_value, Dimension outer, Formatter errlog) {
     for (Variable v : ds.getVariables()) {
-      String stdName = ds.findAttValueIgnoreCase(v, CF.STANDARD_NAME, null);
-      if ((stdName != null) && stdName.equals(standard_name)) {
+      String stdName = ds.findAttValueIgnoreCase(v, att_name, null);
+      if ((stdName != null) && stdName.equals(att_value)) {
         if (v.getRank() > 0 && v.getDimension(0).equals(outer))
           return v;
         if (isEffectivelyScaler(v) && (outer == null))

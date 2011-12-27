@@ -35,6 +35,8 @@ package ucar.nc2;
 import junit.framework.*;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
+
 import java.io.IOException;
 
 /**
@@ -71,11 +73,11 @@ public class TestWriteRecordStructure extends TestCase  {
     writeableFile.addVariableAttribute("lon", "units", "degrees_east");
 
     writeableFile.addVariable("rh", DataType.INT, dim3);
-    writeableFile.addVariableAttribute("rh", "long_name", "relative humidity");
+    writeableFile.addVariableAttribute("rh", CDM.LONG_NAME, "relative humidity");
     writeableFile.addVariableAttribute("rh", "units", "percent");
 
     writeableFile.addVariable("T", DataType.DOUBLE, dim3);
-    writeableFile.addVariableAttribute("T", "long_name", "surface temperature");
+    writeableFile.addVariableAttribute("T", CDM.LONG_NAME, "surface temperature");
     writeableFile.addVariableAttribute("T", "units", "degC");
 
     writeableFile.addVariable("time", DataType.INT, new Dimension[] {timeDim});

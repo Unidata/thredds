@@ -33,6 +33,7 @@
 
 package ucar.nc2.jni.netcdf;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
@@ -529,7 +530,7 @@ public class JniIosp extends AbstractIOServiceProvider {
       }
 
       if (isUnsigned(typeid))
-        v.addAttribute(new Attribute("_Unsigned","true"));
+        v.addAttribute(new Attribute(CDM.UNSIGNED,"true"));
 
       // read Variable attributes
       List<Attribute> atts = makeAttributes(grpid, varno, nattsp.getValue(), v);
@@ -681,7 +682,7 @@ public class JniIosp extends AbstractIOServiceProvider {
       Variable v = new Variable(ncfile, g, parent, name);
       v.setDataType( convertDataType(fldtypeid));
       if (isUnsigned(fldtypeid))
-        v.addAttribute(new Attribute("_Unsigned","true"));
+        v.addAttribute(new Attribute(CDM.UNSIGNED,"true"));
 
       try {
         v.setDimensionsAnonymous(dims);

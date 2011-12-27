@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
@@ -192,7 +193,7 @@ public class NUWGConvention extends CoordSysBuilder {
             if (units != null) {
               units = StringUtil2.remove(units, '(');
               units = StringUtil2.remove(units, ')');
-              ncvar.addAttribute(new Attribute("units", units));
+              ncvar.addAttribute(new Attribute(CDM.UNITS, units));
             }
           } else {
             parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getFullName());
@@ -425,7 +426,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
     public String getName() { return ncvar.getShortName(); }
     public String getDescription() {
-      Attribute att = ncvar.findAttributeIgnoreCase("long_name");
+      Attribute att = ncvar.findAttributeIgnoreCase(CDM.LONG_NAME);
       return (att == null) ? getName() : att.getStringValue();
     }
     public DataType getValueType() { return valueType; }

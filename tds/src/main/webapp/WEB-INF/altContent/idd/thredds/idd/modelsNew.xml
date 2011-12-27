@@ -58,16 +58,14 @@
     <dataset name="Global Forecast System (GFS) Model">
 
       <metadata inherited="true">
-        <documentation type="summary">NCEP Global Forecast System Model, previously called AVN/MRF (Medium Range
-          Forecast)
-        </documentation>
+        <documentation type="summary">NCEP Global Forecast System Model, previously called AVN/MRF (Medium Range Forecast)</documentation>
         <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/avintro.htm"
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
         <documentation xlink:href="http://www.emc.ncep.noaa.gov/gmb/STATS/html/model_changes.html"
                        xlink:title="NCEP Model Notes"/>
       </metadata>
 
-      <featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true"
+      <!-- featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true"
                          path="grib/NCEP/GFS/Global_0p5deg">
         <metadata inherited="true">
           <documentation type="summary">NCEP GFS Model : AWIPS 230 (G) Grid. Global Lat/Lon grid.
@@ -166,7 +164,7 @@
             timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-      </featureCollection>
+      </featureCollection -->
 
       <featureCollection name="NCEP-GFS-Puerto_Rico_0p5deg" featureType="GRIB" harvest="true"
                          path="grib/NCEP/GFS/Puerto_Rico_0p5deg">
@@ -183,15 +181,31 @@
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_0p5deg/.*grib2$"
             name="GFS_Puerto_Rico_0p5deg"
-            dateFormatMark="#GFS_Puerto_Rico_0p5deg_#yyyyMMdd_HHmm"
-            timePartition="day"
-            olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+            dateFormatMark="#GFS_Puerto_Rico_0p5deg_#yyyyMMdd_HHmm" />
+        <tdm startup="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-GFS-Puerto_Rico_191km" featureType="GRIB" harvest="true"
+                         path="fmrc/NCEP/GFS/Puerto_Rico_191km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-1</dataFormat>
+          <documentation type="summary">NCEP GFS Model : AWIPS 205 (L) Grid. National - Puerto Rico (polar stereographic).
+            Model runs are made at 0Z, with analysis and forecasts every 12 hours out 10 days.
+            Horizontal = 45 by 39 points, resolution 190.5 km, Polar Stereographic projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+         <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$"
+            name="GFS_Puerto_Rico_191km"
+            dateFormatMark="#GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm" />
+        <tdm startup="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
     </dataset>
 
-    <dataset name="North American Model (NAM)">
+    <!-- dataset name="North American Model (NAM)">
 
       <metadata inherited="true">
         <documentation type="summary">NCEP Nonhydrostatic Mesoscale Model (NMM) and Gridpoint Statistical Interpolation
@@ -926,7 +940,7 @@
       <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
     </featureCollection>
 
-  </dataset>
+  </dataset -->
 
 </catalog>
 

@@ -1,6 +1,16 @@
+target/
 /bufr/target/
 /cdm/target/
 /grib/target/
 /opendap/target/
 /tds/target/
-/tds/content
+/tds/content/
+ui/target/
+visad/target/
+wmoTables/target/
+
+# Ignore unwanted IntelliJ IDEA project files
+intelliJ/maven/
+intelliJ/thredds/
+*.iws
+atlassian-ide-plugin.xml

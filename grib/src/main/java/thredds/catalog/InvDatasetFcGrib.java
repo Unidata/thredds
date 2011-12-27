@@ -34,6 +34,7 @@ package thredds.catalog;
 
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
+import thredds.inventory.CollectionManager;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.TimePartitionCollection;
@@ -41,9 +42,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -63,7 +62,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @ThreadSafe
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
-  static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcFmrc.class);
+  static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
 
   /////////////////////////////////////////////////////////////////////////////
@@ -84,10 +83,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   private final FeatureCollectionConfig.GribConfig gribConfig;
   private final AtomicBoolean needsUpdate = new AtomicBoolean();
-  private final AtomicBoolean needsProto  = new AtomicBoolean();
+  private final AtomicBoolean needsProto = new AtomicBoolean();
+  private DataFormatType format;
 
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
     super(parent, name, path, featureType, config);
+    this.gribConfig = config.gribConfig;
 
     Formatter errlog = new Formatter();
     if (config.useIndexOnly)
@@ -96,64 +97,60 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       this.dcm = TimePartitionCollection.factory(config, errlog);
     } else {
       this.dcm = new DatasetCollectionMFiles(config, errlog);
-      this.dcm.setChangeChecker( Grib2Index.getChangeChecker());  // the underlying files are GRIB2
+      this.dcm.setChangeChecker(GribIndex.getChangeChecker());   // LOOK needed?
     }
 
     String errs = errlog.toString();
-    if (errs.length() > 0) logger.debug("DatasetCollectionManager parse error = {} ", errs);
+    if (errs.length() > 0) logger.debug("{}: CollectionManager parse error = {} ", name, errs);
 
     tmi.setDataType(FeatureType.GRID); // override GRIB
     finish(); // ??
-    this.gribConfig = config.gribConfig;
-  }
 
-  // deferred init
-  // but it should be cheap
-  // ony called from lock
-  private void init(StateGrib localState) {
-    try {
-      if (config.timePartition != null) {
-        TimePartition previous = localState.timePartition;
-        localState.timePartition = TimePartitionBuilder.factory((TimePartitionCollection) this.dcm, config.updateConfig.force, new Formatter());
-        localState.gribCollection = null;
-        if (previous != null) previous.close(); // LOOK thread safety
-
-      } else {
-        GribCollection previous = localState.gribCollection;
-        localState.gribCollection = Grib2CollectionBuilder.factory(dcm, config.updateConfig.force, new Formatter());
-        localState.timePartition = null;
-        if (previous != null) previous.close(); // LOOK thread safety
-      }
-    } catch (IOException e) {
-      logger.error("Cant init " + dcm, e);
-    }
-    logger.info("Collection was recreated="+getName());
   }
 
   @Override
   public void update() {
     needsUpdate.set(true);
+
+    // use checkState to do the actual work, for the locking
+    try {
+      checkState();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
   public void updateProto() {
     needsProto.set(true);
+
+    // no actual work, wait until dataset is called (??)
   }
 
   @Override
   protected StateGrib checkState() throws IOException {
     synchronized (lock) {
 
+      boolean updateNeeded = false;
       if (state == null) {
         firstInit();
-      } else if (!needsUpdate.get()) {
-        return (StateGrib) state;
+        updateNeeded = dcm.scanIfNeeded();
+      } else {
+        if (needsUpdate.get()) { // external trigger
+          updateNeeded = true;
+        } else {
+          updateNeeded = dcm.scanIfNeeded(); // the case where recheckEvery is used
+        }
       }
+
+      if (!updateNeeded) return (StateGrib) state;
+
+      // in all cases the dcm has been rescanned
 
       // update local copy of state, then switch all at once
       // i think this is "copy on write"
-      StateGrib localState = new StateGrib((StateGrib)state);
-      init(localState);
+      StateGrib localState = new StateGrib((StateGrib) state);
+      updateCollection(localState);
 
       makeTopDatasets(localState);
       localState.lastInvChange = System.currentTimeMillis();
@@ -165,13 +162,34 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
+  private void updateCollection(StateGrib localState) {
+    this.format = getDataFormatType();
+    try {
+      if (config.timePartition != null) {
+        TimePartition previous = localState.timePartition;
+        localState.timePartition = TimePartitionBuilder.factory((TimePartitionCollection) this.dcm, CollectionManager.Force.test, new Formatter());
+        localState.gribCollection = null;
+        if (previous != null) previous.close(); // LOOK thread safety
+
+      } else { // WTF? open and close every time (!)
+        GribCollection previous = localState.gribCollection;
+        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.test, new Formatter());
+        localState.timePartition = null;
+        if (previous != null) previous.close(); // LOOK thread safety
+      }
+    } catch (IOException e) {
+      logger.error("Cant updateCollection " + dcm, e);
+    }
+    logger.info("{}: Collection was recreated", getName());
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
   // LOOK maybe we should ehcache some or all of this ??
   @Override
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {
-    logger.debug("FcGrib make catalog for " + match + " " + baseURI);
+    //logger.debug("{}: make catalog for {} {}", name, match, baseURI);
     StateGrib localState = null;
     try {
       localState = (StateGrib) checkState();
@@ -257,14 +275,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         addFileDatasets(ds, name);
 
         // metadata is specific to each group
-        ds.tmi.addVariables( extractThreddsVariables(localState.gribCollection, group));
+        ds.tmi.addVariables(extractThreddsVariables(localState.gribCollection, group));
         ds.tmi.setGeospatialCoverage(extractGeospatial(group));
         CalendarDateRange cdr = extractCalendarDateRange(group);
         if (cdr != null) ds.tmi.setTimeCoverage(cdr);
 
         ds.finish();
         datasets.add(ds);
-       }
+      }
 
     } else {
 
@@ -275,7 +293,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       ds.finish();
       datasets.add(ds);
 
-      for ( TimePartition.Partition dc : localState.timePartition.getPartitions()) {
+      for (TimePartition.Partition dc : localState.timePartition.getPartitions()) {
         String dname = dc.getName();
         ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
         dname = StringUtil2.replace(dname, ' ', "_");
@@ -297,30 +315,35 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   private ThreddsMetadata.Variables extractThreddsVariables(GribCollection gribCollection, GribCollection.GroupHcs group) {
-      ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(DataFormatType.GRIB2.toString());
-      for (GribCollection.VariableIndex vindex : group.varIndex) {
-        ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
-        VertCoord vc = (vindex.vertIdx < 0) ? null : group.vertCoords.get(vindex.vertIdx);
+    ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(format.toString());
+    for (GribCollection.VariableIndex vindex : group.varIndex) {
+      ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
+      VertCoord vc = (vindex.vertIdx < 0) ? null : group.vertCoords.get(vindex.vertIdx);
+
+      if (format == DataFormatType.GRIB2) {
         //GribTables tables = group.getGribCollection().getTables(); // LOOK
         Grib2Tables tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
-        tv.setName( Grib2Iosp.makeVariableName(tables, gribCollection, vindex));
-        tv.setDescription( Grib2Iosp.makeVariableLongName(tables, vindex));
-        tv.setUnits( Grib2Iosp.makeVariableUnits(tables, vindex));
+        tv.setName(Grib2Iosp.makeVariableName(tables, gribCollection, vindex));
+        tv.setDescription(Grib2Iosp.makeVariableLongName(tables, vindex));
+        tv.setUnits(Grib2Iosp.makeVariableUnits(tables, vindex));
 
-        tv.setVocabularyId( "2-"+vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
+        tv.setVocabularyId("2-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
 
         String paramDisc = tables.getTableValue("0.0", vindex.discipline);
         if (paramDisc == null) paramDisc = "Unknown";
-        String paramCategory = tables.getTableValue("4.1."+vindex.discipline, vindex.category);
+        String paramCategory = tables.getTableValue("4.1." + vindex.discipline, vindex.category);
         if (paramCategory == null) paramCategory = "Unknown";
         String paramName = tables.getVariableName(vindex.discipline, vindex.category, vindex.parameter);
         tv.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName);
-
         vars.addVariable(tv);
+
+      } else {  // LOOK
       }
-      vars.sort();
-      return vars;
+
+    }
+    vars.sort();
+    return vars;
   }
 
   private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupHcs group) {
@@ -391,13 +414,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     for (GribCollection.GroupHcs group : gribCollection.getGroups()) {
       String name = group.getGroupName();
-      InvDatasetImpl ds = new InvDatasetImpl(this, name+"_"+COLLECTION);
+      InvDatasetImpl ds = new InvDatasetImpl(this, name + "_" + COLLECTION);
       name = StringUtil2.replace(name, ' ', "_");
       ds.setUrlPath(this.path + "/" + collectionName + "/" + name);
       ds.setID(id + "/" + collectionName + "/" + name);
 
       // metadata is specific to each group
-      ds.tmi.addVariables( extractThreddsVariables(gribCollection, group));
+      ds.tmi.addVariables(extractThreddsVariables(gribCollection, group));
       ds.tmi.setGeospatialCoverage(extractGeospatial(group));
       CalendarDateRange cdr = extractCalendarDateRange(group);
       if (cdr != null) ds.tmi.setTimeCoverage(cdr);
@@ -524,9 +547,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (localState.timePartition == null) {
       int n = paths.length;
-      if (n >= 2 ) { // files
-        String group = paths[n-2];
-        String filename = paths[n-1];
+      if (n >= 2) { // files
+        String group = paths[n - 2];
+        String filename = paths[n - 1];
         return localState.gribCollection.getNetcdfDataset(group, filename);
       } else {
         return localState.gribCollection.getNetcdfDataset(paths[0], null);

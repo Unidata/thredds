@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>edu.ucar</groupId>
+    <artifactId>thredds-parent</artifactId>
+    <version>4.3.5-SNAPSHOT</version>
+  </parent>
+
+  <groupId>edu.ucar</groupId>
+  <artifactId>visad</artifactId>
+  <packaging>jar</packaging>
+  <name>VisAD-based IOSPs</name>
+  <description>
+    Several netCDF-Java IOSPs that depend on the VisAD library including a
+    GEMPAK IOSP for grid, station, and sounding datasets; a McIDAS IOSP for
+    grid datasets; and an ADDE IOSP for image and station datasets.
+  </description>
+  <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
+
+  <developers>
+    <developer>
+      <name>Don Murray</name>
+      <organization>NOAA/ESRL/PSD</organization>
+      <organizationUrl>http://www.esrl.noaa.gov/psd/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Robb Kambic</name>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>John Caron</name>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <!-- Dependencies -->
+  <dependencies>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.wisc</groupId>
+      <artifactId>visad</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+  </dependencies>
+
+  <!-- Build configuration
+       We declare a non-existant test directory as a dirty trick
+       for skiping completly the tests, including compilation.
+    -->
+  <build>
+    <finalName>visadCdm</finalName>
+    <testSourceDirectory>void</testSourceDirectory>
+  </build>
+
+</project>

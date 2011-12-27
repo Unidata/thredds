@@ -34,6 +34,7 @@ package ucar.unidata.geoloc.vertical;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
@@ -114,7 +115,7 @@ public class AtmosSigma extends VerticalTransformImpl {
           + sigmaName + " err= " + e.getMessage());
     }
 
-    units = ds.findAttValueIgnoreCase(psVar, "units", "none");
+    units = ds.findAttValueIgnoreCase(psVar, CDM.UNITS, "none");
   }
 
   /**

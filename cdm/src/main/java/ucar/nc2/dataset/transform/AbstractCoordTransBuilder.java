@@ -37,6 +37,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
@@ -180,7 +181,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
   //////////////////////////////////////////
   //private UnitFormat format;
   static public double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
-    String units = ds.findAttValueIgnoreCase(ctv, "units", null);
+    String units = ds.findAttValueIgnoreCase(ctv, CDM.UNITS, null);
     if (units == null) {
       List<CoordinateAxis> axes = ds.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {

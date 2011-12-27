@@ -34,6 +34,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 
 import java.util.EnumSet;
 
@@ -52,7 +53,6 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   static private final int NC_FILL_INT = -2147483647;
   static private final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
   static private final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
-  static private final String FillValue = "_FillValue";
 
   static private boolean debug = false, debugRead = false, debugMissing = false;
 
@@ -131,7 +131,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     Attribute att;
 
     // scale and offset
-    if (null != (att = forVar.findAttribute("scale_factor"))) {
+    if (null != (att = forVar.findAttribute(CDM.SCALE_FACTOR))) {
       if (!att.isString()) {
         scale = att.getNumericValue().doubleValue();
         hasScaleOffset = true;
@@ -140,7 +140,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         if (debug) System.out.println("scale = " + scale + " type " + scaleType);
       }
     }
-    if (null != (att = forVar.findAttribute("add_offset"))) {
+    if (null != (att = forVar.findAttribute(CDM.ADD_OFFSET))) {
       if (!att.isString()) {
         offset = att.getNumericValue().doubleValue();
         hasScaleOffset = true;
@@ -194,7 +194,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       hasValidRange = true;
 
     /// _FillValue
-    if ((null != (att = forVar.findAttribute("_FillValue"))) && !att.isString()) {
+    if ((null != (att = forVar.findAttribute(CDM.FILL_VALUE))) && !att.isString()) {
       double[] values = getValueAsDouble(att);
       fillValue = values[0];
       hasFillValue = true;
@@ -204,7 +204,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     }
 
     /// missing_value
-    if (null != (att = forVar.findAttribute("missing_value"))) {
+    if (null != (att = forVar.findAttribute(CDM.MISSING_VALUE))) {
       if (att.isString()) {
         String svalue = att.getStringValue();
         if (forVar.getDataType() == DataType.CHAR) {
@@ -549,7 +549,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       return result;
     } else {
       String[] result = new String[1];
-      result[0] = FillValue;
+      result[0] = CDM.FILL_VALUE;
       return result;
     }
   }

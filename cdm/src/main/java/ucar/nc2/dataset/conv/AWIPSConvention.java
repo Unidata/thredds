@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
@@ -141,10 +142,10 @@ public class AWIPSConvention extends CoordSysBuilder {
     // kludge in fixing the units
     List<Variable> vlist = ds.getVariables();
     for (Variable v : vlist) {
-      Attribute att = v.findAttributeIgnoreCase("units");
+      Attribute att = v.findAttributeIgnoreCase(CDM.UNITS);
       if (att != null) {
         String units = att.getStringValue();
-        v.addAttribute(new Attribute("units", normalize(units))); // removes the old
+        v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
       }
     }
 
@@ -330,9 +331,9 @@ public class AWIPSConvention extends CoordSysBuilder {
       varNew.setDimension(newDimIndex, dim);
 
       // synthesize long name
-      String long_name = ds.findAttValueIgnoreCase(ncVar, "long_name", ncVar.getShortName());
+      String long_name = ds.findAttValueIgnoreCase(ncVar, CDM.LONG_NAME, ncVar.getShortName());
       long_name = long_name + "-" + dim.getName();
-      ds.addVariableAttribute(varNew, new Attribute("long_name", long_name));
+      ds.addVariableAttribute(varNew, new Attribute(CDM.LONG_NAME, long_name));
 
       ds.addVariable(null, varNew);
 
@@ -606,7 +607,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     while (iiter.hasNext())
       diter.setDoubleNext(iiter.getDoubleNext() + refValue); // add reftime to each of the values
 
-    String units = ds.findAttValueIgnoreCase(refVar, "units", "seconds since 1970-1-1 00:00:00");
+    String units = ds.findAttValueIgnoreCase(refVar, CDM.UNITS, "seconds since 1970-1-1 00:00:00");
     units = normalize(units);
     String desc = "synthesized time coordinate from reftime, valtimeMINUSreftime";
     CoordinateAxis1D timeCoord = new CoordinateAxis1D(ds, null, "timeCoord", DataType.DOUBLE, "record", units, desc);

@@ -38,6 +38,7 @@ package ucar.nc2.iosp.gempak;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 
@@ -328,7 +329,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         var.addAttribute(new Attribute("long_name", param.getDescription()));
         String units = param.getUnit();
         if ((units != null) && !units.equals("")) {
-            var.addAttribute(new Attribute("units", units));
+            var.addAttribute(new Attribute(CDM.UNITS, units));
         }
         var.addAttribute(new Attribute("missing_value", RMISS));
         return var;
@@ -347,7 +348,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
                             new Attribute("history",
                                           "Direct read of " + fileType
                                           + " into NetCDF-Java 4.2 API"));  //  at " + dateFormat.toDateTimeStringISO(new Date())));
-        ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, getCFFeatureType()));
+        ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, getCFFeatureType()));
     }
 
     /**
@@ -530,7 +531,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
             longName = "altitude";
             unit     = "meter";
             type     = DataType.FLOAT;
-            attrs.add(new Attribute("positive", "up"));
+            attrs.add(new Attribute(CF.POSITIVE, CF.POSITIVE_UP));
             attrs.add(new Attribute("standard_name", "station_altitude"));
         } else if (varname.equals(GempakStation.STAT)) {
             longName = "state or province";
@@ -555,7 +556,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         v.setDataType(type);
         v.addAttribute(new Attribute("long_name", longName));
         if (unit != null) {
-            v.addAttribute(new Attribute("units", unit));
+            v.addAttribute(new Attribute(CDM.UNITS, unit));
         }
         if (type.equals(DataType.FLOAT)) {
             v.addAttribute(new Attribute("missing_value", RMISS));

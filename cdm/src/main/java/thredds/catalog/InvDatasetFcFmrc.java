@@ -67,7 +67,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   @Override
   public void update() {
-    fmrc.update();
+    fmrc.update();       // so when is work done?
   }
 
   @Override
@@ -404,7 +404,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
      if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files) && (topDirectory != null)) {
 
        // LOOK - replace this with InvDatasetScan( collectionManager) or something
-       long olderThan = (long) (1000 * dcm.getOlderThanFilterInSecs());
+       long olderThan = dcm.getOlderThanFilterInMSecs();
        ScanFilter scanFilter = new ScanFilter(null, olderThan);
        InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + FILES,
                topDirectory, scanFilter, true, "true", false, null, null, null);

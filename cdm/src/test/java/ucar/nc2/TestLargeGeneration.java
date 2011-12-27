@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import ucar.nc2.*;
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
 
 public class TestLargeGeneration {
 
@@ -74,9 +75,9 @@ public class TestLargeGeneration {
   static String unitsAttName = "units";
   static String axisAttName = "axis";
   static String standardNameAttName = "standard_name";
-  static String longNameAttName = "long_name";
+  static String longNameAttName = CDM.LONG_NAME;
   static float fillValue = -9999.0f;
-  static String missingValueAttName = "missing_value";
+  static String missingValueAttName = CDM.MISSING_VALUE;
   static String fillValueAttName = "_FillValue";
 
   static String variableName = "testVar";

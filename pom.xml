@@ -14,19 +14,19 @@
            Project description (including license)
        ==================================================== -->
   <groupId>edu.ucar</groupId>
-  <artifactId>netcdf-parent</artifactId>
+  <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.3.2-SNAPSHOT</version>
-  <name>Unidata parent</name>
+  <version>4.3.5-SNAPSHOT</version>
+  <name>Unidata THREDDS parent</name>
   <description>
-    The NetCDF-Java Library is a Java interface to NetCDF files,
-    as well as to many other types of scientific data formats.
+    The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
+    the THREDDS Data Server (TDS).
   </description>
   <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
   <organization>
     <name>UCAR/Unidata</name>
-    <url>http://www.ucar.edu/</url>
+    <url>http://www.unidata.ucar.edu/</url>
   </organization>
   <inceptionYear>1999</inceptionYear>
 
@@ -49,7 +49,7 @@
   <scm>
     <url>https://github.com/Unidata/thredds/</url>
     <connection>scm:git:https://github.com/Unidata/thredds/</connection>
-    <developerConnection>scm:git:https://github.com/Unidata/thredds/</developerConnection>
+    <developerConnection>scm:git:git@github.com:Unidata/thredds.git</developerConnection>
   </scm>
 
   <!-- ===========================================================
@@ -146,6 +146,25 @@
 
            Reference: http://repo1.maven.org/maven2/
        =========================================================== -->
+  <distributionManagement>
+    <repository>
+      <id>thredds-releases</id>
+      <name>THREDDS Releases</name>
+      <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds-releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>thredds-snapshots</id>
+      <name>THREDDS Snapshots</name>
+      <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <repositories>
+    <repository>
+      <id>thredds</id>
+      <name>THREDDS</name>
+      <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds/</url>
+    </repository>
+  </repositories>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -161,7 +180,7 @@
       <dependency>
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
-        <version>1.7.3</version>
+        <version>2.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -258,14 +277,10 @@
         <artifactId>oro</artifactId>
         <version>2.0.8</version>
       </dependency>
-      <!-- 
-        to install, run followin command from directory containing this file with tds.version property replaced...
-        mvn install:install-file -DgroupId=ncwms -DartifactId=ncwms -Dversion=local-${tds.version} -Dpackaging=jar -Dfile=lib/release/ncwms.jar
-      -->
       <dependency>
-        <groupId>ncwms</groupId>
+        <groupId>uk.ac.rdg.rersc</groupId>
         <artifactId>ncwms</artifactId>
-        <version>local-${project.version}</version>
+        <version>1.0.tds.4.2.20110419.2059</version>
       </dependency>
       <dependency>
         <groupId>org.geotoolkit</groupId>
@@ -339,6 +354,14 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.2.1</version>
+        <configuration>
+          <tagNameFormat>v@{project.version}</tagNameFormat>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>1.5</source>
@@ -381,13 +404,13 @@
   <!-- ====================================================
            Deployment to public servers
        ==================================================== -->
-  <distributionManagement>
+  <!--distributionManagement>
     <repository>
       <id>sonatype-nexus-staging</id>
       <name>Sonatype OSS Hosting, synced to Maven Central</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
-  </distributionManagement>
+  </distributionManagement-->
 
 
   <!-- ===========================================================
@@ -399,6 +422,7 @@
     <module>grib</module>
     <module>opendap</module>
     <module>tds</module>
+    <module>visad</module>
   </modules>
 
   <properties>

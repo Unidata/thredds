@@ -34,13 +34,12 @@ package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.DatasetCollectionMFiles;
+import thredds.inventory.DatasetCollectionSingleFile;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
@@ -60,16 +59,17 @@ public class Grib2CollectionBuilder {
   private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist
-  static public GribCollection createFromSingleFile(File file, Formatter f) throws IOException {
+  static public GribCollection createFromSingleFile(File file, CollectionManager.Force force, Formatter f) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, f);
-    builder.init(CollectionManager.Force.nocheck, f);
+    builder.readOrCreateIndex(force, f);
     return builder.gc;
   }
 
   // from a collection, read in the index, create if it doesnt exist or is out of date
+  // assume that the CollectionManager is up to date, eg doesnt need to be scanned
   static public GribCollection factory(CollectionManager dcm, CollectionManager.Force force, Formatter f) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm);
-    builder.init(force, f);
+    builder.readOrCreateIndex(force, f);
     return builder.gc;
   }
 
@@ -95,8 +95,8 @@ public class Grib2CollectionBuilder {
   // single file
   private Grib2CollectionBuilder(File file, Formatter f) throws IOException {
     try {
-      String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
-      CollectionManager dcm = DatasetCollectionMFiles.open(spec, null, f);
+      //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
+      CollectionManager dcm = new DatasetCollectionSingleFile(file);
       this.collections.add(dcm);
       this.gc = new Grib2Collection(file.getName(), new File(dcm.getRoot()));
 
@@ -126,7 +126,7 @@ public class Grib2CollectionBuilder {
   }
 
   // read or create index
-  private void init(CollectionManager.Force ff, Formatter f) throws IOException {
+  private void readOrCreateIndex(CollectionManager.Force ff, Formatter f) throws IOException {
 
     // force new index or test for new index needed
     boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate()));
@@ -134,11 +134,11 @@ public class Grib2CollectionBuilder {
     // otherwise, we're good as long as the index file exists
     File idx = gc.getIndexFile();
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
-      logger.info("GribCollection createIndex {}", idx.getPath());
+      logger.info("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx, ff, f);        // write out index
       gc.rafLocation = idx.getPath();
-      gc.raf = new RandomAccessFile(idx.getPath(), "r");
-      readIndex(gc.raf); // read back in index
+      gc.setRaf( new RandomAccessFile(idx.getPath(), "r"));
+      readIndex(gc.getRaf()); // read back in index
     }
   }
 
@@ -164,21 +164,21 @@ public class Grib2CollectionBuilder {
     return readIndex( new RandomAccessFile(filename, "r") );
   }
 
-  public boolean readIndex(RandomAccessFile raf) throws IOException {
-    gc.raf = raf; // LOOK leaving the raf open in the GribCollection
+  public boolean readIndex(RandomAccessFile raf) {
+    gc.setRaf( raf); // LOOK leaving the raf open in the GribCollection
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
      //// header message
       if (!NcStream.readAndTest(raf, MAGIC_START.getBytes())) {
-        logger.error("GribCollection {} invalid index", gc.getName());
-        throw new IOException("GribCollection " + gc.getName() + " invalid index");
+        logger.error("GribCollection {}: invalid index", gc.getName());
+        return false;
       }
 
       int v = raf.readInt();
       if (v != getVersion()) {
-        logger.warn("GribCollection {} index found version={}, want version= {} on file {}", new Object[]{gc.getName(), v, version, raf.getLocation()});
+        logger.warn("GribCollection {}: index found version={}, want version= {} on file {}", new Object[]{gc.getName(), v, version, raf.getLocation()});
         return false;
       }
 
@@ -187,7 +187,7 @@ public class Grib2CollectionBuilder {
 
       int size = NcStream.readVInt(raf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
-        logger.warn("GribCollection {} invalid index ", gc.getName());
+        logger.warn("GribCollection {}: invalid index ", gc.getName());
         return false;
       }
 
@@ -212,7 +212,7 @@ public class Grib2CollectionBuilder {
 
       // error condition on a GribCollection Index
       if ((proto.getFilesCount() == 0) && !(this instanceof TimePartitionBuilder)) {
-        logger.warn("GribCollection {} has no files, force recreate ", gc.getName());
+        logger.warn("GribCollection {}: has no files, force recreate ", gc.getName());
         return false;
       }
 
@@ -226,7 +226,7 @@ public class Grib2CollectionBuilder {
         gc.params.add(readParam(proto.getParams(i)));
 
       if (!readPartitions(proto)) {
-        logger.warn("TimePartition {} has no partitions, force recreate ", gc.getName());
+        logger.warn("TimePartition {}: has no partitions, force recreate ", gc.getName());
         return false;
       }
 
@@ -398,7 +398,7 @@ public class Grib2CollectionBuilder {
     int total = 0;
     int fileno = 0;
     for (CollectionManager dcm : collections) {
-      dcm.scanIfNeeded(); // LOOK ??
+      // dcm.scanIfNeeded(); // LOOK ??
       f.format(" dcm= %s%n", dcm);
       Map<Integer,Integer> gdsConvert = (Map<Integer,Integer>) dcm.getAuxInfo("gdsHash");
 
@@ -493,7 +493,7 @@ public class Grib2CollectionBuilder {
       f.format("  write RecordMaps: bytes = %d record = %d bytesPerRecord=%d%n", countBytes, countRecords, bytesPerRecord);
 
       if (first == null) {
-        logger.error("GribCollection {} has no files\n{}", gc.getName(), f.toString());
+        logger.error("GribCollection {}: has no files\n{}", gc.getName(), f.toString());
         throw new IllegalArgumentException("GribCollection " + gc.getName() + " has no files");
       }
 

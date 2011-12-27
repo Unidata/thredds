@@ -50,7 +50,6 @@ import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 /**
@@ -120,8 +119,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     } else if (featureType.isPointFeatureType())
       result =  new InvDatasetFcPoint(parent, name, path, featureType, config);
 
-    if (result != null)
+    if (result != null) {
       result.finishConstruction(); // stuff that shouldnt be done in a constructor
+    }
 
     return result;
   }
@@ -190,12 +190,13 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   // stuff that shouldnt be done in a constructor - eg dont let 'this' escape
+  // LOOK maybe not best design to start tasks from here
   protected void finishConstruction() {
     dcm.addEventListener(this); // now wired for events
     CollectionUpdater.INSTANCE.scheduleTasks(CollectionUpdater.FROM.tds, config, dcm); // see if any background scheduled tasks are needed
   }
 
-  // call this first time (state == null
+  // call this first time (state == null)
   protected void firstInit() {
     this.orgService = getServiceDefault();
     if (this.orgService == null) throw new IllegalStateException("No default service for InvDatasetFeatureCollection "+name);
@@ -223,13 +224,13 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   /**
-   * collection was changed, update internals.
+   * Collection was changed, update internal objects.
    * called by CollectionUpdater, trigger via handleCollectionEvent
    */
   abstract public void update();
 
   /**
-   * update the proto dataset used.
+   * update the proto dataset being used.
    * called by CollectionUpdater via handleCollectionEvent
    */
   abstract public void updateProto();

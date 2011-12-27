@@ -71,9 +71,9 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
 
   //////////////////////////////
 
-  private final FeatureCollectionConfig config;
-  private final CollectionSpecParser sp;
-  private final DateExtractor dateExtractor;
+  private FeatureCollectionConfig config;
+  private CollectionSpecParser sp;
+  private DateExtractor dateExtractor;
   private int npartitions;
   private boolean setfromExistingIndices;
   private Type type;
@@ -83,15 +83,15 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
     this.config = config;
     this.protoChoice = config.protoConfig.choice;
 
-    if (config.dateFormatMark == null)
-      this.sp = new CollectionSpecParser(config.spec, errlog); // dateFormatMark part of spec - can only be in name
+    sp = new CollectionSpecParser(config.spec, errlog);
+
+    if (config.dateFormatMark != null)
+      dateExtractor = new DateExtractorFromName(config.dateFormatMark, false);
+    else if (sp.getDateFormatMark() != null)
+      dateExtractor = new DateExtractorFromName(sp.getDateFormatMark(), true);
     else
-      this.sp = new CollectionSpecParser(config.spec, config.dateFormatMark, errlog); // seperate dateFormatMark
+      throw new IllegalArgumentException("Time partition must specify a date extractor");
 
-    if (sp.getDateFormatMark() == null)
-      throw new IllegalArgumentException("Time partition must specify a date extractor spec = "+ config.spec);
-
-    this.dateExtractor = new DateExtractorFromName(sp.getDateFormatMark(), sp.useName());
   }
 
   public List<CollectionManager> makePartitions() throws IOException {

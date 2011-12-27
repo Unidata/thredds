@@ -43,6 +43,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
+import thredds.catalog.DataFormatType;
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.inventory.*;
 
@@ -67,7 +68,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * run: java -Xmx4g -server -jar tdm-4.3.jar
  * if you need to muck with that, use:
  * java -Xmx4g -server -jar tdm-4.3.jar -catalog <muck.xml>
- * where you start with tdm-4.3.jar/resources/indexNomads.xml
+ * where you can start with tdm-4.3.jar/resources/indexNomads.xml
+ * or modify resources/applicatin-config.xml to set the catalog
  *
  * @author caron
  * @since 4/26/11
@@ -75,7 +77,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TdmRunner {
   //static private final Logger logger = org.slf4j.LoggerFactory.getLogger(TdmRunner.class);
   static private boolean seperateFiles = true;
-  private String serverName = "http://localhost:8080"; // hack for now
+  static private String serverName = "http://localhost:8080/"; // hack for now
   static private HTTPSession session;
 
   private java.util.concurrent.ExecutorService executor;
@@ -100,6 +102,7 @@ public class TdmRunner {
     this.serverName = serverName;
   }
 
+  // Task causes a new index to be written - we know collection has changed, dont test again
   // run these through the executor so we can control how many we can do at once.
   // thread pool set in spring config file
   private class IndexTask implements Runnable {
@@ -121,6 +124,7 @@ public class TdmRunner {
     public void run() {
       try {
         FeatureCollectionConfig config = fc.getConfig();
+        thredds.catalog.DataFormatType format = fc.getDataFormatType();
 
         // delete any files first
         if (config.tdmConfig.deleteAfter != null) {
@@ -132,10 +136,10 @@ public class TdmRunner {
           logger.debug("**** running TimePartitionBuilder.factory {} thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
-            if (TimePartitionBuilder.writeIndexFile(tpc, config.tdmConfig.force, f)) {
+            if (TimePartitionBuilder.writeIndexFile(tpc, CollectionManager.Force.always, f)) {
               // send a trigger if enabled
               if (config.tdmConfig.triggerOk) {
-                String url = serverName + "/thredds/admin/collection?trigger=true&collection="+fc.getName();
+                String url = serverName + "thredds/admin/collection?trigger=true&collection="+fc.getName();
                 int status = sendTrigger(url, f);
                 f.format(" trigger %s status = %d%n", url, status);
               }
@@ -150,9 +154,15 @@ public class TdmRunner {
           logger.debug("**** running GribCollectionBuilder.factory {} Thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
-            GribCollection gc = Grib2CollectionBuilder.factory(dcm, config.tdmConfig.force, f);
+            GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, f);
             gc.close();
             f.format("**** GribCollectionBuilder.factory complete %s%n", name);
+            if (config.tdmConfig.triggerOk) {
+              String url = serverName + "thredds/admin/collection?trigger=true&collection="+fc.getName();
+              int status = sendTrigger(url, f);
+              f.format(" trigger %s status = %d%n", url, status);
+            }
+
           } catch (Throwable e) {
             logger.error("GribCollectionBuilder.factory " + name, e);
           }
@@ -176,8 +186,10 @@ public class TdmRunner {
       try {
         m = HTTPMethod.Get(session, url);
         int status = m.execute();
-        m.getResponseAsString();
-        return status;
+        String s = m.getResponseAsString();
+        f.format("%s == %s", url, s);
+        System.out.printf("Trigger response = %s%n", s);
+       return status;
 
       } catch (HTTPException e) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -335,7 +347,7 @@ public class TdmRunner {
 
       dcm.addEventListener( new Listener(fc, dcm)); // now wired for events
       dcm.removeEventListener( fc); // not needed
-      CollectionUpdater.INSTANCE.scheduleTasks( CollectionUpdater.FROM.tdm, fc.getConfig(), dcm); // see if any background scheduled tasks are needed
+     // CollectionUpdater.INSTANCE.scheduleTasks( CollectionUpdater.FROM.tdm, fc.getConfig(), dcm); // already done in finish() method
     }
 
     // show whats up
@@ -371,21 +383,15 @@ public class TdmRunner {
       }
     }
 
-    session = new HTTPSession("TdsMonitor");
+    session = new HTTPSession(serverName);
     session.setCredentialsProvider(new CredentialsProvider() {
       public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
         System.out.printf("getCredentials called%n");
-        return new UsernamePasswordCredentials("caron", "carTDSon"); // do not checkin
-        //return null;
+        return new UsernamePasswordCredentials("", "");
       }
     });
     session.setUserAgent("TdsMonitor");
 
-    /* HTTPSession.setGlobalCredentialsProvider(new CredentialsProvider() {
-      public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-        return new UsernamePasswordCredentials("caron", "carTDSon"); // do not checkin
-      }
-    }); */
     HTTPSession.setGlobalUserAgent("TDM v4.3");
 
     driver.start();

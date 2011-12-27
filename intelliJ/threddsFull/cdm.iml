@@ -84,15 +84,6 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/quartz-1.7.3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.6.4.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -103,6 +94,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.6.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/quartz-2.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

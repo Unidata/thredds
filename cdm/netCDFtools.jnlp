@@ -26,6 +26,7 @@
     <jar href="httplogging.jar"/>
     <jar href="jdom.jar"/>
     <jar href="jgoodies.jar"/>
+    <jar href="joda.jar"/>
     <jar href="loggingAPI.jar"/>
     <jar href="logging.jar"/>
     <jar href="opendap.jar"/>

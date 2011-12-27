@@ -33,6 +33,7 @@
 package ucar.nc2.grib;
 
 import thredds.inventory.CollectionManager;
+import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 //import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
@@ -43,7 +44,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Abstraction for Grib1Index and Grib2Index so GribCollection can handle both.
+ * Abstract superclass for Grib1Index and Grib2Index
  *
  * @author John
  * @since 9/5/11
@@ -52,17 +53,31 @@ public abstract class GribIndex {
   public static final String IDX_EXT = ".gbx9";
   public static final boolean debug = false;
 
-  public GribCollection makeCollection(RandomAccessFile raf, CollectionManager.Force force, Formatter f, int edition) throws IOException {
-    boolean write = false, rewrite = false;
+  private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
+    public boolean hasChangedSince(MFile file, long when) {
+      File idxFile = new File(file.getPath() + IDX_EXT); // LOOK need DiskCache for non-writeable directories
+      if (!idxFile.exists()) return true;
+      if (idxFile.lastModified() < file.getLastModified()) return true;
+      if (0 < when && when < idxFile.lastModified()) return true;
+      return false;
+    }
+  };
 
-    String filename = raf.getLocation();
+  static public CollectionManager.ChangeChecker getChangeChecker() {
+    return gribCC;
+  }
+
+  public GribCollection createFromSingleFile(RandomAccessFile dataRaf, CollectionManager.Force force, Formatter f, int edition) throws IOException {
+
+    String filename = dataRaf.getLocation();
     File dataFile = new File(filename);
     boolean readOk;
     try {
-      readOk = readIndex(filename, dataFile.lastModified(), force); // heres where the index date is checked against the data file
+      readOk = readIndex(filename, dataFile.lastModified(), force); // heres where the gbx9 file date is checked against the data file
     } catch (IOException ioe) {
       readOk = false;
     }
+
     // make or remake the index
     if (!readOk) {
       makeIndex(filename, f);
@@ -71,14 +86,32 @@ public abstract class GribIndex {
       f.format("  Index read: %s%n", filename + IDX_EXT);
     }
 
+    // heres where the ncx file date is checked against the data file
     if (edition == 1)
-      return Grib1CollectionBuilder.createFromSingleFile(dataFile, f);
+      return Grib1CollectionBuilder.createFromSingleFile(dataFile, force, f);
     else
-      return Grib2CollectionBuilder.createFromSingleFile(dataFile, f);
+      return Grib2CollectionBuilder.createFromSingleFile(dataFile, force, f);
   }
 
+  /**
+   * Read the gbx9 index file.
+   *
+   * @param location location of the data file
+   * @param dataModified last modified date of the data file
+   * @param force always, test or nocheck
+   * @return true if index was successfully read, false if index must be (re)created
+   * @throws IOException on io error
+   */
   public abstract boolean readIndex(String location, long dataModified, CollectionManager.Force force) throws IOException;
 
+  /**
+   * Make the gbx9 index file.
+   *
+   * @param location location of the data file
+   * @param f put error message here
+   * @return true
+   * @throws IOException on io error
+   */
   public abstract boolean makeIndex(String location, Formatter f) throws IOException;
 
 

@@ -37,6 +37,7 @@ package ucar.nc2.iosp.dorade;
 import ucar.nc2.*;
 
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -316,8 +317,8 @@ public class Doradeheader {
       if( dims != null ) vVar.setDimensions(dims);
       else vVar.setDimensions("");
       if(att != null ) vVar.addAttribute(att);
-      vVar.addAttribute( new Attribute("units", ut));
-      vVar.addAttribute( new Attribute("long_name", longName));
+      vVar.addAttribute( new Attribute(CDM.UNITS, ut));
+      vVar.addAttribute( new Attribute(CDM.LONG_NAME, longName));
       nc.addVariable(null, vVar);
   }
 
@@ -329,12 +330,12 @@ public class Doradeheader {
       v.setDimensions(dims);
       ncfile.addVariable(null, v);
 
-      v.addAttribute( new Attribute("long_name", dparm.getDescription()));
-      v.addAttribute( new Attribute("units", dparm.getUnits()));
+      v.addAttribute( new Attribute(CDM.LONG_NAME, dparm.getDescription()));
+      v.addAttribute( new Attribute(CDM.UNITS, dparm.getUnits()));
       String coordinates = "elevation azimuth distance_1 " + "latitudes_1 longitudes_1 altitudes_1";
       v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
       /*
-      v.addAttribute( new Attribute("missing_value", new Float(dparm.getBadDataFlag())));
+      v.addAttribute( new Attribute(CDM.MISSING_VALUE, new Float(dparm.getBadDataFlag())));
       v.addAttribute( new Attribute("_FillValue", new Float(dparm.getBadDataFlag())));
       v.addAttribute( new Attribute("scale_factor", dparm.getUnits()));
       v.addAttribute( new Attribute("polarization", dparm.getUnits()));
@@ -365,7 +366,7 @@ public class Doradeheader {
         nc.addAttribute(null, new Attribute("time_coverage_start",  dd[0].toString()));
         nc.addAttribute(null, new Attribute("time_coverage_end",  dd[dd.length-1].toString()));
         nc.addAttribute(null, new Attribute("Content", "This file contains one scan of remotely sensed data"));
-        nc.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
+        nc.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
         nc.addAttribute(null, new Attribute("format", "Unidata/netCDF/Dorade"));
         nc.addAttribute(null, new Attribute("Radar_Name", mySweep.getSensorName(0)));
         nc.addAttribute(null, new Attribute("Project_name", ""+mySweep.getProjectName()));

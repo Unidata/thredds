@@ -33,6 +33,8 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.ncml.NcMLReader;
@@ -60,7 +62,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
    * @return true if we think this is a NsslRadarMosaicConvention file.
    */
   public static boolean isMine(NetcdfFile ncfile) {
-    String cs = ncfile.findAttValueIgnoreCase(null, "Conventions", null);
+    String cs = ncfile.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (cs != null) return false;
 
     String s = ncfile.findAttValueIgnoreCase(null, "DataType", null);
@@ -97,7 +99,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
   }
 
   private void augment3D(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    ds.addAttribute(null, new Attribute("Conventions", "NSSL National Reflectivity Mosaic"));
+    ds.addAttribute(null, new Attribute(CDM.CONVENTIONS, "NSSL National Reflectivity Mosaic"));
 
     addLongName(ds, "mrefl_mosaic", "3-D reflectivity mosaic grid");
     addCoordinateAxisType(ds, "Height", AxisType.Height);  
@@ -110,22 +112,22 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
     Attribute att = var.findAttributeIgnoreCase("Scale");
     if (att != null) {
       scale_factor = att.getNumericValue().floatValue();
-      var.addAttribute(new Attribute("scale_factor", 1.0f / scale_factor));
+      var.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0f / scale_factor));
     }
     att = ds.findGlobalAttributeIgnoreCase("MissingData");
     if (null != att) {
       float val = att.getNumericValue().floatValue();
       if (!Float.isNaN(scale_factor)) val *= scale_factor;
-      var.addAttribute(new Attribute("missing_value", (short) val));
+      var.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) val));
     }
     // hack
     Array missingData = Array.factory(DataType.SHORT.getPrimitiveClassType(), new int[] {2}, new short[] {-990, -9990});
-    var.addAttribute(new Attribute("missing_value", missingData));    
+    var.addAttribute(new Attribute(CDM.MISSING_VALUE, missingData));
     var.addAttribute(new Attribute(_Coordinate.Axes, "Height Lat Lon"));
   }
 
   private void augment2D(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    ds.addAttribute(null, new Attribute("Conventions", "NSSL National Reflectivity Mosaic"));
+    ds.addAttribute(null, new Attribute(CDM.CONVENTIONS, "NSSL National Reflectivity Mosaic"));
 
     addLongName(ds, "cref", "composite reflectivity");
     addLongName(ds, "hgt_cref", "height associated with the composite reflectivity");
@@ -149,14 +151,14 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
       Attribute att = var.findAttributeIgnoreCase("Scale");
       if (att != null) {
         scale_factor = att.getNumericValue().floatValue();
-        var.addAttribute(new Attribute("scale_factor", 1.0f / scale_factor));
+        var.addAttribute(new Attribute(CDM.SCALE_FACTOR, 1.0f / scale_factor));
         //need_enhance = true;
       }
       att = var.findAttributeIgnoreCase("MissingData");
       if (null != att) {
         float val = att.getNumericValue().floatValue();
         if (!Float.isNaN(scale_factor)) val *= scale_factor;
-        var.addAttribute(new Attribute("missing_value", (short) val));
+        var.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) val));
         //need_enhance = true;
       }
       //if (need_enhance)
@@ -169,7 +171,7 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
   private void addLongName(NetcdfDataset ds, String varName, String longName) {
     Variable v = ds.findVariable(varName);
     if (v != null)
-      v.addAttribute(new Attribute("long_name", longName));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, longName));
   }
 
     private void addCoordinateAxisType(NetcdfDataset ds, String varName, AxisType type) {

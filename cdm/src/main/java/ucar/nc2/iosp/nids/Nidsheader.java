@@ -773,7 +773,7 @@ class Nidsheader{
              Variable ppage = new Variable(ncfile, null, null, "TabMessagePage");
              ppage.setDimensions(dims);
              ppage.setDataType(DataType.STRING);
-             ppage.addAttribute( new Attribute("long_name", "Graphic Product Message"));
+             ppage.addAttribute( new Attribute(CDM.LONG_NAME, "Graphic Product Message"));
              ncfile.addVariable(null, ppage);
              ppage.setSPobject( new Vinfo (npage, 0, tblen, 0, hoff, ppos, isR, isZ, null, null, tab_bid, 0));
          }
@@ -888,7 +888,7 @@ class Nidsheader{
          Variable ppage = new Variable(ncfile, null, null, "GraphicMessagePage");
          ppage.setDimensions(dims);
          ppage.setDataType(DataType.STRING);
-         ppage.addAttribute( new Attribute("long_name", "Graphic Product Message"));
+         ppage.addAttribute( new Attribute(CDM.LONG_NAME, "Graphic Product Message"));
          ncfile.addVariable(null, ppage);
          ppage.setSPobject( new Vinfo (npage, 0, tblen, 0, hoff, ppos, isR, isZ, null, null, graphic_bid));
            */
@@ -922,18 +922,18 @@ class Nidsheader{
         Structure dist = new Structure(ncfile, null, null, structName);
         dist.setDimensions(dims);
         ncfile.addVariable(null, dist);
-        dist.addAttribute( new Attribute("long_name", "special graphic symbol for code "+code));
+        dist.addAttribute( new Attribute(CDM.LONG_NAME, "special graphic symbol for code "+code));
 
 
         Variable i0 = new Variable(ncfile, null, dist, "x_start");
         i0.setDimensions((String)null);
         i0.setDataType(DataType.SHORT);
-        i0.addAttribute( new Attribute("units", "KM"));
+        i0.addAttribute( new Attribute(CDM.UNITS, "KM"));
         dist.addMemberVariable(i0);
         Variable j0 = new Variable(ncfile, null, dist, "y_start");
         j0.setDimensions((String)null);
         j0.setDataType(DataType.SHORT);
-        j0.addAttribute( new Attribute("units", "KM"));
+        j0.addAttribute( new Attribute(CDM.UNITS, "KM"));
         dist.addMemberVariable(j0);
 
 
@@ -966,7 +966,7 @@ class Nidsheader{
       Structure dist = new Structure(ncfile, null, null, "circleStruct");
       dist.setDimensions(dims);
       ncfile.addVariable(null, dist);
-      dist.addAttribute( new Attribute("long_name", "Circle Packet"));
+      dist.addAttribute( new Attribute(CDM.LONG_NAME, "Circle Packet"));
 
 
       Variable ii0 = new Variable(ncfile, null, dist, "x_center");
@@ -1015,7 +1015,7 @@ class Nidsheader{
       Structure dist = new Structure(ncfile, null, null, vname +"Struct");
       dist.setDimensions(dims);
       ncfile.addVariable(null, dist);
-      dist.addAttribute( new Attribute("long_name", vname+" Packet"));
+      dist.addAttribute( new Attribute(CDM.LONG_NAME, vname+" Packet"));
 
 
       Variable ii0 = new Variable(ncfile, null, dist, "x_start");
@@ -1065,32 +1065,32 @@ class Nidsheader{
       Structure dist = new Structure(ncfile, null, null, cname);
       dist.setDimensions(dims);
       ncfile.addVariable(null, dist);
-      dist.addAttribute( new Attribute("long_name", "Wind Barb Data"));
+      dist.addAttribute( new Attribute(CDM.LONG_NAME, "Wind Barb Data"));
 
       Variable value = new Variable(ncfile, null, dist, "value");
       value.setDimensions((String)null);
       value.setDataType(DataType.SHORT);
-      value.addAttribute( new Attribute("units", "RMS"));
+      value.addAttribute( new Attribute(CDM.UNITS, "RMS"));
       dist.addMemberVariable(value);
       Variable i0 = new Variable(ncfile, null, dist, "x_start");
       i0.setDimensions((String)null);
       i0.setDataType(DataType.SHORT);
-      i0.addAttribute( new Attribute("units", "KM"));
+      i0.addAttribute( new Attribute(CDM.UNITS, "KM"));
       dist.addMemberVariable(i0);
       Variable j0 = new Variable(ncfile, null, dist, "y_start");
       j0.setDimensions((String)null);
       j0.setDataType(DataType.SHORT);
-      j0.addAttribute( new Attribute("units", "KM"));
+      j0.addAttribute( new Attribute(CDM.UNITS, "KM"));
       dist.addMemberVariable(j0);
       Variable direct = new Variable(ncfile, null, dist, "direction");
       direct.setDimensions((String)null);
       direct.setDataType(DataType.SHORT);
-      direct.addAttribute( new Attribute("units", "degree"));
+      direct.addAttribute( new Attribute(CDM.UNITS, "degree"));
       dist.addMemberVariable(direct);
       Variable speed = new Variable(ncfile, null, dist, "speed");
       speed.setDimensions((String)null);
       speed.setDataType(DataType.SHORT);
-      speed.addAttribute( new Attribute("units", "knots"));
+      speed.addAttribute( new Attribute(CDM.UNITS, "knots"));
       dist.addMemberVariable(speed);
 
       int[] pos1 = new int[len];
@@ -1153,32 +1153,32 @@ class Nidsheader{
       Structure dist = new Structure(ncfile, null, null, "vectorArrow");
       dist.setDimensions(dims);
       ncfile.addVariable(null, dist);
-      dist.addAttribute( new Attribute("long_name", "Vector Arrow Data"));
+      dist.addAttribute( new Attribute(CDM.LONG_NAME, "Vector Arrow Data"));
 
       Variable i0 = new Variable(ncfile, null, dist, "x_start");
       i0.setDimensions((String)null);
       i0.setDataType(DataType.SHORT);
-      i0.addAttribute( new Attribute("units", "KM"));
+      i0.addAttribute( new Attribute(CDM.UNITS, "KM"));
       dist.addMemberVariable(i0);
       Variable j0 = new Variable(ncfile, null, dist, "y_start");
       j0.setDimensions((String)null);
       j0.setDataType(DataType.SHORT);
-      j0.addAttribute( new Attribute("units", "KM"));
+      j0.addAttribute( new Attribute(CDM.UNITS, "KM"));
       dist.addMemberVariable(j0);
       Variable direct = new Variable(ncfile, null, dist, "direction");
       direct.setDimensions((String)null);
       direct.setDataType(DataType.SHORT);
-      direct.addAttribute( new Attribute("units", "degree"));
+      direct.addAttribute( new Attribute(CDM.UNITS, "degree"));
       dist.addMemberVariable(direct);
       Variable speed = new Variable(ncfile, null, dist, "arrowLength");
       speed.setDimensions((String)null);
       speed.setDataType(DataType.SHORT);
-      speed.addAttribute( new Attribute("units", "pixels"));
+      speed.addAttribute( new Attribute(CDM.UNITS, "pixels"));
       dist.addMemberVariable(speed);
       Variable speed1 = new Variable(ncfile, null, dist, "arrowHeadLength");
       speed1.setDimensions((String)null);
       speed1.setDataType(DataType.SHORT);
-      speed1.addAttribute( new Attribute("units", "pixels"));
+      speed1.addAttribute( new Attribute(CDM.UNITS, "pixels"));
       dist.addMemberVariable(speed1);
 
       int[] pos1 = new int[len];
@@ -1209,29 +1209,29 @@ class Nidsheader{
         Structure dist = new Structure(ncfile, null, null, structName + abbre);
         dist.setDimensions(dims);
         ncfile.addVariable(null, dist);
-        dist.addAttribute( new Attribute("long_name", "text and special symbol for code "+code));
+        dist.addAttribute( new Attribute(CDM.LONG_NAME, "text and special symbol for code "+code));
 
         if(code == 8){
             Variable strVal = new Variable(ncfile, null, dist, "strValue");
             strVal.setDimensions((String)null);
             strVal.setDataType(DataType.SHORT);
-            strVal.addAttribute( new Attribute("units", ""));
+            strVal.addAttribute( new Attribute(CDM.UNITS, ""));
             dist.addMemberVariable(strVal);
         }
         Variable i0 = new Variable(ncfile, null, dist, "x_start");
         i0.setDimensions((String)null);
         i0.setDataType(DataType.SHORT);
-        i0.addAttribute( new Attribute("units", "KM"));
+        i0.addAttribute( new Attribute(CDM.UNITS, "KM"));
         dist.addMemberVariable(i0);
         Variable j0 = new Variable(ncfile, null, dist, "y_start");
         j0.setDimensions((String)null);
         j0.setDataType(DataType.SHORT);
-        j0.addAttribute( new Attribute("units", "KM"));
+        j0.addAttribute( new Attribute(CDM.UNITS, "KM"));
         dist.addMemberVariable(j0);
         Variable tstr = new Variable(ncfile, null, dist, "textString" );
         tstr.setDimensions((String)null);
         tstr.setDataType(DataType.STRING);
-        tstr.addAttribute( new Attribute("units", ""));
+        tstr.addAttribute( new Attribute(CDM.UNITS, ""));
         dist.addMemberVariable(tstr);
 
         int[] pos1 = new int[len];
@@ -1266,7 +1266,7 @@ class Nidsheader{
         Structure dist = new Structure(ncfile, null, null, "unlinkedVectorStruct");
         dist.setDimensions(dims);
         ncfile.addVariable(null, dist);
-        dist.addAttribute( new Attribute("long_name", "Unlinked Vector Packet"));
+        dist.addAttribute( new Attribute(CDM.LONG_NAME, "Unlinked Vector Packet"));
 
         v = new Variable(ncfile, null, null, "iValue");
         v.setDataType(DataType.SHORT);
@@ -1337,10 +1337,10 @@ class Nidsheader{
             v.setDataType(DataType.SHORT);
             v.setDimensions(dims);
             ncfile.addVariable(null, v);
-            v.addAttribute( new Attribute("long_name", ctitle+" at Symbology Layer "+ slayer));
+            v.addAttribute( new Attribute(CDM.LONG_NAME, ctitle+" at Symbology Layer "+ slayer));
             v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, code, 0));
-            v.addAttribute( new Attribute("units", cunit));
-            v.addAttribute( new Attribute("missing_value", 255));
+            v.addAttribute( new Attribute(CDM.UNITS, cunit));
+            v.addAttribute( new Attribute(CDM.MISSING_VALUE, 255));
 
         } //else  if(slayer == 1) {
           //  ncfile.addDimension( null, iDim);
@@ -1368,8 +1368,8 @@ class Nidsheader{
             Variable xaxis = new Variable( ncfile, null, null, "x");
             xaxis.setDataType( DataType.DOUBLE);
             xaxis.setDimensions("x");
-            xaxis.addAttribute( new Attribute("long_name", "projection x coordinate"));
-            xaxis.addAttribute( new Attribute("units", "km"));
+            xaxis.addAttribute( new Attribute(CDM.LONG_NAME, "projection x coordinate"));
+            xaxis.addAttribute( new Attribute(CDM.UNITS, "km"));
             xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
             double[] data1 = new double[numX];
             for (int i = 0; i < numX; i++)
@@ -1381,8 +1381,8 @@ class Nidsheader{
             Variable yaxis = new Variable( ncfile, null, null, "y");
             yaxis.setDataType( DataType.DOUBLE);
             yaxis.setDimensions( "y");
-            yaxis.addAttribute( new Attribute("long_name", "projection y coordinate"));
-            yaxis.addAttribute( new Attribute("units", "km"));
+            yaxis.addAttribute( new Attribute(CDM.LONG_NAME, "projection y coordinate"));
+            yaxis.addAttribute( new Attribute(CDM.UNITS, "km"));
             yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
             data1 = new double[numY];
             for (int i = 0; i < numY; i++)
@@ -1495,8 +1495,8 @@ class Nidsheader{
         v.setDataType(DataType.BYTE);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
-        v.addAttribute( new Attribute("long_name", ctitle));
-        v.addAttribute( new Attribute("units", cunit));
+        v.addAttribute( new Attribute(CDM.LONG_NAME, ctitle));
+        v.addAttribute( new Attribute(CDM.UNITS, cunit));
         v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, pkcode, 0));
         v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
 
@@ -1521,8 +1521,8 @@ class Nidsheader{
         Variable xaxis = new Variable( ncfile, null, null, "x");
         xaxis.setDataType( DataType.DOUBLE);
         xaxis.setDimensions("x");
-        xaxis.addAttribute( new Attribute("long_name", "projection x coordinate"));
-        xaxis.addAttribute( new Attribute("units", "km"));
+        xaxis.addAttribute( new Attribute(CDM.LONG_NAME, "projection x coordinate"));
+        xaxis.addAttribute( new Attribute(CDM.UNITS, "km"));
         xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
         double[] data1 = new double[numX];
         for (int i = 0; i < numX; i++)
@@ -1534,8 +1534,8 @@ class Nidsheader{
         Variable yaxis = new Variable( ncfile, null, null, "y");
         yaxis.setDataType( DataType.DOUBLE);
         yaxis.setDimensions( "y");
-        yaxis.addAttribute( new Attribute("long_name", "projection y coordinate"));
-        yaxis.addAttribute( new Attribute("units", "km"));
+        yaxis.addAttribute( new Attribute(CDM.LONG_NAME, "projection y coordinate"));
+        yaxis.addAttribute( new Attribute(CDM.UNITS, "km"));
         yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
         data1 = new double[numY];
         for (int i = 0; i < numY; i++)
@@ -1631,8 +1631,8 @@ class Nidsheader{
         // aziVar.setDataType(DataType.FLOAT);
         // aziVar.setDimensions(dims1);
         // ncfile.addVariable(null, aziVar);
-        // aziVar.addAttribute( new Attribute("long_name", "azimuth angle in degrees: 0 = true north, 90 = east"));
-        // aziVar.addAttribute( new Attribute("units", "degrees"));
+        // aziVar.addAttribute( new Attribute(CDM.LONG_NAME, "azimuth angle in degrees: 0 = true north, 90 = east"));
+        // aziVar.addAttribute( new Attribute(CDM.UNITS, "degrees"));
         // aziVar.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, null, 0));
 
         // dims1 =  new ArrayList();
@@ -1641,8 +1641,8 @@ class Nidsheader{
         //gateV.setDataType(DataType.FLOAT);
         //gateV.setDimensions(dims2);
         //ncfile.addVariable(null, gateV);
-        //gateV.addAttribute( new Attribute("long_name", "radial distance to start of gate"));
-        //gateV.addAttribute( new Attribute("units", "m"));
+        //gateV.addAttribute( new Attribute(CDM.LONG_NAME, "radial distance to start of gate"));
+        //gateV.addAttribute( new Attribute(CDM.UNITS, "m"));
         //gateV.setSPobject( new Vinfo (numX, numX0, numY, radp_scale, hoff, hedsiz, isR, isZ, null, null, 0, 0));
         isR = true;
 
@@ -1716,7 +1716,7 @@ class Nidsheader{
         v.setDataType(DataType.BYTE);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
-        v.addAttribute( new Attribute("units", cunit));
+        v.addAttribute( new Attribute(CDM.UNITS, cunit));
         String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
         v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
         v.addAttribute( new Attribute("_unsigned", "true"));
@@ -1864,8 +1864,8 @@ class Nidsheader{
         v.setDataType(dtype);
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
-        v.addAttribute( new Attribute("long_name", longName));
-        v.addAttribute( new Attribute("units", ut));
+        v.addAttribute( new Attribute(CDM.LONG_NAME, longName));
+        v.addAttribute( new Attribute(CDM.UNITS, ut));
         v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
         v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, iscale, nlevel));
 
@@ -1894,8 +1894,8 @@ class Nidsheader{
           if( dims != null ) vVar.setDimensions(dims);
           else vVar.setDimensions("");
           if(att != null ) vVar.addAttribute(att);
-          vVar.addAttribute( new Attribute("units", ut));
-          vVar.addAttribute( new Attribute("long_name", longName));
+          vVar.addAttribute( new Attribute(CDM.UNITS, ut));
+          vVar.addAttribute( new Attribute(CDM.LONG_NAME, longName));
           nc.addVariable(null, vVar);
           vVar.setSPobject( new Vinfo (numX, numX0, numY, y0, hoff, doff, isR, isZ, null, null, 0, 0));
     }
@@ -2459,7 +2459,7 @@ class Nidsheader{
           Variable ppage = new Variable(ncfile, null, null, "TabMessagePage");
           ppage.setDimensions(dims);
           ppage.setDataType(DataType.STRING);
-          ppage.addAttribute( new Attribute("long_name", "Stand Alone Tabular Alphanumeric Product Message"));
+          ppage.addAttribute( new Attribute(CDM.LONG_NAME, "Stand Alone Tabular Alphanumeric Product Message"));
           ncfile.addVariable(null, ppage);
           //ppage.setSPobject( new Vinfo (numPages, 0, tblen, 0, hoff, ppos, isR, false, null, null, 82, 0));
     }

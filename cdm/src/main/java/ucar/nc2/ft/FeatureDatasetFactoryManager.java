@@ -376,7 +376,7 @@ public class FeatureDatasetFactoryManager {
     }
 
     // LOOK - compare to CF names when those are finalized
-    String ftypeS = ncd.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
+    String ftypeS = ncd.findAttValueIgnoreCase(null, CF.FEATURE_TYPE, null);
     if (ftypeS == null)
       ftypeS = ncd.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
     if (ftypeS == null)

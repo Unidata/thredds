@@ -70,7 +70,7 @@ import java.io.IOException;
       </variable>
 
       <variable name="ReletiveHumidity" type="int" shape="time lat lon" orgName="rh">
-        <attribute name="long_name" type="string" value="relative humidity"/>
+        <attribute name=CDM.LONG_NAME type="string" value="relative humidity"/>
         <attribute name="units" type="string" value="percent"/>
       </variable>
     </netcdf>
@@ -83,7 +83,7 @@ import java.io.IOException;
       <dimension name="lon" length="4"/>
 
       <variable name="Temperature" type="double" shape="time lat lon" orgName="T">
-        <attribute name="long_name" type="string" value="surface temperature"/>
+        <attribute name=CDM.LONG_NAME type="string" value="surface temperature"/>
         <attribute name="units" type="string" value="degC"/>
       </variable>
     </netcdf>

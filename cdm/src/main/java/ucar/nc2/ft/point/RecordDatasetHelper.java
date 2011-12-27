@@ -38,6 +38,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.*;
 
 import ucar.nc2.dataset.NetcdfDataset;
@@ -127,7 +128,7 @@ public class RecordDatasetHelper {
 
     // need the time units
     Variable timeVar = ncfile.findVariable(obsTimeVName);
-    String timeUnitString = ncfile.findAttValueIgnoreCase(timeVar, "units", "seconds since 1970-01-01");
+    String timeUnitString = ncfile.findAttValueIgnoreCase(timeVar, CDM.UNITS, "seconds since 1970-01-01");
     try {
       timeUnit = new DateUnit(timeUnitString);
     } catch (Exception e) {
@@ -167,7 +168,7 @@ public class RecordDatasetHelper {
     // check for meter conversion
     if (zcoordVName != null) {
       Variable v = ncfile.findVariable(zcoordVName);
-      zcoordUnits = ncfile.findAttValueIgnoreCase(v, "units", null);
+      zcoordUnits = ncfile.findAttValueIgnoreCase(v, CDM.UNITS, null);
       if (zcoordUnits != null)
         try {
           altScaleFactor = getMetersConversionFactor(zcoordUnits);
