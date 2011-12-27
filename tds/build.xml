@@ -112,7 +112,7 @@
   <property name="commons-logging.jar" value="external/jcl-over-slf4j-1.6.4.jar"/>
 
   <!-- property name="nlog4j.jar" value="external/nlog4j-1.2.25.jar"/ -->
-  <property name="quartz.jar" value="external/quartz-1.7.3.jar"/>
+  <property name="quartz.jar" value="quartz-2.1.1.jar"/>
   <property name="jstl.jar" value="external/jstl.jar"/>
   <property name="jstl-standard.jar" value="external/standard.jar"/>
 
