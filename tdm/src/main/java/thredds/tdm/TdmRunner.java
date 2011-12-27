@@ -77,7 +77,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TdmRunner {
   //static private final Logger logger = org.slf4j.LoggerFactory.getLogger(TdmRunner.class);
   static private boolean seperateFiles = true;
-  private String serverName = "http://localhost:8080"; // hack for now
+  static private String serverName = "http://localhost:8080/"; // hack for now
   static private HTTPSession session;
 
   private java.util.concurrent.ExecutorService executor;
@@ -139,7 +139,7 @@ public class TdmRunner {
             if (TimePartitionBuilder.writeIndexFile(tpc, CollectionManager.Force.always, f)) {
               // send a trigger if enabled
               if (config.tdmConfig.triggerOk) {
-                String url = serverName + "/thredds/admin/collection?trigger=true&collection="+fc.getName();
+                String url = serverName + "thredds/admin/collection?trigger=true&collection="+fc.getName();
                 int status = sendTrigger(url, f);
                 f.format(" trigger %s status = %d%n", url, status);
               }
@@ -157,6 +157,12 @@ public class TdmRunner {
             GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, f);
             gc.close();
             f.format("**** GribCollectionBuilder.factory complete %s%n", name);
+            if (config.tdmConfig.triggerOk) {
+              String url = serverName + "thredds/admin/collection?trigger=true&collection="+fc.getName();
+              int status = sendTrigger(url, f);
+              f.format(" trigger %s status = %d%n", url, status);
+            }
+
           } catch (Throwable e) {
             logger.error("GribCollectionBuilder.factory " + name, e);
           }
@@ -180,8 +186,10 @@ public class TdmRunner {
       try {
         m = HTTPMethod.Get(session, url);
         int status = m.execute();
-        m.getResponseAsString();
-        return status;
+        String s = m.getResponseAsString();
+        f.format("%s == %s", url, s);
+        System.out.printf("Trigger response = %s%n", s);
+       return status;
 
       } catch (HTTPException e) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -375,21 +383,15 @@ public class TdmRunner {
       }
     }
 
-    session = new HTTPSession("TdsMonitor");
+    session = new HTTPSession(serverName);
     session.setCredentialsProvider(new CredentialsProvider() {
       public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
         System.out.printf("getCredentials called%n");
-        return new UsernamePasswordCredentials("caron", "carTDSon"); // do not checkin
-        //return null;
+        return new UsernamePasswordCredentials("", "");
       }
     });
     session.setUserAgent("TdsMonitor");
 
-    /* HTTPSession.setGlobalCredentialsProvider(new CredentialsProvider() {
-      public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-        return new UsernamePasswordCredentials("caron", "carTDSon"); // do not checkin
-      }
-    }); */
     HTTPSession.setGlobalUserAgent("TDM v4.3");
 
     driver.start();
