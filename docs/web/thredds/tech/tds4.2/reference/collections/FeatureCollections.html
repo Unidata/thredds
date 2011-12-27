@@ -40,7 +40,7 @@ dl {margin: 10px 5px 5px 15px;}
 &lt;/featureCollection&gt;
 </pre>
 <p>Fully specify the options:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Alaska_11km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$&quot;<br />            name=&quot;NAM_Alaska_11km&quot;<br />            dateFormatMark=&quot;#NAM_Alaska_11km_#yyyyMMdd_HHmm&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;
 
 
@@ -50,7 +50,7 @@ dl {margin: 10px 5px 5px 15px;}
 &lt;/featureCollection&gt;
 </pre>
 <p>  With NcML elements:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Alaska_11km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot; olderThan=&quot;5 min&quot;/&gt;
   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
@@ -107,11 +107,11 @@ The XML Schema:
 <p>where</p>
 <ol>
   <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this example, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the reqular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. Each dataset is assigned a nominal time  by matching <em>yyyyMMdd_HHmm</em> to the portion of the filename following &quot;WEST-CONUS_4km_3.9_&quot;.</li>
-  <li><strong>name</strong>: collection name <em><strong>must be unique in all of your TDS catalogs</strong></em>. This is used for external triggers and  as an easy to read identifier for indexing, logging and debugging. If missing, the spec string is used (not a good idea in the context of the TDS). </li>
+  <li><strong>name</strong>: collection name <em><strong>must be unique in all of your TDS catalogs</strong></em>. This is used for external triggers and  as an easy to read identifier for indexing, logging and debugging. If missing, the Feature Collection name is used.</li>
   <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included. This excludes files that are in the process of being written. However, it only applies to newly found files, that is, once a file is in the collection it is not removed because it got updated.</li>
   <li><strong>recheckAfter</strong> (optional): This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed). <em>Do not use this if you are using an <strong>&lt;update scan=&quot;cron&quot;&gt;</strong> element.</em></li>
   <li><strong>dateFormatMark</strong> (optional): the collection specification string can only extract dates from the file name, as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract the date from the full path. <em>Use this OR a date extrator in the specification string, but not both.</em></li>
-  <li><strong>timePartition</strong> (optional):: experimental, not complete yet.</li>
+  <li><strong>timePartition</strong> (optional): experimental, not complete yet.</li>
 </ol>
 <h3>Date Extractor</h3>
 <p>Feature Collections  need to know how to sort the collection of files, so it is strongly recommended that you have a date in the filename, and to specify a date extractor in the specification string or include a dateFormatMark attribute. Otherwise, files will be sorted by filename.</p>
@@ -202,13 +202,11 @@ The XML Schema definition for the update element:
     </ol>
   </li>
   <li><strong>rescan</strong>:  uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task.</li>
-  <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated only when needed, by an external program (or person) sending an explicit &quot;trigger&quot; URL to the server. 
-    This URL is protected by HTTPS, so you must <a href="http://www.unidata.ucar.edu/staff/caron/bufr/">enable remote access</a> for this to work.
-    <ol>
-      <li>The URL is &quot;<strong>https://server:port/thredds/admin/collection?trigger=true&amp;collection=&lt;name&gt;</strong>&quot;, where name is the featureCollection name.</li>
-      <li>You can see a list of the FMRC datasets (and manually trigger a rescan) on the page &quot;<strong>https://server:port/thredds/admin/debug?Collections/triggerRescan</strong>&quot;.</li>
-      <li> You can see what datasets are currently cached in each collection on the page &quot;<strong>https://server:port/thredds/admin/debug?Collections/showFmrcCache</strong></li>
-    </ol>
+  <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated by an external program (or person) sending an explicit &quot;trigger&quot; URL to the server. 
+    This URL is protected by HTTPS, so you must <a href="http://www.unidata.ucar.edu/staff/caron/bufr/">enable remote access</a> for this to work.<ol>
+      <li>You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page <strong>https://server:port/thredds/admin/debug?Collections/showCollection</strong></li>
+      <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection?trigger=true&amp;collection=&lt;name&gt;</strong>, where name is the featureCollection name.</li>
+      </ol>
   </li>
 </ol>
 <h3>manage element (NOT IMPLEMENTED YET)</h3>

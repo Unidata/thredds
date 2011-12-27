@@ -7,6 +7,51 @@
 
 <body>
 <h1> GRIB Collection Processing</h1>
+<h3>Use Cases</h3>
+<ol>
+  <li>client
+    <ol>
+        <li>single data file mode</li>
+      <li>collection index mode</li>
+    </ol>
+  </li>
+  <li>server with small, static collections
+    <ol>
+        <li>&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot;/&gt; from tds, must have write permision, no rescan needed.</li>
+      <li>if no update, will be created when first accessed</li>
+    </ol>
+  </li>
+  <li>server with small, dynamic collections; lazy updating
+    <ol>
+        <li>&lt;collection recheckEvery=&quot;time&quot;/&gt;</li>
+    </ol>
+  </li>
+  <li>server with small, dynamic collections; active updating
+    in background tds task
+    <ol>
+        <li>&lt;update startup=&quot;true&quot; rescan=&quot;0 0/5 * * * ? *&quot; trigger=&quot;allow&quot;/&gt; from tds, must have write permision</li>
+    </ol>
+  </li>
+  <li>server with small, dynamic collections; active updating
+    in background tdm task
+      <ol>
+        <li>&lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/5 * * * ? *&quot; trigger=&quot;allow&quot;/&gt; from seperate tdm process</li>
+        <li>if tdm hasnt run, tds will create grib collection index if possibl</li>
+      </ol>
+  </li>
+  <li>server with large, dynamic collections
+    <ol>
+        <li>use timePartition. This builds global ncx from time partitioned ncx, for performance.</li>
+    </ol>
+  </li>
+</ol>
+<h3>Notes</h3>
+<ul>
+  <li>You must put in <strong>&lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;</strong>, otherwise GRIB-2 is assumed</li>
+  <li>olderThan=&quot;5 min&quot; now exlucde files only if they are not already in the collection. OTOH is this needed anymore? Rectilyze should prevent fragmented coordinates.</li>
+  <li>dont mix recheck  with update/tdm. recheck means when a dataset is accessed, scan if this much time has elapsed since the last scan. so its synchronous, wheras update is asynch.</li>
+</ul>
+<p>&nbsp;</p>
 <h3>Single Data File Mode</h3>
 <p>Pass the data file location to the IOSP.  Assumes its a File (ie not remote, etc). Call <strong>GribIndex.makeCollection() </strong></p>
 <ol><li>Check for grib index (<strong>gbx9</strong>).
@@ -29,66 +74,36 @@
 <h3>Collection Index Mode</h3>
 <p>Pass the <strong>ncx</strong> file to the IOSP. In this case, the collection is created from reading the ncx file with no checking against the original data file(s).</p>
 <p>You can create an <strong>ncx</strong> file based on a collection spec in: Tools UI: IOSP/GRIB1(2)/GribCollection. Enter the collection spec and hit Enter. To write the index file, hit the  &quot;Write Index&quot; button on the right. Give it a memorable name and hit Save.</p>
-<h3>Grib Collection Mode</h3>
 <h3>FeatureCollection Mode</h3>
 <ol>
   <li>At TDS startup, only the configuration info is read and stored. No scanning or object building, etc.</li>
   <li>if <strong>recheckEvery</strong> is defined on the collection
     <ol>
       <li>on every request test to see if <strong>recheckEvery</strong> time has passed since last checked</li>
+      <li>if so, rescan and recreate if needed</li>
     </ol>
   </li>
-  <li>If &lt;update&gt; is defined
+  <li>If <strong>&lt;update&gt;</strong> is defined
     <ol>
       <li>then a task is added to the CollectionUpdater, to be run in the background.</li>
       <li>task call CollectionManager.scan().</li>
-      <li>if scan() finds a change, InvDatasetFcGrib.update() is called, which rebuilds the index.</li>
+      <li>if scan() finds a change, InvDatasetFcGrib.update() is called, which recreates the collection.</li>
+    </ol>
+  </li>
+  <li>If <strong>&lt;tdm&gt;</strong> is defined
+    <ol>
+      <li>then a task is added to the CollectionUpdater, to be run in the background.</li>
+      <li>task call CollectionManager.scan().</li>
+      <li>if scan() finds a change, InvDatasetFcGrib.update() is called, which recreates the collection.</li>
     </ol>
   </li>
 </ol>
 <p>&nbsp;</p>
-<h3>Use Cases</h3>
-<ol>
-  <li>client
-    <ol>
-      <li>single data file mode</li>
-      <li>collection index mode</li>
-    </ol>
-  </li>
-  <li>server with small, static collections
-    <ol>
-      <li>&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot;/&gt; from tds, must have write permision, no rescan needed.</li>
-      <li>if no update, will be created when first accessed</li>
-    </ol>
-  </li>
-  <li>server with small, dynamic collections; lazy updating
-    <ol>
-      <li>&lt;collection rechecEvery=&quot;time&quot;/&gt;</li>
-    </ol>
-  </li>
-  <li>server with small, dynamic collections that are writeable
-    <ol>
-      <li>&lt;update startup=&quot;true&quot; rescan=&quot;0 0/5 * * * ? *&quot; trigger=&quot;allow&quot;/&gt; from tds, must have write permision</li>
-      <li>&lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/5 * * * ? *&quot; trigger=&quot;allow&quot;/&gt; from seperate tdm process</li>
-      <li>if tdm hasnt run, tds will create grib collection index if possible</li>
-    </ol>
-  </li>
-  <li>server with large, dynamic collections
-    <ol>
-      <li>use timePartition. This builds global ncx from time partitioned ncx, for performance.</li>
-    </ol>
-  </li>
-</ol>
-<h3>Notes</h3>
-<ul>
-  <li>You must put in           <strong>&lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;</strong>, otherwise GRIB-2 is assumed</li>
-  <li>olderThan=&quot;5 min&quot; problematic, since you may exclude a file that was already in the collection, but was just appended. Ok only if you are sure it doesnt get appended to again after that amount of time. Really should be: if not already in collection, exclude files with lastModified &gt; olderThan. Problem is that we are implementing this at the MFile filter level. Probably just stop doing that. OTOH is this needed anymore? Rectilyze should prevent fragmented coordinates.</li>
-  <li>dont mix recheck  with update/tdm. recheck means when a dataset is accessed, scan if this much time has elapsed since the last scan. so its synchronous, wheras update is asynch.<br />
-  </li>
-</ul>
+<h3><br />
+</h3>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 24, 2011
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 26, 2011
 </address>
 </body>
 </html>

@@ -44,10 +44,40 @@ import java.io.IOException;
  * should work.
  *
  * <p> A CollectionManager implements the <collection> element.
- * It may have a recheck value, which forces a rescan if that much time has passed since last scanned.
- * <p>
- * It may get scanned in the background by an <update> element.
- * One should listen for rescan events to detect this, by registering as a TriggerListener.
+ *
+<h3>collection element</h3>
+<p>A <strong>collection</strong> element defines the collection of datasets. </p>
+<pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$&quot;
+            <strong>name</strong>=&quot;WEST-CONUS_4km&quot; <strong>olderThan</strong>=&quot;1 min&quot; <strong></strong><strong>olderThan</strong>=&quot;15 min&quot; /&gt;
+</pre>
+
+The XML Schema:
+<pre>
+&lt;xsd:complexType name=&quot;collectionType&quot;&gt;
+  1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+  2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;
+  3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
+  4)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
+  5)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;
+  6)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;
+&lt;/xsd:complexType&gt;<br /></pre>
+<p>where</p>
+<ol>
+  <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required).</li>
+  <li><strong>name</strong>: collection name <em><strong>must be unique in all of your TDS catalogs</strong></em>.
+    This is used for external triggers and as an easy to read identifier for indexing, logging and debugging.
+    If missing, the spec string is used (not a good idea in the context of the TDS). </li>
+  <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included.
+ This excludes files that are in the process of being written. However, it only applies to newly found files, that is,
+ once a file is in the collection it is not removed because it got updated.</li>
+  <li><strong>recheckAfter</strong> (optional): This will cause a new scan whenever a request comes in and this much time
+ has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed).
+ <em>Do not use this if you are using an <strong>&lt;update scan=&quot;cron&quot;&gt;</strong> element.</em></li>
+  <li><strong>dateFormatMark</strong> (optional): the collection specification string can only extract dates from the file name,
+ as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract
+ the date from the full path. <em>Use this OR a date extrator in the specification string, but not both.</em></li>
+  <li><strong>timePartition</strong> (optional):: experimental, not complete yet.</li>
+</ol>
  *
  * @author caron
  * @since Jan 19, 2010

@@ -384,13 +384,13 @@ public class TdmRunner {
     }
 
     session = new HTTPSession(serverName);
-    session.setCredentialsProvider(new CredentialsProvider() {
+    /* session.setCredentialsProvider(new CredentialsProvider() {
       public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
         System.out.printf("getCredentials called%n");
         return new UsernamePasswordCredentials("", "");
       }
-    });
-    session.setUserAgent("TdsMonitor");
+    }); */
+    session.setUserAgent("tdmRunner");
 
     HTTPSession.setGlobalUserAgent("TDM v4.3");
 

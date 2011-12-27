@@ -53,7 +53,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Feature Collection Dataset.
+ * Abstract superclass for Feature Collection Datasets.
  * This is a InvCatalogRef subclass. So the reference is placed in the parent, but
  * the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
  *       match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
@@ -152,6 +152,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       }
     }
   }
+
   /////////////////////////////////////////////////////////////////////////////
   // not changed after first call
   protected InvService orgService, virtualService;
@@ -193,7 +194,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // LOOK maybe not best design to start tasks from here
   protected void finishConstruction() {
     dcm.addEventListener(this); // now wired for events
-    CollectionUpdater.INSTANCE.scheduleTasks(CollectionUpdater.FROM.tds, config, dcm); // see if any background scheduled tasks are needed
+    CollectionUpdater.INSTANCE.scheduleTasks(CollectionUpdater.FROM.tds, config, dcm); // see if any background tasks are needed
   }
 
   // call this first time (state == null)
@@ -215,11 +216,14 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   // external trigger was called to rescan the collection
   // if collection changed, then handleCollectionEvent() will get called to complete the work
-  public void triggerRescan() {
+  // look - maybe you really want to do this asynchronously, eg put it into a task queue?
+  public boolean triggerRescan(Formatter f) {
     try {
-      dcm.scan();
+      logger.info("{}: Trigger rescan", dcm.getCollectionName());
+      return dcm.scan();
     } catch (IOException e) {
-      logger.error("DatasetCollectionManager rescan error", e);
+      f.format("DatasetCollectionManager rescan error = %s", e);
+      return false;
     }
   }
 
@@ -407,7 +411,8 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return new File(fname.toString());
   }
 
-    // specialized filter handles olderThan and/or filename pattern matching
+  // specialized filter handles olderThan and/or filename pattern matching
+  // for InvDatasetScan
   static class ScanFilter implements CrawlableDatasetFilter {
     private final Pattern p;
     private final long olderThan;
