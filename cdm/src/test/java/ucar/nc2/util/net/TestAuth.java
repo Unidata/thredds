@@ -187,6 +187,26 @@ public class TestAuth extends ucar.nc2.util.TestCommon
         }
     }
 
+   @Test
+    public void
+    testBasic2() throws Exception
+    {
+      String url = "http://motherlode.ucar.edu/thredds/dodsC/restrict/testdata/testData.nc.html";
+      HTTPSession session = new HTTPSession(url);
+      if(true)
+        session.setCredentialsProvider(new CredentialsProvider() {
+          public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b)
+                    throws CredentialsNotAvailableException {
+             System.out.printf("getCredentials called\n");
+             return new UsernamePasswordCredentials("tiggeUser", "tigge");
+           }
+      });
+      session.setUserAgent("TdsMonitor");
+      HTTPMethod method = HTTPMethod.Get(session);
+      int status = method.execute();
+      System.out.printf("\ttestBasic2: status code = %d\n", status);  System.out.flush();
+      session.close();
+    }
 
     //Disable for now
     public void
@@ -277,6 +297,7 @@ block:          {
         }
         junit.framework.Assert.assertTrue("test(De-)Serialize", ok);
     }
+
 
 }
 
