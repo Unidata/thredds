@@ -44,6 +44,7 @@ import ucar.nc2.ft.point.standard.PointDatasetStandardFactory;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.grid.GridDatasetStandardFactory;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
+import ucar.nc2.ft.ugrid.UGridDatasetStandardFactory;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.stream.CdmrFeatureDataset;
 
@@ -75,6 +76,7 @@ public class FeatureDatasetFactoryManager {
     registerFactory(FeatureType.GRID, GridDatasetStandardFactory.class);
     registerFactory(FeatureType.RADIAL, RadialDatasetStandardFactory.class);
     registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
+    registerFactory(FeatureType.UGRID, UGridDatasetStandardFactory.class);
 
     // further calls to registerFactory are by the user
     userMode = true;
@@ -349,6 +351,10 @@ public class FeatureDatasetFactoryManager {
 
     if (want == FeatureType.GRID) {
       return facType.isGridFeatureType();
+    }
+    
+    if (want == FeatureType.UGRID) {
+      return facType.isUnstructuredGridFeatureType();
     }
 
     return false;
