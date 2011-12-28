@@ -181,6 +181,14 @@
       <groupId>com.sleepycat</groupId>
       <scope>provided</scope>
     </dependency>
+    
+    <!-- UGRID -->
+    <dependency>
+      <groupId>com.asascience</groupId>
+      <artifactId>NetCDF-Java-UGRID</artifactId>
+      <version>0.1</version>
+    </dependency>
+    
   </dependencies>
 
 

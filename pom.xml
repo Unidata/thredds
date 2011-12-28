@@ -250,6 +250,13 @@
         <version>4.8.2</version>
         <scope>test</scope>
       </dependency>
+      <!--
+      <dependency>
+        <artifactId>NetCDF-Java-UGRID</artifactId>
+        <groupId>com.asascience</groupId>
+        <version>0.1</version>
+      </dependency>
+      -->
 
       <!-- THREDDS - START -->
       <dependency>
