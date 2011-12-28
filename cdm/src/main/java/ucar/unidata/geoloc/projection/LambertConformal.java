@@ -62,7 +62,7 @@ public class LambertConformal extends ProjectionImpl {
 
   public ProjectionImpl constructCopy() {
     return new LambertConformal(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
-            getFalseEasting(), getFalseNorthing());
+            getFalseEasting(), getFalseNorthing(), earth_radius);
   }
 
   /**

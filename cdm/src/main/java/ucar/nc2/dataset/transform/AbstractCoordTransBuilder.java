@@ -38,9 +38,11 @@ import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
+import ucar.unidata.geoloc.Earth;
 import ucar.unidata.util.Parameter;
 
 import java.util.StringTokenizer;
@@ -202,6 +204,19 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
       }
     }
     return 1.0;
+  }
+
+    /**
+   * Get the earth radius in km from the attribute "earth_radius".
+   * Normally this is in meters, convert to km if its > 10,000.
+   * Use  Earth.getRadius() as default.
+   * @param ctv coord transform variable
+   * @return earth radius in km
+   */
+  protected double getEarthRadius(Variable ctv) {
+    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius());
+    if (earth_radius > 10000.0) earth_radius *= .001;
+    return earth_radius;
   }
 
 }

@@ -1,0 +1,137 @@
+# http://dss.ucar.edu/datasets/ds093.0/metadata/grib2.html
+# cut and paste 11/3/2011
+
+0	0	0	TMP	. Temperature	. K
+0	0	2	POT	. Potential temperature	. K
+0	0	4	T MAX	. Maximum temperature	. K
+0	0	5	T MIN	. Minimum temperature	. K
+0	0	6	DPT	. Dewpoint temperature	. K
+0	0	8	LAPR	. Lapse rate	. K m-1
+0	0	10	LHTFL	. Latent heat flux	. W m-2
+0	0	11	SHTFL	. Sensible heat flux	. W m-2
+0	0	192	SNOHF	. Snow phase change heat flux	. W m-2
+0	0	195	LRGHR	. Large scale condensate heating rate	. K s-1
+0	0	196	CNVHR	. Deep convective heating rate	. K s-1
+0	0	197	THFLX	. Total downward heat flux at surface	. W m-2
+0	0	198	TTDIA	. Temperature tendency by all physics	. K s-1
+0	0	201	SHAHR	. Shallow convective heating rate	. K s-1
+0	0	202	VDFHR	. Vertical diffusion heating rate	. K s-1
+0	0	204	TCHP	. Tropical cyclone heat potential	. J m-2 K-1
+0	1	0	SPF H	. Specific humidity	. kg kg-1
+0	1	1	R H	    . Relative humidity	. %
+0	1	3	P WAT	. Precipitable water	. kg m-2
+0	1	7	PRATE	. Precipitation rate	. kg m-2 s-1
+0	1	8	A PCP	. Total precipitation	. kg m-2
+0	1	9	NCPCP	. Large scale precipitation (non-convective)	. kg m-2
+0	1	10	ACPCP	. Convective precipitation	. kg m-2
+0	1	11	SNO D	. Snow depth	. m
+0	1	13	WEASD	. Water equivalent of accumulated snow depth	. kg m-2
+0	1	22	CLWMR	. Cloud water mixing ratio	. kg kg-1
+0	1	192	CRAIN	. Categorical rain . (yes=1; no=0)
+0	1	193	CFRZR	. Categorical freezing rain . (yes=1; no=0)
+0	1	194	CICEP	. Categorical ice pellets . (yes=1; no=0)
+0	1	195	CSNOW	. Categorical snow . (yes=1; no=0)
+0	1	196	CPRAT	. Convective precipitation rate	. kg m-2 s-1
+0	1	200	PEVPR	. Potential evaporation rate	. W m-2
+0	1	201	SNOWC	. Snow cover	. %
+0	1	211	EMNP	. Evaporation minus precipitation	. cm day-1
+0	1	212	SBSNO	. Sublimation (evaporation from snow)	. W m-2
+0	1	213	CNVMR	. Deep convective moistening rate	. kg kg-1 s-1
+0	1	214	SHAMR	. Shallow convective moistening rate	. kg kg-1 s-1
+0	1	215	VDFMR	. Vertical diffusion moistening rate	. kg kg-1 s-1
+0	1	217	LRGMR	. Large scale moistening rate	. kg kg-1 s-1
+0	1	219	QMAX	. Maximum specific humidity at 2m	. kg kg-1
+0	1	220	QMIN	. Minimum specific humidity at 2m	. kg kg-1
+0	2	2	U GRD	. u-component of wind	. m s-1
+0	2	3	V GRD	. v-component of wind	. m s-1
+0	2	4	STRM	. Stream function	. m2 s-1
+0	2	5	V POT	. Velocity potential	. m2 s-1
+0	2	6	MNTSF	. Montgomery stream function	. m2 s-1
+0	2	8	V VEL	. Vertical velocity (pressure)	. Pa s-1
+0	2	9	DZDT	. Vertical velocity (geometric)	. m s-1
+0	2	10	ABS V	. Absolute vorticity	. s-1
+0	2	14	PVORT	. Potential vorticity	. K m2 kg-1 s-1
+0	2	17	U FLX	. Momentum flux, u-component	. N m-2
+0	2	18	V FLX	. Momentum flux, v-component	. N m-2
+0	2	192	VW SH	. Vertical speed shear	. s-1
+0	2	194	USTM	. u-component of storm motion	. m s-1
+0	2	195	VSTM	. v-component of storm motion	. m s-1
+0	2	197	FRICV	. Frictional velocity	. m s-1
+0	2	208	VDFUA	. Vertical diffusion zonal acceleration	. m s-2
+0	2	209	VDFVA	. Vertical diffusion meridional acceleration	. m s-2
+0	2	210	GWDU	. Gravity wave drag zonal acceleration	. m s-2
+0	2	211	GWDV	. Gravity wave drag meridional acceleration	. m s-2
+0	2	212	CNVU	. Convective zonal momentum mixing acceleration	. m s-2
+0	2	213	CNVV	. Convective meridional momentum mixing acceleration	. m s-2
+0	2	216	CNGWDU	. Convective gravity wave drag zonal acceleration	. m s-2
+0	2	217	CNGWDV	. Convective gravity wave drag meridional acceleration	. m s-2
+0	3	0	PRES	. Pressure	. Pa
+0	3	1	PRMSL	. Pressure reduced to MSL	. Pa
+0	3	5	HGT	    . Geopotential height	. gpm
+0	3	9	GP A	. Geopotential height anomaly	. gpm
+0	3	193	5WAVH	. 5-wave geopotential height	. gpm
+0	3	194	U-GWD	. Zonal flux of gravity wave stress	. N m-2
+0	3	195	V-GWD	. Meridional flux of gravity wave stress	. N m-2
+0	3	196	HPBL	. Planetary boundary layer height	. m
+0	3	197	5WAVA	. 5-wave geopotential height anomaly	. gpm
+0	4	192	DSWRF	. Downward shortwave radiation flux	. W m-2
+0	4	193	USWRF	. Upward shortwave radiation flux	. W m-2
+0	4	194	DUVB	. UV-B downward solar flux	. W m-2
+0	4	195	CDUVB	. Clear sky UV-B downward solar flux	. W m-2
+0	4	196	CSDSF	. Clear sky downward solar flux	. W m-2
+0	4	197	SWHR	. Solar radiative heating rate	. K s-1
+0	4	198	CSUSF	. Clear sky upward solar flux	. W m-2
+0	5	192	DLWRF	. Downward longwave radiation flux	. W m-2
+0	5	193	ULWRF	. Upward longwave radiation flux	. W m-2
+0	5	194	LWHR	. Long-wave radiative heating rate	. K s-1
+0	5	195	CSULF	. Clear sky upward longwave flux	. W m-2
+0	5	196	CSDLF	. Clear sky downward longwave flux	. W m-2
+0	6	1	T CDC	. Total cloud cover . 	%
+0	6	6	C WAT	. Cloud water	. kg m-2
+0	6	192	CDLYR	. Non-Convective cloud cover	. %
+0	6	193	CWORK	. Cloud workfunction	. J kg-1
+0	7	0	PLI	    . Parcel lifted index (to 500 mb)	. K
+0	7	6	CAPE	. Convective available potential energy . 	J kg-1
+0	7	7	CIN	    . Convective inhibition	. J kg-1
+0	7	8	HLCY	. Storm relative helicity	. m2 s-2
+0	7	192	LFT X	. Surface lifted index	. deg K
+0	7	193	4LFTX	. Best (4 layer) lifted index	. deg K
+0	14	0	TOZNE	. Total ozone	. Dobson
+0	14	192	O3MR	. Ozone mixing ratio	. kg kg-1
+0	14	195	VDFOZ	. Ozone vertical diffusion	. kg kg-1 s-1
+0	14	196	POZ	    . Ozone production	. kg kg-1 s-1
+0	14	197	TOZ	    . Ozone tendency	. kg kg-1 s-1
+0	14	198	POZT	. Ozone production from temperature term	. kg kg-1 s-1
+0	14	199	POZO	. Ozone production from column ozone term	. kg kg-1 s-1
+0	19	1	ALBDO	. Albedo	. %
+1	0	193	SSRUN	. Storm surface runoff	. kg m-2
+2	0	0	LAND	. Land cover	  .
+2	0	1	SFC R	. Surface roughness	. m
+2	0	3	SOIL M	. Soil moisture content	. kg m-2
+2	0	4	VEG	    . Vegetation	. %
+2	0	5	WATR	. Water runoff	. kg m-2
+2	0	192	SOILW	. Volumetric soil moisture content .
+2	0	193	GFLUX	. Ground heat flux	. W m-2
+2	0	195	SFEXC	. Exchange coefficient	. (kg m-3) (m s-1)
+2	0	196	CNWAT	. Plant canopy surface water	. kg m-2
+2	0	198	VGTYP	. Vegetation type	.
+2	0	208	AKHS	. Surface exchange coefficients for T and Q divided by delta z	. m s-1
+2	0	209	AKMS	. Surface exchange coefficients for U and V divided by delta z	. m s-1
+2	0	210	VEGT	. Vegetation canopy temperature	. K
+2	0	228	ACOND	. Aerodynamic conductance	. m s-1
+2	0	229	EVCW	. Canopy water evaporation	. W m-2
+2	0	230	TRANS	. Transpiration	. W m-2
+2	3	0	SOTYP	. Soil type	.
+2	3	192	SOILL	. Liquid volumetric soil moisture (non-frozen)	.
+2	3	194	SLTYP	. Surface slope type	.
+2	3	198	EVBS	. Direct evaporation from bare soil	. W m-2
+10	1	2	UOGRD	. U-component of current	. m s-1
+10	1	3	VOGRD	. V-component of current	. m s-1
+10	2	0	ICEC	. Ice cover	. fraction
+10	2	1	ICETK	. Ice thickness	. m
+10	2	4	UICE	. U-Component of ice drift	. m s-1
+10	2	5	VICE	. V-Component of ice drift	. m s-1
+10	3	195	SSHG	. Sea surface height relative to geoid	. m
+10	4	3	SALTY	. Salinity	. kg kg-1
+10	4	195	DBSS	. Geometric depth below sea surface	. m
+10	4	197	OHC	    . Ocean heat content	. J m-2

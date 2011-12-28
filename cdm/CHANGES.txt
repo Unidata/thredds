@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  5: (2011-12-xx)
+  Fix when earth_radius comes in km instead of meters.
   DatasetCollectionMFiles: olderThan applies only to newly found files.
   DatasetCollectionMFiles: use dateFormatMark if present.
   CollectionSpecParser: Remove seperate dateMatch string, forName.

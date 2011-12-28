@@ -69,9 +69,7 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-    // these must be in meters (CF spec), projection needs them in km
-    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius()) * .001;
-
+    double earth_radius = getEarthRadius(ctv);
     double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
     double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
     double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);
