@@ -69,6 +69,7 @@ import java.security.*;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
@@ -76,6 +77,7 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 import javax.net.ssl.*;
+import javax.security.auth.login.CredentialNotFoundException;
 
 /**
  * <p/>
@@ -245,16 +247,19 @@ public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
       // Get the HTTPAuthProvider
       HTTPAuthProvider provider;
       provider = (HTTPAuthProvider) params.getParameter(CredentialsProvider.PROVIDER);
-      if (provider == null) {
-        // Do no authentication
-        sslcontext = SSLContext.getInstance("SSL");
-        sslcontext.init(null, null, null);
-        return sslcontext;
-      }
+      if (provider == null) return noauthenticate();
 
       // Abuse the getCredentials() api
-      Credentials creds = provider.getCredentials(HTTPSSLScheme.Default, null, 0, false);
-      HTTPSSLProvider sslprovider = (HTTPSSLProvider) creds;
+      Credentials creds = null;
+      try {
+          creds = provider.getCredentials(HTTPSSLScheme.Default, null, 0, false);
+          if (creds == null) return noauthenticate();
+      } catch (CredentialsNotAvailableException e) {
+          return noauthenticate();
+      }
+
+      HTTPSSLProvider sslprovider = (creds == null ? null : (HTTPSSLProvider) creds);
+      if (sslprovider == null) return noauthenticate();
 
       keypath = (String) sslprovider.getKeystore();
       keypassword = (String) sslprovider.getKeypassword();
@@ -267,6 +272,7 @@ public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
         kmfactory.init(keystore, keypassword.toCharArray());
         keymanagers = kmfactory.getKeyManagers();
       }
+
       truststore = buildstore(trustpath, trustpassword, "trust");
       if (truststore != null) {
         //TrustManagerFactory trfactory = TrustManagerFactory.getInstance("SunX509");
@@ -282,8 +288,10 @@ public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
 
       return sslcontext;
 
+    } catch (KeyManagementException e) {
+        throw new HTTPException("Key Management exception: " + e.getMessage());
     } catch (NoSuchAlgorithmException e) {
-      throw new HTTPException("Unsupported algorithm exception: " + e.getMessage());
+        throw new HTTPException("Unsupported algorithm exception: " + e.getMessage());
     } catch (KeyStoreException e) {
       throw new HTTPException("Keystore exception: " + e.getMessage());
     } catch (GeneralSecurityException e) {
@@ -291,6 +299,16 @@ public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
     } catch (IOException e) {
       throw new HTTPException("I/O error reading keystore/truststore file: " + e.getMessage());
     }
+  }
+
+  // Do no authentication
+  static SSLContext
+  noauthenticate()
+      throws KeyManagementException,NoSuchAlgorithmException
+  {
+    SSLContext sslcontext = SSLContext.getInstance("SSL");
+    sslcontext.init(null,null,null);
+    return sslcontext;
   }
 
   static KeyStore

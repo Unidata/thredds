@@ -187,47 +187,6 @@ public class TestAuth extends ucar.nc2.util.TestCommon
         }
     }
 
-   @Test
-    public void
-    testBasic2() throws Exception
-    {
-          String serverName = "http://motherlode.ucar.edu:9080/";
-          String url = serverName + "thredds/admin/collection?trigger=true&collection=NCEP-GFS-Puerto_Rico";
-
-          pass = false;
-
-          HTTPSession session = new HTTPSession(serverName);
-          if(false)
-              session.setCredentialsProvider(new CredentialsProvider() {
-              public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-                System.out.printf("getCredentials called%n");
-                return new UsernamePasswordCredentials("", "");
-              }
-            });
-            session.setUserAgent("tdmRunner");
-            HTTPSession.setGlobalUserAgent("TDM v4.3");
-            HTTPMethod m = null;
-            try {
-              System.out.printf("url %s\n", url);
-              m = HTTPMethod.Get(session, url);
-              int status = m.execute();
-              String s = m.getResponseAsString();
-              System.out.printf("Trigger response = %d == %s\n", status, s);
-              pass = true;
-            } catch (HTTPException e) {
-              ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-              e.printStackTrace(new PrintStream(bos));
-              e.printStackTrace();
-              pass = false;
-            } finally {
-              if (m != null) m.close();
-            }
-          if(pass)
-            junit.framework.Assert.assertTrue("testBasic2", true);
-          else
-            junit.framework.Assert.assertTrue("testBasic2", false);
-    }
-
     //Disable for now
     public void
     xtestKeystore() throws Exception

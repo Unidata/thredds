@@ -44,6 +44,7 @@ public class HTTPSSLScheme implements AuthScheme
 {
 
 static public final HTTPSSLScheme Default  = new HTTPSSLScheme();
+
 public
 HTTPSSLScheme()
 {
