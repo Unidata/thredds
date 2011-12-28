@@ -255,6 +255,13 @@
         <artifactId>visad</artifactId>
         <version>${visad.version}</version>
       </dependency>
+      <!--
+      <dependency>
+        <artifactId>NetCDF-Java-UGRID</artifactId>
+        <groupId>com.asascience</groupId>
+        <version>0.1</version>
+      </dependency>
+      -->
 
       <!-- THREDDS - START -->
       <dependency>
