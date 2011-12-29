@@ -192,7 +192,7 @@ public class StringUtil2 {
     for (int i = 0, len = name.length(); i < len; i++) {
       int c = name.charAt(i);
       if (c == 0x2f)
-        sbuff.append(RC.useGroups?c:'_');
+        sbuff.append(RC.getUseGroups()?c:'_');
       else if (c >= 0x20)
         sbuff.append((char) c);
     }

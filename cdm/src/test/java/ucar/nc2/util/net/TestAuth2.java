@@ -31,12 +31,14 @@
  */
 package ucar.nc2.util.net;
 
+import junit.framework.TestCase;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.Credentials;
 
+import org.junit.Test;
 import ucar.nc2.util.net.HTTPException;
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
@@ -44,43 +46,53 @@ import ucar.nc2.util.net.HTTPSession;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-public class TestAuth2
+public class TestAuth2 extends TestCase
 {
-  static private String serverName = "http://motherlode.ucar.edu:9080/";
-  static private String url = serverName + "thredds/admin/collection?trigger=true&collection=NCEP-GFS-Puerto_Rico";
-  public static void main(String args[]) throws HTTPException {
+  //static private String serverName = "motherlode.ucar.edu:9080";
+  static private String serverName = "localhost:8080";
+  static private String[] urls = new String[] {
+          "http://" + serverName + "/thredds/admin/collection?trigger=true&collection=NCEP-GFS-Puerto_Rico",
+          //"https://" + serverName + "/thredds/admin/collection?trigger=true&collection=NCEP-GFS-Puerto_Rico",
+  };
 
-    HTTPSession session = new HTTPSession(serverName);
-    if(true)
-        session.setCredentialsProvider(new CredentialsProvider() {
-          public Credentials getCredentials(AuthScheme authScheme, String host, int port, boolean isproxy) throws CredentialsNotAvailableException {
-            UsernamePasswordCredentials creds = new UsernamePasswordCredentials("", "");
-            System.out.printf("getCredentials called: creds=|%s| host=%s port=%d isproxy=%b authscheme=%s%n",
-                              creds.toString(),host,port,isproxy,authScheme);
-            return creds;
-          }
-    });
-    session.setUserAgent("tdmRunner");
-
-    HTTPSession.setGlobalUserAgent("TDM v4.3");
-
-    HTTPMethod m = null;
-    try {
-      System.out.printf("url %s%n", url);
-      m = HTTPMethod.Get(session, url);
-      int status = m.execute();
-      String s = m.getResponseAsString();
-      System.out.printf("Trigger response = %d == %s%n", status, s);
-
-    } catch (HTTPException e) {
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      e.printStackTrace(new PrintStream(bos));
-      e.printStackTrace();
-
-    } finally {
-      if (m != null) m.close();
+  @Test
+  public void testAuth2() throws Exception
+  {
+    boolean pass = true;
+    for(String url: urls) {
+        HTTPSession session = new HTTPSession(url);
+        if(true)
+            session.setCredentialsProvider(new CredentialsProvider() {
+              public Credentials getCredentials(AuthScheme authScheme, String host, int port, boolean isproxy) throws CredentialsNotAvailableException {
+                UsernamePasswordCredentials creds = new UsernamePasswordCredentials("", "");
+                System.out.printf("getCredentials called: creds=|%s| host=%s port=%d isproxy=%b authscheme=%s%n",
+                                  creds.toString(),host,port,isproxy,authScheme);
+                return creds;
+              }
+        });
+        session.setUserAgent("tdmRunner");
+        HTTPSession.setGlobalUserAgent("TDM v4.3");
+        HTTPMethod m = null;
+        try {
+          System.out.printf("url %s%n", url);
+          m = HTTPMethod.Get(session, url);
+          int status = m.execute();
+          String s = m.getResponseAsString();
+          System.out.printf("Trigger response = %d == %s%n", status, s);
+        } catch (HTTPException e) {
+          System.err.println("Fail: "+url);
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+          e.printStackTrace(new PrintStream(bos));
+          e.printStackTrace();
+          pass = false;
+        } finally {
+          if (session != null) session.close();
+        }
     }
-
+    if(pass)
+      junit.framework.Assert.assertTrue("testAuth2", true);
+    else
+      junit.framework.Assert.assertTrue("testAuth2", false);
   }
 
 }

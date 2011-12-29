@@ -65,7 +65,7 @@ public class Variable implements VariableIF, ProxyReader {
 
   static public String getDAPName(String name, Variable context)
   {
-    if(RC.useGroups) {
+    if(RC.getUseGroups()) {
          // leave off leading '/' for root entries
         if(!context.getParentGroup().isRoot()) {
             // Get the list of parent groups

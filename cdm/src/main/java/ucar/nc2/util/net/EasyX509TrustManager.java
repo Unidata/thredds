@@ -27,6 +27,7 @@ package ucar.nc2.util.net;
 
 
 import ucar.nc2.util.log.LogStream;
+import ucar.nc2.util.rc.RC;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -94,14 +95,18 @@ public class EasyX509TrustManager implements X509TrustManager {
   /**
    * see com.sun.net.ssl.X509TrustManager#isClientTrusted(X509Certificate[])
    */
-  public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
+  public void checkClientTrusted(X509Certificate[] certificates, String authType)
+        throws CertificateException
+  {
     this.standardTrustManager.checkClientTrusted(certificates, authType);
   }
 
   /**
    * see com.sun.net.ssl.X509TrustManager#isServerTrusted(X509Certificate[])
    */
-  public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
+  public void checkServerTrusted(X509Certificate[] certificates, String authType)
+        throws CertificateException
+  {
     if ((certificates != null) && logger.isDebugEnabled()) {
       logger.debug("Server certificate chain:");
       for (int i = 0; i < certificates.length; i++) {
@@ -109,14 +114,26 @@ public class EasyX509TrustManager implements X509TrustManager {
       }
     }
 
-    if ((certificates != null) && (certificates.length == 1)) {
-      X509Certificate certificate = certificates[0];
-//FIX        certificate.checkValidity();
-    } else {
-      this.standardTrustManager.checkServerTrusted(certificates, authType);
-    }
-      return;
-      
-  }
+    // The certificate checking rules are as follows:
+    // 1. If !RC.getVerifyServer()
+    //    then just return (indicating success)
+    // 2. If certificates.length > 1 || !RC.getAllowSelfSigned() then 
+    //    call standardTrustManager.checkServerTrusted() to
+    //    see if this is a valid certificate chain.
+    // 3. Otherwise, see if this looks like a self signed certificate.
 
+    if(RC.getVerifyServer()) {
+	if(RC.getAllowSelfSigned() && certificates != null && certificates.length == 1) {
+	    X509Certificate certificate = certificates[0];
+            certificate.checkValidity(); // check that current date is within the certficates valid dates
+            // See if this looks like a self-signed cert
+            if(!certificate.getIssuerDN().equals(certificate.getSubjectDN())) {
+                // apparently not self-signed so check certificate chain
+                standardTrustManager.checkServerTrusted(certificates,authType);
+	    }
+	}	
+    }
+    return;
+  }
+  
 }

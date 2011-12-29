@@ -47,11 +47,48 @@ import java.util.*;
 public class RC
 {
 
-
 //////////////////////////////////////////////////
 // Predefined flags
+// To add a new flag:
+// 1. Define the protected static field with default value
+// 2. Define a get function
+// 3. Add an arm to the set function
+// 4. Add any usefull utilities like booleanize()
 
-static public boolean useGroups = true;
+static protected boolean useGroups = true;
+static protected boolean verifyServer = true;
+static protected boolean allowSelfSigned = true;
+
+static public boolean getUseGroups()
+  {if(!initialized) RC.initialize(); return useGroups;}
+static public boolean getVerifyServer()
+  {if(!initialized) RC.initialize(); return verifyServer;}
+static public boolean getAllowSelfSigned()
+  {if(!initialized) RC.initialize(); return allowSelfSigned;}
+
+static protected void set(String key, String value)
+{
+    // TODO: think about the rc properties naming hierarchy
+    assert(key != null && value != null);
+    if("ucar.nc2.cdm.usegroups".equals(key)) {
+        useGroups = booleanize(value);
+    } else if("ucar.nc2.net.verifyserver".equals(key)) {
+        verifyServer = booleanize(value);
+    } else if("ucar.nc2.net.allowselfsigned".equals(key)) {
+        allowSelfSigned = booleanize(value);
+    }
+}
+
+static boolean
+booleanize(String value)
+{
+    // canonical boolean values
+    if(value == null || "0".equals(value) || "false".equalsIgnoreCase(value))
+        return false;
+    if("1".equals(value) || "true".equalsIgnoreCase(value))
+        return true;
+    return value != null; // any non-null value?
+}
 
 //////////////////////////////////////////////////
 
@@ -63,7 +100,7 @@ static final char RTAG = ']';
 
 static final String[] rcfilelist = new String[] {".dodsrc", ".tdsrc" };
 
-static public int urlCompare(URL u1, URL u2)
+static int urlCompare(URL u1, URL u2)
 {
     int relation;
     if(u1 == null && u2 == null) return 0;
@@ -86,7 +123,7 @@ static public int urlCompare(URL u1, URL u2)
 }
 
 // Match has different semantics than urlCompare
-static public boolean
+static boolean
 urlMatch(URL pattern, URL url)
 {
     int relation;
@@ -116,17 +153,26 @@ static public class Triple implements Comparable
 
     public Triple(String key, String value, String url)
     {
-       URL u = null;
-       try {u = new URL(url);} catch (MalformedURLException e) {u=null;}
-       this.key = key; this.value = value; this.url = u;
+        URL u = null;
+	if(url != null && url.length() > 0)
+            try {u = new URL(url);} catch (MalformedURLException e) {u=null;}
+	set(key,value,u);
     }
-    public Triple(String key, String value, URL url)
-    {this.key = key; this.value = value; this.url = url;}
+
+    public Triple(String key, String value, URL url) {set(key,value,url);}
+
+    void set(String key, String value, URL url)
+    {
+       this.key = key.trim().toLowerCase();
+       this.url = url;
+       this.value = value;
+       if(this.value == null) this.value = "";
+    }
 
     public boolean equals(Object o)
     {
-	    if(o == null || !(o instanceof Triple)) return false;
-	    return (compareTo((Triple)o) == 0);
+        if(o == null || !(o instanceof Triple)) return false;
+	return (compareTo((Triple)o) == 0);
     }
 
     public int compareTo(Object o)
@@ -160,17 +206,15 @@ static RC dfaltRC = null;
 
 static private boolean initialized = false;
 
-static {
-    RC.initialize();
-}
+static {RC.initialize();}
 
-static public void initialize ()
+static synchronized public void initialize()
 {
     if(!initialized) {
+        initialized = true;
         RC.loadDefaults();
         RC.setWellKnown();
     }
-    initialized = true;
 }
 
 /**
@@ -183,6 +227,7 @@ static synchronized public void
 add(String key, String value, String url)
 {
     if(key == null) return;
+    if(!initialized) RC.initialize();
     Triple t = new Triple(key,value,url);
     dfaltRC.insert(t);
     // recompute well-knowns
@@ -199,6 +244,7 @@ static synchronized public String
 find(String key, String url)
 {
     if(key == null) return null;
+    if(!initialized) RC.initialize();
     Triple t = dfaltRC.lookup(key,url);
     return (t==null?null:t.value);
 }
@@ -206,27 +252,20 @@ find(String key, String url)
 /**
  * Record some well known parameters
  */
-static public void
+static void
 setWellKnown()
 {
-   Triple triple = dfaltRC.lookup("unidata.cdm.usegroups");
-   if(triple != null)
-       useGroups = booleanize(triple);
+   if(dfaltRC.triplestore.size() == 0) return;
+   // Walk the set of triples looking for those that have no url
+   for(String key: dfaltRC.keySet()) {
+       Triple triple = dfaltRC.lookup(key);
+	if(triple.url == null) {
+	    RC.set(key,triple.value); // let set sort it out
+	}	
+   }
 }
 
-static boolean
-booleanize(Triple triple)
-{
-    // canonical boolean values
-    if(triple == null || "0".equals(triple.value) || "false".equalsIgnoreCase(triple.value))
-        return false;
-    if("1".equals(triple.value) || "true".equalsIgnoreCase(triple.value))
-        return true;
-    return triple.value != null; // any non-null value?
-
-}
-
-static public void
+static void
 loadDefaults()
 {
     RC rc0 = new RC();
@@ -335,7 +374,7 @@ load(String abspath)
     return true;
 }
 
-    public Set<String> keySet() {return triplestore.keySet();}
+public Set<String> keySet() {return triplestore.keySet();}
 
 public List<Triple> getTriples(String key)
 {

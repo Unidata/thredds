@@ -77,7 +77,6 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 import javax.net.ssl.*;
-import javax.security.auth.login.CredentialNotFoundException;
 
 /**
  * <p/>
@@ -247,19 +246,19 @@ public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
       // Get the HTTPAuthProvider
       HTTPAuthProvider provider;
       provider = (HTTPAuthProvider) params.getParameter(CredentialsProvider.PROVIDER);
-      if (provider == null) return noauthenticate();
+      if (provider == null) return stdauthenticate();
 
       // Abuse the getCredentials() api
       Credentials creds = null;
       try {
           creds = provider.getCredentials(HTTPSSLScheme.Default, null, 0, false);
-          if (creds == null) return noauthenticate();
+          if (creds == null) return stdauthenticate();
       } catch (CredentialsNotAvailableException e) {
-          return noauthenticate();
+          return stdauthenticate();
       }
 
       HTTPSSLProvider sslprovider = (creds == null ? null : (HTTPSSLProvider) creds);
-      if (sslprovider == null) return noauthenticate();
+      if (sslprovider == null) return stdauthenticate();
 
       keypath = (String) sslprovider.getKeystore();
       keypassword = (String) sslprovider.getKeypassword();
@@ -302,12 +301,13 @@ public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
   }
 
   // Do no authentication
-  static SSLContext
-  noauthenticate()
-      throws KeyManagementException,NoSuchAlgorithmException
+  static private SSLContext
+  stdauthenticate()
+      throws KeyManagementException,NoSuchAlgorithmException, KeyStoreException
   {
+    TrustManager[] trustmanagers = new TrustManager[]{new EasyX509TrustManager(null)};
     SSLContext sslcontext = SSLContext.getInstance("SSL");
-    sslcontext.init(null,null,null);
+    sslcontext.init(null, trustmanagers, null);
     return sslcontext;
   }
 

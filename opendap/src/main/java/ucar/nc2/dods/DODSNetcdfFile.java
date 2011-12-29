@@ -653,7 +653,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   {
       if(parentGroup == null)
           parentGroup = getRootGroup();
-      if(RC.useGroups) {
+      if(RC.getUseGroups()) {
           // If the shortname has '/' in it, then we need to insert
           // this variable into the proper group and rename it
           String name = v.getShortName();
@@ -979,7 +979,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         myd = new Dimension("", dad.getSize(), false);
 
       } else { // see if shared
-	if(RC.useGroups) {
+	if(RC.getUseGroups()) {
               if(name.indexOf('/') >= 0) {// place dimension in proper group
                   int index= name.indexOf('/');
                   group = group.makeRelativeGroup(this,name,true);
