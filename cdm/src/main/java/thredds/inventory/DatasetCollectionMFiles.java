@@ -148,7 +148,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
 
     scanList.add(new MCollection(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
 
-    this.recheck = makeRecheck(config.recheckAfter);
+    this.recheck = makeRecheck(config.updateConfig.recheckAfter);
     protoChoice = config.protoConfig.choice;
   }
 

@@ -163,7 +163,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final FeatureType featureType;
   protected final FeatureCollectionConfig config;
   protected final String topDirectory;
-  protected CollectionManager dcm; // defines the collection of datasets in this feature collection
+  protected CollectionManager dcm; // defines the collection of datasets in this feature collection; actually final after subclass constructor is done.
 
   @GuardedBy("lock")
   protected State state;
@@ -194,10 +194,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // LOOK maybe not best design to start tasks from here
   protected void finishConstruction() {
     dcm.addEventListener(this); // now wired for events
-    CollectionUpdater.INSTANCE.scheduleTasks(CollectionUpdater.FROM.tds, config, dcm); // see if any background tasks are needed
+    CollectionUpdater.INSTANCE.scheduleTasks(config, dcm); // see if any background tasks are needed
   }
 
-  // call this first time (state == null)
+  // call this first time a request comes in
   protected void firstInit() {
     this.orgService = getServiceDefault();
     if (this.orgService == null) throw new IllegalStateException("No default service for InvDatasetFeatureCollection "+name);
@@ -208,34 +208,24 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   @Override
   // DatasetCollectionManager was changed asynchronously
   public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
+    if (event.getType() == CollectionManager.TriggerType.updateNocheck)
+      update(CollectionManager.Force.nocheck);
     if (event.getType() == CollectionManager.TriggerType.update)
-      update();
+      update(CollectionManager.Force.test);
     if (event.getType() == CollectionManager.TriggerType.proto)
       updateProto();
    }
 
-  // external trigger was called to rescan the collection
-  // if collection changed, then handleCollectionEvent() will get called to complete the work
-  // look - maybe you really want to do this asynchronously, eg put it into a task queue?
-  public boolean triggerRescan(Formatter f) {
-    try {
-      logger.info("{}: Trigger rescan", dcm.getCollectionName());
-      return dcm.scan();
-    } catch (IOException e) {
-      f.format("DatasetCollectionManager rescan error = %s", e);
-      return false;
-    }
-  }
-
   /**
    * Collection was changed, update internal objects.
-   * called by CollectionUpdater, trigger via handleCollectionEvent
+   * called by CollectionUpdater, trigger via handleCollectionEvent, so in a quartz scheduler thread
+   * @param force test : update index if anything changed or nocheck - use index if it exists
    */
-  abstract public void update();
+  abstract public void update(CollectionManager.Force force);
 
   /**
    * update the proto dataset being used.
-   * called by CollectionUpdater via handleCollectionEvent
+   * called by CollectionUpdater via handleCollectionEvent, so in a quartz scheduler thread
    */
   abstract public void updateProto();
 

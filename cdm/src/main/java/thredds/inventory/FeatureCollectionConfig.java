@@ -74,7 +74,7 @@ public class FeatureCollectionConfig {
 
   //////////////////////////////////////////////
 
-  public String name, spec, dateFormatMark, olderThan, recheckAfter, timePartition;
+  public String name, spec, dateFormatMark, olderThan, timePartition;
   public UpdateConfig tdmConfig = new UpdateConfig();
   public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
@@ -95,7 +95,7 @@ public class FeatureCollectionConfig {
     this.spec = spec;
     this.dateFormatMark = dateFormatMark;
     this.olderThan = olderThan;
-    this.recheckAfter = recheckAfter;
+    if (recheckAfter != null) this.updateConfig.recheckAfter = recheckAfter;
     this.timePartition = timePartition;
     this.useIndexOnly = useIndexOnlyS != null && useIndexOnlyS.equalsIgnoreCase("true");
     this.innerNcml = innerNcml;
@@ -108,7 +108,6 @@ public class FeatureCollectionConfig {
             ", spec='" + spec + '\'' +
             ", dateFormatMark='" + dateFormatMark + '\'' +
             ", olderThan='" + olderThan + '\'' +
-            ", recheckAfter='" + recheckAfter + '\'' +
             ", timePartition=" + timePartition +
             ", updateConfig=" + updateConfig +
             ", tdmConfig=" + tdmConfig +
@@ -121,23 +120,21 @@ public class FeatureCollectionConfig {
 
   // <update startup="true" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
-    public String rescan = null;
+    public String recheckAfter;
+    public String rescan;
     public boolean triggerOk;
-    public CollectionManager.Force startup = null;
+    public boolean startup;
     public String deleteAfter = null;
 
     public UpdateConfig() { // defaults
     }
 
-    public UpdateConfig(String startupS, String rescan, String triggerS, String deleteAfter) {
+    public UpdateConfig(String startupS, String recheckAfter, String rescan, String triggerS, String deleteAfter) {
       this.rescan = rescan; // may be null
+      if (recheckAfter != null) this.recheckAfter = recheckAfter; // in case it was set in collection element
       this.deleteAfter = deleteAfter; // may be null
-      if (startupS != null) {
-        if (startupS.equalsIgnoreCase("true"))
-          startup = CollectionManager.Force.always;
-        else
-          startup = CollectionManager.Force.valueOf(startupS);
-      }
+      if ((startupS != null) && startupS.equalsIgnoreCase("true"))
+        this.startup = true;
       if (triggerS != null)
         this.triggerOk = triggerS.equalsIgnoreCase("allow");
     }
@@ -146,6 +143,7 @@ public class FeatureCollectionConfig {
     public String toString() {
       return "UpdateConfig{" +
               "startup=" + startup +
+              ", recheckAfter='" + recheckAfter + '\'' +
               ", rescan='" + rescan + '\'' +
               ", triggerOk=" + triggerOk +
               ", deleteAfter=" + deleteAfter +

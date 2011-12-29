@@ -107,7 +107,6 @@
     </xsd:sequence>
 
     <xsd:attribute name="name" type="xsd:string" use="required"/>
-
     <xsd:attribute name="alias" type="xsd:token"/>
     <xsd:attribute name="authority" type="xsd:string"/>  <!-- deprecated : use element -->
     <xsd:attribute name="collectionType" type="collectionTypes"/>
@@ -339,7 +338,7 @@
     <xsd:attribute name="spec" type="xsd:string" use="required"/>
     <xsd:attribute name="name" type="xsd:token"/>
     <xsd:attribute name="olderThan" type="xsd:string" />
-    <xsd:attribute name="recheckAfter" type="xsd:string" />
+    <xsd:attribute name="recheckAfter" type="xsd:string" />  <!-- deprecated : move to update element -->
     <xsd:attribute name="dateFormatMark" type="xsd:string"/>
     <xsd:attribute name="timePartition" type="xsd:string"/>
   </xsd:complexType>
@@ -348,7 +347,8 @@
     <xsd:sequence>
       <xsd:element ref="manage" minOccurs="0"/>
     </xsd:sequence>
-    <xsd:attribute name="startup" type="forceEnumTypes"/>
+    <xsd:attribute name="startup" type="xsd:boolean"/>
+    <xsd:attribute name="recheckAfter" type="xsd:string" />
     <xsd:attribute name="rescan" type="xsd:token"/>
     <xsd:attribute name="trigger" type="xsd:token"/>
   </xsd:complexType>

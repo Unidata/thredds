@@ -373,7 +373,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     Element tdmElem = dsElem.getChild( "tdm", defNS );
     if (tdmElem != null) {
       config.tdmConfig = readUpdateElement( tdmElem);              // the presence of tdm element
-      config.updateConfig.startup = CollectionManager.Force.nocheck; // makes "no check" the default for update
     }
     Element updateElem = dsElem.getChild( "update", defNS );
     if (updateElem != null)
@@ -448,6 +447,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
   protected FeatureCollectionConfig.UpdateConfig readUpdateElement(Element updateElem) {
     String startup = updateElem.getAttributeValue("startup");
+    String recheckAfter = updateElem.getAttributeValue("recheckAfter");
     String rescan = updateElem.getAttributeValue("rescan");
     String trigger = updateElem.getAttributeValue("trigger");
 
@@ -457,7 +457,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       deleteAfter = manageElem.getAttributeValue("deleteAfter");
     }
 
-    return new FeatureCollectionConfig.UpdateConfig(startup, rescan, trigger, deleteAfter);
+    return new FeatureCollectionConfig.UpdateConfig(startup, recheckAfter, rescan, trigger, deleteAfter);
   }
 
   protected InvDatasetImpl readDatasetFmrc( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {

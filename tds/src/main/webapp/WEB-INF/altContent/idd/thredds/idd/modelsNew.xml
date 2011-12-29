@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-         xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.4">
+<catalog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ name="Unidata THREDDS Data Server"
+ version="1.0.4">
 
   <service name="latest" serviceType="Resolver" base=""/>
 
@@ -182,7 +185,7 @@
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_0p5deg/.*grib2$"
             name="GFS_Puerto_Rico_0p5deg"
             dateFormatMark="#GFS_Puerto_Rico_0p5deg_#yyyyMMdd_HHmm" />
-        <tdm startup="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-Puerto_Rico_191km" featureType="GRIB" harvest="true"
@@ -200,7 +203,7 @@
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$"
             name="GFS_Puerto_Rico_191km"
             dateFormatMark="#GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm" />
-        <tdm startup="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
     </dataset>
@@ -940,7 +943,9 @@
       <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
     </featureCollection>
 
-  </dataset -->
+</dataset -->
+    
+    </dataset>
 
 </catalog>
 

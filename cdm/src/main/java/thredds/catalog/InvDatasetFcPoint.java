@@ -1,6 +1,7 @@
 package thredds.catalog;
 
 import org.slf4j.Logger;
+import thredds.inventory.CollectionManager;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -54,7 +55,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   public FeatureDatasetPoint getFeatureDatasetPoint() { return fd; }
 
   @Override
-  public void update() {
+  public void update(CollectionManager.Force force) {
     ((UpdateableCollection)fd).update();
   }
 
@@ -78,7 +79,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       // copy on write
       State localState = new State(state);
       makeDatasets(localState); // LOOK whats really needed is just the time range metadata updated
-      update();
+      update(CollectionManager.Force.test);
 
       if (null != fd) {
         localState.vars = MetadataExtractor.extractVariables(fd);
