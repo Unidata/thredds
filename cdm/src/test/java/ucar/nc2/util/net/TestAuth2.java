@@ -48,39 +48,48 @@ import java.io.PrintStream;
 
 public class TestAuth2 extends TestCase
 {
-  //static private String serverName = "motherlode.ucar.edu:9080";
-  static private String serverName = "localhost:8080";
-  static private String[] urls = new String[] {
-          "http://" + serverName + "/thredds/admin/collection?trigger=true&collection=NCEP-GFS-Puerto_Rico",
-          //"https://" + serverName + "/thredds/admin/collection?trigger=true&collection=NCEP-GFS-Puerto_Rico",
-  };
+  static class Data
+  {
+      String url;
+      CredentialsProvider provider;
+      public Data(String u,CredentialsProvider p) {this.url=u; this.provider=p;}
+  }
+    static private Data[] cases = new Data[] {
+      new Data("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
+               new CredentialsProvider() {
+                   public Credentials getCredentials(AuthScheme sch, String h, int p, boolean pr)
+                           throws CredentialsNotAvailableException {
+                     UsernamePasswordCredentials creds
+                       = new UsernamePasswordCredentials("tiggeUser","tigge");
+                     System.out.printf("getCredentials called: creds=|%s| host=%s port=%d isproxy=%b authscheme=%s%n",
+                                  creds.toString(),h,p,pr,sch);
+                     return creds;
+                   }
+               }),
+      new Data("https://motherlode.ucar.edu:8443/dts/b31.dds",null),
+    };
 
   @Test
   public void testAuth2() throws Exception
   {
     boolean pass = true;
-    for(String url: urls) {
-        HTTPSession session = new HTTPSession(url);
-        if(true)
-            session.setCredentialsProvider(new CredentialsProvider() {
-              public Credentials getCredentials(AuthScheme authScheme, String host, int port, boolean isproxy) throws CredentialsNotAvailableException {
-                UsernamePasswordCredentials creds = new UsernamePasswordCredentials("", "");
-                System.out.printf("getCredentials called: creds=|%s| host=%s port=%d isproxy=%b authscheme=%s%n",
-                                  creds.toString(),host,port,isproxy,authScheme);
-                return creds;
-              }
-        });
+    for(Data data: cases) {
+        HTTPSession session = new HTTPSession(data.url);
+        if(data.provider != null)
+            session.setCredentialsProvider(data.provider);
         session.setUserAgent("tdmRunner");
         HTTPSession.setGlobalUserAgent("TDM v4.3");
         HTTPMethod m = null;
         try {
-          System.out.printf("url %s%n", url);
-          m = HTTPMethod.Get(session, url);
+          System.out.printf("url %s%n", data.url);
+          m = HTTPMethod.Get(session);
           int status = m.execute();
           String s = m.getResponseAsString();
           System.out.printf("Trigger response = %d == %s%n", status, s);
+          if(status != 200  && status != 404)
+              pass = false;
         } catch (HTTPException e) {
-          System.err.println("Fail: "+url);
+          System.err.println("Fail: "+data.url);
           ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
           e.printStackTrace(new PrintStream(bos));
           e.printStackTrace();

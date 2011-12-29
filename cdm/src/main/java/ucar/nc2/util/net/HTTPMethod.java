@@ -88,7 +88,7 @@ static private org.slf4j.Logger LOG = null;
 
     static public class RetryHandler extends  org.apache.commons.httpclient.DefaultHttpMethodRetryHandler
     {
-        static final int MAXRETRIES = 10;
+        static final int MAXRETRIES = 5;
 	    static final boolean verbose = false;
 
         public RetryHandler() {super(MAXRETRIES,false);}

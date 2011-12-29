@@ -123,15 +123,16 @@ public class EasyX509TrustManager implements X509TrustManager {
     // 3. Otherwise, see if this looks like a self signed certificate.
 
     if(RC.getVerifyServer()) {
-	if(RC.getAllowSelfSigned() && certificates != null && certificates.length == 1) {
-	    X509Certificate certificate = certificates[0];
-            certificate.checkValidity(); // check that current date is within the certficates valid dates
-            // See if this looks like a self-signed cert
-            if(!certificate.getIssuerDN().equals(certificate.getSubjectDN())) {
-                // apparently not self-signed so check certificate chain
-                standardTrustManager.checkServerTrusted(certificates,authType);
-	    }
-	}	
+        if(RC.getAllowSelfSigned() && certificates != null && certificates.length == 1) {
+            X509Certificate certificate = certificates[0];
+                certificate.checkValidity(); // check that current date is within the certficates valid dates
+                // See if this looks like a self-signed cert
+                if(!certificate.getIssuerDN().equals(certificate.getSubjectDN())) {
+                    // apparently not self-signed so check certificate chain
+                    standardTrustManager.checkServerTrusted(certificates,authType);
+            }
+        } else // Do a complete certificates check
+            standardTrustManager.checkServerTrusted(certificates,authType);
     }
     return;
   }
