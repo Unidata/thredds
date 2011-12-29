@@ -57,7 +57,6 @@ The XML Schema:
   1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
   2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;
   3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
-  4)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
   5)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;
   6)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;
 &lt;/xsd:complexType&gt;<br /></pre>
@@ -70,9 +69,6 @@ The XML Schema:
   <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included.
  This excludes files that are in the process of being written. However, it only applies to newly found files, that is,
  once a file is in the collection it is not removed because it got updated.</li>
-  <li><strong>recheckAfter</strong> (optional): This will cause a new scan whenever a request comes in and this much time
- has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed).
- <em>Do not use this if you are using an <strong>&lt;update scan=&quot;cron&quot;&gt;</strong> element.</em></li>
   <li><strong>dateFormatMark</strong> (optional): the collection specification string can only extract dates from the file name,
  as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract
  the date from the full path. <em>Use this OR a date extrator in the specification string, but not both.</em></li>
@@ -83,6 +79,7 @@ The XML Schema:
  * @since Jan 19, 2010
  */
 public interface CollectionManager {
+
   public enum Force {always, // force new index
                      test,   // test if new index is needed
                      nocheck } // if index exists, use it
@@ -138,6 +135,8 @@ public interface CollectionManager {
    * @throws IOException on I/O error
    */
   public boolean scan() throws IOException;
+
+  public void updateNocheck() throws IOException;
 
   /**
    * Get the current collection of MFile.
@@ -235,7 +234,7 @@ public interface CollectionManager {
     public void handleCollectionEvent(TriggerEvent event);
   }
 
-  public enum TriggerType {update, proto }
+  public enum TriggerType {update, proto, updateNocheck }
 
   public class TriggerEvent extends java.util.EventObject {
      private final TriggerType type;

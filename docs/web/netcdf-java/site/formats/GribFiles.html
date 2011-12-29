@@ -50,6 +50,8 @@
   <li>You must put in <strong>&lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;</strong>, otherwise GRIB-2 is assumed</li>
   <li>olderThan=&quot;5 min&quot; now exlucde files only if they are not already in the collection. OTOH is this needed anymore? Rectilyze should prevent fragmented coordinates.</li>
   <li>dont mix recheck  with update/tdm. recheck means when a dataset is accessed, scan if this much time has elapsed since the last scan. so its synchronous, wheras update is asynch.</li>
+  <li>trigger from user means go scan collection</li>
+  <li>trigger from tdm means index is created, but rebuild gc objecy from it. maybe thats fast enough that you can do it when next request comes in. but other fc (point, fmrc) may be differernt ??</li>
 </ul>
 <p>&nbsp;</p>
 <h3>Single Data File Mode</h3>
@@ -79,7 +81,7 @@
   <li>At TDS startup, only the configuration info is read and stored. No scanning or object building, etc.</li>
   <li>if <strong>recheckEvery</strong> is defined on the collection
     <ol>
-      <li>on every request test to see if <strong>recheckEvery</strong> time has passed since last checked</li>
+      <li>on every request, test to see if <strong>recheckEvery</strong> time has passed since last checked - InvDatasetFcGrib.checkState()</li>
       <li>if so, rescan and recreate if needed</li>
     </ol>
   </li>

@@ -1,9 +1,13 @@
 package thredds.server.root;
 
+import org.quartz.JobKey;
+import org.quartz.TriggerKey;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdater;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import thredds.server.config.TdsContext;
@@ -53,6 +57,43 @@ public class CollectionController extends AbstractController {
       }
     };
     debugHandler.addAction(act);
+
+    act = new DebugHandler.Action("sched", "Show scheduler") {
+      public void doAction(DebugHandler.Event e) {
+        org.quartz.Scheduler scheduler = CollectionUpdater.INSTANCE.getScheduler();
+        if (scheduler == null) return;
+
+        try {
+          e.pw.println(scheduler.getMetaData());
+
+          List<String> groups = scheduler.getJobGroupNames();
+          List<String> triggers = scheduler.getTriggerGroupNames();
+
+          // enumerate each job group
+          for (String group : scheduler.getJobGroupNames()) {
+            e.pw.println("Group " + group);
+
+            // enumerate each job in group
+            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(group))) {
+              e.pw.println("  Job " + jobKey.getName());
+              e.pw.println("    " + scheduler.getJobDetail(jobKey));
+            }
+
+            // enumerate each trigger in group
+            for (TriggerKey triggerKey : scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(group))) {
+              e.pw.println("  Trigger " + triggerKey.getName());
+              e.pw.println("    " + scheduler.getTrigger(triggerKey));
+            }
+          }
+
+
+        } catch (Exception e1) {
+          e.pw.println("Error on scheduler " + e1.getMessage());
+          log.error("Error on scheduler " + e1.getMessage());
+        }
+      }
+    };
+    debugHandler.addAction(act);
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -66,8 +107,9 @@ public class CollectionController extends AbstractController {
 
     // find the collection
     String collectName = req.getParameter(COLLECTION);
-    String trigger = req.getParameter(TRIGGER);
-    boolean wantTrigger = (trigger != null) && trigger.equalsIgnoreCase("true");
+    String triggerS = req.getParameter(TRIGGER);
+    boolean trigger = (triggerS != null) && triggerS.equalsIgnoreCase("true");
+    boolean nocheck = (triggerS != null) && triggerS.equalsIgnoreCase("nocheck");
     InvDatasetFeatureCollection fc = DataRootHandler.getInstance().getFeatureCollection(collectName);
     if (fc == null) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
@@ -80,7 +122,7 @@ public class CollectionController extends AbstractController {
     CollectionManager dcm = fc.getDatasetCollectionManager();
     pw.printf("<h3>Collection Name %s</h3>%n", dcm.getCollectionName());
 
-    if (wantTrigger) {
+    if (trigger || nocheck) {
       // see if trigger is allowed
       if (!fc.getConfig().updateConfig.triggerOk && !fc.getConfig().tdmConfig.triggerOk) {
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
@@ -90,15 +132,8 @@ public class CollectionController extends AbstractController {
         return null;
       }
 
-      Formatter f = new Formatter();
-      boolean scanReturn = fc.triggerRescan(f);
-      String err = f.toString();
-      if (err != null && err.length() > 0) {
-        pw.printf(" RESCAN FAILED = %s%n", err);
-      } else {
-        pw.printf(" RESCAN RETURN = %s%n", scanReturn);
-        showFiles(pw, dcm);
-      }
+      CollectionUpdater.INSTANCE.triggerUpdate(dcm.getCollectionName(), trigger ? "trigger" : "nocheck");
+      pw.printf(" TRIGGER SENT%n");
 
     } else {
       showFiles(pw, dcm);

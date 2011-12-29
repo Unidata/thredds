@@ -84,6 +84,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private final FeatureCollectionConfig.GribConfig gribConfig;
   private final AtomicBoolean needsUpdate = new AtomicBoolean();
   private final AtomicBoolean needsProto = new AtomicBoolean();
+  private boolean first = true;
   private DataFormatType format;
 
   public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
@@ -104,53 +105,59 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (errs.length() > 0) logger.debug("{}: CollectionManager parse error = {} ", name, errs);
 
     tmi.setDataType(FeatureType.GRID); // override GRIB
-    finish(); // ??
-
+    finish();
   }
 
   @Override
-  public void update() {
-    needsUpdate.set(true);
-
-    // use checkState to do the actual work, for the locking
-    try {
-      checkState();
-    } catch (IOException e) {
-      e.printStackTrace();
+  public void update(CollectionManager.Force force) { // this is called from a background thread
+    if (first) {
+      synchronized (lock) {
+        this.format = getDataFormatType(); // why wait until now ??
+        firstInit(); // why ??
+        first  = false;
+      }
     }
+
+    // do the update in a local object
+    StateGrib localState = new StateGrib((StateGrib) state);
+    updateCollection(localState, force);
+    makeTopDatasets(localState);
+    localState.lastInvChange = System.currentTimeMillis();
+
+    // switch to live
+    synchronized (lock) {
+      needsUpdate.set(false);
+      needsProto.set(false);
+      state = localState;
+    }
+
   }
 
   @Override
   public void updateProto() {
     needsProto.set(true);
 
-    // no actual work, wait until dataset is called (??)
+    // no actual work, wait until next call to updateCollection (??)
+    // not sure proto is used in GC
   }
 
   @Override
-  protected StateGrib checkState() throws IOException {
+  protected StateGrib checkState() throws IOException { // this is called from the request thread
     synchronized (lock) {
-
-      boolean updateNeeded = false;
-      if (state == null) {
+      if (first) {
+        this.format = getDataFormatType(); // for some reason have to wait until first request ??
         firstInit();
-        updateNeeded = dcm.scanIfNeeded();
+        first  = false;
+
       } else {
-        if (needsUpdate.get()) { // external trigger
-          updateNeeded = true;
-        } else {
-          updateNeeded = dcm.scanIfNeeded(); // the case where recheckEvery is used
-        }
+        if (!dcm.scanIfNeeded())
+          return (StateGrib) state;
       }
-
-      if (!updateNeeded) return (StateGrib) state;
-
-      // in all cases the dcm has been rescanned
 
       // update local copy of state, then switch all at once
       // i think this is "copy on write"
       StateGrib localState = new StateGrib((StateGrib) state);
-      updateCollection(localState);
+      updateCollection(localState, CollectionManager.Force.test);
 
       makeTopDatasets(localState);
       localState.lastInvChange = System.currentTimeMillis();
@@ -162,18 +169,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
-  private void updateCollection(StateGrib localState) {
-    this.format = getDataFormatType();
+  private void updateCollection(StateGrib localState, CollectionManager.Force force) {
     try {
       if (config.timePartition != null) {
         TimePartition previous = localState.timePartition;
-        localState.timePartition = TimePartitionBuilder.factory((TimePartitionCollection) this.dcm, CollectionManager.Force.test, new Formatter());
+        localState.timePartition = TimePartitionBuilder.factory((TimePartitionCollection) this.dcm, force, new Formatter());
         localState.gribCollection = null;
         if (previous != null) previous.close(); // LOOK thread safety
 
       } else { // WTF? open and close every time (!)
         GribCollection previous = localState.gribCollection;
-        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.test, new Formatter());
+        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, new Formatter());
         localState.timePartition = null;
         if (previous != null) previous.close(); // LOOK thread safety
       }

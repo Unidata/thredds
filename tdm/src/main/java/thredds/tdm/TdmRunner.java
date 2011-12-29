@@ -77,7 +77,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TdmRunner {
   //static private final Logger logger = org.slf4j.LoggerFactory.getLogger(TdmRunner.class);
   static private boolean seperateFiles = true;
-  static private String serverName = "http://localhost:8080/"; // hack for now
+  static private String serverName = "http://localhost:8080/"; // set in the spring config file
   static private HTTPSession session;
 
   private java.util.concurrent.ExecutorService executor;
@@ -157,8 +157,8 @@ public class TdmRunner {
             GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, f);
             gc.close();
             f.format("**** GribCollectionBuilder.factory complete %s%n", name);
-            if (config.tdmConfig.triggerOk) {
-              String url = serverName + "thredds/admin/collection?trigger=true&collection="+fc.getName();
+            if (config.tdmConfig.triggerOk) { // LOOK is there any point if you dont have trigger = true ?
+              String url = serverName + "thredds/admin/collection?trigger=nocheck&collection="+fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
             }
@@ -166,7 +166,7 @@ public class TdmRunner {
           } catch (Throwable e) {
             logger.error("GribCollectionBuilder.factory " + name, e);
           }
-          logger.debug("\n{}", f.toString());
+          logger.debug("\n------------------------\n{}\n------------------------\n", f.toString());
         }
 
     } finally {
@@ -384,15 +384,16 @@ public class TdmRunner {
     }
 
     session = new HTTPSession(serverName);
-    /* session.setCredentialsProvider(new CredentialsProvider() {
+    session.setCredentialsProvider(new CredentialsProvider() {
       public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
         System.out.printf("getCredentials called%n");
-        return new UsernamePasswordCredentials("", "");
+        return new UsernamePasswordCredentials("caron", "secret666");
       }
-    }); */
+    });
     session.setUserAgent("tdmRunner");
-
     HTTPSession.setGlobalUserAgent("TDM v4.3");
+
+    CollectionUpdater.INSTANCE.setTdm(true);
 
     driver.start();
   }

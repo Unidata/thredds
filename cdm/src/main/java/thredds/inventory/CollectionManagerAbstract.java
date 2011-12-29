@@ -171,6 +171,11 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   // events; keep the code from getting too coupled
 
   @Override
+  public void updateNocheck() throws IOException {
+    sendEvent(new TriggerEvent(this, TriggerType.updateNocheck));
+  }
+
+  @Override
   public void resetProto() {
     if (lm != null)
       lm.sendEvent(new TriggerEvent(this, TriggerType.proto));

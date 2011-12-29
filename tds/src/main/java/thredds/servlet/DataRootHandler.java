@@ -32,15 +32,11 @@
  */
 package thredds.servlet;
 
-import org.quartz.JobKey;
-import org.quartz.TriggerKey;
-import org.quartz.impl.matchers.GroupMatcher;
 import thredds.catalog.*;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.cataloggen.ProxyDatasetHandler;
-import thredds.inventory.CollectionUpdater;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
 import thredds.util.StartsWithPathAliasReplacement;
@@ -153,126 +149,6 @@ public class DataRootHandler {
   public List<PathAliasReplacement> getDataRootLocationAliasExpanders() {
     return Collections.unmodifiableList(this.dataRootLocAliasExpanders);
   }
-
-  /////////////////////
-  // could use Spring DI
-  /*
-  private org.quartz.Scheduler scheduler = null;
-  public void initScheduler() {
-    SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
-    try {
-      scheduler = schedFact.getScheduler();
-      scheduler.start();
-      logScan.info(scheduler.getMetaData().toString());
-      
-    } catch (SchedulerException e) {
-      logScan.error("cronExecutor failed to initialize", e);
-      scheduler = null;
-    }
-  }
-
-  private static final String FC_NAME= "fc";
-  private void scheduleTasks(InvDatasetFeatureCollection invFeatCollection) {
-    if (scheduler == null) return;
-    FeatureCollectionConfig config = invFeatCollection.getConfig();
-
-    JobDetail updateJob = new JobDetail(config.spec, "FeatureCollection", ScanFmrcJob.class);
-    org.quartz.JobDataMap map = new org.quartz.JobDataMap();
-    map.put(FC_NAME, invFeatCollection);
-    updateJob.setJobDataMap(map);
-
-    FeatureCollectionConfig.UpdateConfig update = config.updateConfig;
-    if (update.startup) {
-      // wait 30 secs to trigger
-      Date runTime = new Date(new Date().getTime() + 30 * 1000);
-      Trigger trigger0 = new SimpleTrigger(config.spec, "startup", runTime);
-      try {
-        scheduler.scheduleJob(updateJob, trigger0);
-        logScan.info("Schedule startup scan for "+config.spec+" at "+ runTime);
-      } catch (SchedulerException e) {
-        logScan.error("cronExecutor failed to schedule startup Job", e);
-        //e.printStackTrace();
-      }
-    }
-
-    if (update.rescan != null) {
-      try {
-        Trigger trigger1 = new CronTrigger(config.spec, "rescan", update.rescan);
-        if (update.startup) {
-          trigger1.setJobName(updateJob.getName());
-          trigger1.setJobGroup(updateJob.getGroup());
-          scheduler.scheduleJob(trigger1);
-        } else {
-          scheduler.scheduleJob(updateJob, trigger1);
-        }
-        logScan.info("Schedule recurring scan for "+config.spec+" cronExpr="+ update.rescan);
-      } catch (ParseException e) {
-        logScan.error("cronExecutor failed: bad cron expression= "+ update.rescan, e);
-      } catch (SchedulerException e) {
-        logScan.error("cronExecutor failed to schedule cron Job", e);
-        e.printStackTrace();
-      }
-    }
-
-   FeatureCollectionConfig.ProtoConfig pconfig = config.protoConfig;
-    if (pconfig.change != null) {
-      JobDetail protoJob = new JobDetail(config.spec, "fcProto", RereadProtoJob.class);
-      org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
-      pmap.put(FC_NAME, invFeatCollection);
-      protoJob.setJobDataMap(pmap);
-
-      try {
-        Trigger trigger2 = new CronTrigger(config.spec, "rereadProto", pconfig.change);
-        scheduler.scheduleJob(protoJob, trigger2);
-        logScan.info("Schedule Reread Proto for "+config.spec);
-      } catch (ParseException e) {
-        logScan.error("cronExecutor failed: RereadProto has bad cron expression= "+ pconfig.change, e);
-      } catch (SchedulerException e) {
-        logScan.error("cronExecutor failed to schedule RereadProtoJob", e);
-        e.printStackTrace();
-      }
-    }
-
-  }
-
-  public void shutdown() {
-    if (scheduler == null) return;
-    try {
-      scheduler.shutdown( true);
-      org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
-      logServerStartup.info( "DataRootHandler / scheduler shutdown" );
-    } catch (SchedulerException e) {
-      log.error("Scheduler failed to shutdown", e);
-      scheduler = null;
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
-  }
-
-  public static class ScanFmrcJob implements org.quartz.Job {
-    public ScanFmrcJob() {}
-    public void execute(JobExecutionContext context) throws JobExecutionException {
-      try {
-        InvDatasetFeatureCollection fc = (InvDatasetFeatureCollection) context.getJobDetail().getJobDataMap().get(FC_NAME);
-        logScan.info("Trigger scan for "+fc.getName());
-        fc.triggerRescan();
-      } catch (Throwable e) {
-        logScan.error("InitFmrcJob failed", e);
-      }
-    }
-  }
-
-  public static class RereadProtoJob implements org.quartz.Job {
-    public RereadProtoJob() {}
-    public void execute(JobExecutionContext context) throws JobExecutionException {
-      try {
-        InvDatasetFeatureCollection fc = (InvDatasetFeatureCollection) context.getJobDetail().getJobDataMap().get(FC_NAME);
-        logScan.info("Trigger rereadProto for "+fc.getName());
-        fc.triggerProto();
-      } catch (Throwable e) {
-        logScan.error("RereadProtoJob failed", e);
-      }
-    }
-  } */
 
   //////////////////////////////////////////////
 
@@ -1881,40 +1757,6 @@ public class DataRootHandler {
         } catch (Exception e1) {
           e.pw.println("Error on reinit " + e1.getMessage());
           log.error("Error on reinit " + e1.getMessage());
-        }
-      }
-    };
-    debugHandler.addAction(act);
-
-    act = new DebugHandler.Action("sched", "Show scheduler") {
-      public void doAction(DebugHandler.Event e) {
-        org.quartz.Scheduler scheduler = CollectionUpdater.INSTANCE.getScheduler();
-        if (scheduler == null) return;
-
-        try {
-          e.pw.println(scheduler.getMetaData());
-
-          // enumerate each job group
-          for (String group : scheduler.getJobGroupNames()) {
-            e.pw.println("Group " + group);
-
-            // enumerate each job in group
-            for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.<JobKey> groupEquals(group))) {
-              e.pw.println("  Job " + jobKey.getName());
-              e.pw.println("    " + scheduler.getJobDetail(jobKey));
-            }
-
-            // enumerate each trigger in group
-            for (TriggerKey triggerKey : scheduler.getTriggerKeys(GroupMatcher.<TriggerKey> groupEquals(group))) {
-              e.pw.println("  Trigger " + triggerKey.getName());
-              e.pw.println("    " + scheduler.getTrigger(triggerKey));
-            }
-          }
-
-
-        } catch (Exception e1) {
-          e.pw.println("Error on scheduler " + e1.getMessage());
-          log.error("Error on scheduler " + e1.getMessage());
         }
       }
     };
