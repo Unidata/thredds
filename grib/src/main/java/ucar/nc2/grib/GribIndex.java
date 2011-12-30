@@ -44,7 +44,9 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Abstract superclass for Grib1Index and Grib2Index
+ * Abstract superclass for Grib1Index and Grib2Index.
+ * Handles gbx9 index for grib.
+ * Also creating an ncx file for a single file.
  *
  * @author John
  * @since 9/5/11

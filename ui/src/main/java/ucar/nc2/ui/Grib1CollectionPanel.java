@@ -414,7 +414,7 @@ public class Grib1CollectionPanel extends JPanel {
     DatasetCollectionMFiles dc = null;
     try {
       dc = DatasetCollectionMFiles.open(spec, null, f);
-      dc.scan();
+      dc.scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFiles());
       return dc;
 

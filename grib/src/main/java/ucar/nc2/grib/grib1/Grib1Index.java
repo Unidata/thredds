@@ -106,11 +106,10 @@ public class Grib1Index extends GribIndex {
     }
 
     public boolean readIndex(String filename, long gribLastModified, CollectionManager.Force force) throws IOException {
-
       File idxFile = new File(filename + IDX_EXT);
       if (!idxFile.exists()) return false;
       long idxModified = idxFile.lastModified();
-      if ((force == CollectionManager.Force.test) && (idxFile.lastModified() < gribLastModified)) return false;
+      if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false;
         // force new index if file was updated
 
       FileInputStream fin = new FileInputStream(idxFile); // LOOK need DiskCache for non-writeable directories

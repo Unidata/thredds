@@ -495,9 +495,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (id == null) id = getPath();
 
     for (String f : group.getFilenames()) {
-      int pos = f.lastIndexOf("/");
+      int pos = f.lastIndexOf("/"); // LOOK not
       String fname = f.substring(pos + 1);
-      String path = collectionName + "/" + group.getGroupName() + "/" + fname;
+      String path = FILES + "/" + fname;
       InvDatasetImpl ds = new InvDatasetImpl(this, fname);
       ds.setUrlPath(this.path + "/" + path);
       ds.setID(id + "/" + path);
@@ -548,6 +548,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public NetcdfDataset getNetcdfDataset(String matchPath) throws IOException {
+    // handle FILES
+    NetcdfDataset result = super.getNetcdfDataset(matchPath);
+    if (result != null) return result;
+
     StateGrib localState = null;
     try {
       localState = checkState();
