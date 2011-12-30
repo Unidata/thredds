@@ -203,7 +203,7 @@
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$"
             name="GFS_Puerto_Rico_191km"
             dateFormatMark="#GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm" />
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/1 * * * ? *" trigger="allow"/>
       </featureCollection>
 
     </dataset>

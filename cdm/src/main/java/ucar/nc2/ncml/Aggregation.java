@@ -280,7 +280,7 @@ public abstract class Aggregation {
   }
 
   private boolean _sync() throws IOException {
-    if (!datasetManager.scan())
+    if (!datasetManager.scan(true))
       return false; // nothing changed LOOK what about grib extention ??
     cacheDirty = true;
     closeDatasets();
@@ -394,7 +394,7 @@ public abstract class Aggregation {
   // all elements are processed, finish construction
 
   public void finish(CancelTask cancelTask) throws IOException {
-    datasetManager.scan(); // Make the list of Datasets, by scanning if needed.
+    datasetManager.scan(true); // Make the list of Datasets, by scanning if needed.
     cacheDirty = true;
     closeDatasets();
     makeDatasets(cancelTask);

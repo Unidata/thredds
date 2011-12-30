@@ -77,7 +77,7 @@ public class DatasetCollectionSingleFile extends CollectionManagerAbstract {
   }
 
   @Override
-  public boolean scan() throws IOException {
+  public boolean scan(boolean sendEvent) throws IOException {
     return false;
   }
 

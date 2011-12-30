@@ -118,6 +118,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
     }
 
+    if (force == CollectionManager.Force.nocheck) {
+      // we need to update the dcm without triggering an index rewrite
+      try {
+        dcm.scan(false);
+      } catch (IOException e) {
+        logger.error("Error on scan " + dcm, e);
+      }
+    }
+
     // do the update in a local object
     StateGrib localState = new StateGrib((StateGrib) state);
     updateCollection(localState, force);

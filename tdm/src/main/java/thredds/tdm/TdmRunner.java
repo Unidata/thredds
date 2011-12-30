@@ -98,7 +98,7 @@ public class TdmRunner {
     this.catalog = catalog;
   }
 
-  public void setServerName(String serverName) {
+  public void setTdsServer(String serverName) {
     this.serverName = serverName;
   }
 
@@ -361,33 +361,41 @@ public class TdmRunner {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////
+  private static String user, pass;
   public static void main(String args[]) throws IOException, InterruptedException {
     ApplicationContext springContext = new FileSystemXmlApplicationContext("classpath:resources/application-config.xml");
     TdmRunner driver = (TdmRunner) springContext.getBean("testDriver");
     //RandomAccessFile.setDebugLeaks(true);
 
+
     for (int i=0; i<args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
-        System.out.printf("usage: TdmRunner [-force] [-catalog <cat>] [-showDirs] %n");
+        System.out.printf("usage: TdmRunner [-catalog <cat>] [-server <tdsServer>] [-cred <user:passwd>] [-showDirs] %n");
+        System.out.printf("example: TdmRunner -catalog classpath:/resources/indexNomads.xml -server http://localhost:8080/ -cred user:password %n");
         System.exit(0);
       }
-      //if (args[i].equalsIgnoreCase("-force"))
-      //  driver.setForce(true);
-      //if (args[i].equalsIgnoreCase("-ncxOnly"))
-      //  driver.setIndexOnly(true);
       if (args[i].equalsIgnoreCase("-showDirs"))
         driver.setShowOnly(true);
+      if (args[i].equalsIgnoreCase("-server"))
+        driver.setTdsServer(args[i+1]);
+      if (args[i].equalsIgnoreCase("-cred")) {
+        String cred = args[i+1];
+        String[] split = cred.split(":");
+        user = split[0];
+        pass = split[1];
+        System.out.printf("parse cert %s %s%n", user, pass);
+      }
       if (args[i].equalsIgnoreCase("-catalog")) {
         Resource cat = new FileSystemResource(args[i+1]);
-        driver.setCatalog(cat); // allow default catalog overide
+        driver.setCatalog(cat);
       }
     }
 
     session = new HTTPSession(serverName);
     session.setCredentialsProvider(new CredentialsProvider() {
       public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-        System.out.printf("getCredentials called%n");
-        return new UsernamePasswordCredentials("caron", "secret666");
+        System.out.printf("getCredentials called %s %s%n", user, pass);
+        return new UsernamePasswordCredentials(user, pass);
       }
     });
     session.setUserAgent("tdmRunner");

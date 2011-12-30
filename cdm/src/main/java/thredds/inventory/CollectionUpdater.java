@@ -273,7 +273,7 @@ public enum CollectionUpdater {
         if (groupName.equals("nocheck"))
           manager.updateNocheck();
         else
-          manager.scan();
+          manager.scan(true);
       } catch (Throwable e) {
         logger.error("InitFmrcJob failed", e);
       }

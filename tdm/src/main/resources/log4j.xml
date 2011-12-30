@@ -43,6 +43,18 @@
     <appender-ref ref="fileLogger" />
   </logger>
 
+  <logger name="thredds.catalog.InvDatasetFeatureCollection" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="consoleLogger"/>
+    <appender-ref ref="fileLogger" />
+  </logger>
+
+  <logger name="thredds.catalog.InvDatasetFcGrib" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="consoleLogger"/>
+    <appender-ref ref="fileLogger" />
+  </logger>
+
   <root>
     <level value="WARN"/>
     <appender-ref ref="consoleLogger"/>

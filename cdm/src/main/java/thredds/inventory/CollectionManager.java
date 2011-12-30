@@ -134,7 +134,7 @@ public interface CollectionManager {
    * @return true if anything actually changed.
    * @throws IOException on I/O error
    */
-  public boolean scan() throws IOException;
+  public boolean scan(boolean sendEvent) throws IOException;
 
   public void updateNocheck() throws IOException;
 

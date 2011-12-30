@@ -107,7 +107,6 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
   private Map<String, MFile> map; // current map of MFile in the collection
   private long lastScanned; // last time scanned
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
-  private boolean inProgress = false; // prevent recursion
 
   // simplified version called from DatasetCollectionManager.open()
   private DatasetCollectionMFiles(String collectionSpec, String olderThan, Formatter errlog, Object fake) {
@@ -310,7 +309,7 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
 
   @Override
   public boolean scanIfNeeded() throws IOException {
-    return isScanNeeded() && scan();
+    return isScanNeeded() && scan(true);
   }
 
   protected boolean hasScans() {
@@ -327,11 +326,6 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
     // see if we need to recheck
     if (recheck == null) {
       logger.debug("{}: scan not needed, recheck null", collectionName);
-      return false;
-    }
-
-    if (inProgress) {
-      logger.debug("{}: scan in Progress", collectionName);
       return false;
     }
 
@@ -357,10 +351,10 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
   }
 
   @Override
-  public boolean scan() throws IOException {
+  public boolean scan(boolean sendEvent) throws IOException {
     if (map == null) {
       boolean changed = scanFirstTime();
-      if (changed)
+      if (changed && sendEvent)
         sendEvent(new TriggerEvent(this, TriggerType.update));  // watch out for infinite loop
       return changed;
     }
@@ -427,10 +421,8 @@ public class DatasetCollectionMFiles extends CollectionManagerAbstract {
       }
     }
 
-    if (changed) {
-      inProgress = true;  // LOOK needed ??
+    if (changed && sendEvent) {
       sendEvent(new TriggerEvent(this, TriggerType.update));  // watch out for infinite loop
-      inProgress = false;
     }
 
     return changed;

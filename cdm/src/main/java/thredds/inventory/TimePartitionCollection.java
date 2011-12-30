@@ -223,7 +223,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
     this.type = Type.days;
     Formatter errlog = new Formatter();
     CollectionManager dcm = new DatasetCollectionMFiles(null, config.spec, errlog);
-    dcm.scan();
+    dcm.scan(true);
 
     List<DatedMFile> files = new ArrayList<DatedMFile>();
     for (MFile mfile : dcm.getFiles()) {
@@ -252,7 +252,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
   }
 
   @Override
-  public boolean scan() throws IOException {
+  public boolean scan(boolean sendEvent) throws IOException {
     // LOOK ????
     sendEvent(new TriggerEvent(this, TriggerType.update));  // watch out for infinite loop
     return false;
@@ -365,7 +365,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
     }
 
     @Override
-    public boolean scan() throws IOException {
+    public boolean scan(boolean sendEvent) throws IOException {
       return false;
     }
 
