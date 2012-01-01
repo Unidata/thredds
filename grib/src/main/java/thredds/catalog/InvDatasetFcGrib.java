@@ -101,6 +101,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       this.dcm.setChangeChecker(GribIndex.getChangeChecker());   // LOOK needed?
     }
 
+    // sneak in extra config info
+    if (config.gribConfig != null) {
+      if (config.gribConfig.gdsHash != null)
+        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GDSHASH, config.gribConfig.gdsHash);
+      if (config.gribConfig.intervalMerge)
+        dcm.putAuxInfo(FeatureCollectionConfig.AUX_INTERVAL_MERGE, Boolean.TRUE);
+    }
+
     String errs = errlog.toString();
     if (errs.length() > 0) logger.debug("{}: CollectionManager parse error = {} ", name, errs);
 
@@ -467,7 +475,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   // this catalog lists the individual files comprising a grib collection.
-  // a hack around InvDatasetScan
+  // cat use InvDatasetScan because we might have multiple hcs
   private InvCatalogImpl makeFilesCatalog(GribCollection gc, GribCollection.GroupHcs group, URI baseURI, State localState) throws IOException {
 
     String collectionName = gc.getName();
@@ -495,8 +503,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (id == null) id = getPath();
 
     for (String f : group.getFilenames()) {
-      int pos = f.lastIndexOf("/"); // LOOK not
-      String fname = f.substring(pos + 1);
+      if (!f.startsWith(topDirectory))
+        System.out.println("HEY");
+      String fname = f.substring(topDirectory.length()+1);
       String path = FILES + "/" + fname;
       InvDatasetImpl ds = new InvDatasetImpl(this, fname);
       ds.setUrlPath(this.path + "/" + path);

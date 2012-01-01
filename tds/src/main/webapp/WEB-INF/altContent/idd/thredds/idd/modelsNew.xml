@@ -68,112 +68,86 @@
                        xlink:title="NCEP Model Notes"/>
       </metadata>
 
-      <!-- featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/GFS/Global_0p5deg">
+      <featureCollection name="GFS-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_0p5deg">
         <metadata inherited="true">
           <documentation type="summary">NCEP GFS Model : AWIPS 230 (G) Grid. Global Lat/Lon grid.
-            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours from 96 to 180 hours (4
-            to 7.5 days).
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours from 96 to 180 hours (4 to 7.5 days).
             Horizontal= 361 by 720 points, resolution 0.5 degree, Lat/Lon projection.
-            Vertical= 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
-            layers.
+            Vertical= 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
           </documentation>
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/.*grib2$"
-                    name="GFS_Global_0p5deg"
                     dateFormatMark="#GFS_Global_0p5deg_#yyyyMMdd_HHmm"
-                    timePartition="day"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow">
-          <manage deleteAfter="45 days" />
-        </tdm>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow" />
       </featureCollection>
 
-      <featureCollection name="NCEP-GFS-Global_onedeg" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/GFS/Global_onedeg">
+      <featureCollection name="GFS-Global_onedeg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_onedeg">
         <metadata inherited="true">
           <documentation type="summary">NCEP GFS Model : AWIPS 229 (F) Grid. Global Lat/Lon grid.
-            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out to 180 hours (7.5
-            days).
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out to 180 hours (7.5 days).
             Horizontal = 181 by 360 points, resolution 1 degree, Lat/Lon projection.
-            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
-            layers.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
           </documentation>
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/.*grib2$"
-                    name="GFS_Global_onedeg"
                     dateFormatMark="#GFS_Global_onedeg_#yyyyMMdd_HHmm"
-                    timePartition="day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-GFS-Global_2p5deg" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/GFS/Global_2p5deg">
+      <featureCollection name="GFS-Global_2p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_2p5deg">
         <metadata inherited="true">
           <documentation type="summary">NCEP GFS Model : AWIPS 228 (A) Grid. Global Lat/Lon grid.
             Model runs are made at every 12 hours from 192 to 384 hours (8 to 16 days).
             Horizontal= 73 by 144 points, resolution 2.5 degree, Lat/Lon projection.
-            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
-            layers.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
           </documentation>
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/.*grib2$"
-                    name="GFS_Global_2p5deg"
                     dateFormatMark="#GFS_Global_2p5deg_#yyyyMMdd_HHmm"
-                    timePartition="day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-GFS-N_Hemisphere_381km" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/GFS/N_Hemisphere_381km">
+      <featureCollection name="GFS-N_Hemisphere_381km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/N_Hemisphere_381km">
         <metadata inherited="true">
           <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemisphere (polar stereographic).
             Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
             Horizontal = 65 by 65 points, resolution 381.0 km, Polar Stereographic projection.
-            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
-            layers.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
           </documentation>
         </metadata>
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km_grib2/.*grib2$"
-            name="GFS_N_Hemisphere_381km"
             dateFormatMark="#GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-GFS-Pacific_40km" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/GFS/Pacific_40km">
+      <featureCollection name="GFS-Pacific_40km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Pacific_40km">
         <metadata inherited="true">
-          <documentation type="summary">NCEP GFS Model : Mercator Grid.
+          <documentation type="summary">NCEP GFS Model : Mercator Grid over most of the Pacific. longitude 110 W to 110 E.
             Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
             Horizontal = 300 by 369 points, resolution 40 km, Mercator projection.
-            Vertical = 1000 to 100 hPa mandatory pressure levels (29 levels); surface, height above ground, pressure
-            layers.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (29 levels); surface, height above ground, pressure layers.
           </documentation>
         </metadata>
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Pacific_40km/.*grib2$"
-            name="GFS_Pacific_40km"
             dateFormatMark="#GFS_Pacific_40km_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-      </featureCollection -->
+      </featureCollection>
 
-      <featureCollection name="NCEP-GFS-Puerto_Rico_0p5deg" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/GFS/Puerto_Rico_0p5deg">
+      <featureCollection name="GFS-Puerto_Rico_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Puerto_Rico_0p5deg">
         <metadata inherited="true">
-          <documentation type="summary">NCEP GFS Model :
-            Puerto_Rico 0.5 degree Lat/Lon grid.
+          <documentation type="summary">NCEP GFS Model : Puerto_Rico 0.5 degree Lat/Lon grid.
             Model runs are made at 0, 6, 12, 18 hours out to 10 days.
             Horizontal = 102 by 107 points, resolution .5 degree, Lat/Lon projection.
             Vertical = 1000 to 100 hPa mandatory pressure levels (29 levels); surface, height above ground, pressure
@@ -183,13 +157,88 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_0p5deg/.*grib2$"
-            name="GFS_Puerto_Rico_0p5deg"
-            dateFormatMark="#GFS_Puerto_Rico_0p5deg_#yyyyMMdd_HHmm" />
+            dateFormatMark="#GFS_Puerto_Rico_0p5deg_#yyyyMMdd_HHmm"
+            olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-GFS-Puerto_Rico_191km" featureType="GRIB" harvest="true"
-                         path="fmrc/NCEP/GFS/Puerto_Rico_191km">
+      <featureCollection name="GFS-Alaska_191km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Alaska_191km">
+        <dataFormat>GRIB-1</dataFormat>
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 203 (J) Grid. National - Alaska (polar stereographic).
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
+            Horizontal = 45 by 39 points, resolution 190.5 km, Polar Stereographic projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="GFS-Hawaii_160km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Hawaii_160km">
+        <dataFormat>GRIB-1</dataFormat>
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 204 (K) Grid. National-Hawaii.
+            Model runs are made at 0Z, with analysis and forecasts every 12 hours out 10 days.
+            Horizontal= 93 by 68 points, resolution 160 km, Polar Stereographic projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/GFS_Hawaii_160km_#yyyyMMdd_HHmm#.grib1"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="GFS-CONUS_80km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/CONUS_80km">
+        <dataFormat>GRIB-1</dataFormat>
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 211 (Q) Grid. Regional - CONUS (Lambert Conformal).
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
+            Horizontal = 93 by 65 points, resolution 81.27 km, LambertConformal projection.
+            Vertical = 1000 to 100 hPa pressure levels (29 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="GFS-CONUS_95km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/CONUS_95km">
+        <dataFormat>GRIB-1</dataFormat>
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 213 (H) Grid. National - CONUS - Double Resolution (polar
+            stereographic).
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
+            Horizontal = 129 by 85 points, resolution 95.25 km, Polar Stereographic projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/GFS_CONUS_95km_#yyyyMMdd_HHmm#.grib1"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="GFS-CONUS_191km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/CONUS_191km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-1</dataFormat>
+          <documentation type="summary">NCEP GFS Model : AWIPS 202 (I) Grid. National - CONUS (polar stereographic).
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
+            Horizontal = 65 by 43 points, resolution 190.5 km, Polar Stereographic projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/GFS_CONUS_191km_#yyyyMMdd_HHmm#.grib1"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="GFS-Puerto_Rico_191km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Puerto_Rico_191km">
         <metadata inherited="true">
           <dataFormat>GRIB-1</dataFormat>
           <documentation type="summary">NCEP GFS Model : AWIPS 205 (L) Grid. National - Puerto Rico (polar stereographic).
@@ -201,9 +250,9 @@
 
          <collection
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$"
-            name="GFS_Puerto_Rico_191km"
-            dateFormatMark="#GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm" />
-        <tdm startup="true" rescan="0 0/1 * * * ? *" trigger="allow"/>
+            dateFormatMark="#GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
     </dataset>

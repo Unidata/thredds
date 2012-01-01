@@ -44,6 +44,8 @@ import java.util.*;
  * @since Mar 30, 2010
  */
 public class FeatureCollectionConfig {
+  static public final String AUX_GDSHASH = "gdshash";
+  static public final String AUX_INTERVAL_MERGE = "intvMerge";
 
   static public enum ProtoChoice {
     First, Random, Latest, Penultimate, Run
@@ -58,7 +60,7 @@ public class FeatureCollectionConfig {
   }
 
   static public enum GribDatasetType {
-    collection, Files
+    Collection, Files
   }
 
   public static void setRegularizeDefault(boolean t) {
@@ -286,12 +288,13 @@ public class FeatureCollectionConfig {
   }
 
   static private Set<GribDatasetType> defaultGribDatasetTypes =
-          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.collection, GribDatasetType.Files));
+          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.Collection, GribDatasetType.Files));
 
   static public class GribConfig  {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
     public Map<Integer, Integer> gdsHash;
     protected boolean explicit = false;
+    public boolean intervalMerge = false;
 
     public GribConfig() { // defaults
     }

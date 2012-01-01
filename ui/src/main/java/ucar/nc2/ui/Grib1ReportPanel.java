@@ -383,7 +383,7 @@ public class Grib1ReportPanel extends JPanel {
         Grib1SectionGridDefinition gdss = gr.getGDSsection();
         Grib1SectionProductDefinition pds = gr.getPDSsection();
         String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for CounterS
-        timeUnit.count(pds.getTimeType());
+        timeUnit.count(pds.getTimeRangeIndicator());
 
         if (gdss.isThin()) {
           if (showThin) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), ff.getPath());

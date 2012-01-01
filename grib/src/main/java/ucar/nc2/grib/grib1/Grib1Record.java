@@ -164,8 +164,10 @@ public class Grib1Record {
       result += result * 37 + pdss.getParameterNumber();
       result += result * 37 + pdss.getTableVersion();
 
-      if (ptime.isInterval() && ptime.getStatType() != null)  // an interval must have a statProcessType
-        result += result * 37 + ptime.getStatType().ordinal();
+      if (ptime.isInterval()) {
+        result += result * 37 + ptime.getIntervalSize();  // create new variable for each interval size
+        if (ptime.getStatType() != null) result += result * 37 + ptime.getStatType().ordinal(); // create new variable for each stat type
+      }
 
       // if this uses any local tables, then we have to add the center id, and subcenter if present
       if (pdss.getParameterNumber() > 127) {

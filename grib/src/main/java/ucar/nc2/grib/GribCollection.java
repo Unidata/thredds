@@ -381,16 +381,17 @@ public abstract class GribCollection {
 
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int tableVersion,
                                                         int discipline, int category, int parameter, int levelType, boolean isLayer,
-                                                        int intvType, int ensDerivedType, int probType, String probabilityName,
+                                                        int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
                                                         int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
     return new VariableIndex(g, tableVersion, discipline, category, parameter, levelType, isLayer,
-            intvType, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            intvType, intvName, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   public class VariableIndex implements Comparable<VariableIndex> {
     public final int tableVersion; // grib1 : can vary by variable
     public final int discipline, category, parameter, levelType, intvType, ensDerivedType, probType;  // uniquely identifies the variable
+    public final String intvName;                                                                     // uniquely identifies the variable
     public final String probabilityName;                                                              // uniquely identifies the variable
     public final boolean isLayer;                                                                     // uniquely identifies the variable
     public final int cdmHash;                  // unique hashCode - from Grib2Record, but works here also
@@ -406,7 +407,7 @@ public abstract class GribCollection {
 
     public VariableIndex(GroupHcs g, int tableVersion,
                          int discipline, int category, int parameter, int levelType, boolean isLayer,
-                         int intvType, int ensDerivedType, int probType, String probabilityName,
+                         int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
                          int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
       this.group = g;
       this.tableVersion = tableVersion;
@@ -416,6 +417,7 @@ public abstract class GribCollection {
       this.levelType = levelType;
       this.isLayer = isLayer;
       this.intvType = intvType;
+      this.intvName = intvName;
       this.ensDerivedType = ensDerivedType;
       this.probabilityName = probabilityName;
       this.probType = probType;
@@ -464,6 +466,7 @@ public abstract class GribCollection {
               ", parameter=" + parameter +
               ", levelType=" + levelType +
               ", intvType=" + intvType +
+              ", intvName=" + intvName +
               ", ensDerivedType=" + ensDerivedType +
               ", probabilityName='" + probabilityName + '\'' +
               ", cdmHash=" + cdmHash +

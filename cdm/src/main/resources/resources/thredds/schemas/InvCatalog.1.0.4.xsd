@@ -326,6 +326,7 @@
      <xsd:simpleType>
        <xsd:restriction base="xsd:token">
          <xsd:enumeration value="FMRC"/>
+         <xsd:enumeration value="GRIB"/>
          <xsd:enumeration value="Station"/>
          <xsd:enumeration value="Point"/>
          <xsd:enumeration value="Station_Profile"/>
@@ -351,6 +352,7 @@
     <xsd:attribute name="recheckAfter" type="xsd:string" />
     <xsd:attribute name="rescan" type="xsd:token"/>
     <xsd:attribute name="trigger" type="xsd:token"/>
+    <xsd:attribute name="deleteAfter" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- Force Types -->

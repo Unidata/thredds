@@ -156,7 +156,7 @@
 
   <!-- featureType debugging -->
   <logger name="thredds.inventory.DatasetCollectionMFiles" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
@@ -166,17 +166,17 @@
   </logger>
 
   <logger name="ucar.nc2.grib" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
   <logger name="thredds.catalog.InvDatasetFeatureCollection" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
   <logger name="thredds.catalog.InvDatasetFcGrib" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 

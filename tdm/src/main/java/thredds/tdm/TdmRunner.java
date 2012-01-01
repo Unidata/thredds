@@ -218,13 +218,17 @@ public class TdmRunner {
       // awkward
       double val = deleteAfter.getValue();
       CalendarPeriod.Field unit = CalendarPeriod.fromUnitString( deleteAfter.getTimeUnit().getUnitString());
-
+      CalendarPeriod period = CalendarPeriod.of(1, unit);
       CalendarDate now = CalendarDate.of(new Date());
-      CalendarDate last = now.add(val, unit);
+      CalendarDate last = now.add(-val, unit);
+
       for (MFile mfile : dcm.getFiles()) {
         CalendarDate cd = dcm.extractRunDate(mfile);
+        int n = period.subtract(cd, now);
         if (cd.isBefore(last)) {
-          logger.info("delete={}", mfile.getPath());
+          logger.info("delete={} age = {}", mfile.getPath(), n + " " + unit);
+        } else {
+          logger.debug("dont delete={} age = {}", mfile.getPath(), n + " " + unit);
         }
       }
 

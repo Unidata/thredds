@@ -52,6 +52,7 @@ import java.util.*;
 public class Grib2Rectilyser {
   private final Grib2Tables tables;
   private final int gdsHash;
+  private final boolean intvMerge;
 
   private final List<Grib2Record> records;
   private List<VariableBag> gribvars;
@@ -61,13 +62,11 @@ public class Grib2Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser(List<Grib2Record> records, int gdsHash) {
+  public Grib2Rectilyser(Grib2Tables tables, List<Grib2Record> records, int gdsHash, boolean intvMerge) {
+    this.tables = tables;
     this.records = records;
     this.gdsHash = gdsHash;
-
-    Grib2Record first = records.get(0);
-    Grib2SectionIdentification ids = first.getId();
-    this.tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+    this.intvMerge = intvMerge;
   }
 
   public List<Grib2Record> getRecords() {
@@ -90,17 +89,22 @@ public class Grib2Rectilyser {
     return ensCoords;
   }
 
-  public void make( Formatter f, Counter counter) throws IOException {
+  public String getTimeIntervalName(int timeIdx) {
+    TimeCoord tc = timeCoords.get(timeIdx);
+    return tc.getTimeIntervalName();
+  }
+
+  public void make(Formatter f, Counter counter) throws IOException {
     // unique variables using Grib2Record.cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
     for (Grib2Record gr : records) {
-      int cdmHash = gr.cdmVariableHash(gdsHash);
+      int cdmHash = cdmVariableHash(gr, tables, gdsHash);
       VariableBag bag = vbHash.get(cdmHash);
       if (bag == null) {
-        bag = new VariableBag(gr);
+        bag = new VariableBag(gr, cdmHash);
         vbHash.put(cdmHash, bag);
       }
-      bag.atomList.add( new Record(gr));
+      bag.atomList.add(new Record(gr));
     }
     gribvars = new ArrayList<VariableBag>(vbHash.values());
     Collections.sort(gribvars); // make it deterministic by sorting
@@ -142,7 +146,7 @@ public class Grib2Rectilyser {
     for (VariableBag vb : gribvars) {
       TimeCoord tc = timeCoords.get(vb.timeCoordIndex);
       VertCoord vc = (vb.vertCoordIndex < 0) ? null : vertCoords.get(vb.vertCoordIndex);
-      EnsCoord ec = (vb.ensCoordIndex < 0) ? null :  ensCoords.get(vb.ensCoordIndex);
+      EnsCoord ec = (vb.ensCoordIndex < 0) ? null : ensCoords.get(vb.ensCoordIndex);
 
       int ntimes = tc.getSize();
       int nverts = (vc == null) ? 1 : vc.getSize();
@@ -151,22 +155,22 @@ public class Grib2Rectilyser {
       int dups = 0;
 
       for (Record r : vb.atomList) {
-        int timeIdx =  (r.tcIntvCoord != null) ? tc.findInterval(r.tcIntvCoord) : tc.findIdx(r.tcCoord);
+        int timeIdx = (r.tcIntvCoord != null) ? tc.findInterval(r.tcIntvCoord) : tc.findIdx(r.tcCoord);
         if (timeIdx < 0) {
           timeIdx = (r.tcIntvCoord != null) ? tc.findInterval(r.tcIntvCoord) : tc.findIdx(r.tcCoord); // debug
-          throw new IllegalStateException("Cant find time coord "+r.tcCoord);
+          throw new IllegalStateException("Cant find time coord " + r.tcCoord);
         }
 
-        int vertIdx =  (vb.vertCoordIndex < 0) ? 0 : vc.findIdx(r.vcCoord);
+        int vertIdx = (vb.vertCoordIndex < 0) ? 0 : vc.findIdx(r.vcCoord);
         if (vertIdx < 0) {
           vertIdx = vc.findIdx(r.vcCoord); // debug
-          throw new IllegalStateException("Cant find vert coord "+r.vcCoord);
+          throw new IllegalStateException("Cant find vert coord " + r.vcCoord);
         }
 
-        int ensIdx =  (vb.ensCoordIndex < 0) ? 0 : ec.findIdx(r.ecCoord);
+        int ensIdx = (vb.ensCoordIndex < 0) ? 0 : ec.findIdx(r.ecCoord);
         if (ensIdx < 0) {
-          ensIdx =  ec.findIdx(r.ecCoord); // debug
-          throw new IllegalStateException("Cant find ens coord "+r.ecCoord);
+          ensIdx = ec.findIdx(r.ecCoord); // debug
+          throw new IllegalStateException("Cant find ens coord " + r.ecCoord);
         }
 
         // later records overwrite earlier ones with same index. so atomList must be ordered
@@ -180,7 +184,7 @@ public class Grib2Rectilyser {
       tot_records += vb.atomList.size();
       tot_dups += dups;
     }
-    f.format("records unique=%d total=%d dups=%d (%f) %n", tot_recordMap, tot_records, tot_dups, ((float)tot_dups)/tot_records);
+    f.format("records unique=%d total=%d dups=%d (%f) %n", tot_recordMap, tot_records, tot_dups, ((float) tot_dups) / tot_records);
     counter.recordsUnique += tot_recordMap;
     counter.records += tot_records;
     counter.dups += tot_dups;
@@ -279,9 +283,9 @@ public class Grib2Rectilyser {
 
       // LOOK - cant you just compare time units ??
       int time = pds.getForecastTime();
-      CalendarDate date1 = cd.add( Grib2Utils.getCalendarPeriod(unit).multiply(time));  // actual forecast date
+      CalendarDate date1 = cd.add(Grib2Utils.getCalendarPeriod(unit).multiply(time));  // actual forecast date
       int offset = TimeCoord.getOffset(refDate, date1, vb.timeUnit);
-      CalendarDate date2 = refDate.add( vb.timeUnit.multiply(offset));  // forecast date using offset
+      CalendarDate date2 = refDate.add(vb.timeUnit.multiply(offset));  // forecast date using offset
       if (!date1.equals(date2)) {
         timeUnitOk = false;
       }
@@ -307,7 +311,7 @@ public class Grib2Rectilyser {
         r.tcCoord = time;
       } else {
         CalendarDate refDate = r.gr.getReferenceDate();
-        CalendarDate date = refDate.add( duration.multiply(time));
+        CalendarDate date = refDate.add(duration.multiply(time));
         r.tcCoord = TimeCoord.getOffset(vb.refDate, date, vb.timeUnit);
       }
       times.add(r.tcCoord);
@@ -328,7 +332,7 @@ public class Grib2Rectilyser {
       } else {
         TimeCoord.Tinv org = new TimeCoord.Tinv(timeb[0], timeb[1]);
         CalendarPeriod fromUnit = Grib2Utils.getCalendarPeriod(pds.getTimeUnit());
-        r.tcIntvCoord =  org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit);
+        r.tcIntvCoord = org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit);
         times.add(r.tcIntvCoord);
       }
     }
@@ -339,19 +343,19 @@ public class Grib2Rectilyser {
 
   public void dump(Formatter f, Grib2Tables tables) {
     f.format("%nTime Coordinates%n");
-    for (int i=0; i<timeCoords.size(); i++) {
+    for (int i = 0; i < timeCoords.size(); i++) {
       TimeCoord time = timeCoords.get(i);
       f.format("  %d: (%d) %s%n", i, time.getSize(), time);
     }
 
     f.format("%nVert Coordinates%n");
-    for (int i=0; i<vertCoords.size(); i++) {
+    for (int i = 0; i < vertCoords.size(); i++) {
       VertCoord coord = vertCoords.get(i);
       f.format("  %d: (%d) %s%n", i, coord.getSize(), coord);
     }
 
     f.format("%nEns Coordinates%n");
-    for (int i=0; i<ensCoords.size(); i++) {
+    for (int i = 0; i < ensCoords.size(); i++) {
       EnsCoord coord = ensCoords.get(i);
       f.format("  %d: (%d) %s%n", i, coord.getSize(), coord);
     }
@@ -361,7 +365,7 @@ public class Grib2Rectilyser {
     for (VariableBag vb : gribvars) {
       String vname = tables.getVariableName(vb.first);
       f.format("  %3d %3d %3d %s records = %d density = %d/%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
-                vname, vb.atomList.size(), vb.countDensity(), vb.recordMap.length);
+              vname, vb.atomList.size(), vb.countDensity(), vb.recordMap.length);
       if (vb.countDensity() != vb.recordMap.length) f.format(" HEY!!");
       f.format("%n");
     }
@@ -369,6 +373,8 @@ public class Grib2Rectilyser {
 
   public class VariableBag implements Comparable<VariableBag> {
     Grib2Record first;
+    int cdmHash;
+
     List<Record> atomList = new ArrayList<Record>(100);
     int timeCoordIndex = -1;
     int vertCoordIndex = -1;
@@ -379,8 +385,9 @@ public class Grib2Rectilyser {
     long pos;
     int length;
 
-    private VariableBag(Grib2Record first) {
+    private VariableBag(Grib2Record first, int cdmHash) {
       this.first = first;
+      this.cdmHash = cdmHash;
     }
 
     @Override
@@ -395,5 +402,73 @@ public class Grib2Rectilyser {
       return count;
     }
   }
+
+  /**
+   * A hash code to group records into a CDM variable
+   * Herein lies the semantics of a variable object identity.
+   * Read it and weep.
+   *
+   * @param gr the Grib record
+   * @param table the Grib table
+   * @param gdsHash can override the gdsHash
+   * @return this record's hash code, identical hash means belongs to the same variable
+   */
+  public int cdmVariableHash(Grib2Record gr, Grib2Tables table, int gdsHash) {
+    Grib2SectionGridDefinition gdss = gr.getGDSsection();
+    Grib2Pds pds2 = gr.getPDS();
+
+    int result = 17;
+
+    if (gdsHash == 0)
+      result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
+    else
+      result += result * 37 + gdsHash;
+
+    result += result * 37 + gr.getDiscipline();
+    result += result * 37 + pds2.getLevelType1();
+    if (Grib2Utils.isLayer(gr)) result += result * 37 + 1;
+
+    result += result * 37 + pds2.getParameterCategory();
+    result += result * 37 + pds2.getTemplateNumber();
+
+    if (pds2.isInterval()) {
+      double size = table.getForecastTimeIntervalSize(gr, CalendarPeriod.Hour); // using an Hour here, but will need to make this configurable
+      if (!intvMerge) result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - configurable
+      result += result * 37 + pds2.getStatisticalProcessType(); // create new variable for each stat type
+    }
+
+    result += result * 37 + pds2.getParameterNumber();
+
+    int ensDerivedType = -1;
+    if (pds2.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
+      Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds2;
+      ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
+      result += result * 37 + ensDerivedType;
+
+    } else if (pds2.isEnsemble()) {
+      result += result * 37 + 1;
+    }
+
+    // each probability interval generates a separate variable; could be a dimension instead
+    int probType = -1;
+    if (pds2.isProbability()) {
+      Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds2;
+      probType = pdsProb.getProbabilityType();
+      result += result * 37 + pdsProb.getProbabilityHashcode();
+    }
+
+    // if this uses any local tables, then we have to add the center id, and subcenter if present
+    if ((pds2.getParameterCategory() > 191) || (pds2.getParameterNumber() > 191) || (pds2.getLevelType1() > 191)
+            || (pds2.isInterval() && pds2.getStatisticalProcessType() > 191)
+            || (ensDerivedType > 191) || (probType > 191)) {
+      Grib2SectionIdentification id = gr.getId();
+      result += result * 37 + id.getCenter_id();
+      if (id.getSubcenter_id() > 0)
+        result += result * 37 + id.getSubcenter_id();
+    }
+
+    return result;
+  }
+
 
 }

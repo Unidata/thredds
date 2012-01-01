@@ -359,8 +359,8 @@ public class Grib1CollectionBuilder {
     int vertIdx = pv.getVertIdx();
     int ensIdx = pv.getEnsIdx();
 
-    return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, ensDerivedType,
-            probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+    return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, null,
+            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -611,7 +611,7 @@ public class Grib1CollectionBuilder {
     b.setLevelType(pds.getLevelType());
     Grib1ParamLevel plevel = pds.getParamLevel();
     b.setIsLayer(plevel.isLayer());
-    b.setIntervalType(pds.getTimeType());
+    b.setIntervalType(pds.getTimeRangeIndicator());
     b.setCdmHash(vb.first.cdmVariableHash(0));
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);

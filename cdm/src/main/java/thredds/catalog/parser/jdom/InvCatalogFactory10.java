@@ -450,12 +450,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String recheckAfter = updateElem.getAttributeValue("recheckAfter");
     String rescan = updateElem.getAttributeValue("rescan");
     String trigger = updateElem.getAttributeValue("trigger");
-
-    String deleteAfter = null;
-    Element manageElem = updateElem.getChild( "manage", defNS );
-    if (manageElem != null) {
-      deleteAfter = manageElem.getAttributeValue("deleteAfter");
-    }
+    String deleteAfter = updateElem.getAttributeValue("deleteAfter");
 
     return new FeatureCollectionConfig.UpdateConfig(startup, recheckAfter, rescan, trigger, deleteAfter);
   }

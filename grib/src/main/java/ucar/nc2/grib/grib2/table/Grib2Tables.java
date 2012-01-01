@@ -316,6 +316,34 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables {
     return result;
   }
 
+  /**
+   * Get interval size in units of wantPeriod
+   * @param gr must be an interval
+   * @param wantPeriod in these units
+   * @return  interval size in units of wantPeriod
+   */
+  public double getForecastTimeIntervalSize(Grib2Record gr, CalendarPeriod wantPeriod) {
+    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
+    int timeUnit = gr.getPDS().getTimeUnit();
+
+    // calculate total "range" in units of timeUnit
+    int range = 0;
+    for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
+      if ((ti.timeRangeUnit != timeUnit) || (ti.timeIncrementUnit != timeUnit && ti.timeIncrementUnit != 255)) {
+        log.warn("TimeInterval has different units timeUnit= " + timeUnit + " TimeInterval=" + ti);
+      }
+
+      range += ti.timeRangeLength;
+      if (ti.timeIncrementUnit != 255) range += ti.timeIncrement;
+    }
+
+    // now convert that range to units of the requested period.
+    CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(timeUnit);
+    if (timeUnitPeriod.equals(wantPeriod)) return range;
+    double fac = wantPeriod.getConvertFactor(timeUnitPeriod);
+    return fac * range;
+  }
+
   public int[] getForecastTimeIntervalOld(Grib2Record gr) {
     // note  from Arthur Taylor (degrib):
     /* If there was a range I used:

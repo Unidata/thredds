@@ -24,7 +24,7 @@ dl {margin: 10px 5px 5px 15px;}
   <li><a href="#changing">Static vs changing datasets</a></li>
   <li><a href="#ncml">NcML Modifications</a></li>
 </ul>
-<p>This document gives an overview of Feature Collections, as well as a complete syntax of allowed elements. For featureType specific information, see:</p>
+<p>This document gives an overview of Feature Collections, as well as a complete syntax of allowed elements. For Feature Type specific information, see:</p>
 <ul>
   <li><a href="FmrcCollection.html">FMRC Collections</a><a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf"></a></li>
   <li><a href="PointFeatures.html">Point Collections</a></li>
@@ -190,9 +190,9 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
 The XML Schema definition for the update element:
 <pre>
    &lt;xsd:complexType name=&quot;updateType&quot;&gt;<br /> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:boolean&quot;/&gt;<br /> 2)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
- 3)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br /> 4)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br />   &lt;/xsd:complexType&gt;</pre>
-<pre>
-  &lt;xsd:simpleType name=&quot;forceEnumTypes&quot;&gt;<br />    &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;<br />      &lt;xsd:simpleType&gt;<br />        &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;<br />          &lt;xsd:enumeration value=&quot;always&quot;/&gt;<br />          &lt;xsd:enumeration value=&quot;test&quot;/&gt;<br />          &lt;xsd:enumeration value=&quot;nocheck&quot;/&gt;<br />        &lt;/xsd:restriction&gt;<br />      &lt;/xsd:simpleType&gt;<br />    &lt;/xsd:union&gt;<br />  &lt;/xsd:simpleType&gt;<br /></pre>
+ 3)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br /> 4)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br /> 5)  &lt;xsd:attribute name=&quot;deleteAfter&quot; type=&quot;xsd:string&quot;/&gt;<br />&lt;/xsd:complexType&gt;<br />
+</pre>
+
 <p> where: </p>
 <ol>
   <li><strong>startup</strong>:  If true,  the collection is rescanned on server startup.</li>
@@ -204,9 +204,10 @@ The XML Schema definition for the update element:
       <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection?trigger=true&amp;collection=&lt;<em>name</em>&gt;</strong>, where <em>name</em> is the collection name.</li>
       </ol>
   </li>
+  <li><strong>deleteAfter</strong>: ONLY FOR TDM. Delete any files that are older than this.</li>
 </ol>
-<h3>manage element (NOT IMPLEMENTED YET)</h3>
-<p>This instructs the TDS to manage your collection by deleting files that are older than a certain time.</p>
+<h3>manage element (ONLY FOR TDM)</h3>
+<p>This instructs the TDM to manage your collection by deleting files that are older than a certain time.</p>
 <pre>&lt;manage deleteAfter<strong></strong>=&quot;30 days&quot;<strong> </strong><strong>check</strong>=&quot;cron expr&quot; /&gt;
 </pre>
 <blockquote>

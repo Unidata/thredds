@@ -52,7 +52,8 @@ import java.util.*;
 import java.util.Formatter;
 
 /**
- * Grib Collection IOSP.
+ * Grib-2 Collection IOSP.
+ * Handles both collections and single GRIB files.
  *
  * @author caron
  * @since 4/6/11
@@ -86,8 +87,10 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       if (vindex.isLayer) f.format("_layer");
     }
 
-    if (vindex.intvType >= 0)
-      f.format("_%s", tables.getIntervalNameShort(vindex.intvType)); // vindex.intvType);
+    if (vindex.intvType >= 0) {
+      f.format("_%s", vindex.intvName);
+      f.format("_%s", tables.getIntervalNameShort(vindex.intvType));
+    }
 
     if (vindex.ensDerivedType >= 0)
       f.format("_D%d", vindex.ensDerivedType);
@@ -216,8 +219,8 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
 
-    boolean isGrib = (raf != null) && Grib2RecordScanner.isValidFile(raf);
-    if (isGrib) {
+    boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
+    if (isGribFile) {
       Grib2Index index = new Grib2Index();
       Formatter f= new Formatter();
       this.gribCollection = index.createFromSingleFile(raf, CollectionManager.Force.test, f, 2);
@@ -232,7 +235,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
       addGroup(ncfile, gHcs, false);
 
-    } else if (gribCollection != null) { // use the gribCollection set in the constructor
+    } else if (gribCollection != null) { // use the gribCollection that was set in the constructor
       if (this.gribCollection instanceof TimePartition) {
         isTimePartitioned = true;
         timePartition = (TimePartition) gribCollection;
@@ -242,7 +245,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
         addGroup(ncfile, g, useGroups);
 
-    } else { // read in entire collection
+    } else { // otherwise, its an ncx file : read in entire collection
 
       raf.seek(0);
       byte[] b = new byte[TimePartitionBuilder.MAGIC_STARTP.length()];
@@ -255,7 +258,6 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       int pos = f.getName().lastIndexOf(".");
       String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName();
 
-      // asssume for now this is the grib collection index file (ncx)
       if (isTimePartitioned) {
         timePartition = TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
         gribCollection = timePartition;

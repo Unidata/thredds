@@ -45,8 +45,8 @@ public class CalendarDuration {
 
   /**
    * Convert a time udunit string
-   * @param value msec, sec, minute, hour, hr, day, week, month, year (plural form ok)
-   * @param udunit number of those
+   * @param value number of units
+   * @param udunit msec, sec, minute, hour, hr, day, week, month, year (plural form ok)
    * @return joda Period
    */
   static org.joda.time.Period convertToPeriod(int value, String udunit) {
