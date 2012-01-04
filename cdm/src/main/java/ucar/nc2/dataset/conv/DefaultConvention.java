@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset.conv;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.constants.AxisType;
@@ -99,7 +100,7 @@ public class DefaultConvention extends CoordSysBuilder {
       // coordinates is an alias for _CoordinateAxes
       for (VarProcess vp : varList) {
         if (vp.coordAxes == null) { // dont override if already set
-          String coordsString = ds.findAttValueIgnoreCase(vp.v, "coordinates", null);
+          String coordsString = ds.findAttValueIgnoreCase(vp.v, CF.COORDINATES, null);
           if (coordsString != null) {
             vp.coordinates = coordsString;
           }

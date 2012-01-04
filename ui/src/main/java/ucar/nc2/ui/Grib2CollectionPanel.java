@@ -178,9 +178,9 @@ public class Grib2CollectionPanel extends JPanel {
           try {
             showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, tables);
           } catch (IOException ioe) {
-             ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-             ioe.printStackTrace(new PrintStream(bos));
-             f.format("%s", bos.toString());
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace(new PrintStream(bos));
+            f.format("%s", bos.toString());
           }
           infoPopup.setText(f.toString());
           infoPopup.gotoTop();
@@ -428,7 +428,7 @@ public class Grib2CollectionPanel extends JPanel {
     Formatter f = new Formatter();
     this.dcm = scanCollection(spec, f);
     if (dcm == null) {
-      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n"+f.toString());
+      javax.swing.JOptionPane.showMessageDialog(this, "Collection is null\n" + f.toString());
       return;
     }
 
@@ -446,7 +446,7 @@ public class Grib2CollectionPanel extends JPanel {
     param2BeanTable.setBeans(params);
 
     for (Grib2SectionGridDefinition gds : gdsSet.values()) {
-      gdsList.add(new Gds2Bean( gds));
+      gdsList.add(new Gds2Bean(gds));
     }
     Collections.sort(gdsList);
     gds2Table.setBeans(gdsList);
@@ -468,6 +468,8 @@ public class Grib2CollectionPanel extends JPanel {
         gdsSet.put(hash, gds);
     }
 
+    Grib2Rectilyser rect = new Grib2Rectilyser(tables, null, 0, false);
+
     for (Grib2Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
@@ -476,7 +478,8 @@ public class Grib2CollectionPanel extends JPanel {
         tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
       }
 
-      int id = gr.cdmVariableHash(0);
+
+      int id = rect.cdmVariableHash(gr, tables, 0);
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new Grib2ParameterBean(gr);
@@ -491,7 +494,7 @@ public class Grib2CollectionPanel extends JPanel {
     DatasetCollectionMFiles dc = null;
     try {
       dc = DatasetCollectionMFiles.open(spec, null, f);
-      dc.scan();
+      dc.scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFiles());
       return dc;
 
@@ -524,7 +527,7 @@ public class Grib2CollectionPanel extends JPanel {
       fileno++;
     }
 
-    Grib2Rectilyser agg = new Grib2Rectilyser(records, 0);
+    Grib2Rectilyser agg = new Grib2Rectilyser(tables, records, 0, false);
     agg.make(f, new Grib2Rectilyser.Counter());
     agg.dump(f, tables);
 
@@ -552,7 +555,7 @@ public class Grib2CollectionPanel extends JPanel {
     String name = dcm.getCollectionName();
     int pos = name.lastIndexOf('/');
     if (pos < 0) pos = name.lastIndexOf('\\');
-    if (pos > 0) name = name.substring(pos+1);
+    if (pos > 0) name = name.substring(pos + 1);
     File def = new File(dcm.getRoot(), name + GribCollection.IDX_EXT);
     String filename = fileChooser.chooseFilename(def);
     if (filename == null) return false;
@@ -714,15 +717,15 @@ public class Grib2CollectionPanel extends JPanel {
     Collections.sort(dcList);
 
     f.format("Run Dates%n");
-    int total= 0;
-    for (DateCount dc : dcList){
+    int total = 0;
+    for (DateCount dc : dcList) {
       f.format(" %s == %d%n", dc.d, dc.count);
       total += dc.count;
     }
     f.format("total records = %d%n", total);
   }
 
-  private void writeToFile(List beans)  {
+  private void writeToFile(List beans) {
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -755,7 +758,7 @@ public class Grib2CollectionPanel extends JPanel {
         }
 
         Grib2SectionIndicator is = bean.gr.getIs();
-        int size = (int)(is.getMessageLength());
+        int size = (int) (is.getMessageLength());
         long startPos = is.getStartPos();
         if (startPos < 0) {
           JOptionPane.showMessageDialog(Grib2CollectionPanel.this, "Old index does not have message start - record not written");
@@ -768,7 +771,7 @@ public class Grib2CollectionPanel extends JPanel {
         n++;
       }
 
-      JOptionPane.showMessageDialog(Grib2CollectionPanel.this, filename + ": "+n+" records successfully written, append="+append);
+      JOptionPane.showMessageDialog(Grib2CollectionPanel.this, filename + ": " + n + " records successfully written, append=" + append);
 
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(Grib2CollectionPanel.this, "ERROR: " + ex.getMessage());
@@ -778,7 +781,8 @@ public class Grib2CollectionPanel extends JPanel {
       try {
         if (fos != null) fos.close();
         if (raf != null) raf.close();
-      } catch (IOException ioe) { }
+      } catch (IOException ioe) {
+      }
     }
   }
 
@@ -1009,8 +1013,7 @@ public class Grib2CollectionPanel extends JPanel {
           f.format("%d %s", ti.statProcessType, tables.getIntervalNameShort(ti.statProcessType));
         }
         return f.toString();
-      }
-      else return "";
+      } else return "";
     }
 
     public int getGDS() {
@@ -1054,7 +1057,7 @@ public class Grib2CollectionPanel extends JPanel {
     public String getOldName() {
       String oldName = ucar.grib.grib2.ParameterTable.getParameterName(discipline, pds.getParameterCategory(), pds.getParameterNumber());
       boolean diff = !oldName.equalsIgnoreCase(getName());
-      return diff ? "*"+oldName : oldName;
+      return diff ? "*" + oldName : oldName;
     }
 
     public String getUnits() {
@@ -1097,7 +1100,7 @@ public class Grib2CollectionPanel extends JPanel {
 
   ////////////////////////////////////////////////////
 
- static void showBytes(Formatter f, byte[] buff) {
+  static void showBytes(Formatter f, byte[] buff) {
     for (byte b : buff) {
       int ub = (b < 0) ? b + 256 : b;
       if (b >= 32 && b < 127)
@@ -1163,7 +1166,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
     showPdsTemplate(pdss, f, tables);
     if (pds.getHybridCoordinatesCount() > 0) {
-      float[] coords =  pds.getHybridCoordinates();
+      float[] coords = pds.getHybridCoordinates();
       f.format("Hybrid Coordinates (%d) %n  ", coords.length);
       for (float fc : coords) f.format("%10.5f ", fc);
       f.format("%n%n");
@@ -1286,8 +1289,8 @@ public class Grib2CollectionPanel extends JPanel {
       int v1 = pds.getLevelType1();
       int v2 = pds.getLevelType2();
       if (v1 == 255) return "";
-      if (v2 == 255) return ""+pds.getLevelValue1();
-      if (v1 != v2) return pds.getLevelValue1() + "-" + pds.getLevelValue2()+" level2 type= "+v2;
+      if (v2 == 255) return "" + pds.getLevelValue1();
+      if (v1 != v2) return pds.getLevelValue1() + "-" + pds.getLevelValue2() + " level2 type= " + v2;
       return pds.getLevelValue1() + "-" + pds.getLevelValue2();
     }
 
@@ -1295,14 +1298,14 @@ public class Grib2CollectionPanel extends JPanel {
     TimeInterval: statProcessType= 0, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 744, timeIncrementUnit= 1, timeIncrement=24
     TimeInterval: statProcessType= 197, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 23, timeIncrementUnit= 1, timeIncrement=0
      */
-     public String getTInv() {
+    public String getTInv() {
       if (pds.isInterval()) {
         Formatter f = new Formatter();
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         int count = 0;
         for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals()) {
           if (count++ > 0) f.format(", ");
-          f.format("%d-%d-%d",ti.statProcessType, ti.timeRangeLength, ti.timeIncrement);
+          f.format("%d-%d-%d", ti.statProcessType, ti.timeRangeLength, ti.timeIncrement);
         }
         return f.toString();
       }
@@ -1338,12 +1341,12 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public final int getPertType() {
-      int v =  pds.getPerturbationType();
+      int v = pds.getPerturbationType();
       return (v == GribNumbers.UNDEFINED) ? -1 : v;
     }
 
     public final String getProbLimits() {
-      double v =  pds.getProbabilityLowerLimit();
+      double v = pds.getProbabilityLowerLimit();
       if (v == GribNumbers.UNDEFINEDD) return "";
       else return pds.getProbabilityLowerLimit() + "-" + pds.getProbabilityUpperLimit();
     }
@@ -1368,7 +1371,7 @@ public class Grib2CollectionPanel extends JPanel {
       f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
       int[] tinv = tables.getForecastTimeInterval(gr);
       if (tinv != null)
-        f.format("  TimeInterval=(%d,%d)%n",tinv[0],tinv[1]);
+        f.format("  TimeInterval=(%d,%d)%n", tinv[0], tinv[1]);
       f.format("%n");
       pds.show(f);
       return f.toString();
@@ -1380,7 +1383,7 @@ public class Grib2CollectionPanel extends JPanel {
       ucar.unidata.io.RandomAccessFile raf = null;
       try {
         raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
-        raf.order( ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+        raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
         return gr.readData(raf);
       } finally {
         if (raf != null)
@@ -1417,7 +1420,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public String getGroupName() {
-      return getGridName()+"-"+getNy()+"X"+getNx();
+      return getGridName() + "-" + getNy() + "X" + getNx();
     }
 
     public int getNPoints() {
@@ -1438,7 +1441,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     @Override
     public String toString() {
-      return getGridName()+" "+ getTemplate()+" "+ getNx()+" X "+ getNy();
+      return getGridName() + " " + getTemplate() + " " + getNx() + " X " + getNy();
     }
 
     public void toRawGdsString(Formatter f) {

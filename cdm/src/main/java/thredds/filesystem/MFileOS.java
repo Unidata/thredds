@@ -47,7 +47,7 @@ public class MFileOS implements MFile {
   private final java.io.File file;
   private Object auxInfo;
   
-  MFileOS(java.io.File file) {
+  public MFileOS(java.io.File file) {
     this.file = file;
   }
 

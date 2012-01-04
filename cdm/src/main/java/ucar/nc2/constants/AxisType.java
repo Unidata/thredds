@@ -57,35 +57,35 @@ public enum AxisType {
    * represents the time coordinate
    */
   //Time(2),
-  Time(1),
+  Time(1, "T"),
   /**
    * represents a x coordinate
    */
-  GeoX(5),
+  GeoX(5, "X"),
   /**
    * represents a y coordinate
    */
-  GeoY(4),
+  GeoY(4, "Y"),
   /**
    * represents a z coordinate
    */
-  GeoZ(3),
+  GeoZ(3, "Z"),
   /**
    * represents a latitude coordinate
    */
-  Lat(4),
+  Lat(4, "Y"),
   /**
    * represents a longitude coordinate
    */
-  Lon(5),
+  Lon(5, "X"),
   /**
    * represents a vertical height coordinate
    */
-  Height(3),
+  Height(3, "Z"),
   /**
    * represents a vertical pressure coordinate
    */
-  Pressure(3),
+  Pressure(3, "Z"),
   /**
    * represents a radial azimuth coordinate
    */
@@ -99,13 +99,17 @@ public enum AxisType {
    */
   RadialElevation(6);
 
-  private int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance
-  //private String _AxisType;
+  private final int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance
+  private final String cfAxisName; // X, Y, Z, T from http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-types
 
   private AxisType(int order) {
-    //this._AxisType = s;
     this.order = order;
-    //hash.put(s, this);
+    this.cfAxisName = null;
+  }
+
+  private AxisType(int order, String cfAxisName) {
+    this.order = order;
+    this.cfAxisName = cfAxisName;
   }
 
   /**
@@ -130,6 +134,10 @@ public enum AxisType {
    */
   public int axisOrder() {
     return order;
+  }
+
+  public String getCFAxisName() {
+    return cfAxisName;
   }
 
 }

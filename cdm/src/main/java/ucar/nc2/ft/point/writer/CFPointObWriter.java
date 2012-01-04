@@ -37,6 +37,7 @@ import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.PointObsDataset;
@@ -163,8 +164,8 @@ public class CFPointObWriter {
       if (atts == null)
         atts = new ArrayList<Attribute>(2);
       
-      if (pov.getDesc() != null) atts.add(new Attribute("long_name", pov.getDesc()));
-      if (pov.getUnits() != null) atts.add(new Attribute("units", pov.getUnits()));
+      if (pov.getDesc() != null) atts.add(new Attribute(CDM.LONG_NAME, pov.getDesc()));
+      if (pov.getUnits() != null) atts.add(new Attribute(CDM.UNITS, pov.getUnits()));
       return atts;
     }
 

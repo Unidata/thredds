@@ -43,6 +43,7 @@ import org.jdom.input.SAXBuilder;
 import java.io.*;
 import java.util.*;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.unidata.util.StringUtil2;
 
@@ -541,7 +542,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       vcElem.setAttribute("id", vc.getId());
       vcElem.setAttribute("name", vc.getName());
       if (null != vc.getUnits())
-        vcElem.setAttribute("units", vc.getUnits());
+        vcElem.setAttribute(CDM.UNITS, vc.getUnits());
 
       StringBuilder sbuff = new StringBuilder();
       double[] values1 = vc.getValues1();
@@ -667,7 +668,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       ForecastModelRunInventory.VertCoord vc = new ForecastModelRunInventory.VertCoord();
       vc.setId(vcElem.getAttributeValue("id"));
       vc.setName(vcElem.getAttributeValue("name"));
-      vc.setUnits(vcElem.getAttributeValue("units"));
+      vc.setUnits(vcElem.getAttributeValue(CDM.UNITS));
 
       /* parse the values
       String values = vcElem.getText();

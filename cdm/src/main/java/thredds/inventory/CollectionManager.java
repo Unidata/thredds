@@ -44,15 +44,42 @@ import java.io.IOException;
  * should work.
  *
  * <p> A CollectionManager implements the <collection> element.
- * It may have a recheck value, which forces a rescan if that much time has passed since last scanned.
- * <p>
- * It may get scanned in the background by an <update> element.
- * One should listen for rescan events to detect this, by registering as a TriggerListener.
+ *
+<h3>collection element</h3>
+<p>A <strong>collection</strong> element defines the collection of datasets. </p>
+<pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$&quot;
+            <strong>name</strong>=&quot;WEST-CONUS_4km&quot; <strong>olderThan</strong>=&quot;1 min&quot; <strong></strong><strong>olderThan</strong>=&quot;15 min&quot; /&gt;
+</pre>
+
+The XML Schema:
+<pre>
+&lt;xsd:complexType name=&quot;collectionType&quot;&gt;
+  1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+  2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;
+  3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
+  5)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;
+  6)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;
+&lt;/xsd:complexType&gt;<br /></pre>
+<p>where</p>
+<ol>
+  <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required).</li>
+  <li><strong>name</strong>: collection name <em><strong>must be unique in all of your TDS catalogs</strong></em>.
+    This is used for external triggers and as an easy to read identifier for indexing, logging and debugging.
+    If missing, the spec string is used (not a good idea in the context of the TDS). </li>
+  <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included.
+ This excludes files that are in the process of being written. However, it only applies to newly found files, that is,
+ once a file is in the collection it is not removed because it got updated.</li>
+  <li><strong>dateFormatMark</strong> (optional): the collection specification string can only extract dates from the file name,
+ as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract
+ the date from the full path. <em>Use this OR a date extrator in the specification string, but not both.</em></li>
+  <li><strong>timePartition</strong> (optional):: experimental, not complete yet.</li>
+</ol>
  *
  * @author caron
  * @since Jan 19, 2010
  */
 public interface CollectionManager {
+
   public enum Force {always, // force new index
                      test,   // test if new index is needed
                      nocheck } // if index exists, use it
@@ -107,7 +134,9 @@ public interface CollectionManager {
    * @return true if anything actually changed.
    * @throws IOException on I/O error
    */
-  public boolean scan() throws IOException;
+  public boolean scan(boolean sendEvent) throws IOException;
+
+  public void updateNocheck() throws IOException;
 
   /**
    * Get the current collection of MFile.
@@ -158,10 +187,11 @@ public interface CollectionManager {
   /**
    * The "olderThan" amount in seconds.
    * Files are excluded if they have been modified within this amount of time.
+   * However once in the collection they are not removed.
    * Really this is handled by the manager, but this is exposed so that others (eg DatasetScan) can be consistent.
    * @return olderThan" amount in seconds, or < 0 to mean this filter is not present
    */
-  public double getOlderThanFilterInSecs();
+  public long getOlderThanFilterInMSecs();
 
 
   ////////////////////////////////////////////////////
@@ -204,7 +234,7 @@ public interface CollectionManager {
     public void handleCollectionEvent(TriggerEvent event);
   }
 
-  public enum TriggerType {update, proto }
+  public enum TriggerType {update, proto, updateNocheck }
 
   public class TriggerEvent extends java.util.EventObject {
      private final TriggerType type;

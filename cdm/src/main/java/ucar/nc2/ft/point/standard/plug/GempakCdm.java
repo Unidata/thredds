@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.point.standard.plug;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.AxisType;
@@ -59,7 +60,7 @@ public class GempakCdm extends TableConfigurerImpl {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     boolean ok = false;
-    String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (conv == null) return false;
     if (conv.equals(Convention)) ok = true;
 
@@ -149,7 +150,7 @@ public class GempakCdm extends TableConfigurerImpl {
       stnTable.stnAlt = alt.getFullName();
 
     // station id
-    stnTable.stnId = Evaluator.getNameOfVariableWithAttribute(ds, "standard_name", "station_id");
+    stnTable.stnId = Evaluator.findNameOfVariableWithAttributeValue(ds, "standard_name", "station_id");
     if (stnTable.stnId == null) {
       errlog.format("Must have a Station id variable with standard name station_id");
       return null;
@@ -175,7 +176,7 @@ public class GempakCdm extends TableConfigurerImpl {
     Structure multidimStruct = null;
     if (obsTableType == null) {
       // Structure(station, time)
-      multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
+      multidimStruct = Evaluator.findStructureWithDimensions(ds, stationDim, obsDim);
       if (multidimStruct != null) {
         obsTableType = Table.Type.MultidimStructure;
       }
@@ -264,7 +265,7 @@ public class GempakCdm extends TableConfigurerImpl {
     Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
 
     Table.Type obsTableType = Table.Type.Structure;
-    Structure multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
+    Structure multidimStruct = Evaluator.findStructureWithDimensions(ds, stationDim, obsDim);
 
     if (multidimStruct == null) {
         errlog.format("GempakCdm: Cannot figure out StationAsPoint table structure");
@@ -312,7 +313,7 @@ public class GempakCdm extends TableConfigurerImpl {
     }
     Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
 
-    Structure multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
+    Structure multidimStruct = Evaluator.findStructureWithDimensions(ds, stationDim, obsDim);
     if (multidimStruct == null) {
         errlog.format("GempakCdm: Cannot figure out Station/obs table structure");
         return null;
@@ -328,7 +329,7 @@ public class GempakCdm extends TableConfigurerImpl {
     stnTable.addChild(timeTable);
 
     TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, obsDim.getName());
-    Structure nestedStruct = Evaluator.getNestedStructure(multidimStruct);
+    Structure nestedStruct = Evaluator.findNestedStructure(multidimStruct);
     if (nestedStruct == null) {
         errlog.format("GempakCdm: Cannot find nested Structure for profile");
         return null;

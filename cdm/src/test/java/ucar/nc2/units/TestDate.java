@@ -98,7 +98,7 @@ public class TestDate extends TestCase {
    * <pre>
    * &lt;variable name="time" shape="time" type="double"&gt;
    *   &lt;attribute name="units" value="days since 1858-11-17 00:00:00 UTC"/&gt;
-   *   &lt;attribute name="long_name" value="Modified Julian Day"/&gt;
+   *   &lt;attribute name=CDM.LONG_NAME value="Modified Julian Day"/&gt;
    *   &lt;values start="47865.7916666665110000" increment="0.0416666666666667"/&gt;
    * &lt;/variable&gt;
    * </pre>

@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IospHelper;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -550,7 +551,7 @@ public class NcStream {
       ncvar.addAttribute(decodeAtt(att));
 
     if (var.getUnsigned())
-      ncvar.addAttribute(new Attribute("_Unsigned", "true"));
+      ncvar.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
 
     if (var.hasData()) {
       // LOOK may mess with ability to change var size later.

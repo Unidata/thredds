@@ -63,7 +63,6 @@
             <element id="library" level="project" name="ehcache" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/easymock-2.5.2.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/je-4.0.71.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-1.7.3.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/casclient-2.1.1.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.2.1.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.4.jar" />
@@ -86,6 +85,7 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/org.springframework.test-3.0.5.RELEASE.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/org.springframework.beans-3.0.5.RELEASE.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.4.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-2.1.1.jar" />
           </element>
         </element>
         <element id="javaee-facet-resources" facet="tds/web/tds" />

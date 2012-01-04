@@ -1,6 +1,7 @@
 package ucar.nc2;
 
 import ucar.ma2.DataType;
+import ucar.nc2.constants.CDM;
 
 import java.io.IOException;
 
@@ -21,8 +22,8 @@ public class TestWriteString {
   String unitsAttName = "units";
   String axisAttName = "axis";
   String standardNameAttName = "standard_name";
-  String longNameAttName = "long_name";
-  String missingValueAttName = "missing_value";
+  String longNameAttName = CDM.LONG_NAME;
+  String missingValueAttName = CDM.MISSING_VALUE;
   String fillValueAttName = "_FillValue";
 
 

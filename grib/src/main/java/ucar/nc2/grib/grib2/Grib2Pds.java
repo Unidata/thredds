@@ -1172,15 +1172,6 @@ public abstract class Grib2Pds {
        return null;
 
     return CalendarDate.of(null, year, month, day, hour, minute, second);
-
-    /* if ((year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0)) return refTime;
-
-    calendar.clear();
-    calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-    calendar.set(Calendar.DST_OFFSET, 0);
-    calendar.set(year, month - 1, day, hour, minute, second);
-
-    return calendar.getTimeInMillis();*/
   }
 
   /**

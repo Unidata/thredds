@@ -296,7 +296,7 @@ public class Grib1Tables implements GribTables {
         String name = flds[1].trim() + ": " + flds[2].trim();
 
         result.put(val, name);
-        if (true) System.out.printf(" %d == %s%n", val, name);
+        if (false) System.out.printf(" %d == %s%n", val, name);
       }
 
       nwsoSubCenter = result; // all at once - thread safe

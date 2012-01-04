@@ -34,6 +34,7 @@ package ucar.unidata.geoloc.vertical;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
@@ -117,7 +118,7 @@ public class HybridSigmaPressure extends VerticalTransformImpl {
     if (p0Name != null)
       p0Var = ds.findVariable(p0Name);
 
-    units = ds.findAttValueIgnoreCase(psVar, "units", "none");
+    units = ds.findAttValueIgnoreCase(psVar, CDM.UNITS, "none");
   }
 
   /**

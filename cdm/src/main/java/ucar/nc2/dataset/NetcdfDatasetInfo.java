@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
@@ -137,7 +138,7 @@ public class NetcdfDatasetInfo {
       if (axis.getAxisType() != null)
         axisElem.setAttribute("type", axis.getAxisType().toString());
       if (axis.getUnitsString() != null) {
-        axisElem.setAttribute("units", axis.getUnitsString());
+        axisElem.setAttribute(CDM.UNITS, axis.getUnitsString());
         axisElem.setAttribute("udunits", isUdunits(axis.getUnitsString()));
       }
       if (axis instanceof CoordinateAxis1D) {
@@ -204,7 +205,7 @@ public class NetcdfDatasetInfo {
         gridElem.setAttribute("name", ve.getFullName());
         gridElem.setAttribute("decl", getDecl(ve));
         if (ve.getUnitsString() != null) {
-          gridElem.setAttribute("units", ve.getUnitsString());
+          gridElem.setAttribute(CDM.UNITS, ve.getUnitsString());
           gridElem.setAttribute("udunits", isUdunits(ve.getUnitsString()));
         }
         gridElem.setAttribute("coordSys", gcs.getName());
@@ -223,7 +224,7 @@ public class NetcdfDatasetInfo {
         elem.setAttribute("name", ve.getFullName());
         elem.setAttribute("decl", getDecl(ve));
         if (ve.getUnitsString() != null) {
-          elem.setAttribute("units", ve.getUnitsString());
+          elem.setAttribute(CDM.UNITS, ve.getUnitsString());
           elem.setAttribute("udunits", isUdunits(ve.getUnitsString()));
         }
         elem.setAttribute("coordSys", getCoordSys(ve));

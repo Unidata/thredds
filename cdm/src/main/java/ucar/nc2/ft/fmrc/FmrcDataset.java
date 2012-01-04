@@ -35,7 +35,7 @@ package ucar.nc2.ft.fmrc;
 import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.*;
-import ucar.nc2.constants.CF;
+import ucar.nc2.constants.*;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -43,9 +43,6 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.ma2.*;
 
@@ -289,9 +286,9 @@ class FmrcDataset {
 
       // some additional global attributes
       Group root = result.getRootGroup();
-      root.addAttribute(new Attribute("Conventions", "CF-1.4, " + _Coordinate.Convention));
+      root.addAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.4, " + _Coordinate.Convention));
       root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-      root.addAttribute(new Attribute(CF.featureTypeAtt, FeatureType.GRID.toString()));
+      root.addAttribute(new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
       root.addAttribute(new Attribute("location", "Proto "+fmrcInv.getName()));
 
       // remove some attributes that can cause trouble
@@ -342,7 +339,7 @@ class FmrcDataset {
           if ((axis.getAxisType() != AxisType.Time) && (axis.getAxisType() != AxisType.RunTime)) // these are added later
             sbuff.append(axis.getFullName()).append(" ");
         }
-        newV.addAttribute(new Attribute("coordinates", sbuff.toString())); // LOOK what about adding lat/lon variable
+        newV.addAttribute(new Attribute(CF.COORDINATES, sbuff.toString())); // LOOK what about adding lat/lon variable
 
         // looking for coordinate transform variables
         for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
@@ -356,14 +353,14 @@ class FmrcDataset {
           Variable coordV = result.findVariable(axis.getFullNameEscaped());
           if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
             if (null != axis.getPositive())
-              coordV.addAttribute(new Attribute("positive", axis.getPositive()));
+              coordV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
           }
           if (axis.getAxisType() == AxisType.Lat) {
-            coordV.addAttribute(new Attribute("units", "degrees_north"));
+            coordV.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
             coordV.addAttribute(new Attribute("standard_name", "latitude"));
           }
           if (axis.getAxisType() == AxisType.Lon) {
-            coordV.addAttribute(new Attribute("units", "degrees_east"));
+            coordV.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
             coordV.addAttribute(new Attribute("standard_name", "longitude"));
           }
           if (axis.getAxisType() == AxisType.GeoX) {
@@ -514,7 +511,7 @@ class FmrcDataset {
     //CoordSysBuilderIF builder = result.enhance();
     //if (debugEnhance) System.out.printf("buildDataset2D.enhance() parseInfo = %s%n", builder.getParseInfo());
 
-    addAttributeInfo(result, "history", "FMRC 2D Dataset");
+    addAttributeInfo(result, CDM.HISTORY, "FMRC 2D Dataset");
 
     // create runtime aggregation dimension
     double[] runOffset = lite.runOffset;
@@ -535,9 +532,9 @@ class FmrcDataset {
     // create runtime aggregation coordinate variable
     DataType coordType = DataType.DOUBLE; // LOOK getCoordinateType();
     VariableDS runtimeCoordVar = new VariableDS(result, null, null, runtimeDimName, coordType, runtimeDimName, null, null);
-    runtimeCoordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
+    runtimeCoordVar.addAttribute(new Attribute(CDM.LONG_NAME, "Run time for ForecastModelRunCollection"));
     runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
-    runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + lite.base));
+    runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(CDM.UNITS, "hours since " + lite.base));
     runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
     result.removeVariable(null, runtimeCoordVar.getShortName());
     result.addVariable(null, runtimeCoordVar);
@@ -560,10 +557,10 @@ class FmrcDataset {
       DataType dtype = DataType.DOUBLE;
       String dims = getRunDimensionName() + " " + gridset.gridsetName;
       VariableDS timeVar = new VariableDS(result, newGroup, null, gridset.gridsetName, dtype, dims, null, null); // LOOK could just make a CoordinateAxis1D
-      timeVar.addAttribute(new Attribute("long_name", "Forecast time for ForecastModelRunCollection"));
+      timeVar.addAttribute(new Attribute(CDM.LONG_NAME, "Forecast time for ForecastModelRunCollection"));
       timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
-      timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + lite.base));
-      timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
+      timeVar.addAttribute(new ucar.nc2.Attribute(CDM.UNITS, "hours since " + lite.base));
+      timeVar.addAttribute(new ucar.nc2.Attribute(CDM.MISSING_VALUE, Double.NaN));
       timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
       // remove the old one if any
@@ -578,7 +575,7 @@ class FmrcDataset {
         timeVar.addAttribute(new ucar.nc2.Attribute("bounds", bname));
         Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension( result);
         VariableDS boundsVar = new VariableDS(result, newGroup, null, bname, dtype, dims+" "+bd.getName(), null, null);
-        boundsVar.addAttribute(new Attribute("long_name", "bounds for "+ timeVar.getShortName()));
+        boundsVar.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for "+ timeVar.getShortName()));
         boundsVar.setCachedData(Array.factory( DataType.DOUBLE, new int[] {nruns, gridset.noffsets, 2}, gridset.timeBounds));
         newGroup.addVariable(boundsVar);
       }
@@ -836,7 +833,7 @@ class FmrcDataset {
     result.setLocation(lite.collectionName);
     transferGroup(proto.getRootGroup(), result.getRootGroup(), result);
     result.finish();
-    addAttributeInfo(result, "history", "FMRC "+timeInv.getName()+" Dataset");
+    addAttributeInfo(result, CDM.HISTORY, "FMRC "+timeInv.getName()+" Dataset");
 
     //DateFormatter dateFormatter = new DateFormatter();
     ProxyReader1D proxyReader1D = new ProxyReader1D();
@@ -946,10 +943,10 @@ class FmrcDataset {
   private VariableDS makeTimeCoordinate(NetcdfDataset result, Group group, String dimName, CalendarDate base, FmrcInvLite.ValueB valueb) {
     DataType dtype = DataType.DOUBLE;
     VariableDS timeVar = new VariableDS(result, group, null, dimName, dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
-    timeVar.addAttribute(new Attribute("long_name", "Forecast time for ForecastModelRunCollection"));
+    timeVar.addAttribute(new Attribute(CDM.LONG_NAME, "Forecast time for ForecastModelRunCollection"));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
-    timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + base));
-    timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
+    timeVar.addAttribute(new ucar.nc2.Attribute(CDM.UNITS, "hours since " + base));
+    timeVar.addAttribute(new ucar.nc2.Attribute(CDM.MISSING_VALUE, Double.NaN));
     timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     // construct the values
@@ -962,7 +959,7 @@ class FmrcDataset {
       timeVar.addAttribute(new ucar.nc2.Attribute("bounds", bname));
       Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension( result);
       VariableDS boundsVar = new VariableDS(result, group, null, bname, dtype, dimName+" " + bd.getName(), null, null);
-      boundsVar.addAttribute(new Attribute("long_name", "bounds for "+ timeVar.getShortName()));
+      boundsVar.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for "+ timeVar.getShortName()));
       boundsVar.setCachedData(Array.factory( DataType.DOUBLE, new int[] {ntimes, 2}, valueb.bounds));
       group.addVariable(boundsVar);
     }
@@ -973,10 +970,10 @@ class FmrcDataset {
   private VariableDS makeRunTimeCoordinate(NetcdfDataset result, Group group, String dimName, CalendarDate base, double[] values) {
     DataType dtype = DataType.DOUBLE;
     VariableDS timeVar = new VariableDS(result, group, null, dimName+"_run", dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
-    timeVar.addAttribute(new Attribute("long_name", "run times for coordinate = " + dimName));
+    timeVar.addAttribute(new Attribute(CDM.LONG_NAME, "run times for coordinate = " + dimName));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
-    timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + base));
-    timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
+    timeVar.addAttribute(new ucar.nc2.Attribute(CDM.UNITS, "hours since " + base));
+    timeVar.addAttribute(new ucar.nc2.Attribute(CDM.MISSING_VALUE, Double.NaN));
     timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString())); // if theres already a time coord, dont put in coordSys - too complicated
 
     // construct the values
@@ -991,10 +988,10 @@ class FmrcDataset {
   private VariableDS makeOffsetCoordinate(NetcdfDataset result, Group group, String dimName, CalendarDate base, double[] values) {
     DataType dtype = DataType.DOUBLE;
     VariableDS timeVar = new VariableDS(result, group, null, dimName+"_offset", dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
-    timeVar.addAttribute(new Attribute("long_name", "offset hour from start of run for coordinate = " + dimName));
+    timeVar.addAttribute(new Attribute(CDM.LONG_NAME, "offset hour from start of run for coordinate = " + dimName));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_period"));
-    timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + base));
-    timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
+    timeVar.addAttribute(new ucar.nc2.Attribute(CDM.UNITS, "hours since " + base));
+    timeVar.addAttribute(new ucar.nc2.Attribute(CDM.MISSING_VALUE, Double.NaN));
 
     // construct the values
     int ntimes = values.length;

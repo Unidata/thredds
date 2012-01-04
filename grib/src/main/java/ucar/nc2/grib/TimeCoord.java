@@ -174,6 +174,12 @@ public class TimeCoord {
     return isInterval() ? intervals.size() : coords.size();
   }
 
+  public String getTimeIntervalName() {
+    if (!isInterval()) return null;
+    Tinv first = intervals.get(0); // they should all be the same
+    int value = (int) ((first.b2 - first.b1) * getTimeUnitScale());
+    return value + "_" + timeUnit.getField().toString();
+  }
 
   @Override
   public String toString() {

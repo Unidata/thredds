@@ -72,8 +72,7 @@ public class VerticalPerspective extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-    // these must be in meters, projection needs them in km
-    double earth_radius = readAttributeDouble(ctv, "earth_radius", Earth.getRadius()) * .001;
+    double earth_radius = getEarthRadius(ctv);
 
     ucar.unidata.geoloc.projection.VerticalPerspectiveView proj =
             new ucar.unidata.geoloc.projection.VerticalPerspectiveView(lat0, lon0, earth_radius, distance, false_easting, false_northing);

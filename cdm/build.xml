@@ -69,7 +69,7 @@
   <!-- property name="lucene.jar" value="lucene.jar"/ -->
   <property name="opendap.jar" value="opendap-4.3.jar"/>
   <property name="protobuf.jar" value="protobuf-java-2.4.1.jar"/>
-  <property name="quartz.jar" value="quartz-1.7.3.jar"/>
+  <property name="quartz.jar" value="quartz-2.1.1.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="spring-aop.jar" value="org.springframework.aop-3.0.5.RELEASE.jar"/>
   <property name="spring-asm.jar" value="org.springframework.asm-3.0.5.RELEASE.jar"/>
@@ -760,6 +760,8 @@
              signedjar="${webstart_dir}/ehcache.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${joda.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/joda.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jdom.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/jdom.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jgoodies.jar}" keystore="${keystore}"

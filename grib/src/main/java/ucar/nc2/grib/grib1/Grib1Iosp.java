@@ -36,9 +36,7 @@ import org.jdom.Element;
 import thredds.inventory.CollectionManager;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CF;
-import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Tables;
@@ -67,17 +65,17 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   static private final boolean debugTime = false, debugRead = false;
 
  static public String makeVariableName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-   return Grib1Utils.makeVariableName(tables, gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter,
+   return Grib1Utils.makeVariableName(tables, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
            vindex.levelType, vindex.intvType);
  }
 
   static public String makeVariableLongName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return Grib1Utils.makeVariableLongName(tables, gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter,
+    return Grib1Utils.makeVariableLongName(tables, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
             vindex.levelType, vindex.intvType, vindex.isLayer, vindex.probabilityName);
   }
 
   static public String makeVariableUnits(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return Grib1Utils.makeVariableUnits(tables, gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+    return Grib1Utils.makeVariableUnits(tables, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,6 +94,8 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     byte[] b = new byte[Grib1CollectionBuilder.MAGIC_START.length()];  // LOOK NOT also matches GribCollectionTimePartitioned
     raf.readFully(b);
     String magic = new String(b);
+
+    // check if its an ncx file
     if (magic.equals(Grib1CollectionBuilder.MAGIC_START)) return true;
 
     // check for GRIB1 file
@@ -140,33 +140,36 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     return super.sendIospMessage(special);
   }
 
-
   // public no-arg constructor for reflection
   public Grib1Iosp() {
   }
 
+  // called from GribCollection
   public Grib1Iosp(GribCollection.GroupHcs gHcs) {
     this.gHcs = gHcs;
     this.owned = true;
   }
 
+  // called from GribCollection
   public Grib1Iosp(GribCollection gc) {
     this.gribCollection = gc;
+    this.owned = true;
   }
 
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    if (paramTable != null) // so iosp message must be recieved before the open()
+    if (paramTable != null) // so an iosp message must be received before the open()
       tables = Grib1Tables.factory(paramTable);
     else
       tables = Grib1Tables.factory(paramTablePath, lookupTablePath);
 
-    boolean isGrib = Grib1RecordScanner.isValidFile(raf);
+    // create the gbx9 index file if not already there
+    boolean isGrib = (raf != null) && Grib1RecordScanner.isValidFile(raf);
     if (isGrib) {
       Grib1Index index = new Grib1Index();
       Formatter f= new Formatter();
-      this.gribCollection = index.makeCollection(raf, CollectionManager.Force.test, f, 1);
+      this.gribCollection = index.createFromSingleFile(raf, CollectionManager.Force.test, f, 1);
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor
@@ -186,7 +189,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
         addGroup(ncfile, g, useGroups);
 
-    } else { // read in entire collection
+    } else { // the raf is a collection index (ncx)
 
       raf.seek(0);
       byte[] b = new byte[TimePartitionBuilder.MAGIC_STARTP.length()];
@@ -223,9 +226,9 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Generating process or model", val));
 
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.6"));
-    ncfile.addAttribute(null, new Attribute("history", "Read using CDM IOSP Grib1Collection"));
-    ncfile.addAttribute(null, new Attribute("featureType", "GRID"));
+    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
+    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib1Collection"));
+    ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
     for (Parameter p : gribCollection.getParams())
       ncfile.addAttribute(null, new Attribute(p));
   }
@@ -259,14 +262,14 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       ncfile.addDimension(g, new Dimension("lat", hcs.ny));
 
       Variable cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "lat", DataType.FLOAT, "lat"));
-      cv.addAttribute(new Attribute(CF.UNITS, "degrees_north"));
+      cv.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
       if (hcs.gaussLats != null)
         cv.setCachedData(hcs.gaussLats); //  LOOK do we need to make a copy?
       else
         cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
 
       cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "lon", DataType.FLOAT, "lon"));
-      cv.addAttribute(new Attribute(CF.UNITS, "degrees_east"));
+      cv.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx));
 
     } else {
@@ -282,12 +285,12 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
       Variable cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "x", DataType.FLOAT, "x"));
       cv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_X_COORDINATE));
-      cv.addAttribute(new Attribute(CF.UNITS, "km"));
+      cv.addAttribute(new Attribute(CDM.UNITS, "km"));
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx));
 
       cv = ncfile.addVariable(g, new Variable(ncfile, g, null, "y", DataType.FLOAT, "y"));
       cv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_Y_COORDINATE));
-      cv.addAttribute(new Attribute(CF.UNITS, "km"));
+      cv.addAttribute(new Attribute(CDM.UNITS, "km"));
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
@@ -303,7 +306,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       String tcName = tc.getName();
       ncfile.addDimension(g, new Dimension(tcName, n));
       Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, tcName));
-      v.addAttribute(new Attribute(CF.UNITS, tc.getUnits()));
+      v.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
       v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
 
       int[] data = new int[n];
@@ -319,8 +322,8 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       if (tc.isInterval()) {
         Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName + "_bounds", DataType.INT, tcName + " 2"));
         v.addAttribute(new Attribute(CF.BOUNDS, tcName + "_bounds"));
-        bounds.addAttribute(new Attribute(CF.UNITS, tc.getUnits()));
-        bounds.addAttribute(new Attribute(CF.LONG_NAME, "bounds for " + tcName));
+        bounds.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
+        bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
 
         data = new int[2 * n];
         count = 0;
@@ -374,14 +377,14 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       //System.out.printf("added %s%n",vname);
 
       String desc = makeVariableLongName(tables, gribCollection, vindex);
-      v.addAttribute(new Attribute(CF.LONG_NAME, desc));
-      v.addAttribute(new Attribute(CF.UNITS, makeVariableUnits(tables, gribCollection, vindex)));
-      v.addAttribute(new Attribute(CF.MISSING_VALUE, MISSING_VALUE));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
+      v.addAttribute(new Attribute(CDM.UNITS, makeVariableUnits(tables, gribCollection, vindex)));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, MISSING_VALUE));
       v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
 
       // Grib attributes
       v.addAttribute(new Attribute("Grib_Parameter", vindex.parameter));
-      Grib1Parameter param = tables.getParameter(gribCollection.center, gribCollection.subcenter, vindex.tableVersion, vindex.parameter);
+      Grib1Parameter param = tables.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
       if (param != null && param.getName() != null)
         v.addAttribute(new Attribute("Grib_Parameter_Name", param.getName()));
 
@@ -406,9 +409,9 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     String vcName = vc.getName();
     ncfile.addDimension(g, new Dimension(vcName, n));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
-    v.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
-    v.addAttribute(new Attribute(CF.LONG_NAME, tables.getLevelDescription(vc.getCode())));
-    v.addAttribute(new Attribute("positive", vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+    v.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, tables.getLevelDescription(vc.getCode())));
+    v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
 
     v.addAttribute(new Attribute("GRIB1_level_code", vc.getCode()));
     VertCoord.VertUnit vu = Grib1ParamLevel.getLevelUnit(vc.getCode());
@@ -426,8 +429,8 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
       Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName + "_bounds", DataType.FLOAT, vcName + " 2"));
       v.addAttribute(new Attribute(CF.BOUNDS, vcName + "_bounds"));
-      bounds.addAttribute(new Attribute(CF.UNITS, vc.getUnits()));
-      bounds.addAttribute(new Attribute(CF.LONG_NAME, "bounds for " + vcName));
+      bounds.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
+      bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + vcName));
 
       data = new float[2 * n];
       count = 0;
@@ -453,8 +456,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
   @Override
   public void close() throws java.io.IOException {
-    //if (!owned && gribCollection != null) // klugerino
-    if (gribCollection != null)
+    if (!owned && gribCollection != null) // klugerino
       gribCollection.close();
   }
 

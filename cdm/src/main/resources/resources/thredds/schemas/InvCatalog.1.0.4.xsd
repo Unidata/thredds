@@ -107,7 +107,6 @@
     </xsd:sequence>
 
     <xsd:attribute name="name" type="xsd:string" use="required"/>
-
     <xsd:attribute name="alias" type="xsd:token"/>
     <xsd:attribute name="authority" type="xsd:string"/>  <!-- deprecated : use element -->
     <xsd:attribute name="collectionType" type="collectionTypes"/>
@@ -327,6 +326,7 @@
      <xsd:simpleType>
        <xsd:restriction base="xsd:token">
          <xsd:enumeration value="FMRC"/>
+         <xsd:enumeration value="GRIB"/>
          <xsd:enumeration value="Station"/>
          <xsd:enumeration value="Point"/>
          <xsd:enumeration value="Station_Profile"/>
@@ -339,7 +339,7 @@
     <xsd:attribute name="spec" type="xsd:string" use="required"/>
     <xsd:attribute name="name" type="xsd:token"/>
     <xsd:attribute name="olderThan" type="xsd:string" />
-    <xsd:attribute name="recheckAfter" type="xsd:string" />
+    <xsd:attribute name="recheckAfter" type="xsd:string" />  <!-- deprecated : move to update element -->
     <xsd:attribute name="dateFormatMark" type="xsd:string"/>
     <xsd:attribute name="timePartition" type="xsd:string"/>
   </xsd:complexType>
@@ -348,11 +348,26 @@
     <xsd:sequence>
       <xsd:element ref="manage" minOccurs="0"/>
     </xsd:sequence>
-    <xsd:attribute name="startup" type="xsd:token"/>
+    <xsd:attribute name="startup" type="xsd:boolean"/>
+    <xsd:attribute name="recheckAfter" type="xsd:string" />
     <xsd:attribute name="rescan" type="xsd:token"/>
     <xsd:attribute name="trigger" type="xsd:token"/>
-    <xsd:attribute name="force" type="xsd:token"/>
+    <xsd:attribute name="deleteAfter" type="xsd:string"/>
   </xsd:complexType>
+
+  <!-- Force Types -->
+  <xsd:simpleType name="forceEnumTypes">
+    <xsd:union memberTypes="xsd:token">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:token">
+          <xsd:enumeration value="always"/>
+          <xsd:enumeration value="test"/>
+          <xsd:enumeration value="nocheck"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:union>
+  </xsd:simpleType>
+
 
   <xsd:element name="manage">
     <xsd:complexType>

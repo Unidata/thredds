@@ -34,6 +34,7 @@
 package ucar.nc2.iosp.dmsp;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -134,8 +135,8 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       {
         curVariable.setDimensions( scanDimList );
       }
-      curVariable.addAttribute( new Attribute( "long_name", curVarInfo.getLongName()));
-      curVariable.addAttribute( new Attribute( "units", curVarInfo.getUnits()));
+      curVariable.addAttribute( new Attribute( CDM.LONG_NAME, curVarInfo.getLongName()));
+      curVariable.addAttribute( new Attribute( CDM.UNITS, curVarInfo.getUnits()));
 
       if ( curVariable.getShortName().equals( "latitude"))
       {
@@ -160,15 +161,15 @@ public class DMSPiosp extends AbstractIOServiceProvider {
           throw new IOException( "Invalid DMSP file: \"startDate\" attribute value <" + this.startDateString +
                                  "> not parseable with format string <" + DMSPHeader.DateFormatHandler.ISO_DATE_TIME.getDateTimeFormatString() + ">.");
         }
-        curVariable.addAttribute( new Attribute( "units", "seconds since " + this.startDateString));
+        curVariable.addAttribute( new Attribute( CDM.UNITS, "seconds since " + this.startDateString));
         curVariable.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Time.toString()));
       }
       else if ( curVariable.getShortName().equals( "infraredImagery"))
       {
         curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude"));
-        curVariable.addAttribute( new Attribute( "_Unsigned", "true"));
-        curVariable.addAttribute( new Attribute( "scale_factor", new Float((310.0-190.0)/(256.0-1.0))));
-        curVariable.addAttribute( new Attribute( "add_offset", new Float( 190.0)));
+        curVariable.addAttribute( new Attribute( CDM.UNSIGNED, "true"));
+        curVariable.addAttribute( new Attribute( CDM.SCALE_FACTOR, new Float((310.0-190.0)/(256.0-1.0))));
+        curVariable.addAttribute( new Attribute( CDM.ADD_OFFSET, new Float( 190.0)));
         curVariable.addAttribute( new Attribute( "description",
                                                  "Infrared pixel values correspond to a temperature range of 190 to 310 " +
                                                  "Kelvins in 256 equally spaced steps. Onboard calibration is performed " +
@@ -177,7 +178,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
       else if ( curVariable.getShortName().equals( "visibleImagery"))
       {
         curVariable.addAttribute( new Attribute( _Coordinate.Axes, "latitude longitude"));
-        curVariable.addAttribute( new Attribute( "_Unsigned", "true"));
+        curVariable.addAttribute( new Attribute( CDM.UNSIGNED, "true"));
         curVariable.addAttribute( new Attribute( "description",
                                                  "Visible pixels are relative values ranging from 0 to 63 rather than " +
                                                  "absolute values in Watts per m^2. Instrumental gain levels are adjusted " +

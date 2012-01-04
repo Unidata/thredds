@@ -45,7 +45,7 @@ public interface VariableEnhanced extends ucar.nc2.VariableIF, Enhancements {
   public void setOriginalVariable(ucar.nc2.Variable orgVar);
   public String getOriginalName();
 
-  /** Set the Unit String for this Variable. Default is to use the "units" attribute.
+  /** Set the Unit String for this Variable. Default is to use the CDM.UNITS attribute.
    * @param units  unit string
    */
   public void setUnitsString( String units);

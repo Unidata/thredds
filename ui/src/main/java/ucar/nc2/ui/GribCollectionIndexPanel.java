@@ -36,6 +36,7 @@ import ucar.nc2.grib.*;
 //import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -64,8 +65,8 @@ import java.util.List;
 public class GribCollectionIndexPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted groupTable, varTable, vertCoordTable;
-  private JSplitPane split, split2;
+  private BeanTableSorted groupTable, varTable, vertCoordTable, timeCoordTable;
+  private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoPopup, detailTA;
   private IndependentWindow infoWindow, detailWindow;
@@ -123,7 +124,7 @@ public class GribCollectionIndexPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         VarBean bean = (VarBean) varTable.getSelectedBean();
         if (bean != null) {
-          infoPopup.setText(bean.v.toString());
+          infoPopup.setText(bean.v.toStringComplete());
           infoPopup.gotoTop();
           infoWindow.showIfNotIconified();
         }
@@ -156,6 +157,20 @@ public class GribCollectionIndexPanel extends JPanel {
       }
     });
 
+    timeCoordTable = new BeanTableSorted(TimeCoordBean.class, (PreferencesExt) prefs.node("TimeCoordBean"), false);
+    varPopup = new PopupMenu(timeCoordTable.getJTable(), "Options");
+
+    varPopup.addAction("Show", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        TimeCoordBean bean = (TimeCoordBean) timeCoordTable.getSelectedBean();
+        if (bean != null) {
+          infoPopup.setText(bean.tc.toString());
+          infoPopup.gotoTop();
+          infoWindow.showIfNotIconified();
+        }
+      }
+    });
+
     /////////////////////////////////////////
     // the info windows
     infoPopup = new TextHistoryPane();
@@ -168,10 +183,13 @@ public class GribCollectionIndexPanel extends JPanel {
 
     setLayout(new BorderLayout());
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, groupTable, varTable);
+    split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, groupTable, varTable);
+    split3.setDividerLocation(prefs.getInt("splitPos3", 800));
+
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split3, vertCoordTable);
     split2.setDividerLocation(prefs.getInt("splitPos2", 800));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, vertCoordTable);
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, timeCoordTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     add(split, BorderLayout.CENTER);
@@ -186,6 +204,7 @@ public class GribCollectionIndexPanel extends JPanel {
     prefs.putBeanObject("DetailWindowBounds", detailWindow.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
   }
 
   private void compareFiles(Formatter f) throws IOException {
@@ -286,6 +305,12 @@ public class GribCollectionIndexPanel extends JPanel {
     for (VertCoord vc : group.vertCoords)
       coords.add(new CoordBean(vc, count++));
     vertCoordTable.setBeans(coords);
+
+    count = 0;
+    List<TimeCoordBean> tcoords = new ArrayList<TimeCoordBean>();
+    for (TimeCoord tc : group.timeCoords)
+      tcoords.add(new TimeCoordBean(tc, count++));
+    timeCoordTable.setBeans(tcoords);
   }
 
   private void showFiles(Formatter f) {
@@ -517,6 +542,39 @@ public class GribCollectionIndexPanel extends JPanel {
 
     public String getUnits() {
       return vc.getUnits();
+    }
+
+    public int getIndex() {
+      return index;
+    }
+  }
+
+  public class TimeCoordBean {
+    TimeCoord tc;
+    int index;
+
+    public TimeCoordBean() {
+    }
+
+    public TimeCoordBean(TimeCoord tc, int index) {
+      this.tc = tc;
+      this.index = index;
+    }
+
+    public int getNCoords() {
+      return tc.getSize();
+    }
+
+    public String getCalendarRange() {
+      return tc.getCalendarRange().toString();
+    }
+
+    public String getTimeUnit() {
+      return tc.getTimeUnit().toString();
+    }
+
+    public String getTimeIntervalName() {
+      return tc.getTimeIntervalName();
     }
 
     public int getIndex() {

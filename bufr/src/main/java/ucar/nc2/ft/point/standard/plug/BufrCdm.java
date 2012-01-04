@@ -93,10 +93,10 @@ public class BufrCdm extends TableConfigurerImpl {
     Structure obsStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
     obsTable.structName = obsStruct.getFullName();
     obsTable.nestedTableName = obsStruct.getShortName();
-    obsTable.lat = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
-    obsTable.lon = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lon.toString());
-    obsTable.elev = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
-    obsTable.time = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Time.toString());
+    obsTable.lat = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+    obsTable.lon = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+    obsTable.elev = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
+    obsTable.time = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Time.toString());
 
     return obsTable;
   }
@@ -111,16 +111,16 @@ public class BufrCdm extends TableConfigurerImpl {
      TableConfig timeTable = new TableConfig(Table.Type.ParentId, BufrIosp.obsRecord);
 
      Structure stnStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
-     timeTable.lat = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lat.toString());
-     timeTable.lon = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lon.toString());
-     timeTable.stnAlt = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Height.toString());
+     timeTable.lat = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+     timeTable.lon = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+     timeTable.stnAlt = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, _Coordinate.AxisType, AxisType.Height.toString());
 
-     timeTable.stnId = Evaluator.getNameOfVariableWithAttribute(stnStruct, CF.STANDARD_NAME, CF.STATION_ID);
-     timeTable.stnWmoId = Evaluator.getNameOfVariableWithAttribute(stnStruct, CF.STANDARD_NAME, CF.STATION_WMOID);
+     timeTable.stnId = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, CF.STANDARD_NAME, CF.STATION_ID);
+     timeTable.stnWmoId = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, CF.STANDARD_NAME, CF.STATION_WMOID);
      if (timeTable.stnId == null) timeTable.stnId = timeTable.stnWmoId;
      timeTable.parentIndex = timeTable.stnId;
 
-     timeTable.time = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
+     timeTable.time = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
      timeTable.structName = BufrIosp.obsRecord;
      stnTable.addChild(timeTable);
 
@@ -136,10 +136,10 @@ public class BufrCdm extends TableConfigurerImpl {
     Structure obsStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
     obsTable.structName = obsStruct.getFullName();
     obsTable.nestedTableName = obsStruct.getShortName();
-    obsTable.lat = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
-    obsTable.lon = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lon.toString());
-    obsTable.elev = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
-    obsTable.time = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Time.toString());
+    obsTable.lat = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+    obsTable.lon = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+    obsTable.elev = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
+    obsTable.time = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Time.toString());
     topTable.addChild(obsTable);
 
     return topTable;
@@ -151,16 +151,16 @@ public class BufrCdm extends TableConfigurerImpl {
      profileTable.featureType = FeatureType.PROFILE;
      profileTable.structName = BufrIosp.obsRecord;
      Structure profileStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
-     profileTable.lat = Evaluator.getNameOfVariableWithAttribute(profileStruct, _Coordinate.AxisType, AxisType.Lat.toString());
-     profileTable.lon = Evaluator.getNameOfVariableWithAttribute(profileStruct, _Coordinate.AxisType, AxisType.Lon.toString());
-     profileTable.time = Evaluator.getNameOfVariableWithAttribute(profileStruct, _Coordinate.AxisType, AxisType.Time.toString());
+     profileTable.lat = Evaluator.findNameOfVariableWithAttributeValue(profileStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+     profileTable.lon = Evaluator.findNameOfVariableWithAttributeValue(profileStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+     profileTable.time = Evaluator.findNameOfVariableWithAttributeValue(profileStruct, _Coordinate.AxisType, AxisType.Time.toString());
 
      // the time series is just the outer structure
      TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, "struct5");
      Structure obsStruct = (Structure) profileStruct.findVariable("struct5");
      obsTable.structName = obsStruct.getFullName();
      obsTable.nestedTableName = obsStruct.getShortName();
-     obsTable.elev = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Pressure.toString()); // HEY not height
+     obsTable.elev = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Pressure.toString()); // HEY not height
      profileTable.addChild(obsTable);
     
      return profileTable;
@@ -177,16 +177,16 @@ public class BufrCdm extends TableConfigurerImpl {
     TableConfig timeTable = new TableConfig(Table.Type.ParentId, BufrIosp.obsRecord);
 
     Structure stnStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
-    timeTable.lat = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lat.toString());
-    timeTable.lon = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Lon.toString());
-    timeTable.stnAlt = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Height.toString());
+    timeTable.lat = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, _Coordinate.AxisType, AxisType.Lat.toString());
+    timeTable.lon = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, _Coordinate.AxisType, AxisType.Lon.toString());
+    timeTable.stnAlt = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, _Coordinate.AxisType, AxisType.Height.toString());
 
-    timeTable.stnId = Evaluator.getNameOfVariableWithAttribute(stnStruct, CF.STANDARD_NAME, CF.STATION_ID);
-    timeTable.stnWmoId = Evaluator.getNameOfVariableWithAttribute(stnStruct, CF.STANDARD_NAME, CF.STATION_WMOID);
+    timeTable.stnId = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, CF.STANDARD_NAME, CF.STATION_ID);
+    timeTable.stnWmoId = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, CF.STANDARD_NAME, CF.STATION_WMOID);
     if (timeTable.stnId == null) timeTable.stnId = timeTable.stnWmoId;
     timeTable.parentIndex = timeTable.stnId;
 
-    timeTable.time = Evaluator.getNameOfVariableWithAttribute(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
+    timeTable.time = Evaluator.findNameOfVariableWithAttributeValue(stnStruct, _Coordinate.AxisType, AxisType.Time.toString());
     timeTable.structName = BufrIosp.obsRecord;
     stnTable.addChild(timeTable);
 
@@ -197,7 +197,7 @@ public class BufrCdm extends TableConfigurerImpl {
       obsStruct = (Structure) stnStruct.findVariable("struct1");
     obsTable.structName = obsStruct.getFullName();
     obsTable.nestedTableName = obsStruct.getShortName();
-    obsTable.elev = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
+    obsTable.elev = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
     timeTable.addChild(obsTable);
 
     return stnTable;

@@ -32,6 +32,7 @@
 
 package ucar.nc2.ft.point.standard.plug;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.point.standard.TableConfigurerImpl;
@@ -49,7 +50,7 @@ import java.io.IOException;
  */
 public class Nldn extends TableConfigurerImpl {
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    String center = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    String center = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     return center != null && center.equals("NLDN-CDM");
   }
 

@@ -88,8 +88,8 @@ static private org.slf4j.Logger LOG = null;
 
     static public class RetryHandler extends  org.apache.commons.httpclient.DefaultHttpMethodRetryHandler
     {
-        static final int MAXRETRIES = 10;
-	static final boolean verbose = false;
+        static final int MAXRETRIES = 5;
+	    static final boolean verbose = false;
 
         public RetryHandler() {super(MAXRETRIES,false);}
         public boolean retryMethod(final org.apache.commons.httpclient.HttpMethod method,
@@ -100,7 +100,7 @@ static private org.slf4j.Logger LOG = null;
             if(LOG == null)  LOG = org.slf4j.LoggerFactory.getLogger(HTTPMethod.class);
 		    LOG.info(String.format("Retry: count=%d exception=%s\n",executionCount, exception.toString()));
         }
-	    return super.retryMethod(method,exception,executionCount);
+        return super.retryMethod(method,exception,executionCount);
         }
     }
 
@@ -251,7 +251,7 @@ public int execute() throws HTTPException
         }
 
         // Change the retry handler
-	method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,new RetryHandler());
+	    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,new RetryHandler());
 
         setcontent();
 
@@ -658,7 +658,7 @@ setAuthentication(HTTPSession session, HTTPMethod method)
     if(url == null) url = HTTPAuthStore.ANY_URL;
 
     // Provide a credentials (provider) to enact the process
-    CredentialsProvider cp  = new HTTPAuthProvider(url);
+    CredentialsProvider cp  = new HTTPAuthProvider(url,method);
 
     // Since we not know where this will get called, do everywhere
     session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,cp);

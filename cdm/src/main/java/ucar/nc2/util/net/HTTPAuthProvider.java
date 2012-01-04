@@ -60,6 +60,7 @@ import org.apache.commons.httpclient.auth.*;
 
 public class HTTPAuthProvider implements Serializable, CredentialsProvider
 {
+static final int MAX_RETRIES = 3;
 
 //////////////////////////////////////////////////
 // Predefined keys (Used local to the package)
@@ -85,13 +86,17 @@ static private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(HTTPAuth
 // Instance variables
 
 String url = null;
+HTTPMethod method = null;
+int retryCount;
 
 //////////////////////////////////////////////////
 // Constructor(s)
 
-public HTTPAuthProvider(String url)
+public HTTPAuthProvider(String url, HTTPMethod method)
 {
     this.url = url;
+    this.method = method;
+    this.retryCount = MAX_RETRIES;
 }
 
 //////////////////////////////////////////////////
@@ -104,6 +109,17 @@ getCredentials(AuthScheme authscheme,
 	       boolean isproxy)
     throws CredentialsNotAvailableException
 {
+    // There appears to be a bug in HttpMethodDirector such that
+    // as long as bad credentials are provided, it will keep on
+    // calling the credentials provider.  We fix by checking for
+    // retry in same way as HttpMethodDirector.processWWWAuthChallenge.
+    // After MAX_RETRIES, we force retries to stop.
+    AuthState authstate = method.getMethod().getHostAuthState();
+    if(retryCount == 0 && authstate.isAuthAttempted() && authscheme.isComplete()) {
+        return null; // Stop the retry.
+    }
+    retryCount--;
+
     // Figure out what scheme is being used
     HTTPAuthScheme scheme;
     Credentials credentials = null;
@@ -115,22 +131,25 @@ getCredentials(AuthScheme authscheme,
 
     if(scheme == null) {
         LOG.error("HTTPAuthProvider: unsupported scheme: "+authscheme.getSchemeName());
+        //throw new CredentialsNotAvailableException();
         return null;
     }
 
     // search for matching authstore entries
     HTTPAuthStore.Entry[] matches = HTTPAuthStore.search(new HTTPAuthStore.Entry(scheme,url,null));
     if(matches.length == 0)  {
-        LOG.error("HTTPAuthProvider: no match for ("+scheme+","+url+")");
+        LOG.debug("HTTPAuthProvider: no match for ("+scheme+","+url+")");
+        //throw new CredentialsNotAvailableException();
         return null;
     }
 
     HTTPAuthStore.Entry entry = matches[0];
-    LOG.info("HTTPAuthProvider: AuthStore row: "+entry.toString());
+    LOG.debug("HTTPAuthProvider: AuthStore row: "+entry.toString());
     CredentialsProvider provider = entry.creds;
 
     if(provider == null) {
-        LOG.error("HTTPAuthProvider: no credentials provider provided");
+        LOG.debug("HTTPAuthProvider: no credentials provider provided");
+        //throw new CredentialsNotAvailableException();
         return null;
     }
 
@@ -138,9 +157,11 @@ getCredentials(AuthScheme authscheme,
     // Use the incoming parameters
     credentials = provider.getCredentials(authscheme,host,port,isproxy);
     if(credentials == null) {
-        LOG.error("HTTPAuthProvider: cannot obtain credentials");
+        LOG.debug("HTTPAuthProvider: cannot obtain credentials");
+        //throw new CredentialsNotAvailableException();
         return null;
     }
+
     return credentials;
 }
 

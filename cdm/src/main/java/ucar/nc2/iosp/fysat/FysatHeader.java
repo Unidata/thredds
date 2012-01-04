@@ -27,6 +27,8 @@ import java.text.*;
 
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
@@ -222,14 +224,14 @@ public final class FysatHeader {
         Variable taxis = new Variable(ncfile, null, null, timeCoordName);
         taxis.setDataType(DataType.DOUBLE);
         taxis.setDimensions("time");
-        taxis.addAttribute(new Attribute("long_name", "time since base date"));
+        taxis.addAttribute(new Attribute(CDM.LONG_NAME, "time since base date"));
         taxis.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
         double[] tdata = new double[1];
         tdata[0] = cal.getTimeInMillis();
         Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{1}, tdata);
         taxis.setCachedData(dataA, false);
         DateFormatter formatter = new DateFormatter();
-        taxis.addAttribute(new Attribute("units", "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
+        taxis.addAttribute(new Attribute(CDM.UNITS, "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
         ncfile.addVariable(null, taxis);
         //  Get dimensions
         Integer ni = new Integer(geoSatelliteSecondHeader.widthOfImage);
@@ -318,7 +320,7 @@ public final class FysatHeader {
 
         Variable var = new Variable(ncfile, ncfile.getRootGroup(), null, vname);
 
-        var.addAttribute(new Attribute("long_name", vname));
+        var.addAttribute(new Attribute(CDM.LONG_NAME, vname));
 
         // get dimensions
         int velems;
@@ -374,18 +376,18 @@ public final class FysatHeader {
 
         }
 
-        var.addAttribute(new Attribute("coordinates", "Lon Lat"));
+        var.addAttribute(new Attribute(CF.COORDINATES, "Lon Lat"));
 
         var.addAttribute(new Attribute("_unsigned", "true"));
-        var.addAttribute(new Attribute("units", "percent"));
+        var.addAttribute(new Attribute(CDM.UNITS, "percent"));
         // if(var.getDataType() == DataType.BYTE) {
         //     var.addAttribute(new Attribute("_missing_value", new Byte((byte)-1)));
         //     var.addAttribute( new Attribute("scale_factor", new Byte((byte)(1))));
         //     var.addAttribute( new Attribute("add_offset", new Byte((byte)(0))));
         //  } else {
         var.addAttribute(new Attribute("_missing_value", new Short((short) -1)));
-        var.addAttribute(new Attribute("scale_factor", new Short((short) (1))));
-        var.addAttribute(new Attribute("add_offset", new Short((short) (0))));
+        var.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Short((short) (1))));
+        var.addAttribute(new Attribute(CDM.ADD_OFFSET, new Short((short) (0))));
         //  }
 
         // size and beginning data position in file
@@ -423,8 +425,8 @@ public final class FysatHeader {
           Variable xaxis = new Variable(ncfile, null, null, "x");
           xaxis.setDataType(DataType.DOUBLE);
           xaxis.setDimensions("x");
-          xaxis.addAttribute(new Attribute("long_name", "projection x coordinate"));
-          xaxis.addAttribute(new Attribute("units", "km"));
+          xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "projection x coordinate"));
+          xaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
           xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
           double[] data = new double[nx];
           if (proj == 2) {
@@ -452,8 +454,8 @@ public final class FysatHeader {
           Variable yaxis = new Variable(ncfile, null, null, "y");
           yaxis.setDataType(DataType.DOUBLE);
           yaxis.setDimensions("y");
-          yaxis.addAttribute(new Attribute("long_name", "projection y coordinate"));
-          yaxis.addAttribute(new Attribute("units", "km"));
+          yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "projection y coordinate"));
+          yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
           yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
           data = new double[ny];
           double endy = starty + dyKm * (data.length - 1); // apparently lat1,lon1 is always the lower ledt, but data is upper left
@@ -492,13 +494,13 @@ public final class FysatHeader {
           ct.setCachedData(dataA, false);
 
           ncfile.addVariable(null, ct);
-          ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
+          ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
         } else {
           Variable yaxis = new Variable(ncfile, null, null, "lat");
           yaxis.setDataType(DataType.DOUBLE);
           yaxis.setDimensions("lat");
-          yaxis.addAttribute(new Attribute("long_name", "latitude"));
-          yaxis.addAttribute(new Attribute("units", "degree"));
+          yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "latitude"));
+          yaxis.addAttribute(new Attribute(CDM.UNITS, "degree"));
           yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "Lat"));
           double[] data = new double[ny];
 
@@ -516,8 +518,8 @@ public final class FysatHeader {
           Variable xaxis = new Variable(ncfile, null, null, "lon");
           xaxis.setDataType(DataType.DOUBLE);
           xaxis.setDimensions("lon");
-          xaxis.addAttribute(new Attribute("long_name", "longitude"));
-          xaxis.addAttribute(new Attribute("units", "degree"));
+          xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "longitude"));
+          xaxis.addAttribute(new Attribute(CDM.UNITS, "degree"));
           xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "Lon"));
           data = new double[nx];
 
@@ -574,14 +576,14 @@ public final class FysatHeader {
         Variable taxis = new Variable(ncfile, null, null, timeCoordName);
         taxis.setDataType(DataType.DOUBLE);
         taxis.setDimensions("time");
-        taxis.addAttribute(new Attribute("long_name", "time since base date"));
+        taxis.addAttribute(new Attribute(CDM.LONG_NAME, "time since base date"));
         taxis.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
         double[] tdata = new double[1];
         tdata[0] = cal.getTimeInMillis();
         Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[]{1}, tdata);
         taxis.setCachedData(dataA, false);
         DateFormatter formatter = new DateFormatter();
-        taxis.addAttribute(new Attribute("units", "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
+        taxis.addAttribute(new Attribute(CDM.UNITS, "msecs since " + formatter.toDateTimeStringISO(new Date(0))));
         ncfile.addVariable(null, taxis);
 
 
@@ -652,9 +654,9 @@ public final class FysatHeader {
         //String vname= this.firstHeader.fileName.substring(0, this.firstHeader.fileName.length() -4);
         Variable var = new Variable(ncfile, ncfile.getRootGroup(), null, vname);
 
-        var.addAttribute(new Attribute("long_name", vname)); // getPhysElemLongName(phys_elem, ent_id)));
-        var.addAttribute(new Attribute("units", getPhysElemUnits(gridprocuctSecondHeader.gridFeature)));
-        // 		    var.addAttribute( new Attribute("missing_value", new Byte((byte) 0))); // ??
+        var.addAttribute(new Attribute(CDM.LONG_NAME, vname)); // getPhysElemLongName(phys_elem, ent_id)));
+        var.addAttribute(new Attribute(CDM.UNITS, getPhysElemUnits(gridprocuctSecondHeader.gridFeature)));
+        // 		    var.addAttribute( new Attribute(CDM.MISSING_VALUE, new Byte((byte) 0))); // ??
 
         // get dimensions
         int velems;
@@ -701,20 +703,20 @@ public final class FysatHeader {
 
         }
 
-        var.addAttribute(new Attribute("coordinates", "lon lat"));
+        var.addAttribute(new Attribute(CF.COORDINATES, "lon lat"));
 
-        var.addAttribute(new Attribute("_Unsigned", "true"));
-        //var.addAttribute(new Attribute("units", "percent"));
+        var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+        //var.addAttribute(new Attribute(CDM.UNITS, "percent"));
 
 
         if (var.getDataType() == DataType.BYTE) {
           var.addAttribute(new Attribute("_missing_value", new Byte((byte) -1)));
-          var.addAttribute(new Attribute("add_offset", (short) gridprocuctSecondHeader.dataBaseValue));
-          var.addAttribute(new Attribute("scale_factor", (short) gridprocuctSecondHeader.dataBaseValue));
+          var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) gridprocuctSecondHeader.dataBaseValue));
+          var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) gridprocuctSecondHeader.dataBaseValue));
         } else {
           var.addAttribute(new Attribute("_missing_value", new Short((short) -1)));
-          var.addAttribute(new Attribute("add_offset", (short) gridprocuctSecondHeader.dataBaseValue));
-          var.addAttribute(new Attribute("scale_factor", (short) gridprocuctSecondHeader.dataScale));
+          var.addAttribute(new Attribute(CDM.ADD_OFFSET, (short) gridprocuctSecondHeader.dataBaseValue));
+          var.addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) gridprocuctSecondHeader.dataScale));
         }
 
         // size and beginning data position in file
@@ -740,8 +742,8 @@ public final class FysatHeader {
         Variable yaxis = new Variable(ncfile, null, null, "lat");
         yaxis.setDataType(DataType.DOUBLE);
         yaxis.setDimensions("lat");
-        yaxis.addAttribute(new Attribute("long_name", "latitude"));
-        yaxis.addAttribute(new Attribute("units", "degree_north"));
+        yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "latitude"));
+        yaxis.addAttribute(new Attribute(CDM.UNITS, "degree_north"));
         yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "latitude"));
         double[] data = new double[ny];
 
@@ -759,8 +761,8 @@ public final class FysatHeader {
         Variable xaxis = new Variable(ncfile, null, null, "lon");
         xaxis.setDataType(DataType.DOUBLE);
         xaxis.setDimensions("lon");
-        xaxis.addAttribute(new Attribute("long_name", "longitude"));
-        xaxis.addAttribute(new Attribute("units", "degree_east"));
+        xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "longitude"));
+        xaxis.addAttribute(new Attribute(CDM.UNITS, "degree_east"));
         xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "longitude"));
         data = new double[nx];
 
@@ -802,14 +804,14 @@ public final class FysatHeader {
         //		    Variable taxis = new Variable(ncfile, null, null, timeCoordName);
         //		    taxis.setDataType(DataType.DOUBLE);
         //		    taxis.setDimensions("time");
-        //		    taxis.addAttribute( new Attribute("long_name", "time since base date"));
+        //		    taxis.addAttribute( new Attribute(CDM.LONG_NAME, "time since base date"));
         //		    taxis.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
         //		    double [] tdata = new double[1];
         //		    tdata[0] = cal.getTimeInMillis();
         //		    Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {1}, tdata);
         //		    taxis.setCachedData( dataA, false);
         //		    DateFormatter formatter = new DateFormatter();
-        //		    taxis.addAttribute( new Attribute("units", "msecs since "+formatter.toDateTimeStringISO(new Date(0))));
+        //		    taxis.addAttribute( new Attribute(CDM.UNITS, "msecs since "+formatter.toDateTimeStringISO(new Date(0))));
         //		    ncfile.addVariable(null, taxis);
         //
         break;

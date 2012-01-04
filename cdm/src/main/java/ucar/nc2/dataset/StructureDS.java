@@ -34,6 +34,7 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 
@@ -80,9 +81,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     this.proxy = new EnhancementsImpl(this, units, desc);
 
     if (units != null)
-      addAttribute(new Attribute("units", units));
+      addAttribute(new Attribute(CDM.UNITS, units));
     if (desc != null)
-      addAttribute(new Attribute("long_name", desc));
+      addAttribute(new Attribute(CDM.LONG_NAME, desc));
   }
 
   /**

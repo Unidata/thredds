@@ -134,7 +134,7 @@ public class TimePartition extends Grib2Collection {
                           int intvType, int ensDerivedType, int probType, String probabilityName,
                           int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
-      super(g, 0,discipline, category, parameter, levelType, isLayer, intvType, ensDerivedType, probType, probabilityName,
+      super(g, 0,discipline, category, parameter, levelType, isLayer, intvType, null, ensDerivedType, probType, probabilityName,
               cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
     }
 
@@ -290,8 +290,7 @@ public class TimePartition extends Grib2Collection {
   }
 
   public void close() throws java.io.IOException {
-    if (raf != null)
-      raf.close();
+    super.close();
     for (Partition part : getPartitions()) {
       if (part.gribCollection != null)
         part.gribCollection.close();

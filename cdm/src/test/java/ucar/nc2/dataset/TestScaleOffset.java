@@ -33,6 +33,7 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf;
 import ucar.ma2.*;
 
@@ -75,8 +76,8 @@ public class TestScaleOffset extends TestCase {
 
     ncfile.addVariable("packed", DataType.SHORT, "lat lon");
     if (isUnsigned) ncfile.addVariableAttribute("packed", "_Unsigned", "true");
-    //ncfile.addVariableAttribute("packed", "missing_value", new Short( (short) -9999));
-    ncfile.addVariableAttribute("packed", "scale_factor", so.scale);
+    //ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, new Short( (short) -9999));
+    ncfile.addVariableAttribute("packed", CDM.SCALE_FACTOR, so.scale);
     ncfile.addVariableAttribute("packed", "add_offset", so.offset);
 
     // create the file

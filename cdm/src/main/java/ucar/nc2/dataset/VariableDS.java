@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
@@ -97,9 +98,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+shortName);
 
     if (units != null)
-      addAttribute( new Attribute("units", units));
+      addAttribute( new Attribute(CDM.UNITS, units));
     if (desc != null)
-      addAttribute( new Attribute("long_name", desc));
+      addAttribute( new Attribute(CDM.LONG_NAME, desc));
 
     this.enhanceProxy = new EnhancementsImpl(this, units, desc);
     this.scaleMissingProxy = new EnhanceScaleMissingImpl(); // gets replaced later, in enhance()
@@ -272,7 +273,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       if (mode.contains(NetcdfDataset.Enhance.ScaleMissing) &&
           scaleMissingProxy.hasScaleOffset() && (scaleMissingProxy.getConvertedDataType() != getDataType())) {
         setDataType( scaleMissingProxy.getConvertedDataType());
-        removeAttributeIgnoreCase("_Unsigned");
+        removeAttributeIgnoreCase(CDM.UNSIGNED);
       }
 
       // do we need to actually convert data ?
@@ -286,7 +287,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
       // LOOK promote data type to STRING ????
       setDataType( DataType.STRING);
-      removeAttributeIgnoreCase("_Unsigned");
+      removeAttributeIgnoreCase(CDM.UNSIGNED);
     }
 
   }

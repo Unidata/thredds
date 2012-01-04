@@ -39,6 +39,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf;
 
 public class TestRedefine extends TestCase {
@@ -55,7 +56,7 @@ public class TestRedefine extends TestCase {
     file = NetcdfFileWriteable.createNew(filename, true);
 
     file.addGlobalAttribute("Conventions", "globulate");
-    file.addGlobalAttribute("history", "lava");
+    file.addGlobalAttribute(CDM.HISTORY, "lava");
     file.addGlobalAttribute("att8", "12345678");
 
     Dimension time = file.addDimension("time", 4, true, false, false);
@@ -92,8 +93,8 @@ public class TestRedefine extends TestCase {
     //////////////////////////////////////////
     file.setRedefineMode(true);
 
-    file.renameGlobalAttribute("history", "lamp");
-    file.addGlobalAttribute("history", "final");
+    file.renameGlobalAttribute(CDM.HISTORY, "lamp");
+    file.addGlobalAttribute(CDM.HISTORY, "final");
     file.deleteGlobalAttribute("Conventions");
 
     file.addVariableAttribute("h", "units", "meters"); // duplicates existing
@@ -108,7 +109,7 @@ public class TestRedefine extends TestCase {
 
     Attribute att = file.findGlobalAttribute("Conventions");
     assert att == null;
-    att = file.findGlobalAttribute("history");
+    att = file.findGlobalAttribute(CDM.HISTORY);
     assert att.getStringValue().equals("final");
     att = file.findGlobalAttribute("lamp");
     assert att.getStringValue().equals("lava");

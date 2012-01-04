@@ -33,6 +33,7 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
@@ -59,13 +60,13 @@ public class GIEFConvention extends CoordSysBuilder {
 
     Variable timeVar = ds.findVariable("time");
     String time_units = ds.findAttValueIgnoreCase(null, "time_units", null);
-    timeVar.addAttribute( new Attribute( "units", time_units));
+    timeVar.addAttribute( new Attribute( CDM.UNITS, time_units));
 
     Variable levelVar = ds.findVariable("level");
     String level_units = ds.findAttValueIgnoreCase(null, "level_units", null);
     String level_name = ds.findAttValueIgnoreCase(null, "level_name", null);
-    levelVar.addAttribute( new Attribute( "units", level_units));
-    levelVar.addAttribute( new Attribute( "long_name", level_name));
+    levelVar.addAttribute( new Attribute( CDM.UNITS, level_units));
+    levelVar.addAttribute( new Attribute( CDM.LONG_NAME, level_name));
 
     // may be 1 or 2 data variables
     String unit_name = ds.findAttValueIgnoreCase(null, "unit_name", null);
@@ -73,8 +74,8 @@ public class GIEFConvention extends CoordSysBuilder {
     List<Variable> vlist = ds.getVariables();
     for (Variable v : vlist) {
       if (v.getRank() > 1) {
-        v.addAttribute(new Attribute("units", unit_name));
-        v.addAttribute(new Attribute("long_name", v.getShortName() + " " + parameter_name));
+        v.addAttribute(new Attribute(CDM.UNITS, unit_name));
+        v.addAttribute(new Attribute(CDM.LONG_NAME, v.getShortName() + " " + parameter_name));
         v.addAttribute(new Attribute(_Coordinate.Axes, "time level latitude longitude"));
       }
     }

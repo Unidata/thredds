@@ -60,6 +60,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateFormatter;
@@ -198,7 +199,7 @@ public class AreaReader {
         Variable timeVar = new Variable(ncfile, null, null, "time");
         timeVar.setDataType(DataType.INT);
         timeVar.setDimensions("time");
-        timeVar.addAttribute(new Attribute("units",
+        timeVar.addAttribute(new Attribute(CDM.UNITS,
                                            "seconds since "
                                            + df.toDateTimeString(nomTime)));
         timeVar.addAttribute(new Attribute("long_name", "time"));
@@ -212,7 +213,7 @@ public class AreaReader {
         Variable lineVar = new Variable(ncfile, null, null, "lines");
         lineVar.setDataType(DataType.INT);
         lineVar.setDimensions("lines");
-        //lineVar.addAttribute(new Attribute("units", "km"));
+        //lineVar.addAttribute(new Attribute(CDM.UNITS, "km"));
         lineVar.addAttribute(new Attribute("standard_name",
                                            "projection_y_coordinate"));
         varArray = new ArrayInt.D1(numLines);
@@ -228,7 +229,7 @@ public class AreaReader {
         Variable elementVar = new Variable(ncfile, null, null, "elements");
         elementVar.setDataType(DataType.INT);
         elementVar.setDimensions("elements");
-        //elementVar.addAttribute(new Attribute("units", "km"));
+        //elementVar.addAttribute(new Attribute(CDM.UNITS, "km"));
         elementVar.addAttribute(new Attribute("standard_name",
                 "projection_x_coordinate"));
         varArray = new ArrayInt.D1(numElements);
@@ -318,7 +319,7 @@ public class AreaReader {
 
         // add global attributes
         ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
-        ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, FeatureType.GRID.toString()));
+        ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
         ncfile.addAttribute(null, new Attribute("nominal_image_time", df.toDateTimeString(nomTime)));
 
         String encStr = "netCDF encoded on " + df.toDateTimeString(new Date());
@@ -707,7 +708,7 @@ public class AreaReader {
         }
         image.addAttribute(new Attribute("long_name", longName));
         if (calUnit != null) {
-            image.addAttribute(new Attribute("units", calUnit));
+            image.addAttribute(new Attribute(CDM.UNITS, calUnit));
         }
         if (calScale != 1.f) {
             image.addAttribute(new Attribute("scale_factor", calScale));

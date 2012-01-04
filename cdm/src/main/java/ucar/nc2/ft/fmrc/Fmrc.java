@@ -263,7 +263,7 @@ public class Fmrc {
     synchronized (lock) {
       if (fmrcDataset == null) {
         try {
-          manager.scan();
+          manager.scan(true);
           update();
           return;
         } catch (Throwable t) {
@@ -274,7 +274,7 @@ public class Fmrc {
 
       if (!force && !manager.isScanNeeded()) return;
       try {
-        if (!manager.scan()) return;
+        if (!manager.scan(true)) return;
         update();
       } catch (Throwable t) {
         logger.error(config.spec+": rescan failed");

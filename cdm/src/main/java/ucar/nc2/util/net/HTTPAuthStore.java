@@ -114,7 +114,7 @@ static public class Entry implements Serializable, Comparable
     protected void constructor(HTTPAuthScheme scheme, String uri, CredentialsProvider creds)
     {
 	if(uri == null) uri = ANY_URL;
-        if(scheme == null) scheme = ANY_SCHEME;
+        if(scheme == null) scheme = DEFAULT_SCHEME;
 	this.scheme = scheme;
 	this.url = uri;
 	this.creds = creds;
@@ -240,6 +240,7 @@ static public class Entry implements Serializable, Comparable
 static public final boolean          SCHEME = true;
 static public final String           ANY_URL = "";
 static public final HTTPAuthScheme   ANY_SCHEME = HTTPAuthScheme.ANY;
+static public final HTTPAuthScheme   DEFAULT_SCHEME = HTTPAuthScheme.BASIC;
 
 static final public Entry            ANY_ENTRY = new Entry(ANY_SCHEME,ANY_URL,null);
 

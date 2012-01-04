@@ -34,6 +34,7 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.ma2.DataType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.AxisType;
@@ -56,7 +57,7 @@ public class CdmDirect extends TableConfigurerImpl {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     boolean ok = false;
-    String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (conv == null) return false;
     if (conv.equals(Convention)) ok = true;
 
@@ -128,17 +129,17 @@ public class CdmDirect extends TableConfigurerImpl {
       stnTable.stnAlt = alt.getShortName();
 
     // station id
-    stnTable.stnId = Evaluator.getNameOfVariableWithAttribute(ds, CF.CF_ROLE, CF.STATION_ID);
+    stnTable.stnId = Evaluator.findNameOfVariableWithAttributeValue(ds, CF.CF_ROLE, CF.STATION_ID);
     if (stnTable.stnId == null)
-      stnTable.stnId = Evaluator.getNameOfVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_ID); // old way
+      stnTable.stnId = Evaluator.findNameOfVariableWithAttributeValue(ds, CF.STANDARD_NAME, CF.STATION_ID); // old way
     if (stnTable.stnId == null) {
       errlog.format("Must have a Station id variable with standard name station_id%n");
       return null;
     }
 
     // other station
-    stnTable.stnDesc = Evaluator.getNameOfVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_DESC);
-    stnTable.stnWmoId = Evaluator.getNameOfVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_WMOID);
+    stnTable.stnDesc = Evaluator.findNameOfVariableWithAttributeValue(ds, CF.STANDARD_NAME, CF.STATION_DESC);
+    stnTable.stnWmoId = Evaluator.findNameOfVariableWithAttributeValue(ds, CF.STANDARD_NAME, CF.STATION_WMOID);
 
     // obs table
     Structure stnv = (Structure) ds.findVariable("station");

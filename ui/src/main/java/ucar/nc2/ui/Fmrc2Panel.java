@@ -266,7 +266,7 @@ public class Fmrc2Panel extends JPanel {
     infoTA.appendLine(cm.toString());
 
     try {
-      cm.scan();
+      cm.scan(true);
     } catch (IOException e1) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
       e1.printStackTrace(new PrintStream(bos));

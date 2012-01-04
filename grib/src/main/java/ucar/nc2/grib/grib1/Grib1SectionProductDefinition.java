@@ -56,7 +56,7 @@ import java.util.Formatter;
 @Immutable
 public final class Grib1SectionProductDefinition {
 
-  private byte[] rawData;
+  private final byte[] rawData;
 
   /**
    * Read Product Definition section from raf.
@@ -230,7 +230,7 @@ public final class Grib1SectionProductDefinition {
    *
    * @return Time range indicator
    */
-  public final int getTimeType() {
+  public final int getTimeRangeIndicator() {
     return getOctet(21);
   }
 
@@ -334,7 +334,7 @@ public final class Grib1SectionProductDefinition {
   public void showPds(Grib1Tables tables, Formatter f) {
 
     f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
-    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), tables.getSubCenterName(getCenter(), getSubCenter()));
+    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), Grib1Tables.getSubCenterName(getCenter(), getSubCenter()));
     f.format("                 Table Version : %d%n", getTableVersion());
 
     Grib1Parameter parameter = tables.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
@@ -353,7 +353,7 @@ public final class Grib1SectionProductDefinition {
     f.format("                Reference Time : %s%n", getReferenceDate());
     f.format("                    Time Units : (%d) %s%n", getTimeUnit(), Grib1ParamTime.getCalendarPeriod(getTimeUnit()));
     Grib1ParamTime ptime = getParamTime();
-    f.format("          Time Range Indicator : (%d) %s%n", getTimeType(), ptime.getTimeTypeName());
+    f.format("          Time Range Indicator : (%d) %s%n", getTimeRangeIndicator(), ptime.getTimeTypeName());
     f.format("                   Time 1 (P1) : %d%n", getTimeValue1());
     f.format("                   Time 2 (P2) : %d%n", getTimeValue2());
     f.format("                   Time  coord : %s%n", ptime.getTimeCoord());

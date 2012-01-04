@@ -52,6 +52,7 @@ import java.util.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.units.SimpleUnit;
@@ -236,8 +237,8 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     final double xcell = doubleAttribute( "XCELL" ) * scale;
 
     ds.setValues(axis, dim.getLength(), xorig, xcell);
-    axis.addAttribute( new Attribute( "units", newUnits ) );
-    axis.addAttribute( new Attribute( "long_name", desc ) );
+    axis.addAttribute( new Attribute( CDM.UNITS, newUnits ) );
+    axis.addAttribute( new Attribute( CDM.LONG_NAME, desc ) );
     axis.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.GeoX.toString() ) );
     ds.addCoordinateAxis( axis );
   }
@@ -261,8 +262,8 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     final double yorig = doubleAttribute( "YORIG" ) * scale;
     final double ycell = doubleAttribute( "YCELL" ) * scale;
     ds.setValues(axis,  dim.getLength(), yorig, ycell );
-    axis.addAttribute( new Attribute( "units", newUnits ) );
-    axis.addAttribute( new Attribute( "long_name", desc ) );
+    axis.addAttribute( new Attribute( CDM.UNITS, newUnits ) );
+    axis.addAttribute( new Attribute( CDM.LONG_NAME, desc ) );
     axis.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.GeoY.toString() ) );
     ds.addCoordinateAxis( axis );
   }
@@ -294,8 +295,8 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     }
 
     ds.setValues(axis, vgArray );
-    axis.addAttribute( new Attribute( "units", "km" ) );
-    axis.addAttribute( new Attribute( "long_name", desc ) );
+    axis.addAttribute( new Attribute( CDM.UNITS, "km" ) );
+    axis.addAttribute( new Attribute( CDM.LONG_NAME, desc ) );
     axis.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Height.toString() ) );
     ds.addCoordinateAxis( axis );
   }
@@ -333,8 +334,8 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     String units = timeUnits();
     CoordinateAxis1D axis = new CoordinateAxis1D( ds, null, "time", DataType.INT, "TSTEP", units, desc );
     axis.setCachedData( data, true);
-    axis.addAttribute( new Attribute( "long_name", desc));
-    axis.addAttribute( new Attribute( "units", units ));
+    axis.addAttribute( new Attribute( CDM.LONG_NAME, desc));
+    axis.addAttribute( new Attribute( CDM.UNITS, units ));
     axis.addAttribute( new Attribute( _Coordinate.AxisType, AxisType.Time.toString() ) );
     ds.addCoordinateAxis( axis );
   }

@@ -14,3 +14,6 @@ intelliJ/maven/
 intelliJ/thredds/
 *.iws
 atlassian-ide-plugin.xml
+
+# Ignore Dreamweaver balogna
+_notes

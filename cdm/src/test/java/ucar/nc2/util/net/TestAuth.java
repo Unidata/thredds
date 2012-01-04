@@ -152,7 +152,7 @@ public class TestAuth extends ucar.nc2.util.TestCommon
     testBasic() throws Exception
     {
         AuthDataBasic[] basictests = {
-            new AuthDataBasic("http://motherlode.ucar.edu/thredds/dodsC/restrict/testdata/testData.nc.html","tiggeUser","tigge")
+            new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html","tiggeUser","tigge")
         };
 
         System.out.println("*** Testing: Http Basic Password Authorization");
@@ -186,7 +186,6 @@ public class TestAuth extends ucar.nc2.util.TestCommon
                 junit.framework.Assert.assertTrue("testBasic", false);
         }
     }
-
 
     //Disable for now
     public void
@@ -277,6 +276,7 @@ block:          {
         }
         junit.framework.Assert.assertTrue("test(De-)Serialize", ok);
     }
+
 
 }
 

@@ -79,7 +79,7 @@ public class TestPointFeatureTypes extends TestCase {
     TestAll.actOnAll(dir, ff, new TestAll.Act() {
 
       public int doAct(String filename) throws IOException {
-        checkPointDataset(filename, FeatureType.ANY_POINT, true);
+        checkPointDataset(filename, FeatureType.ANY_POINT, false);
         //testPointDataset(filename, FeatureType.POINT, true);
         return 1;
       }
@@ -170,18 +170,22 @@ public class TestPointFeatureTypes extends TestCase {
     // forget flat for now
     //assert 420 == checkPointDataset(CFpointObs_topdir + "sectionFlat.ncml", FeatureType.SECTION, false);
     //assert 420 == checkPointDataset(CFpointObs_topdir + "sectionFlat.nc", FeatureType.SECTION, false);
+
+  }
+
+    // CF 1.6
+  public void testCF1p6() throws IOException {
+    assert 6 == checkPointDataset(CFpointObs_topdir + "stationRaggedContig6.ncml", FeatureType.STATION, false);
+    assert 6 == checkPointDataset(CFpointObs_topdir + "stationRaggedIndex6.ncml", FeatureType.STATION, false);
+    assert 12 == checkPointDataset(CFpointObs_topdir + "sectionRagged6.ncml", FeatureType.SECTION, false);
+    assert 14 == checkPointDataset(CFpointObs_topdir + "stationProfileRagged6.ncml", FeatureType.STATION_PROFILE, false);
+    assert 6 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedContigTimeJoin6.ncml", FeatureType.PROFILE, false);
+    assert 22 ==  checkPointDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin6.ncml", FeatureType.PROFILE, false);
+    assert 20 == checkPointDataset(CFpointObs_topdir + "trajMultidim6.ncml", FeatureType.TRAJECTORY, false);
   }
 
   public void testProblem() throws IOException {
-    // not picking up missing value
-    // int n = checkPointDataset(CFpointObs_topdir + "stationRaggedMissing.ncml", FeatureType.STATION, false);
-
-    //int n = checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
-    //System.out.printf("n=%d%n", n);
-
-    assert 17280 == checkPointDataset(topdir + "cfPoint/station/rig_tower.2009-02-01.ncml", FeatureType.STATION, true);
-    //System.out.printf("n=%d%n", n);
-
+    assert 20 == checkPointDataset(CFpointObs_topdir + "kunicki.structs.nc4", FeatureType.STATION, true);
   }
 
   public void testCF() throws IOException {
@@ -217,6 +221,9 @@ public class TestPointFeatureTypes extends TestCase {
 
     // netcdf-4 with structure, from tom: tkunicki@usgs.gov
     // assert 6 == checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
+
+    // netcdf4 structs
+    assert 20 == checkPointDataset(CFpointObs_topdir + "kunicki.structs.nc4", FeatureType.STATION, true);
   }
 
   public void testPlug() throws IOException {

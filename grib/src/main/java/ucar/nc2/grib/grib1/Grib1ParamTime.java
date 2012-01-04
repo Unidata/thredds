@@ -37,7 +37,9 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarPeriod;
 
 /**
- * Process level information from GRIB-1 Table 5: "Time range indicator"
+ * Time coordinate from the PDS.
+ * Process information from GRIB-1 Table 4: "Forecast time unit"
+ * Process information from GRIB-1 Table 5: "Time range indicator"
  *
  * @author John
  * @since 9/4/11
@@ -46,6 +48,11 @@ import ucar.nc2.time.CalendarPeriod;
 public class Grib1ParamTime {
   static public enum StatType {Average, Accumulation, Difference, StdDev, Variance}
 
+  /**
+   * Convert a time unit to a CalendarPeriod
+   * @param timeUnit (table 4)
+   * @return equivalent CalendarPeriod
+   */
   static public CalendarPeriod getCalendarPeriod(int timeUnit) {
     // LOOK - some way to intern these ?
     switch (timeUnit) { // code table 4.4
@@ -80,8 +87,8 @@ public class Grib1ParamTime {
     }
   }
 
-  static public StatType getStatType(int timeType) {
-    switch (timeType) {
+  static public StatType getStatType(int timeRangeIndicator) {
+    switch (timeRangeIndicator) {
       case 3:
       case 6:
       case 7:
@@ -103,15 +110,16 @@ public class Grib1ParamTime {
       case 119:
       case 125:
         return StatType.StdDev;
+      default:
+        return null;
     }
-    return null;
   }
 
   // code table 5 - 2010 edition of WMO manual on codes (I.2 – Bi — 21)
-  static public String getTimeTypeName(int timeType, int p1, int p2) {
+  static public String getTimeTypeName(int timeRangeIndicator, int p1, int p2) {
     String timeRange;
 
-    switch (timeType) {
+    switch (timeRangeIndicator) {
 
       /* Forecast product valid for reference time + P1 (P1 > 0), or
         Uninitialized analysis product for reference time (P1 = 0), or
@@ -247,7 +255,7 @@ public class Grib1ParamTime {
         break;
 
       default:
-        timeRange = "Unknown Time Range Indicator " + timeType;
+        timeRange = "Unknown Time Range Indicator " + timeRangeIndicator;
     }
 
     return timeRange;
@@ -255,12 +263,12 @@ public class Grib1ParamTime {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  private final int timeType; // code Table 5 (octet 21)
+  private final int timeRangeIndicator; // code Table 5 (octet 21)
   private final int p1, p2; // octet 19 and 20
   private final boolean isInterval;
-  private int start;
-  private int end;
-  private int forecastTime;
+  private final int start;
+  private final int end;
+  private final int forecastTime;
 
   /**
    * Handles GRIB-1 code table 5 : "Time range indicator".
@@ -269,24 +277,26 @@ public class Grib1ParamTime {
    */
   public Grib1ParamTime(Grib1SectionProductDefinition pds) {
 
-    timeType = pds.getTimeType();
+    timeRangeIndicator = pds.getTimeRangeIndicator();
     p1 = pds.getTimeValue1();
     p2 = pds.getTimeValue2();
     int n = pds.getNincluded();
 
-    switch (timeType) {
+    switch (timeRangeIndicator) {
 
       /*Forecast product valid for reference time + P1 (P1 > 0), or
         Uninitialized analysis product for reference time (P1 = 0), or
         Image product for reference time (P1 = 0) */
       case 0:
         forecastTime = p1;
+        start = end = 0;
         isInterval = false;
         break;
 
       // Initialized analysis product for reference time (P1 = 0)
       case 1:
         forecastTime = 0;
+        start = end = 0;
         isInterval = false;
         break;
 
@@ -294,6 +304,7 @@ public class Grib1ParamTime {
       case 2:
         start = p1;
         end = p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -301,6 +312,7 @@ public class Grib1ParamTime {
       case 3:
         start = p1;
         end = p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -308,7 +320,7 @@ public class Grib1ParamTime {
       case 4:
         start = p1;
         end = p2;
-        forecastTime = p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -316,7 +328,7 @@ public class Grib1ParamTime {
       case 5:
         start = p1;
         end = p2;
-        forecastTime = p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -324,6 +336,7 @@ public class Grib1ParamTime {
       case 6:
         start = -p1;
         end = -p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -331,12 +344,14 @@ public class Grib1ParamTime {
       case 7:
         start = -p1;
         end = p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
       // P1 occupies octets 19 and 20; product valid at reference time + P1
       case 10:
         forecastTime = GribNumbers.int2(p1, p2);
+        start = end = 0;
         isInterval = false;
         break;
 
@@ -354,6 +369,7 @@ public class Grib1ParamTime {
         The units of P2 are given by the contents of octet 18 and Code table 4 */
       case 51:  // LOOK ??
         forecastTime = p2;
+        start = end = 0;
         isInterval = false;
         break;
 
@@ -363,6 +379,7 @@ public class Grib1ParamTime {
       case 113:
         start = 0;
         end = p1 + n * p2;  // LOOK might be n-1 ??
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -372,6 +389,7 @@ public class Grib1ParamTime {
       case 114:
         start = 0;
         end = p1 + n * p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -380,6 +398,7 @@ public class Grib1ParamTime {
       case 115:
         start = 0;
         end = p1 + n * p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -388,6 +407,7 @@ public class Grib1ParamTime {
       case 116:
         start = 0;
         end = p1 + n * p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -399,6 +419,7 @@ public class Grib1ParamTime {
       case 117:
         start = 0;
         end = p1;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -408,6 +429,7 @@ public class Grib1ParamTime {
       case 118:
         start = 0;
         end = n * p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -417,6 +439,7 @@ public class Grib1ParamTime {
       case 119:
         start = p1;
         end = p1 + n * p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -424,6 +447,7 @@ public class Grib1ParamTime {
       case 123:
         start = 0;
         end = n * p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -431,6 +455,7 @@ public class Grib1ParamTime {
       case 124:
         start = 0;
         end = n * p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
@@ -440,39 +465,68 @@ public class Grib1ParamTime {
       case 125:
         start = 0;
         end = p1 + n * p2;
+        forecastTime = 0;
         isInterval = true;
         break;
 
       default:
-        throw new IllegalArgumentException("PDS: Unknown Time Range Indicator " + timeType);
+        throw new IllegalArgumentException("PDS: Unknown Time Range Indicator " + timeRangeIndicator);
     }
 
   }
 
+  /**
+   * Get interval [start, end] since reference time in units of timeUnit, only if  an interval.
+   * @return interval [start, end]
+   */
   public int[] getInterval() {
     return isInterval ? new int[]{start, end} : null;
   }
 
+  /**
+   * Get interval size (end - start) in units of timeUnit, only if an interval.
+   * @return interval size
+   */
+  public int getIntervalSize() {
+    return isInterval ? end - start : 0;
+  }
+
+  /**
+   * Is this an interval time coordinate
+   * @return If an interval time coordinate
+   */
   public boolean isInterval() {
     return isInterval;
   }
 
+  /**
+   * Forecast time since reference time in units of timeUnit, only if not an interval.
+   * @return Forecast time
+   */
   public int getForecastTime() {
     return forecastTime;
   }
 
-  public int getTimeType() {
-    return timeType;
-  }
-
+  /**
+   * The time unit name (code table 5)
+   * @return time unit name
+   */
   public String getTimeTypeName() {
-    return getTimeTypeName(timeType, p1, p2);
+    return getTimeTypeName(timeRangeIndicator, p1, p2);
   }
 
+   /**
+   * The time unit statistical type, derived from code table 5)
+   * @return time unit statistical type
+   */
   public StatType getStatType() {
-    return getStatType(timeType);
+    return getStatType(timeRangeIndicator);
   }
 
+  /**
+   * A string representation of the time coordinate, whether its an interval or not.
+   * @return string representation of the time coordinate
+   */
   public String getTimeCoord() {
     if (isInterval()) {
       int[] intv = getInterval();

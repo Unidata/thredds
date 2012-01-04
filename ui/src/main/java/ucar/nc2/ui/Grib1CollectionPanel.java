@@ -38,15 +38,12 @@ import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Parameter;
-import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
 import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
-import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
@@ -414,7 +411,7 @@ public class Grib1CollectionPanel extends JPanel {
     DatasetCollectionMFiles dc = null;
     try {
       dc = DatasetCollectionMFiles.open(spec, null, f);
-      dc.scan();
+      dc.scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFiles());
       return dc;
 
@@ -607,7 +604,7 @@ public class Grib1CollectionPanel extends JPanel {
     public String getName() {
       if (param == null) return null;
       return Grib1Utils.makeVariableName(tables, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
-              pds.getLevelType(), pds.getTimeType());
+              pds.getLevelType(), pds.getTimeRangeIndicator());
     }
 
     public String getUnit() {
@@ -671,13 +668,13 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public int getTimeType() {
-      return ptime.getTimeType();
+      return pds.getTimeRangeIndicator();
     }
 
     public String getTimeCoord() {
       if (ptime.isInterval()) {
         int[] intv = ptime.getInterval();
-        return intv[0] + "-" + intv[1];
+        return intv[0] + "-" + intv[1] + "("+ptime.getIntervalSize()+")";
       }
       return Integer.toString(ptime.getForecastTime());
     }

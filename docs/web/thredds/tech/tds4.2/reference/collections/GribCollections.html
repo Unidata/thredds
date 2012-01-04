@@ -12,35 +12,52 @@ dl {margin: 10px 5px 5px 15px;}
 
 <body>
 <h1>GRIB Collections</h1>
-<p>Status: alpha code in TDS 4.3</p>
+<p>Status: beta code in TDS 4.3</p>
+<p>See <a href="FeatureCollections.html">Feature Collection</a> overview.</p>
 <hr />
-<h2>TDS Configuration</h2>
-<pre>1)&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
-2)  &lt;metadata inherited=&quot;true&quot;&gt;
-      &lt;serviceName&gt;fullServices&lt;/serviceName&gt;<br />      &lt;authority&gt;edu.ucar.unidata&lt;/authority&gt;<br />      &lt;dataType&gt;GRID&lt;/dataType&gt;<br />      &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
-      &lt;documentation type=&quot;summary&quot;&gt;NCEP GFS Model : AWIPS 230 (G) Grid. Global Lat/Lon grid&lt;/documentation&gt;
-    &lt;/metadata&gt;
-
-3)  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;
-4)       name=&quot;GFS_Global_0p5deg&quot; 
-5)       olderThan=&quot;5 min&quot;/&gt;
-6)  &lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
-7)  &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
-8)  &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
-  &lt;/featureCollection&gt;
-</pre>
+<h3>Example:</h3>
+<pre>1) &lt;featureCollection name=&quot;GFS-Puerto_Rico_191km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/GFS/Puerto_Rico_191km&quot;&gt;
+2)   &lt;metadata inherited=&quot;true&quot;&gt;
+3)     &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;
+       &lt;documentation type=&quot;summary&quot;&gt;NCEP GFS Model : AWIPS 205 (L) Grid. National - Puerto Rico (polar stereographic).
+         Model runs are made at 0Z, with analysis and forecasts every 12 hours out 10 days.
+       &lt;/documentation&gt;
+     &lt;/metadata&gt;
+4)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$&quot;&gt;
+5)   &lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+6)   &lt;gribConfig datasetTypes=&quot;collection Files&quot; /&gt;
+   &lt;/featureCollection&gt;</pre>
 <ol>
-  <li>A featureCollection must have a name and a path, recommend that you not specify the ID, which will default to the  path. featureType is set to GRIB. </li>
+  <li>A featureCollection must have a <em>name</em> and a <em>path</em>, recommend that you not specify an <em>ID</em>, which will then default to the  <em>path</em>. The <em>featureType</em> attribute is set to <em>GRIB</em>. </li>
   <li>A featureCollection is a InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
-  <li>Collection must consist of GRIB-2 files. Not sure if the #yyyyMMdd_HHmm# date extractor is used for anything.</li>
-  <li>The collection name is used for the index (.ncx)</li>
-  <li>The olderThan attribute is optional, if used says to ignore files younder than this time</li>
-  <li>??</li>
-  <li>??</li>
-  <li>not used i think</li>
+  <li>The collection must consist of GRIB-1 or GRIB-2 files. You must set the dataFormat to indicate which.</li>
+  <li>The <a href="CollectionSpecification.html">collection specification</a>. If you dont put a <em>name</em> attribute, the featureCollection name is used. This name must be unique for all collections on this TDS server.</li>
+  <li>The collection changes, so the <em>update</em> element says to rescan it on TDS startup and every 15 minutes. </li>
+  <li>See below.</li>
 </ol>
-<p>You must have a default service.</p>
-<h2>GribCollection </h2>
+<hr />
+<h3>gribConfig element</h3>
+<p>The schema definition:</p>
+<pre>  &lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;<br />    &lt;xsd:sequence&gt;<br />      &lt;xsd:element name=&quot;gdsHash&quot;&gt;<br />        &lt;xsd:complexType&gt;<br />          &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot;/&gt;<br />          &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot;/&gt;<br />        &lt;/xsd:complexType&gt;<br />      &lt;/xsd:element&gt;<br />    &lt;/xsd:sequence&gt;<br />    &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;<br />  &lt;/xsd:complexType&gt;</pre>
+<p>Defines options on feature collections with <strong> featureType</strong>=&quot;GRIB&quot;. Example:</p>
+<pre>1) &lt;gribConfig datasetTypes=&quot;Collection Files&quot; &gt;
+2)   &lt;gdsHash from=&quot;-2121584860&quot; to=&quot;28944332&quot;/&gt;<br />3)   &lt;intervalMerge/&gt;<br />&lt;/gribConfig&gt;</pre>
+<ol>
+  <li><strong>datasetTypes</strong>: define which 
+  datasets are available in the TDS catalog
+  <ol>
+    <li>
+      <strong>Collection</strong>: the collection level dataset</li>
+    <li><strong>Files</strong>:
+      each physical file
+    is exposed as a seperate dataset.</li>
+    </ol>
+  </li>
+  <li><strong>gdsHash</strong>: translate any gds hash that equals &quot;-2121584860&quot; to &quot;28944332&quot;. This is used to fix minor errors in the GDS encoding.</li>
+  <li><strong>intervalMerge</strong>: normally, time coordinates with seperate intervals are kept seperate.</li>
+</ol>
+<hr />
+<h2>Implementation Notes</h2>
 <h3>Index</h3>
 <p>Example 1. GFS global half degree - 45 day archive</p>
 <pre>
@@ -93,7 +110,7 @@ dl {margin: 10px 5px 5px 15px;}
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  May 2011
+<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Dec 2011
 </address>
 </body>
 </html>

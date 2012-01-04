@@ -60,7 +60,7 @@ public class FlatEarth extends AbstractCoordTransBuilder {
     double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double rot = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.FlatEarth.ROTATIONANGLE, 0.0);
-    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius()) * .001;
+    double earth_radius = getEarthRadius(ctv);
 
     ucar.unidata.geoloc.projection.FlatEarth proj = new ucar.unidata.geoloc.projection.FlatEarth(lat0, lon0, rot, earth_radius);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);

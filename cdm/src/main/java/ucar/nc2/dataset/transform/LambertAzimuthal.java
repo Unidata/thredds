@@ -60,6 +60,7 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
     double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
+    double earth_radius = getEarthRadius(ctv);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
       double scalef = getFalseEastingScaleFactor(ds, ctv);
@@ -67,8 +68,6 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-    // these must be in meters, projection needs them in km
-    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius()) * .001;
 
     ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea proj =
             new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing, earth_radius);
