@@ -174,7 +174,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="GFS-Hawaii_160km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Hawaii_160km">
@@ -189,7 +189,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/GFS_Hawaii_160km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="GFS-CONUS_80km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/CONUS_80km">
@@ -204,7 +204,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="GFS-CONUS_95km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/CONUS_95km">
@@ -220,7 +220,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/GFS_CONUS_95km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="GFS-CONUS_191km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/CONUS_191km">
@@ -235,7 +235,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/GFS_CONUS_191km_#yyyyMMdd_HHmm#.grib1"
                     olderThan="5 min"/>
-        <tdm startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
       <featureCollection name="GFS-Puerto_Rico_191km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Puerto_Rico_191km">
@@ -257,7 +257,7 @@
 
     </dataset>
 
-    <!-- dataset name="North American Model (NAM)">
+    <dataset name="North American Model (NAM)">
 
       <metadata inherited="true">
         <documentation type="summary">NCEP Nonhydrostatic Mesoscale Model (NMM) and Gridpoint Statistical Interpolation
@@ -267,7 +267,7 @@
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
       </metadata>
 
-      <featureCollection name="NCEP-NAM-Alaska_11km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Alaska_11km">
+      <featureCollection name="NAM-Alaska_11km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Alaska_11km">
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model: AWIPS 242 (S) Grid over Alaska.
             Model runs are made at 0, 6, 12, 18Z with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
@@ -276,63 +276,46 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$"
-            name="NAM_Alaska_11km"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$"
             dateFormatMark="#NAM_Alaska_11km_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-NAM-Alaska_45km-conduit" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/NAM/Alaska_45km/conduit">
+      <featureCollection name="NAM-Alaska_45km-conduit" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Alaska_45km/conduit">
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model : AWIPS 216 (V) grid over Alaska.
-            Model runs are made at 00Z, 06Z, 12Z, and 18Z with analysis and forecasts every 3 hours out to 84 hours
-            (3.5 days).
+            Model runs are made at 00Z, 06Z, 12Z, and 18Z with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
             Horizontal = 139 by 107 points, resolution 45.0 km, Polar Stereographic projection.
             Vertical = 1000 to 50 hPa pressure levels.
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/.*grib2$"
-            name="NAM_Alaska_45km_conduit"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/.*grib2$"
             dateFormatMark="#NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-NAM-CONUS_12km-noaaport" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/NAM/CONUS_12km">
+      <featureCollection name="NAM-CONUS_12km-noaaport" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/CONUS_12km">
         <metadata inherited="true">
-          <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United
-            States.
-            Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5
-            days).
+          <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United States.
+            Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
             Horizontal = 614 by 428 points, resolution 12.19 km, LambertConformal projection.
             Vertical = 1000 to 100 hPa pressure levels (29).
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/.*grib2$"
-            name="NAM_CONUS_12km-noaaport"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/.*grib2$"
             dateFormatMark="#NAM_CONUS_12km_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-NAM-CONUS_12km-conduit" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/NAM/CONUS_12km/conduit">
+      <featureCollection name="NAM-CONUS_12km-conduit" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/CONUS_12km/conduit">
         <metadata inherited="true">
-          <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United
-            States.
-            Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5
-            days).
+          <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United States.
+            Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
             Horizontal = 614 by 428 points, resolution 12.19 km, LambertConformal projection.
             Vertical = small number of mandatory pressure levels, lots of surface fields.
           </documentation>
@@ -340,15 +323,12 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/.*grib2$"
-            name="NAM_CONUS_12km_conduit"
             dateFormatMark="#NAM_CONUS_12km_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-NAM-CONUS_20km-surface" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/NAM/CONUS_20km/surface">
+      <featureCollection name="NAM-CONUS_20km-surface" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/CONUS_20km/surface">
         <metadata inherited="true">
           <documentation type="summary">
             NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution.
@@ -358,17 +338,13 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/.*grib2$"
-            name="NAM_CONUS_20km_surface"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/.*grib2$"
             dateFormatMark="#NAM_CONUS_20km_surface_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-NAM-CONUS_20km-selectsurface" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/NAM/CONUS_20km/selectsurface">
+      <featureCollection name="NAM-CONUS_20km-selectsurface" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/CONUS_20km/selectsurface">
         <metadata inherited="true">
           <documentation type="summary">
             NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution.
@@ -379,17 +355,13 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/.*grib2$"
-            name="NAM_CONUS_20km_selectsurface"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/.*grib2$"
             dateFormatMark="#NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-NAM-CONUS_40km-conduit" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/NAM/CONUS_40km/conduit">
+      <featureCollection name="NAM-CONUS_40km-conduit" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/CONUS_40km/conduit">
         <metadata inherited="true">
           <documentation type="summary">
             NCEP North American Model : AWIPS 212 (R) Regional - CONUS - Double Resolution.
@@ -399,16 +371,13 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/.*grib2$"
-            name="NAM_CONUS_40km_conduit"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/.*grib2$"
             dateFormatMark="#NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-NAM-Polar_90km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Polar_90km">
+      <featureCollection name="NAM-Polar_90km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Polar_90km">
         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model : AWIPS 105 Grid.
             Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out to 84 hours.
@@ -417,28 +386,98 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/.*grib2$"
-            name="NAM_Polar_90km"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/.*grib2$"
             dateFormatMark="#NAM_Polar_90km_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
+
+      <featureCollection name="NAM-Alaska_22km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Alaska_22km">
+         <metadata inherited="true">
+           <dataFormat>GRIB-1</dataFormat>
+          <documentation type="summary">NCEP North American Model: AWIPS 217 (Y) Grid over Alaska - Double Resolution.
+            Model runs are made at 0 and 12Z, with analysis and forecasts every 3 hours out to 60 hours.
+            Horizontal = 277 by 213 points, resolution 22.5 km, Polar Stereographic projection.
+            Vertical = surface, height above ground, pressure layer (2D levels only)
+          </documentation>
+         </metadata>
+
+         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/NAM_Alaska_22km_#yyyyMMdd_HHmm#.grib1"
+             olderThan="5 min"/>
+         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+       </featureCollection>
+
+       <featureCollection name="NAM-Alaska_45km-noaaport" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Alaska_45km/noaaport">
+         <metadata inherited="true">
+           <dataFormat>GRIB-1</dataFormat>
+             <documentation type="summary">NCEP North American Model : AWIPS 216 (V) grid over Alaska.
+              Model runs are made at 0 and 12Z, with analysis and forecasts every 3 hours out to 60 hours.
+              Horizontal = 139 by 107 points, resolution 45.0 km, Polar Stereographic projection.
+              Vertical = 1000 to 50 hPa pressure levels.
+            </documentation>
+         </metadata>
+
+         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/NAM_Alaska_45km_noaaport_#yyyyMMdd_HHmm#.grib1"
+             olderThan="5 min"/>
+         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+       </featureCollection>
+
+        <featureCollection name="NAM-Alaska_95km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Alaska_95km">
+          <metadata inherited="true">
+            <dataFormat>GRIB-1</dataFormat>
+              <documentation type="summary">NCEP North American Model : AWIPS 207 (N) Regional - Alaska.
+              Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out to 60 hours.
+              Horizontal = 49 by 35 points, resolution 95.25 km, Stereographic projection.
+              Vertical = 1000 to 100 hPa pressure levels.
+            </documentation>
+          </metadata>
+
+          <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/NAM_Alaska_95km_#yyyyMMdd_HHmm#.grib1"
+              olderThan="5 min"/>
+          <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        </featureCollection>
+
+        <featureCollection name="NAM-CONUS_20km-noaaport" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/CONUS_20km/noaaport">
+          <metadata inherited="true">
+            <dataFormat>GRIB-1</dataFormat>
+              <documentation type="summary">
+              Model runs are made at 00Z, and 12Z with analysis and forecasts every 3 hours out to 60 hours; and at 06Z,
+              and 18Z with analysis and forecasts every 3 hours out to 48 hours.
+              Vertical = surface, height above ground, and 1000 to 30 hPa pressure levels.
+            </documentation>
+          </metadata>
+
+          <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/NAM_CONUS_20km_noaaport_#yyyyMMdd_HHmm#.grib1"
+              olderThan="5 min"/>
+          <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        </featureCollection>
+
+        <featureCollection name="NAM-CONUS_80km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/CONUS_80km">
+          <metadata inherited="true">
+            <dataFormat>GRIB-1</dataFormat>
+            <documentation type="summary">NCEP North American Model : AWIPS 211 (Q) Regional - CONUS (Lambert Conformal).
+              Model runs are made at 12Z and 00Z, with analysis and forecasts every 6 hours out to 60 hours.
+              Horizontal = 93 by 65 points, resolution 81.27 km, LambertConformal projection.
+              Vertical = 1000 to 100 hPa pressure levels.
+            </documentation>
+          </metadata>
+
+          <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
+              olderThan="5 min"/>
+          <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        </featureCollection>
 
     </dataset>
 
     <dataset name="Rapid Update Cycle (RUC) Model">
       <metadata inherited="true">
-        <documentation type="summary">NCEP Rapid Update Cycle (RUC) Model: frequently updated short-range weather
-          forecasts.
-        </documentation>
+        <documentation type="summary">NCEP Rapid Update Cycle (RUC) Model: frequently updated short-range weather forecasts.</documentation>
         <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/rucintro.htm"
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
         <dataFormat>GRIB-2</dataFormat>
       </metadata>
 
-      <featureCollection name="NCEP-RUC2-CONUS_13km" featureType="GRIB" harvest="true" path="grib/NCEP/RUC2/CONUS_13km">
+      <featureCollection name="RUC2-CONUS_13km" featureType="GRIB" harvest="true" path="grib/NCEP/RUC2/CONUS_13km">
         <metadata inherited="true">
           <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC2).
             Model runs are made hourly, with analysis and hourly forecasts out to 12 hours; on the 0, 3, 6, 9, 12, 15,
@@ -449,15 +488,12 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_13km/.*grib2$"
-            name="RUC2_CONUS_13km"
             dateFormatMark="#RUC2_CONUS_13km_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-RUC2-CONUS_20km-surface" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/RUC2/CONUS_20km/surface">
+      <featureCollection name="RUC2-CONUS_20km-surface" featureType="GRIB" harvest="true" path="grib/NCEP/RUC2/CONUS_20km/surface">
         <metadata inherited="true">
           <documentation type="summary">
             NCEP Rapid Update Cycle 2 (RUC2) Surface parameters.
@@ -469,15 +505,12 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/.*grib2$"
-            name="RUC2_CONUS_20km_surface"
             dateFormatMark="#RUC2_CONUS_20km_surface_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-RUC2-CONUS_20km-pressure" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/RUC2/CONUS_20km/pressure">
+      <featureCollection name="RUC2-CONUS_20km-pressure" featureType="GRIB" harvest="true" path="grib/NCEP/RUC2/CONUS_20km/pressure">
         <metadata inherited="true">
           <documentation type="summary">
             NCEP Rapid Update Cycle 2 (RUC2) Parameters on pressure levels.
@@ -489,15 +522,12 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/.*grib2$"
-            name="RUC2_CONUS_20km_pressure"
             dateFormatMark="#RUC2_CONUS_20km_pressure_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-RUC2-CONUS_20km-hybrid" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/RUC2/CONUS_20km/hybrid">
+      <featureCollection name="RUC2-CONUS_20km-hybrid" featureType="GRIB" harvest="true" path="grib/NCEP/RUC2/CONUS_20km/hybrid">
         <metadata inherited="true">
           <documentation type="summary">
             NCEP Rapid Update Cycle 2 (RUC2) Parameters on hybrid levels.
@@ -509,16 +539,44 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/.*grib2$"
-            name="RUC2_CONUS_20km_hybrid"
             dateFormatMark="#RUC2_CONUS_20km_hybrid_#yyyyMMdd_HHmm"
-            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="RUC2-CONUS_40km" featureType="GRIB" harvest="true" path="grib/NCEP/RUC2/CONUS_40km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-1</dataFormat>
+          <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC2).
+            Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs, there are also 4, 5, 6, 7, 8, 9, and 12 hour forecasts.
+            Horizontal = 151 by 113 points, resolution 40.63 km, LambertConformal projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_#yyyyMMdd_HHmm#.grib1"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="RUC-CONUS_80km" featureType="GRIB" harvest="true" path="grib/NCEP/RUC/CONUS_80km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-1</dataFormat>
+          <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC).
+            Model runs are made hourly, with analysis and 3 hour forecast; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs,
+            there are also 6, 9, and 12 hour forecasts.
+            Horizontal = 93 by 65 points, resolution 81.27 km LambertConformal projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/RUC_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
     </dataset>
 
 
-    <dataset name="Downscaled GFS with Eta Extension (DGEX)">
+    <!-- dataset name="Downscaled GFS with Eta Extension (DGEX)">
       <metadata inherited="true">
         <documentation type="summary">
           The NCEP DGEX Model is the Eta model extended to 8 days over smaller domains using the operational Eta model
@@ -813,7 +871,7 @@
         </gribConfig>
       </featureCollection>
 
-    </dataset>
+    </dataset -->
 
     <dataset name="NCEP Wave Watch III">
       <metadata inherited="true">
@@ -824,7 +882,7 @@
         <dataFormat>GRIB-2</dataFormat>
       </metadata>
 
-      <featureCollection name="NCEP-WW3-Global" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Global">
+      <featureCollection name="WW3-Global" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Global">
         <metadata inherited="true">
           <documentation type="summary">
             720 by 336 points, resolution 30 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
@@ -834,15 +892,12 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/WW3/Global/.*grib2$"
-            name="WW3_Global"
             dateFormatMark="#WW3_Global_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Regional_Alaska" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/WW3/Regional_Alaska">
+      <featureCollection name="WW3-Regional_Alaska" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Regional_Alaska">
         <metadata inherited="true">
           <documentation type="summary">
             401 by 187 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
@@ -850,17 +905,13 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Alaska/.*grib2$"
-            name="WW3_Regional_Alaska"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Alaska/.*grib2$"
             dateFormatMark="#WW3_Regional_Alaska_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Regional_Eastern_Pacific" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/WW3/Regional_Eastern_Pacific">
+      <featureCollection name="WW3-Regional_Eastern_Pacific" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Regional_Eastern_Pacific">
         <metadata inherited="true">
           <documentation type="summary">
             511 by 301 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
@@ -868,17 +919,13 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Eastern_Pacific/.*grib2$"
-            name="WW3_Regional_Eastern_Pacific"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Eastern_Pacific/.*grib2$"
             dateFormatMark="#WW3_Regional_Eastern_Pacific_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Regional_US_East_Coast" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/WW3/Regional_US_East_Coast">
+      <featureCollection name="WW3-Regional_US_East_Coast" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Regional_US_East_Coast">
         <metadata inherited="true">
           <documentation type="summary">
             301 by 331 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
@@ -886,11 +933,8 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_East_Coast/.*grib2$"
-            name="WW3_Regional_US_East_Coast"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_East_Coast/.*grib2$"
             dateFormatMark="#WW3_Regional_US_East_Coast_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
@@ -904,17 +948,13 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_West_Coast/.*grib2$"
-            name="WW3_Regional_US_West_Coast"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_West_Coast/.*grib2$"
             dateFormatMark="#WW3_Regional_US_West_Coast_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Coastal_US_East_Coast" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/WW3/Coastal_US_East_Coast">
+      <featureCollection name="WW3-Coastal_US_East_Coast" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Coastal_US_East_Coast">
         <metadata inherited="true">
           <documentation type="summary">
             586 by 481 points, resolution 4 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
@@ -922,17 +962,13 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_East_Coast/.*grib2$"
-            name="WW3_Coastal_US_East_Coast"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_East_Coast/.*grib2$"
             dateFormatMark="#WW3_Coastal_US_East_Coast_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Coastal_US_West_Coast" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/WW3/Coastal_US_West_Coast">
+      <featureCollection name="NCEP-WW3-Coastal_US_West_Coast" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Coastal_US_West_Coast">
         <metadata inherited="true">
           <documentation type="summary">
             736 by 526 points, resolution 4 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
@@ -940,16 +976,13 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_West_Coast/.*grib2$"
-            name="WW3_Coastal_US_West_Coast"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_West_Coast/.*grib2$"
             dateFormatMark="#WW3_Coastal_US_West_Coast_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Coastal_Alaska" featureType="GRIB" harvest="true"
+      <featureCollection name="WW3-Coastal_Alaska" featureType="GRIB" harvest="true"
                          path="grib/NCEP/WW3/Coastal_Alaska">
         <metadata inherited="true">
           <documentation type="summary">
@@ -958,11 +991,8 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_Alaska/.*grib2$"
-            name="WW3_Coastal_Alaska"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_Alaska/.*grib2$"
             dateFormatMark="#WW3_Coastal_Alaska_#yyyyMMdd_HHmm"
-            timePartition="day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
@@ -971,7 +1001,7 @@
 
   </dataset>
 
-  <dataset name="Unidata NEXRAD Composite-1km" harvest="true">
+  <!-- dataset name="Unidata NEXRAD Composite-1km" harvest="true">
     <metadata inherited="true">
       <dataFormat>GRIB-2</dataFormat>
       <documentation type="summary">NEXRAD Radar National Composites of Level 3 Base Reflectivity. 1 km resolution.
@@ -985,16 +1015,12 @@
 
     <featureCollection name="nexrad_composite_1km" featureType="GRIB" harvest="true" path="grib/nexrad/composite/1km">
       <collection spec="/data/ldm/pub/native/radar/composite/grib2/N0R/**/.*grib2$"
-                  name="nexrad_composite_1km"
                   dateFormatMark="#/N0R/#yyyyMMdd"
-                  timePartition="directory"
-                  olderThan="5 min"/>
+                  olderThan="5 min"/>                           <!-- timePartition="directory"
       <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
     </featureCollection>
 
-</dataset -->
-    
-    </dataset>
+  </dataset -->
 
 </catalog>
 

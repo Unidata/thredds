@@ -142,7 +142,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       f.format("%s", gp.getName());
 
     if (vindex.intvType >= 0)
-      f.format(" (%s)", tables.getTableValue("4.10", vindex.intvType));
+      f.format(" (%s %s)", vindex.intvName, tables.getTableValue("4.10", vindex.intvType));
 
     if (vindex.ensDerivedType >= 0)
       f.format(" (%s)", tables.getTableValue("4.7", vindex.ensDerivedType));
@@ -512,6 +512,8 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       int[] param = new int[] {vindex.discipline,vindex.category,vindex.parameter};
       v.addAttribute(new Attribute("Grib_Parameter", Array.factory(param)));
       v.addAttribute(new Attribute("Grib_Level_Type", vindex.levelType));
+      if ( vindex.intvName != null)
+        v.addAttribute(new Attribute("Time_Interval", vindex.intvName));
       if (vindex.intvType >= 0) {
         v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));
         CF.CellMethods cm = tables.convertTable4_10(vindex.intvType);

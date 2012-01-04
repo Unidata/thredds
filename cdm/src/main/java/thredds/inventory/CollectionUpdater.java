@@ -52,72 +52,72 @@ public enum CollectionUpdater {
 
     @Override
     public void jobScheduled(Trigger trigger) {
-      System.out.printf("jobScheduled %s%n", trigger);
+      logger.debug("jobScheduled {}", trigger);
     }
 
     @Override
     public void jobUnscheduled(TriggerKey triggerKey) {
-      System.out.printf("jobUnscheduled %s%n", triggerKey);
+      logger.debug("jobUnscheduled {}", triggerKey);
     }
 
     @Override
     public void triggerFinalized(Trigger trigger) {
-      System.out.printf("triggerFinalized %s%n", trigger);
+      logger.debug("triggerFinalized {}", trigger);
     }
 
     @Override
     public void triggerPaused(TriggerKey triggerKey) {
-      System.out.printf("triggerPaused %s%n", triggerKey);
+      logger.debug("triggerPaused {}", triggerKey);
     }
 
     @Override
     public void triggersPaused(String s) {
-      System.out.printf("triggersPaused %s%n", s);
+      logger.debug("triggersPaused {}", s);
     }
 
     @Override
     public void triggerResumed(TriggerKey triggerKey) {
-      System.out.printf("triggerResumed %s%n", triggerKey);
+      logger.debug("triggerResumed {}", triggerKey);
     }
 
     @Override
     public void triggersResumed(String s) {
-      System.out.printf("triggersResumed %s%n", s);
+      logger.debug("triggersResumed {}", s);
     }
 
     @Override
     public void jobAdded(JobDetail jobDetail) {
-      System.out.printf("jobAdded %s%n", jobDetail);
+      logger.debug("jobAdded {}", jobDetail);
     }
 
     @Override
     public void jobDeleted(JobKey jobKey) {
-      System.out.printf("jobDeleted %s%n", jobKey);
+      logger.debug("jobDeleted {}", jobKey);
     }
 
     @Override
     public void jobPaused(JobKey jobKey) {
-      System.out.printf("jobPaused %s%n", jobKey);
+      logger.debug("jobPaused {}", jobKey);
     }
 
     @Override
     public void jobsPaused(String s) {
-      System.out.printf("jobPaused %s%n", s);
+      logger.debug("jobPaused {}", s);
     }
 
     @Override
     public void jobResumed(JobKey jobKey) {
-      System.out.printf("jobsResumed %s%n", jobKey);
+      logger.debug("jobsResumed {}", jobKey);
     }
 
     @Override
     public void jobsResumed(String s) {
-      System.out.printf("jobsResumed %s%n", s);
+      logger.debug("jobsResumed {}", s);
     }
 
     @Override
     public void schedulerError(String s, SchedulerException e) {
-      //To change body of implemented methods use File | Settings | File Templates.
+      logger.debug("schedulerError {} {}", s, e);
     }
 
     @Override
@@ -180,7 +180,7 @@ public enum CollectionUpdater {
 
       try {
         scheduler.scheduleJob(startupTrigger);
-        logger.info("Schedule startup scan for {} at {}\n", config, runTime);
+        logger.info("Schedule startup scan for {} at {}", config.spec, runTime);
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
@@ -255,7 +255,7 @@ public enum CollectionUpdater {
       logger.info("Trigger Update for {}", collectionName);
       scheduler.scheduleJob(trigger);
     } catch (SchedulerException e) {
-      logger.error("cronExecutor failed to schedule RereadProtoJob", e);
+      logger.error("triggerUpdate failed", e);
       // e.printStackTrace();
     }
   }
@@ -267,15 +267,14 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
         CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
-        logger.debug("Update for {} trigger = {}", manager.getCollectionName(), context.getJobDetail().getKey());
-        System.out.printf("%s%n", context.getTrigger().getKey());
+        logger.debug("Update for {} trigger = {}", manager.getCollectionName(), context.getTrigger().getKey());
         String groupName = context.getTrigger().getKey().getGroup();
         if (groupName.equals("nocheck"))
           manager.updateNocheck();
         else
           manager.scan(true);
       } catch (Throwable e) {
-        logger.error("InitFmrcJob failed", e);
+        logger.error("UpdateCollectionJob.execute failed", e);
       }
     }
   }
@@ -290,7 +289,7 @@ public enum CollectionUpdater {
         logger.debug("Update resetProto for {}", manager.getCollectionName());
         manager.resetProto();
       } catch (Throwable e) {
-        logger.error("RereadProtoJob failed", e);
+        logger.error("ChangeProtoJob.execute failed", e);
       }
     }
   }
