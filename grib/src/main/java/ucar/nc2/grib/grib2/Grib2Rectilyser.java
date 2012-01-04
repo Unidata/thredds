@@ -89,11 +89,6 @@ public class Grib2Rectilyser {
     return ensCoords;
   }
 
-  public String getTimeIntervalName(int timeIdx) {
-    TimeCoord tc = timeCoords.get(timeIdx);
-    return tc.getTimeIntervalName();
-  }
-
   public void make(Formatter f, Counter counter) throws IOException {
     // unique variables using Grib2Record.cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
@@ -468,6 +463,11 @@ public class Grib2Rectilyser {
     }
 
     return result;
+  }
+
+  public String getTimeIntervalName(int timeIdx) {
+    TimeCoord tc = timeCoords.get(timeIdx);
+    return tc.getTimeIntervalName();
   }
 
 

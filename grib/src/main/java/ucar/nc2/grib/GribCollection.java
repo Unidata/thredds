@@ -403,7 +403,7 @@ public abstract class GribCollection {
     public int ntimes, nverts, nens;           // time, vert and ens coordinate lengths
     public Record[] records;                   // Record[ntimes*nverts*nens] - lazy init
 
-    int partTimeCoordIdx; // partition time coordinate index
+    public int partTimeCoordIdx; // partition time coordinate index
 
     public VariableIndex(GroupHcs g, int tableVersion,
                          int discipline, int category, int parameter, int levelType, boolean isLayer,

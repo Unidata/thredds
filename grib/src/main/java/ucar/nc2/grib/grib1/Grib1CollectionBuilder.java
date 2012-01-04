@@ -348,6 +348,7 @@ public class Grib1CollectionBuilder {
     int tableVersion = pv.getTableVersion();
     int levelType = pv.getLevelType();
     int intvType = pv.getIntervalType();
+    String intvName = pv.getIntvName();
     boolean isLayer = pv.getIsLayer();
     int ensDerivedType = pv.getEnsDerivedType();
     int probType = pv.getProbabilityType();
@@ -359,7 +360,7 @@ public class Grib1CollectionBuilder {
     int vertIdx = pv.getVertIdx();
     int ensIdx = pv.getEnsIdx();
 
-    return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, null,
+    return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
             ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
@@ -551,7 +552,7 @@ public class Grib1CollectionBuilder {
 
   private GribCollectionProto.VariableRecords writeRecordsProto(Grib1Rectilyser.VariableBag vb, Set<Integer> fileSet) throws IOException {
     GribCollectionProto.VariableRecords.Builder b = GribCollectionProto.VariableRecords.newBuilder();
-    b.setCdmHash(vb.first.cdmVariableHash(0));
+    b.setCdmHash(vb.cdmHash);
     for (Grib1Rectilyser.Record ar : vb.recordMap) {
       GribCollectionProto.Record.Builder br = GribCollectionProto.Record.newBuilder();
 
@@ -580,7 +581,7 @@ public class Grib1CollectionBuilder {
       b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
 
     for (Grib1Rectilyser.VariableBag vb : g.rect.getGribvars())
-      b.addVariables(writeVariableProto(vb));
+      b.addVariables(writeVariableProto(g.rect, vb));
 
     List<TimeCoord> timeCoords = g.rect.getTimeCoords();
     for (int i = 0; i < timeCoords.size(); i++)
@@ -600,7 +601,7 @@ public class Grib1CollectionBuilder {
     return b.build();
   }
 
-  private GribCollectionProto.Variable writeVariableProto(Grib1Rectilyser.VariableBag vb) throws IOException {
+  private GribCollectionProto.Variable writeVariableProto(Grib1Rectilyser rect, Grib1Rectilyser.VariableBag vb) throws IOException {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
     Grib1SectionProductDefinition pds = vb.first.getPDSsection();
 
@@ -612,7 +613,7 @@ public class Grib1CollectionBuilder {
     Grib1ParamLevel plevel = pds.getParamLevel();
     b.setIsLayer(plevel.isLayer());
     b.setIntervalType(pds.getTimeRangeIndicator());
-    b.setCdmHash(vb.first.cdmVariableHash(0));
+    b.setCdmHash(vb.cdmHash);
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
     b.setTimeIdx(vb.timeCoordIndex);
@@ -620,6 +621,11 @@ public class Grib1CollectionBuilder {
       b.setVertIdx(vb.vertCoordIndex);
     if (vb.ensCoordIndex >= 0)
       b.setEnsIdx(vb.ensCoordIndex);
+
+    Grib1ParamTime ptime = pds.getParamTime();
+    if (ptime.isInterval()) {
+      b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
+    }
 
     /* if (pds.isEnsembleDerived()) {
       Grib1Pds.PdsEnsembleDerived pdsDerived = (Grib1Pds.PdsEnsembleDerived) pds;

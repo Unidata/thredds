@@ -939,7 +939,7 @@
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Regional_US_West_Coast" featureType="GRIB" harvest="true"
+      <featureCollection name="WW3-Regional_US_West_Coast" featureType="GRIB" harvest="true"
                          path="grib/NCEP/WW3/Regional_US_West_Coast">
         <metadata inherited="true">
           <documentation type="summary">
@@ -968,7 +968,7 @@
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Coastal_US_West_Coast" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Coastal_US_West_Coast">
+      <featureCollection name="WW3-Coastal_US_West_Coast" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Coastal_US_West_Coast">
         <metadata inherited="true">
           <documentation type="summary">
             736 by 526 points, resolution 4 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
@@ -1016,7 +1016,7 @@
     <featureCollection name="nexrad_composite_1km" featureType="GRIB" harvest="true" path="grib/nexrad/composite/1km">
       <collection spec="/data/ldm/pub/native/radar/composite/grib2/N0R/**/.*grib2$"
                   dateFormatMark="#/N0R/#yyyyMMdd"
-                  olderThan="5 min"/>                           <!-- timePartition="directory"
+                  olderThan="5 min"/>                            timePartition="directory"
       <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
     </featureCollection>
 

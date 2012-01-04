@@ -214,7 +214,7 @@ public class Grib2CollectionBuilder {
         gc.filenames.add(proto.getFiles(i));
 
       // error condition on a GribCollection Index
-      if ((proto.getFilesCount() == 0) && !(this instanceof TimePartitionBuilder)) {
+      if ((proto.getFilesCount() == 0) && !(this instanceof Grib2TimePartitionBuilder)) {
         logger.warn("GribCollection {}: has no files, force recreate ", gc.getName());
         return false;
       }

@@ -30,14 +30,14 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib;
+package ucar.nc2.grib.grib2;
 
 import thredds.inventory.CollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.grib2.Grib2Collection;
-import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -46,14 +46,19 @@ import java.util.*;
 
 /**
  * A collection of GribCollection objects which are Time Partitioned.
- * A TimePartition is the collection; a  TimePartition.Partition represents one of the GribCollection.
+ * A TimePartition is the collection; a TimePartition.Partition represents one of the GribCollection.
  * Everything is done with lazy instantiation.
  *
  * @author caron
  * @since 4/17/11
  */
-public class TimePartition extends Grib2Collection {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
+public class Grib2TimePartition extends GribCollection {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartition.class);
+
+  /* static public Grib2TimePartition factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, Formatter f) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.factory(dcm, force, f);
+    return Grib2CollectionBuilder.factory(dcm, force, f);
+  }  */
 
   Map<String, Partition> partitionMap;
   List<Partition> partitions;
@@ -159,8 +164,18 @@ public class TimePartition extends Grib2Collection {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  TimePartition(String name, File directory) {
+  Grib2TimePartition(String name, File directory) {
     super(name, directory);
+  }
+
+  @Override
+  public NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
+  public GridDataset getGridDataset(String groupName, String filename) throws IOException {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -300,7 +315,7 @@ public class TimePartition extends Grib2Collection {
   public static void main(String[] args) throws IOException {
     Formatter f = new Formatter();
     RandomAccessFile raf = new RandomAccessFile("G:/nomads/cfsr/timeseries/collection.ncx", "r");
-    TimePartition gtc = TimePartitionBuilder.createFromIndex("test", null, raf);
+    Grib2TimePartition gtc = Grib2TimePartitionBuilder.createFromIndex("test", null, raf);
     gtc.showIndex(f);
 
     System.out.printf("%s%n", f);

@@ -40,6 +40,8 @@ import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Tables;
+import ucar.nc2.grib.grib2.Grib2TimePartition;
+import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -66,12 +68,12 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
  static public String makeVariableName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
    return Grib1Utils.makeVariableName(tables, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-           vindex.levelType, vindex.intvType);
+           vindex.levelType, vindex.intvType, vindex.intvName);
  }
 
   static public String makeVariableLongName(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     return Grib1Utils.makeVariableLongName(tables, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-            vindex.levelType, vindex.intvType, vindex.isLayer, vindex.probabilityName);
+            vindex.levelType, vindex.intvType, vindex.intvName, vindex.isLayer, vindex.probabilityName);
   }
 
   static public String makeVariableUnits(Grib1Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
@@ -80,7 +82,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private TimePartition timePartition;
+  private Grib2TimePartition timePartition;
   private GribCollection gribCollection;
   private Grib1Tables tables;
   private GribCollection.GroupHcs gHcs;
@@ -174,16 +176,16 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
     if (gHcs != null) { // just use the one group that was set in the constructor
       this.gribCollection = gHcs.getGribCollection();
-      if (this.gribCollection instanceof TimePartition) {
+      if (this.gribCollection instanceof Grib2TimePartition) {
         isTimePartitioned = true;
-        timePartition = (TimePartition) gribCollection;
+        timePartition = (Grib2TimePartition) gribCollection;
       }
       addGroup(ncfile, gHcs, false);
 
     } else if (gribCollection != null) { // use the gribCollection set in the constructor
-      if (this.gribCollection instanceof TimePartition) {
+      if (this.gribCollection instanceof Grib2TimePartition) {
         isTimePartitioned = true;
-        timePartition = (TimePartition) gribCollection;
+        timePartition = (Grib2TimePartition) gribCollection;
       }
       boolean useGroups = gribCollection.getGroups().size() > 1;
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
@@ -192,10 +194,10 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     } else { // the raf is a collection index (ncx)
 
       raf.seek(0);
-      byte[] b = new byte[TimePartitionBuilder.MAGIC_STARTP.length()];
+      byte[] b = new byte[Grib2TimePartitionBuilder.MAGIC_STARTP.length()];
       raf.readFully(b);
       String magic = new String(b);
-      isTimePartitioned = magic.equals(TimePartitionBuilder.MAGIC_STARTP);
+      isTimePartitioned = magic.equals(Grib2TimePartitionBuilder.MAGIC_STARTP);
 
       String location = raf.getLocation();
       File f = new File(location);
@@ -204,7 +206,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
       // asssume for now this is the grib collection index file (ncx)
       if (isTimePartitioned) {
-        timePartition = TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
+        timePartition = Grib2TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
         gribCollection = timePartition;
       } else {
         gribCollection = Grib1CollectionBuilder.createFromIndex(name, f.getParentFile(), raf);
@@ -540,7 +542,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   } */
 
   private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
-    TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject();
+    Grib2TimePartition.VariableIndexPartitioned vindexP = (Grib2TimePartition.VariableIndexPartitioned) v2.getSPobject();
 
     // canonical order: time, ens, z, y, x
     int rangeIdx = 0;

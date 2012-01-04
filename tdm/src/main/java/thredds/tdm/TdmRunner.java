@@ -48,8 +48,7 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.inventory.*;
 
 import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.TimePartitionBuilder;
-import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;
@@ -64,7 +63,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Thredds Data Manager.
- *
+ * <p/>
  * run: java -Xmx4g -server -jar tdm-4.3.jar
  * if you need to muck with that, use:
  * java -Xmx4g -server -jar tdm-4.3.jar -catalog <muck.xml>
@@ -136,10 +135,10 @@ public class TdmRunner {
           logger.debug("**** running TimePartitionBuilder.factory {} thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
-            if (TimePartitionBuilder.writeIndexFile(tpc, CollectionManager.Force.always, f)) {
+            if (Grib2TimePartitionBuilder.writeIndexFile(tpc, CollectionManager.Force.always, f)) {
               // send a trigger if enabled
               if (config.tdmConfig.triggerOk) {
-                String url = serverName + "thredds/admin/collection?trigger=true&collection="+fc.getName();
+                String url = serverName + "thredds/admin/collection?trigger=true&collection=" + fc.getName();
                 int status = sendTrigger(url, f);
                 f.format(" trigger %s status = %d%n", url, status);
               }
@@ -158,7 +157,7 @@ public class TdmRunner {
             gc.close();
             f.format("**** GribCollectionBuilder.factory complete %s%n", name);
             if (config.tdmConfig.triggerOk) { // LOOK is there any point if you dont have trigger = true ?
-              String url = serverName + "thredds/admin/collection?trigger=nocheck&collection="+fc.getName();
+              String url = serverName + "thredds/admin/collection?trigger=nocheck&collection=" + fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
             }
@@ -169,10 +168,10 @@ public class TdmRunner {
           logger.debug("\n------------------------\n{}\n------------------------\n", f.toString());
         }
 
-    } finally {
-      // tell liz that task is done
-      if (!liz.inUse.getAndSet(false))
-        logger.warn("Listener InUse should have been set");
+      } finally {
+        // tell liz that task is done
+        if (!liz.inUse.getAndSet(false))
+          logger.warn("Listener InUse should have been set");
       }
 
       /* System.out.printf("OpenFiles:%n");
@@ -189,7 +188,7 @@ public class TdmRunner {
         String s = m.getResponseAsString();
         f.format("%s == %s", url, s);
         System.out.printf("Trigger response = %s%n", s);
-       return status;
+        return status;
 
       } catch (HTTPException e) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -210,14 +209,14 @@ public class TdmRunner {
         try {
           deleteAfter = new TimeDuration(deleteAfterS);
         } catch (Exception e) {
-          logger.error(dcm.getCollectionName()+": Invalid time unit for deleteAfter = {}", deleteAfter);
+          logger.error(dcm.getCollectionName() + ": Invalid time unit for deleteAfter = {}", deleteAfter);
           return;
         }
       }
 
       // awkward
       double val = deleteAfter.getValue();
-      CalendarPeriod.Field unit = CalendarPeriod.fromUnitString( deleteAfter.getTimeUnit().getUnitString());
+      CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(deleteAfter.getTimeUnit().getUnitString());
       CalendarPeriod period = CalendarPeriod.of(1, unit);
       CalendarDate now = CalendarDate.of(new Date());
       CalendarDate last = now.add(-val, unit);
@@ -252,7 +251,7 @@ public class TdmRunner {
         try {
           //create logger in log4j
           Layout layout = new PatternLayout("%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %c - %m%n");
-          String loggerName = fc.getName()+".log";
+          String loggerName = fc.getName() + ".log";
           FileAppender app = new FileAppender(layout, loggerName);
           org.apache.log4j.Logger log4j = LogManager.getLogger(fc.getName());
           log4j.addAppender(app);
@@ -349,9 +348,9 @@ public class TdmRunner {
       if (fcConfig != null && fcConfig.gribConfig != null && fcConfig.gribConfig.gdsHash != null)
         dcm.putAuxInfo("gdsHash", fcConfig.gribConfig.gdsHash); // sneak in extra config info
 
-      dcm.addEventListener( new Listener(fc, dcm)); // now wired for events
-      dcm.removeEventListener( fc); // not needed
-     // CollectionUpdater.INSTANCE.scheduleTasks( CollectionUpdater.FROM.tdm, fc.getConfig(), dcm); // already done in finish() method
+      dcm.addEventListener(new Listener(fc, dcm)); // now wired for events
+      dcm.removeEventListener(fc); // not needed
+      // CollectionUpdater.INSTANCE.scheduleTasks( CollectionUpdater.FROM.tdm, fc.getConfig(), dcm); // already done in finish() method
     }
 
     // show whats up
@@ -366,13 +365,14 @@ public class TdmRunner {
 
   ///////////////////////////////////////////////////////////////////////////////////////
   private static String user, pass;
+
   public static void main(String args[]) throws IOException, InterruptedException {
     ApplicationContext springContext = new FileSystemXmlApplicationContext("classpath:resources/application-config.xml");
     TdmRunner driver = (TdmRunner) springContext.getBean("testDriver");
     //RandomAccessFile.setDebugLeaks(true);
 
 
-    for (int i=0; i<args.length; i++) {
+    for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
         System.out.printf("usage: TdmRunner [-catalog <cat>] [-server <tdsServer>] [-cred <user:passwd>] [-showDirs] %n");
         System.out.printf("example: TdmRunner -catalog classpath:/resources/indexNomads.xml -server http://localhost:8080/ -cred user:password %n");
@@ -381,16 +381,16 @@ public class TdmRunner {
       if (args[i].equalsIgnoreCase("-showDirs"))
         driver.setShowOnly(true);
       if (args[i].equalsIgnoreCase("-server"))
-        driver.setTdsServer(args[i+1]);
+        driver.setTdsServer(args[i + 1]);
       if (args[i].equalsIgnoreCase("-cred")) {
-        String cred = args[i+1];
+        String cred = args[i + 1];
         String[] split = cred.split(":");
         user = split[0];
         pass = split[1];
         System.out.printf("parse cert %s %s%n", user, pass);
       }
       if (args[i].equalsIgnoreCase("-catalog")) {
-        Resource cat = new FileSystemResource(args[i+1]);
+        Resource cat = new FileSystemResource(args[i + 1]);
         driver.setCatalog(cat);
       }
     }
@@ -409,7 +409,6 @@ public class TdmRunner {
 
     driver.start();
   }
-
 
 
 }
