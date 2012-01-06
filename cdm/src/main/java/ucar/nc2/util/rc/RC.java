@@ -56,7 +56,7 @@ public class RC
 // 4. Add any usefull utilities like booleanize()
 
 static protected boolean useGroups = true;
-static protected boolean verifyServer = true;
+static protected boolean verifyServer = false;
 static protected boolean allowSelfSigned = true;
 
 static public boolean getUseGroups()

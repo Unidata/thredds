@@ -34,10 +34,15 @@
 package ucar.nc2.util.net;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 
+import com.sun.org.apache.xerces.internal.util.*;
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -45,6 +50,7 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.*;
 
+import org.apache.commons.httpclient.protocol.Protocol;
 import ucar.nc2.util.log.LogStream;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,13 +262,30 @@ public int execute() throws HTTPException
         setcontent();
 
         setAuthentication(session,this);
+        // WARNING; DANGER WILL ROBINSION
+        // httpclient3 only allows one registered https protocol, so
+        // we do a major hack to register the protocol based on the port
 
-        try {
-            session.sessionClient.executeMethod(method);
-        } catch (IllegalArgumentException iae) {
-            iae.printStackTrace();
- 	    throw iae;
-       }
+        // Pull of the protocol
+        int index = this.legalurl.indexOf("://");
+        String proto;
+        String remainder;
+        if(false  && index > 0) {
+            proto = this.legalurl.substring(0,index);
+            if("https".equals(proto)) {
+            try {
+                URL hack = new URL(this.legalurl);
+                switch (hack.getPort()) {
+                case 443: case 8443:  case 8843:
+                    // change the protocol associated with "https"
+                    Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), hack.getPort()));
+                default: break; // leave as is
+                }
+            } catch (MalformedURLException e) {}
+            }
+        }
+
+        session.sessionClient.executeMethod(method);
 
         int code = getStatusCode();
         return code;

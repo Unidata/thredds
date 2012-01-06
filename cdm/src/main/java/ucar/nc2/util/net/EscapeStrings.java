@@ -323,7 +323,9 @@ public class EscapeStrings {
             fragment = m.group(5);
         } else {// faster, but may not work quite right
             URL u = null;
-            try {u = new URL(url);} catch (MalformedURLException e) {return null;}
+            try {u = new URL(url);} catch (MalformedURLException e) {
+                return null;
+            }
             protocol = u.getProtocol();
             authority = u.getAuthority();
             path = u.getPath();

@@ -104,6 +104,8 @@ static {
     setGlobalThreadCount(DFALTTHREADCOUNT);
     // Fill in the scheme registry for at least http and https
     // allow self-signed certificates
+    // Major problem: can only register one https protocol.
+    // See hack in HTTPMethod.execute.
     Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
     sessionList = new ArrayList<HTTPSession>(); // see kill function
     setGlobalConnectionTimeout(DFALTTIMEOUT);
