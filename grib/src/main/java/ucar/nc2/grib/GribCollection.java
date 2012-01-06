@@ -260,8 +260,10 @@ public abstract class GribCollection {
   // these objects are created from the ncx index.
 
   public class GroupHcs implements Comparable<GroupHcs> {
-    private String name;
     public GdsHorizCoordSys hcs;
+    public byte[] rawGds;
+
+    private String name;
     public List<VariableIndex> varIndex;
     public List<TimeCoord> timeCoords;
     public List<VertCoord> vertCoords;
@@ -269,8 +271,9 @@ public abstract class GribCollection {
     public int[] filenose;
     public List<TimeCoordUnion> timeCoordPartitions; // used only for time partitions - DO NOT USE
 
-    public void setHorizCoordSystem(GdsHorizCoordSys hcs) {
+    public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds) {
       this.hcs = hcs;
+      this.rawGds = rawGds;
       setName();
     }
 
@@ -460,27 +463,33 @@ public abstract class GribCollection {
     }
 
     public String toStringComplete() {
-      return "VariableIndex{" +
-              "discipline=" + discipline +
-              ", category=" + category +
-              ", parameter=" + parameter +
-              ", levelType=" + levelType +
-              ", intvType=" + intvType +
-              ", intvName=" + intvName +
-              ", ensDerivedType=" + ensDerivedType +
-              ", probabilityName='" + probabilityName + '\'' +
-              ", cdmHash=" + cdmHash +
-              ", timeIdx=" + timeIdx +
-              ", vertIdx=" + vertIdx +
-              ", ensIdx=" + ensIdx +
-              ", recordsLen=" + recordsLen +
-              ", recordsPos=" + recordsPos +
-              ", group=" + group +
-              ", ntimes=" + ntimes +
-              ", nverts=" + nverts +
-              ", nens=" + nens +
-              ", records=" + (records == null ? null : Arrays.asList(records)) +
-              '}';
+      final StringBuilder sb = new StringBuilder();
+      sb.append("VariableIndex");
+      sb.append("{tableVersion=").append(tableVersion);
+      sb.append(", discipline=").append(discipline);
+      sb.append(", category=").append(category);
+      sb.append(", parameter=").append(parameter);
+      sb.append(", levelType=").append(levelType);
+      sb.append(", intvType=").append(intvType);
+      sb.append(", ensDerivedType=").append(ensDerivedType);
+      sb.append(", probType=").append(probType);
+      sb.append(", intvName='").append(intvName).append('\'');
+      sb.append(", probabilityName='").append(probabilityName).append('\'');
+      sb.append(", isLayer=").append(isLayer);
+      sb.append(", cdmHash=").append(cdmHash);
+      sb.append(", timeIdx=").append(timeIdx);
+      sb.append(", vertIdx=").append(vertIdx);
+      sb.append(", ensIdx=").append(ensIdx);
+      sb.append(", recordsPos=").append(recordsPos);
+      sb.append(", recordsLen=").append(recordsLen);
+      sb.append(", group=").append(group);
+      sb.append(", ntimes=").append(ntimes);
+      sb.append(", nverts=").append(nverts);
+      sb.append(", nens=").append(nens);
+      sb.append(", records=").append(records == null ? "null" : Arrays.asList(records).toString());
+      sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
+      sb.append('}');
+      return sb.toString();
     }
 
     public Record[] getRecords() throws IOException {
@@ -542,6 +551,7 @@ public abstract class GribCollection {
   }
 
   public void showIndex(Formatter f) {
+    f.format("Class (%s)%n", getClass().getName());
     f.format("Files (%d)%n", filenames.size());
     for (String file : filenames)
       f.format("  %s%n", file);
@@ -552,7 +562,7 @@ public abstract class GribCollection {
 
       f.format("%nVarIndex (%d)%n", g.varIndex.size());
       for (VariableIndex v : g.varIndex)
-        f.format("  %s%n", v);
+        f.format("  %s%n", v.toStringComplete());
 
       f.format("%nTimeCoords (%d)%n", g.timeCoords.size());
       for (int i = 0; i < g.timeCoords.size(); i++) {

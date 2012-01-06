@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.TimePartitionCollection;
@@ -51,7 +52,7 @@ import java.util.*;
  * @since 4/28/11
  */
 public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
-  public static final String MAGIC_STARTP = "GribCollectionIndexTimePartitioned";
+  public static final String MAGIC_START = "Grib2Partition0Index";
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartitionBuilder.class);
   static private final int versionTP = 2;
@@ -60,7 +61,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     // read in the index, create if it doesnt exist or is out of date
   static public Grib2TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
-    builder.init(force, f);
+    builder.readOrCreateIndex(force, f);
     return builder.tp;
   }
 
@@ -86,7 +87,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     Grib2TimePartitionBuilder builder = null;
     try {
       builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
-      return builder.init(force, f);
+      return builder.readOrCreateIndex(force, f);
 
     } finally {
       if ((builder != null) && (builder.tp != null))
@@ -105,7 +106,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     this.tpc = tpc;
   }
 
-  private boolean init(CollectionManager.Force ff, Formatter f) throws IOException {
+  private boolean readOrCreateIndex(CollectionManager.Force ff, Formatter f) throws IOException {
     File idx = gc.getIndexFile();
 
      // force new index or test for new index needed
@@ -143,9 +144,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     long start = System.currentTimeMillis();
 
     // create partitions based on TimePartitionCollections object
-    tp.partitionMap = new TreeMap<String, Grib2TimePartition.Partition>();
     for (CollectionManager dcm : tpc.makePartitions()) {
-      tp.partitionMap.put(dcm.getCollectionName(), tp.makePartition(dcm));
+      tp.addPartition(dcm);
     }
 
     List<Grib2TimePartition.Partition> bad = new ArrayList<Grib2TimePartition.Partition>();
@@ -363,6 +363,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
   //////////////////////////////////////////////////////////
 
+  public String getMagicStart() {
+    return MAGIC_START;
+  }
+
   // writing ncx
   /*
   MAGIC_START
@@ -380,7 +384,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     try {
       //// header message
-      raf.write(MAGIC_STARTP.getBytes("UTF-8"));
+      raf.write(MAGIC_START.getBytes("UTF-8"));
       raf.writeInt(versionTP);
       raf.writeLong(0); // no record section
 
@@ -401,8 +405,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       indexBuilder.setMaster(canonGc.master);
       indexBuilder.setLocal(canonGc.local);
 
-      for (String key : tp.partitionMap.keySet())
-        indexBuilder.addPartitions(writePartitionProto(key, tp.partitionMap.get(key)));
+      for (TimePartition.Partition p : tp.getPartitions()) {
+        indexBuilder.addPartitions(writePartitionProto(p.getName(), (Grib2TimePartition.Partition) p));
+      }
 
       GribCollectionProto.GribCollectionIndex index = indexBuilder.build();
       byte[] b = index.toByteArray();
@@ -422,7 +427,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private GribCollectionProto.Group writeGroupProto(GribCollection.GroupHcs g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    // LOOK b.setGds(ByteString.copyFrom(g.hcs.gds.getRawBytes()));
+    b.setGds(ByteString.copyFrom(g.rawGds));
 
     for (GribCollection.VariableIndex vb : g.varIndex)
       b.addVariables(writeVariableProto( (Grib2TimePartition.VariableIndexPartitioned) vb));
@@ -449,6 +454,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     b.setLevelType(v.levelType);
     b.setIsLayer(v.isLayer);
     b.setIntervalType(v.intvType);
+    if (v.intvName != null)
+      b.setIntvName(v.intvName);
     b.setCdmHash(v.cdmHash);
     b.setRecordsPos(0);
     b.setRecordsLen(0);
@@ -511,11 +518,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
   @Override
   protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto) {
-    tp.partitionMap = new TreeMap<String, Grib2TimePartition.Partition>(); // ??
     for (int i = 0; i < proto.getPartitionsCount(); i++) {
       GribCollectionProto.Partition pp = proto.getPartitions(i);
-      Grib2TimePartition.Partition p = tp.makePartition(pp.getName(), pp.getFilename());
-      tp.partitionMap.put(pp.getName(), p);
+      tp.addPartition(pp.getName(), pp.getFilename());
     }
     return  proto.getPartitionsCount() > 0;
   }
@@ -559,6 +564,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     int param = pv.getParameter();
     int levelType = pv.getLevelType();
     int intvType = pv.getIntervalType();
+    String intvName = pv.getIntvName();
     boolean isLayer = pv.getIsLayer();
     int ensDerivedType = pv.getEnsDerivedType();
     int probType = pv.getProbabilityType();
@@ -569,12 +575,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     int timeIdx = pv.getTimeIdx();
     int vertIdx = pv.getVertIdx();
     int ensIdx = pv.getEnsIdx();
+    int tableVersion = pv.getTableVersion();
 
-    List<Integer> groupno = pv.getGroupnoList();
-    List<Integer> varno = pv.getVarnoList();
-
-    return tp.makeVariableIndex(group, discipline, category, param, levelType, isLayer, intvType, ensDerivedType,
-            probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen, groupno, varno);
+    return tp.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
+            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   public static void main(String[] args) throws IOException {

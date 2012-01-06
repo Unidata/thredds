@@ -334,19 +334,23 @@ public abstract class Grib1Gds {
       if (lo2 < lo1) lo2 += 360.0F;
 
       deltaLon = getOctet2(24);
-      if (deltaLon != GribNumbers.UNDEFINED) deltaLon *= scale3; // undefined for thin grids
-      else  deltaLon = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
-
       float calcDelta = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
+      if (deltaLon != GribNumbers.UNDEFINED) deltaLon *= scale3; // undefined for thin grids
+      else deltaLon = calcDelta;
       if (!Misc.closeEnough(deltaLon, calcDelta)) {
         log.debug("deltaLon != calcDeltaLon");
         deltaLon = calcDelta;
       }
 
       deltaLat = getOctet2(26);
-      if (deltaLat != GribNumbers.UNDEFINED) { // undefined for thin grids
-        deltaLat *= scale3;
+      calcDelta = (la2 - la1) / (ny-1); // more accurate - deltaLon may have roundoff
+      if (deltaLat != GribNumbers.UNDEFINED) {
+        deltaLat *= scale3; // undefined for thin grids
         if (la2 < la1) deltaLat *= -1.0;
+      } else deltaLat = calcDelta;
+      if (!Misc.closeEnough(deltaLat, calcDelta)) {
+        log.debug("deltaLat != calcDeltaLat");
+        deltaLon = calcDelta;
       }
 
       scanMode = (byte) getOctet(28);

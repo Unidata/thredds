@@ -182,10 +182,11 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.length()];  // LOOK NOT also matches GribCollectionTimePartitioned
+    byte[] b = new byte[Grib2CollectionBuilder.MAGIC_START.length()];
     raf.readFully(b);
     String magic = new String(b);
     if (magic.equals(Grib2CollectionBuilder.MAGIC_START)) return true;
+    if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START)) return true;
 
     // check for GRIB2 file
     return Grib2RecordScanner.isValidFile(raf);
@@ -248,10 +249,10 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     } else { // otherwise, its an ncx file : read in entire collection
 
       raf.seek(0);
-      byte[] b = new byte[Grib2TimePartitionBuilder.MAGIC_STARTP.length()];
+      byte[] b = new byte[Grib2TimePartitionBuilder.MAGIC_START.length()];
       raf.readFully(b);
       String magic = new String(b);
-      isTimePartitioned = magic.equals(Grib2TimePartitionBuilder.MAGIC_STARTP);
+      isTimePartitioned = magic.equals(Grib2TimePartitionBuilder.MAGIC_START);
 
       String location = raf.getLocation();
       File f = new File(location);

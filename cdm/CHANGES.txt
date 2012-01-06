@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 5: (2011-12-xx)
+ 5: (2012-01-06)
   Fix when earth_radius comes in km instead of meters.
   DatasetCollectionMFiles: olderThan applies only to newly found files.
   DatasetCollectionMFiles: use dateFormatMark if present.

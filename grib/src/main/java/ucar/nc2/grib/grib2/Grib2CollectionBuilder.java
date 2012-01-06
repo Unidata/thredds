@@ -55,7 +55,6 @@ import java.util.*;
  */
 public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
-
   public static final String MAGIC_START = "Grib2CollectionIndex";
   protected static final int version = 6;
   private static final boolean debug = false;
@@ -163,6 +162,10 @@ public class Grib2CollectionBuilder {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // reading
 
+  public String getMagicStart() {
+    return MAGIC_START;
+  }
+
   public boolean readIndex(String filename) throws IOException {
     return readIndex( new RandomAccessFile(filename, "r") );
   }
@@ -174,7 +177,7 @@ public class Grib2CollectionBuilder {
       raf.seek(0);
 
      //// header message
-      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes())) {
+      if (!NcStream.readAndTest(raf, getMagicStart().getBytes())) {
         logger.error("GribCollection {}: invalid index", gc.getName());
         return false;
       }
@@ -251,9 +254,10 @@ public class Grib2CollectionBuilder {
 
   GribCollection.GroupHcs readGroup(GribCollectionProto.Group p, GribCollection.GroupHcs group) throws IOException {
 
-    Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(p.getGds().toByteArray());
+    byte[] rawGds = p.getGds().toByteArray();
+    Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
     Grib2Gds gds = gdss.getGDS();
-    group.setHorizCoordSystem(gds.makeHorizCoordSys());
+    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds);
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
     for (int i = 0; i < p.getVariablesCount(); i++)

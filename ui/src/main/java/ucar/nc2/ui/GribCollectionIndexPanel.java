@@ -36,6 +36,7 @@ import ucar.nc2.grib.*;
 //import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -74,11 +75,11 @@ public class GribCollectionIndexPanel extends JPanel {
   public GribCollectionIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Files", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        showFiles(f);
+        gc.showIndex(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
@@ -87,7 +88,20 @@ public class GribCollectionIndexPanel extends JPanel {
     buttPanel.add(infoButton);
 
 
-    AbstractButton showButt = BAMutil.makeButtcon("Information", "Compare Files", false);
+    AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
+    filesButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        showFiles(f);
+        detailTA.setText(f.toString());
+        detailTA.gotoTop();
+        detailWindow.show();
+      }
+    });
+    buttPanel.add(filesButton);
+
+
+   /*  AbstractButton showButt = BAMutil.makeButtcon("Information", "Compare Files", false);
     showButt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
@@ -101,7 +115,7 @@ public class GribCollectionIndexPanel extends JPanel {
         detailWindow.show();
       }
     });
-    buttPanel.add(showButt);
+    buttPanel.add(showButt);  */
 
     ////////////////////////////
 
@@ -272,7 +286,7 @@ public class GribCollectionIndexPanel extends JPanel {
   ///////////////////////////////////////////////
   GribCollection gc;
 
-  public void setIndex(String indexFile) throws IOException {
+  public void setIndexFile(String indexFile) throws IOException {
     if (gc != null) gc.close();
 
     RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
@@ -284,6 +298,9 @@ public class GribCollectionIndexPanel extends JPanel {
       gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf);
     else if (magic.equals(Grib1CollectionBuilder.MAGIC_START))
       gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf);
+    else if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START))
+      gc = Grib2TimePartitionBuilder.createFromIndex(indexFile, null, raf);
+
     else
       throw new IOException("Not a grib collection index file ="+magic);
 

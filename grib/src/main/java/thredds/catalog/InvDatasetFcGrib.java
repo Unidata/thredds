@@ -43,8 +43,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.Grib2TimePartition;
-import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -69,7 +67,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
-    Grib2TimePartition timePartition;
+    TimePartition timePartition;
     GribCollection gribCollection;
 
     protected StateGrib(StateGrib from) {
@@ -191,8 +189,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private void updateCollection(StateGrib localState, CollectionManager.Force force) {
     try {
       if (config.timePartition != null) {
-        Grib2TimePartition previous = localState.timePartition;
-        localState.timePartition = Grib2TimePartitionBuilder.factory((TimePartitionCollection) this.dcm, force, new Formatter());
+        TimePartition previous = localState.timePartition;
+        localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, new Formatter());
         localState.gribCollection = null;
         if (previous != null) previous.close(); // LOOK thread safety
 
@@ -247,7 +245,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           return makeGribCollectionCatalog(localState.timePartition, baseURI, localState);
         }
 
-        Grib2TimePartition.Partition dc = localState.timePartition.getCollection(match);
+        TimePartition.Partition dc = localState.timePartition.getPartitionByName(match);
         if (dc != null) {
           return makeGribCollectionCatalog(dc.getGribCollection(), baseURI, localState);
         }
@@ -264,7 +262,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         } */
 
         // otherwise of form <partition>/<hcs>/files eg 200808/LatLon-181X360/files
-        dc = localState.timePartition.getCollection(path[0]);
+        dc = localState.timePartition.getPartitionByName(path[0]);
         if (dc != null) {
           GribCollection gc = dc.getGribCollection();
           GribCollection.GroupHcs group = gc.findGroup(path[1]);
@@ -318,7 +316,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       ds.finish();
       datasets.add(ds);
 
-      for (Grib2TimePartition.Partition dc : localState.timePartition.getPartitions()) {
+      for (TimePartition.Partition dc : localState.timePartition.getPartitions()) {
         String dname = dc.getName();
         ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
         dname = StringUtil2.replace(dname, ' ', "_");
@@ -456,7 +454,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       //tm.setTimeCoverage(group.getTimeCoverage());
       //tm.addVariables(group.getVariables());
 
-      if (!(gribCollection instanceof Grib2TimePartition)) // dont add files for collection dataset
+      if (!(gribCollection instanceof TimePartition)) // dont add files for collection dataset
         addFileDatasets(ds, collectionName + "/" + name);
       ds.finish();
       top.addDataset(ds);
@@ -548,7 +546,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (paths[0].equals(localState.timePartition.getName()))
         return localState.timePartition.getGridDataset(paths[1]);
 
-      Grib2TimePartition.Partition dcm = localState.timePartition.getCollection(paths[0]);
+      TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
       if (dcm != null) {
         return dcm.getGribCollection().getGridDataset(paths[1], filename);
       }
@@ -591,7 +589,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (paths[0].equals(localState.timePartition.getName()))
         return localState.timePartition.getNetcdfDataset(paths[1]);
 
-      Grib2TimePartition.Partition dcm = localState.timePartition.getCollection(paths[0]);
+      TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
       if (dcm != null) {
         String filename = paths.length > 2 ? paths[2] : null;
         return dcm.getGribCollection().getNetcdfDataset(paths[1], filename);

@@ -101,8 +101,9 @@
   </li>
 </ol>
 <p>&nbsp;</p>
-<h3><br />
-</h3>
+<h3>Indexing</h3>
+<p>Rule of thumb is ~ 500 bytes / GRIB record. (check with GRIB1). So a collection of 7M records cost 3.5 Gb. If TdmRunner has 4 threads, can get OOM error. Solution is probably to use time partitions.<br />
+</p>
 <hr width="100%" />
 <address>
 <img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 26, 2011

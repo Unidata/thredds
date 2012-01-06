@@ -254,13 +254,16 @@ public class Grib1CollectionBuilder {
 
   GribCollection.GroupHcs readGroup(GribCollectionProto.Group p, GribCollection.GroupHcs group, int center) throws IOException {
 
+    byte[] rawGds = null;
     Grib1Gds gds;
     if (p.hasPredefinedGds()) {
       gds = ucar.nc2.grib.grib1.Grib1GdsPredefined.factory(center, p.getPredefinedGds());
     } else {
-      Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(p.getGds().toByteArray());
-      gds = gdss.getGDS();    }
-    group.setHorizCoordSystem(gds.makeHorizCoordSys());
+      rawGds = p.getGds().toByteArray();
+      Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(rawGds);
+      gds = gdss.getGDS();
+    }
+    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds);
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
     for (int i = 0; i < p.getVariablesCount(); i++)

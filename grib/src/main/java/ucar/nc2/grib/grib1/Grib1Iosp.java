@@ -194,10 +194,10 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     } else { // the raf is a collection index (ncx)
 
       raf.seek(0);
-      byte[] b = new byte[Grib2TimePartitionBuilder.MAGIC_STARTP.length()];
+      byte[] b = new byte[Grib2TimePartitionBuilder.MAGIC_START.length()];
       raf.readFully(b);
       String magic = new String(b);
-      isTimePartitioned = magic.equals(Grib2TimePartitionBuilder.MAGIC_STARTP);
+      isTimePartitioned = magic.equals(Grib2TimePartitionBuilder.MAGIC_START);
 
       String location = raf.getLocation();
       File f = new File(location);
