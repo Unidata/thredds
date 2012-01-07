@@ -48,6 +48,7 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.inventory.*;
 
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.TimePartition;
 import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -135,13 +136,13 @@ public class TdmRunner {
           logger.debug("**** running TimePartitionBuilder.factory {} thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
-            if (Grib2TimePartitionBuilder.writeIndexFile(tpc, CollectionManager.Force.always, f)) {
-              // send a trigger if enabled
-              if (config.tdmConfig.triggerOk) {
-                String url = serverName + "thredds/admin/collection?trigger=true&collection=" + fc.getName();
-                int status = sendTrigger(url, f);
-                f.format(" trigger %s status = %d%n", url, status);
-              }
+            GribCollection tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, f);
+            tp.close();
+            f.format("**** TimePartitionBuilder complete %s%n", name);
+            if (config.tdmConfig.triggerOk) { // send a trigger if enabled
+              String url = serverName + "thredds/admin/collection?trigger=true&collection=" + fc.getName();
+              int status = sendTrigger(url, f);
+              f.format(" trigger %s status = %d%n", url, status);
             }
             f.format("**** TimePartitionBuilder.factory complete %s%n", name);
           } catch (Throwable e) {

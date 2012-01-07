@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.grib2;
+package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
@@ -45,30 +45,28 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Builds Collections of Grib2 Time Partitioned.
- * TimePartition objects from special ncx file, which starts with TimePartion.MAGIC_STARTP.
- * Writes index files from TimePartitionCollections, from which it builds collections of GribCollection.
+ * Builds Collections of Grib1 Time Partitioned.
  *
  * @author caron
- * @since 4/28/11
+ * @since 1/7/12
  */
-public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
-  public static final String MAGIC_START = "Grib2Partition0Index";
+public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
+  public static final String MAGIC_START = "Grib1Partition0Index";
 
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartitionBuilder.class);
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1TimePartitionBuilder.class);
   static private final int versionTP = 2;
   static private final boolean trace = false;
 
     // read in the index, create if it doesnt exist or is out of date
-  static public Grib2TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
-    Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
+  static public Grib1TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
+    Grib1TimePartitionBuilder builder = new Grib1TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
     builder.readOrCreateIndex(force, f);
     return builder.tp;
   }
 
   // read in the index, index raf already open
-  static public Grib2TimePartition createFromIndex(String name, File directory, RandomAccessFile raf) throws IOException {
-    Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(name, directory, null);
+  static public Grib1TimePartition createFromIndex(String name, File directory, RandomAccessFile raf) throws IOException {
+    Grib1TimePartitionBuilder builder = new Grib1TimePartitionBuilder(name, directory, null);
     if (builder.readIndex(raf)) {
       return builder.tp;
     }
@@ -85,9 +83,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
    * @throws IOException on error
    */
   static public boolean writeIndexFile(TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
-    Grib2TimePartitionBuilder builder = null;
+    Grib1TimePartitionBuilder builder = null;
     try {
-      builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
+      builder = new Grib1TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
       return builder.readOrCreateIndex(force, f);
 
     } finally {
@@ -99,10 +97,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   //////////////////////////////////////////////////////////////////////////////////
 
   private final TimePartitionCollection tpc; // defines the partition
-  private final Grib2TimePartition tp;  // build this object
+  private final Grib1TimePartition tp;  // build this object
 
-  private Grib2TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc) {
-    this.tp = new Grib2TimePartition(name, directory);
+  private Grib1TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc) {
+    this.tp = new Grib1TimePartition(name, directory);
     this.gc = tp;
     this.tpc = tpc;
   }
@@ -126,7 +124,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   }
 
   private boolean needsUpdate(long collectionLastModified, Formatter f) throws IOException {
-    CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
+    CollectionManager.ChangeChecker cc = Grib1Index.getChangeChecker();
     for (CollectionManager dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
       File idxFile = new File(dcm.getRoot(), dcm.getCollectionName() + GribCollection.IDX_EXT);
       if (!idxFile.exists()) return true;
@@ -584,9 +582,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     Formatter f = new Formatter();
     String indexName = (args.length > 0) ? args[0] : "F:/nomads/NOMADS-cfsrr-timeseries.ncx";
     RandomAccessFile raf = new RandomAccessFile(indexName, "r");
-    Grib2TimePartition gtc = Grib2TimePartitionBuilder.createFromIndex("test", null, raf);
+    Grib1TimePartition gtc = Grib1TimePartitionBuilder.createFromIndex("test", null, raf);
     gtc.showIndex(f);
     System.out.printf("%s%n", f);
   }
 }
-

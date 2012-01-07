@@ -6,7 +6,7 @@
 							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
   <bean id="executor" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
-    <constructor-arg type="int" value="1"/>
+    <constructor-arg type="int" value="4"/>
   </bean>
 
   <bean id="completionQ" class="java.util.concurrent.ArrayBlockingQueue">

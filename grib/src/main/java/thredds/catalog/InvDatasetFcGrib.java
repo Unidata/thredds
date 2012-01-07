@@ -544,7 +544,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (paths.length < 2) return null;
 
       if (paths[0].equals(localState.timePartition.getName()))
-        return localState.timePartition.getGridDataset(paths[1]);
+        return localState.timePartition.getGridDataset(paths[1], null);
 
       TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
       if (dcm != null) {
@@ -587,7 +587,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (paths.length < 2) return null;
 
       if (paths[0].equals(localState.timePartition.getName()))
-        return localState.timePartition.getNetcdfDataset(paths[1]);
+        return localState.timePartition.getNetcdfDataset(paths[1], null);
 
       TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
       if (dcm != null) {

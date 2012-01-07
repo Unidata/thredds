@@ -58,6 +58,48 @@
       </timeCoverage>
     </metadata>
 
+    <dataset name="Downscaled GFS with Eta Extension (DGEX)">
+      <metadata inherited="true">
+        <documentation type="summary">
+          The NCEP DGEX Model is the Eta model extended to 8 days over smaller domains using the operational Eta model
+          78 hour forecast and GFS boundary conditions.
+        </documentation>
+        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/etintro.htm"
+                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
+        <documentation xlink:href="http://www.nws.noaa.gov/ost/ifps_sst/DGEX_combined.pdf"
+                       xlink:title="NCEP presentation (ppt)"/>
+      </metadata>
+
+      <featureCollection name="DGEX-CONUS_12km" featureType="GRIB" harvest="true" path="grib/NCEP/DGEX/CONUS_12km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Model output Grid 185 (C) horizontal = 491 by 303 points, resolution 12 km, LambertConformal projection.
+            Model runs are made at 6 and 18Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/.*grib2$"
+            dateFormatMark="#DGEX_CONUS_12km_#yyyyMMdd_HHmm"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="DGEX-Alaska_12km" featureType="GRIB" harvest="true" path="grib/NCEP/DGEX/Alaska_12km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Model output AWIPS Grid 186 (C) horizontal = 377 by 237 points, resolution 12 km, Polar Stereographic projection.
+            Model runs are made at 0 and 12Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/.*grib2$"
+            dateFormatMark="#DGEX_Alaska_12km_#yyyyMMdd_HHmm"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+    </dataset>
+
     <dataset name="Global Forecast System (GFS) Model">
 
       <metadata inherited="true">
@@ -79,6 +121,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/.*grib2$"
                     dateFormatMark="#GFS_Global_0p5deg_#yyyyMMdd_HHmm"
+                    timePartition="1 day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow" />
       </featureCollection>
@@ -94,6 +137,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/.*grib2$"
                     dateFormatMark="#GFS_Global_onedeg_#yyyyMMdd_HHmm"
+                    timePartition="1 day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
@@ -293,6 +337,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/.*grib2$"
             dateFormatMark="#NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm"
+            timePartition="1 day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
@@ -373,6 +418,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/.*grib2$"
             dateFormatMark="#NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm"
+            timePartition="1 day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
@@ -388,6 +434,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/.*grib2$"
             dateFormatMark="#NAM_Polar_90km_#yyyyMMdd_HHmm"
+            timePartition="1 day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
@@ -469,6 +516,92 @@
 
     </dataset>
 
+    <dataset name="NWS National Digital Forecast Database">
+      <metadata inherited="true">
+        <dataFormat>GRIB-2</dataFormat>
+        <documentation type="summary">National Digital Forecast Database (NDFD): US National Weather Service gridded
+          forecasts of sensible weather elements.
+        </documentation>
+        <documentation xlink:href="http://www.weather.gov/ndfd/" xlink:title="NWS/NDFD Website"/>
+        <documentation xlink:href="http://www.nws.noaa.gov/ndfd/definitions.htm" xlink:title="NDFD parameter descriptions"/>
+      </metadata>
+
+      <featureCollection name="NDFD-CONUS_5km" featureType="GRIB" harvest="true" path="grib/NCEP/NDFD/CONUS_5km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            CONUS, 1073 by 689 points, resolution 5 km. Results from 12Z and 18Z run. Forecasts every 6 hours from 90 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/.*grib2$"
+            dateFormatMark="#NDFD_CONUS_5km_#yyyyMMdd_HHmm"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB" harvest="true" path="grib/NCEP/NDFD/CONUS_5km_conduit">
+        <metadata inherited="true">
+          <documentation type="summary">
+            CONUS, 1073 by 689 points, resolution 5 km. Models are run hourly. Forecasts every 3 hours from 2 to 74 hours and
+            every 6 hours from 74 to 170.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/conduit/CONUS_5km/.*grib2$"
+            dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <gdsHash from="-2121584860" to="28944332"/>
+        </gribConfig>
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="Real Time Mesoscale Analysis (RTMA)">
+      <metadata inherited="true">
+        <documentation type="summary">
+          The NCEP RTMA Model is Real Time Mesoscale Analysis models.
+        </documentation>
+        <documentation xlink:href="http://www.weather.gov/infoservicechanges/tin08-56_rtma.txt"
+                       xlink:title="RTMA TIN"/>
+        <documentation xlink:href="http://www.coaps.fsu.edu/~dvandyke/wrfarw/rtma.html"
+                       xlink:title="COAPS FSU"/>
+      </metadata>
+
+      <featureCollection name="RTMA-CONUS_2p5km" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/RTMA/CONUS_2p5km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Model horizontal = 1377 by 2145 points, resolution 2.5 km, LambertConformal projection.
+            Model runs are made hourly, with 0 hour forecast
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RTMA/CONUS_2p5km/.*grib2$"
+            dateFormatMark="#RTMA_CONUS_2p5km_#yyyyMMdd_HHmm"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="RTMA-GUAM_2p5km" featureType="GRIB" harvest="true" path="grib/NCEP/RTMA/GUAM_2p5km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Model horizontal = 193 by 193 points, resolution 2.5 km, Mercator projection.
+            Model runs are made every 3 hours at 0, 3, ... with 0 hour forecasts.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RTMA/GUAM_2p5km/.*grib2$"
+            dateFormatMark="#RTMA_GUAM_2p5km_#yyyyMMdd_HHmm"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+    </dataset>
+
     <dataset name="Rapid Update Cycle (RUC) Model">
       <metadata inherited="true">
         <documentation type="summary">NCEP Rapid Update Cycle (RUC) Model: frequently updated short-range weather forecasts.</documentation>
@@ -489,6 +622,7 @@
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_13km/.*grib2$"
             dateFormatMark="#RUC2_CONUS_13km_#yyyyMMdd_HHmm"
+            timePartition="1 day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
@@ -540,6 +674,7 @@
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/.*grib2$"
             dateFormatMark="#RUC2_CONUS_20km_hybrid_#yyyyMMdd_HHmm"
+            timePartition="1 day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
@@ -573,49 +708,6 @@
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
-    </dataset>
-
-
-    <dataset name="Downscaled GFS with Eta Extension (DGEX)">
-      <metadata inherited="true">
-        <documentation type="summary">
-          The NCEP DGEX Model is the Eta model extended to 8 days over smaller domains using the operational Eta model
-          78 hour forecast and GFS boundary conditions.
-        </documentation>
-        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/etintro.htm"
-                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
-        <documentation xlink:href="http://www.nws.noaa.gov/ost/ifps_sst/DGEX_combined.pdf"
-                       xlink:title="NCEP presentation (ppt)"/>
-      </metadata>
-
-      <featureCollection name="DGEX-CONUS_12km" featureType="GRIB" harvest="true" path="grib/NCEP/DGEX/CONUS_12km">
-        <metadata inherited="true">
-          <documentation type="summary">
-            NCEP Model output Grid 185 (C) horizontal = 491 by 303 points, resolution 12 km, LambertConformal projection.
-            Model runs are made at 6 and 18Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours
-          </documentation>
-        </metadata>
-
-        <collection spec="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/.*grib2$"
-            dateFormatMark="#DGEX_CONUS_12km_#yyyyMMdd_HHmm"
-            olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-      </featureCollection>
-
-      <featureCollection name="DGEX-Alaska_12km" featureType="GRIB" harvest="true" path="grib/NCEP/DGEX/Alaska_12km">
-        <metadata inherited="true">
-          <documentation type="summary">
-            NCEP Model output AWIPS Grid 186 (C) horizontal = 377 by 237 points, resolution 12 km, Polar Stereographic projection.
-            Model runs are made at 0 and 12Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours
-          </documentation>
-        </metadata>
-
-        <collection spec="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/.*grib2$"
-            dateFormatMark="#DGEX_Alaska_12km_#yyyyMMdd_HHmm"
-            olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-      </featureCollection>
-
     </dataset>
 
     <!-- dataset name="NCEP Global Ensemble Forecasting System (GEFS)">
@@ -665,50 +757,6 @@
       </featureCollection>
 
     </dataset -->
-
-    <dataset name="NCEP Real Time Mesoscale Analysis (RTMA)">
-      <metadata inherited="true">
-        <documentation type="summary">
-          The NCEP RTMA Model is Real Time Mesoscale Analysis models.
-        </documentation>
-        <documentation xlink:href="http://www.weather.gov/infoservicechanges/tin08-56_rtma.txt"
-                       xlink:title="RTMA TIN"/>
-        <documentation xlink:href="http://www.coaps.fsu.edu/~dvandyke/wrfarw/rtma.html"
-                       xlink:title="COAPS FSU"/>
-      </metadata>
-
-      <featureCollection name="RTMA-CONUS_2p5km" featureType="GRIB" harvest="true"
-                         path="grib/NCEP/RTMA/CONUS_2p5km">
-        <metadata inherited="true">
-          <documentation type="summary">
-            NCEP Model horizontal = 1377 by 2145 points, resolution 2.5 km, LambertConformal projection.
-            Model runs are made hourly, with 0 hour forecast
-          </documentation>
-        </metadata>
-
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/RTMA/CONUS_2p5km/.*grib2$"
-            dateFormatMark="#RTMA_CONUS_2p5km_#yyyyMMdd_HHmm"
-            olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-      </featureCollection>
-
-      <featureCollection name="RTMA-GUAM_2p5km" featureType="GRIB" harvest="true" path="grib/NCEP/RTMA/GUAM_2p5km">
-        <metadata inherited="true">
-          <documentation type="summary">
-            NCEP Model horizontal = 193 by 193 points, resolution 2.5 km, Mercator projection.
-            Model runs are made every 3 hours at 0, 3, ... with 0 hour forecasts.
-          </documentation>
-        </metadata>
-
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/RTMA/GUAM_2p5km/.*grib2$"
-            dateFormatMark="#RTMA_GUAM_2p5km_#yyyyMMdd_HHmm"
-            olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-      </featureCollection>
-
-    </dataset>
 
     <!-- dataset name="NCEP Short Range Ensemble Forecasting (SREF)">
       <metadata inherited="true">
@@ -811,49 +859,7 @@
 
     </dataset -->
 
-    <dataset name="NWS National Digital Forecast Database">
-      <metadata inherited="true">
-        <dataFormat>GRIB-2</dataFormat>
-        <documentation type="summary">National Digital Forecast Database (NDFD): US National Weather Service gridded
-          forecasts of sensible weather elements.
-        </documentation>
-        <documentation xlink:href="http://www.weather.gov/ndfd/" xlink:title="NWS/NDFD Website"/>
-        <documentation xlink:href="http://www.nws.noaa.gov/ndfd/definitions.htm" xlink:title="NDFD parameter descriptions"/>
-      </metadata>
-
-      <featureCollection name="NDFD-CONUS_5km" featureType="GRIB" harvest="true" path="grib/NCEP/NDFD/CONUS_5km">
-        <metadata inherited="true">
-          <documentation type="summary">
-            CONUS, 1073 by 689 points, resolution 5 km. Results from 12Z and 18Z run. Forecasts every 6 hours from 90 to 180 hours.
-          </documentation>
-        </metadata>
-
-        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/.*grib2$"
-            dateFormatMark="#NDFD_CONUS_5km_#yyyyMMdd_HHmm"
-            olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-      </featureCollection>
-
-      <featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB" harvest="true" path="grib/NCEP/NDFD/CONUS_5km_conduit">
-        <metadata inherited="true">
-          <documentation type="summary">
-            CONUS, 1073 by 689 points, resolution 5 km. Models are run hourly. Forecasts every 3 hours from 2 to 74 hours and
-            every 6 hours from 74 to 170.
-          </documentation>
-        </metadata>
-
-        <collection spec="/data/ldm/pub/native/grid/NCEP/NDFD/conduit/CONUS_5km/.*grib2$"
-            dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm"
-            olderThan="5 min"/>
-        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-        <gribConfig>
-          <gdsHash from="-2121584860" to="28944332"/>
-        </gribConfig>
-      </featureCollection>
-
-    </dataset>
-
-    <dataset name="NCEP Wave Watch III">
+    <dataset name="Wave Watch III">
       <metadata inherited="true">
         <documentation type="summary">NCEP Wave Watch III (WW3): US National Weather Service gridded forecasts of
           sensible weather elements.

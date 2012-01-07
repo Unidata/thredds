@@ -645,7 +645,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
   } */
 
   private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
-    Grib2TimePartition.VariableIndexPartitioned vindexP = (Grib2TimePartition.VariableIndexPartitioned) v2.getSPobject();
+    TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject();
 
     // canonical order: time, ens, z, y, x
     int rangeIdx = 0;

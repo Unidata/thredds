@@ -34,12 +34,8 @@ package ucar.nc2.grib;
 
 import thredds.inventory.CollectionManager;
 import thredds.inventory.TimePartitionCollection;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDataset;
+import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
-import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.Grib2TimePartition;
 import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -53,11 +49,21 @@ import java.util.*;
  * @author caron
  * @since 1/4/12
  */
+
+/**
+ * A collection of GribCollection objects which are Time Partitioned.
+ * A TimePartition is the collection; a TimePartition.Partition represents one of the GribCollection.
+ * Everything is done with lazy instantiation.
+ *
+ * @author caron
+ * @since 4/17/11
+ */
 public abstract class TimePartition extends GribCollection {
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
 
   static public TimePartition factory(boolean isGrib1, TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
+    if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, f);
     return Grib2TimePartitionBuilder.factory(tpc, force, f);
   }
 
@@ -194,12 +200,12 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public void addPartition(String name, String filename) {
-    if (partitionMap == null) partitionMap = new TreeMap<String, Grib2TimePartition.Partition>();
+    if (partitionMap == null) partitionMap = new TreeMap<String, TimePartition.Partition>();
     partitionMap.put(name, new Partition(name, filename));
   }
 
   public void addPartition(CollectionManager dcm) {
-    if (partitionMap == null) partitionMap = new TreeMap<String, Grib2TimePartition.Partition>();
+    if (partitionMap == null) partitionMap = new TreeMap<String, TimePartition.Partition>();
     partitionMap.put(dcm.getCollectionName(), new Partition(dcm));
   }
 
@@ -255,20 +261,12 @@ public abstract class TimePartition extends GribCollection {
       partitionMap.remove(p.getDcm().getCollectionName());
   }
 
-  @Override
-  public NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  @Override
-  public GridDataset getGridDataset(String groupName, String filename) throws IOException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
   // LOOK - needs time partition collection iosp or something
-  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName) throws IOException;
+  @Override
+  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException;
 
-  public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName) throws IOException;
+  @Override
+  public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException;
 
   public void showIndex(Formatter f) {
     List<Partition> plist = getPartitions();

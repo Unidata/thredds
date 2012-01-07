@@ -33,11 +33,10 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.*;
-//import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
+import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -300,6 +299,8 @@ public class GribCollectionIndexPanel extends JPanel {
       gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf);
     else if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START))
       gc = Grib2TimePartitionBuilder.createFromIndex(indexFile, null, raf);
+    else if (magic.equals(Grib1TimePartitionBuilder.MAGIC_START))
+      gc = Grib1TimePartitionBuilder.createFromIndex(indexFile, null, raf);
 
     else
       throw new IOException("Not a grib collection index file ="+magic);

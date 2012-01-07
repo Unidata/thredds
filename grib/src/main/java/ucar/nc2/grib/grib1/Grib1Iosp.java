@@ -40,8 +40,6 @@ import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Tables;
-import ucar.nc2.grib.grib2.Grib2TimePartition;
-import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -82,7 +80,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private Grib2TimePartition timePartition;
+  private Grib1TimePartition timePartition;
   private GribCollection gribCollection;
   private Grib1Tables tables;
   private GribCollection.GroupHcs gHcs;
@@ -176,16 +174,16 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
     if (gHcs != null) { // just use the one group that was set in the constructor
       this.gribCollection = gHcs.getGribCollection();
-      if (this.gribCollection instanceof Grib2TimePartition) {
+      if (this.gribCollection instanceof Grib1TimePartition) {
         isTimePartitioned = true;
-        timePartition = (Grib2TimePartition) gribCollection;
+        timePartition = (Grib1TimePartition) gribCollection;
       }
       addGroup(ncfile, gHcs, false);
 
     } else if (gribCollection != null) { // use the gribCollection set in the constructor
-      if (this.gribCollection instanceof Grib2TimePartition) {
+      if (this.gribCollection instanceof Grib1TimePartition) {
         isTimePartitioned = true;
-        timePartition = (Grib2TimePartition) gribCollection;
+        timePartition = (Grib1TimePartition) gribCollection;
       }
       boolean useGroups = gribCollection.getGroups().size() > 1;
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
@@ -194,10 +192,10 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     } else { // the raf is a collection index (ncx)
 
       raf.seek(0);
-      byte[] b = new byte[Grib2TimePartitionBuilder.MAGIC_START.length()];
+      byte[] b = new byte[Grib1TimePartitionBuilder.MAGIC_START.length()];
       raf.readFully(b);
       String magic = new String(b);
-      isTimePartitioned = magic.equals(Grib2TimePartitionBuilder.MAGIC_START);
+      isTimePartitioned = magic.equals(Grib1TimePartitionBuilder.MAGIC_START);
 
       String location = raf.getLocation();
       File f = new File(location);
@@ -206,7 +204,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
       // asssume for now this is the grib collection index file (ncx)
       if (isTimePartitioned) {
-        timePartition = Grib2TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
+        timePartition = Grib1TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
         gribCollection = timePartition;
       } else {
         gribCollection = Grib1CollectionBuilder.createFromIndex(name, f.getParentFile(), raf);
@@ -542,7 +540,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   } */
 
   private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
-    Grib2TimePartition.VariableIndexPartitioned vindexP = (Grib2TimePartition.VariableIndexPartitioned) v2.getSPobject();
+    TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject();
 
     // canonical order: time, ens, z, y, x
     int rangeIdx = 0;
