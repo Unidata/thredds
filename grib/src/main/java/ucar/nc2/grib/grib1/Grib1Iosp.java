@@ -97,6 +97,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
     // check if its an ncx file
     if (magic.equals(Grib1CollectionBuilder.MAGIC_START)) return true;
+    if (magic.equals(Grib1TimePartitionBuilder.MAGIC_START)) return true;
 
     // check for GRIB1 file
     return Grib1RecordScanner.isValidFile(raf);
@@ -202,7 +203,6 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       int pos = f.getName().lastIndexOf(".");
       String name = (pos > 0) ? f.getName().substring(0, pos) : f.getName();
 
-      // asssume for now this is the grib collection index file (ncx)
       if (isTimePartitioned) {
         timePartition = Grib1TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
         gribCollection = timePartition;

@@ -44,13 +44,6 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Describe
- *
- * @author caron
- * @since 1/4/12
- */
-
-/**
  * A collection of GribCollection objects which are Time Partitioned.
  * A TimePartition is the collection; a TimePartition.Partition represents one of the GribCollection.
  * Everything is done with lazy instantiation.

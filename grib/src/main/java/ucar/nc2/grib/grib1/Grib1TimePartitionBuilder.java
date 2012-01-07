@@ -362,7 +362,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
 
   //////////////////////////////////////////////////////////
 
-
+  @Override
   public String getMagicStart() {
     return MAGIC_START;
   }

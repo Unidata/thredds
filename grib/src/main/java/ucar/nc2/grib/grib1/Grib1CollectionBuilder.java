@@ -177,7 +177,7 @@ public class Grib1CollectionBuilder {
       raf.seek(0);
 
       //// header message
-      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes())) {
+      if (!NcStream.readAndTest(raf, getMagicStart().getBytes())) {
         logger.error("GribCollection {}: invalid index", gc.getName());
         return false;
       }
@@ -466,6 +466,10 @@ public class Grib1CollectionBuilder {
     return result;
   }
 
+  public String getMagicStart() {
+    return MAGIC_START;
+  }
+
   /*
    MAGIC_START
    version
@@ -485,7 +489,7 @@ public class Grib1CollectionBuilder {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     try {
       //// header message
-      raf.write(MAGIC_START.getBytes("UTF-8"));
+      raf.write(getMagicStart().getBytes("UTF-8"));
       raf.writeInt(version);
       long lenPos = raf.getFilePointer();
       raf.writeLong(0); // save space to write the length of the record section

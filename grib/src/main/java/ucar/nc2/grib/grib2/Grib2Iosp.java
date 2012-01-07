@@ -92,8 +92,9 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       f.format("_%s", tables.getIntervalNameShort(vindex.intvType));
     }
 
-    if (vindex.ensDerivedType >= 0)
-      f.format("_D%d", vindex.ensDerivedType);
+    if (vindex.ensDerivedType >= 0) {
+      f.format("_%s", tables.getProbabilityNameShort(vindex.ensDerivedType));
+    }
 
     else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
       String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
@@ -513,7 +514,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       int[] param = new int[] {vindex.discipline,vindex.category,vindex.parameter};
       v.addAttribute(new Attribute("Grib_Parameter", Array.factory(param)));
       v.addAttribute(new Attribute("Grib_Level_Type", vindex.levelType));
-      if ( vindex.intvName != null)
+      if ( vindex.intvName != null && vindex.intvName.length() != 0)
         v.addAttribute(new Attribute("Time_Interval", vindex.intvName));
       if (vindex.intvType >= 0) {
         v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));
