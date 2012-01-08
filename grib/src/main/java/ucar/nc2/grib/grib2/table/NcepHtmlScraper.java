@@ -40,6 +40,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ucar.unidata.util.StringUtil2;
 
+import javax.lang.model.util.ElementScanner6;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -65,42 +66,61 @@ public class NcepHtmlScraper  {
 
   void parseTopDoc() throws IOException {
     String source = "http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml";
-    String base = "http://www.nco.ncep.noaa.gov/pmb/docs/grib2/";
-    File input = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\ON388.TableA.htm");
     Document doc = Jsoup.parse(new URL(source), 5 * 1000); // 5 sec timeout
     //System.out.printf("%s%n", doc);
-    List<Stuff> stuff = new ArrayList<Stuff>();
 
-    Element body = doc.select("body").first();
     Elements links = doc.select("a[href]");
     for (Element link : links) {
-      System.out.printf("%s", link.text());
-      if (link.text().startsWith("Table 4")) {
+      System.out.printf("%s", link);
+      if (link.text().startsWith("Table 4.2")) {
         System.out.printf(" == ");
-        parseTable4(link.attr("abs:href"));
+        parseTable42(link.attr("abs:href"), link.text());
+      } else {
+        if (link.text().startsWith("Table 4")) {
+          System.out.printf(" == ");
+          parseTable4(link.attr("abs:href"), link.text());
+        }
       }
       System.out.printf("%n");
     }
   }
 
-  void parseTable4(String url) throws IOException {
+  void parseTable42(String url, String tableName) throws IOException {
     System.out.printf(" %s%n", url);
     Document doc = Jsoup.parse(new URL(url), 5 * 1000); // 5 sec timeout
     System.out.printf("%s%n", doc);
-  }
 
+    Elements elems = doc.select("h4");
+    String title =  (elems != null) ? elems.first().text() : "NCEP GRIB-2 Code Table";
+    System.out.printf("%s%n", title);
 
+    Element table = doc.select("table").first();
+    List<Stuff> stuff = new ArrayList<Stuff>();
+    Elements rows = table.select("tr");
+    for (Element row : rows) {
+      Elements cols = row.select("td");
+      if (debug) {
+        System.out.printf(" #cols=%d: ", cols.size());
+        for (Element col : cols)
+          System.out.printf("%s:", col.text());
+        System.out.printf("%n");
+      }
 
-      /* if (cols.size() == 2) {
+      if (cols.size() == 2) {
         String snum = StringUtil2.cleanup(cols.get(0).text()).trim();
+        if (snum.contains("Reserved")) {
+            System.out.printf("*** Skip Reserved %s%n", row.text());
+            continue;
+        }
+
         try {
           int pnum = Integer.parseInt(snum);
           String desc = StringUtil2.cleanup(cols.get(1).text()).trim();
-          if (desc.startsWith("Reserved")) {
+          if (desc.contains("Reserved")) {
             System.out.printf("*** Skip Reserved %s%n", row.text());
             continue;
           } else {
-            System.out.printf("%d == %s%n", pnum, desc);
+            System.out.printf("val %d == %s%n", pnum, desc);
             stuff.add(new Stuff(pnum, desc));
           }
           //result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
@@ -110,8 +130,56 @@ public class NcepHtmlScraper  {
 
       }
     }
-    //writeTableAXml("NCEP GRIB-1 Table A", source, "ncepTableA.xml", stuff);
-  } */
+   writeCodeTableXml(title, url, tableName, stuff);
+  }
+
+  void parseTable4(String url, String tableName) throws IOException {
+    System.out.printf(" %s%n", url);
+    Document doc = Jsoup.parse(new URL(url), 5 * 1000); // 5 sec timeout
+    //System.out.printf("%s%n", doc);
+
+    Elements elems = doc.select("h4");
+    String title =  (elems != null) ? elems.first().text() : "NCEP GRIB-2 Code Table";
+    System.out.printf("%s%n", title);
+
+    Element table = doc.select("table").first();
+    List<Stuff> stuff = new ArrayList<Stuff>();
+    Elements rows = table.select("tr");
+    for (Element row : rows) {
+      Elements cols = row.select("td");
+      if (debug) {
+        System.out.printf(" #cols=%d: ", cols.size());
+        for (Element col : cols)
+          System.out.printf("%s:", col.text());
+        System.out.printf("%n");
+      }
+
+      if (cols.size() == 2) {
+        String snum = StringUtil2.cleanup(cols.get(0).text()).trim();
+        if (snum.contains("Reserved")) {
+            System.out.printf("*** Skip Reserved %s%n", row.text());
+            continue;
+        }
+
+        try {
+          int pnum = Integer.parseInt(snum);
+          String desc = StringUtil2.cleanup(cols.get(1).text()).trim();
+          if (desc.contains("Reserved")) {
+            System.out.printf("*** Skip Reserved %s%n", row.text());
+            continue;
+          } else {
+            System.out.printf("val %d == %s%n", pnum, desc);
+            stuff.add(new Stuff(pnum, desc));
+          }
+          //result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
+        } catch (NumberFormatException e) {
+          System.out.printf("*** Cant parse %s == %s%n", snum, row.text());
+        }
+
+      }
+    }
+   writeCodeTableXml(title, url, tableName, stuff);
+  }
 
   private class Stuff {
     int no;
@@ -123,10 +191,10 @@ public class NcepHtmlScraper  {
     }
   }
 
-  private void writeTableAXml(String name, String source, String filename, List<Stuff> stuff) throws IOException {
-    org.jdom.Element rootElem = new org.jdom.Element("tableA");
+  private void writeCodeTableXml(String name, String source, String tableName, List<Stuff> stuff) throws IOException {
+    org.jdom.Element rootElem = new org.jdom.Element("codeTable");
     org.jdom.Document doc = new org.jdom.Document(rootElem);
-    rootElem.addContent(new org.jdom.Element("title").setText(name));
+    rootElem.addContent(new org.jdom.Element("title").setText(name+" "+tableName));
     rootElem.addContent(new org.jdom.Element("source").setText(source));
 
     for (Stuff p : stuff) {
@@ -139,7 +207,8 @@ public class NcepHtmlScraper  {
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     String x = fmt.outputString(doc);
 
-    FileOutputStream fout = new FileOutputStream(dirOut + filename);
+    String tableName2 = StringUtil2.removeWhitespace(tableName);
+    FileOutputStream fout = new FileOutputStream(dirOut + tableName2+".xml");
     fout.write(x.getBytes());
     fout.close();
 
@@ -220,7 +289,7 @@ public class NcepHtmlScraper  {
   }
 
   /////////////////////////////////////////////////////////
-  String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
+  String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep\\";
 
   private void writeTable2Xml(String name, String source, String filename, List<Param> params) throws IOException {
     org.jdom.Element rootElem = new org.jdom.Element("parameterMap");
