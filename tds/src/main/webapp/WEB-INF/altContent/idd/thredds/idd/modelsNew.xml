@@ -848,7 +848,8 @@
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="SREF-CONUS_40km-biasCorrected-members" featureType="GRIB" harvest="true"
+      <!-- apparently SREF members are incorectly encoded - dont have the ensembe info in them -->
+      <!-- featureCollection name="SREF-CONUS_40km-biasCorrected-members" featureType="GRIB" harvest="true"
                          path="grib/NCEP/SREF/CONUS_40km/pgrb_biasc">
         <metadata inherited="true">
           <documentation type="summary">
@@ -862,7 +863,7 @@
                     dateFormatMark="yyyyMMdd_HHmm#.grib2#"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-      </featureCollection>
+      </featureCollection -->
 
       <featureCollection name="SREF-Alaska_45km-ensprod" featureType="GRIB" harvest="true"
                          path="grib/NCEP/SREF/Alaska_45km/ensprod">
@@ -910,8 +911,7 @@
           </documentation>
         </metadata>
 
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/WW3/Global/.*grib2$"
+        <collection spec="/data/ldm/pub/native/grid/NCEP/WW3/Global/.*grib2$"
             dateFormatMark="#WW3_Global_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
