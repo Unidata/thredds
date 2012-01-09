@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dataset.conv;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.Variable;
@@ -87,7 +88,7 @@ public class COARDSConvention extends CoordSysBuilder {
     if (unit.equalsIgnoreCase("level") || unit.equalsIgnoreCase("layer") || unit.equalsIgnoreCase("sigma_level"))
       return AxisType.GeoZ;
 
-    String positive = ncDataset.findAttValueIgnoreCase((Variable) v, "positive", null);
+    String positive = ncDataset.findAttValueIgnoreCase((Variable) v, CF.POSITIVE, null);
     if (positive != null) {
       if (SimpleUnit.isCompatible("m", unit))
         return AxisType.Height;

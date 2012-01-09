@@ -462,7 +462,7 @@ public class NcMLWriter {
   }
 
   /* private Element makeCoordinateAxis( CoordinateAxis var) {
-   var.addAttribute( new Attribute("units", var.getUnitsString()));
+   var.addAttribute( new Attribute(CDM.UNITS, var.getUnitsString()));
    if (var.getAxisType() != null)
      var.addAttribute( new Attribute(_Coordinate.AxisType", var.getAxisType().toString()));
    if (var.getPositive() != null)

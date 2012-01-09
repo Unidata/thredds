@@ -33,9 +33,10 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.*;
-//import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
+import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -64,8 +65,8 @@ import java.util.List;
 public class GribCollectionIndexPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTableSorted groupTable, varTable, vertCoordTable;
-  private JSplitPane split, split2;
+  private BeanTableSorted groupTable, varTable, vertCoordTable, timeCoordTable;
+  private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoPopup, detailTA;
   private IndependentWindow infoWindow, detailWindow;
@@ -73,11 +74,11 @@ public class GribCollectionIndexPanel extends JPanel {
   public GribCollectionIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Files", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        showFiles(f);
+        gc.showIndex(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
@@ -86,7 +87,20 @@ public class GribCollectionIndexPanel extends JPanel {
     buttPanel.add(infoButton);
 
 
-    AbstractButton showButt = BAMutil.makeButtcon("Information", "Compare Files", false);
+    AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
+    filesButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        showFiles(f);
+        detailTA.setText(f.toString());
+        detailTA.gotoTop();
+        detailWindow.show();
+      }
+    });
+    buttPanel.add(filesButton);
+
+
+   /*  AbstractButton showButt = BAMutil.makeButtcon("Information", "Compare Files", false);
     showButt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
@@ -100,7 +114,7 @@ public class GribCollectionIndexPanel extends JPanel {
         detailWindow.show();
       }
     });
-    buttPanel.add(showButt);
+    buttPanel.add(showButt);  */
 
     ////////////////////////////
 
@@ -123,7 +137,7 @@ public class GribCollectionIndexPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         VarBean bean = (VarBean) varTable.getSelectedBean();
         if (bean != null) {
-          infoPopup.setText(bean.v.toString());
+          infoPopup.setText(bean.v.toStringComplete());
           infoPopup.gotoTop();
           infoWindow.showIfNotIconified();
         }
@@ -156,6 +170,20 @@ public class GribCollectionIndexPanel extends JPanel {
       }
     });
 
+    timeCoordTable = new BeanTableSorted(TimeCoordBean.class, (PreferencesExt) prefs.node("TimeCoordBean"), false);
+    varPopup = new PopupMenu(timeCoordTable.getJTable(), "Options");
+
+    varPopup.addAction("Show", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        TimeCoordBean bean = (TimeCoordBean) timeCoordTable.getSelectedBean();
+        if (bean != null) {
+          infoPopup.setText(bean.tc.toString());
+          infoPopup.gotoTop();
+          infoWindow.showIfNotIconified();
+        }
+      }
+    });
+
     /////////////////////////////////////////
     // the info windows
     infoPopup = new TextHistoryPane();
@@ -168,10 +196,13 @@ public class GribCollectionIndexPanel extends JPanel {
 
     setLayout(new BorderLayout());
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, groupTable, varTable);
+    split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, groupTable, varTable);
+    split3.setDividerLocation(prefs.getInt("splitPos3", 800));
+
+    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split3, vertCoordTable);
     split2.setDividerLocation(prefs.getInt("splitPos2", 800));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, vertCoordTable);
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, timeCoordTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     add(split, BorderLayout.CENTER);
@@ -186,6 +217,7 @@ public class GribCollectionIndexPanel extends JPanel {
     prefs.putBeanObject("DetailWindowBounds", detailWindow.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
   }
 
   private void compareFiles(Formatter f) throws IOException {
@@ -253,7 +285,7 @@ public class GribCollectionIndexPanel extends JPanel {
   ///////////////////////////////////////////////
   GribCollection gc;
 
-  public void setIndex(String indexFile) throws IOException {
+  public void setIndexFile(String indexFile) throws IOException {
     if (gc != null) gc.close();
 
     RandomAccessFile raf = new RandomAccessFile(indexFile, "r");
@@ -265,6 +297,11 @@ public class GribCollectionIndexPanel extends JPanel {
       gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf);
     else if (magic.equals(Grib1CollectionBuilder.MAGIC_START))
       gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf);
+    else if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START))
+      gc = Grib2TimePartitionBuilder.createFromIndex(indexFile, null, raf);
+    else if (magic.equals(Grib1TimePartitionBuilder.MAGIC_START))
+      gc = Grib1TimePartitionBuilder.createFromIndex(indexFile, null, raf);
+
     else
       throw new IOException("Not a grib collection index file ="+magic);
 
@@ -286,6 +323,12 @@ public class GribCollectionIndexPanel extends JPanel {
     for (VertCoord vc : group.vertCoords)
       coords.add(new CoordBean(vc, count++));
     vertCoordTable.setBeans(coords);
+
+    count = 0;
+    List<TimeCoordBean> tcoords = new ArrayList<TimeCoordBean>();
+    for (TimeCoord tc : group.timeCoords)
+      tcoords.add(new TimeCoordBean(tc, count++));
+    timeCoordTable.setBeans(tcoords);
   }
 
   private void showFiles(Formatter f) {
@@ -517,6 +560,39 @@ public class GribCollectionIndexPanel extends JPanel {
 
     public String getUnits() {
       return vc.getUnits();
+    }
+
+    public int getIndex() {
+      return index;
+    }
+  }
+
+  public class TimeCoordBean {
+    TimeCoord tc;
+    int index;
+
+    public TimeCoordBean() {
+    }
+
+    public TimeCoordBean(TimeCoord tc, int index) {
+      this.tc = tc;
+      this.index = index;
+    }
+
+    public int getNCoords() {
+      return tc.getSize();
+    }
+
+    public String getCalendarRange() {
+      return tc.getCalendarRange().toString();
+    }
+
+    public String getTimeUnit() {
+      return tc.getTimeUnit().toString();
+    }
+
+    public String getTimeIntervalName() {
+      return tc.getTimeIntervalName();
     }
 
     public int getIndex() {

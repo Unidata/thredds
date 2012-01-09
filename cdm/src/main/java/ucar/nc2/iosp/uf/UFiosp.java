@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.uf;
 
+import ucar.nc2.constants.*;
 import ucar.nc2.iosp.uf.UFheader;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 
@@ -40,9 +41,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.FeatureType;
 import ucar.ma2.*;
 
 import java.io.IOException;
@@ -97,7 +95,7 @@ public class UFiosp extends AbstractIOServiceProvider {
 
 
 
-        ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
+        ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
         ncfile.addAttribute(null, new Attribute("format", headerParser.getDataFormat()));
         ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
         //Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
@@ -114,7 +112,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         double lonRadiusDegrees = Math.toDegrees( radarRadius / cosLat / ucar.unidata.geoloc.Earth.getRadius());
         ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Double(headerParser.getStationLongitude() - lonRadiusDegrees)));
         ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Double(headerParser.getStationLongitude() + lonRadiusDegrees)));
-        ncfile.addAttribute(null, new Attribute("history", "Direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
+        ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
         ncfile.addAttribute(null, new Attribute("DataType", "Radial"));
 
         ncfile.addAttribute(null, new Attribute("Title", "Nexrad Level 2 Station "+headerParser.getStationId()+" from "+
@@ -170,13 +168,13 @@ public class UFiosp extends AbstractIOServiceProvider {
         v.setDimensions(dims);
         ncfile.addVariable(null, v);
 
-        v.addAttribute( new Attribute("units", firstRay.getDatatypeUnits(abbrev)));
-        v.addAttribute( new Attribute("long_name", longName));
+        v.addAttribute( new Attribute(CDM.UNITS, firstRay.getDatatypeUnits(abbrev)));
+        v.addAttribute( new Attribute(CDM.LONG_NAME, longName));
         v.addAttribute( new Attribute("abbrev", abbrev));
-        v.addAttribute( new Attribute("missing_value", firstRay.getMissingData()));
+        v.addAttribute( new Attribute(CDM.MISSING_VALUE, firstRay.getMissingData()));
         v.addAttribute( new Attribute("signal_below_threshold", firstRay.getDatatypeRangeFoldingThreshhold(abbrev)));
-        v.addAttribute( new Attribute("scale_factor", firstRay.getDatatypeScaleFactor(abbrev)));
-        v.addAttribute( new Attribute("add_offset", firstRay.getDatatypeAddOffset(abbrev)));
+        v.addAttribute( new Attribute(CDM.SCALE_FACTOR, firstRay.getDatatypeScaleFactor(abbrev)));
+        v.addAttribute( new Attribute(CDM.ADD_OFFSET, firstRay.getDatatypeAddOffset(abbrev)));
        // v.addAttribute( new Attribute("_Unsigned", "false"));
 
         v.addAttribute( new Attribute("range_folding_threshold" ,firstRay.getDatatypeRangeFoldingThreshhold(abbrev)));
@@ -198,9 +196,9 @@ public class UFiosp extends AbstractIOServiceProvider {
         Date d = firstRay.getDate();
         String units = "msecs since "+formatter.toDateTimeStringISO(d);
 
-        timeVar.addAttribute( new Attribute("long_name", "time since base date"));
-        timeVar.addAttribute( new Attribute("units", units));
-        timeVar.addAttribute( new Attribute("missing_value", firstRay.getMissingData()));
+        timeVar.addAttribute( new Attribute(CDM.LONG_NAME, "time since base date"));
+        timeVar.addAttribute( new Attribute(CDM.UNITS, units));
+        timeVar.addAttribute( new Attribute(CDM.MISSING_VALUE, firstRay.getMissingData()));
         timeVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
         // add elevation coordinate variable
@@ -210,9 +208,9 @@ public class UFiosp extends AbstractIOServiceProvider {
         elevVar.setDimensions(dim2);
         ncfile.addVariable(null, elevVar);
 
-        elevVar.addAttribute( new Attribute("units", "degrees"));
-        elevVar.addAttribute( new Attribute("long_name", "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular"));
-        elevVar.addAttribute( new Attribute("missing_value", firstRay.getMissingData()));
+        elevVar.addAttribute( new Attribute(CDM.UNITS, "degrees"));
+        elevVar.addAttribute( new Attribute(CDM.LONG_NAME, "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular"));
+        elevVar.addAttribute( new Attribute(CDM.MISSING_VALUE, firstRay.getMissingData()));
         elevVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));
 
         // add azimuth coordinate variable
@@ -222,9 +220,9 @@ public class UFiosp extends AbstractIOServiceProvider {
         aziVar.setDimensions(dim2);
         ncfile.addVariable(null, aziVar);
 
-        aziVar.addAttribute( new Attribute("units", "degrees"));
-        aziVar.addAttribute( new Attribute("long_name", "azimuth angle in degrees: 0 = true north, 90 = east"));
-        aziVar.addAttribute( new Attribute("missing_value", firstRay.getMissingData()));
+        aziVar.addAttribute( new Attribute(CDM.UNITS, "degrees"));
+        aziVar.addAttribute( new Attribute(CDM.LONG_NAME, "azimuth angle in degrees: 0 = true north, 90 = east"));
+        aziVar.addAttribute( new Attribute(CDM.MISSING_VALUE, firstRay.getMissingData()));
         aziVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString()));
 
         // add gate coordinate variable
@@ -238,8 +236,8 @@ public class UFiosp extends AbstractIOServiceProvider {
         ncfile.addVariable(null, gateVar);
   //      radarRadius = firstRay.getGateStart(datatype) + ngates * firstRay.getGateSize(datatype);
 
-        gateVar.addAttribute( new Attribute("units", "m"));
-        gateVar.addAttribute( new Attribute("long_name", "radial distance to start of gate"));
+        gateVar.addAttribute( new Attribute(CDM.UNITS, "m"));
+        gateVar.addAttribute( new Attribute(CDM.LONG_NAME, "radial distance to start of gate"));
         gateVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString()));
 
         // add number of radials variable
@@ -247,7 +245,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         Variable nradialsVar = new Variable(ncfile, null, null, nradialsName);
         nradialsVar.setDataType(DataType.INT);
         nradialsVar.setDimensions(scanDim.getName());
-        nradialsVar.addAttribute( new Attribute("long_name", "number of valid radials in this scan"));
+        nradialsVar.addAttribute( new Attribute(CDM.LONG_NAME, "number of valid radials in this scan"));
         ncfile.addVariable(null, nradialsVar);
 
         // add number of gates variable
@@ -255,7 +253,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         Variable ngateVar = new Variable(ncfile, null, null, ngateName);
         ngateVar.setDataType(DataType.INT);
         ngateVar.setDimensions(scanDim.getName());
-        ngateVar.addAttribute( new Attribute("long_name", "number of valid gates in this scan"));
+        ngateVar.addAttribute( new Attribute(CDM.LONG_NAME, "number of valid gates in this scan"));
         ncfile.addVariable(null, ngateVar);
 
         makeCoordinateDataWithMissing(abbrev, timeVar, elevVar, aziVar, nradialsVar, ngateVar, groups);

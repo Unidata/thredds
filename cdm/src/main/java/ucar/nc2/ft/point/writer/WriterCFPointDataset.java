@@ -34,6 +34,7 @@
 package ucar.nc2.ft.point.writer;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.PointObsDatatype;
 import ucar.nc2.dt.PointObsDataset;
 import ucar.nc2.dt.DataIterator;
@@ -105,8 +106,8 @@ public class WriterCFPointDataset {
         ncfileOut.addAttribute(null, att);
       }
     }
-    ncfileOut.addAttribute(null, new Attribute("Conventions", "CF-1"));  // LOOK CF-1.?
-    ncfileOut.addAttribute(null, new Attribute("CF:featureType", CF.FeatureType.point.name()));
+    ncfileOut.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1"));  // LOOK CF-1.?
+    ncfileOut.addAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }
 
   // private ArrayInt.D1 timeArray = new ArrayInt.D1(1);
@@ -118,37 +119,37 @@ public class WriterCFPointDataset {
 
     // time variable
     Variable timeVar = ncfileOut.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
-    timeVar.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00:00"));
-    timeVar.addAttribute(new Attribute("long_name", "date/time of observation"));
+    timeVar.addAttribute(new Attribute(CDM.UNITS, "secs since 1970-01-01 00:00:00"));
+    timeVar.addAttribute(new Attribute(CDM.LONG_NAME, "date/time of observation"));
     recordVars.add(timeVar);
 
     // latitude variable
     Variable latVar = ncfileOut.addVariable(null, latName, DataType.DOUBLE, recordDimName);
-    latVar.addAttribute(new Attribute("units", "degrees_north"));
-    latVar.addAttribute(new Attribute("long_name", "latitude of observation"));
+    latVar.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+    latVar.addAttribute(new Attribute(CDM.LONG_NAME, "latitude of observation"));
     latVar.addAttribute(new Attribute("standard_name", "latitude"));
     recordVars.add(latVar);
 
     // longitude variable
     Variable lonVar = ncfileOut.addVariable(null, lonName, DataType.DOUBLE, recordDimName);
-    lonVar.addAttribute(new Attribute("units", "degrees_east"));
-    lonVar.addAttribute(new Attribute("long_name", "longitude of observation"));
+    lonVar.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+    lonVar.addAttribute(new Attribute(CDM.LONG_NAME, "longitude of observation"));
     lonVar.addAttribute(new Attribute("standard_name", "longitude"));
     recordVars.add(lonVar);
 
     if (useAlt) {
       // altitude variable
       Variable altVar = ncfileOut.addVariable(null, altName, DataType.DOUBLE, recordDimName);
-      altVar.addAttribute(new Attribute("units", altUnits));
-      altVar.addAttribute(new Attribute("long_name", "altitude of observation"));
+      altVar.addAttribute(new Attribute(CDM.UNITS, altUnits));
+      altVar.addAttribute(new Attribute(CDM.LONG_NAME, "altitude of observation"));
       altVar.addAttribute(new Attribute("standard_name", "longitude"));
-      altVar.addAttribute(new Attribute("positive", CF1Convention.getZisPositive(altName, altUnits))); 
+      altVar.addAttribute(new Attribute(CF.POSITIVE, CF1Convention.getZisPositive(altName, altUnits)));
       recordVars.add(altVar);
     }
 
     String coordinates = timeName + " " + latName + " " + lonName;
     if (useAlt) coordinates = coordinates + " " + altName;
-    Attribute coordAtt = new Attribute("coordinates", coordinates);
+    Attribute coordAtt = new Attribute(CF.COORDINATES, coordinates);
 
     // find all dimensions needed by the data variables
     for (VariableSimpleIF var : dataVars) {

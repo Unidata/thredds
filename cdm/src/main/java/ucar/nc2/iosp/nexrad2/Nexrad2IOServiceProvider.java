@@ -34,12 +34,10 @@ package ucar.nc2.iosp.nexrad2;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import static ucar.nc2.iosp.nexrad2.Level2Record.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -164,7 +162,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     DateFormatter formatter = new DateFormatter();
 
-    ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
+    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", volScan.getDataFormat()));
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
     Date d = getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
@@ -173,7 +171,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(d)));
     ncfile.addAttribute(null, new Attribute("time_coverage_end", formatter.toDateTimeStringISO(volScan.getEndDate())));
 
-    ncfile.addAttribute(null, new Attribute("history", "Direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
+    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
     ncfile.addAttribute(null, new Attribute("DataType", "Radial"));
 
     ncfile.addAttribute(null, new Attribute("Title", "Nexrad Level 2 Station "+volScan.getStationId()+" from "+
@@ -284,8 +282,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.setDimensions(dims);
     ncfile.addVariable(null, v);
 
-    v.addAttribute( new Attribute("units", getDatatypeUnits(datatype)));
-    v.addAttribute( new Attribute("long_name", longName));
+    v.addAttribute( new Attribute(CDM.UNITS, getDatatypeUnits(datatype)));
+    v.addAttribute( new Attribute(CDM.LONG_NAME, longName));
 
 
     byte[] b = new byte[2];
@@ -293,11 +291,11 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     b[1] = BELOW_THRESHOLD;
     Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
 
-    v.addAttribute( new Attribute("missing_value", missingArray));
+    v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
-    v.addAttribute( new Attribute("scale_factor", firstRecord.getDatatypeScaleFactor(datatype)));
-    v.addAttribute( new Attribute("add_offset", firstRecord.getDatatypeAddOffset(datatype)));
-    v.addAttribute( new Attribute("_Unsigned", "true"));
+    v.addAttribute( new Attribute(CDM.SCALE_FACTOR, firstRecord.getDatatypeScaleFactor(datatype)));
+    v.addAttribute( new Attribute(CDM.ADD_OFFSET, firstRecord.getDatatypeAddOffset(datatype)));
+    v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
     if(rd == 1) {
        v.addAttribute( new Attribute("SNR_threshold" ,firstRecord.getDatatypeSNRThreshhold(datatype)));
     }
@@ -320,9 +318,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     Date d = getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     String units = "msecs since "+formatter.toDateTimeStringISO(d);
 
-    timeVar.addAttribute( new Attribute("long_name", "time since base date"));
-    timeVar.addAttribute( new Attribute("units", units));
-    timeVar.addAttribute( new Attribute("missing_value", MISSING_INT));
+    timeVar.addAttribute( new Attribute(CDM.LONG_NAME, "time since base date"));
+    timeVar.addAttribute( new Attribute(CDM.UNITS, units));
+    timeVar.addAttribute( new Attribute(CDM.MISSING_VALUE, MISSING_INT));
     timeVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     // add elevation coordinate variable
@@ -332,9 +330,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     elevVar.setDimensions(dim2);
     ncfile.addVariable(null, elevVar);
 
-    elevVar.addAttribute( new Attribute("units", "degrees"));
-    elevVar.addAttribute( new Attribute("long_name", "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular"));
-    elevVar.addAttribute( new Attribute("missing_value", MISSING_FLOAT));
+    elevVar.addAttribute( new Attribute(CDM.UNITS, "degrees"));
+    elevVar.addAttribute( new Attribute(CDM.LONG_NAME, "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular"));
+    elevVar.addAttribute( new Attribute(CDM.MISSING_VALUE, MISSING_FLOAT));
     elevVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));
 
     // add azimuth coordinate variable
@@ -344,9 +342,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     aziVar.setDimensions(dim2);
     ncfile.addVariable(null, aziVar);
 
-    aziVar.addAttribute( new Attribute("units", "degrees"));
-    aziVar.addAttribute( new Attribute("long_name", "azimuth angle in degrees: 0 = true north, 90 = east"));
-    aziVar.addAttribute( new Attribute("missing_value", MISSING_FLOAT));
+    aziVar.addAttribute( new Attribute(CDM.UNITS, "degrees"));
+    aziVar.addAttribute( new Attribute(CDM.LONG_NAME, "azimuth angle in degrees: 0 = true north, 90 = east"));
+    aziVar.addAttribute( new Attribute(CDM.MISSING_VALUE, MISSING_FLOAT));
     aziVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString()));
 
     // add gate coordinate variable
@@ -360,8 +358,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addVariable(null, gateVar);
     radarRadius = firstRecord.getGateStart(datatype) + ngates * firstRecord.getGateSize(datatype);
 
-    gateVar.addAttribute( new Attribute("units", "m"));
-    gateVar.addAttribute( new Attribute("long_name", "radial distance to start of gate"));
+    gateVar.addAttribute( new Attribute(CDM.UNITS, "m"));
+    gateVar.addAttribute( new Attribute(CDM.LONG_NAME, "radial distance to start of gate"));
     gateVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString()));
 
     // add number of radials variable
@@ -369,7 +367,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     Variable nradialsVar = new Variable(ncfile, null, null, nradialsName);
     nradialsVar.setDataType(DataType.INT);
     nradialsVar.setDimensions(scanDim.getName());
-    nradialsVar.addAttribute( new Attribute("long_name", "number of valid radials in this scan"));
+    nradialsVar.addAttribute( new Attribute(CDM.LONG_NAME, "number of valid radials in this scan"));
     ncfile.addVariable(null, nradialsVar);
 
     // add number of gates variable
@@ -377,7 +375,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     Variable ngateVar = new Variable(ncfile, null, null, ngateName);
     ngateVar.setDataType(DataType.INT);
     ngateVar.setDimensions(scanDim.getName());
-    ngateVar.addAttribute( new Attribute("long_name", "number of valid gates in this scan"));
+    ngateVar.addAttribute( new Attribute(CDM.LONG_NAME, "number of valid gates in this scan"));
     ncfile.addVariable(null, ngateVar);
 
     makeCoordinateDataWithMissing( datatype, timeVar, elevVar, aziVar, nradialsVar, ngateVar, groups);
@@ -414,20 +412,18 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.setDimensions( from.getDimensions());
     ncfile.addVariable(null, v);
 
-    v.addAttribute( new Attribute("units", getDatatypeUnits(datatype)));
-    v.addAttribute( new Attribute("long_name", longName));
+    v.addAttribute( new Attribute(CDM.UNITS, getDatatypeUnits(datatype)));
+    v.addAttribute( new Attribute(CDM.LONG_NAME, longName));
 
     byte[] b = new byte[2];
     b[0] = MISSING_DATA;
     b[1] = BELOW_THRESHOLD;
-    Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[] {2}, b);
-    Attribute scale = from.findAttribute("scale_factor");
-    Attribute offset = from.findAttribute("add_offset");
-    v.addAttribute( new Attribute("missing_value", missingArray));
+    Array missingArray = Array.factory(DataType.BYTE.getPrimitiveClassType(), new int[]{2}, b);
+    v.addAttribute( new Attribute(CDM.MISSING_VALUE, missingArray));
     v.addAttribute( new Attribute("signal_below_threshold", BELOW_THRESHOLD));
-    v.addAttribute( new Attribute("scale_factor", record.getDatatypeScaleFactor(datatype)));
-    v.addAttribute( new Attribute("add_offset", record.getDatatypeAddOffset(datatype)));
-    v.addAttribute( new Attribute("_Unsigned", "true"));
+    v.addAttribute( new Attribute(CDM.SCALE_FACTOR, record.getDatatypeScaleFactor(datatype)));
+    v.addAttribute( new Attribute(CDM.ADD_OFFSET, record.getDatatypeAddOffset(datatype)));
+    v.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
     if(datatype == Level2Record.SPECTRUM_WIDTH_HIGH){
        v.addAttribute( new Attribute("SNR_threshold" ,record.getDatatypeSNRThreshhold(datatype)));
     }

@@ -44,6 +44,8 @@ import java.util.*;
  * @since Mar 30, 2010
  */
 public class FeatureCollectionConfig {
+  static public final String AUX_GDSHASH = "gdshash";
+  static public final String AUX_INTERVAL_MERGE = "intvMerge";
 
   static public enum ProtoChoice {
     First, Random, Latest, Penultimate, Run
@@ -58,7 +60,7 @@ public class FeatureCollectionConfig {
   }
 
   static public enum GribDatasetType {
-    collection, Files
+    Collection, Files
   }
 
   public static void setRegularizeDefault(boolean t) {
@@ -74,7 +76,7 @@ public class FeatureCollectionConfig {
 
   //////////////////////////////////////////////
 
-  public String name, spec, dateFormatMark, olderThan, recheckAfter, timePartition;
+  public String name, spec, dateFormatMark, olderThan, timePartition;
   public UpdateConfig tdmConfig = new UpdateConfig();
   public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
@@ -95,7 +97,7 @@ public class FeatureCollectionConfig {
     this.spec = spec;
     this.dateFormatMark = dateFormatMark;
     this.olderThan = olderThan;
-    this.recheckAfter = recheckAfter;
+    if (recheckAfter != null) this.updateConfig.recheckAfter = recheckAfter;
     this.timePartition = timePartition;
     this.useIndexOnly = useIndexOnlyS != null && useIndexOnlyS.equalsIgnoreCase("true");
     this.innerNcml = innerNcml;
@@ -108,7 +110,6 @@ public class FeatureCollectionConfig {
             ", spec='" + spec + '\'' +
             ", dateFormatMark='" + dateFormatMark + '\'' +
             ", olderThan='" + olderThan + '\'' +
-            ", recheckAfter='" + recheckAfter + '\'' +
             ", timePartition=" + timePartition +
             ", updateConfig=" + updateConfig +
             ", tdmConfig=" + tdmConfig +
@@ -121,31 +122,30 @@ public class FeatureCollectionConfig {
 
   // <update startup="true" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
-    public boolean startup;
-    public String rescan = null;
+    public String recheckAfter;
+    public String rescan;
     public boolean triggerOk;
-    public CollectionManager.Force force = CollectionManager.Force.test;
+    public boolean startup;
     public String deleteAfter = null;
 
     public UpdateConfig() { // defaults
     }
 
-    public UpdateConfig(String startup, String rescan, String trigger, String forceS, String deleteAfter) {
+    public UpdateConfig(String startupS, String recheckAfter, String rescan, String triggerS, String deleteAfter) {
       this.rescan = rescan; // may be null
+      if (recheckAfter != null) this.recheckAfter = recheckAfter; // in case it was set in collection element
       this.deleteAfter = deleteAfter; // may be null
-      if (startup != null)
-        this.startup = startup.equalsIgnoreCase("true");
-      if (forceS != null)
-        force = CollectionManager.Force.valueOf(forceS);
-      if (trigger != null)
-        this.triggerOk = trigger.equalsIgnoreCase("allow");
+      if ((startupS != null) && startupS.equalsIgnoreCase("true"))
+        this.startup = true;
+      if (triggerS != null)
+        this.triggerOk = triggerS.equalsIgnoreCase("allow");
     }
 
     @Override
     public String toString() {
       return "UpdateConfig{" +
               "startup=" + startup +
-              ", force=" + force +
+              ", recheckAfter='" + recheckAfter + '\'' +
               ", rescan='" + rescan + '\'' +
               ", triggerOk=" + triggerOk +
               ", deleteAfter=" + deleteAfter +
@@ -288,12 +288,13 @@ public class FeatureCollectionConfig {
   }
 
   static private Set<GribDatasetType> defaultGribDatasetTypes =
-          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.collection, GribDatasetType.Files));
+          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.Collection, GribDatasetType.Files));
 
   static public class GribConfig  {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
     public Map<Integer, Integer> gdsHash;
     protected boolean explicit = false;
+    public boolean intervalMerge = false;
 
     public GribConfig() { // defaults
     }

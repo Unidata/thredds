@@ -34,6 +34,7 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
@@ -107,14 +108,14 @@ public class AWIPSsatConvention extends CoordSysBuilder {
     Variable datav = ds.findVariable("image");
     String long_name = ds.findAttValueIgnoreCase(null, "channel", null);
     if (null != long_name)
-      datav.addAttribute( new Attribute("long_name", long_name));
+      datav.addAttribute( new Attribute(CDM.LONG_NAME, long_name));
 
     // missing values
     ArrayByte.D1 missing_values = new ArrayByte.D1(2);
     missing_values.set(0, (byte) 0);
     missing_values.set(1, (byte) -127);
     datav.addAttribute( new Attribute("missing_values", missing_values));
-    datav.addAttribute( new Attribute("_Unsigned", "true"));
+    datav.addAttribute( new Attribute(CDM.UNSIGNED, "true"));
 
     if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);

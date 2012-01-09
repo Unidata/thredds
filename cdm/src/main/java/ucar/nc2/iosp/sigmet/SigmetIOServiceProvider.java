@@ -22,6 +22,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.Layout;
@@ -293,11 +294,11 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
                 dims2.add(radial);
                 dims2.add(gateR[jj]);
                 v[j][jj].setDimensions(dims2);
-                v[j][jj].addAttribute(new Attribute( "long_name", var_name));
-                v[j][jj].addAttribute(new Attribute( "units", unit[tp]));
+                v[j][jj].addAttribute(new Attribute( CDM.LONG_NAME, var_name));
+                v[j][jj].addAttribute(new Attribute( CDM.UNITS, unit[tp]));
                 String coordinates="time elevationR azimuthR distanceR";
                 v[j][jj].addAttribute(new Attribute(_Coordinate.Axes, coordinates));
-                v[j][jj].addAttribute(new Attribute("missing_value", -999.99f));
+                v[j][jj].addAttribute(new Attribute(CDM.MISSING_VALUE, -999.99f));
                 ncfile.addVariable(null, v[j][jj]);
                 varList.add(v[j][jj]);
                 dims2.clear();
@@ -326,10 +327,10 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
         time[j]=new Variable(ncfile, null, null, tm_name);
         time[j].setDataType(DataType.INT);
         time[j].setDimensions(dims0);
-        time[j].addAttribute(new Attribute("long_name", "time from start of sweep"));
-        time[j].addAttribute(new Attribute("units", time_units[j]));
+        time[j].addAttribute(new Attribute(CDM.LONG_NAME, "time from start of sweep"));
+        time[j].addAttribute(new Attribute(CDM.UNITS, time_units[j]));
         time[j].addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-        time[j].addAttribute(new Attribute("missing_value", -99));
+        time[j].addAttribute(new Attribute(CDM.MISSING_VALUE, -99));
         ncfile.addVariable(null, time[j]);
         varList.add(time[j]);
         }
@@ -342,10 +343,10 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
         elevationR[j]=new Variable(ncfile, null, null, ele_name);
         elevationR[j].setDataType(DataType.FLOAT);
         elevationR[j].setDimensions(dims0);
-        elevationR[j].addAttribute(new Attribute("long_name", "elevation angle"));
-        elevationR[j].addAttribute(new Attribute("units", "degrees"));
+        elevationR[j].addAttribute(new Attribute(CDM.LONG_NAME, "elevation angle"));
+        elevationR[j].addAttribute(new Attribute(CDM.UNITS, "degrees"));
         elevationR[j].addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString()));
-        elevationR[j].addAttribute(new Attribute("missing_value", -999.99f));
+        elevationR[j].addAttribute(new Attribute(CDM.MISSING_VALUE, -999.99f));
         ncfile.addVariable(null, elevationR[j]);
         varList.add(elevationR[j]);
         }
@@ -358,10 +359,10 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
         azimuthR[j]=new Variable(ncfile, null, null, azim_name);
         azimuthR[j].setDataType(DataType.FLOAT);
         azimuthR[j].setDimensions(dims0);
-        azimuthR[j].addAttribute(new Attribute("long_name", "azimuth angle"));
-        azimuthR[j].addAttribute(new Attribute("units", "degrees"));
+        azimuthR[j].addAttribute(new Attribute(CDM.LONG_NAME, "azimuth angle"));
+        azimuthR[j].addAttribute(new Attribute(CDM.UNITS, "degrees"));
         azimuthR[j].addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString()));
-        azimuthR[j].addAttribute(new Attribute("missing_value", -999.99f));
+        azimuthR[j].addAttribute(new Attribute(CDM.MISSING_VALUE, -999.99f));
         ncfile.addVariable(null, azimuthR[j]);
         varList.add(azimuthR[j]);
         }
@@ -376,8 +377,8 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
         distanceR[j].setDataType(DataType.FLOAT);
         dims1.add(gateR[j]);
         distanceR[j].setDimensions(dims1);
-        distanceR[j].addAttribute(new Attribute("long_name", "radial distance"));
-        distanceR[j].addAttribute(new Attribute("units", "m"));
+        distanceR[j].addAttribute(new Attribute(CDM.LONG_NAME, "radial distance"));
+        distanceR[j].addAttribute(new Attribute(CDM.UNITS, "m"));
         distanceR[j].addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString()));
         ncfile.addVariable(null, distanceR[j]);
         varList.add(distanceR[j]);
@@ -388,7 +389,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
         Variable numGates=new Variable(ncfile, null, null, "numGates");
         numGates.setDataType(DataType.INT);
         numGates.setDimensions(dims3);
-        numGates.addAttribute(new Attribute("long_name", "number of gates in the sweep"));
+        numGates.addAttribute(new Attribute(CDM.LONG_NAME, "number of gates in the sweep"));
         ncfile.addVariable(null, numGates);
         varList.add(numGates);
 
@@ -414,7 +415,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
         ncfile.addAttribute(null, new Attribute("range_first", new Float(range_first)));
         ncfile.addAttribute(null, new Attribute("range_last", new Float(range_last)));
         ncfile.addAttribute(null, new Attribute("DataType", "Radial"));
-        ncfile.addAttribute(null, new Attribute("Conventions", _Coordinate.Convention));
+        ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
 
         // --------- fill all of values in the ncfile ------
         doNetcdfFileCoordinate(ncfile, volScan.base_time, volScan.year, volScan.month, volScan.day, varList, recHdr);

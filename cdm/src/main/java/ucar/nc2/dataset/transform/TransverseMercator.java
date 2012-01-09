@@ -70,9 +70,7 @@ public class TransverseMercator extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-        // these are as of CF in meters, need to be km (as false_easting...)
-    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius()) * .001;
-
+    double earth_radius = getEarthRadius(ctv);
     double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN) * .001;
     double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN) * .001;
     double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);

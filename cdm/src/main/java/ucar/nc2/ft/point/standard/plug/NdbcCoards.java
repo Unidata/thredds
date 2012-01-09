@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point.standard.plug;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -49,7 +50,7 @@ import java.util.Formatter;
 public class NdbcCoards extends TableConfigurerImpl  {
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
-    if (!ds.findAttValueIgnoreCase(null, "Conventions", "").equalsIgnoreCase("COARDS"))
+    if (!ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, "").equalsIgnoreCase("COARDS"))
       return false;
 
     String dataProvider = ds.findAttValueIgnoreCase(null, "data_provider", null);

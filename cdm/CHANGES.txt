@@ -3,7 +3,18 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 4: (2011-12-xx)
+ 5: (2012-01-06)
+  Fix when earth_radius comes in km instead of meters.
+  DatasetCollectionMFiles: olderThan applies only to newly found files.
+  DatasetCollectionMFiles: use dateFormatMark if present.
+  CollectionSpecParser: Remove seperate dateMatch string, forName.
+  upgrade to quartz 2.1.1
+  get GRIB collections working
+  GRIB: update ncx when data file changes
+
+ 4: (2011-12-22)
+  split CF and CDM constants, propagate them (incomplete)
+  upgrade CFpointObs to handle CF 1.6 final conventions
   StringUtil2.remove(StringBuilder sb, String out) had error
   Grib1: wasnt getting all of the center 9 subcenters from bldparm.f read correctly
   Grib1CollectionPanel: improve various context menu functionalities

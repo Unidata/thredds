@@ -405,7 +405,7 @@ public class GribWmoCodesPanel extends JPanel {
             else ndiff++;
             total++;
 
-            /* String unitsCurr = dt.findAttributeIgnoreCase("units").getStringValue();
+            /* String unitsCurr = dt.findAttributeIgnoreCase(CDM.UNITS).getStringValue();
             String unitsWmo = entry.unit;
             boolean sameUnits = (unitsWmo == null) ? (unitsCurr == null) : unitsWmo.equals(unitsCurr);
             same = same && sameUnits; */

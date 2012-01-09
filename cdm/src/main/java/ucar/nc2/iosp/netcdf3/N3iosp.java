@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.nc2.iosp.*;
@@ -66,7 +67,6 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   static public final long NC_FILL_LONG = -9223372036854775806L;
   static public final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
   static public final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
-  static public final String FillValue = "_FillValue";
 
   /* CLASSIC
      The maximum size of a record in the classic format in versions 3.5.1 and earlier is 2^32 - 4 bytes.
@@ -794,7 +794,7 @@ public String NC_check_name(String name) {
   private Array makeConstantArray(Variable v) {
     Class classType = v.getDataType().getPrimitiveClassType();
     //int [] shape = v.getShape();
-    Attribute att = v.findAttribute("_FillValue");
+    Attribute att = v.findAttribute(CDM.FILL_VALUE);
 
     Object storage = null;
     if (classType == double.class) {

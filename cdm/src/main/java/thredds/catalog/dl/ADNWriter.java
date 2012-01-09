@@ -35,6 +35,7 @@ package thredds.catalog.dl;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
@@ -397,12 +398,12 @@ public class ADNWriter {
       if (value > 0) {
         time = new Element("timeRelative", defNS);
         Element begin = new Element("begin", defNS);
-        begin.setAttribute("units", units);
+        begin.setAttribute(CDM.UNITS, units);
         begin.addContent(Double.toString(value));
         time.addContent( begin);
 
         Element end = new Element("end", defNS);
-        end.setAttribute("units", units);
+        end.setAttribute(CDM.UNITS, units);
         end.addContent("0");
         time.addContent( end);
       }

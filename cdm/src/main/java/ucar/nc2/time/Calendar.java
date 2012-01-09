@@ -93,7 +93,7 @@ public enum Calendar {
 http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Time
 
 You should use a true calendar package rather than the UDUNITS-2 package to handle time. Having said that, many people use
-the time-handling capabilities of the UDUNITS-2 package because it supports "units" like "seconds since 1970-01-01".
+the time-handling capabilities of the UDUNITS-2 package because it supports CDM.UNITS like "seconds since 1970-01-01".
 You should be aware, however, that the hybrid Gregorian/Julian calendar used by the UDUNITS-2 package cannot be changed.
 Dates on or after 1582-10-15 are assumed to be Gregorian dates; dates before that are assumed to be Julian dates.
 In particular, the year 1 BCE is immediately followed by the year 1 CE.

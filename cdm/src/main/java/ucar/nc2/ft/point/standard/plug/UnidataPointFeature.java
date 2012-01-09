@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point.standard.plug;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -55,7 +56,7 @@ public class UnidataPointFeature  extends TableConfigurerImpl  {
     if (featureType != FeatureType.STATION_PROFILE)
       return false;
 
-    String conv = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    String conv = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (conv == null) return false;
 
     StringTokenizer stoke = new StringTokenizer(conv, ",");

@@ -160,8 +160,10 @@ public class DatasetHandler {
       return ncfile;
     }
 
-    // look for an fmrc dataset
+    // look for a match
     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+
+    // look for an fmrc dataset
     if ((match != null) && (match.dataRoot.fmrc != null)) {
       InvDatasetFmrc fmrc = match.dataRoot.fmrc;
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFmrc= " + fmrc);
@@ -169,6 +171,8 @@ public class DatasetHandler {
       if (ncfile == null) throw new FileNotFoundException(reqPath);
       return ncfile;
     }
+
+    // look for an feature collection dataset
     if ((match != null) && (match.dataRoot.featCollection != null)) {
       InvDatasetFeatureCollection featCollection = match.dataRoot.featCollection;
       if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found InvDatasetFeatureCollection= " + featCollection);

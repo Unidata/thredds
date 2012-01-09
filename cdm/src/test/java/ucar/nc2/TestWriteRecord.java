@@ -35,6 +35,8 @@ package ucar.nc2;
 import junit.framework.*;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
+
 import java.io.IOException;
 
 /**
@@ -112,7 +114,7 @@ public class TestWriteRecord extends TestCase  {
     //    rh:long_name="relative humidity" ;
     //    rh:units = "percent" ;
     ncfile.addVariable("rh", DataType.INT, dim3);
-    ncfile.addVariableAttribute("rh", "long_name", "relative humidity");
+    ncfile.addVariableAttribute("rh", CDM.LONG_NAME, "relative humidity");
     ncfile.addVariableAttribute("rh", "units", "percent");
 
     // test attribute array
@@ -127,7 +129,7 @@ public class TestWriteRecord extends TestCase  {
     //   T:long_name="surface temperature" ;
     //   T:units = "degC" ;
     ncfile.addVariable("T", DataType.DOUBLE, dim3);
-    ncfile.addVariableAttribute("T", "long_name", "surface temperature");
+    ncfile.addVariableAttribute("T", CDM.LONG_NAME, "surface temperature");
     ncfile.addVariableAttribute("T", "units", "degC");
 
 
@@ -349,7 +351,7 @@ public class TestWriteRecord extends TestCase  {
     //   T:long_name="surface temperature" ;
     //   T:units = "degC" ;
     ncfile.addVariable("T", DataType.DOUBLE, dim3);
-    ncfile.addVariableAttribute("T", "long_name", "surface temperature");
+    ncfile.addVariableAttribute("T", CDM.LONG_NAME, "surface temperature");
     ncfile.addVariableAttribute("T", "units", "degC");
 
 

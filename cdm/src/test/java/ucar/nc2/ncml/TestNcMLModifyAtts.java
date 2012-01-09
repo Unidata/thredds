@@ -36,6 +36,7 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 
 import java.io.IOException;
 
@@ -82,7 +83,7 @@ public class TestNcMLModifyAtts extends TestCase {
     Variable v = ncfile.findVariable("rh");
     assert null != v;
 
-    Attribute att = v.findAttribute("long_name");
+    Attribute att = v.findAttribute(CDM.LONG_NAME);
     assert null == att;
 
     att = v.findAttribute("units");

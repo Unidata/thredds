@@ -33,6 +33,7 @@
 package ucar.nc2.ft.fmrc;
 
 import thredds.inventory.CollectionManagerAbstract;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -509,7 +510,7 @@ public class GridDatasetInv {
       vcElem.setAttribute("id", Integer.toString(vc.getId()));
       vcElem.setAttribute("name", vc.getName());
       if (vc.getUnits() != null)
-        vcElem.setAttribute("units", vc.getUnits());
+        vcElem.setAttribute(CDM.UNITS, vc.getUnits());
 
       StringBuilder sbuff = new StringBuilder();
       double[] values1 = vc.getValues1();
@@ -604,7 +605,7 @@ public class GridDatasetInv {
       fmr.vaxes.add(vc);
       vc.setId( Integer.parseInt(vertElem.getAttributeValue("id")));
       vc.setName(vertElem.getAttributeValue("name"));
-      vc.setUnits(vertElem.getAttributeValue("units"));
+      vc.setUnits(vertElem.getAttributeValue(CDM.UNITS));
 
       // parse the values
       String values = vertElem.getTextNormalize();

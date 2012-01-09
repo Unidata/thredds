@@ -811,7 +811,7 @@ public class NcMLReader {
     }
 
     // look for unit conversion
-    Element unitElem = varElem.getChild("units", ncNS);
+    Element unitElem = varElem.getChild(CDM.UNITS, ncNS);
     if (unitElem != null) {
       String value = unitElem.getAttributeValue("convertTo");
       if (value != null) {

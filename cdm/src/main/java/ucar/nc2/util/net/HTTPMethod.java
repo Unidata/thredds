@@ -34,10 +34,15 @@
 package ucar.nc2.util.net;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 
+import com.sun.org.apache.xerces.internal.util.*;
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -45,6 +50,7 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.*;
 
+import org.apache.commons.httpclient.protocol.Protocol;
 import ucar.nc2.util.log.LogStream;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,8 +94,8 @@ static private org.slf4j.Logger LOG = null;
 
     static public class RetryHandler extends  org.apache.commons.httpclient.DefaultHttpMethodRetryHandler
     {
-        static final int MAXRETRIES = 10;
-	static final boolean verbose = false;
+        static final int MAXRETRIES = 5;
+	    static final boolean verbose = false;
 
         public RetryHandler() {super(MAXRETRIES,false);}
         public boolean retryMethod(final org.apache.commons.httpclient.HttpMethod method,
@@ -100,7 +106,7 @@ static private org.slf4j.Logger LOG = null;
             if(LOG == null)  LOG = org.slf4j.LoggerFactory.getLogger(HTTPMethod.class);
 		    LOG.info(String.format("Retry: count=%d exception=%s\n",executionCount, exception.toString()));
         }
-	    return super.retryMethod(method,exception,executionCount);
+        return super.retryMethod(method,exception,executionCount);
         }
     }
 
@@ -251,18 +257,35 @@ public int execute() throws HTTPException
         }
 
         // Change the retry handler
-	method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,new RetryHandler());
+	    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,new RetryHandler());
 
         setcontent();
 
         setAuthentication(session,this);
+        // WARNING; DANGER WILL ROBINSION
+        // httpclient3 only allows one registered https protocol, so
+        // we do a major hack to register the protocol based on the port
 
-        try {
-            session.sessionClient.executeMethod(method);
-        } catch (IllegalArgumentException iae) {
-            iae.printStackTrace();
- 	    throw iae;
-       }
+        // Pull of the protocol
+        int index = this.legalurl.indexOf("://");
+        String proto;
+        String remainder;
+        if(false  && index > 0) {
+            proto = this.legalurl.substring(0,index);
+            if("https".equals(proto)) {
+            try {
+                URL hack = new URL(this.legalurl);
+                switch (hack.getPort()) {
+                case 443: case 8443:  case 8843:
+                    // change the protocol associated with "https"
+                    Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), hack.getPort()));
+                default: break; // leave as is
+                }
+            } catch (MalformedURLException e) {}
+            }
+        }
+
+        session.sessionClient.executeMethod(method);
 
         int code = getStatusCode();
         return code;
@@ -658,7 +681,7 @@ setAuthentication(HTTPSession session, HTTPMethod method)
     if(url == null) url = HTTPAuthStore.ANY_URL;
 
     // Provide a credentials (provider) to enact the process
-    CredentialsProvider cp  = new HTTPAuthProvider(url);
+    CredentialsProvider cp  = new HTTPAuthProvider(url,method);
 
     // Since we not know where this will get called, do everywhere
     session.sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER,cp);

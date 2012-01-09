@@ -34,6 +34,7 @@ package ucar.unidata.geoloc.vertical;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
@@ -93,7 +94,7 @@ public class HybridHeight extends VerticalTransformImpl {
     aVar = ds.findVariable(aName);
     bVar = ds.findVariable(bName);
     orogVar = ds.findVariable(orogName);
-    units = ds.findAttValueIgnoreCase(orogVar, "units", "none");
+    units = ds.findAttValueIgnoreCase(orogVar, CDM.UNITS, "none");
 
   }
 

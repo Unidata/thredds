@@ -26,13 +26,20 @@
     <jar href="httplogging.jar"/>
     <jar href="jdom.jar"/>
     <jar href="jgoodies.jar"/>
+    <jar href="joda.jar"/>
     <jar href="loggingAPI.jar"/>
     <jar href="logging.jar"/>
     <jar href="opendap.jar"/>
     <jar href="protobuf.jar"/>
     <jar href="quartz.jar"/>
     <jar href="resourcesOptional.jar"/>
-    <jar href="spring.jar"/>
+    <jar href="spring-aop.jar"/>
+    <jar href="spring-asm.jar"/>
+    <jar href="spring-aop.jar"/>
+    <jar href="spring-beans.jar"/>
+    <jar href="spring-context.jar"/>
+    <jar href="spring-core.jar"/>
+    <jar href="spring-expression.jar"/>
     <jar href="visadCdm.jar"/>
   </resources>
 

@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.hdf4;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.ma2.*;
@@ -267,7 +268,7 @@ public class H4header {
         TagAnnotate ta = (TagAnnotate) t;
         Vinfo vinfo = refnoMap.get(ta.obj_refno);
         if (vinfo != null) {
-          vinfo.v.addAttribute(new Attribute((t.code == 105) ? "description" : "long_name", ta.text));
+          vinfo.v.addAttribute(new Attribute((t.code == 105) ? "description" : CDM.LONG_NAME, ta.text));
           t.used = true;
         }
       }
@@ -930,13 +931,13 @@ public class H4header {
         TagTextN labels = (TagTextN) tag;
         labels.read(dim.rank);
         tag.used = true;
-        v.addAttribute(new Attribute("long_name", labels.getList()));
+        v.addAttribute(new Attribute(CDM.LONG_NAME, labels.getList()));
       }
       if (tag.code == 705) {
         TagTextN units = (TagTextN) tag;
         units.read(dim.rank);
         tag.used = true;
-        v.addAttribute(new Attribute("units", units.getList()));
+        v.addAttribute(new Attribute(CDM.UNITS, units.getList()));
       }
       if (tag.code == 706) {
         TagTextN formats = (TagTextN) tag;
@@ -974,7 +975,7 @@ public class H4header {
           Attribute att = makeAttribute(vh);
           if (null != att) {
             vinfo.v.addAttribute(att);
-            if (att.getName().equals("_FillValue"))
+            if (att.getName().equals(CDM.FILL_VALUE))
               vinfo.setFillValue(att);
           }
         }

@@ -33,10 +33,8 @@
 package ucar.nc2.iosp.hdf4;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.*;
 import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.FeatureType;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
@@ -331,18 +329,18 @@ public class HdfEos {
     String name = v.getShortName();
     if (name.equalsIgnoreCase("Latitude") || name.equalsIgnoreCase("GeodeticLatitude")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-      v.addAttribute(new Attribute("units", "degrees_north"));
+      v.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
       return AxisType.Lat;
 
     } else if (name.equalsIgnoreCase("Longitude")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-      v.addAttribute(new Attribute("units", "degrees_east"));
+      v.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
       return AxisType.Lon;
 
     } else if (name.equalsIgnoreCase("Time")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
-      if (v.findAttribute("units") == null)
-        v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00:00")); // default units I hope
+      if (v.findAttribute(CDM.UNITS) == null)
+        v.addAttribute(new Attribute(CDM.UNITS, "secs since 1970-01-01 00:00:00")); // default units I hope
       return AxisType.Time;
 
     } else if (name.equalsIgnoreCase("Pressure")) {
@@ -351,7 +349,7 @@ public class HdfEos {
 
     } else if (name.equalsIgnoreCase("Altitude")) {
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
-      v.addAttribute(new Attribute("positive", "up")); // probably
+      v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_UP)); // probably
       return AxisType.Height;
      }
 

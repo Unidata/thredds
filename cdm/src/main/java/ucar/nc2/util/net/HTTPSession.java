@@ -104,6 +104,8 @@ static {
     setGlobalThreadCount(DFALTTHREADCOUNT);
     // Fill in the scheme registry for at least http and https
     // allow self-signed certificates
+    // Major problem: can only register one https protocol.
+    // See hack in HTTPMethod.execute.
     Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
     sessionList = new ArrayList<HTTPSession>(); // see kill function
     setGlobalConnectionTimeout(DFALTTIMEOUT);
@@ -550,14 +552,14 @@ public void
 setCredentialsProvider(CredentialsProvider provider)
 {
     sessionProvider = provider;
-    setCredentialsProvider(HTTPAuthScheme.ANY,legalurl,provider);
+    setCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME,legalurl,provider);
 }
 
 static synchronized public void
 setGlobalCredentialsProvider(CredentialsProvider provider)
 {
     globalProvider = provider;
-    setCredentialsProvider(HTTPAuthScheme.ANY,HTTPAuthStore.ANY_URL,provider);
+    setCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME,HTTPAuthStore.ANY_URL,provider);
 }
 
 
@@ -572,10 +574,11 @@ setGlobalKeyStore()
     String trustpassword = cleanproperty("truststorepassword");
     String trustpath = cleanproperty("truststore");
 
-    HTTPSSLProvider sslprovider = new HTTPSSLProvider(keypath,keypassword,
+    if(keypath != null || trustpath != null) { // define conditionally
+        HTTPSSLProvider sslprovider = new HTTPSSLProvider(keypath,keypassword,
 						      trustpath,trustpassword);
-
-    setGlobalCredentialsProvider(sslprovider);
+        setCredentialsProvider(HTTPAuthScheme.SSL,HTTPAuthStore.ANY_URL,sslprovider);
+    }
 }
 
 static String

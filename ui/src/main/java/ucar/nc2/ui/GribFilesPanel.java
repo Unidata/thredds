@@ -276,7 +276,7 @@ public class GribFilesPanel extends JPanel {
       DatasetCollectionMFiles dc = null;
       try {
         dc = DatasetCollectionMFiles.open(spec, null, f);
-        dc.scan();
+        dc.scan(false);
         fileList = dc.getFiles();
 
       } catch (Exception e) {

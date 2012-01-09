@@ -33,6 +33,8 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
@@ -310,7 +312,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    */
   static public CoordSysBuilderIF factory(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     // look for the Conventions attribute
-    String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    String convName = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (convName == null)
       convName = ds.findAttValueIgnoreCase(null, "Convention", null);
     if (convName != null)
@@ -1117,7 +1119,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       positive = ds.findAttValueIgnoreCase(v, _Coordinate.ZisPositive, null);
       if (positive == null)
-        positive = ds.findAttValueIgnoreCase(v, "positive", null);
+        positive = ds.findAttValueIgnoreCase(v, CF.POSITIVE, null);
       else {
         isCoordinateAxis = true;
         positive = positive.trim();

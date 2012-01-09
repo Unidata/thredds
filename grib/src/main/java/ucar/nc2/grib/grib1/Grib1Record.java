@@ -137,50 +137,6 @@ public class Grib1Record {
     f.format("discipline=%d ", is.getMessageLength());
   }
 
-  /**
-   * A hash code to group records into a CDM variable
-   * Herein lies the semantics of a variable object identity.
-   * Read it and weep.
-   *
-   * @param gdsHash can override the gdsHash
-   * @return this records hash code, to group like records into a variable
-   */
-  public int cdmVariableHash(int gdsHash) {
-    if (hashcode == 0 || gdsHash != 0) {
-      int result = 17;
-
-      if (gdsHash == 0)
-        result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
-      else
-        result += result * 37 + gdsHash;
-
-      Grib1SectionProductDefinition pds = getPDSsection();
-      Grib1ParamLevel plevel = pds.getParamLevel();
-      Grib1ParamTime ptime = pds.getParamTime();
-
-      result += result * 37 + pdss.getLevelType();
-      if (plevel.isLayer()) result += result * 37 + 1;
-
-      result += result * 37 + pdss.getParameterNumber();
-      result += result * 37 + pdss.getTableVersion();
-
-      if (ptime.isInterval() && ptime.getStatType() != null)  // an interval must have a statProcessType
-        result += result * 37 + ptime.getStatType().ordinal();
-
-      // if this uses any local tables, then we have to add the center id, and subcenter if present
-      if (pdss.getParameterNumber() > 127) {
-        result += result * 37 + pds.getCenter();
-        if (pds.getSubCenter() > 0)
-          result += result * 37 + pds.getSubCenter();
-      }
-
-      hashcode = result;
-    }
-    return hashcode;
-  }
-
-  private int hashcode = 0;
-
   public int getFile() {
     return file;
   }

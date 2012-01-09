@@ -7,7 +7,7 @@
   <datasetRoot path="restrict" location="content/" />
   <dataset name="Realtime data from IDD">
     <!-- catalogRef xlink:href="idd/models.xml" xlink:title="NCEP Model Data" name="" / -->
-    <catalogRef xlink:href="idd/modelsNew.xml" xlink:title="NCEP Grib-2 Collection Model Data" name="" />
+    <catalogRef xlink:href="idd/modelsNew.xml" xlink:title="Test Grib Collection Model Data" name="" />
     <!-- catalogRef xlink:href="idd/fnmoc.xml" xlink:title="FNMOC Model Data" name="" />
     <catalogRef xlink:href="idd/radars.xml" xlink:title="Radar Data" name="" />
     <catalogRef xlink:href="idd/obsData.xml" xlink:title="Station Data" name="" />

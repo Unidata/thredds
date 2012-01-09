@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -33,11 +33,10 @@
 package ucar.nc2.grib;
 
 import thredds.inventory.CollectionManager;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.grib2.Grib2Collection;
-import ucar.nc2.grib.grib2.Grib2Iosp;
+import thredds.inventory.TimePartitionCollection;
+import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -46,17 +45,20 @@ import java.util.*;
 
 /**
  * A collection of GribCollection objects which are Time Partitioned.
- * A TimePartition is the collection; a  TimePartition.Partition represents one of the GribCollection.
+ * A TimePartition is the collection; a TimePartition.Partition represents one of the GribCollection.
  * Everything is done with lazy instantiation.
  *
  * @author caron
  * @since 4/17/11
  */
-public class TimePartition extends Grib2Collection {
+public abstract class TimePartition extends GribCollection {
+
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
 
-  Map<String, Partition> partitionMap;
-  List<Partition> partitions;
+  static public TimePartition factory(boolean isGrib1, TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
+    if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, f);
+    return Grib2TimePartitionBuilder.factory(tpc, force, f);
+  }
 
   // wrapper around a GribCollection
   public class Partition implements Comparable<Partition> {
@@ -128,17 +130,17 @@ public class TimePartition extends Grib2Collection {
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
-    int[] groupno, varno;
+    public int[] groupno, varno;
 
     public VariableIndexPartitioned(GribCollection.GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
-                          int intvType, int ensDerivedType, int probType, String probabilityName,
-                          int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
+                                    int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                                    int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
-      super(g, 0,discipline, category, parameter, levelType, isLayer, intvType, ensDerivedType, probType, probabilityName,
+      super(g, 0, discipline, category, parameter, levelType, isLayer, intvType, intvName, ensDerivedType, probType, probabilityName,
               cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
     }
 
-    void setPartitionIndex(int partno, int groupIdx, int varIdx) {
+    public void setPartitionIndex(int partno, int groupIdx, int varIdx) {
       groupno[partno] = groupIdx;
       varno[partno] = varIdx;
     }
@@ -155,57 +157,82 @@ public class TimePartition extends Grib2Collection {
       return vindex;
     }
 
+    @Override
+    public String toStringComplete() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("VariableIndexPartitioned");
+      sb.append("{groupno=").append(groupno == null ? "null" : "");
+      for (int i = 0; groupno != null && i < groupno.length; ++i)
+        sb.append(i == 0 ? "" : ", ").append(groupno[i]);
+      sb.append(", varno=").append(varno == null ? "null" : "");
+      for (int i = 0; varno != null && i < varno.length; ++i)
+        sb.append(i == 0 ? "" : ", ").append(varno[i]);
+      sb.append('}');
+      sb.append(super.toStringComplete());
+      return sb.toString();
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  TimePartition(String name, File directory) {
+  protected Map<String, Partition> partitionMap;
+  protected List<Partition> partitions;
+
+  protected TimePartition(String name, File directory) {
     super(name, directory);
   }
 
   @Override
-  public File getIndexFile() {
-    return new File(directory, name +  GribCollection.IDX_EXT);
+  public List<String> getFilenames() {
+    if (filenames == null || filenames.size() == 0) {
+      List<Partition> parts = getPartitions();
+      filenames = new ArrayList<String>(parts.size());
+      for (Partition p : parts) filenames.add(p.filename);
+    }
+    return filenames;
   }
 
-  Partition makePartition(CollectionManager dcm) {
-    return new Partition(dcm);
+  public void addPartition(String name, String filename) {
+    if (partitionMap == null) partitionMap = new TreeMap<String, TimePartition.Partition>();
+    partitionMap.put(name, new Partition(name, filename));
   }
 
-  Partition makePartition(String name, String filename) {
-    return new Partition(name, filename);
+  public void addPartition(CollectionManager dcm) {
+    if (partitionMap == null) partitionMap = new TreeMap<String, TimePartition.Partition>();
+    partitionMap.put(dcm.getCollectionName(), new Partition(dcm));
   }
 
-  public Partition getCollection(String name) {
+  public Partition getPartitionByName(String name) {
     return partitionMap.get(name);
   }
 
   GribCollection.VariableIndex makeVariableIndex(GribCollection.GroupHcs group,
-                         int discipline, int category, int parameter, int levelType, boolean isLayer, int intvType,
-                         int ensDerivedType, int probType, String probabilityName,
-                         int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen,
-                         List<Integer> groupnoList, List<Integer> varnoList) {
+                                                 int discipline, int category, int parameter, int levelType, boolean isLayer, int intvType,
+                                                 String intvName, int ensDerivedType, int probType, String probabilityName,
+                                                 int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen,
+                                                 List<Integer> groupnoList, List<Integer> varnoList) {
 
-    VariableIndexPartitioned vip =  new VariableIndexPartitioned(group, discipline, category, parameter, levelType, isLayer, intvType,
-            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+    VariableIndexPartitioned vip = new VariableIndexPartitioned(group, discipline, category, parameter, levelType, isLayer, intvType,
+            intvName, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
 
     int nparts = varnoList.size();
     vip.groupno = new int[nparts];
     vip.varno = new int[nparts];
-    for (int i=0; i<nparts; i++) {
+    for (int i = 0; i < nparts; i++) {
       vip.groupno[i] = groupnoList.get(i);
       vip.varno[i] = varnoList.get(i);
     }
     return vip;
   }
 
-  VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi, int nparts) {
-    VariableIndexPartitioned vip = new VariableIndexPartitioned(vi.group, vi.discipline, vi.category, vi.parameter, vi.levelType, vi.isLayer, vi.intvType,
+  public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi, int nparts) {
+    VariableIndexPartitioned vip = new VariableIndexPartitioned(vi.group, vi.discipline, vi.category, vi.parameter, vi.levelType,
+            vi.isLayer, vi.intvType, vi.intvName,
             vi.ensDerivedType, vi.probType, vi.probabilityName, vi.cdmHash, vi.timeIdx, vi.vertIdx, vi.ensIdx, vi.recordsPos, vi.recordsLen);
 
     vip.groupno = new int[nparts];
     vip.varno = new int[nparts];
-    for (int i=0; i<nparts; i++) {
+    for (int i = 0; i < nparts; i++) {
       vip.groupno[i] = -1;
       vip.varno[i] = -1;
     }
@@ -227,48 +254,12 @@ public class TimePartition extends Grib2Collection {
       partitionMap.remove(p.getDcm().getCollectionName());
   }
 
-  /////////////////////////////////////////////
-  // stuff for InvDatasetFcGrib
-
-  public void updateProto() {
-  }
-
-  // true if things have changed since given time
-  public boolean checkInvState(long lastInvChange) throws IOException {
-    return false; // this.lastInvChanged > lastInvChange;
-  }
-
-  // true if things have changed since given time
-  public boolean checkProtoState(long lastProtoChanged) throws IOException {
-    return false; // this.lastProtoChanged > lastProtoChanged;
-  }
-
-  public void checkNeeded(boolean force) {
-  }
-
-  // public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException;
-  // public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException;
-
-
   // LOOK - needs time partition collection iosp or something
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName) throws IOException {
-    GroupHcs want = findGroup(groupName);
-    if (want == null) return null;
+  @Override
+  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException;
 
-    Grib2Iosp iosp = new Grib2Iosp(want);
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-    return new NetcdfDataset(ncfile);
-  }
-
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName) throws IOException {
-    GroupHcs want = findGroup(groupName);
-    if (want == null) return null;
-
-    Grib2Iosp iosp = new Grib2Iosp(want);
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
-    return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
-  }
+  @Override
+  public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException;
 
   public void showIndex(Formatter f) {
     List<Partition> plist = getPartitions();
@@ -280,31 +271,20 @@ public class TimePartition extends Grib2Collection {
     super.showIndex(f);
   }
 
-
- //////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
 
   public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
     Partition part = getPartitions().get(partno);
-    return part.gribCollection.getRaf( fileno);
+    return part.gribCollection.getRaf(fileno);
   }
 
   public void close() throws java.io.IOException {
-    if (raf != null)
-      raf.close();
+    super.close();
     for (Partition part : getPartitions()) {
       if (part.gribCollection != null)
         part.gribCollection.close();
     }
   }
 
-  public static void main(String[] args) throws IOException {
-    Formatter f = new Formatter();
-    RandomAccessFile raf = new RandomAccessFile("G:/nomads/cfsr/timeseries/collection.ncx", "r");
-    TimePartition gtc = TimePartitionBuilder.createFromIndex("test", null, raf);
-    gtc.showIndex(f);
-
-    System.out.printf("%s%n", f);
-    raf.close();
-  }
 }

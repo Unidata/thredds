@@ -2680,7 +2680,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribTable.setIndex(command);
+        gribTable.setIndexFile(command);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());

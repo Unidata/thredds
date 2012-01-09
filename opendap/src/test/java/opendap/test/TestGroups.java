@@ -97,7 +97,7 @@ public class TestGroups extends ucar.nc2.util.TestCommon
                    ""));
        }
 
-        if(!RC.useGroups)   {
+        if(!RC.getUseGroups())   {
             System.out.println("Groups not supported; continuing");
             //junit.framework.Assert.assertTrue("Groups not supported; continuing", true);
             //return; // do not run if groups are not being supported

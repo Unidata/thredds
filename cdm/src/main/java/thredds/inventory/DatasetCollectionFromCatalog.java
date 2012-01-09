@@ -77,7 +77,7 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionMFiles implem
   }
 
   @Override
-  protected void scan(java.util.Map<String, MFile> map) throws IOException {
+  protected void reallyScan(java.util.Map<String, MFile> map) throws IOException {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     InvCatalogImpl cat = catFactory.readXML(catalogUrl);
     StringBuilder buff = new StringBuilder();
@@ -175,7 +175,7 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionMFiles implem
     String catUrl = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml";
     DatasetCollectionFromCatalog man = new DatasetCollectionFromCatalog(catUrl);
     man.debug = true;
-    man.scan();
+    man.scan(true);
     Formatter errlog = new Formatter();
     Fmrc fmrc = Fmrc.open(DatasetCollectionMFiles.CATALOG+catUrl, errlog);
     System.out.printf("errlog = %s %n", errlog);

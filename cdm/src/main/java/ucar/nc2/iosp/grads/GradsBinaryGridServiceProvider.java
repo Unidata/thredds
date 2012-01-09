@@ -47,6 +47,8 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
@@ -316,9 +318,9 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
                 double[] vals = dim.getValues();
                 v = new Variable(ncFile, null, null, name, DataType.DOUBLE,
                                  name);
-                v.addAttribute(new Attribute("units", dim.getUnit()));
+                v.addAttribute(new Attribute(CDM.UNITS, dim.getUnit()));
                 if (name.equals(Y_VAR)) {
-                    v.addAttribute(new Attribute("long_name", "latitude"));
+                    v.addAttribute(new Attribute(CDM.LONG_NAME, "latitude"));
                     v.addAttribute(new Attribute("standard_name",
                             "latitude"));
                     v.addAttribute(new Attribute("axis", "Y"));
@@ -326,7 +328,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
                     v.addAttribute(new Attribute(_Coordinate.AxisType,
                             AxisType.Lat.toString()));
                 } else if (name.equals(X_VAR)) {
-                    v.addAttribute(new Attribute("long_name", "longitude"));
+                    v.addAttribute(new Attribute(CDM.LONG_NAME, "longitude"));
                     v.addAttribute(new Attribute("standard_name",
                             "longitude"));
                     v.addAttribute(new Attribute("axis", "X"));
@@ -336,10 +338,10 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
                 } else if (name.equals(Z_VAR)) {
                     numZ = size;
                     zDims.put(name, ncDim);
-                    v.addAttribute(new Attribute("long_name", "level"));
+                    v.addAttribute(new Attribute(CDM.LONG_NAME, "level"));
                     addZAttributes(dim, v);
                 } else if (name.equals(TIME_VAR)) {
-                    v.addAttribute(new Attribute("long_name", "time"));
+                    v.addAttribute(new Attribute(CDM.LONG_NAME, "time"));
                     v.addAttribute(new Attribute(_Coordinate.AxisType,
                             AxisType.Time.toString()));
                 }
@@ -363,8 +365,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
                         ncFile.addDimension(null, ncDim);
                         Variable vz = new Variable(ncFile, null, null, name,
                                           DataType.DOUBLE, name);
-                        vz.addAttribute(new Attribute("long_name", name));
-                        vz.addAttribute(new Attribute("units",
+                        vz.addAttribute(new Attribute(CDM.LONG_NAME, name));
+                        vz.addAttribute(new Attribute(CDM.UNITS,
                                 zDim.getUnit()));
                         addZAttributes(zDim, vz);
                         ArrayDouble.D1 varArray = new ArrayDouble.D1(nl);
@@ -395,16 +397,12 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             }
             v = new Variable(ncFile, null, null, var.getName(),
                              DataType.FLOAT, coords);
-            v.addAttribute(new Attribute("long_name", var.getDescription()));
+            v.addAttribute(new Attribute(CDM.LONG_NAME, var.getDescription()));
             if (var.getUnitName() != null) {
-                v.addAttribute(new Attribute("units", var.getUnitName()));
+                v.addAttribute(new Attribute(CDM.UNITS, var.getUnitName()));
             }
-            v.addAttribute(
-                new Attribute(
-                    "_FillValue", new Float(gradsDDF.getMissingValue())));
-            v.addAttribute(
-                new Attribute(
-                    "missing_value", new Float(gradsDDF.getMissingValue())));
+            v.addAttribute(new Attribute(CDM.FILL_VALUE, new Float(gradsDDF.getMissingValue())));
+            v.addAttribute(new Attribute(CDM.MISSING_VALUE, new Float(gradsDDF.getMissingValue())));
             for (GradsAttribute attr : attrs) {
                 if (attr.getVariable().equalsIgnoreCase(var.getName())) {
                     // TODO: what to do about a UINT16/32
@@ -448,11 +446,11 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             ncFile.addVariable(null, v);
         }
         // Global Attributes
-        ncFile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
+        ncFile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.0"));
         ncFile.addAttribute(
             null,
             new Attribute(
-                "history",
+                CDM.HISTORY,
                 "Direct read of GrADS binary grid into NetCDF-Java 4 API"));
         String title = gradsDDF.getTitle();
         if ((title != null) && !title.isEmpty()) {
@@ -475,11 +473,11 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
      */
     private void addZAttributes(GradsDimension zDim, Variable v) {
         if (zDim.getUnit().indexOf("Pa") >= 0) {
-            v.addAttribute(new Attribute("positive", "down"));
+            v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN));
             v.addAttribute(new Attribute(_Coordinate.AxisType,
                                          AxisType.Pressure.toString()));
         } else {
-            v.addAttribute(new Attribute("positive", "up"));
+            v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_UP));
             v.addAttribute(new Attribute(_Coordinate.AxisType,
                                          AxisType.Height.toString()));
         }

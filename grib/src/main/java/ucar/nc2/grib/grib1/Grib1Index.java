@@ -88,20 +88,6 @@ public class Grib1Index extends GribIndex {
     private static final int version = 5;
     private static final boolean debug = false;
 
-    private static final CollectionManager.ChangeChecker Grib1CC = new CollectionManager.ChangeChecker() {
-      public boolean hasChangedSince(MFile file, long when) {
-        File idxFile = new File(file.getPath() + IDX_EXT); // LOOK need DiskCache for non-writeable directories
-        if (!idxFile.exists()) return true;
-        if (idxFile.lastModified() < file.getLastModified()) return true;
-        if (0 < when && when < idxFile.lastModified()) return true;
-        return false;
-      }
-    };
-
-    static public CollectionManager.ChangeChecker getChangeChecker() {
-      return Grib1CC;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     private List<Grib1SectionGridDefinition> gdsList;
@@ -120,11 +106,10 @@ public class Grib1Index extends GribIndex {
     }
 
     public boolean readIndex(String filename, long gribLastModified, CollectionManager.Force force) throws IOException {
-
       File idxFile = new File(filename + IDX_EXT);
       if (!idxFile.exists()) return false;
       long idxModified = idxFile.lastModified();
-      if ((force == CollectionManager.Force.test) && (idxFile.lastModified() < gribLastModified)) return false;
+      if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false;
         // force new index if file was updated
 
       FileInputStream fin = new FileInputStream(idxFile); // LOOK need DiskCache for non-writeable directories
@@ -143,8 +128,10 @@ public class Grib1Index extends GribIndex {
         }
 
         int size = NcStream.readVInt(fin);
-        if (size <= 0 || size > 100 * 1000 * 1000) // try to catch garbage
-          throw new IOException("Grib1Index bad for " +filename);
+        if (size <= 0 || size > 100 * 1000 * 1000) { // try to catch garbage
+          log.warn("Grib1Index bad size = {} for {} ", size, filename);
+          return false;
+        }
 
         byte[] m = new byte[size];
         NcStream.readFully(fin, m);

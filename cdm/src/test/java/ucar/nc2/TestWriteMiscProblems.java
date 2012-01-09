@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.IO;
 
@@ -110,7 +111,7 @@ public class TestWriteMiscProblems extends TestCase {
     ncFile.addVariable(varName, DataType.FLOAT, dim);
 
     ncFile.addVariableAttribute(varName, "_FillValue", -9999);
-    ncFile.addVariableAttribute(varName, "missing_value", -9999);
+    ncFile.addVariableAttribute(varName, CDM.MISSING_VALUE, -9999);
 
     System.out.println("Creating netcdf <=");
     ncFile.create();

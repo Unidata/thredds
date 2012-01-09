@@ -62,8 +62,6 @@ public class Grib1Rectilyser {
   public Grib1Rectilyser(List<Grib1Record> records, int gdsHash) {
     this.records = records;
     this.gdsHash = gdsHash;
-
-    Grib1Record first = records.get(0);
   }
 
   public List<Grib1Record> getRecords() {
@@ -90,10 +88,10 @@ public class Grib1Rectilyser {
     // unique variables using Grib1Record.cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
     for (Grib1Record gr : records) {
-      int cdmHash = gr.cdmVariableHash(gdsHash);
+      int cdmHash = cdmVariableHash(gr, gdsHash);
       VariableBag bag = vbHash.get(cdmHash);
       if (bag == null) {
-        bag = new VariableBag(gr);
+        bag = new VariableBag(gr, cdmHash);
         vbHash.put(cdmHash, bag);
       }
       bag.atomList.add( new Record(gr));
@@ -183,6 +181,52 @@ public class Grib1Rectilyser {
     counter.records += tot_records;
     counter.dups += tot_dups;
     counter.vars += gribvars.size();
+  }
+
+  /**
+   * A hash code to group records into a CDM variable
+   * Herein lies the semantics of a variable object identity.
+   * Read it and weep.
+   *
+   * @param gdsHash can override the gdsHash
+   * @return this records hash code, to group like records into a variable
+   */
+  public int cdmVariableHash(Grib1Record gr, int gdsHash) {
+    int result = 17;
+
+    Grib1SectionGridDefinition gdss = gr.getGDSsection();
+    if (gdsHash == 0)
+      result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
+    else
+      result += result * 37 + gdsHash;
+
+    Grib1SectionProductDefinition pdss = gr.getPDSsection();
+    Grib1ParamLevel plevel = pdss.getParamLevel();
+    Grib1ParamTime ptime = pdss.getParamTime();
+
+    result += result * 37 + pdss.getLevelType();
+    if (plevel.isLayer()) result += result * 37 + 1;
+
+    result += result * 37 + pdss.getParameterNumber();
+    result += result * 37 + pdss.getTableVersion();
+
+    if (ptime.isInterval()) {
+      result += result * 37 + ptime.getIntervalSize();  // create new variable for each interval size
+      if (ptime.getStatType() != null) result += result * 37 + ptime.getStatType().ordinal(); // create new variable for each stat type
+    }
+
+    // if this uses any local tables, then we have to add the center id, and subcenter if present
+    if (pdss.getParameterNumber() > 127) {
+      result += result * 37 + pdss.getCenter();
+      if (pdss.getSubCenter() > 0)
+        result += result * 37 + pdss.getSubCenter();
+    }
+    return result;
+  }
+
+  public String getTimeIntervalName(int timeIdx) {
+    TimeCoord tc = timeCoords.get(timeIdx);
+    return tc.getTimeIntervalName();
   }
 
   static public class Counter {
@@ -373,6 +417,8 @@ public class Grib1Rectilyser {
 
   public class VariableBag implements Comparable<VariableBag> {
     Grib1Record first;
+    int cdmHash;
+
     List<Record> atomList = new ArrayList<Record>(100);
     int timeCoordIndex = -1;
     int vertCoordIndex = -1;
@@ -383,8 +429,9 @@ public class Grib1Rectilyser {
     long pos;
     int length;
 
-    private VariableBag(Grib1Record first) {
+    private VariableBag(Grib1Record first, int cdmHash) {
       this.first = first;
+      this.cdmHash = cdmHash;
     }
 
     @Override

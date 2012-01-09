@@ -73,7 +73,7 @@ public class Grib2ReportPanel extends JPanel {
     CollectionManager dc = null;
     try {
       dc = DatasetCollectionMFiles.open(spec, null, f);
-      dc.scan();
+      dc.scan(false);
 
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -417,7 +417,7 @@ public class Grib2ReportPanel extends JPanel {
     Grib2Index index = createIndex(ff, fm);
     if (index == null) return;
 
-    GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(path), fm);
+    GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(path), CollectionManager.Force.nocheck, fm);
     gc.close();
 
     GridDataset ncfile = null;

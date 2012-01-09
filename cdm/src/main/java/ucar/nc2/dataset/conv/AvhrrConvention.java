@@ -32,6 +32,7 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.hdf5.H5iosp;
@@ -82,10 +83,10 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
     Group vhrr = ds.findGroup("VHRR");
     Group loc = vhrr.findGroup("Geo-Location");
     Variable lat = loc.findVariable("Latitude");
-    lat.addAttribute(new Attribute("units", "degrees_north"));
+    lat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
     lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     Variable lon = loc.findVariable("Longitude");
-    lon.addAttribute(new Attribute("units", "degrees_east"));
+    lon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
     lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     int[] shape = lat.getShape();

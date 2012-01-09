@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
@@ -1023,7 +1024,7 @@ public class H5header {
       if (fillValue != null) {
         Object defFillValue = vinfo.getFillValueDefault(vinfo.typeInfo.dataType);
         if (!fillValue.equals(defFillValue))
-          fillAttribute = new Attribute("_FillValue", (Number) fillValue);
+          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue);
       }
     }
 
@@ -1070,10 +1071,10 @@ public class H5header {
       }
     }
     processSystemAttributes(facade.dobj.messages, v.getAttributes());
-    if (fillAttribute != null && v.findAttribute("_FillValue") == null)
+    if (fillAttribute != null && v.findAttribute(CDM.FILL_VALUE) == null)
       v.addAttribute(fillAttribute);
     if (vinfo.typeInfo.unsigned)
-      v.addAttribute(new Attribute("_Unsigned", "true"));
+      v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
     if (facade.dobj.mdt.type == 5) {
       String desc = facade.dobj.mdt.opaque_desc;
       if ((desc != null) && (desc.length() > 0))
@@ -1179,7 +1180,7 @@ public class H5header {
     vinfo.setOwner(v);
 
     if (vinfo.typeInfo.unsigned)
-      v.addAttribute(new Attribute("_Unsigned", "true"));
+      v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
 
     return v;
   }

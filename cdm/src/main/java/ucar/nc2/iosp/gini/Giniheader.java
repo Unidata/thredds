@@ -34,10 +34,8 @@ package ucar.nc2.iosp.gini;
 
 
 import ucar.nc2.*;
+import ucar.nc2.constants.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.geoloc.projection.Stereographic;
@@ -252,7 +250,7 @@ class Giniheader {
     //if (out != null) this.out = out;
     actualSize = raf.length();
 
-    Attribute att = new Attribute( "Conventions", "GRIB");
+    Attribute att = new Attribute( CDM.CONVENTIONS, "GRIB");
     this.ncfile.addAttribute(null, att);
 
     bos.position(0);
@@ -302,14 +300,14 @@ class Giniheader {
     Variable taxis = new Variable(ncfile, null, null, timeCoordName);
     taxis.setDataType(DataType.DOUBLE);
     taxis.setDimensions("time");
-    taxis.addAttribute( new Attribute("long_name", "time since base date"));
+    taxis.addAttribute( new Attribute(CDM.LONG_NAME, "time since base date"));
     taxis.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     double [] tdata = new double[1];
     tdata[0] = cal.getTimeInMillis();
     Array dataA = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), new int[] {1}, tdata);
     taxis.setCachedData( dataA, false);
     DateFormatter formatter = new DateFormatter();
-    taxis.addAttribute( new Attribute("units", "msecs since "+formatter.toDateTimeStringISO(new Date(0))));
+    taxis.addAttribute( new Attribute(CDM.UNITS, "msecs since "+formatter.toDateTimeStringISO(new Date(0))));
     ncfile.addVariable(null, taxis);
 
     //att = new Attribute( "Time", dstring);
@@ -600,9 +598,9 @@ class Giniheader {
 
     String vname= gini_GetPhysElemID(phys_elem, ent_id);
     Variable var = new Variable( ncfile, ncfile.getRootGroup(), null, vname);
-    var.addAttribute( new Attribute("long_name", getPhysElemLongName(phys_elem, ent_id)));
-    var.addAttribute( new Attribute("units", getPhysElemUnits(phys_elem, ent_id)));
-    // var.addAttribute( new Attribute("missing_value", new Byte((byte) 0))); // ??
+    var.addAttribute( new Attribute(CDM.LONG_NAME, getPhysElemLongName(phys_elem, ent_id)));
+    var.addAttribute( new Attribute(CDM.UNITS, getPhysElemUnits(phys_elem, ent_id)));
+    // var.addAttribute( new Attribute(CDM.MISSING_VALUE, new Byte((byte) 0))); // ??
 
       // get dimensions
     int velems;
@@ -640,10 +638,10 @@ class Giniheader {
     }
     else  {
         var.setDataType( DataType.BYTE);
-        var.addAttribute(new Attribute("_Unsigned", "true"));
+        var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
         var.addAttribute(new Attribute("_missing_value", new Short((short)255)));
-        var.addAttribute( new Attribute("scale_factor", new Short((short)(1))));
-        var.addAttribute( new Attribute("add_offset", new Short((short)(0))));
+        var.addAttribute( new Attribute(CDM.SCALE_FACTOR, new Short((short)(1))));
+        var.addAttribute( new Attribute(CDM.ADD_OFFSET, new Short((short)(0))));
         var.setSPobject( new Vinfo (vsize, begin, isRecord, nx, ny));
     }
     String coordinates = "x y time";
@@ -665,8 +663,8 @@ class Giniheader {
     Variable xaxis = new Variable( ncfile, null, null, "x");
     xaxis.setDataType( DataType.DOUBLE);
     xaxis.setDimensions( "x");
-    xaxis.addAttribute( new Attribute("long_name", "projection x coordinate"));
-    xaxis.addAttribute( new Attribute("units", "km"));
+    xaxis.addAttribute( new Attribute(CDM.LONG_NAME, "projection x coordinate"));
+    xaxis.addAttribute( new Attribute(CDM.UNITS, "km"));
     xaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoX"));
     double[] data = new double[nx];
     if( proj == 1 ) {
@@ -693,8 +691,8 @@ class Giniheader {
     Variable yaxis = new Variable( ncfile, null, null, "y");
     yaxis.setDataType( DataType.DOUBLE);
     yaxis.setDimensions( "y");
-    yaxis.addAttribute( new Attribute("long_name", "projection y coordinate"));
-    yaxis.addAttribute( new Attribute("units", "km"));
+    yaxis.addAttribute( new Attribute(CDM.LONG_NAME, "projection y coordinate"));
+    yaxis.addAttribute( new Attribute(CDM.UNITS, "km"));
     yaxis.addAttribute( new Attribute(_Coordinate.AxisType, "GeoY"));
     data = new double[ny];
     double endy = starty + dyKm * (data.length - 1); // apparently lat1,lon1 is always the lower ledt, but data is upper left
@@ -731,7 +729,7 @@ class Giniheader {
     ct.setCachedData(dataA, false);
 
     ncfile.addVariable(null, ct);
-    ncfile.addAttribute( null, new Attribute("Conventions", _Coordinate.Convention));
+    ncfile.addAttribute( null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
 
     // finish
     ncfile.finish();

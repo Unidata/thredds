@@ -36,17 +36,15 @@ import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Parameter;
-import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
 import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
-import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
@@ -414,7 +412,7 @@ public class Grib1CollectionPanel extends JPanel {
     DatasetCollectionMFiles dc = null;
     try {
       dc = DatasetCollectionMFiles.open(spec, null, f);
-      dc.scan();
+      dc.scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFiles());
       return dc;
 
@@ -442,6 +440,8 @@ public class Grib1CollectionPanel extends JPanel {
         gdsSet.put(hash, gds);
     }
 
+    Grib1Rectilyser rect = new Grib1Rectilyser(null, 0);
+
     for (Grib1Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
@@ -450,7 +450,7 @@ public class Grib1CollectionPanel extends JPanel {
       //  tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
       //}
 
-      int id = gr.cdmVariableHash(0);
+      int id = rect.cdmVariableHash(gr, 0);
       ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new ParameterBean(gr);
@@ -606,8 +606,10 @@ public class Grib1CollectionPanel extends JPanel {
 
     public String getName() {
       if (param == null) return null;
+      //TimeCoord tc = timeCoords.get(timeIdx);
+      //String intvName = tc.getTimeIntervalName();
       return Grib1Utils.makeVariableName(tables, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
-              pds.getLevelType(), pds.getTimeType());
+              pds.getLevelType(), pds.getTimeRangeIndicator(), null);
     }
 
     public String getUnit() {
@@ -621,6 +623,12 @@ public class Grib1CollectionPanel extends JPanel {
 
     public int getN() {
       return records.size();
+    }
+
+    public final String getStatType() {
+      Grib1ParamTime ptime = pds.getParamTime();
+      Grib1ParamTime.StatType stype = ptime.getStatType();
+      return (stype == null) ? null : stype.name();
     }
 
   }
@@ -671,13 +679,13 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public int getTimeType() {
-      return ptime.getTimeType();
+      return pds.getTimeRangeIndicator();
     }
 
     public String getTimeCoord() {
       if (ptime.isInterval()) {
         int[] intv = ptime.getInterval();
-        return intv[0] + "-" + intv[1];
+        return intv[0] + "-" + intv[1] + "("+ptime.getIntervalSize()+")";
       }
       return Integer.toString(ptime.getForecastTime());
     }
@@ -707,11 +715,6 @@ public class Grib1CollectionPanel extends JPanel {
 
     public final int getFile() {
       return gr.getFile();
-    }
-
-    public final String getStatType() {
-      Grib1ParamTime.StatType stype = ptime.getStatType();
-      return (stype == null) ? null : stype.name();
     }
 
     float[] readData() throws IOException {

@@ -144,6 +144,7 @@ public class ConvertD2N {
    */
   public Array convertTopVariable(ucar.nc2.Variable v, List<Range> section, DodsV dataV) throws IOException, DAP2Exception {
     Array data = convert(dataV);
+    data.setUnsigned(v.isUnsigned()); // HT to Ghansham Sangar ; note that this really should be done in the convert function
 
     // arrays
     if ((dataV.darray != null) && (dataV.bt instanceof DString)) {

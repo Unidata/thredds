@@ -1,5 +1,6 @@
 package ucar.nc2.grib.grib2;
 
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -166,70 +167,6 @@ public class Grib2Record {
   public void setDataSection(Grib2SectionData dataSection) {
     this.dataSection = dataSection;
   }
-
-  /**
-   * A hash code to group records into a CDM variable
-   * Herein lies the semantics of a variable object identity.
-   * Read it and weep.
-   * @param gdsHash can override the gdsHash
-   * @return this records hash code, to group like records into a variable
-   */
-  public int cdmVariableHash(int gdsHash) {
-    if (hashcode == 0 || gdsHash != 0) {
-      int result = 17;
-
-      if (gdsHash == 0)
-        result += result * 37 + gdss.getGDS().hashCode(); // the horizontal grid
-      else
-        result += result * 37 + gdsHash;
-
-      Grib2Pds pds2 = getPDS();
-
-      result += result * 37 + getDiscipline();
-      result += result * 37 + pds2.getLevelType1();
-      if (Grib2Utils.isLayer(this)) result += result * 37 + 1;
-
-      result += result * 37 + pds2.getParameterCategory();
-      result += result * 37 + pds2.getTemplateNumber();
-
-      if (pds2.isInterval())  // an interval must have a statProcessType
-        result += result * 37 + pds2.getStatisticalProcessType();
-
-      result += result * 37 + pds2.getParameterNumber();
-
-      int ensDerivedType = -1;
-      if (pds2.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
-        Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds2;
-        ensDerivedType = pdsDerived.getDerivedForecastType(); // derived type (table 4.7)
-        result += result * 37 + ensDerivedType;
-
-      } else if (pds2.isEnsemble()) {
-        result += result * 37 + 1;
-      }
-
-      // each probability interval generates a separate variable; could be a dimension instead
-      int probType = -1;
-      if (pds2.isProbability()) {
-        Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds2;
-        probType = pdsProb.getProbabilityType();
-        result += result * 37 + pdsProb.getProbabilityHashcode();
-      }
-
-      // if this uses any local tables, then we have to add the center id, and subcenter if present
-      if ((pds2.getParameterCategory() > 191) || (pds2.getParameterNumber() > 191) || (pds2.getLevelType1() > 191)
-              || (pds2.isInterval() && pds2.getStatisticalProcessType() > 191)
-              || (ensDerivedType > 191) || (probType > 191)) {
-        result += result * 37 + getId().getCenter_id();
-        if (getId().getSubcenter_id() > 0)
-          result += result * 37 + getId().getSubcenter_id();
-      }
-
-      hashcode = result;
-    }
-    return hashcode;
-  }
-
-  private int hashcode = 0;
 
   public int getFile() {
     return file;

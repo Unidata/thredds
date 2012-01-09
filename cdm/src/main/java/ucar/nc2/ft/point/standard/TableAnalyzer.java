@@ -33,6 +33,7 @@
 package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.standard.plug.*;
 import ucar.nc2.dataset.*;
@@ -163,7 +164,7 @@ public class TableAnalyzer {
     String convUsed = null;
 
     // look for the Conventions attribute
-    String convName = ds.findAttValueIgnoreCase(null, "Conventions", null);
+    String convName = ds.findAttValueIgnoreCase(null, CDM.CONVENTIONS, null);
     if (convName == null)
       convName = ds.findAttValueIgnoreCase(null, "Convention", null);
 

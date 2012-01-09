@@ -352,6 +352,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return null;
     }
     String specName = collElem.getAttributeValue("name");
+    if (specName == null) specName = name; // If missing, the Feature Collection name is used.
     String spec = collElem.getAttributeValue("spec");
     String timePartition = collElem.getAttributeValue("timePartition");
     String dateFormatMark = collElem.getAttributeValue("dateFormatMark");
@@ -372,7 +373,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     Element tdmElem = dsElem.getChild( "tdm", defNS );
     if (tdmElem != null) {
       config.tdmConfig = readUpdateElement( tdmElem);              // the presence of tdm element
-      config.updateConfig.force = CollectionManager.Force.nocheck; // makes "no check" the default for update
     }
     Element updateElem = dsElem.getChild( "update", defNS );
     if (updateElem != null)
@@ -447,17 +447,12 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
   protected FeatureCollectionConfig.UpdateConfig readUpdateElement(Element updateElem) {
     String startup = updateElem.getAttributeValue("startup");
+    String recheckAfter = updateElem.getAttributeValue("recheckAfter");
     String rescan = updateElem.getAttributeValue("rescan");
     String trigger = updateElem.getAttributeValue("trigger");
-    String force = updateElem.getAttributeValue("force");
+    String deleteAfter = updateElem.getAttributeValue("deleteAfter");
 
-    String deleteAfter = null;
-    Element manageElem = updateElem.getChild( "manage", defNS );
-    if (manageElem != null) {
-      deleteAfter = manageElem.getAttributeValue("deleteAfter");
-    }
-
-    return new FeatureCollectionConfig.UpdateConfig(startup, rescan, trigger, force, deleteAfter);
+    return new FeatureCollectionConfig.UpdateConfig(startup, recheckAfter, rescan, trigger, deleteAfter);
   }
 
   protected InvDatasetImpl readDatasetFmrc( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
