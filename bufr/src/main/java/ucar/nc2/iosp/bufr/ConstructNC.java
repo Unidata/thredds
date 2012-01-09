@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -86,7 +87,7 @@ class ConstructNC {
     }  */
 
     // global Attributes
-    ncfile.addAttribute(null, new Attribute("history", "Direct read of BUFR data by CDM"));
+    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of BUFR data by CDM"));
     if (nc.getLocation() != null)
       ncfile.addAttribute(null, new Attribute("location", nc.getLocation()));
     ncfile.addAttribute(null, new Attribute("BUFR:edition", proto.is.getBufrEdition()));
@@ -132,7 +133,7 @@ class ConstructNC {
     v.addAttribute(new Attribute("standard_name", "station_name"));
 
     v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "time", DataType.LONG, ""));
-    v.addAttribute(new Attribute("units", "msecs since 1970-01-01 00:00"));
+    v.addAttribute(new Attribute(CDM.UNITS, "msecs since 1970-01-01 00:00"));
     v.addAttribute(new Attribute("long_name", "observation time"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
 
@@ -148,7 +149,7 @@ class ConstructNC {
     DataDescriptor root = proto.getRootDataDescriptor();
     if (hasTime()) {
       Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, TIME_NAME, DataType.STRING, ""));
-      timev.addAttribute(new Attribute("units", dateUnit.toString()));
+      timev.addAttribute(new Attribute(CDM.UNITS, dateUnit.toString()));
       timev.addAttribute(new Attribute("long_name", "time of observation"));
       timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
     }
@@ -312,11 +313,11 @@ class ConstructNC {
       if (warnUnits) log.warn("dataDesc.units == null for " + name);
     } else {
       if (dataDesc.units.equalsIgnoreCase("Code_Table") || dataDesc.units.equalsIgnoreCase("Code Table"))
-        v.addAttribute(new Attribute("units", "CodeTable " + dataDesc.getFxyName()));
+        v.addAttribute(new Attribute(CDM.UNITS, "CodeTable " + dataDesc.getFxyName()));
       else if (dataDesc.units.equalsIgnoreCase("Flag_Table") || dataDesc.units.equalsIgnoreCase("Flag Table"))
-        v.addAttribute(new Attribute("units", "FlagTable " + dataDesc.getFxyName()));
+        v.addAttribute(new Attribute(CDM.UNITS, "FlagTable " + dataDesc.getFxyName()));
       else if (!dataDesc.units.startsWith("CCITT") && !dataDesc.units.startsWith("Numeric"))
-        v.addAttribute(new Attribute("units", dataDesc.units));
+        v.addAttribute(new Attribute(CDM.UNITS, dataDesc.units));
     }
 
     if (dataDesc.type == 1) {
@@ -340,7 +341,7 @@ class ConstructNC {
       else if (nbytes == 4)
         v.setDataType(DataType.ENUM4);
 
-      //v.removeAttribute("units");
+      //v.removeAttribute(CDM.UNITS);
       v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName() + " (" + dataDesc.getFxyName() + ")"));
 
       Group g = struct.getParentGroup();
@@ -424,12 +425,12 @@ class ConstructNC {
   private void annotate(Variable v, DataDescriptor dkey) {
     String id = dkey.getFxyName();
     if (id.equals("0-5-1") || id.equals("0-5-2")) {
-      v.addAttribute(new Attribute("units", "degrees_north"));
+      v.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     }
 
     if (id.equals("0-6-1") || id.equals("0-6-2")) {
-      v.addAttribute(new Attribute("units", "degrees_east"));
+      v.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     }
 

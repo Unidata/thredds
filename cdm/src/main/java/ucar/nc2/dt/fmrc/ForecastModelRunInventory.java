@@ -45,6 +45,7 @@ import java.util.*;
 
 import ucar.ma2.InvalidRangeException;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VariableEnhanced;
@@ -888,7 +889,7 @@ public class ForecastModelRunInventory {
       ecElem.setAttribute("name", ec.name);
       ecElem.setAttribute("product_definition", Integer.toString(ec.pdn));
       //if (ec.units != null)
-      //  ecElem.setAttribute("units", ec.units);
+      //  ecElem.setAttribute(CDM.UNITS, ec.units);
 
       StringBuilder sbuff = new StringBuilder();
       for (int j = 0; j < ec.ensTypes.length; j++) {
@@ -1042,7 +1043,7 @@ public class ForecastModelRunInventory {
       fmr.vaxes.add(vc);
       vc.id = vertElem.getAttributeValue("id");
       vc.name = vertElem.getAttributeValue("name");
-      vc.units = vertElem.getAttributeValue("units");
+      vc.units = vertElem.getAttributeValue(CDM.UNITS);
 
       // parse the values
       String values = vertElem.getText();

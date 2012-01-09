@@ -50,11 +50,10 @@ import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 /**
- * Feature Collection Dataset.
+ * Abstract superclass for Feature Collection Datasets.
  * This is a InvCatalogRef subclass. So the reference is placed in the parent, but
  * the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
  *       match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
@@ -120,8 +119,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     } else if (featureType.isPointFeatureType())
       result =  new InvDatasetFcPoint(parent, name, path, featureType, config);
 
-    if (result != null)
+    if (result != null) {
       result.finishConstruction(); // stuff that shouldnt be done in a constructor
+    }
 
     return result;
   }
@@ -152,6 +152,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       }
     }
   }
+
   /////////////////////////////////////////////////////////////////////////////
   // not changed after first call
   protected InvService orgService, virtualService;
@@ -162,7 +163,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final FeatureType featureType;
   protected final FeatureCollectionConfig config;
   protected final String topDirectory;
-  protected CollectionManager dcm; // defines the collection of datasets in this feature collection
+  protected CollectionManager dcm; // defines the collection of datasets in this feature collection; actually final after subclass constructor is done.
 
   @GuardedBy("lock")
   protected State state;
@@ -190,12 +191,13 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   // stuff that shouldnt be done in a constructor - eg dont let 'this' escape
+  // LOOK maybe not best design to start tasks from here
   protected void finishConstruction() {
     dcm.addEventListener(this); // now wired for events
-    CollectionUpdater.INSTANCE.scheduleTasks(CollectionUpdater.FROM.tds, config, dcm); // see if any background scheduled tasks are needed
+    CollectionUpdater.INSTANCE.scheduleTasks(config, dcm); // see if any background tasks are needed
   }
 
-  // call this first time (state == null
+  // call this first time a request comes in
   protected void firstInit() {
     this.orgService = getServiceDefault();
     if (this.orgService == null) throw new IllegalStateException("No default service for InvDatasetFeatureCollection "+name);
@@ -206,31 +208,24 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   @Override
   // DatasetCollectionManager was changed asynchronously
   public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
+    if (event.getType() == CollectionManager.TriggerType.updateNocheck)
+      update(CollectionManager.Force.nocheck);
     if (event.getType() == CollectionManager.TriggerType.update)
-      update();
+      update(CollectionManager.Force.test);
     if (event.getType() == CollectionManager.TriggerType.proto)
       updateProto();
    }
 
-  // external trigger was called to rescan the collection
-  // if collection changed, then handleCollectionEvent() will get called to complete the work
-  public void triggerRescan() {
-    try {
-      dcm.scan();
-    } catch (IOException e) {
-      logger.error("DatasetCollectionManager rescan error", e);
-    }
-  }
-
   /**
-   * collection was changed, update internals.
-   * called by CollectionUpdater, trigger via handleCollectionEvent
+   * Collection was changed, update internal objects.
+   * called by CollectionUpdater, trigger via handleCollectionEvent, so in a quartz scheduler thread
+   * @param force test : update index if anything changed or nocheck - use index if it exists
    */
-  abstract public void update();
+  abstract public void update(CollectionManager.Force force);
 
   /**
-   * update the proto dataset used.
-   * called by CollectionUpdater via handleCollectionEvent
+   * update the proto dataset being used.
+   * called by CollectionUpdater via handleCollectionEvent, so in a quartz scheduler thread
    */
   abstract public void updateProto();
 
@@ -396,6 +391,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   // called by DataRootHandler.getCrawlableDatasetAsFile()
   // have to remove the extra "files" from the path
+  // this says that a File URL has to be topDirectory + [FILES/ +] + match.remaining
   public File getFile(String remaining) {
     if (null == topDirectory) return null;
     int pos = remaining.indexOf(FILES);
@@ -406,7 +402,8 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return new File(fname.toString());
   }
 
-    // specialized filter handles olderThan and/or filename pattern matching
+  // specialized filter handles olderThan and/or filename pattern matching
+  // for InvDatasetScan
   static class ScanFilter implements CrawlableDatasetFilter {
     private final Pattern p;
     private final long olderThan;

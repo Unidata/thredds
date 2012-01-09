@@ -69,7 +69,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   }
 
   @Override
-  public double getOlderThanFilterInSecs() {
+  public long getOlderThanFilterInMSecs() {
     return -1;
   }
 
@@ -169,6 +169,11 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
 
   ////////////////////////////////////////////////////
   // events; keep the code from getting too coupled
+
+  @Override
+  public void updateNocheck() throws IOException {
+    sendEvent(new TriggerEvent(this, TriggerType.updateNocheck));
+  }
 
   @Override
   public void resetProto() {

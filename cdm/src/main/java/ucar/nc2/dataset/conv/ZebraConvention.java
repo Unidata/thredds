@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
@@ -75,9 +76,9 @@ public class ZebraConvention extends ATDRadarConvention {
     if ((timeDim == null) || (base_time == null) || (time_offset == null) || (time == null))
       return;
 
-    Attribute att = base_time.findAttribute("units");
+    Attribute att = base_time.findAttribute(CDM.UNITS);
     String units = (att != null) ? att.getStringValue() : "seconds since 1970-01-01 00:00 UTC";
-    time.addAttribute(new Attribute("units", units));
+    time.addAttribute(new Attribute(CDM.UNITS, units));
 
     Array data;
     try {

@@ -2,13 +2,15 @@ package thredds.inventory;
 
 import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 
-import java.text.ParseException;
 import java.util.Date;
 
 /**
- * Handle background tasks that rescan and reset proto, for collections.
+ * Handle background tasks for updating collections.
  * Singleton, thread safe.
+ * Cover for quartz library.
+ * Only used in tds/tdm.
  *
  * @author caron
  * @since Nov 21, 2010
@@ -17,80 +19,185 @@ import java.util.Date;
 public enum CollectionUpdater {
   INSTANCE;   // Singleton cf Bloch p 18
 
-  static public enum FROM {tds, tdm }
-
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
-  static private final String FC_NAME= "fc";
-  static private final long startupWait = 30 * 1000; // 30 secs
+  static private final String DCM_NAME = "dcm";
+  static private final long startupWait = 10 * 1000; // 10 secs
   static private boolean disabled = false;
 
   // could use Spring DI
   private org.quartz.Scheduler scheduler = null;
   private boolean failed = false;
+  private boolean isTdm = false;
 
-  // debugging only
+  public void setTdm(boolean tdm) {
+    isTdm = tdm;
+  }
+
+  private CollectionUpdater() {
+    try {
+      scheduler = StdSchedulerFactory.getDefaultScheduler();
+      scheduler.start();
+      scheduler.getListenerManager().addSchedulerListener(new MySchedListener());
+    } catch (SchedulerException e) {
+      failed = true;
+      throw new RuntimeException("quartz scheduler failed to initialize", e);
+    }
+  }
+
   public org.quartz.Scheduler getScheduler() {
     return scheduler;
   }
 
-  public void scheduleTasks(FROM from, FeatureCollectionConfig config, CollectionManager manager) {
+  private class MySchedListener implements SchedulerListener {
+
+    @Override
+    public void jobScheduled(Trigger trigger) {
+      logger.debug("jobScheduled {}", trigger);
+    }
+
+    @Override
+    public void jobUnscheduled(TriggerKey triggerKey) {
+      logger.debug("jobUnscheduled {}", triggerKey);
+    }
+
+    @Override
+    public void triggerFinalized(Trigger trigger) {
+      logger.debug("triggerFinalized {}", trigger);
+    }
+
+    @Override
+    public void triggerPaused(TriggerKey triggerKey) {
+      logger.debug("triggerPaused {}", triggerKey);
+    }
+
+    @Override
+    public void triggersPaused(String s) {
+      logger.debug("triggersPaused {}", s);
+    }
+
+    @Override
+    public void triggerResumed(TriggerKey triggerKey) {
+      logger.debug("triggerResumed {}", triggerKey);
+    }
+
+    @Override
+    public void triggersResumed(String s) {
+      logger.debug("triggersResumed {}", s);
+    }
+
+    @Override
+    public void jobAdded(JobDetail jobDetail) {
+      logger.debug("jobAdded {}", jobDetail);
+    }
+
+    @Override
+    public void jobDeleted(JobKey jobKey) {
+      logger.debug("jobDeleted {}", jobKey);
+    }
+
+    @Override
+    public void jobPaused(JobKey jobKey) {
+      logger.debug("jobPaused {}", jobKey);
+    }
+
+    @Override
+    public void jobsPaused(String s) {
+      logger.debug("jobPaused {}", s);
+    }
+
+    @Override
+    public void jobResumed(JobKey jobKey) {
+      logger.debug("jobsResumed {}", jobKey);
+    }
+
+    @Override
+    public void jobsResumed(String s) {
+      logger.debug("jobsResumed {}", s);
+    }
+
+    @Override
+    public void schedulerError(String s, SchedulerException e) {
+      logger.debug("schedulerError {} {}", s, e);
+    }
+
+    @Override
+    public void schedulerInStandbyMode() {
+      //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void schedulerStarted() {
+      //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void schedulerShutdown() {
+      //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void schedulerShuttingdown() {
+      //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void schedulingDataCleared() {
+      //To change body of implemented methods use File | Settings | File Templates.
+    }
+  }
+
+  public void scheduleTasks(FeatureCollectionConfig config, CollectionManager manager) {
     if (disabled || failed) return;
 
-    FeatureCollectionConfig.UpdateConfig useConfig = null;
-    if (from == FROM.tds) {
-      useConfig = config.updateConfig;
-      if (!useConfig.startup && (useConfig.rescan == null) && (config.protoConfig.change == null)) return;
-    } else if (from == FROM.tdm) {
-      useConfig = config.tdmConfig;
-      if (!useConfig.startup && (useConfig.rescan == null) && (config.protoConfig.change == null)) return;
-    }
+    FeatureCollectionConfig.UpdateConfig useConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
+    //if (!useConfig.startup && (useConfig.rescan == null) && (config.protoConfig.change == null))
+    //  return;
 
-    // dont start a Scheduler thread unless we need it
-    synchronized (this) {
-      if (!failed && scheduler == null) {
-        SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
-        try {
-          scheduler = schedFact.getScheduler();
-          scheduler.start();
-        } catch (SchedulerException e) {
-          failed = true;
-          throw new RuntimeException("quartz scheduler failed to initialize", e);
-        }
-      }
-    }
-
-    // updating the collection
-    JobDetail updateJob = new JobDetail(config.name, "UpdateCollection", UpdateCollectionJob.class);
+    // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
-    map.put(FC_NAME, manager);
-    updateJob.setJobDataMap(map);
+    map.put(DCM_NAME, manager);
+    JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
+            .withIdentity(config.name, "UpdateCollection")
+            .storeDurably()
+            .usingJobData(map)
+            .build();
+
+    try {
+      scheduler.addJob(updateJob, false);
+    } catch (SchedulerException e) {
+      logger.error("cronExecutor failed to schedule startup Job for " + config, e);
+      return;
+    }
 
     if (useConfig.startup) {
       // wait 30 secs to trigger
       Date runTime = new Date(new Date().getTime() + startupWait);
-      Trigger trigger0 = new SimpleTrigger(config.name, "startup", runTime);
+      SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
+              .withIdentity(config.name, "startup")
+              .startAt(runTime)
+              .forJob(updateJob)
+              .build();
+
       try {
-        scheduler.scheduleJob(updateJob, trigger0);
-        logger.info("Schedule startup scan for {} at {}\n" ,config, runTime);
+        scheduler.scheduleJob(startupTrigger);
+        logger.info("Schedule startup scan for {} at {}", config.spec, runTime);
       } catch (SchedulerException e) {
-        logger.error("cronExecutor failed to schedule startup Job for "+config, e);
+        logger.error("cronExecutor failed to schedule startup Job for " + config, e);
         return;
       }
     }
 
     if (useConfig.rescan != null) {
+        CronTrigger rescanTrigger = TriggerBuilder.newTrigger()
+                .withIdentity(config.name, "rescan")
+                .withSchedule(CronScheduleBuilder.cronSchedule(useConfig.rescan))
+                .forJob(updateJob)
+                .build();
+
       try {
-        Trigger trigger1 = new CronTrigger(config.spec, "rescan", useConfig.rescan);
-        if (useConfig.startup) {
-          trigger1.setJobName(updateJob.getName());
-          trigger1.setJobGroup(updateJob.getGroup());
-          scheduler.scheduleJob(trigger1);
-        } else {
-          scheduler.scheduleJob(updateJob, trigger1);
-        }
+        scheduler.scheduleJob(rescanTrigger);
         logger.info("Schedule recurring scan for {} cronExpr={}", config.spec, useConfig.rescan);
-      } catch (ParseException e) {
-        logger.error("cronExecutor failed: bad cron expression= "+ useConfig.rescan, e);
+
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule cron Job", e);
         // e.printStackTrace();
@@ -100,17 +207,22 @@ public enum CollectionUpdater {
     // updating the proto dataset
     FeatureCollectionConfig.ProtoConfig pconfig = config.protoConfig;
     if (pconfig.change != null) {
-      JobDetail protoJob = new JobDetail(config.name, "UpdateProto", ChangeProtoJob.class);
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
-      pmap.put(FC_NAME, manager);
-      protoJob.setJobDataMap(pmap);
+      map.put(DCM_NAME, manager);
+      JobDetail protoJob = JobBuilder.newJob(ChangeProtoJob.class)
+              .withIdentity(config.name, "UpdateProto")
+              .usingJobData(pmap)
+              .storeDurably()
+              .build();
 
       try {
-        Trigger trigger2 = new CronTrigger(config.name, "rereadProto", pconfig.change);
-        scheduler.scheduleJob(protoJob, trigger2);
+        CronTrigger protoTrigger = TriggerBuilder.newTrigger()
+                .withIdentity(config.name, "rereadProto")
+                .withSchedule(CronScheduleBuilder.cronSchedule(pconfig.change))
+                .build();
+        scheduler.scheduleJob(protoJob, protoTrigger);
         logger.info("Schedule Reread Proto for {}", config.name);
-      } catch (ParseException e) {
-        logger.error("cronExecutor failed: RereadProto has bad cron expression= "+ pconfig.change, e);
+
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule RereadProtoJob", e);
         // e.printStackTrace();
@@ -122,9 +234,9 @@ public enum CollectionUpdater {
   public void shutdown() {
     if (scheduler == null) return;
     try {
-      scheduler.shutdown( true);
-      org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
-      logServerStartup.info( "Scheduler shutdown" );
+      scheduler.shutdown(true);
+      org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
+      logServerStartup.info("Scheduler shutdown");
     } catch (SchedulerException e) {
       logger.error("Scheduler failed to shutdown", e);
       scheduler = null;
@@ -132,28 +244,52 @@ public enum CollectionUpdater {
     }
   }
 
+  public void triggerUpdate(String collectionName, String triggerType) {
+    Trigger trigger = TriggerBuilder.newTrigger()
+            .withIdentity(collectionName, triggerType)
+            .forJob(collectionName, "UpdateCollection") // ??
+            .startNow()
+            .build();
+
+    try {
+      logger.info("Trigger Update for {}", collectionName);
+      scheduler.scheduleJob(trigger);
+    } catch (SchedulerException e) {
+      logger.error("triggerUpdate failed", e);
+      // e.printStackTrace();
+    }
+  }
+
   public static class UpdateCollectionJob implements org.quartz.Job {
-    public UpdateCollectionJob() {}
+    public UpdateCollectionJob() {
+    }
+
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
-        CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(FC_NAME);
-        logger.info("Update rescan for {}", manager.getCollectionName());
-        manager.scan();
+        CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
+        logger.debug("Update for {} trigger = {}", manager.getCollectionName(), context.getTrigger().getKey());
+        String groupName = context.getTrigger().getKey().getGroup();
+        if (groupName.equals("nocheck"))
+          manager.updateNocheck();
+        else
+          manager.scan(true);
       } catch (Throwable e) {
-        logger.error("InitFmrcJob failed", e);
+        logger.error("UpdateCollectionJob.execute failed", e);
       }
     }
   }
 
   public static class ChangeProtoJob implements org.quartz.Job {
-    public ChangeProtoJob() {}
+    public ChangeProtoJob() {
+    }
+
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
-        CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(FC_NAME);
-        logger.info("Update resetProto for {}", manager.getCollectionName());
+        CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
+        logger.debug("Update resetProto for {}", manager.getCollectionName());
         manager.resetProto();
       } catch (Throwable e) {
-        logger.error("RereadProtoJob failed", e);
+        logger.error("ChangeProtoJob.execute failed", e);
       }
     }
   }

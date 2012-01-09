@@ -75,7 +75,7 @@
     </layout>
   </appender>
 
-  <!-- special log for grib processing -->
+  <!-- special log for old grib processing -->
   <appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${tds.log.dir}/models.log"/>
     <param name="MaxFileSize" value="5MB"/>
@@ -91,6 +91,14 @@
     <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd' 'HH:mm:ss.SSS} %-5p - %c%n%m%n"/>
+    </layout>
+  </appender>
+
+  <!-- debugging -->
+  <appender name="consoleLogger" class="org.apache.log4j.ConsoleAppender">
+    <param name="ImmediateFlush" value="true"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %c - %m%n"/>
     </layout>
   </appender>
 
@@ -125,7 +133,7 @@
     <appender-ref ref="serverStartupAppender"/>
   </logger>
 
-  <!-- grib debugging -->
+  <!-- old grib debugging -->
   <logger name="ucar.nc2.iosp.grid" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="modelLog"/>
@@ -145,10 +153,8 @@
     <level value="INFO"/>
     <appender-ref ref="modelLog"/>
   </logger>
-  <!-- end grib debugging -->
 
-  <!-- fmrc debugging -->
-
+  <!-- featureType debugging -->
   <logger name="thredds.inventory.DatasetCollectionMFiles" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
@@ -158,6 +164,23 @@
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
+
+  <logger name="ucar.nc2.grib" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="thredds.catalog.InvDatasetFeatureCollection" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="thredds.catalog.InvDatasetFcGrib" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <!-- fmrc debugging -->
 
   <logger name="thredds.inventory.bdb.MetadataManager" additivity="false">
     <level value="INFO"/>
@@ -238,21 +261,11 @@
   <logger name="thredds.dqc"/>
   <logger name="thredds.servlet"/>
 
+  <!-- dennis opendap testing (??) -->
   <logger name="opendap.servlet.LogStream" additivity="false">
     <level value="info" />
     <appender-ref ref="logcdm"/>
   </logger>
-
-  <!-- debug
-  <logger name="ucar.nc2.ncml.Aggregation" additivity="false">
-    <level value="DEBUG"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger>
-
-  <logger name="thredds.inventory.DatasetCollectionManager" additivity="false">
-    <level value="DEBUG"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger>   -->
 
   <root>
     <level value="INFO"/>

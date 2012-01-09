@@ -32,6 +32,8 @@
 
 package ucar.nc2.ft.point.writer;
 
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.*;
@@ -107,8 +109,8 @@ public class WriterCFStationCollection {
   }
 
   private void createGlobalAttributes() {
-    ncfile.addGlobalAttribute("Conventions", "CF-1.6");
-    ncfile.addGlobalAttribute("featureType", "timeSeries");
+    ncfile.addGlobalAttribute(CDM.CONVENTIONS, "CF-1.6");
+    ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name());
     ncfile.addGlobalAttribute("title", title);
     ncfile.addGlobalAttribute("desc", "Written by TDS/CDM Remote Feature subset service");
   }
@@ -150,41 +152,41 @@ public class WriterCFStationCollection {
 
     // add the station Variables using the station dimension
     Variable v = ncfile.addVariable(latName, DataType.DOUBLE, stationDimName);
-    ncfile.addVariableAttribute(v, new Attribute("units", "degrees_north"));
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "station latitude"));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "degrees_north"));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station latitude"));
 
     v = ncfile.addVariable(lonName, DataType.DOUBLE, stationDimName);
-    ncfile.addVariableAttribute(v, new Attribute("units", "degrees_east"));
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "station longitude"));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "degrees_east"));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station longitude"));
 
     if (useAlt) {
       v = ncfile.addVariable(altName, DataType.DOUBLE, stationDimName);
-      ncfile.addVariableAttribute(v, new Attribute("units", "meters"));
-      ncfile.addVariableAttribute(v, new Attribute("positive", "up"));
-      ncfile.addVariableAttribute(v, new Attribute("long_name", "station altitude"));
+      ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "meters"));
+      ncfile.addVariableAttribute(v, new Attribute(CF.POSITIVE, CF.POSITIVE_UP));
+      ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station altitude"));
     }
 
     v = ncfile.addStringVariable(idName, stationDims, name_strlen);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "station identifier"));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station identifier"));
     ncfile.addVariableAttribute(v, new Attribute("standard_name", "station_id"));
 
     v = ncfile.addStringVariable(descName, stationDims, desc_strlen);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "station description"));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station description"));
 
     if (useWmoId) {
       v = ncfile.addStringVariable(wmoName, stationDims, wmo_strlen);
-      ncfile.addVariableAttribute(v, new Attribute("long_name", "station WMO id"));
+      ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station WMO id"));
     }
   }
 
   private void createObsVariables(DateUnit timeUnit) throws IOException {
     // time variable
     Variable timeVar = ncfile.addVariable(timeName, DataType.DOUBLE, recordDimName);
-    ncfile.addVariableAttribute(timeVar, new Attribute("units", timeUnit.getUnitsString()));
-    ncfile.addVariableAttribute(timeVar, new Attribute("long_name", "time of measurement"));
+    ncfile.addVariableAttribute(timeVar, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
+    ncfile.addVariableAttribute(timeVar, new Attribute(CDM.LONG_NAME, "time of measurement"));
 
     Variable v = ncfile.addVariable(stationIndexName, DataType.INT, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute("long_name", "station index for this observation record"));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station index for this observation record"));
     ncfile.addVariableAttribute(v, new Attribute("standard_name", "ragged_parentIndex"));
   }
 
@@ -217,7 +219,7 @@ public class WriterCFStationCollection {
       for (Attribute att : atts) {
         newVar.addAttribute( att);
       }
-      newVar.addAttribute( new Attribute("coordinates", coordNames));
+      newVar.addAttribute( new Attribute(CF.COORDINATES, coordNames));
     }
 
 

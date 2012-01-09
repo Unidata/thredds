@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.constants.CF;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
@@ -195,7 +196,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   ////////////////////////////////////////////////////////////////////////
 
   private ucar.nc2.time.Calendar getCalendarFromAttribute() {
-    Attribute cal = findAttribute("calendar");
+    Attribute cal = findAttribute(CF.CALENDAR);
     String s = (cal == null) ? null : cal.getStringValue();
     return ucar.nc2.time.Calendar.get(s);
   }
@@ -216,7 +217,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     this.ncd = ncd;
     this.orgName = org.orgName;
 
-    Attribute cal = findAttribute("calendar");
+    Attribute cal = findAttribute(CF.CALENDAR);
     String calendarName = (cal == null) ? null : cal.getStringValue();
     this.calendar = getCalendarFromAttribute();
 
@@ -292,7 +293,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
     super(ncd, org);
 
-    Attribute cal = findAttribute("calendar");
+    Attribute cal = findAttribute(CF.CALENDAR);
     String calName = (cal == null) ? null : cal.getStringValue();
     CalendarDateUnit dateUnit = CalendarDateUnit.of(calName, getUnitsString()); // this will throw exception on failure
     this.calendar = dateUnit.getCalendar();

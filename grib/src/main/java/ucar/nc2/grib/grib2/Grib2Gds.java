@@ -258,10 +258,26 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       la2 = getOctet4(56) * scale;
       lo2 = getOctet4(60) * scale;
 
+
+      if (lo2 < lo1) lo2 += 360.0F;
+
+
+      // GFS_Puerto_Rico_0p5deg seems to have deltaLat, deltaLon incorrectly encoded
       deltaLon = getOctet4(64) * scale;
-      //if (lo2 < lo1) deltaLon = -deltaLon;
+      float calcDelta = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
+      if (!Misc.closeEnough(deltaLon, calcDelta)) {
+        log.debug("deltaLon != calcDeltaLon");
+        deltaLon = calcDelta;
+      }
+
       deltaLat = getOctet4(68) * scale;
       if (la2 < la1) deltaLat = -deltaLat;
+      calcDelta = (la2 - la1) / (ny-1); // more accurate - deltaLat may have roundoff
+      if (!Misc.closeEnough(deltaLat, calcDelta)) {
+        log.debug("deltaLat != calcDeltaLat");
+        deltaLat = calcDelta;
+      }
+
       scanMode = getOctet(72);
 
       lastOctet = 73;

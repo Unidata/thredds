@@ -41,25 +41,20 @@ import ucar.nc2.NetcdfFile;
  * @since Jan 21, 2009
  */
 public interface CF {
-  public final static String POSITIVE_UP = "up";
-  public final static String POSITIVE_DOWN = "down";
 
-  public static final String featureTypeAtt = "featureType";
-  public static final String featureTypeAtt2 = "CF:featureType";
-  public static final String featureTypeAtt3 = "CF:feature_type"; // GRIB was using this form (!)
-  //public static final String featureTypeAtt2 = "CF-featureType";
-  //public static final String featureTypeAtt3 = "CFfeatureType";
-
-  // standard attributes
-  public static final String ADD_OFFSET = "add_offset";
+  // attribute names
+  public static final String AXIS = "axis";
   public static final String BOUNDS = "bounds";
+  public static final String CALENDAR = "calendar";
   public static final String CF_ROLE = "cf_role";
   public final static String COORDINATES = "coordinates";
-  public static final String LONG_NAME = "long_name";
-  public static final String MISSING_VALUE = "missing_value";
-  public static final String SCALE_FACTOR = "scale_factor";
+  public static final String FEATURE_TYPE = "featureType";
+  public static final String POSITIVE = "positive";
   public static final String STANDARD_NAME = "standard_name";
-  public static final String UNITS = "units";
+
+  // positive values
+  public final static String POSITIVE_UP = "up";
+  public final static String POSITIVE_DOWN = "down";
 
   // grid mapping names
   public final static String ALBERS_CONICAL_EQUAL_AREA = "albers_conical_equal_area";
@@ -99,21 +94,37 @@ public interface CF {
   public static final String STANDARD_PARALLEL = "standard_parallel";
   public static final String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE = "straight_vertical_longitude_from_pole";
 
-  // proposed attributes
-  public static final String RAGGED_ROWSIZE = "CF:ragged_row_count";
-  public static final String RAGGED_PARENTINDEX = "CF:ragged_parent_index";
-
   // standard_names
   public static final String PROJECTION_X_COORDINATE  = "projection_x_coordinate";
   public static final String PROJECTION_Y_COORDINATE  = "projection_y_coordinate";
+
+  // cf_role
+  public static final String PROFILE_ID = "profile_id";
+  public static final String TIMESERIES_ID = "timeseries_id"; // alias STATION_ID
+  public static final String TRAJECTORY_ID = "trajectory_id";
+
+  // DSC
+  public static final String SAMPLE_DIMENSION = "sample_dimension";
+  public static final String INSTANCE_DIMENSION = "instance_dimension";
+
+  public static final String PLATFORM_NAME = "platform_name"; // alias STATION_DESC
+  public static final String SURFACE_ALTITUDE = "surface_altitude"; // alias STATION_ALTITUDE
+  public static final String PLATFORM_ID = "platform_id";  // alias STATION_WMOID
+
+  ///////////////////////////////////////////////////////////////////
+  // DSG proposed - not adopted; here for backwards compatibility
+  public static final String RAGGED_ROWSIZE = "CF:ragged_row_count";
+  public static final String RAGGED_PARENTINDEX = "CF:ragged_parent_index";
 
   // proposed standard_names
   public static final String STATION_ID = "station_id";
   public static final String STATION_DESC = "station_description";
   public static final String STATION_ALTITUDE = "surface_altitude";
   public static final String STATION_WMOID = "station_WMO_id";
-  public static final String TRAJ_ID = "trajectory_id";
-  public static final String PROFILE_ID = "profile_id";
+
+  public static final String featureTypeAtt2 = "CF:featureType";
+  public static final String featureTypeAtt3 = "CF:feature_type"; // GRIB was using this form (!)
+  ///////////////////////////////////////////////////////////////////////
 
   /**
    * Start of map from CF feature type names to our FeatureType enums.
@@ -187,13 +198,11 @@ maybe:
     }
 
     public static FeatureType getFeatureTypeFromGlobalAttribute(NetcdfFile ds) {
-      String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
+      String ftypeS = ds.findAttValueIgnoreCase(null, CF.FEATURE_TYPE, null);
       if (ftypeS == null)
         ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
-      /* if (ftypeS == null)
-        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
       if (ftypeS == null)
-        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt4, null); */
+        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
 
       if (ftypeS == null)
         return null;

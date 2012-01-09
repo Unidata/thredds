@@ -32,6 +32,7 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
@@ -136,7 +137,7 @@ public class Stereographic extends ProjectionImpl {
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
       addParameter(CF.FALSE_EASTING, false_easting);
       addParameter(CF.FALSE_NORTHING, false_northing);
-      addParameter(CF.UNITS, "km");
+      addParameter(CDM.UNITS, "km");
     }
   }
 

@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.misc;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -121,8 +122,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     init();
 
-    ncfile.addAttribute(null, new Attribute("history", "Direct read of NMC ON29 by CDM"));
-    ncfile.addAttribute(null, new Attribute("Conventions", "Unidata"));
+    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of NMC ON29 by CDM"));
+    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "Unidata"));
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.STATION_PROFILE.toString()));
 
     try {
@@ -165,41 +166,41 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private Structure makeStationStructure() throws IOException, InvalidRangeException {
     Structure station = new Structure(ncfile, null, null, "station");
     station.setDimensions("station");
-    station.addAttribute(new Attribute("long_name", "unique stations within this file"));
+    station.addAttribute(new Attribute(CDM.LONG_NAME, "unique stations within this file"));
 
     int pos = 0;
     Variable v = station.addMemberVariable(new Variable(ncfile, null, station, "stationName", DataType.CHAR, ""));
     v.setDimensionsAnonymous(new int[]{6});
-    v.addAttribute(new Attribute("long_name", "name of station"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "name of station"));
     v.addAttribute(new Attribute("standard_name", "station_name"));
     v.setSPobject(new Vinfo(pos));
     pos += 6;
 
     v = station.addMemberVariable(new Variable(ncfile, null, station, "lat", DataType.FLOAT, ""));
-    v.addAttribute(new Attribute("units", "degrees_north"));
-    v.addAttribute(new Attribute("long_name", "geographic latitude"));
+    v.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "geographic latitude"));
     v.addAttribute(new Attribute("accuracy", "degree/100"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     v.setSPobject(new Vinfo(pos));
     pos += 4;
 
     v = station.addMemberVariable(new Variable(ncfile, null, station, "lon", DataType.FLOAT, ""));
-    v.addAttribute(new Attribute("units", "degrees_east"));
-    v.addAttribute(new Attribute("long_name", "geographic longitude"));
+    v.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "geographic longitude"));
     v.addAttribute(new Attribute("accuracy", "degree/100"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     v.setSPobject(new Vinfo(pos));
     pos += 4;
 
     v = station.addMemberVariable(new Variable(ncfile, null, station, "elev", DataType.FLOAT, ""));
-    v.addAttribute(new Attribute("units", "meters"));
-    v.addAttribute(new Attribute("long_name", "station elevation above MSL"));
+    v.addAttribute(new Attribute(CDM.UNITS, "meters"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "station elevation above MSL"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
     v.setSPobject(new Vinfo(pos));
     pos += 4;
 
     v = station.addMemberVariable(new Variable(ncfile, null, station, "nrecords", DataType.INT, ""));
-    v.addAttribute(new Attribute("long_name", "number of records"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "number of records"));
     v.addAttribute(new Attribute("standard_name", "npts"));
     v.setSPobject(new Vinfo(pos));
     pos += 4;
@@ -211,19 +212,19 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     Structure reportIndex = new Structure(ncfile, null, null, "reportIndex");
     reportIndex.setDimensions("report");
 
-    reportIndex.addAttribute(new Attribute("long_name", "index on report - in memory"));
+    reportIndex.addAttribute(new Attribute(CDM.LONG_NAME, "index on report - in memory"));
     int pos = 0;
 
     Variable v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "stationName", DataType.CHAR, ""));
     v.setDimensionsAnonymous(new int[]{6});
-    v.addAttribute(new Attribute("long_name", "name of station"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "name of station"));
     v.addAttribute(new Attribute("standard_name", "station_name"));
     v.setSPobject(new Vinfo(pos));
     pos += 6;
 
     v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "time", DataType.INT, ""));
-    v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
-    v.addAttribute(new Attribute("long_name", "observation time"));
+    v.addAttribute(new Attribute(CDM.UNITS, "secs since 1970-01-01 00:00"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "observation time"));
     v.setSPobject(new Vinfo(pos));
     pos += 4;
 
@@ -234,36 +235,36 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private Structure makeReportStructure() throws InvalidRangeException, IOException {
     Structure report = new Structure(ncfile, null, null, "report");
     report.setDimensions("report");
-    report.addAttribute(new Attribute("long_name", "ON29 observation report"));
+    report.addAttribute(new Attribute(CDM.LONG_NAME, "ON29 observation report"));
     int pos = 0;
 
     Variable v = report.addMemberVariable(new Variable(ncfile, null, report, "time", DataType.INT, ""));
-    v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
-    v.addAttribute(new Attribute("long_name", "observation time"));
+    v.addAttribute(new Attribute(CDM.UNITS, "secs since 1970-01-01 00:00"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "observation time"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     v.setSPobject(new Vinfo(pos));
     pos += 4;
 
     v = report.addMemberVariable(new Variable(ncfile, null, report, "timeISO", DataType.CHAR, ""));
     v.setDimensionsAnonymous(new int[]{20});
-    v.addAttribute(new Attribute("long_name", "ISO formatted date/time"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "ISO formatted date/time"));
     v.setSPobject(new Vinfo(pos));
     pos += 20;
 
     v = report.addMemberVariable(new Variable(ncfile, null, report, "reportType", DataType.SHORT, ""));
-    v.addAttribute(new Attribute("long_name", "report type from Table R.1"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "report type from Table R.1"));
     v.setSPobject(new Vinfo(pos));
     pos += 2;
 
     // only for ON29
     v = report.addMemberVariable(new Variable(ncfile, null, report, "instType", DataType.SHORT, ""));
-    v.addAttribute(new Attribute("long_name", "instrument type from Table R.2"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "instrument type from Table R.2"));
     v.setSPobject(new Vinfo(pos));
     pos += 2;
 
     v = report.addMemberVariable(new Variable(ncfile, null, report, "reserved", DataType.CHAR, ""));
     v.setDimensionsAnonymous(new int[]{7});
-    v.addAttribute(new Attribute("long_name", "reserved characters"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, "reserved characters"));
     v.setSPobject(new Vinfo(pos));
     pos += 7;
 
@@ -909,57 +910,57 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
       Sequence seq = new Sequence(ncfile, null, parent, "mandatoryLevels");
-      seq.addAttribute(new Attribute("long_name", catNames[1]));
+      seq.addAttribute(new Attribute(CDM.LONG_NAME, catNames[1]));
 
       int pos = 0;
 
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "mbars"));
-      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute(CDM.UNITS, "mbars"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "pressure level"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "geopotential", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "meter"));
-      v.addAttribute(new Attribute("long_name", "geopotential"));
-      v.addAttribute(new Attribute("missing_value", 99999.0f));
+      v.addAttribute(new Attribute(CDM.UNITS, "meter"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "geopotential"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99999.0f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "temperature"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 999.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "dewpoint depression"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "dewpoint depression"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "degrees"));
-      v.addAttribute(new Attribute("long_name", "wind direction"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "degrees"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind direction"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "knots"));
-      v.addAttribute(new Attribute("long_name", "wind speed"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "knots"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind speed"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{4});
-      v.addAttribute(new Attribute("long_name", "quality marks: 0=geopot, 1=temp, 2=dewpoint, 3=wind"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=geopot, 1=temp, 2=dewpoint, 3=wind"));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
@@ -996,37 +997,37 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
       Sequence seq = new Sequence(ncfile, null, parent, "tempPressureLevels");
-      seq.addAttribute(new Attribute("long_name", catNames[2]));
+      seq.addAttribute(new Attribute(CDM.LONG_NAME, catNames[2]));
 
       int pos = 0;
 
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "mbars"));
-      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute(CDM.UNITS, "mbars"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "pressure level"));
       v.addAttribute(new Attribute("accuracy", "mbar/10"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "temperature"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 999.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "dewpoint depression"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "dewpoint depression"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{3});
-      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=temp, 2=dewpoint"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=temp, 2=dewpoint"));
       v.setSPobject(new Vinfo(pos));
       pos += 3;
 
@@ -1062,35 +1063,35 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
       Sequence seq = new Sequence(ncfile, null, parent, "windPressureLevels");
-      seq.addAttribute(new Attribute("long_name", catNames[3]));
+      seq.addAttribute(new Attribute(CDM.LONG_NAME, catNames[3]));
 
       int pos = 0;
 
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "mbars"));
-      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute(CDM.UNITS, "mbars"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "pressure level"));
       v.addAttribute(new Attribute("accuracy", "mbar/10"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "degrees"));
-      v.addAttribute(new Attribute("long_name", "wind direction"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "degrees"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind direction"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "knots"));
-      v.addAttribute(new Attribute("long_name", "wind speed"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "knots"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind speed"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=wind"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=wind"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
@@ -1126,34 +1127,34 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
       Sequence seq = new Sequence(ncfile, null, parent, "windHeightLevels");
-      seq.addAttribute(new Attribute("long_name", catNames[4]));
+      seq.addAttribute(new Attribute(CDM.LONG_NAME, catNames[4]));
 
       int pos = 0;
 
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "geopotential", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "meter"));
-      v.addAttribute(new Attribute("long_name", "geopotential"));
-      v.addAttribute(new Attribute("missing_value", 99999.0f));
+      v.addAttribute(new Attribute(CDM.UNITS, "meter"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "geopotential"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99999.0f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "degrees"));
-      v.addAttribute(new Attribute("long_name", "wind direction"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "degrees"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind direction"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "knots"));
-      v.addAttribute(new Attribute("long_name", "wind speed"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "knots"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind speed"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "quality marks: 0=geopot, 1=wind"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=geopot, 1=wind"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
@@ -1192,50 +1193,50 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
       Sequence seq = new Sequence(ncfile, null, parent, "tropopause");
-      seq.addAttribute(new Attribute("long_name", catNames[5]));
+      seq.addAttribute(new Attribute(CDM.LONG_NAME, catNames[5]));
 
       int pos = 0;
 
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "mbars"));
-      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute(CDM.UNITS, "mbars"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "pressure level"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "temperature"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 999.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "dewpoint depression"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "dewpoint depression"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "degrees"));
-      v.addAttribute(new Attribute("long_name", "wind direction"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "degrees"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind direction"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "knots"));
-      v.addAttribute(new Attribute("long_name", "wind speed"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "knots"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind speed"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{4});
-      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=temp, 2=dewpoint, 3=wind"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=temp, 2=dewpoint, 3=wind"));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
@@ -1272,27 +1273,27 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
       Sequence seq = new Sequence(ncfile, null, parent, "clouds");
-      seq.addAttribute(new Attribute("long_name", catNames[7]));
+      seq.addAttribute(new Attribute(CDM.LONG_NAME, catNames[7]));
 
       int pos = 0;
 
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "mbars"));
-      v.addAttribute(new Attribute("long_name", "pressure level"));
+      v.addAttribute(new Attribute(CDM.UNITS, "mbars"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "pressure level"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "percentClouds", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", ""));
-      v.addAttribute(new Attribute("long_name", "amount of cloudiness (%)"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, ""));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "amount of cloudiness (%)"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressure, 1=percentClouds"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressure, 1=percentClouds"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
@@ -1326,25 +1327,25 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
       Sequence seq = new Sequence(ncfile, null, parent, "otherData");
-      seq.addAttribute(new Attribute("long_name", catNames[8]));
+      seq.addAttribute(new Attribute(CDM.LONG_NAME, catNames[8]));
 
       int pos = 0;
 
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "data", DataType.INT, ""));
-      v.addAttribute(new Attribute("long_name", "additional data specified in table 101.1"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "additional data specified in table 101.1"));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "table101code", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("long_name", "code figure from table 101"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "code figure from table 101"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "indicatorFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "quality marks: 0=data, 1=form"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=data, 1=form"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
@@ -1405,149 +1406,149 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
       Sequence seq = new Sequence(ncfile, null, parent, "surfaceData");
-      seq.addAttribute(new Attribute("long_name", catNames[11]));
+      seq.addAttribute(new Attribute(CDM.LONG_NAME, catNames[11]));
 
       int pos = 0;
 
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressureSeaLevel", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "mbars"));
-      v.addAttribute(new Attribute("long_name", "sea level pressure"));
+      v.addAttribute(new Attribute(CDM.UNITS, "mbars"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "sea level pressure"));
       v.addAttribute(new Attribute("accuracy", "mbars/10"));
-      v.addAttribute(new Attribute("missing_value", 9999.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 9999.9f));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressure", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "mbars"));
-      v.addAttribute(new Attribute("long_name", "station pressure"));
+      v.addAttribute(new Attribute(CDM.UNITS, "mbars"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "station pressure"));
       v.addAttribute(new Attribute("accuracy", "mbars/10"));
-      v.addAttribute(new Attribute("missing_value", 9999.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 9999.9f));
       v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windDir", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "degrees"));
-      v.addAttribute(new Attribute("long_name", "wind direction"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "degrees"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind direction"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "windSpeed", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "knots"));
-      v.addAttribute(new Attribute("long_name", "wind speed"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "knots"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "wind speed"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperature", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "air temperature"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "air temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 999.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "dewpoint", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "dewpoint depression"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "dewpoint depression"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperatureMax", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "maximum temperature"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "maximum temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 999.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "temperatureMin", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "minimum temperature"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "minimum temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 999.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "qualityFlags", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{4});
-      v.addAttribute(new Attribute("long_name", "quality marks: 0=pressureSeaLevel, 1=pressure, 2=wind, 3=temperature"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "quality marks: 0=pressureSeaLevel, 1=pressure, 2=wind, 3=temperature"));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pastWeatherW2", DataType.CHAR, ""));
-      v.addAttribute(new Attribute("long_name", "past weather (W2): WMO table 4561"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "past weather (W2): WMO table 4561"));
       v.setSPobject(new Vinfo(pos));
       pos += 1;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "horizViz", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{3});
-      v.addAttribute(new Attribute("long_name", "horizontal visibility: WMO table 4300"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "horizontal visibility: WMO table 4300"));
       v.setSPobject(new Vinfo(pos));
       pos += 3;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "presentWeatherWW", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{3});
-      v.addAttribute(new Attribute("long_name", "present weather (WW): WMO table 4677"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "present weather (WW): WMO table 4677"));
       v.setSPobject(new Vinfo(pos));
       pos += 3;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pastWeatherW1", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "past weather (WW): WMO table 4561"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "past weather (WW): WMO table 4561"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionN", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "cloud fraction (N): WMO table 2700"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (N): WMO table 2700"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionNh", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "cloud fraction (Nh): WMO table 2700"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (Nh): WMO table 2700"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCL", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "cloud fraction (CL): WMO table 0513"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (CL): WMO table 0513"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudHeightCL", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "cloud base height above ground (h): WMO table 1600"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud base height above ground (h): WMO table 1600"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCM", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "cloud fraction (CM): WMO table 0515"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (CM): WMO table 0515"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "cloudFractionCH", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "cloud fraction (CH): WMO table 0509"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "cloud fraction (CH): WMO table 0509"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressureTendencyCharacteristic", DataType.CHAR, ""));
-      v.addAttribute(new Attribute("long_name", "pressure tendency characteristic for 3 hours previous to obs time: WMO table 0200"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "pressure tendency characteristic for 3 hours previous to obs time: WMO table 0200"));
       v.setSPobject(new Vinfo(pos));
       pos += 1;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "pressureTendency", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "mbars"));
-      v.addAttribute(new Attribute("long_name", "pressure tendency magnitude"));
+      v.addAttribute(new Attribute(CDM.UNITS, "mbars"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "pressure tendency magnitude"));
       v.addAttribute(new Attribute("accuracy", "mbars/10"));
-      v.addAttribute(new Attribute("missing_value", 99.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
@@ -1633,107 +1634,107 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
       Sequence seq = new Sequence(ncfile, null, parent, "surfaceData2");
-      seq.addAttribute(new Attribute("long_name", catNames[12]));
+      seq.addAttribute(new Attribute(CDM.LONG_NAME, catNames[12]));
 
       int pos = 0;
 
       Variable v = seq.addMemberVariable(new Variable(ncfile, null, parent, "precip6hours", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "inch"));
-      v.addAttribute(new Attribute("long_name", "precipitation past 6 hours"));
+      v.addAttribute(new Attribute(CDM.UNITS, "inch"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "precipitation past 6 hours"));
       v.addAttribute(new Attribute("accuracy", "inch/100"));
-      v.addAttribute(new Attribute("missing_value", 99.99f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99.99f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "snowDepth", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "inch"));
-      v.addAttribute(new Attribute("long_name", "total depth of snow on ground"));
-      v.addAttribute(new Attribute("missing_value", (short) 999));
+      v.addAttribute(new Attribute(CDM.UNITS, "inch"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "total depth of snow on ground"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 999));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "precip24hours", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "inch"));
-      v.addAttribute(new Attribute("long_name", "precipitation past 24 hours"));
+      v.addAttribute(new Attribute(CDM.UNITS, "inch"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "precipitation past 24 hours"));
       v.addAttribute(new Attribute("accuracy", "inch/100"));
-      v.addAttribute(new Attribute("missing_value", 99.99f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99.99f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "precipDuration", DataType.BYTE, ""));
-      v.addAttribute(new Attribute("units", "6 hours"));
-      v.addAttribute(new Attribute("long_name", "duration of precipitation observation"));
-      v.addAttribute(new Attribute("missing_value", 9));
+      v.addAttribute(new Attribute(CDM.UNITS, "6 hours"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "duration of precipitation observation"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 9));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "wavePeriod", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "second"));
-      v.addAttribute(new Attribute("long_name", "period of waves"));
-      v.addAttribute(new Attribute("missing_value", (short) 99));
+      v.addAttribute(new Attribute(CDM.UNITS, "second"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "period of waves"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 99));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "waveHeight", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "meter/2"));
-      v.addAttribute(new Attribute("long_name", "height of waves"));
-      v.addAttribute(new Attribute("missing_value", (short) 99));
+      v.addAttribute(new Attribute(CDM.UNITS, "meter/2"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "height of waves"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 99));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWaveDir", DataType.CHAR, ""));
       v.setDimensionsAnonymous(new int[]{2});
-      v.addAttribute(new Attribute("long_name", "direction from which swell waves are moving: WMO table 0877"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "direction from which swell waves are moving: WMO table 0877"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWavePeriod", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "second"));
-      v.addAttribute(new Attribute("long_name", "period of swell waves"));
-      v.addAttribute(new Attribute("missing_value", (short) 99));
+      v.addAttribute(new Attribute(CDM.UNITS, "second"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "period of swell waves"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 99));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "swellWaveHeight", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "meter/2"));
-      v.addAttribute(new Attribute("long_name", "height of waves"));
-      v.addAttribute(new Attribute("missing_value", (short) 99));
+      v.addAttribute(new Attribute(CDM.UNITS, "meter/2"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "height of waves"));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) 99));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "sst", DataType.FLOAT, ""));
-      v.addAttribute(new Attribute("units", "celsius"));
-      v.addAttribute(new Attribute("long_name", "sea surface temperature"));
+      v.addAttribute(new Attribute(CDM.UNITS, "celsius"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "sea surface temperature"));
       v.addAttribute(new Attribute("accuracy", "celsius/10"));
-      v.addAttribute(new Attribute("missing_value", 999.9f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 999.9f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "special", DataType.CHAR, ""));
-      v.addAttribute(new Attribute("long_name", "special phenomena - general"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "special phenomena - general"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "specialDetail", DataType.CHAR, ""));
-      v.addAttribute(new Attribute("long_name", "special phenomena - detailed"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "special phenomena - detailed"));
       v.setSPobject(new Vinfo(pos));
       pos += 2;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "shipCourse", DataType.CHAR, ""));
-      v.addAttribute(new Attribute("long_name", "ships course: WMO table 0700"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "ships course: WMO table 0700"));
       v.setSPobject(new Vinfo(pos));
       pos += 1;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "shipSpeed", DataType.CHAR, ""));
-      v.addAttribute(new Attribute("long_name", "ships average speed: WMO table 4451"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "ships average speed: WMO table 4451"));
       v.setSPobject(new Vinfo(pos));
       pos += 1;
 
       v = seq.addMemberVariable(new Variable(ncfile, null, parent, "waterEquiv", DataType.SHORT, ""));
-      v.addAttribute(new Attribute("units", "inch"));
-      v.addAttribute(new Attribute("long_name", "water equivalent of snow and/or ice"));
+      v.addAttribute(new Attribute(CDM.UNITS, "inch"));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, "water equivalent of snow and/or ice"));
       v.addAttribute(new Attribute("accuracy", "inch/100"));
-      v.addAttribute(new Attribute("missing_value", 99999.99f));
+      v.addAttribute(new Attribute(CDM.MISSING_VALUE, 99999.99f));
       v.setSPobject(new Vinfo(pos));
       pos += 4;
 

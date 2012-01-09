@@ -11,7 +11,7 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="file://$MODULE_DIR$/../../bufr/src/main/resources" />
@@ -20,20 +20,11 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="cdm" exported="" />
+    <orderEntry type="module" module-name="cdm" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.6.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.6.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

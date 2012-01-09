@@ -45,6 +45,7 @@ import net.jcip.annotations.Immutable;
 @Immutable
 public class CalendarPeriod {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
+  static public final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
 
   public enum Field {
     Millisec, Second, Minute, Hour, Day, Month, Year
@@ -112,7 +113,7 @@ public class CalendarPeriod {
 
   public int subtract(CalendarDate start, CalendarDate end) {
     if (field == CalendarPeriod.Field.Month || field == CalendarPeriod.Field.Year) {
-      log.warn(" using Month or Year");
+      log.warn(" CalendarDate.subtracct on Month or Year");
       long diff = end.getDifferenceInMsecs(start);
       return (int) (diff / getValueInMillisecs());
     } else {
@@ -120,6 +121,19 @@ public class CalendarPeriod {
       return (int) (diff / millisecs());
 
     }
+  }
+
+  /**
+   * Get the conversion factor of the other CalendarPeriod to this one
+   * @param from convert from this
+   * @return conversion factor, so that getConvertFactor(from) * from = this
+   */
+  public double getConvertFactor(CalendarPeriod from) {
+    if (field == CalendarPeriod.Field.Month || field == CalendarPeriod.Field.Year) {
+      log.warn(" CalendarDate.convert on Month or Year");
+    }
+
+    return (double)from.millisecs() / millisecs();
   }
 
   /**

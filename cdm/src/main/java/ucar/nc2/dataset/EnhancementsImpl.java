@@ -33,6 +33,9 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+
 import java.util.*;
 
 /**
@@ -97,11 +100,11 @@ class EnhancementsImpl implements Enhancements {
   public void setDescription(String desc) { this.desc = desc; }
 
   /** Get the description of the Variable.
-   *  Default is to look for attributes in this order: "long_name", "description", "title", "standard_name".
+   *  Default is to look for attributes in this order: CDM.LONG_NAME, "description", "title", "standard_name".
    */
   public String getDescription() {
     if ((desc == null) && (forVar != null)) {
-      Attribute att = forVar.findAttributeIgnoreCase( "long_name");
+      Attribute att = forVar.findAttributeIgnoreCase( CDM.LONG_NAME);
       if ((att != null) && att.isString())
         desc = att.getStringValue();
 
@@ -112,13 +115,13 @@ class EnhancementsImpl implements Enhancements {
       }
 
       if (desc == null) {
-        att = forVar.findAttributeIgnoreCase( "title");
+        att = forVar.findAttributeIgnoreCase( CDM.TITLE);
         if ((att != null) && att.isString())
           desc = att.getStringValue();
       }
 
       if (desc == null) {
-        att = forVar.findAttributeIgnoreCase( "standard_name");
+        att = forVar.findAttributeIgnoreCase(CF.STANDARD_NAME);
         if ((att != null) && att.isString())
           desc = att.getStringValue();
       }
@@ -126,22 +129,22 @@ class EnhancementsImpl implements Enhancements {
     return (desc == null) ? "" : desc.trim();
   }
 
-  /** Set the Unit String for this Variable. Default is to use the "units" attribute.
+  /** Set the Unit String for this Variable. Default is to use the CDM.UNITS attribute.
    * @param units  unit string
    */
   public void setUnitsString( String units) {
     this.units = units;
-    forVar.addAttribute( new Attribute("units", units));
+    forVar.addAttribute( new Attribute(CDM.UNITS, units));
   }
 
   /**
-   * Get the Unit String for the Variable. May be set explicitly, else look for attribute "units".
+   * Get the Unit String for the Variable. May be set explicitly, else look for attribute CDM.UNITS.
    * @return the Unit String for the Variable, or null if none.
    */
   public String getUnitsString() {
     String result = units;
     if ((result == null) && (forVar != null)) {
-      Attribute att = forVar.findAttributeIgnoreCase( "units");
+      Attribute att = forVar.findAttributeIgnoreCase( CDM.UNITS);
       if ((att != null) && att.isString())
         result = att.getStringValue();
     }

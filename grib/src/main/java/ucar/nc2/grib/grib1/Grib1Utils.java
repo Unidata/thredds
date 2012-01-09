@@ -105,7 +105,7 @@ Notes:
     names relative to earlier versions.
  */
   static public String makeVariableName(Grib1Tables tables, int center, int subcenter, int version, int paramNo,
-                                        int levelType, int intvType) {
+                                        int levelType, int intvType, String intvName) {
     Formatter f = new Formatter();
 
     Grib1Parameter param = tables.getParameter(center, subcenter, version, paramNo);
@@ -125,15 +125,17 @@ Notes:
 
     if (intvType >= 0) {
       Grib1ParamTime.StatType stype = Grib1ParamTime.getStatType(intvType);
-      if (stype != null)
+      if (stype != null) {
+        if (intvName != null) f.format("_%s", intvName);
         f.format("_%s", stype.name());
+      }
     }
 
     return f.toString();
   }
 
   static public String makeVariableLongName(Grib1Tables tables, int center, int subcenter, int version, int paramNo,
-                                            int levelType, int intvType, boolean isLayer, String probabilityName) {
+                                            int levelType, int intvType, String intvName, boolean isLayer, String probabilityName) {
     Formatter f = new Formatter();
 
     boolean isProb = (probabilityName != null && probabilityName.length() > 0);
@@ -148,7 +150,8 @@ Notes:
 
     if (intvType >= 0) {
       Grib1ParamTime.StatType stat = Grib1ParamTime.getStatType(intvType);
-      if (stat != null) f.format(" (%s)", stat.name());
+      if (stat != null) f.format(" (%s %s)", intvName, stat.name());
+      else if (intvName != null) f.format(" (%s)", intvName);
     }
 
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level

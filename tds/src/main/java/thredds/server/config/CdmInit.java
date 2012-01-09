@@ -184,8 +184,8 @@ public class CdmInit {
     // Nj22 disk cache
     dir = ThreddsConfig.get("DiskCache.dir", new File( tdsContext.getContentDirectory(), "/cache/cdm/" ).getPath());
     boolean alwaysUse = ThreddsConfig.getBoolean("DiskCache.alwaysUse", false);
-    scourSecs = ThreddsConfig.getSeconds("DiskCache.scour", 60 * 60);
-    long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);
+    scourSecs = ThreddsConfig.getSeconds("DiskCache.scour", 60 * 60); // default once an hour
+    long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);  // default 1 Gbyte
     DiskCache.setRootDirectory(dir);
     DiskCache.setCachePolicy(alwaysUse);
     startupLog.info("CdmInit:  CdmCache= "+dir+" scour = "+scourSecs+" maxSize = "+maxSize);

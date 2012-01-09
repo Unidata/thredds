@@ -33,6 +33,7 @@
 package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -213,7 +214,7 @@ public class CF1Convention extends CSMConvention {
       return;
     }
 
-    String units = ds.findAttValueIgnoreCase(p0Var, "units", "hPa");
+    String units = ds.findAttValueIgnoreCase(p0Var, CDM.UNITS, "hPa");
 
     // create the data and the variable
     try { // p(k) = p0 * exp(-lev(k))
@@ -287,7 +288,7 @@ public class CF1Convention extends CSMConvention {
 
     // check axis attribute - only for X, Y, Z
     if (at == null) {
-      String axis = ncDataset.findAttValueIgnoreCase((Variable) v, "axis", null);
+      String axis = ncDataset.findAttValueIgnoreCase((Variable) v, CF.AXIS, null);
       if (axis != null) {
         axis = axis.trim();
         String unit = v.getUnitsString();

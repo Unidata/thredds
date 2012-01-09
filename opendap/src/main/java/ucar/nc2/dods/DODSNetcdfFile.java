@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dods;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.util.net.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -652,7 +653,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   {
       if(parentGroup == null)
           parentGroup = getRootGroup();
-      if(RC.useGroups) {
+      if(RC.getUseGroups()) {
           // If the shortname has '/' in it, then we need to insert
           // this variable into the proper group and rename it
           String name = v.getShortName();
@@ -858,7 +859,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     // this is the case where its (probably) a Grid, and so _Coordinate.Axes has been assigned, but if
     // theres also a coordinates attribute, need to add that info
-    Attribute axes = v.findAttribute("coordinates");
+    Attribute axes = v.findAttribute(CF.COORDINATES);
     Attribute _axes = v.findAttribute(_Coordinate.Axes);
     if ((null != axes) && (null != _axes)) {
       v.addAttribute(new Attribute(_Coordinate.Axes, axes.getStringValue() + " " + _axes.getStringValue()));
@@ -978,7 +979,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         myd = new Dimension("", dad.getSize(), false);
 
       } else { // see if shared
-	if(RC.useGroups) {
+	if(RC.getUseGroups()) {
               if(name.indexOf('/') >= 0) {// place dimension in proper group
                   int index= name.indexOf('/');
                   group = group.makeRelativeGroup(this,name,true);

@@ -33,6 +33,7 @@
 
 package ucar.nc2.iosp.misc;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -93,16 +94,16 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     elev.setDataType(DataType.SHORT);
     elev.setDimensions("lat lon");
 
-    elev.addAttribute(new Attribute("units", "m"));
+    elev.addAttribute(new Attribute(CDM.UNITS, "m"));
     elev.addAttribute(new Attribute("units_desc", "meters above sea level"));
-    elev.addAttribute(new Attribute("long_name", "digital elevation in meters above mean sea level"));
-    elev.addAttribute(new Attribute("missing_value", (short) -9999));
+    elev.addAttribute(new Attribute(CDM.LONG_NAME, "digital elevation in meters above mean sea level"));
+    elev.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999));
     ncfile.addVariable(null, elev);
 
     Variable lat = new Variable(ncfile, null, null, "lat");
     lat.setDataType(DataType.FLOAT);
     lat.setDimensions("lat");
-    lat.addAttribute(new Attribute("units", "degrees_north"));
+    lat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
     ncfile.addVariable(null, lat);
     Array data = Array.makeArray(DataType.FLOAT, nlats, starty, -incr);
     lat.setCachedData(data, false);
@@ -110,12 +111,12 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     Variable lon = new Variable(ncfile, null, null, "lon");
     lon.setDataType(DataType.FLOAT);
     lon.setDimensions("lon");
-    lon.addAttribute(new Attribute("units", "degrees_east"));
+    lon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
     ncfile.addVariable(null, lon);
     Array lonData = Array.makeArray(DataType.FLOAT, nlons, startx, incr);
     lon.setCachedData(lonData, false);
 
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.0"));
+    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.0"));
     ncfile.addAttribute(null, new Attribute("History", "Direct read by Netcdf-Java CDM library"));
     ncfile.addAttribute(null, new Attribute("Source", "http://eros.usgs.gov/products/elevation/gtopo30.html"));
 

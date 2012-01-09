@@ -1357,7 +1357,7 @@ public abstract class Field {
 
 
   /**
-   * An integer input field with an associated "units" label.
+   * An integer input field with an associated CDM.UNITS label.
    *
   static public class IntUnits extends Int implements UnitsField {
     private String units;

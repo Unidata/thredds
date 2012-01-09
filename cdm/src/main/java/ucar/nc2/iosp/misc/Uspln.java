@@ -36,6 +36,7 @@ import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -260,7 +261,7 @@ public class Uspln extends AbstractLightningIOSP {
                                   "",
                                   "signed peak amplitude (signal strength)",
                                   null, "kAmps", null);
-        v.addAttribute(new Attribute("missing_value", new Double(999)));
+        v.addAttribute(new Attribute(CDM.MISSING_VALUE, new Double(999)));
         seq.addMemberVariable(v);
 
         if (isExtended) {  // extended

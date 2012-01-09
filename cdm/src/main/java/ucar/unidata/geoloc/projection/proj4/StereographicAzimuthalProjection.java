@@ -22,6 +22,7 @@ package ucar.unidata.geoloc.projection.proj4;
 import java.awt.geom.Point2D;
 import java.util.Formatter;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
@@ -98,7 +99,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
       addParameter(CF.FALSE_EASTING, false_easting);
       addParameter(CF.FALSE_NORTHING, false_northing);
-      addParameter(CF.UNITS, "km");
+      addParameter(CDM.UNITS, "km");
     }
     addParameter(CF.SEMI_MAJOR_AXIS, earth.getMajor());
     addParameter(CF.INVERSE_FLATTENING, 1.0 / earth.getFlattening());

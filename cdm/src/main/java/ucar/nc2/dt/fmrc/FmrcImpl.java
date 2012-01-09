@@ -33,6 +33,8 @@
 
 package ucar.nc2.dt.fmrc;
 
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
@@ -523,10 +525,10 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     for (Attribute a : src.getAttributes()) {
       target.addAttribute(a);
     }
-    String oldHistory = ncd_2dtime.findAttValueIgnoreCase(null, "history", null);
+    String oldHistory = ncd_2dtime.findAttValueIgnoreCase(null, CDM.HISTORY, null);
     String newHistory = "Synthetic dataset from TDS fmrc (" + type + ") aggregation, original data from " + ncd_2dtime.getLocation();
     String history = (oldHistory != null) ? oldHistory + "; " + newHistory : newHistory;
-    target.addAttribute(new Attribute("history", history));
+    target.addAttribute(new Attribute(CDM.HISTORY, history));
 
     // need this attribute for fmrInventory
     DateFormatter df = new DateFormatter();
@@ -552,10 +554,9 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
         v.setDimensions(gridset.makeDimensions(v.getDimensions()));
         // v.addProxyReader(new Subsetter(invList, v));
         v.remove(v.findAttribute(_Coordinate.Axes));
-        v.remove(v.findAttribute("coordinates"));
-        v.remove(v.findAttribute("_CoordinateAxes"));
+        v.remove(v.findAttribute(CF.COORDINATES));
         String coords = makeCoordinatesAttribute(grid.getCoordinateSystem(), gridset.timeDimName);
-        v.addAttribute(new Attribute("coordinates", coords));
+        v.addAttribute(new Attribute(CF.COORDINATES, coords));
         target.addVariable(v); // reparent
       }
     }
@@ -617,7 +618,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     VariableDS timeCoordinate = new VariableDS(newds, g, null, dimName, DataType.DOUBLE, dimName,
             "hours since " + formatter.toDateTimeStringISO(baseDate), desc);
     timeCoordinate.setCachedData(offsetData, true);
-    timeCoordinate.addAttribute(new Attribute("long_name", desc));
+    timeCoordinate.addAttribute(new Attribute(CDM.LONG_NAME, desc));
     timeCoordinate.addAttribute(new Attribute("standard_name", useRun ? "forecast_reference_time" : "time"));
     timeCoordinate.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     newds.addVariable(g, timeCoordinate);
@@ -633,7 +634,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     VariableDS runtimeCoordinate = new VariableDS(newds, newds.getRootGroup(), null, dimName + "_run",
             DataType.STRING, dimName, null, desc);
     runtimeCoordinate.setCachedData(runData, true);
-    runtimeCoordinate.addAttribute(new Attribute("long_name", desc));
+    runtimeCoordinate.addAttribute(new Attribute(CDM.LONG_NAME, desc));
 
     runtimeCoordinate.addAttribute(new Attribute("standard_name", "forecast_reference_time"));
     runtimeCoordinate.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
@@ -651,8 +652,8 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
             DataType.DOUBLE, dimName, null, desc);
 
     offsetCoordinate.setCachedData(offsetData, true);
-    offsetCoordinate.addAttribute(new Attribute("long_name", desc));
-    offsetCoordinate.addAttribute(new Attribute("units", "hour"));
+    offsetCoordinate.addAttribute(new Attribute(CDM.LONG_NAME, desc));
+    offsetCoordinate.addAttribute(new Attribute(CDM.UNITS, "hour"));
     offsetCoordinate.addAttribute(new Attribute("standard_name", "forecast_period"));
     newds.addVariable(newds.getRootGroup(), offsetCoordinate);
   }
@@ -683,7 +684,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     VariableDS timeCoordinate = new VariableDS(newds, g, null, dimName, DataType.DOUBLE, dimName,
             "hours since " + formatter.toDateTimeStringISO(baseDate), desc);
     timeCoordinate.setCachedData(offsetData, true);
-    timeCoordinate.addAttribute(new Attribute("long_name", desc));
+    timeCoordinate.addAttribute(new Attribute(CDM.LONG_NAME, desc));
     timeCoordinate.addAttribute(new Attribute("standard_name", useRun ? "forecast_reference_time" : "time"));
     timeCoordinate.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
     newds.addVariable(g, timeCoordinate);
@@ -716,13 +717,13 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     VariableDS otherCoordinate = new VariableDS(newds, newds.getRootGroup(), null, typeName + "_" + dimName,
             dataType, dimName, null, desc);
     otherCoordinate.setCachedData(data, true);
-    otherCoordinate.addAttribute(new Attribute("long_name", desc));
+    otherCoordinate.addAttribute(new Attribute(CDM.LONG_NAME, desc));
 
     if (!useOffset) {
       otherCoordinate.addAttribute(new Attribute("standard_name", "forecast_reference_time"));
       otherCoordinate.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
     } else {
-      otherCoordinate.addAttribute(new Attribute("units", "hour"));
+      otherCoordinate.addAttribute(new Attribute(CDM.UNITS, "hour"));
       otherCoordinate.addAttribute(new Attribute("standard_name", "forecast_period"));
     }
     newds.addVariable(newds.getRootGroup(), otherCoordinate);

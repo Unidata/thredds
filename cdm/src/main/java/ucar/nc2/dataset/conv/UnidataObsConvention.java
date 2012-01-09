@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dataset.conv;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordSysBuilder;
@@ -102,7 +103,7 @@ public class UnidataObsConvention extends CoordSysBuilder {
 
               for (int i = 0; i < ds.getVariables().size(); i++) {
                 VariableEnhanced ve = (VariableEnhanced) ds.getVariables().get( i );
-                String positive = ds.findAttValueIgnoreCase((Variable) ve, "positive", null);
+                String positive = ds.findAttValueIgnoreCase((Variable) ve, CF.POSITIVE, null);
                 if (positive != null) {
                   addAxisType((Variable) ve, AxisType.Height); // CF-1
                   break;

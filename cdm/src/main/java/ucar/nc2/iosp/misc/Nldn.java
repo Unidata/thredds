@@ -39,6 +39,8 @@ import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -214,20 +216,20 @@ The specifics for the binary NLDN data record contained in the IDD is:
     v = makeLightningVariable(ncfile, null, seq, LAT, DataType.INT, "",
             "latitude", "latitude", "degrees_north",
             AxisType.Lat);
-    v.addAttribute(new Attribute("scale_factor", new Float(1.0e-3)));
+    v.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float(1.0e-3)));
     seq.addMemberVariable(v);
 
     v = makeLightningVariable(ncfile, null, seq, LON, DataType.INT, "",
             "longitude", "longitude", "degrees_east",
             AxisType.Lon);
-    v.addAttribute(new Attribute("scale_factor", new Float(1.0e-3)));
+    v.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float(1.0e-3)));
     seq.addMemberVariable(v);
 
     v = makeLightningVariable(
             ncfile, null, seq, SIGNAL, DataType.SHORT, "",
             "signal strength/polarity [150 NLDN measures ~= 30 kAmps]", null, "",
             null);
-    v.addAttribute(new Attribute("scale_factor", new Float(1.0e-1)));
+    v.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float(1.0e-1)));
     seq.addMemberVariable(v);
 
     v = makeLightningVariable(ncfile, null, seq, MULTIPLICITY,
@@ -292,7 +294,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
     ncfile.addAttribute(null,
             new Attribute("title", "NLDN Lightning Data"));
 
-    ncfile.addAttribute(null, new Attribute("Conventions", "NLDN-CDM"));
+    ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "NLDN-CDM"));
   }
 
   /* The specifics for the binary NLDN data record contained in the IDD is:

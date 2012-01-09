@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -90,7 +91,7 @@ public class Nimbus extends COARDSConvention {
         try {
           DateUnit dunit = new DateUnit("seconds since 1970-01-01 00:00");
           String time_units = "seconds since " + dunit.makeStandardDateString(base_time);
-          time.addAttribute(new Attribute("units", time_units));
+          time.addAttribute(new Attribute(CDM.UNITS, time_units));
           time.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.name()));
         } catch (Exception e) {
           e.printStackTrace();
