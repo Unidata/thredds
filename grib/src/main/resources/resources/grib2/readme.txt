@@ -15,7 +15,7 @@
 
 12/8/2011 new WMO tables found from http://www.wmo.int/pages/prog/www/WMOCodes/TDCFtables.html#TDCFtables
  - GRIB2 8.0
- - BUFR 17.0
+ - BUFR 17.0 (not integrated yet)
  - Common Codes 02Nov11
  - move older tables into src/main/sources to reduce jar size
 
