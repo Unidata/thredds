@@ -1,0 +1,1120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="CommonCodeTable_C2_Nov11_en.xsd" generated="2011-11-04T13:38:52">
+<CommonCodeTable_C2_Nov11_en>
+<No>1</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>00</CodeFigureForrara>
+<CodeFigureForBUFR>0</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Reserved</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>2</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>01</CodeFigureForrara>
+<CodeFigureForBUFR>1</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>iMet-1-BB (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>3</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>02</CodeFigureForrara>
+<CodeFigureForBUFR>2</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>No radiosonde - passive target (e.g. reflector)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>4</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>03</CodeFigureForrara>
+<CodeFigureForBUFR>3</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>No radiosonde - active target (e.g. transponder)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>5</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>04</CodeFigureForrara>
+<CodeFigureForBUFR>4</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>No radiosonde - passive temperature-humidity profiler</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>6</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>05</CodeFigureForrara>
+<CodeFigureForBUFR>5</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>No radiosonde - active temperature-humidity profiler</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>7</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>06</CodeFigureForrara>
+<CodeFigureForBUFR>6</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>No radiosonde - radio-acoustic sounder</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>8</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>07</CodeFigureForrara>
+<CodeFigureForBUFR>7</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>iMet-1-AB (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>9</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>08</CodeFigureForrara>
+<CodeFigureForBUFR>8</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>No radiosonde -... (reserved)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>10</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>09</CodeFigureForrara>
+<CodeFigureForBUFR>9</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>No radiosonde - system unknown or not specified</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>11</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>10</CodeFigureForrara>
+<CodeFigureForBUFR>10</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VIZ type A pressure-commutated (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>12</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>11</CodeFigureForrara>
+<CodeFigureForBUFR>11</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VIZ type B time-commutated (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>13</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>12</CodeFigureForrara>
+<CodeFigureForBUFR>12</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>RS SDC (Space Data Corporation - USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>14</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>13</CodeFigureForrara>
+<CodeFigureForBUFR>13</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Astor (no longer made - Australia)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>15</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>14</CodeFigureForrara>
+<CodeFigureForBUFR>14</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VIZ MARK I MICROSONDE (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>16</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>15</CodeFigureForrara>
+<CodeFigureForBUFR>15</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>EEC Company type 23 (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>17</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>16</CodeFigureForrara>
+<CodeFigureForBUFR>16</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Elin (Austria)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>18</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>17</CodeFigureForrara>
+<CodeFigureForBUFR>17</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Graw G. (Germany)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>19</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>18</CodeFigureForrara>
+<CodeFigureForBUFR>18</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Graw DFM-06 (Germany)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>20</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>19</CodeFigureForrara>
+<CodeFigureForBUFR>19</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Graw M60 (Germany)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>21</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>20</CodeFigureForrara>
+<CodeFigureForBUFR>20</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Indian Meteorological Service MK3 (India)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>22</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>21</CodeFigureForrara>
+<CodeFigureForBUFR>21</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VIZ/Jin Yang MARK I MICROSONDE (Republic of Korea)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>23</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>22</CodeFigureForrara>
+<CodeFigureForBUFR>22</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Meisei RS2-80 (Japan)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>24</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>23</CodeFigureForrara>
+<CodeFigureForBUFR>23</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Mesural FMO 1950A (France)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>25</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>24</CodeFigureForrara>
+<CodeFigureForBUFR>24</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Mesural FMO 1945A (France)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>26</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>25</CodeFigureForrara>
+<CodeFigureForBUFR>25</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Mesural MH73A (France)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>27</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>26</CodeFigureForrara>
+<CodeFigureForBUFR>26</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Meteolabor Basora (Switzerland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>28</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>27</CodeFigureForrara>
+<CodeFigureForBUFR>27</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AVK-MRZ (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>29</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>28</CodeFigureForrara>
+<CodeFigureForBUFR>28</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Meteorit MARZ2-1 (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>30</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>29</CodeFigureForrara>
+<CodeFigureForBUFR>29</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Meteorit MARZ2-2 (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>31</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>30</CodeFigureForrara>
+<CodeFigureForBUFR>30</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Oki RS2-80 (Japan)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>32</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>31</CodeFigureForrara>
+<CodeFigureForBUFR>31</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VIZ/Valcom type A pressure-commutated (Canada)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>33</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>32</CodeFigureForrara>
+<CodeFigureForBUFR>32</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Shanghai Radio (China)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>34</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>33</CodeFigureForrara>
+<CodeFigureForBUFR>33</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>UK Met Office MK3 (UK)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>35</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>34</CodeFigureForrara>
+<CodeFigureForBUFR>34</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vinohrady (Czech Republic)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>36</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>35</CodeFigureForrara>
+<CodeFigureForBUFR>35</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS18 (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>37</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>36</CodeFigureForrara>
+<CodeFigureForBUFR>36</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS21 (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>38</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>37</CodeFigureForrara>
+<CodeFigureForBUFR>37</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS80 (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>39</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>38</CodeFigureForrara>
+<CodeFigureForBUFR>38</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VIZ LOCATE Loran-C (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>40</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>39</CodeFigureForrara>
+<CodeFigureForBUFR>39</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sprenger E076 (Germany)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>41</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>40</CodeFigureForrara>
+<CodeFigureForBUFR>40</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sprenger E084 (Germany)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>42</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>41</CodeFigureForrara>
+<CodeFigureForBUFR>41</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sprenger E085 (Germany)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>43</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>42</CodeFigureForrara>
+<CodeFigureForBUFR>42</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sprenger E086 (Germany)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>44</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>43</CodeFigureForrara>
+<CodeFigureForBUFR>43</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AIR IS - 4A - 1680 (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>45</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>44</CodeFigureForrara>
+<CodeFigureForBUFR>44</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AIR IS - 4A - 1680 X (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>46</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>45</CodeFigureForrara>
+<CodeFigureForBUFR>45</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>RS MSS (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>47</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>46</CodeFigureForrara>
+<CodeFigureForBUFR>46</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AIR IS - 4A - 403 (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>48</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>47</CodeFigureForrara>
+<CodeFigureForBUFR>47</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Meisei RS2-91 (Japan)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>49</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>48</CodeFigureForrara>
+<CodeFigureForBUFR>48</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VALCOM (Canada)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>50</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>49</CodeFigureForrara>
+<CodeFigureForBUFR>49</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VIZ MARK II (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>51</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>50</CodeFigureForrara>
+<CodeFigureForBUFR>50</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Graw DFM-90 (Germany)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>52</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>51</CodeFigureForrara>
+<CodeFigureForBUFR>51</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VIZ-B2 (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>53</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>52</CodeFigureForrara>
+<CodeFigureForBUFR>52</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS80-57H</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>54</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>53</CodeFigureForrara>
+<CodeFigureForBUFR>53</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AVK-RF95 (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>55</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>54</CodeFigureForrara>
+<CodeFigureForBUFR>54</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Graw DFM-97 (Germany)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>56</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>55</CodeFigureForrara>
+<CodeFigureForBUFR>55</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Meisei RS-016 (Japan)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>57</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>56</CodeFigureForrara>
+<CodeFigureForBUFR>56</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>M2K2 (France)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>58</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>57</CodeFigureForrara>
+<CodeFigureForBUFR>57</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Modem M2K2-DC (France)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>59</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>58</CodeFigureForrara>
+<CodeFigureForBUFR>58</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AVK-BAR (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>60</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>59</CodeFigureForrara>
+<CodeFigureForBUFR>59</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Modem M2K2-R 1680 MHz RDF radiosonde with pressure sensor chip (France)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>61</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>60</CodeFigureForrara>
+<CodeFigureForBUFR>60</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS80/MicroCora (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>62</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>61</CodeFigureForrara>
+<CodeFigureForBUFR>61</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS80/Loran/Digicora I, II or Marwin (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>63</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>62</CodeFigureForrara>
+<CodeFigureForBUFR>62</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS80/PCCora (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>64</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>63</CodeFigureForrara>
+<CodeFigureForBUFR>63</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS80/Star (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>65</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>64</CodeFigureForrara>
+<CodeFigureForBUFR>64</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Orbital Sciences Corporation, Space Data Division, transponder radiosonde, type 909-11-XX, where XX corresponds to the model of the instrument (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>66</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>65</CodeFigureForrara>
+<CodeFigureForBUFR>65</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>VIZ transponder radiosonde, model number 1499–520 (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>67</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>66</CodeFigureForrara>
+<CodeFigureForBUFR>66</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS80 /Autosonde (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>68</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>67</CodeFigureForrara>
+<CodeFigureForBUFR>67</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS80/Digicora III (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>69</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>68</CodeFigureForrara>
+<CodeFigureForBUFR>68</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AVK-RZM-2 (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>70</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>69</CodeFigureForrara>
+<CodeFigureForBUFR>69</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>MARL-A or Vektor-M-RZM-2 (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>71</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>70</CodeFigureForrara>
+<CodeFigureForBUFR>70</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS92/Star (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>72</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>71</CodeFigureForrara>
+<CodeFigureForBUFR>71</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS90/Loran/Digicora I, II or Marwin (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>73</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>72</CodeFigureForrara>
+<CodeFigureForBUFR>72</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS90/PC-Cora (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>74</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>73</CodeFigureForrara>
+<CodeFigureForBUFR>73</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS90/Autosonde (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>75</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>74</CodeFigureForrara>
+<CodeFigureForBUFR>74</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS90/Star (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>76</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>75</CodeFigureForrara>
+<CodeFigureForBUFR>75</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AVK-MRZ-ARMA (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>77</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>76</CodeFigureForrara>
+<CodeFigureForBUFR>76</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AVK-RF95-ARMA (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>78</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>77</CodeFigureForrara>
+<CodeFigureForBUFR>77</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>GEOLINK GPSonde GL98 (France)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>79</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>78</CodeFigureForrara>
+<CodeFigureForBUFR>78</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS90/Digicora III (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>80</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>79</CodeFigureForrara>
+<CodeFigureForBUFR>79</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS92/Digicora I,II or Marwin (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>81</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>80</CodeFigureForrara>
+<CodeFigureForBUFR>80</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS92/Digicora III (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>82</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>81</CodeFigureForrara>
+<CodeFigureForBUFR>81</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS92/Autosonde (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>83</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>82</CodeFigureForrara>
+<CodeFigureForBUFR>82</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sippican MK2 GPS/STAR (USA) with rod thermistor, carbon element and derived pressure</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>84</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>83</CodeFigureForrara>
+<CodeFigureForBUFR>83</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sippican MK2 GPS/W9000 (USA) with rod thermistor, carbon element and derived pressure</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>85</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>84</CodeFigureForrara>
+<CodeFigureForBUFR>84</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sippican MARK II with chip thermistor, carbon element and derived pressure from GPS height</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>86</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>85</CodeFigureForrara>
+<CodeFigureForBUFR>85</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sippican MARK IIA with chip thermistor, carbon element and derived pressure from GPS height</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>87</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>86</CodeFigureForrara>
+<CodeFigureForBUFR>86</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sippican MARK II with chip thermistor, pressure and carbon element</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>88</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>87</CodeFigureForrara>
+<CodeFigureForBUFR>87</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sippican MARK IIA with chip thermistor, pressure and carbon element</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>89</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>88</CodeFigureForrara>
+<CodeFigureForBUFR>88</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>MARL-A or Vektor-M-MRZ (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>90</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>89</CodeFigureForrara>
+<CodeFigureForBUFR>89</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>MARL-A or Vektor-M-BAR (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>91</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>90</CodeFigureForrara>
+<CodeFigureForBUFR>90</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Radiosonde not specified or unknown</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>92</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>91</CodeFigureForrara>
+<CodeFigureForBUFR>91</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Pressure only radiosonde</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>93</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>92</CodeFigureForrara>
+<CodeFigureForBUFR>92</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Pressure only radiosonde plus transponder</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>94</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>93</CodeFigureForrara>
+<CodeFigureForBUFR>93</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Pressure only radiosonde plus radar reflector</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>95</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>94</CodeFigureForrara>
+<CodeFigureForBUFR>94</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>No pressure radiosonde plus transponder</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>96</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>95</CodeFigureForrara>
+<CodeFigureForBUFR>95</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>No pressure radiosonde plus radar reflector</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>97</No>
+<DateOfAssignment_en>Not applicable</DateOfAssignment_en>
+<CodeFigureForrara>96</CodeFigureForrara>
+<CodeFigureForBUFR>96</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Descending radiosonde</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>98</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>97</CodeFigureForrara>
+<CodeFigureForBUFR>97</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>BAT-16P (South Africa)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>99</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>98</CodeFigureForrara>
+<CodeFigureForBUFR>98</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>BAT-16G (South Africa)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>100</No>
+<DateOfAssignment_en>Before</DateOfAssignment_en>
+<CodeFigureForrara>99</CodeFigureForrara>
+<CodeFigureForBUFR>99</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>BAT-4G (South Africa)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>101</No>
+<CodeFigureForrara>Not available</CodeFigureForrara>
+<CodeFigureForBUFR>100</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Reserved for BUFR only</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>102</No>
+<CodeFigureForrara>01</CodeFigureForrara>
+<CodeFigureForBUFR>101</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>103</No>
+<CodeFigureForrara>Not available</CodeFigureForrara>
+<CodeFigureForBUFR>102-106</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Reserved for BUFR only</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>104</No>
+<CodeFigureForrara>07</CodeFigureForrara>
+<CodeFigureForBUFR>107</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>105</No>
+<CodeFigureForrara>Not available</CodeFigureForrara>
+<CodeFigureForBUFR>108-109</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Reserved for BUFR only</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>106</No>
+<DateOfAssignment_en>01/01/2008</DateOfAssignment_en>
+<CodeFigureForrara>10</CodeFigureForrara>
+<CodeFigureForBUFR>110</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sippican LMS5 w/Chip Thermistor, duct mounted capacitance relative humidity sensor and derived pressure from GPS height</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>107</No>
+<DateOfAssignment_en>01/01/2008</DateOfAssignment_en>
+<CodeFigureForrara>11</CodeFigureForrara>
+<CodeFigureForBUFR>111</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Sippican LMS6 w/Chip Thermistor, external boom mounted capacitance relative humidity sensor, and derived pressure from GPS height</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>108</No>
+<CodeFigureForrara>12</CodeFigureForrara>
+<CodeFigureForBUFR>112</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>109</No>
+<DateOfAssignment_en>15/09/2010</DateOfAssignment_en>
+<CodeFigureForrara>13</CodeFigureForrara>
+<CodeFigureForBUFR>113</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS92/MARWIN MW32 (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>110</No>
+<DateOfAssignment_en>3/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>14</CodeFigureForrara>
+<CodeFigureForBUFR>114</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS92 / DigiCORA MW41 (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>111</No>
+<DateOfAssignment_en>1/12/2011</DateOfAssignment_en>
+<CodeFigureForrara>15</CodeFigureForrara>
+<CodeFigureForBUFR>115</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>PAZA-12M/Radiotheodolite-UL (Ukraine)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>112</No>
+<DateOfAssignment_en>1/12/2011</DateOfAssignment_en>
+<CodeFigureForrara>16</CodeFigureForrara>
+<CodeFigureForBUFR>116</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>PAZA-22/AVK-1 (Ukraine)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>113</No>
+<CodeFigureForrara>17-22</CodeFigureForrara>
+<CodeFigureForBUFR>117-122</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>114</No>
+<DateOfAssignment_en>03/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>23</CodeFigureForrara>
+<CodeFigureForBUFR>123</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS41 / DigiCORA MW41 (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>115</No>
+<DateOfAssignment_en>03/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>24</CodeFigureForrara>
+<CodeFigureForBUFR>124</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS41 / AUTOSONDE (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>116</No>
+<DateOfAssignment_en>03/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>25</CodeFigureForrara>
+<CodeFigureForBUFR>125</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS41 / MARWIN MW32 (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>117</No>
+<CodeFigureForrara>26-27</CodeFigureForrara>
+<CodeFigureForBUFR>126-127</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>118</No>
+<DateOfAssignment_en>15/09/2011</DateOfAssignment_en>
+<CodeFigureForrara>28</CodeFigureForrara>
+<CodeFigureForBUFR>128</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>AVK - AK2-02(Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>119</No>
+<DateOfAssignment_en>15/09/2011</DateOfAssignment_en>
+<CodeFigureForrara>29</CodeFigureForrara>
+<CodeFigureForBUFR>129</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>MARL-A or Vektor-M - AK2-02 (Russian Federation)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>120</No>
+<DateOfAssignment_en>01/01/2010</DateOfAssignment_en>
+<CodeFigureForrara>30</CodeFigureForrara>
+<CodeFigureForBUFR>130</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Meisei RS06G (Japan)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>121</No>
+<DateOfAssignment_en>3/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>31</CodeFigureForrara>
+<CodeFigureForBUFR>131</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Taiyuan GTS1-1/GFE(L) (China )</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>122</No>
+<DateOfAssignment_en>3/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>32</CodeFigureForrara>
+<CodeFigureForBUFR>132</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Shanghai GTS1/GFE(L)  (China)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>123</No>
+<DateOfAssignment_en>3/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>33</CodeFigureForrara>
+<CodeFigureForBUFR>133</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Nanjing GTS1-2/GFE(L)  (China)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>124</No>
+<DateOfAssignment_en>Needed</DateOfAssignment_en>
+<CodeFigureForrara>34-35</CodeFigureForrara>
+<CodeFigureForBUFR>134-135</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>125</No>
+<CodeFigureForrara>36-37</CodeFigureForrara>
+<CodeFigureForBUFR>136-137</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>126</No>
+<DateOfAssignment_en>Needed</DateOfAssignment_en>
+<CodeFigureForrara>38-40</CodeFigureForrara>
+<CodeFigureForBUFR>138-140</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>127</No>
+<DateOfAssignment_en>3/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>41</CodeFigureForrara>
+<CodeFigureForBUFR>141</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS41 with pressure derived from GPS height / DigiCORA MW41 (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>128</No>
+<DateOfAssignment_en>3/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>42</CodeFigureForrara>
+<CodeFigureForBUFR>142</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS41 with pressure derived from GPS height / AUTOSONDE (Finland)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>129</No>
+<DateOfAssignment_en>Needed</DateOfAssignment_en>
+<CodeFigureForrara>43-46</CodeFigureForrara>
+<CodeFigureForBUFR>143-146</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>130</No>
+<CodeFigureForrara>47</CodeFigureForrara>
+<CodeFigureForBUFR>147</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>131</No>
+<DateOfAssignment_en>Needed</DateOfAssignment_en>
+<CodeFigureForrara>48</CodeFigureForrara>
+<CodeFigureForBUFR>148</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>132</No>
+<CodeFigureForrara>49-51</CodeFigureForrara>
+<CodeFigureForBUFR>149-151</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>133</No>
+<DateOfAssignment_en>3/11/2011</DateOfAssignment_en>
+<CodeFigureForrara>52</CodeFigureForrara>
+<CodeFigureForBUFR>152</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vaisala RS92-NGP/Intermet IMS-2000 (USA)</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>134</No>
+<CodeFigureForrara>53-63</CodeFigureForrara>
+<CodeFigureForBUFR>153-163</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Pre-operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>135</No>
+<DateOfAssignment_en>Needed</DateOfAssignment_en>
+<CodeFigureForrara>64-65</CodeFigureForrara>
+<CodeFigureForBUFR>164-165</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>136</No>
+<CodeFigureForrara>66-76</CodeFigureForrara>
+<CodeFigureForBUFR>166-176</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>137</No>
+<DateOfAssignment_en>15/03/2010</DateOfAssignment_en>
+<CodeFigureForrara>77</CodeFigureForrara>
+<CodeFigureForBUFR>177</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Modem GPSonde M10 (France)</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>138</No>
+<CodeFigureForrara>78-89</CodeFigureForrara>
+<CodeFigureForBUFR>177-189</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>139</No>
+<CodeFigureForrara>Not available</CodeFigureForrara>
+<CodeFigureForBUFR>190-196</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Reserved for BUFR only</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>140</No>
+<CodeFigureForrara>97-99</CodeFigureForrara>
+<CodeFigureForBUFR>197-199</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Not vacant</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>141</No>
+<CodeFigureForrara>Not available</CodeFigureForrara>
+<CodeFigureForBUFR>200-254</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Reserved for BUFR only</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+<CommonCodeTable_C2_Nov11_en>
+<No>142</No>
+<CodeFigureForBUFR>255</CodeFigureForBUFR>
+<RadiosondeSoundingSystemUsed_en>Missing value</RadiosondeSoundingSystemUsed_en>
+<Status>Operational</Status>
+</CommonCodeTable_C2_Nov11_en>
+</dataroot>

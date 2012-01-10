@@ -3,7 +3,7 @@
  - using  ucar.nc2.grib.grib2.table.NcepHtmlScraper
  - put into directory grib\src\main\resources\resources\grib2\ncep
 
-01/09/2012 result of comparing with current NCEP parameter tables (NcepTable.main())
+01/09/2012 result of comparing with current NCEP parameter tables (NcepTable.main()) using WMO 8.0 tables
 
 NcepTable{title='Temperature', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-0.shtml', tableName='Table4.2.0.0'}
   ud=    0.0.16 Wm-2 (wm-2) != W.m-2 for 0.0.16 (Snow Phase Change Heat Flux)
@@ -62,10 +62,7 @@ NcepTable{title='Moisture', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/
   p1=    0.1.81        Total Column-Integrate Condensate          kg.m-2       Validation
   p2=4.2.0.1.81       Total Column-Integrated Condensate          kg.m-2             null
 
-  Missing Grib2Parameter{discipline=0, category=1, number=90, name='Total Kinematic Moisture Flux', unit='kg.kg-1m.s-1', abbrev='TKMFLX'}
-  Missing Grib2Parameter{discipline=0, category=1, number=91, name='U-component (zonal) Kinematic Moisture Flux', unit='kg.kg-1m.s-1', abbrev='UKMFLX'}
-  Missing Grib2Parameter{discipline=0, category=1, number=92, name='V-component (meridional) Kinematic Moisture Flux', unit='kg.kg-1m.s-1', abbrev='VKMFLX'}
-Conflicts=12 extra=6 udunits=5
+Conflicts=12 extra=3 udunits=5
 
 
 NcepTable{title='Aerosols', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-13.shtml', tableName='Table4.2.0.13'}
@@ -242,6 +239,9 @@ Conflicts=14 extra=0 udunits=0
 
 
 NcepTable{title='Momentum', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-2.shtml', tableName='Table4.2.0.2'}
+  p1=     0.2.0      Wind Direction (from which blowing)                             WDIR
+  p2= 4.2.0.2.0 Wind direction (from which blowing) (degree true)             deg             null
+
   ud=     0.2.0  != deg for 0.2.0 (Wind Direction (from which blowing))
 
   ud=     0.2.6 m2.s-1 (m2.s-1) != m2.s-2 for 0.2.6 (Montgomery Stream Function)
@@ -257,7 +257,6 @@ NcepTable{title='Momentum', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/
 
   ud=    0.2.31 m2s-1 (1000.0 2s-1) != m2/s for 0.2.31 (Turbulent Diffusion Coefficient for Momentum)
 
-  Missing Grib2Parameter{discipline=0, category=2, number=33, name='Wind Fetch', unit='m', abbrev='WINDF'}
   p1=   0.2.192                     Vertical speed sheer             s-1            VW SH
   p2=   0.2.192                     Vertical speed sheer             1/s             VWSH
 
@@ -269,7 +268,7 @@ NcepTable{title='Momentum', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/
 
   ud=   0.2.219 1/s/m (m-1.s-1) != 1/(s/m) for 0.2.219 (Potential Vorticity (Mass-Weighted))
 
-Conflicts=6 extra=6 udunits=4
+Conflicts=7 extra=5 udunits=4
 
 
 NcepTable{title='Atmospheric Chemical Constituents', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-20.shtml', tableName='Table4.2.0.20'}
@@ -279,29 +278,13 @@ NcepTable{title='Atmospheric Chemical Constituents', source='http://www.nco.ncep
   p1=    0.20.5 Atmosphere Net Production And Emision Mass Flux       kg.m-2s-1         ANPEMFLX
   p2=4.2.0.20.5 Atmosphere net production and emission mass flux      kg.m-2.s-1             null
 
-  Missing Grib2Parameter{discipline=0, category=20, number=9, name='Wet Deposition by Large-Scale Precipitation Mass Flux', unit='kg.m-2s-1', abbrev='WLSMFLX'}
-  Missing Grib2Parameter{discipline=0, category=20, number=10, name='Wet Deposition by Convective Precipitation Mass Flux', unit='kg.m-2s-1', abbrev='WCONMFLX'}
-  Missing Grib2Parameter{discipline=0, category=20, number=11, name='Sedimentation Mass Flux', unit='kg.m-2s-1', abbrev='SEDMFLX'}
-  Missing Grib2Parameter{discipline=0, category=20, number=12, name='Dry Deposition Mass Flux', unit='kg.m-2s-1', abbrev='DDMFLX'}
-  Missing Grib2Parameter{discipline=0, category=20, number=13, name='Transfer From Hydrophobic to Hydrophilic', unit='kg.kg-1s-1', abbrev='TRANHH'}
-  Missing Grib2Parameter{discipline=0, category=20, number=14, name='Transfer From SO2 (Sulphur Dioxide) to SO4 (Sulphate)', unit='kg.kg-1s-1', abbrev='TRSDS'}
   p1=   0.20.56 Changes Of Amount in Atmosphere (See Note 1)         mol.s-1            COAIA
   p2=4.2.0.20.56          Changes of amount in atmosphere           mol/s             null
 
   p1=   0.20.58 Total Yearly Average Atmospheric Loss (See Note 1)         mol.s-1            TYAAL
   p2=4.2.0.20.58   Total yearly averaged atmospheric loss           mol/s             null
 
-  Missing Grib2Parameter{discipline=0, category=20, number=59, name='Aerosol Number Concentration', unit='m-3', abbrev='ANCON'}
-  Missing Grib2Parameter{discipline=0, category=20, number=102, name='Aerosol Optical Thickness', unit='Numeric', abbrev='AOTK'}
-  Missing Grib2Parameter{discipline=0, category=20, number=103, name='Single Scattering Albedo', unit='Numeric', abbrev='SSALBK'}
-  Missing Grib2Parameter{discipline=0, category=20, number=104, name='Asymmetry Factor', unit='Numeric', abbrev='ASYSFK'}
-  Missing Grib2Parameter{discipline=0, category=20, number=105, name='Aerosol Extinction Coefficient', unit='m-1', abbrev='AECOEF'}
-  Missing Grib2Parameter{discipline=0, category=20, number=106, name='Aerosol Absorption Coefficient', unit='m-1', abbrev='AACOEF'}
-  Missing Grib2Parameter{discipline=0, category=20, number=107, name='Aerosol Lidar Backscatter from Satellite', unit='m-1sr-1', abbrev='ALBSAT'}
-  Missing Grib2Parameter{discipline=0, category=20, number=108, name='Aerosol Lidar Backscatter from the Ground', unit='m-1sr-1', abbrev='ALBGRD'}
-  Missing Grib2Parameter{discipline=0, category=20, number=109, name='Aerosol Lidar Extinction from Satellite', unit='m-1', abbrev='ALESAT'}
-  Missing Grib2Parameter{discipline=0, category=20, number=110, name='Aerosol Lidar Extinction from the Ground', unit='m-1', abbrev='ALEGRD'}
-Conflicts=4 extra=16 udunits=0
+Conflicts=4 extra=0 udunits=0
 
 
 NcepTable{title='Mass', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-3.shtml', tableName='Table4.2.0.3'}
@@ -387,13 +370,28 @@ Conflicts=3 extra=0 udunits=0
 
 
 NcepTable{title='Waves', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-0.shtml', tableName='Table4.2.10.0'}
+  p1=    10.0.4                  Direction of Wind Waves                            WVDIR
+  p2=4.2.10.0.4    Direction of wind waves (degree true)             deg             null
+
   ud=    10.0.4  != deg for 10.0.4 (Direction of Wind Waves)
+
+  p1=    10.0.7                 Direction of Swell Waves                            SWDIR
+  p2=4.2.10.0.7   Direction of swell waves (degree true)             deg             null
 
   ud=    10.0.7  != deg for 10.0.7 (Direction of Swell Waves)
 
+  p1=   10.0.10                   Primary Wave Direction                            DIRPW
+  p2=4.2.10.0.10     Primary wave direction (degree true)             deg             null
+
   ud=   10.0.10  != deg for 10.0.10 (Primary Wave Direction)
 
+  p1=   10.0.12                 Secondary Wave Direction                            DIRSW
+  p2=4.2.10.0.12   Secondary wave direction (degree true)             deg             null
+
   ud=   10.0.12  != deg for 10.0.12 (Secondary Wave Direction)
+
+  p1=   10.0.14 Direction of Combined Wind Waves and Swell                           WWSDIR
+  p2=4.2.10.0.14 Direction of combined wind waves and swell (degree true)             deg             null
 
   ud=   10.0.14  != deg for 10.0.14 (Direction of Combined Wind Waves and Swell)
 
@@ -444,13 +442,16 @@ NcepTable{title='Waves', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/gri
 
   ud=  10.0.192  != 0 for 10.0.192 (Wave Steepness)
 
-Conflicts=11 extra=0 udunits=12
+Conflicts=16 extra=0 udunits=12
 
 
 NcepTable{title='Currents', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-1.shtml', tableName='Table4.2.10.1'}
+  p1=    10.1.0                        Current Direction     Degree.True            DIR C
+  p2=4.2.10.1.0          Current direction (degree true)             deg             null
+
   ud=    10.1.0 Degree.True (1.7453292519943295E10 rad.rue) != deg for 10.1.0 (Current Direction)
 
-Conflicts=0 extra=0 udunits=1
+Conflicts=1 extra=0 udunits=1
 
 
 NcepTable{title='Miscellaneous', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-191.shtml', tableName='Table4.2.10.191'}
@@ -460,9 +461,12 @@ Conflicts=0 extra=0 udunits=1
 
 
 NcepTable{title='Ice', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-2.shtml', tableName='Table4.2.10.2'}
+  p1=    10.2.2                   Direction of Ice Drift     Degree.True            DICED
+  p2=4.2.10.2.2     Direction of ice drift (degree true)             deg             null
+
   ud=    10.2.2 Degree.True (1.7453292519943295E10 rad.rue) != deg for 10.2.2 (Direction of Ice Drift)
 
-Conflicts=0 extra=0 udunits=1
+Conflicts=1 extra=0 udunits=1
 
 
 NcepTable{title='Surface properties', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-3.shtml', tableName='Table4.2.10.3'}
@@ -483,16 +487,11 @@ NcepTable{title='Sub-surface properties', source='http://www.nco.ncep.noaa.gov/p
 
   ud=    10.4.6 m2s-1 (1000.0 2s-1) != m2.s-1 for 10.4.6 (Ocean Vertical Momentum Diffusivity)
 
-  Missing Grib2Parameter{discipline=10, category=4, number=11, name='Shape Factor With Respect To Salinity Profile', unit='', abbrev='SFSALP'}
-  Missing Grib2Parameter{discipline=10, category=4, number=12, name='Shape Factor With Respect To Temperature Profile In Thermocline', unit='', abbrev='SFTMPP'}
-  Missing Grib2Parameter{discipline=10, category=4, number=13, name='Attenuation Coefficient Of Water With Respect to Solar Radiation', unit='m-1', abbrev='ACWSRD'}
-  Missing Grib2Parameter{discipline=10, category=4, number=14, name='Water Depth', unit='m', abbrev='WDEPTH'}
-  Missing Grib2Parameter{discipline=10, category=4, number=15, name='Water Temperature', unit='K', abbrev='WTMP'}
   udunits cant parse=  10.4.192               c           deg.C
   p1=  10.4.194               Barotropic Kinectic Energy          J.kg-1            BKENG
   p2=  10.4.194                Barotropic Kinetic Energy            J/kg            BKENG
 
-Conflicts=1 extra=5 udunits=3
+Conflicts=1 extra=0 udunits=3
 
 
 NcepTable{title='Vegetation/Biomass', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-2-0.shtml', tableName='Table4.2.2.0'}
@@ -574,8 +573,7 @@ Conflicts=4 extra=0 udunits=7
 
 
 NcepTable{title='Fire Weather', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-2-4.shtml', tableName='Table4.2.2.4'}
-  Missing Grib2Parameter{discipline=2, category=4, number=2, name='Haines Index', unit='Numeric', abbrev='HINDEX'}
-Conflicts=0 extra=1 udunits=0
+Conflicts=0 extra=0 udunits=0
 
 
 NcepTable{title='Image format', source='http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-0.shtml', tableName='Table4.2.3.0'}
@@ -735,8 +733,3 @@ NcepTable{title='Ion-Neutral Coupling', source='http://www.nco.ncep.noaa.gov/pmb
   Missing Grib2Parameter{discipline=4, category=9, number=1, name='Hall Conductivity', unit='S.m-1', abbrev='SIGHAL'}
   Missing Grib2Parameter{discipline=4, category=9, number=2, name='Parallel Conductivity', unit='S.m-1', abbrev='SIGPAR'}
 Conflicts=0 extra=3 udunits=0
-
-
-Disconnected from the target VM, address: '127.0.0.1:63406', transport: 'socket'
-
-Process finished with exit code 0

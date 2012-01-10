@@ -17,5 +17,6 @@
  - GRIB2 8.0
  - BUFR 17.0
  - Common Codes 02Nov11
+ - move older tables into src/main/sources to reduce jar size
 
 

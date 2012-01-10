@@ -166,18 +166,30 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   </Exp_CommonTableC13_E>
 <Exp_CommonTableC13_E>
 */
+
+  /*
+  <CommonCodeTable_C1_Nov11_en>
+<No>1</No>
+<CodeFigureForF1F2>00</CodeFigureForF1F2>
+<CodeFigureForF3F3F3>000</CodeFigureForF3F3F3>
+<Octet5GRIB1_Octet6BUFR3>0</Octet5GRIB1_Octet6BUFR3>
+<OriginatingGeneratingCentres_en>WMO Secretariat</OriginatingGeneratingCentres_en>
+<Status>Operational</Status>
+</CommonCodeTable_C1_Nov11_en>
+<
+   */
   public enum Table {                              // code                code2                  value
-    C01("Centers-GRIB1,BUFR3",    1, 1, new String[]{"CodeFigureForF1F2", "CodeFigureForF3F3F3", "OriginatingGeneratingCentres_E"}),
-    C02("Radiosondes",            2, 1, new String[]{"CodeFigureForBUFR", null, "RadiosondeSoundingSystemUsed_E"}),
-    C03("Water temperature profile instrument", 3, 1, new String[]{"CodeFigureForBUFR", null, "InstrumentMakeAndType_E"}),
-    C04("Water temperature profile recorder",   4, 1, new String[]{"CodeFigureForBUFR", null, "Meaning_E"}),
-    C05("Satellite identifier",   5, 1, new String[]{"CodeFigureForBUFR", null, "SatelliteName_E"}),
-    C07("Satellite tracking",     7, 1, new String[]{"CodeFigureForBUFR", null, "TrackingTechniquesStatusOfSystemUsed_E"}),
-    C08("Satellite instruments",  8, 1, new String[]{"Code", null, "InstrumentLongName_E", "InstrumentShortName_E"}),
-    C11("Centers-GRIB2,BUFR4",    11,1, new String[]{"GRIB2_BUFR4", null, "OriginatingGeneratingCentre_E"}),
+    C1("Centers-GRIB1,BUFR3",    1, 1, new String[]{"CodeFigureForF1F2", "CodeFigureForF3F3F3", "OriginatingGeneratingCentres_en"}),
+    C2("Radiosondes",            2, 1, new String[]{"CodeFigureForBUFR", null, "RadiosondeSoundingSystemUsed_en"}),
+    C3("Water temperature profile instrument", 3, 1, new String[]{"CodeFigureForBUFR", null, "InstrumentMakeAndType_en"}),
+    C4("Water temperature profile recorder",   4, 1, new String[]{"CodeFigureForBUFR", null, "Meaning_en"}),
+    C5("Satellite identifier",   5, 1, new String[]{"CodeFigureForBUFR", null, "SatelliteName_en"}),
+    C7("Satellite tracking",     7, 1, new String[]{"CodeFigureForBUFR", null, "TrackingTechniquesStatusOfSystemUsed_en"}),
+    C8("Satellite instruments",  8, 1, new String[]{"Code", null, "InstrumentLongName_en", "InstrumentShortName_en"}),
+    C11("Centers-GRIB2,BUFR4",    11,1, new String[]{"GRIB2_BUFR4", null, "OriginatingGeneratingCentre_en"}),
                                                     // code                            value                       code2                  value2
-    C12("Subcenters",             12,2, new String[]{"CodeFigure_OriginatingCentres", "Name_OriginatingCentres_E", "CodeFigure_SubCentres", "Name_SubCentres_E"}),
-    C13("Data sub-categories",    13,2, new String[]{"CodeFigure_DataCategories", "Name_DataCategories_E", "CodeFigure_InternationalDataSubcategories", "Name_InternationalDataSubcategories_E"}),
+    C12("Subcenters",             12,2, new String[]{"CodeFigure_OriginatingCentres", "Name_OriginatingCentres_en", "CodeFigure_SubCentres", "Name_SubCentres_en"}),
+    C13("Data sub-categories",    13,2, new String[]{"CodeFigure_DataCategories", "Name_DataCategories_en", "CodeFigure_InternationalDataSubcategories", "Name_InternationalDataSubcategories_en"}),
     ;
 
     String name;
@@ -192,11 +204,11 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     }
 
     public String getResourceName() {
-      return "/resources/wmo/CommonTable_" + this.name() + "_Mar2011_E.xml";
+      return "/resources/wmo/CommonCodeTable_" + this.name() + "_02Nov11_en.xml";
     }
 
-    public String getRootElemName() {
-      return "Exp_CommonTable" + this.name() + "_E";
+    public String getRootElemName() { // CommonCodeTable_C1_Nov11_en
+      return "CommonCodeTable_" + this.name() + "_Nov11_en";
     }
 
     public int getTableNo() {
@@ -494,7 +506,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   }
 
   public static void main(String arg[]) throws IOException {
-    CommonCodeTable ct = readCommonCodes(Table.C01);
+    CommonCodeTable ct = readCommonCodes(Table.C1);
     for (TableEntry entry : ct.entries)
       System.out.printf("%s%n", entry);
     System.out.printf("%n%s%n", ct.state());

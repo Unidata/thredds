@@ -37,6 +37,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
+import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.util.net.HTTPSession;
 import thredds.inventory.FeatureCollectionConfig;
@@ -3068,6 +3069,41 @@ public class ToolsUI extends JPanel {
 
   }
 
+ /////////////////////////////////////////////////////////////////////
+
+  private class GribTemplatePanel extends OpPanel {
+    GribWmoTemplatesPanel codeTable;
+
+    GribTemplatePanel(PreferencesExt p) {
+      super(p, "table:", false, false, false);
+
+      final JComboBox modes = new JComboBox(WmoTemplateTable.Version.values());
+      modes.setSelectedItem(WmoTemplateTable.standard);
+      topPanel.add(modes, BorderLayout.CENTER);
+      modes.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          codeTable.setTable((WmoTemplateTable.Version) modes.getSelectedItem());
+        }
+      });
+
+      codeTable = new GribWmoTemplatesPanel(prefs, buttPanel);
+      add(codeTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object command) {
+      return true;
+    }
+
+    void save() {
+      codeTable.save();
+      super.save();
+    }
+
+    void closeOpenFiles() {
+    }
+
+  }
+
   /////////////////////////////////////////////////////////////////////
 
   private class GribCodePanel extends OpPanel {
@@ -3077,6 +3113,7 @@ public class ToolsUI extends JPanel {
       super(p, "table:", false, false, false);
 
       final JComboBox modes = new JComboBox(WmoCodeTable.Version.values());
+      modes.setSelectedItem(WmoCodeTable.standard);
       topPanel.add(modes, BorderLayout.CENTER);
       modes.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -3148,31 +3185,6 @@ public class ToolsUI extends JPanel {
 
     void closeOpenFiles() {
     }
-  }
-
-  /////////////////////////////////////////////////////////////////////
-
-  private class GribTemplatePanel extends OpPanel {
-    GribWmoTemplatesPanel codeTable;
-
-    GribTemplatePanel(PreferencesExt p) {
-      super(p, "table:", false, false);
-      codeTable = new GribWmoTemplatesPanel(prefs, buttPanel);
-      add(codeTable, BorderLayout.CENTER);
-    }
-
-    boolean process(Object command) {
-      return true;
-    }
-
-    void save() {
-      codeTable.save();
-      super.save();
-    }
-
-    void closeOpenFiles() {
-    }
-
   }
 
 
