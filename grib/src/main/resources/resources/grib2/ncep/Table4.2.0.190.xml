@@ -8,10 +8,5 @@
     <description>Arbitrary Text String</description>
     <units>CCITTIA5</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

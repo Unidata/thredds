@@ -124,6 +124,7 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/member/.*grib2$"
                     dateFormatMark="#GEFS_Global_1p0deg_Ensemble_#yyyyMMdd_HHmm"
+                    timePartition="1 day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
@@ -591,7 +592,7 @@
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="NAM-FireWeather" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/FireWeather">
+      <!-- featureCollection name="NAM-FireWeather" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/FireWeather">
         <metadata inherited="true">
           <documentation type="summary">NCEP NAME Fire Weather
           <documentation
@@ -603,7 +604,7 @@
                     timePartition="1 day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
-      </featureCollection>
+      </featureCollection -->
 
     </dataset>
 

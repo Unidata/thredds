@@ -98,7 +98,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables {
     }
   }
 
-   public static class TableEntry implements Grib2Tables.Parameter, Comparable<Grib2Tables.TableEntry> {
+   public static class TableEntry implements GribTables.Parameter, Comparable<Grib2Tables.TableEntry> {
     public int discipline, category, number;
     public String name, unit, abbrev;
 
@@ -210,7 +210,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables {
     return WmoCodeTable.getTableValue(tableName, code);
   }
 
-  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
+  public GribTables.Parameter getParameter(int discipline, int category, int number) {
     return WmoCodeTable.getParameterEntry(discipline, category, number);
   }
 

@@ -128,10 +128,5 @@
     <description>Scatterometer Estimated V Wind Component</description>
     <units>m s-1</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

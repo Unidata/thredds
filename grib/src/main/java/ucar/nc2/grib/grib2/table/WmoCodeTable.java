@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib2.table;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import ucar.nc2.grib.GribTables;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -395,7 +396,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     return -1;
   }
 
-  public class TableEntry implements Grib2Tables.Parameter, Comparable<TableEntry> {
+  public class TableEntry implements GribTables.Parameter, Comparable<TableEntry> {
     public int start, stop, line;
     public int number = -1;
     public String code, meaning, name, unit, status;

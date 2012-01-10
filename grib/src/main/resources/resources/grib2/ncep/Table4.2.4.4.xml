@@ -38,10 +38,5 @@
     <description>Cosmic Ray Neutron Flux</description>
     <units>h-1</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

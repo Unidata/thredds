@@ -48,10 +48,5 @@
     <description>Storm Surface Runoff</description>
     <units>kg m-2</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

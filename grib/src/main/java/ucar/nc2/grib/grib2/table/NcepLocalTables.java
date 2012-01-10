@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.constants.CF;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 
@@ -65,7 +66,7 @@ public class NcepLocalTables extends Grib2Tables {
     if ((category <= 191) && (parameter <= 191))
       return super.getVariableName(discipline, category, parameter);
 
-    Grib2Tables.Parameter te = getParameter(discipline, category, parameter);
+    GribTables.Parameter te = getParameter(discipline, category, parameter);
     if (te == null)
       return super.getVariableName(discipline, category, parameter);
     else
@@ -73,7 +74,7 @@ public class NcepLocalTables extends Grib2Tables {
   }
 
   @Override
-  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
+  public GribTables.Parameter getParameter(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191))
       return WmoCodeTable.getParameterEntry(discipline, category, number);
 
@@ -840,8 +841,8 @@ Updated again on 3/26/2008
 
   private static class CompTable {
     int key;
-    Grib2Tables.Parameter local;
-    Grib2Tables.Parameter org;
+    GribTables.Parameter local;
+    GribTables.Parameter org;
 
     private CompTable(int key, Parameter local, Parameter org) {
       this.key = key;

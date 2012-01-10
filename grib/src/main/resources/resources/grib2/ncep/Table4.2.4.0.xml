@@ -33,10 +33,5 @@
     <description>Perpendicular Temperature</description>
     <units>K</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

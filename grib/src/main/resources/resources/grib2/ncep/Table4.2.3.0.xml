@@ -53,10 +53,5 @@
     <description>Fire Detection Indicator</description>
     <units>See Table 4.223</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

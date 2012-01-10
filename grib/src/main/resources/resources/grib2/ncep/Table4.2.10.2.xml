@@ -53,10 +53,5 @@
     <description>Ice Internal Pressure</description>
     <units>Pa m</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

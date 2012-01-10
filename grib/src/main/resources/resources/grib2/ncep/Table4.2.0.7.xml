@@ -118,10 +118,5 @@
     <description>Hourly Maximum of Updraft Helicity over Layer 2km to 5 km AGL</description>
     <units>m2/s2</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -33,51 +33,78 @@
 package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.grib.GribTables;
-
-import java.util.*;
+import ucar.nc2.iosp.grid.GridParameter;
 
 /**
- * superclass for local table implementations
+ * Describe
  *
- * @author John
- * @since 6/22/11
+ * @author caron
+ * @since 1/9/12
  */
-public abstract class LocalTables extends Grib2Tables {
-  protected final Map<Integer, TableEntry> local = new HashMap<Integer, TableEntry>(100);
+public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Parameter> {
+  public int discipline, category, number;
+  public String name, unit, abbrev;
 
-  LocalTables(int center, int subCenter, int masterVersion, int localVersion) {
-    super(center, subCenter, masterVersion, localVersion);
-    initLocalTable();
+  public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev) {
+    this.discipline = discipline;
+    this.category = category;
+    this.number = number;
+    this.name = name.trim();
+    this.abbrev = abbrev;
+    this.unit = GridParameter.cleanupUnits(unit);
   }
 
-  protected abstract void initLocalTable();
-
-
-  @Override
-  public List getParameters() {
-    List<TableEntry> result = new ArrayList<TableEntry>();
-    for (TableEntry p : local.values()) result.add(p);
-    Collections.sort(result);
-    return result;
+  public String getId() {
+    return discipline + "." + category + "." + number;
   }
 
-  @Override
-  public String getVariableName(int discipline, int category, int parameter) {
-    if ((category <= 191) && (parameter <= 191))
-      return super.getVariableName(discipline, category, parameter);
-
-    GribTables.Parameter te = getParameter(discipline, category, parameter);
-    if (te == null)
-      return super.getVariableName(discipline, category, parameter);
-    else
-      return te.getName();
+  public int compareTo(Grib2Parameter o) {
+    int c = discipline - o.discipline;
+    if (c != 0) return c;
+    c = category - o.category;
+    if (c != 0) return c;
+    return number - o.number;
   }
 
   @Override
-  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191))
-      return WmoCodeTable.getParameterEntry(discipline, category, number);
-    return local.get(makeHash(discipline, category, number));
+  public int getDiscipline() {
+    return discipline;
   }
 
+  @Override
+  public int getCategory() {
+    return category;
+  }
+
+  @Override
+  public int getNumber() {
+    return number;
+  }
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @Override
+  public String getUnit() {
+    return unit;
+  }
+
+  public String getAbbrev() {
+    return abbrev;
+  }
+
+  @Override
+  public String toString() {
+    return "Grib2Parameter{" +
+            "discipline=" + discipline +
+            ", category=" + category +
+            ", number=" + number +
+            ", name='" + name + '\'' +
+            ", unit='" + unit + '\'' +
+            ", abbrev='" + abbrev + '\'' +
+            '}';
+  }
 }
+

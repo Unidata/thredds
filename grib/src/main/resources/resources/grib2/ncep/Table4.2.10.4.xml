@@ -98,10 +98,5 @@
     <description>Ocean Heat Content</description>
     <units>J m-2</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

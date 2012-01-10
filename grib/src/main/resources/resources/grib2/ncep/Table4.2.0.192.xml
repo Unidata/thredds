@@ -73,10 +73,5 @@
     <description>Covariance between temperature and temperature. Defined as [TT]-[T][T], where "[]" indicates the mean over the indicated time span.</description>
     <units>K*K</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

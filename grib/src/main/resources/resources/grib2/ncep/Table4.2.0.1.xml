@@ -638,10 +638,5 @@
     <description>Relative Humidity with Respect to Precipitable Water</description>
     <units>%</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

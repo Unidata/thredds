@@ -363,10 +363,5 @@
     <description>Transpiration</description>
     <units>W/m2</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 
