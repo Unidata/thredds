@@ -2801,7 +2801,7 @@ public class ToolsUI extends JPanel {
 
     Grib1CollectionPanel(PreferencesExt p) {
       super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.Grib1CollectionPanel(prefs);
+      gribTable = new ucar.nc2.ui.Grib1CollectionPanel(buttPanel, prefs);
       add(gribTable, BorderLayout.CENTER);
 
       AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);

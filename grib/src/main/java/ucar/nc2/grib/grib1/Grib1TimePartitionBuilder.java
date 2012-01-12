@@ -57,7 +57,16 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
   static private final int versionTP = 2;
   static private final boolean trace = false;
 
-    // read in the index, create if it doesnt exist or is out of date
+  // called by tdm
+  static public boolean update(TimePartitionCollection tpc, Formatter f) throws IOException {
+    Grib1TimePartitionBuilder builder = new Grib1TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
+    if (!builder.needsUpdate()) return false;
+    builder.readOrCreateIndex(CollectionManager.Force.always, f);
+    builder.gc.close();
+    return true;
+  }
+
+  // read in the index, create if it doesnt exist or is out of date
   static public Grib1TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
     Grib1TimePartitionBuilder builder = new Grib1TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
     builder.readOrCreateIndex(force, f);
@@ -109,9 +118,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     File idx = gc.getIndexFile();
 
      // force new index or test for new index needed
-    boolean force =
-             ((ff == CollectionManager.Force.always) ||
-             (ff == CollectionManager.Force.test && idx.exists() && needsUpdate(idx.lastModified(), f)));
+    boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate(idx.lastModified(), f)));
 
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {

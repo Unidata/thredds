@@ -49,7 +49,7 @@ import java.util.*;
  * @author caron
  * @since 4/16/11
  */
-public class TimePartitionCollection extends CollectionManagerAbstract {
+public class TimePartitionCollection extends MFileCollectionManager {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartitionCollection.class);
   static private enum Type {setfromExistingIndices, directory, days}
 
@@ -57,41 +57,28 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
     if (config.timePartition == null)
       throw new IllegalArgumentException("Must specify time partition spec = "+ config.spec);
 
-    return new TimePartitionCollection(config, errlog);
+    return new TimePartitionCollection(config, false, errlog);
   }
 
   static public TimePartitionCollection fromExistingIndices(FeatureCollectionConfig config, Formatter errlog) {
     if (config.timePartition == null)
       throw new IllegalArgumentException("Must specify time partition spec = "+ config.spec);
 
-    TimePartitionCollection tpc =  new TimePartitionCollection(config, errlog);
-    tpc.setfromExistingIndices = true;
-    return tpc;
+    return new TimePartitionCollection(config, true, errlog);
   }
 
   //////////////////////////////
 
-  private FeatureCollectionConfig config;
   private CollectionSpecParser sp;
-  private DateExtractor dateExtractor;
   private int npartitions;
   private boolean setfromExistingIndices;
   private Type type;
 
-  private TimePartitionCollection(FeatureCollectionConfig config, Formatter errlog) {
-    super(config.name);
-    this.config = config;
-    this.protoChoice = config.protoConfig.choice;
-
-    sp = new CollectionSpecParser(config.spec, errlog);
-
-    if (config.dateFormatMark != null)
-      dateExtractor = new DateExtractorFromName(config.dateFormatMark, false);
-    else if (sp.getDateFormatMark() != null)
-      dateExtractor = new DateExtractorFromName(sp.getDateFormatMark(), true);
-    else
+  private TimePartitionCollection(FeatureCollectionConfig config, boolean setfromExistingIndices, Formatter errlog) {
+    super(config, errlog);
+    this.setfromExistingIndices = setfromExistingIndices;
+    if (dateExtractor == null)
       throw new IllegalArgumentException("Time partition must specify a date extractor");
-
   }
 
   public List<CollectionManager> makePartitions() throws IOException {
@@ -108,7 +95,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
 
   private List<CollectionManager> makePartitionsFromIndices() {
     this.type = Type.setfromExistingIndices;
-    MController controller = DatasetCollectionMFiles.getController();
+    MController controller = MFileCollectionManager.getController();
     MCollection mc = new MCollection(sp.getRootDir(), sp.getRootDir(), false, (MFileFilter) null, null);
 
     File root = new File(sp.getRootDir());
@@ -154,7 +141,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
       }
       System.out.printf("makePartitionsFromIndices add %s%n",mfile.getPath());
 
-      DatasetCollectionMFiles dcm = new DatasetCollectionMFiles(mfile.getName(), mcs, cdate);
+      MFileCollectionManager dcm = new MFileCollectionManager(mfile.getName(), mcs, cdate);
       dcm.setDateExtractor(dateExtractor);
       result.add(dcm);
       //System.out.printf("%s%n", dcm);
@@ -172,7 +159,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
 
   private List<CollectionManager> makePartitionsFromSubdirs() {
     this.type = Type.directory;
-    MController controller = DatasetCollectionMFiles.getController();
+    MController controller = MFileCollectionManager.getController();
     MCollection mc = new MCollection(sp.getRootDir(), sp.getRootDir(), false, (MFileFilter) null, null);
 
     File root = new File(sp.getRootDir());
@@ -203,7 +190,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
         return null;
       }
 
-      DatasetCollectionMFiles dcm = new DatasetCollectionMFiles(mfile.getName(), mcs, cdate);
+      MFileCollectionManager dcm = new MFileCollectionManager(mfile.getName(), mcs, cdate);
       dcm.setDateExtractor(dateExtractor);
       result.add(dcm);
       //System.out.printf("%s%n", dcm);
@@ -221,12 +208,12 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
 
   private List<CollectionManager> makePartitionsByDays() throws IOException {
     this.type = Type.days;
-    Formatter errlog = new Formatter();
-    CollectionManager dcm = new DatasetCollectionMFiles(null, config.spec, errlog);
-    dcm.scan(true);
+    //Formatter errlog = new Formatter();
+    //CollectionManager dcm = new MFileCollectionManager(null, config.spec, errlog);
+    //dcm.scan(true);
 
     List<DatedMFile> files = new ArrayList<DatedMFile>();
-    for (MFile mfile : dcm.getFiles()) {
+    for (MFile mfile : getFiles()) {
       CalendarDate cdate = dateExtractor.getCalendarDate(mfile);
       if (cdate == null)
         logger.error("Date extraction failed on file= {} dateExtractor = {}", mfile.getPath(), dateExtractor);
@@ -242,7 +229,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
     for (DatedMFile dmf : files) {
       if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
         String name = collectionName+"_"+df.format(dmf.cdate.toDate());
-        curr = new TimePartitionCollectionManager(name, dmf, dcm.getRoot(), this.auxInfo);
+        curr = new TimePartitionCollectionManager(name, dmf, getRoot(), this.auxInfo);
         result.add(curr);
       }
       curr.add(dmf);
@@ -251,6 +238,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
     return result;
   }
 
+  /*
   @Override
   public boolean scan(boolean sendEvent) throws IOException {
     // LOOK ????
@@ -292,7 +280,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
   @Override
   public boolean hasDateExtractor() {
     return true;
-  }
+  } */
 
   @Override
   public CalendarDate getStartCollection() {
@@ -371,7 +359,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
 
     @Override
     public long getLastScanned() {
-      return 0;  //To change body of implemented methods use File | Settings | File Templates.
+      return -1;
     }
 
     @Override
@@ -391,7 +379,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
 
     @Override
     public String toString() {
-      return "MCollectionManager{" +
+      return "TimePartitionCollectionManager{" +
               "name='" + collectionName + '\'' +
               ", startPartition=" + startPartition +
               ", endPartition=" + endPartition +
@@ -411,7 +399,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
   } */
 
    private static void doit(FeatureCollectionConfig config) throws IOException {
-    TimePartitionCollection tpc = new TimePartitionCollection(config, new Formatter(System.out));
+    TimePartitionCollection tpc = TimePartitionCollection.factory(config, new Formatter(System.out));
     System.out.printf("tpc = %s%n", tpc);
      if (tpc.makePartitions() == null) {
        System.out.printf("*** No partitions%n");

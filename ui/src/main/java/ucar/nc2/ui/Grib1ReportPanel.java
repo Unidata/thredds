@@ -33,7 +33,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.DatasetCollectionMFiles;
+import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
@@ -103,7 +103,7 @@ public class Grib1ReportPanel extends JPanel {
   private CollectionManager getCollection(String spec, Formatter f) {
     CollectionManager dc = null;
     try {
-      dc = DatasetCollectionMFiles.open(spec, null, f);
+      dc = MFileCollectionManager.open(spec, null, f);
       dc.scan(false);
 
     } catch (Exception e) {

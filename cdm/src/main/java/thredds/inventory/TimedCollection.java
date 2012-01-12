@@ -182,7 +182,7 @@ public class TimedCollection {
   //////////////////////////////////////////////////////////////////////////
   // debugging
   private static void doit(String spec, Formatter errlog) throws IOException {
-    CollectionManager dcm = DatasetCollectionMFiles.open(spec, null, errlog);
+    CollectionManager dcm = MFileCollectionManager.open(spec, null, errlog);
     TimedCollection specp = new TimedCollection(dcm, errlog);
     System.out.printf("spec= %s%n%s%n", spec, specp);
     String err = errlog.toString();

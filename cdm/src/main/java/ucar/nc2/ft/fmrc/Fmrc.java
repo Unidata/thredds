@@ -78,8 +78,8 @@ public class Fmrc {
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/collections/CollectionSpecification.html"
    */
   public static Fmrc open(String collection, Formatter errlog) throws IOException {
-    if (collection.startsWith(DatasetCollectionMFiles.CATALOG)) {
-      DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(collection);
+    if (collection.startsWith(MFileCollectionManager.CATALOG)) {
+      CatalogCollectionManager manager = new CatalogCollectionManager(collection);
       return new Fmrc(manager, new FeatureCollectionConfig());
 
     } else if (collection.endsWith(".ncml")) {
@@ -94,8 +94,8 @@ public class Fmrc {
   }
 
   public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) throws IOException {
-    if (config.spec.startsWith(DatasetCollectionMFiles.CATALOG)) {
-      DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(config.spec);
+    if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
+      CatalogCollectionManager manager = new CatalogCollectionManager(config.spec);
       return new Fmrc(manager, config);
     }
 
@@ -117,13 +117,13 @@ public class Fmrc {
   private volatile long lastProtoChanged;
 
   private Fmrc(String collectionSpec, Formatter errlog) throws IOException {
-    this.manager = DatasetCollectionMFiles.open(collectionSpec, null, errlog);
+    this.manager = MFileCollectionManager.open(collectionSpec, null, errlog);
     this.config = new FeatureCollectionConfig();
     this.config.spec = collectionSpec;
   }
 
   private Fmrc(FeatureCollectionConfig config, Formatter errlog) {
-    this.manager = new DatasetCollectionMFiles(config, errlog);
+    this.manager = new MFileCollectionManager(config, errlog);
     this.config = config;
   }
 

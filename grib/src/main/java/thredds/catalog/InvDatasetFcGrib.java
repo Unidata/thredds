@@ -35,7 +35,7 @@ package thredds.catalog;
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.DatasetCollectionMFiles;
+import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.constants.FeatureType;
@@ -96,15 +96,18 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       this.dcm = TimePartitionCollection.fromExistingIndices(config, errlog);
     else if (config.timePartition != null) {
       this.dcm = TimePartitionCollection.factory(config, errlog);
+      this.dcm.setChangeChecker(GribIndex.getChangeChecker());
     } else {
-      this.dcm = new DatasetCollectionMFiles(config, errlog);
-      this.dcm.setChangeChecker(GribIndex.getChangeChecker());   // LOOK needed?
+      this.dcm = new MFileCollectionManager(config, errlog);
+      this.dcm.setChangeChecker(GribIndex.getChangeChecker());
     }
 
     // sneak in extra config info
     if (config.gribConfig != null) {
       if (config.gribConfig.gdsHash != null)
         dcm.putAuxInfo(FeatureCollectionConfig.AUX_GDSHASH, config.gribConfig.gdsHash);
+      if (config.gribConfig.gdsName != null)
+        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAME, config.gribConfig.gdsName);
       if (config.gribConfig.intervalMerge)
         dcm.putAuxInfo(FeatureCollectionConfig.AUX_INTERVAL_MERGE, Boolean.TRUE);
     }

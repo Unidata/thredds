@@ -70,6 +70,7 @@ message Group {
   repeated int32 fileno = 8;     // this is so we can show just the component files that are in this group
 
   repeated TimeCoordUnion timeCoordUnions = 9; // for time partitions only
+  optional string name = 10;       // only when user overrides default name
 }
 
 message TimeCoordUnion { // extends Coord

@@ -32,12 +32,9 @@
 
 package ucar.nc2.thredds.server;
 
-import thredds.catalog.InvAccess;
 import thredds.catalog.InvCatalogRef;
 import thredds.catalog.InvDataset;
 import thredds.catalog.crawl.CatalogCrawler;
-import thredds.inventory.DatasetCollectionMFiles;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.thredds.ThreddsDataFactory;

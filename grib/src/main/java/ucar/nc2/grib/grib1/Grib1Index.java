@@ -106,7 +106,7 @@ public class Grib1Index extends GribIndex {
     }
 
     public boolean readIndex(String filename, long gribLastModified, CollectionManager.Force force) throws IOException {
-      File idxFile = new File(filename + IDX_EXT);
+      File idxFile = getIndexFile(filename);
       if (!idxFile.exists()) return false;
       long idxModified = idxFile.lastModified();
       if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false;
@@ -185,8 +185,8 @@ public class Grib1Index extends GribIndex {
 
     // LOOK what about extending an index ??
     public boolean makeIndex(String filename, Formatter f) throws IOException {
-
-      FileOutputStream fout = new FileOutputStream(filename + IDX_EXT); // LOOK need DiskCache for non-writeable directories
+      File idxFile = getIndexFile(filename);
+      FileOutputStream fout = new FileOutputStream(idxFile);
       RandomAccessFile raf = null;
       try {
         //// header message

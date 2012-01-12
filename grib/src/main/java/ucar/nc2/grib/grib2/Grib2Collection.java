@@ -33,7 +33,7 @@
 package ucar.nc2.grib.grib2;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.DatasetCollectionMFiles;
+import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
@@ -111,7 +111,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
   static public void make(String name, String spec) throws IOException {
     long start = System.currentTimeMillis();
     Formatter f = new Formatter();
-    CollectionManager dcm = new DatasetCollectionMFiles(name, spec, f);
+    CollectionManager dcm = new MFileCollectionManager(name, spec, f);
     File idxFile = new File( dcm.getRoot(), name);
     boolean ok = Grib2CollectionBuilder.writeIndexFile(idxFile, dcm, f);
     System.out.printf("GribCollectionBuilder.writeIndexFile ok = %s%n", ok);

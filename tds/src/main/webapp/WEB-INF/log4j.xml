@@ -155,7 +155,7 @@
   </logger>
 
   <!-- featureType debugging -->
-  <logger name="thredds.inventory.DatasetCollectionMFiles" additivity="false">
+  <logger name="thredds.inventory.MFileCollectionManager" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>

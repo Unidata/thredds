@@ -59,6 +59,15 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   static private final int versionTP = 2;
   static private final boolean trace = false;
 
+  // called by tdm
+  static public boolean update(TimePartitionCollection tpc, Formatter f) throws IOException {
+    Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
+    if (!builder.needsUpdate()) return false;
+    builder.readOrCreateIndex(CollectionManager.Force.always, f);
+    builder.gc.close();
+    return true;
+  }
+
     // read in the index, create if it doesnt exist or is out of date
   static public Grib2TimePartition factory(TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
     Grib2TimePartitionBuilder builder = new Grib2TimePartitionBuilder(tpc.getCollectionName(), new File(tpc.getRoot()), tpc);
@@ -107,13 +116,30 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     this.tpc = tpc;
   }
 
+  /* gc
+  private void readOrCreateIndex2(CollectionManager.Force ff, Formatter f) throws IOException {
+
+    // force new index or test for new index needed
+    boolean force = ((ff == CollectionManager.Force.always) ||
+            (ff == CollectionManager.Force.test && needsUpdate()));
+
+    // otherwise, we're good as long as the index file exists
+    File idx = gc.getIndexFile();
+    if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
+      logger.info("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
+      createIndex(idx, ff, f);        // write out index
+      gc.rafLocation = idx.getPath();
+      gc.setRaf( new RandomAccessFile(idx.getPath(), "r"));
+      readIndex(gc.getRaf()); // read back in index
+    }
+  } */
+
+  // old
   private boolean readOrCreateIndex(CollectionManager.Force ff, Formatter f) throws IOException {
     File idx = gc.getIndexFile();
 
      // force new index or test for new index needed
-    boolean force =
-             ((ff == CollectionManager.Force.always) ||
-             (ff == CollectionManager.Force.test && idx.exists() && needsUpdate(idx.lastModified(), f)));
+    boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate(idx.lastModified(), f)));
 
     // otherwise, we're good as long as the index file exists and can be read
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
@@ -129,10 +155,13 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
     for (CollectionManager dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
       File idxFile = new File(dcm.getRoot(), dcm.getCollectionName() + GribCollection.IDX_EXT);
-      if (!idxFile.exists()) return true;
-      if (collectionLastModified < idxFile.lastModified()) return true;
+      if (!idxFile.exists())
+        return true;
+      if (collectionLastModified < idxFile.lastModified())
+        return true;
       for (MFile mfile : dcm.getFiles()) {
-        if (cc.hasChangedSince(mfile, idxFile.lastModified())) return true;
+        if (cc.hasChangedSince(mfile, idxFile.lastModified()))
+          return true;
       }
     }
     return false;
@@ -575,9 +604,12 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     int vertIdx = pv.getVertIdx();
     int ensIdx = pv.getEnsIdx();
     int tableVersion = pv.getTableVersion();
+    List<Integer> groupnoList = pv.getGroupnoList();
+    List<Integer> varnoList = pv.getVarnoList();
 
     return tp.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
-            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen,
+            groupnoList, varnoList);
   }
 
   public static void main(String[] args) throws IOException {
