@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-
 @NotThreadSafe
 public class HTTPSession
 {
@@ -84,35 +83,6 @@ static public String WAIT_FOR_CONTINUE = "<undefined>";
 
 static int DFALTTHREADCOUNT = 50;
 static int DFALTTIMEOUT = 5*60*1000; // 5 minutes (300000 milliseconds)
-
-static MultiThreadedHttpConnectionManager connmgr;
-//fix: protected static SchemeRegistry schemes;
-static String globalAgent = "/NetcdfJava/HttpClient3";
-static int threadcount = DFALTTHREADCOUNT;
-static List<HTTPSession> sessionList; // List of all HTTPSession instances
-static boolean globalauthpreemptive = false;
-static CredentialsProvider globalProvider = null;
-static int globalSoTimeout = 0;
-static int globalConnectionTimeout = 0;
-static String globalsimpleproxyhost = null;
-static int globalsimpleproxyport = 0;
-
-static {
-    //fix: schemes = new SchemeRegistry();
-    //fix: schemes.register(new Scheme("http", PlainSocketFactory.getSocketFactory(),80));
-    connmgr = new MultiThreadedHttpConnectionManager();
-    setGlobalThreadCount(DFALTTHREADCOUNT);
-    // Fill in the scheme registry for at least http and https
-    // allow self-signed certificates
-    // Major problem: can only register one https protocol.
-    // See hack in HTTPMethod.execute.
-    Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
-    sessionList = new ArrayList<HTTPSession>(); // see kill function
-    setGlobalConnectionTimeout(DFALTTIMEOUT);
-    setGlobalSoTimeout(DFALTTIMEOUT);
-    setGlobalSimpleProxy();
-    setGlobalKeyStore();
-}
 
 // ////////////////////////////////////////////////////////////////////////
 
@@ -183,6 +153,116 @@ static private synchronized void kill()
 }
 
 ////////////////////////////////////////////////////////////////////////
+// We need more powerful protocol registry.
+static class ProtocolEntry
+{
+    public String protocol = null;
+    public int port = 0;
+    public Protocol handler;
+    
+    public ProtocolEntry(String protocol, int port, Protocol handler)
+    {
+	this.protocol = protocol;
+	this.port = port;
+	this.handler = handler;
+    }
+}
+
+// Replace org.apache.commons.httpclient.protocol.Protocol.register()
+// This is done because the handler must depend on both the protocol
+// (e.g https) as well as the port.
+
+static synchronized public void
+registerProtocol(String protocol, int port, Protocol handler)
+    throws IllegalArgumentException
+{
+    if(protocol == null)
+	throw new IllegalArgumentException();
+    if(port < 0) port = 0;
+    // port == 0 is wildcard, so use standard Protocol registry
+    if(port == 0) {// look to the standard protocol registry
+	if(handler == null)
+            Protocol.unregisterProtocol(protocol);
+	else
+            Protocol.registerProtocol(protocol,handler);
+    } else {
+        for(int i=0;i<registry.size();i++) {
+	    ProtocolEntry entry = registry.get(i);
+	    if(!entry.protocol.equals(protocol)) continue;
+	    if(entry.port != port) continue;
+	    if(handler == null)
+		registry.remove(i); //delete
+	    else
+	        entry.handler = handler; // replace
+	    return;
+	}
+        registry.add(new ProtocolEntry(protocol,port,handler));
+    }
+}
+
+static synchronized public
+Protocol
+getProtocol(String protocol,int port)
+    throws IllegalArgumentException, IllegalStateException
+{
+    ProtocolEntry entry = null;    
+    if(protocol == null)
+	throw new IllegalArgumentException();
+    if(port < 0) port = 0;
+    // port == 0 is wildcard
+    if(port == 0) {
+	return Protocol.getProtocol(protocol); // may throw exception
+    }
+    for(int i=0;i<registry.size();i++) {
+        entry = registry.get(i);
+	if(!entry.protocol.equals(protocol)) continue;
+	if(entry.port != port) continue;
+	return entry.handler;
+    }
+    throw new IllegalStateException(); // no such protocol X port
+}
+
+////////////////////////////////////////////////////////////////////////
+// Static fields and initializer
+static MultiThreadedHttpConnectionManager connmgr;
+//fix: protected static SchemeRegistry schemes;
+static String globalAgent = "/NetcdfJava/HttpClient3";
+static int threadcount = DFALTTHREADCOUNT;
+static List<HTTPSession> sessionList; // List of all HTTPSession instances
+static boolean globalauthpreemptive = false;
+static CredentialsProvider globalProvider = null;
+static int globalSoTimeout = 0;
+static int globalConnectionTimeout = 0;
+static String globalsimpleproxyhost = null;
+static int globalsimpleproxyport = 0;
+static List<ProtocolEntry> registry;
+
+static {
+    connmgr = new MultiThreadedHttpConnectionManager();
+    setGlobalThreadCount(DFALTTHREADCOUNT);
+    registry = new ArrayList<ProtocolEntry>();
+    // Fill in the registry for our various https ports
+    // allow self-signed certificates
+    registerProtocol("https", 0,
+                     new Protocol("https",
+                                  new EasySSLProtocolSocketFactory(),
+                                  443)); // default
+    registerProtocol("https", 8443,
+                     new Protocol("https",
+                                  new EasySSLProtocolSocketFactory(),
+                                  8443)); // std tomcat https entry
+    registerProtocol("https", 8843,
+                     new Protocol("https",
+                                  new EasySSLProtocolSocketFactory(),
+                                  8843)); // client-side keys test https entry
+    sessionList = new ArrayList<HTTPSession>(); // see kill function
+    setGlobalConnectionTimeout(DFALTTIMEOUT);
+    setGlobalSoTimeout(DFALTTIMEOUT);
+    setGlobalSimpleProxy();
+    setGlobalKeyStore();
+}
+
+//////////////////////////////////////////////////
 
 HttpClient sessionClient = null;
 List<ucar.nc2.util.net.HTTPMethod> methodList = new Vector<HTTPMethod>();

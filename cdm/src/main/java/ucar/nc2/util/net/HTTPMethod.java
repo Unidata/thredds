@@ -264,32 +264,20 @@ public int execute() throws HTTPException
         setAuthentication(session,this);
         // WARNING; DANGER WILL ROBINSION
         // httpclient3 only allows one registered https protocol, so
-        // we do a major hack to register the protocol based on the port
+        // we built our own protocol registry to also take port into account
+        // (see HTTPSession.registerProtocol())
 
-        // Pull of the protocol
-        int index = this.legalurl.indexOf("://");
-        String proto;
-        String remainder;
-        if(false  && index > 0) {
-            proto = this.legalurl.substring(0,index);
-            if("https".equals(proto)) {
-            try {
-                URL hack = new URL(this.legalurl);
-                switch (hack.getPort()) {
-                case 443: case 8443:  case 8843:
-                    // change the protocol associated with "https"
-                    Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), hack.getPort()));
-                default: break; // leave as is
-                }
-            } catch (MalformedURLException e) {}
-            }
-        }
+        // get the protocol and port
+        URL hack = new URL(this.legalurl);
+        Protocol handler = session.getProtocol(hack.getProtocol(),
+                                               hack.getPort());
 
-        session.sessionClient.executeMethod(method);
-
+        HostConfiguration hc = session.sessionClient.getHostConfiguration();
+        hc  = new HostConfiguration(hc);
+        hc.setHost(hack.getHost(),hack.getPort(),handler);
+        session.sessionClient.executeMethod(hc,method);
         int code = getStatusCode();
         return code;
-
     } catch (Exception ie) {
         ie.printStackTrace();
         throw new HTTPException(ie);
