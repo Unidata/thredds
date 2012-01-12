@@ -146,7 +146,7 @@ public abstract class Aggregation {
 
   protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<Aggregation.Dataset>(); // explicitly created Dataset objects from netcdf elements
   protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // all : explicit and scanned
-  protected DatasetCollectionMFiles datasetManager; // manages scanning
+  protected MFileCollectionManager datasetManager; // manages scanning
   protected boolean cacheDirty = true; // aggCache persist file needs updating
 
   protected String dimName; // the aggregation dimension name
@@ -172,7 +172,7 @@ public abstract class Aggregation {
     this.ncDataset = ncd;
     this.dimName = dimName;
     this.type = type;
-    datasetManager = DatasetCollectionMFiles.openWithRecheck(recheckS);
+    datasetManager = MFileCollectionManager.openWithRecheck(recheckS);
   }
 
   /**
@@ -226,7 +226,7 @@ public abstract class Aggregation {
 
   // experimental
   public void addCollection(String spec, String olderThan) throws IOException {
-    datasetManager = DatasetCollectionMFiles.open(spec, olderThan, null);
+    datasetManager = MFileCollectionManager.open(spec, olderThan, null);
  }
 
   public void setModifications(Element ncmlMods) {

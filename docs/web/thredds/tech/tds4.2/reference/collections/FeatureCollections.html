@@ -103,7 +103,8 @@ Here is an example
 
 The XML Schema:
 <pre>
-  &lt;xsd:complexType name=&quot;collectionType&quot;&gt;<br />1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;<br />3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;<br />4)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;<br />5)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;<br />  &lt;/xsd:complexType&gt;<br /></pre>
+  &lt;xsd:complexType name=&quot;collectionType&quot;&gt;<br />1)  &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;<br />2)  &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;<br />3)  &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;<br />4)  &lt;xsd:attribute name=&quot;dateFormatMark&quot; type=&quot;xsd:string&quot;/&gt;<br />5)  &lt;xsd:attribute name=&quot;timePartition&quot; type=&quot;xsd:string&quot;/&gt;
+6)  &lt;xsd:attribute name=&quot;useIndexOnly&quot; type=&quot;xsd:boolean&quot;/&gt;<br />  &lt;/xsd:complexType&gt;<br /></pre>
 <p>where</p>
 <ol>
   <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this example, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the reqular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. Each dataset is assigned a nominal time  by matching <em>yyyyMMdd_HHmm</em> to the portion of the filename following &quot;WEST-CONUS_4km_3.9_&quot;.</li>
@@ -111,6 +112,7 @@ The XML Schema:
   <li><strong>olderThan</strong> (optional): Only files whose lastModified date is older than this are included. This excludes files that are in the process of being written. However, it only applies to newly found files, that is, once a file is in the collection it is not removed because it was updated.</li>
   <li><strong>dateFormatMark</strong> (optional): the collection specification string can only extract dates from the file name, as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract the date from the full path. <em>Use this OR a date extrator in the specification string, but not both.</em></li>
   <li><strong>timePartition</strong> (optional): experimental, not complete yet.</li>
+  <li><strong>useIndexOnly</strong> (optional): experimental, not complete yet</li>
 </ol>
 <h3>Date Extractor</h3>
 <p>Feature Collections  need to know how to sort the collection of files, so it is strongly recommended that you have a date in the filename, and to specify a date extractor in the specification string or include a dateFormatMark attribute. Otherwise, files will be sorted by filename.</p>
@@ -128,7 +130,7 @@ The XML Schema:
   <pre>dateFormatMark=&quot;#Alaska_191km/#yyyyMMdd'/Run_'HHmm&quot;</pre>
   <p>In this case, the <em>'#' </em>characters delineate the <strong>substring match</strong> on the entire pathname. Immediately following the match comes the string to be given to <a href="SimpleDateFormat.html">SimpleDateFormat</a>, in this example:</p>
   <pre>yyyyMMdd'/Run_'HHmm</pre>
-  <p>Note that the<em> /Run_</em> is enclosed in single quotes. This tells SimpleDateFormat to interpret these characters literally, and they must match chanracters in the filename exactly. </p>
+  <p>Note that the<em> /Run_</em> is enclosed in single quotes. This tells SimpleDateFormat to interpret these characters literally, and they must match characters in the filename exactly. </p>
   <p>You might also need to put the SimpleDateFormat before the substring match, eg in the following, <em>stuff</em> differs for each subdirectory, so you cant match on it:</p>
   <p><em>/dataroot/stuff/20111226/Experiment-02387347.grib1</em></p>
   <p>However, you can match on <em>Experiment</em> so you can use:</p>
@@ -299,7 +301,7 @@ The XML Schema definition for the update element:
 <p></p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Dec 24, 2011 
+<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Jan 11, 2012 
 </address>
 </body>
 </html>

@@ -37,6 +37,7 @@ import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 //import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.util.DiskCache;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -57,13 +58,24 @@ public abstract class GribIndex {
 
   private static final CollectionManager.ChangeChecker gribCC = new CollectionManager.ChangeChecker() {
     public boolean hasChangedSince(MFile file, long when) {
-      File idxFile = new File(file.getPath() + IDX_EXT); // LOOK need DiskCache for non-writeable directories
+      File idxFile = getIndexFile(file.getPath());
       if (!idxFile.exists()) return true;
       if (idxFile.lastModified() < file.getLastModified()) return true;
       if (0 < when && when < idxFile.lastModified()) return true;
       return false;
     }
+    public boolean hasntChangedSince(MFile file, long when) {
+      File idxFile = getIndexFile(file.getPath());
+      if (!idxFile.exists()) return true;
+      if (idxFile.lastModified() < file.getLastModified()) return true;
+      if (0 < when && idxFile.lastModified() < when) return true;
+      return false;
+    }
   };
+
+  static public File getIndexFile(String path) {
+    return DiskCache.getFile(path + IDX_EXT, false);
+  }
 
   static public CollectionManager.ChangeChecker getChangeChecker() {
     return gribCC;

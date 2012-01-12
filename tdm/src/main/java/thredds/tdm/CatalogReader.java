@@ -194,8 +194,12 @@ public class CatalogReader {
             href = href.substring(2);
           }
 
-          File refCat = new File(catFile, href);
+          File refCat = new File(catFile.getParent(), href);
           Resource catR = new FileSystemResource(refCat);
+          if (!catR.exists()) {
+            log.error("Reletive catalog {} does not exist", catR);
+            continue;
+          }
           initCatalog(catR, true);
         }
 

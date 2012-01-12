@@ -3,6 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
+ 6: (2012-01-06)
+  GribCollections: consistent use of DiskCache for indexes
+  DatasetCollectionMFiles checks index file date against oldFile date
+  MFileOS captures lastModified at the time of object creation.
+
  5: (2012-01-06)
   Fix when earth_radius comes in km instead of meters.
   DatasetCollectionMFiles: olderThan applies only to newly found files.

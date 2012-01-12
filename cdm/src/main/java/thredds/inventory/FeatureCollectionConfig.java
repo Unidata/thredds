@@ -44,7 +44,8 @@ import java.util.*;
  * @since Mar 30, 2010
  */
 public class FeatureCollectionConfig {
-  static public final String AUX_GDSHASH = "gdshash";
+  static public final String AUX_GDSHASH = "gdsHash";
+  static public final String AUX_GROUP_NAME = "groupName";
   static public final String AUX_INTERVAL_MERGE = "intvMerge";
 
   static public enum ProtoChoice {
@@ -293,6 +294,7 @@ public class FeatureCollectionConfig {
   static public class GribConfig  {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
     public Map<Integer, Integer> gdsHash;
+    public Map<Integer, String> gdsName;
     protected boolean explicit = false;
     public boolean intervalMerge = false;
 
@@ -316,6 +318,7 @@ public class FeatureCollectionConfig {
     }
 
     public void addGdsHash(String fromS, String toS) {
+      if (fromS == null || toS == null) return;
       if (gdsHash == null) gdsHash = new HashMap<Integer, Integer>(5);
 
       try {
@@ -324,6 +327,18 @@ public class FeatureCollectionConfig {
         gdsHash.put(from,to);
       } catch (Exception e) {
         log.warn("Failed  to parse as Integer = {} {}", fromS, toS);
+      }
+    }
+
+    public void addGdsName(String hashS, String name) {
+      if (hashS == null || name == null) return;
+      if (gdsName == null) gdsName = new HashMap<Integer, String>(5);
+
+      try {
+        int hash = Integer.parseInt(hashS);
+        gdsName.put(hash, name);
+      } catch (Exception e) {
+        log.warn("Failed  to parse as Integer = {} {}", hashS, name);
       }
     }
 

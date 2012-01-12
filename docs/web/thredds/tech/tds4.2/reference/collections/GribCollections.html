@@ -38,10 +38,10 @@ dl {margin: 10px 5px 5px 15px;}
 <hr />
 <h3>gribConfig element</h3>
 <p>The schema definition:</p>
-<pre>  &lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;<br />    &lt;xsd:sequence&gt;<br />      &lt;xsd:element name=&quot;gdsHash&quot;&gt;<br />        &lt;xsd:complexType&gt;<br />          &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot;/&gt;<br />          &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot;/&gt;<br />        &lt;/xsd:complexType&gt;<br />      &lt;/xsd:element&gt;<br />    &lt;/xsd:sequence&gt;<br />    &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;<br />  &lt;/xsd:complexType&gt;</pre>
+<pre>  &lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;<br />    &lt;xsd:sequence&gt;<br />      &lt;xsd:element name=&quot;gdsHash&quot;&gt;<br />        &lt;xsd:complexType&gt;<br />          &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot;/&gt;<br />          &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot;/&gt;<br />          &lt;xsd:attribute name=&quot;groupName&quot; type=&quot;xsd:string&quot;/&gt;<br />			&lt;/xsd:complexType&gt;<br />      &lt;/xsd:element&gt;<br />    &lt;/xsd:sequence&gt;<br />    &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;<br />  &lt;/xsd:complexType&gt;</pre>
 <p>Defines options on feature collections with <strong> featureType</strong>=&quot;GRIB&quot;. Example:</p>
 <pre>1) &lt;gribConfig datasetTypes=&quot;Collection Files&quot; &gt;
-2)   &lt;gdsHash from=&quot;-2121584860&quot; to=&quot;28944332&quot;/&gt;<br />3)   &lt;intervalMerge/&gt;<br />&lt;/gribConfig&gt;</pre>
+2)   &lt;gdsHash from=&quot;-2121584860&quot; to=&quot;28944332&quot;/&gt;<br />3)   &lt;gdsHash to=&quot;28944332&quot; groupName=&quot;KTAL&quot;/&gt;<br />4)   &lt;intervalMerge/&gt;<br />   &lt;/gribConfig&gt;</pre>
 <ol>
   <li><strong>datasetTypes</strong>: define which 
   datasets are available in the TDS catalog
@@ -54,6 +54,7 @@ dl {margin: 10px 5px 5px 15px;}
     </ol>
   </li>
   <li><strong>gdsHash</strong>: translate any gds hash that equals &quot;-2121584860&quot; to &quot;28944332&quot;. This is used to fix minor errors in the GDS encoding.</li>
+  <li><strong>groupName</strong>: use the name &quot;KTAL&quot; for the group with gdsHash &quot;28944332&quot;.</li>
   <li><strong>intervalMerge</strong>: normally, time coordinates with seperate intervals are kept seperate.</li>
 </ol>
 <hr />
@@ -107,7 +108,17 @@ dl {margin: 10px 5px 5px 15px;}
 <p>&nbsp;</p>
 <p>cannot mix ensembles and vertical levels across the partition.</p>
 <p> for each variable, create union of times: for each time track (value, partition, localIndex). merge time coords with same {value}. store {partition, localIndex} cmmon case is that variables will share  {partition, localIndex}, but is it worth merging?</p>
+<p>dont need proto change; its reselected when index is rebuilt</p>
+<h2>check for changes</h2>
+<p>handled by DCM, looking only at underlying collection.</p>
+<h3>GribCollection</h3>
+<ol>
+  <li>look for new or deleted files</li>
+  <li>look if newFile.lastModified()  &gt; oldFile.lastModified() </li>
+  <li>look if index (gbx9) file doesnt exist, or has lastModified date   &lt; oldFile.lastModified() </li>
+</ol>
 <p>&nbsp;</p>
+<p>cant examine all files to see whats changed - too mant files. only examine each partition. maybe examine the latest?? maybe not - use manual rescan ??</p>
 <hr width="100%" />
 <address>
 <img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Dec 2011

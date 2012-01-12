@@ -339,9 +339,9 @@
     <xsd:attribute name="spec" type="xsd:string" use="required"/>
     <xsd:attribute name="name" type="xsd:token"/>
     <xsd:attribute name="olderThan" type="xsd:string" />
-    <xsd:attribute name="recheckAfter" type="xsd:string" />  <!-- deprecated : move to update element -->
     <xsd:attribute name="dateFormatMark" type="xsd:string"/>
     <xsd:attribute name="timePartition" type="xsd:string"/>
+    <xsd:attribute name="useIndexOnly" type="xsd:boolean"/>
   </xsd:complexType>
 
   <xsd:complexType name="updateType">
@@ -430,7 +430,12 @@
           <xsd:attribute name="to" type="xsd:int"/>
         </xsd:complexType>
       </xsd:element>
-    </xsd:sequence>
+      <xsd:element name="gdsName">
+        <xsd:complexType>
+          <xsd:attribute name="hash" type="xsd:int"/>
+          <xsd:attribute name="groupName" type="xsd:string"/>
+        </xsd:complexType>
+      </xsd:element>    </xsd:sequence>
     <xsd:attribute name="datasetTypes" type="xsd:string"/>
   </xsd:complexType>
 

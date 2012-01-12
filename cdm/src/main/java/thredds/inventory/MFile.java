@@ -40,17 +40,25 @@ package thredds.inventory;
  * @since Jun 30, 2009
  */
 public interface MFile extends Comparable<MFile> {
-  // time of last modification in Unix time (msecs since reference)
-  // < 0 means dont know
+
+  /**
+   * Get time of last modification at the time the MFile object was created
+   * @return time of last modification in Unix time (msecs since reference), or -1 if unknown
+   */
   public long getLastModified();
 
-  // size of file
-  // < 0 means dont know
+  /**
+   * Size of file in bytes
+   * @return  Size of file in bytes or -1 if unknown
+   */
   public long getLength();
 
   public boolean isDirectory();
 
-  // replace \\ with /
+  /**
+   * Get full path name, replace \\ with /
+   * @return full path name
+   */
   public String getPath();
 
   public String getName();
