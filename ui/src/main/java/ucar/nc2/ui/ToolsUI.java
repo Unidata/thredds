@@ -36,7 +36,7 @@ package ucar.nc2.ui;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTableLookup;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.util.net.HTTPSession;
@@ -952,10 +952,10 @@ public class ToolsUI extends JPanel {
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        Grib1StandardTables.setStrict(state);
+        Grib1ParamTableLookup.setStrict(state);
       }
     };
-    boolean strictMode = Grib1StandardTables.isStrict();
+    boolean strictMode = Grib1ParamTableLookup.isStrict();
     a.putValue(BAMutil.STATE, new Boolean(strictMode));
     BAMutil.setActionPropertiesToggle(a, null, "strict", strictMode, 'S', -1);
     BAMutil.addActionToMenu(ncMenu, a);

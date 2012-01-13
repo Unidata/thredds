@@ -72,15 +72,15 @@
             <gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/>
             <gdsName hash='-1571856555' groupName='KORN:Lower Mississippi RFC'/>
             <gdsName hash='-1491065322' groupName='KKRF:Missouri Basin RFC'/>
-            <gdsName hash='-1017807718' groupName='TSJU'/>
-            <gdsName hash='-1003775954' groupName='NCEP-QPE'/>
+            <gdsName hash='-1017807718' groupName='TSJU:San Juan PR WFO'/>
+            <gdsName hash='-1003775954' groupName='NCEP-QPE National Mosaic'/>
             <gdsName hash='-529497359' groupName='KRHA:Middle Atlantic RFC'/>
-            <gdsName hash='289752153' groupName='KRSA:California-Nevada RFC'/>
-            <gdsName hash='424971237' groupName='KRSA:California-Nevada RFC-2'/>
+            <gdsName hash='289752153' groupName='KRSA:California-Nevada RFC-6hr'/>
+            <gdsName hash='424971237' groupName='KRSA:California-Nevada RFC-1hr'/>
             <gdsName hash='511861653' groupName='KTIR:Ohio Basin RFC'/>
             <gdsName hash='880498701' groupName='KPTR:Northwest RFC'/>
             <gdsName hash='1123818409' groupName='KTAR:Northeast RFC'/>
-            <gdsName hash='1174418106' groupName='KNES'/>
+            <gdsName hash='1174418106' groupName='KNES-National Satellite Analysis'/>
             <gdsName hash='1193085709' groupName='KMSR:North Central RFC'/>
             <gdsName hash='1464276934' groupName='KSTR:Colorado Basin RFC'/>
             <gdsName hash='1815048381' groupName='KALR:Southeast RFC'/>

@@ -38,6 +38,7 @@ import thredds.inventory.CollectionManagerSingleFile;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -102,6 +103,7 @@ public class Grib1CollectionBuilder {
 
   private final List<CollectionManager> collections = new ArrayList<CollectionManager>();
   protected GribCollection gc;
+  protected Grib1Customizer cust;
 
   // single file
   private Grib1CollectionBuilder(File file, Formatter f) throws IOException {
@@ -464,10 +466,12 @@ public class Grib1CollectionBuilder {
     }
     f.format(" total grib records= %d%n", total);
 
+    Grib1Tables tables = new Grib1Tables();
+    cust = new Grib1Customizer(tables);
     Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib1Rectilyser(g.records, g.gdsHash);
+      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash);
       f.format(" GDS hash %d == ", g.gdsHash);
       g.rect.make(f, c);
     }
@@ -630,8 +634,7 @@ public class Grib1CollectionBuilder {
     b.setParameter(pds.getParameterNumber());
     b.setTableVersion(pds.getTableVersion()); // can differ for variables in the same file
     b.setLevelType(pds.getLevelType());
-    Grib1ParamLevel plevel = pds.getParamLevel();
-    b.setIsLayer(plevel.isLayer());
+    b.setIsLayer(cust.isLayer(pds));
     b.setIntervalType(pds.getTimeRangeIndicator());
     b.setCdmHash(vb.cdmHash);
     b.setRecordsPos(vb.pos);
@@ -642,7 +645,7 @@ public class Grib1CollectionBuilder {
     if (vb.ensCoordIndex >= 0)
       b.setEnsIdx(vb.ensCoordIndex);
 
-    Grib1ParamTime ptime = pds.getParamTime();
+    Grib1ParamTime ptime = cust.getParamTime(pds);
     if (ptime.isInterval()) {
       b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
     }

@@ -98,7 +98,6 @@ public class NcepLocalTables extends Grib2Tables {
 
   }
 
-
   @Override
   public int[] getForecastTimeInterval(Grib2Record gr) {
     if (!gr.getPDS().isInterval()) return null;

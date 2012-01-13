@@ -187,9 +187,9 @@ public class Grib1RecordScanner {
     } catch (Throwable t) {
       long pos = (is == null) ? -1 : is.getStartPos();
       log.warn("Bad Grib1 record in file {}, skipping pos={}", raf.getLocation(), pos);
-      t.printStackTrace();
-      lastPos = raf.getFilePointer();
-      if (hasNext()) // skip forward
+      // t.printStackTrace();
+      lastPos += 20; // skip over the "GRIB"
+      if (hasNext()) // search forward for another one
         return next();
     }
 

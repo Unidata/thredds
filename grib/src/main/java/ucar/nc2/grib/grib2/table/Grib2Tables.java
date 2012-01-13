@@ -322,7 +322,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables {
    * @param wantPeriod in these units
    * @return  interval size in units of wantPeriod
    */
-  public double getForecastTimeIntervalSize(Grib2Record gr, CalendarPeriod wantPeriod) {
+  static public double getForecastTimeIntervalSize(Grib2Record gr, CalendarPeriod wantPeriod) {
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
     int timeUnit = gr.getPDS().getTimeUnit();
 

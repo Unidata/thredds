@@ -38,6 +38,7 @@ import thredds.inventory.CollectionManagerSingleFile;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
@@ -465,7 +466,7 @@ public class Grib2CollectionBuilder {
     Grib2Rectilyser.Counter c = new Grib2Rectilyser.Counter(); // debugging
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, intvMerge);
+      g.rect = new Grib2Rectilyser(new Grib2Customizer(tables), g.records, g.gdsHash, intvMerge);
       f.format(" GDS hash %d == ", g.gdsHash);
       g.rect.make(f, c);
     }

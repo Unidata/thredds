@@ -283,7 +283,7 @@ public abstract class GribCollection {
     }
 
     public void setName(String base) {
-      if (base == null) return;
+      if (base == null || base.length() == 0) return;
       String tryit = base;
       int count = 1;
       while (groupNames.contains(tryit)) {

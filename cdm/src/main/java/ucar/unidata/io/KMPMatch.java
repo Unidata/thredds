@@ -69,6 +69,8 @@ public class KMPMatch {
   public int indexOf(byte[] data, int start, int max) {
     int j = 0;
     if (data.length == 0) return -1;
+    if (start + max > data.length)
+      System.out.println("HEY");
 
     for (int i = start; i < start + max; i++) {
       while (j > 0 && match[j] != data[i])

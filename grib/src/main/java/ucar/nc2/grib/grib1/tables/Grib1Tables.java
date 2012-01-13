@@ -38,7 +38,8 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib1.Grib1ParamLevel;
+import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.util.StringUtil2;
 
@@ -77,7 +78,7 @@ public class Grib1Tables implements GribTables {
         throw new FileNotFoundException("cant read parameter table=" + paramTablePath);
     }
     if (lookupTablePath != null) {
-      result.lookup = new Grib1StandardTables.Lookup();
+      result.lookup = new Grib1ParamTableLookup.Lookup();
       if (!result.lookup.readLookupTable(lookupTablePath))
         throw new FileNotFoundException("cant read lookup table=" + lookupTablePath);
     }
@@ -102,19 +103,26 @@ public class Grib1Tables implements GribTables {
 
   ///////////////////////////////////////////////////////////////////////////
 
-  private Grib1StandardTables.Lookup lookup; // if lookup table was set
+  private Grib1ParamTableLookup.Lookup lookup; // if lookup table was set
   private Grib1ParamTable override; // if parameter table was set
 
   public Grib1Tables() {
   }
 
+  //////////////////////////////////////////////
+  // these are the WMO defaults. override as needed
+
   @Override
   public String getLevelNameShort(int code) {
-    return Grib1ParamLevel.getNameShort(code);
+    return Grib1LevelTypeTable.getNameShort(code);
   }
 
   public String getLevelDescription(int levelType) {
-    return Grib1ParamLevel.getLevelDescription(levelType);
+    return Grib1LevelTypeTable.getLevelDescription(levelType);
+  }
+
+  public VertCoord.VertUnit getLevelUnit(int code) {
+    return Grib1LevelTypeTable.getLevelUnit(code);
   }
 
   public Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
@@ -124,23 +132,9 @@ public class Grib1Tables implements GribTables {
     if (param == null && lookup != null)
       param = lookup.getParameter(center, subcenter, tableVersion, param_number);
     if (param == null)
-      param = Grib1StandardTables.getParameter(center, subcenter, tableVersion, param_number); // standard tables
+      param = Grib1ParamTableLookup.getParameter(center, subcenter, tableVersion, param_number); // standard tables
     return param;
   }
-
-  /**
-   * Debugging only
-   */
-  public Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {
-    Grib1ParamTable result = null;
-    if (lookup != null)
-      result = lookup.getParameterTable(center, subcenter, tableVersion);
-    if (result == null)
-      result = Grib1StandardTables.getParameterTable(center, subcenter, tableVersion); // standard tables
-    return result;
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////
 
   private Map<Integer, String> ncepGenProcess;
 
@@ -312,6 +306,21 @@ public class Grib1Tables implements GribTables {
     }
 
   }
+
+  /**
+   * Debugging only
+   */
+  public Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {
+    Grib1ParamTable result = null;
+    if (lookup != null)
+      result = lookup.getParameterTable(center, subcenter, tableVersion);
+    if (result == null)
+      result = Grib1ParamTableLookup.getParameterTable(center, subcenter, tableVersion); // standard tables
+    return result;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////
+
 
   public static void main(String[] args) {
      readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");

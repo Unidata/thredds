@@ -252,6 +252,7 @@ public class VertCoord { // implements Comparable<VertCoord> {
     public final int code;
     public final String units;
     public final String datum;
+    //public final boolean isLayer;
     public final boolean isPositiveUp;
     public final boolean isVerticalCoordinate;
 
@@ -259,6 +260,7 @@ public class VertCoord { // implements Comparable<VertCoord> {
       this.code = code;
       this.units = units;
       this.datum = datum;
+      //this.isLayer = isLayer;
       this.isPositiveUp = isPositiveUp;
       this.isVerticalCoordinate = (units.length() != 0);
     }

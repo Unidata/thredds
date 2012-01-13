@@ -41,6 +41,7 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
@@ -379,6 +380,7 @@ public class Grib2CollectionPanel extends JPanel {
   private MFileCollectionManager dcm;
   private List<MFile> fileList;
   private Grib2Tables tables;
+  private Grib2Customizer cust;
 
   /* public void setCollection(String filename) throws IOException {
     if (filename.endsWith(GribCollection.IDX_EXT)) {
@@ -467,18 +469,18 @@ public class Grib2CollectionPanel extends JPanel {
         gdsSet.put(hash, gds);
     }
 
-    Grib2Rectilyser rect = new Grib2Rectilyser(tables, null, 0, false);
-
+    Grib2Rectilyser rect2 = null;
     for (Grib2Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
-      if (tables == null) {
+      if (rect2 == null) {
         Grib2SectionIdentification ids = gr.getId();
         tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+        cust = new Grib2Customizer(tables);
+        rect2 = new Grib2Rectilyser(cust, null, 0, false);
       }
 
-
-      int id = rect.cdmVariableHash(gr, tables, 0);
+      int id = rect2.cdmVariableHash(gr, 0);
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new Grib2ParameterBean(gr);
@@ -526,7 +528,7 @@ public class Grib2CollectionPanel extends JPanel {
       fileno++;
     }
 
-    Grib2Rectilyser agg = new Grib2Rectilyser(tables, records, 0, false);
+    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, false);
     agg.make(f, new Grib2Rectilyser.Counter());
     agg.dump(f, tables);
 

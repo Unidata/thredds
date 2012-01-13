@@ -32,10 +32,8 @@
 
 package ucar.nc2.grib.grib1;
 
-import ucar.nc2.grib.EnsCoord;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -49,9 +47,10 @@ import java.util.*;
  * @since 3/30/11
  */
 public class Grib1Rectilyser {
+  private Grib1Customizer cust;
+  private final List<Grib1Record> records;
   private final int gdsHash;
 
-  private final List<Grib1Record> records;
   private List<VariableBag> gribvars;
 
   private final List<TimeCoord> timeCoords = new ArrayList<TimeCoord>();
@@ -59,7 +58,8 @@ public class Grib1Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib1Rectilyser(List<Grib1Record> records, int gdsHash) {
+  public Grib1Rectilyser(Grib1Customizer cust, List<Grib1Record> records, int gdsHash) {
+    this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
   }
@@ -105,7 +105,7 @@ public class Grib1Rectilyser {
       TimeCoord use;
       boolean isUniform = checkTimeCoordsUniform(vb);
       Grib1SectionProductDefinition pds = vb.first.getPDSsection();
-      Grib1ParamTime ptime = pds.getParamTime();
+      Grib1ParamTime ptime = cust.getParamTime(pds);
       if (ptime.isInterval()) {
         use = makeTimeCoordsIntv(vb, isUniform);
       } else {
@@ -201,11 +201,10 @@ public class Grib1Rectilyser {
       result += result * 37 + gdsHash;
 
     Grib1SectionProductDefinition pdss = gr.getPDSsection();
-    Grib1ParamLevel plevel = pdss.getParamLevel();
-    Grib1ParamTime ptime = pdss.getParamTime();
+    Grib1ParamTime ptime = cust.getParamTime(pdss);
 
     result += result * 37 + pdss.getLevelType();
-    if (plevel.isLayer()) result += result * 37 + 1;
+    if (cust.isLayer(pdss)) result += result * 37 + 1;
 
     result += result * 37 + pdss.getParameterNumber();
     result += result * 37 + pdss.getTableVersion();
@@ -250,28 +249,29 @@ public class Grib1Rectilyser {
 
   private VertCoord makeVertCoord(VariableBag vb) {
     Grib1SectionProductDefinition pdsFirst = vb.first.getPDSsection();
-    Grib1ParamLevel plevelFirst = pdsFirst.getParamLevel();
-    boolean isLayer = plevelFirst.isLayer();
-    boolean isPositiveUp = plevelFirst.isPositiveUp();
+    VertCoord.VertUnit vertUnit = cust.makeVertUnit(pdsFirst.getLevelType());
+    boolean isLayer = cust.isLayer(pdsFirst);
+
+    //Grib1ParamLevel plevelFirst = pdsFirst.getParamLevel();
+    //boolean isLayer = plevelFirst.isLayer();
+    //boolean isPositiveUp = plevelFirst.isPositiveUp();
 
     Set<VertCoord.Level> coords = new HashSet<VertCoord.Level>();
 
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
-      Grib1ParamLevel plevel = pds.getParamLevel();
+      Grib1ParamLevel plevel = cust.getParamLevel(pds);
       r.vcCoord = new VertCoord.Level(plevel.getValue1(), plevel.getValue2());
       coords.add(r.vcCoord);
     }
 
     List<VertCoord.Level> vlist = new ArrayList<VertCoord.Level>(coords);
     Collections.sort(vlist);
-    if (isPositiveUp)
+    if (vertUnit.isPositiveUp)
       Collections.reverse(vlist);
 
-    VertCoord.VertUnit vertUnit = Grib1ParamLevel.getLevelUnit(pdsFirst.getLevelType());
     return new VertCoord(vlist, vertUnit, isLayer);
   }
-
 
   private EnsCoord makeEnsCoord(VariableBag vb) {
     if (!vb.first.getPDSsection().isEnsemble()) return null;
@@ -306,7 +306,7 @@ public class Grib1Rectilyser {
       int unit = pds.getTimeUnit();
       if (timeUnit < 0) { // first one
         timeUnit = unit;
-        vb.timeUnit = Grib1ParamTime.getCalendarPeriod(timeUnit);
+        vb.timeUnit = Grib1TimeTypeTable.getCalendarPeriod(timeUnit);
 
       } else if (unit != timeUnit) {
         isUniform = false;
@@ -323,9 +323,9 @@ public class Grib1Rectilyser {
       }
 
       // LOOK - cant you just compare time units ??
-      Grib1ParamTime ptime = pds.getParamTime();
+      Grib1ParamTime ptime = cust.getParamTime(pds);
       int time = ptime.getForecastTime();
-      CalendarDate date1 = cd.add( Grib1ParamTime.getCalendarPeriod(unit).multiply(time));  // actual forecast date
+      CalendarDate date1 = cd.add( Grib1TimeTypeTable.getCalendarPeriod(unit).multiply(time));  // actual forecast date
       int offset = TimeCoord.getOffset(refDate, date1, vb.timeUnit);
       CalendarDate date2 = refDate.add( vb.timeUnit.multiply(offset));  // forecast date using offset
       if (!date1.equals(date2)) {
@@ -337,7 +337,7 @@ public class Grib1Rectilyser {
     if (!timeUnitOk)
       timeUnit = 0; // minutes
 
-    vb.timeUnit = Grib1ParamTime.getCalendarPeriod(timeUnit);
+    vb.timeUnit = Grib1TimeTypeTable.getCalendarPeriod(timeUnit);
     vb.refDate = refDate;
     return isUniform;
   }
@@ -346,9 +346,9 @@ public class Grib1Rectilyser {
     Set<Integer> times = new HashSet<Integer>();
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
-      Grib1ParamTime ptime = pds.getParamTime();
+      Grib1ParamTime ptime = cust.getParamTime(pds);
       int time = ptime.getForecastTime();
-      CalendarPeriod duration = Grib1ParamTime.getCalendarPeriod(pds.getTimeUnit());
+      CalendarPeriod duration = Grib1TimeTypeTable.getCalendarPeriod(pds.getTimeUnit());
 
       if (uniform) {
         r.tcCoord = time;
@@ -368,14 +368,14 @@ public class Grib1Rectilyser {
     Set<TimeCoord.Tinv> times = new HashSet<TimeCoord.Tinv>();
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
-      Grib1ParamTime ptime = pds.getParamTime();
+      Grib1ParamTime ptime = cust.getParamTime(pds);
       int[] timeb = ptime.getInterval();
       if (uniform) {
         r.tcIntvCoord = new TimeCoord.Tinv(timeb[0], timeb[1]);
         times.add(r.tcIntvCoord);
       } else {
         TimeCoord.Tinv org = new TimeCoord.Tinv(timeb[0], timeb[1]);
-        CalendarPeriod fromUnit = Grib1ParamTime.getCalendarPeriod(pds.getTimeUnit());
+        CalendarPeriod fromUnit = Grib1TimeTypeTable.getCalendarPeriod(pds.getTimeUnit());
         r.tcIntvCoord =  org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit);
         times.add(r.tcIntvCoord);
       }

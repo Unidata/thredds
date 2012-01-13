@@ -1,10 +1,9 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.GribResourceReader;
-import ucar.nc2.grib.grib1.tables.Grib1Parameter;
-import ucar.nc2.grib.grib1.Grib1Utils;
+import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
-import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTableLookup;
 import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.ui.dialog.Grib1TableCompareDialog;
 import ucar.nc2.ui.widget.*;
@@ -77,7 +76,7 @@ public class Grib1TablesViewer extends JPanel {
         if (bean == null) return;
         initTableDialog();
 
-        Grib1ParamTable wmo = Grib1StandardTables.getParameterTable(0, 0, bean.getVersion());
+        Grib1ParamTable wmo = Grib1ParamTableLookup.getParameterTable(0, 0, bean.getVersion());
         if (wmo == null) {
           infoTA.setText("Cant find WMO version " + bean.getVersion());
           infoWindow.showIfNotIconified();
@@ -160,7 +159,7 @@ public class Grib1TablesViewer extends JPanel {
     buttPanel.add(infoButton);
 
     try {
-      List<Grib1ParamTable> tables = Grib1StandardTables.getStandardParameterTables();
+      List<Grib1ParamTable> tables = Grib1ParamTableLookup.getStandardParameterTables();
       java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.size());
       for (Grib1ParamTable t : tables) {
         beans.add(new TableBean(t));
@@ -445,7 +444,7 @@ public class Grib1TablesViewer extends JPanel {
     }
 
     public String getWMOdesc() {
-      Grib1ParamTable wmo = Grib1StandardTables.getDefaultTable();
+      Grib1ParamTable wmo = Grib1ParamTableLookup.getDefaultTable();
       Grib1Parameter p = wmo.getParameter(param.getNumber());
       return p == null ? "" : p.getDescription();
     }

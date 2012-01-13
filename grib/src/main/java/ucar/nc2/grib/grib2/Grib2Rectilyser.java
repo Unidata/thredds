@@ -36,6 +36,7 @@ import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -50,7 +51,7 @@ import java.util.*;
  * @since 3/30/11
  */
 public class Grib2Rectilyser {
-  private final Grib2Tables tables;
+  private final Grib2Customizer cust;
   private final int gdsHash;
   private final boolean intvMerge;
 
@@ -62,8 +63,8 @@ public class Grib2Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser(Grib2Tables tables, List<Grib2Record> records, int gdsHash, boolean intvMerge) {
-    this.tables = tables;
+  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, boolean intvMerge) {
+    this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
     this.intvMerge = intvMerge;
@@ -93,7 +94,7 @@ public class Grib2Rectilyser {
     // unique variables using Grib2Record.cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
     for (Grib2Record gr : records) {
-      int cdmHash = cdmVariableHash(gr, tables, gdsHash);
+      int cdmHash = cdmVariableHash(gr, gdsHash);
       VariableBag bag = vbHash.get(cdmHash);
       if (bag == null) {
         bag = new VariableBag(gr, cdmHash);
@@ -320,7 +321,7 @@ public class Grib2Rectilyser {
     Set<TimeCoord.Tinv> times = new HashSet<TimeCoord.Tinv>();
     for (Record r : vb.atomList) {
       Grib2Pds pds = r.gr.getPDS();
-      int[] timeb = tables.getForecastTimeInterval(r.gr);
+      int[] timeb = cust.getForecastTimeInterval(r.gr);
       if (uniform) {
         r.tcIntvCoord = new TimeCoord.Tinv(timeb[0], timeb[1]);
         times.add(r.tcIntvCoord);
@@ -404,11 +405,10 @@ public class Grib2Rectilyser {
    * Read it and weep.
    *
    * @param gr the Grib record
-   * @param table the Grib table
    * @param gdsHash can override the gdsHash
    * @return this record's hash code, identical hash means belongs to the same variable
    */
-  public int cdmVariableHash(Grib2Record gr, Grib2Tables table, int gdsHash) {
+  public int cdmVariableHash(Grib2Record gr, int gdsHash) {
     Grib2SectionGridDefinition gdss = gr.getGDSsection();
     Grib2Pds pds2 = gr.getPDS();
 
@@ -427,7 +427,7 @@ public class Grib2Rectilyser {
     result += result * 37 + pds2.getTemplateNumber();
 
     if (pds2.isInterval()) {
-      double size = table.getForecastTimeIntervalSize(gr, CalendarPeriod.Hour); // using an Hour here, but will need to make this configurable
+      double size = cust.getForecastTimeIntervalSize(gr, CalendarPeriod.Hour); // using an Hour here, but will need to make this configurable
       if (!intvMerge) result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - configurable
       result += result * 37 + pds2.getStatisticalProcessType(); // create new variable for each stat type
     }

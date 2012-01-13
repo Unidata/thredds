@@ -38,8 +38,7 @@ package ucar.nc2.grib.grib1;
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
-import ucar.nc2.grib.grib1.tables.Grib1Parameter;
-import ucar.nc2.grib.grib1.tables.Grib1Tables;
+import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
@@ -313,31 +312,13 @@ public final class Grib1SectionProductDefinition {
     return rawData[index - 1] & 0xff;
   }
 
-  /**
-   * Get the time of the forecast.
-   *
-   * @return date and time
-   *         <p/>
-   *         public final int[] getForecastTime() {
-   *         return new int[] {getTimeValue1(), getTimeValue2()};
-   *         }
-   */
-
-  public Grib1ParamLevel getParamLevel() {
-    return new Grib1ParamLevel(this);
-  }
-
-  public Grib1ParamTime getParamTime() {
-    return new Grib1ParamTime(this);
-  }
-
-  public void showPds(Grib1Tables tables, Formatter f) {
+  public void showPds(Grib1Customizer cust, Formatter f) {
 
     f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
-    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), Grib1Tables.getSubCenterName(getCenter(), getSubCenter()));
+    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), cust.getSubCenterName(getCenter(), getSubCenter()));
     f.format("                 Table Version : %d%n", getTableVersion());
 
-    Grib1Parameter parameter = tables.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
+    Grib1Parameter parameter = cust.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
     if (parameter != null) {
       Grib1ParamTable ptable = parameter.getTable();
       f.format("               Parameter Table : (%d-%d-%d) %s%n", getCenter(), getSubCenter(), getTableVersion(), (ptable == null) ? "MISSING" : ptable.getPath());
@@ -348,18 +329,18 @@ public final class Grib1SectionProductDefinition {
       f.format("               Parameter %d not found%n", getParameterNumber());
     }
 
-    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), tables.getTypeGenProcessName(getCenter(), getGenProcess()));
+    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), cust.getTypeGenProcessName(getCenter(), getGenProcess()));
 
     f.format("                Reference Time : %s%n", getReferenceDate());
-    f.format("                    Time Units : (%d) %s%n", getTimeUnit(), Grib1ParamTime.getCalendarPeriod(getTimeUnit()));
-    Grib1ParamTime ptime = getParamTime();
+    f.format("                    Time Units : (%d) %s%n", getTimeUnit(), Grib1TimeTypeTable.getCalendarPeriod(getTimeUnit()));
+    Grib1ParamTime ptime = cust.getParamTime(this);
     f.format("          Time Range Indicator : (%d) %s%n", getTimeRangeIndicator(), ptime.getTimeTypeName());
     f.format("                   Time 1 (P1) : %d%n", getTimeValue1());
     f.format("                   Time 2 (P2) : %d%n", getTimeValue2());
     f.format("                   Time  coord : %s%n", ptime.getTimeCoord());
-    Grib1ParamLevel plevel = getParamLevel();
-    f.format("                    Level Type : (%d) %s%n", getLevelType(), tables.getLevelNameShort(plevel.getLevelType()));
-    f.format("             Level Description : %s%n", tables.getLevelDescription(plevel.getLevelType()));
+    Grib1ParamLevel plevel = cust.getParamLevel(this);
+    f.format("                    Level Type : (%d) %s%n", getLevelType(), plevel.getNameShort());
+    f.format("             Level Description : %s%n", plevel.getDescription());
     f.format("                 Level Value 1 : %f%n", plevel.getValue1());
     f.format("                 Level Value 2 : %f%n", plevel.getValue2());
     f.format("               Grid Definition : %d%n", getGridDefinition());
@@ -381,6 +362,9 @@ public final class Grib1SectionProductDefinition {
   public final int getPerturbationNumber() {
     return 0;
   }
+
+  ////////////////////////////////////////////////////////
+  // Ensembles
   /*
    * NCEP Appendix C Manual 388
    * http://www.nco.ncep.noaa.gov/pmb/docs/on388/appendixc.html

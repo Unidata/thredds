@@ -37,8 +37,7 @@ import ucar.grib.GribGridRecord;
 import ucar.grib.GribPds;
 
 import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.grib1.Grib1ParamTime;
-import ucar.nc2.grib.grib1.Grib1Utils;
+import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
 import ucar.nc2.iosp.grid.GridRecord;
 import ucar.nc2.iosp.grid.GridTimeCoord;
 import ucar.nc2.time.CalendarDate;
@@ -134,8 +133,8 @@ public class GribTimeCoord extends GridTimeCoord {
 
     // taken from Rectilyser
     TimeCoord.Tinv org = new TimeCoord.Tinv(timeInv[0], timeInv[1]);
-    CalendarPeriod fromUnit = Grib1ParamTime.getCalendarPeriod(pds.getTimeUnit());
-    CalendarPeriod toUnit = Grib1ParamTime.getCalendarPeriod(this.timeUnit);
+    CalendarPeriod fromUnit = Grib1TimeTypeTable.getCalendarPeriod(pds.getTimeUnit());  // LOOK why GRIB 1 ??
+    CalendarPeriod toUnit = Grib1TimeTypeTable.getCalendarPeriod(this.timeUnit);
     return org.convertReferenceDate(CalendarDate.of(pds.getReferenceDate()), fromUnit, CalendarDate.of(baseDate), toUnit);
   }
 

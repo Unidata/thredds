@@ -391,6 +391,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
    * @throws IOException if an I/O error occurrs.
    */
   public void seek(long pos) throws IOException {
+    if (pos < 0)
+      throw new java.io.IOException("Negative seek offset");
 
     // If the seek is into the buffer, just update the file pointer.
     if ((pos >= bufferStart) && (pos < dataEnd)) {
