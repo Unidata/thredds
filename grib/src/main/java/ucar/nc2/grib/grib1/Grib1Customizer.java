@@ -34,9 +34,7 @@ package ucar.nc2.grib.grib1;
 
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib1.tables.Grib1LevelTypeTable;
-import ucar.nc2.grib.grib1.tables.Grib1Tables;
-import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
+import ucar.nc2.grib.grib1.tables.*;
 
 /**
  * Interprets the raw grib1 info in a way that may be customized.
@@ -45,18 +43,37 @@ import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
  * @since 1/13/12
  */
 public class Grib1Customizer implements GribTables {
-  private Grib1Tables tables;
 
-  public Grib1Customizer(Grib1Tables tables) {
-    this.tables = tables;
+  static public Grib1Customizer factory(Grib1Record proto) {
+    int center = proto.getPDSsection().getCenter();
+    int subcenter = proto.getPDSsection().getSubCenter();
+    int version = proto.getPDSsection().getTableVersion();
+    return factory(center, subcenter, version);
+  }
+
+  static public Grib1Customizer factory(int center, int subcenter, int version) {
+    if (center == 7) return new NcepTables();
+    else if (center == 9) return new NcepRfcTables();
+    else return new Grib1Customizer();
+  }
+
+  ///////////////////////////////////////
+  private Grib1Tables tables;
+  private int center, subcenter, version;
+
+  protected Grib1Customizer() {
+    this.tables = new Grib1Tables();
+    this.center = center;
+    this.subcenter = subcenter;
+    this.version = version;
   }
 
   public Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
     return tables.getParameter(center, subcenter, tableVersion, param_number);
   }
 
-  public String getTypeGenProcessName(int center, int genProcess) {
-    return tables.getTypeGenProcessName(center, genProcess);
+  public String getTypeGenProcessName(int genProcess) {
+    return null;
   }
 
   public String getSubCenterName(int center, int subcenter) {
@@ -82,17 +99,18 @@ public class Grib1Customizer implements GribTables {
     return Grib1LevelTypeTable.isPositiveUp(pds.getLevelType());
   }
 
-  public String getUnits(Grib1SectionProductDefinition pds) {
-    return Grib1LevelTypeTable.getUnits(pds.getLevelType());
-  }
 
   @Override
-  public String getLevelNameShort(int code) {
-    return Grib1LevelTypeTable.getNameShort(code);
+  public String getLevelNameShort(int levelType) {
+    return Grib1LevelTypeTable.getNameShort(levelType);
   }
 
   public String getLevelDescription(int levelType) {
     return Grib1LevelTypeTable.getLevelDescription(levelType);
+  }
+
+  public String getLevelUnits(int levelType) {
+    return Grib1LevelTypeTable.getUnits(levelType);
   }
 
   ///////////////////////////////////////////////////

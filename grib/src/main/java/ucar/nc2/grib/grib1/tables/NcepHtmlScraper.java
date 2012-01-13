@@ -43,9 +43,8 @@ import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Read  NCEP html files to extract the GRIB tables.
@@ -56,6 +55,90 @@ import java.util.List;
 public class NcepHtmlScraper {
   private boolean debug = false;
   private boolean show = false;
+
+ //////////////////////////////////////////////////////////////////
+  // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
+  // LOOK the table is hand edited to add the units (!)
+  void parseTable3() throws IOException {
+    String url = "http://www.nco.ncep.noaa.gov/pmb/docs/on388/table3.html";
+    Document doc = Jsoup.parse(new URL(url), 5 * 1000); // 5 sec timeout
+    System.out.printf("%s%n", doc);
+
+    Set<String> abbrevSet = new HashSet<String>();
+    Element table = doc.select("table").get(2);
+    List<Stuff3> stuff = new ArrayList<Stuff3>();
+    Elements rows = table.select("tr");
+    for (Element row : rows) {
+      Elements cols = row.select("td");
+      if (debug) {
+        System.out.printf(" %d=", cols.size());
+        for (Element col : cols)
+          System.out.printf("%s:", col.text());
+        System.out.printf("%n");
+      }
+
+      if (cols.size() == 3) {
+        String snum = StringUtil2.cleanup(cols.get(0).text()).trim();
+        try {
+          int pnum = Integer.parseInt(snum);
+          String desc = StringUtil2.cleanup(cols.get(1).text()).trim();
+          String abbrev = StringUtil2.cleanup(cols.get(2).text()).trim();
+          if (desc.startsWith("Reserved")) {
+            System.out.printf("*** Skip Reserved %s%n", row.text());
+            continue;
+          } else {
+            System.out.printf("%d == %s, %s%n", pnum, desc, abbrev);
+            if (abbrevSet.contains(abbrev))
+              System.out.printf("DUPLICATE ABBREV %s%n", abbrev);
+            else
+            stuff.add(new Stuff3(pnum, desc, abbrev));
+          }
+          //result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
+        } catch (NumberFormatException e) {
+          System.out.printf("*** Cant parse %s == %s%n", snum, row.text());
+        }
+
+      }
+    }
+    writeTable3Xml("NCEP GRIB-1 Table 3", url, "ncepTable3.xml", stuff);
+  }
+
+  private class Stuff3 {
+    int no;
+    String desc;
+    String abbrev;
+
+    private Stuff3(int no, String desc, String abbrev) {
+      this.no = no;
+      this.desc = desc;
+      this.abbrev = abbrev;
+    }
+  }
+
+  private void writeTable3Xml(String name, String source, String filename, List<Stuff3> stuff) throws IOException {
+     org.jdom.Element rootElem = new org.jdom.Element("table3");
+     org.jdom.Document doc = new org.jdom.Document(rootElem);
+     rootElem.addContent(new org.jdom.Element("title").setText(name));
+     rootElem.addContent(new org.jdom.Element("source").setText(source));
+
+     for (Stuff3 p : stuff) {
+       org.jdom.Element paramElem = new org.jdom.Element("parameter");
+       paramElem.setAttribute("code", Integer.toString(p.no));
+       paramElem.addContent(new org.jdom.Element("description").setText(p.desc));
+       paramElem.addContent(new org.jdom.Element("abbrev").setText(p.abbrev));
+       rootElem.addContent(paramElem);
+     }
+
+     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+     String x = fmt.outputString(doc);
+
+     FileOutputStream fout = new FileOutputStream(dirOut + filename);
+     fout.write(x.getBytes());
+     fout.close();
+
+     if (show) System.out.printf("%s%n", x);
+   }
+
 
 
   //////////////////////////////////////////////////////////////////
@@ -252,6 +335,6 @@ public class NcepHtmlScraper {
 
   public static void main(String[] args) throws IOException {
     NcepHtmlScraper scraper = new NcepHtmlScraper();
-    scraper.parseTableA();
+    scraper.parseTable3();
   }
 }

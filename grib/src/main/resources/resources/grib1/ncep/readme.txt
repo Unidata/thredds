@@ -1,15 +1,15 @@
 11/21/2011 screen scrape http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html
  - use program ucar.nc2.grib.grib1.tables.NcepHtmlScraper
 
-01/13/2012 also need to get the following tables for NCEP:
+01/13/2012 also need to deal with the following tables for NCEP:
   - TABLE A (Generating Process or Model from Originating Center 7) : http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
-    already have resources/grib1/ncep/ncepTableA.xml but not sure where it came from (!)
+    already have resources/grib1/ncep/ncepTableA.xml read by NcepHtmlScraper
     (center 9 handcoded in  ucar.nc2.grib.grib1.tables.Grib1Tables)
 
   - Table B (GRID IDENTIFICATION) is encoded by hand in program ucar.nc2.grib.grib1.tables.Grib1GdsPredefined
 
-  - Table C(National subcenters) http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablec.html
-    currently hand encoded in ucar.nc2.grib.grib1.tables.Grib1Tables
+  - Table C (National subcenters) http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablec.html
+    matches WMO common table 12 (subccenters)
 
   - Table 3 (level types) http://www.nco.ncep.noaa.gov/pmb/docs/on388/table3.html
     currently hand encoded in ucar.nc2.grib.grib1.Grib1ParamLevel
