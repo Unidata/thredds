@@ -219,7 +219,11 @@ getProtocol(String protocol,int port)
 	if(entry.port != port) continue;
 	return entry.handler;
     }
-    throw new IllegalStateException(); // no such protocol X port
+    // Retry with port 0
+    Protocol p = Protocol.getProtocol(protocol); // may throw exception
+    if(p == null)
+        throw new IllegalStateException(); // no such protocol X port
+    return p;
 }
 
 ////////////////////////////////////////////////////////////////////////
