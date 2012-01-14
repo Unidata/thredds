@@ -117,7 +117,7 @@ public class Grib1TimeTypeTable {
     }
   }
 
-  // code table 5 - 2010 edition of WMO manual on codes (I.2 – Bi — 21)
+  // code table 5 - 2010 edition of WMO manual on codes
   static public String getTimeTypeName(int timeRangeIndicator, int p1, int p2) {
     String timeRange;
 
@@ -182,7 +182,7 @@ public class Grib1TimeTypeTable {
         If P1 = 0 then the data averaged in the basic interval P2 are assumed to be continuous, i.e. all available data
         are simply averaged together.
 
-        If P1 = 1 (the unit of time – octet 18, Code table 4 – is not
+        If P1 = 1 (the unit of time  octet 18, Code table 4  is not
         relevant here) then the data averaged together in the basic interval P2 are valid only at the
         time (hour, minute) given in the reference time, for all the days included in the P2 period.
         The units of P2 are given by the contents of octet 18 and Code table 4 */

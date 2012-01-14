@@ -115,9 +115,11 @@ public class Grib1Index extends GribIndex {
       FileInputStream fin = new FileInputStream(idxFile); // LOOK need DiskCache for non-writeable directories
 
       try {
-        //// header message
-        if (!NcStream.readAndTest(fin, MAGIC_START.getBytes()))
-          throw new IOException("Bad magic number of grib index, should be= " + MAGIC_START);
+        //// check header is ok
+        if (!NcStream.readAndTest(fin, MAGIC_START.getBytes())) {
+          log.debug("Bad magic number of grib index, should be= {}" + MAGIC_START);
+          return false;
+        }
 
         int v = NcStream.readVInt(fin);
         if (v != version) {
