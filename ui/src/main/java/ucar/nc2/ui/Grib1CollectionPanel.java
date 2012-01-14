@@ -481,6 +481,7 @@ public class Grib1CollectionPanel extends JPanel {
         gdsSet.put(hash, gds);
     }
 
+    this.cust = null; // LOOK reset for each file (?)
     Grib1Rectilyser rect = null;
 
     for (Grib1Record gr : index.getRecords()) {
@@ -763,7 +764,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getLevel() {
-      if (cust.isLayer(pds)) {
+      if (cust.isLayer(pds.getLevelType())) {
         return plevel.getValue1() + "-" + plevel.getValue2();
       }
       return Float.toString(plevel.getValue1());

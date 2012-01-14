@@ -34,8 +34,6 @@ package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib1.tables.Grib1LevelTypeTable;
 
 /**
  * Level information from a particular PDS.

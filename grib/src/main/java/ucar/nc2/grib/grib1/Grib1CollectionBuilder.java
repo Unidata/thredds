@@ -634,7 +634,7 @@ public class Grib1CollectionBuilder {
     b.setParameter(pds.getParameterNumber());
     b.setTableVersion(pds.getTableVersion()); // can differ for variables in the same file
     b.setLevelType(pds.getLevelType());
-    b.setIsLayer(cust.isLayer(pds));
+    b.setIsLayer(cust.isLayer(pds.getLevelType()));
     b.setIntervalType(pds.getTimeRangeIndicator());
     b.setCdmHash(vb.cdmHash);
     b.setRecordsPos(vb.pos);
@@ -698,7 +698,8 @@ public class Grib1CollectionBuilder {
   protected GribCollectionProto.Coord writeCoordProto(VertCoord vc, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setCode(vc.getCode());
-    b.setUnit(vc.getUnits());
+    String units = (vc.getUnits() != null) ? vc.getUnits() : "";
+    b.setUnit(units);
     for (VertCoord.Level coord : vc.getCoords()) {
       if (vc.isLayer()) {
         b.addValues((float) coord.getValue1());

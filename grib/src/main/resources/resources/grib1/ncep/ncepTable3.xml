@@ -85,12 +85,10 @@
   <parameter code="216">
     <description>Cumulonimbus Base</description>
     <abbrev>CBB</abbrev>
-    <units>m</units>
   </parameter>
   <parameter code="217">
     <description>Cumulonimbus Top</description>
     <abbrev>CBT</abbrev>
-    <units>m</units>
   </parameter>
   <parameter code="220">
     <description>Planetary Boundary Layer (derived from Richardson number)</description>
@@ -128,6 +126,7 @@
   <parameter code="236">
     <description>Layer between two depths below ocean surface depth of upper surface</description>
     <abbrev>OLYR</abbrev>
+    <isLayer>true</isLayer>
   </parameter>
   <parameter code="237">
     <description>Bottom of Ocean Mixed Layer (m)</description>

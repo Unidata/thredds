@@ -262,7 +262,7 @@ public class VertCoord { // implements Comparable<VertCoord> {
       this.datum = datum;
       //this.isLayer = isLayer;
       this.isPositiveUp = isPositiveUp;
-      this.isVerticalCoordinate = (units.length() != 0);
+      this.isVerticalCoordinate = (units != null) && (units.length() != 0);
     }
   }
 }

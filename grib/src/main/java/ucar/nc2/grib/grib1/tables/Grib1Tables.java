@@ -61,6 +61,24 @@ import java.util.Map;
 public class Grib1Tables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTable.class);
 
+  static public class LevelType {
+    public int code;
+    public String desc;
+    public String abbrev;
+    public String units;
+    public String datum;
+    public boolean isPositiveUp;
+    public boolean isLayer;
+
+    public LevelType(int code, String desc, String abbrev, String units, String datum) {
+      this.code = code;
+      this.desc = desc;
+      this.abbrev = abbrev;
+      this.units = units;
+      this.datum = datum;
+    }
+  }
+
   /**
    * Get a Grib1Tables object, optionally specifiying a parameter table or lookup table specific to this dataset.
    * @param paramTablePath path to a parameter table, in format Grib1ParamTable can read.
@@ -111,18 +129,6 @@ public class Grib1Tables {
 
   //////////////////////////////////////////////
   // these are the WMO defaults. override as needed
-
-  public String getLevelNameShort(int code) {
-    return Grib1LevelTypeTable.getNameShort(code);
-  }
-
-  public String getLevelDescription(int levelType) {
-    return Grib1LevelTypeTable.getLevelDescription(levelType);
-  }
-
-  public VertCoord.VertUnit getLevelUnit(int code) {
-    return Grib1LevelTypeTable.getLevelUnit(code);
-  }
 
   public Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
     Grib1Parameter param = null;

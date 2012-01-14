@@ -11,3 +11,7 @@ notes for tables in fnmoc subdir
 
   - Table 3 (Master Level Type Table)
     resources\grib1\fnmoc\US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml
+
+01/14/2012 reading Table A
+  - missing gentype = 78, eg E:/fnmoc/FNMOC_NCODA_Global_Ocean_20120109_1200.grib1
+  - apparently "Navy Coupled Ocean Data Assimilation (NCODA) Model"

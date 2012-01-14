@@ -66,7 +66,7 @@ public class NcepHtmlScraper {
 
     Set<String> abbrevSet = new HashSet<String>();
     Element table = doc.select("table").get(2);
-    List<Stuff3> stuff = new ArrayList<Stuff3>();
+    List<Grib1Tables.LevelType> stuff = new ArrayList<Grib1Tables.LevelType>();
     Elements rows = table.select("tr");
     for (Element row : rows) {
       Elements cols = row.select("td");
@@ -91,7 +91,7 @@ public class NcepHtmlScraper {
             if (abbrevSet.contains(abbrev))
               System.out.printf("DUPLICATE ABBREV %s%n", abbrev);
             else
-            stuff.add(new Stuff3(pnum, desc, abbrev));
+            stuff.add(new Grib1Tables.LevelType(pnum, desc, abbrev, null, null));
           }
           //result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
         } catch (NumberFormatException e) {
@@ -103,29 +103,21 @@ public class NcepHtmlScraper {
     writeTable3Xml("NCEP GRIB-1 Table 3", url, "ncepTable3.xml", stuff);
   }
 
-  private class Stuff3 {
-    int no;
-    String desc;
-    String abbrev;
-
-    private Stuff3(int no, String desc, String abbrev) {
-      this.no = no;
-      this.desc = desc;
-      this.abbrev = abbrev;
-    }
-  }
-
-  private void writeTable3Xml(String name, String source, String filename, List<Stuff3> stuff) throws IOException {
+  private void writeTable3Xml(String name, String source, String filename, List<Grib1Tables.LevelType> stuff) throws IOException {
      org.jdom.Element rootElem = new org.jdom.Element("table3");
      org.jdom.Document doc = new org.jdom.Document(rootElem);
      rootElem.addContent(new org.jdom.Element("title").setText(name));
      rootElem.addContent(new org.jdom.Element("source").setText(source));
 
-     for (Stuff3 p : stuff) {
+     for (Grib1Tables.LevelType p : stuff) {
        org.jdom.Element paramElem = new org.jdom.Element("parameter");
-       paramElem.setAttribute("code", Integer.toString(p.no));
+       paramElem.setAttribute("code", Integer.toString(p.code));
        paramElem.addContent(new org.jdom.Element("description").setText(p.desc));
        paramElem.addContent(new org.jdom.Element("abbrev").setText(p.abbrev));
+       if (p.units != null) paramElem.addContent(new org.jdom.Element("units").setText(p.units));
+       if (p.datum != null) paramElem.addContent(new org.jdom.Element("datum").setText(p.datum));
+       if (p.isPositiveUp) paramElem.addContent(new org.jdom.Element("isPositiveUp").setText("true"));
+       if (p.isLayer) paramElem.addContent(new org.jdom.Element("isLayer").setText("true"));
        rootElem.addContent(paramElem);
      }
 
@@ -139,7 +131,29 @@ public class NcepHtmlScraper {
      if (show) System.out.printf("%s%n", x);
    }
 
+   /*  Grib1LevelTypeTable will go away soon
+   void writeWmoTable3() throws IOException {
 
+     Set<String> abbrevSet = new HashSet<String>();
+     List<Grib1Tables.LevelType> stuff = new ArrayList<Grib1Tables.LevelType>();
+     for (int code = 1; code < 255; code++) {
+       String desc = Grib1LevelTypeTable.getLevelDescription(code);
+       if (desc.startsWith("Unknown")) continue;
+       String abbrev = Grib1LevelTypeTable.getNameShort(code);
+       String units = Grib1LevelTypeTable.getUnits(code);
+       String datum = Grib1LevelTypeTable.getDatum(code);
+
+       if (abbrevSet.contains(abbrev))
+         System.out.printf("DUPLICATE ABBREV %s%n", abbrev);
+
+       Grib1Tables.LevelType level = new Grib1Tables.LevelType(code, desc, abbrev, units, datum);
+       level.isLayer = Grib1LevelTypeTable.isLayer(code);
+       level.isPositiveUp = Grib1LevelTypeTable.isPositiveUp(code);
+       stuff.add(level);
+     }
+
+     writeTable3Xml("WMO GRIB-1 Table 3", "Unidata transcribe WMO306_Vol_I.2_2010_en.pdf", "wmoTable3.xml", stuff);
+   }  */
 
   //////////////////////////////////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
@@ -335,6 +349,6 @@ public class NcepHtmlScraper {
 
   public static void main(String[] args) throws IOException {
     NcepHtmlScraper scraper = new NcepHtmlScraper();
-    scraper.parseTable3();
+    //scraper.writeWmoTable3();
   }
 }

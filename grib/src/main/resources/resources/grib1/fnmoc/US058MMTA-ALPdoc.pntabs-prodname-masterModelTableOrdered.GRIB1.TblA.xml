@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pnTable>
+  <name>Master Model Table</name>
+  <updatedDTG>201103231036</updatedDTG>
+  <tableStatus setDTG="2007050712">deprecated</tableStatus>
+  <reference>
+    <title>Product Name Standard Document</title>
+    <docId>P-3146-2</docId>
+    <version>2.0</version>
+    <dtg>June 2007</dtg>
+    <organization>Fleet Numerical Meteorology and Oceanography Center</organization>
+    <infoUsed>Model Table</infoUsed>
+  </reference>
+  <fnmocTable>
+    <entry>
+      <grib1Id>0004</grib1Id>
+      <fnmocId>0004</fnmocId>
+      <name>MISC_GRIDS</name>
+      <fullName>Miscellaneous Grids</fullName>
+      <description>atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0008</grib1Id>
+      <fnmocId>0008</fnmocId>
+      <name>STRATO</name>
+      <fullName>NOGAPS Stratosphere Functions</fullName>
+      <description>atmospheric stratosphere model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0010</grib1Id>
+      <fnmocId>0010</fnmocId>
+      <name>OPARS</name>
+      <fullName>Optimum Path Aircraft Routing System</fullName>
+      <description>atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0011</grib1Id>
+      <fnmocId>0011</fnmocId>
+      <name>WW3</name>
+      <fullName>Wave Watch 3</fullName>
+      <description>ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0012</grib1Id>
+      <fnmocId>0012</fnmocId>
+      <name>NCEP_GFS</name>
+      <fullName>NCEP GFS - non-hybrid</fullName>
+      <description>global atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0014</grib1Id>
+      <fnmocId>0014</fnmocId>
+      <name>ETA</name>
+      <fullName>NCEP ETA model</fullName>
+      <description>atmospheric model</description>
+      <status>deprecated</status>
+    </entry>
+    <entry>
+      <grib1Id>0022</grib1Id>
+      <fnmocId>0022</fnmocId>
+      <name>COAMPS_EUROPE</name>
+      <fullName>COAMPS Europe</fullName>
+      <description>mesoscale (regional) atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0023</grib1Id>
+      <fnmocId>0023</fnmocId>
+      <name>GAC</name>
+      <fullName>General Acoustic Conditions</fullName>
+      <description>ocean acoustic model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0024</grib1Id>
+      <fnmocId>0024</fnmocId>
+      <name>COAMPS_SOUTHWEST_ASIA</name>
+      <fullName>COAMPS Southwest Asia</fullName>
+      <description>mesoscale (regional) atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0027</grib1Id>
+      <fnmocId>0027</fnmocId>
+      <name>COAMPS_CENT_AM</name>
+      <fullName>COAMPS Central America</fullName>
+      <description>mesoscale (regional) atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0036</grib1Id>
+      <fnmocId>0036</fnmocId>
+      <name>OCEAN_GLOBAL</name>
+      <fullName>NCODA Ocean model - West Pacific</fullName>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0037</grib1Id>
+      <fnmocId>0037</fnmocId>
+      <name>OCEAN_GLOBAL</name>
+      <fullName>NCODA Ocean model - West Atlantic</fullName>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0041</grib1Id>
+      <fnmocId>0041</fnmocId>
+      <name>DAF</name>
+      <fullName>Derived Atmospheric Forecasts</fullName>
+      <description>global atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0043</grib1Id>
+      <fnmocId>0043</fnmocId>
+      <name>OCEAN_GLOBAL</name>
+      <fullName>NCODA Ocean model - global</fullName>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0049</grib1Id>
+      <fnmocId>0049</fnmocId>
+      <name>NCEP_ENSEMBLE</name>
+      <fullName>NCEP ENSEMBLE</fullName>
+      <description>an ensemble of global atmospheric models</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0050</grib1Id>
+      <fnmocId>0050</fnmocId>
+      <name>ENSEMBLE</name>
+      <fullName>NOGAPS Ensemble</fullName>
+      <description>atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0055</grib1Id>
+      <fnmocId>0055</fnmocId>
+      <name>NUOPC</name>
+      <fullName>National Unified Operational Prediction Capability</fullName>
+      <description>multi-model global ensemble (NOGAPS and GFS)</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0058</grib1Id>
+      <fnmocId>0058</fnmocId>
+      <name>NOGAPS</name>
+      <fullName>Naval Oceanographic Global Atmospheric Prediction System</fullName>
+      <description>global atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0060</grib1Id>
+      <fnmocId>0060</fnmocId>
+      <name>COAMPS_E_PAC</name>
+      <fullName>COAMPS East Pacific Ocean</fullName>
+      <description>mesoscale (regional) atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0063</grib1Id>
+      <fnmocId>0063</fnmocId>
+      <name>COAMPS_W_ATL</name>
+      <fullName>COAMPS Western Atlantic</fullName>
+      <description>mesoscale (regional) atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0075</grib1Id>
+      <fnmocId>0075</fnmocId>
+      <name>COAMPS_ADRIATIC</name>
+      <fullName>COAMPS Adriatic</fullName>
+      <description>mesoscale (regional) atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0076</grib1Id>
+      <fnmocId>0076</fnmocId>
+      <name>GFDN</name>
+      <fullName>Geophysical Fluid Dynamic Laboratory - Navy</fullName>
+      <description>atmospheric model, tropical cyclone structure</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0078</grib1Id>
+      <fnmocId>0078</fnmocId>
+      <name>NCODA</name>
+      <fullName>Navy Coupled Ocean Data Assimilation (NCODA) Model</fullName>
+      <description>added by hand jcaron 1/14/2012</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0083</grib1Id>
+      <fnmocId>0083</fnmocId>
+      <name>LMF</name>
+      <fullName>Layer Mean Field grids</fullName>
+      <description>atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0088</grib1Id>
+      <fnmocId>0088</fnmocId>
+      <name>NCEP_WW3</name>
+      <fullName>NCEP Wave Watch 3</fullName>
+      <description>ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0090</grib1Id>
+      <fnmocId>0090</fnmocId>
+      <name>COAMPS_W_PAC</name>
+      <fullName>COAMPS Western Pacific</fullName>
+      <description>mesoscale (regional) atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0096</grib1Id>
+      <fnmocId>0096</fnmocId>
+      <name>NCOM_GLOBAL</name>
+      <fullName>Navy Coastal Ocean Model - Global</fullName>
+      <description>replaces TOPS</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0110</grib1Id>
+      <fnmocId>0110</fnmocId>
+      <name>WW3_GLOBAL</name>
+      <fullName>Wave Watch 3rd Revision Global</fullName>
+      <description>global ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0111</grib1Id>
+      <fnmocId>0111</fnmocId>
+      <name>WW3_EUROPE</name>
+      <fullName>Wave Watch 3rd Revision Europe</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0112</grib1Id>
+      <fnmocId>0112</fnmocId>
+      <name>WW3_E_PAC</name>
+      <fullName>Wave Watch 3rd Revision Eastern Pacific</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0113</grib1Id>
+      <fnmocId>0113</fnmocId>
+      <name>WW3_CENT_AM</name>
+      <fullName>Wave Watch 3rd Revision Central America</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0115</grib1Id>
+      <fnmocId>0115</fnmocId>
+      <name>WW3_W_ATL</name>
+      <fullName>Wave Watch 3rd Revision Western Atlantic</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0116</grib1Id>
+      <fnmocId>0116</fnmocId>
+      <name>WW3_W_PAC</name>
+      <fullName>Wave Watch 3rd Revision Western Pacific</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0117</grib1Id>
+      <fnmocId>0117</fnmocId>
+      <name>WW3_SOUTHWEST_ASIA</name>
+      <fullName>Wave Watch 3rd Revision Southwest Asia</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0120</grib1Id>
+      <fnmocId>0120</fnmocId>
+      <name>WW3_BALTIC_SEA</name>
+      <fullName>Wave Watch 3rd Revision Baltic Sea</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0121</grib1Id>
+      <fnmocId>0121</fnmocId>
+      <name>WW3_ADRIATIC_SEA</name>
+      <fullName>Wave Watch 3rd Revision Adriatic Sea</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0124</grib1Id>
+      <fnmocId>0124</fnmocId>
+      <name>WW3_N_IND</name>
+      <fullName>Wave Watch 3rd Revision Northern Indian Ocean</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0127</grib1Id>
+      <fnmocId>0127</fnmocId>
+      <name>COAMPS_N_IND</name>
+      <fullName>COAMPS Northern Indian Ocean</fullName>
+      <description>mesoscale (regional) atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0129</grib1Id>
+      <fnmocId>0129</fnmocId>
+      <name>WW3_SE_AUST</name>
+      <fullName>Wave Watch 3 Southeast Australia</fullName>
+      <description>mesoscale ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0130</grib1Id>
+      <fnmocId>0130</fnmocId>
+      <name>WW3_CASPIAN_SEA</name>
+      <fullName>Wave Watch 3rd Revision Caspian Sea</fullName>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0135</grib1Id>
+      <fnmocId>0135</fnmocId>
+      <name>FAROP</name>
+      <fullName>Forecast of Aerosal Radiative Optical Properties</fullName>
+      <description>atmospheric optical model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0136</grib1Id>
+      <fnmocId>0136</fnmocId>
+      <name>UKMET_SW_ASIA</name>
+      <fullName>United Kingdom Meteorological Office model - Southwest Asia</fullName>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0150</grib1Id>
+      <fnmocId>0150</fnmocId>
+      <name>NCOM_W_PAC</name>
+      <fullName>Navy Coastal Ocean Model - Western Pacific</fullName>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0151</grib1Id>
+      <fnmocId>0151</fnmocId>
+      <name>NCOM_W_ATL</name>
+      <fullName>Navy Coastal Ocean Model - Western Atlantic</fullName>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0153</grib1Id>
+      <fnmocId>0153</fnmocId>
+      <name>WW3_W_AFRICA</name>
+      <fullName>WW3 West Africa</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0154</grib1Id>
+      <fnmocId>0154</fnmocId>
+      <name>WW3-SOMALIA</name>
+      <fullName>WW3 Somalia</fullName>
+      <description>mesoscale (regional) ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0179</grib1Id>
+      <fnmocId>0179</fnmocId>
+      <name>COAMPS_W_AFRICA</name>
+      <fullName>COAMPS West Africa</fullName>
+      <description>mesoscale (regional) atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0201</grib1Id>
+      <fnmocId>0201</fnmocId>
+      <name>WW3_EUROPE_180</name>
+      <fullName>Wave Watch 3 Europe 180</fullName>
+      <description>regional ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0202</grib1Id>
+      <fnmocId>0202</fnmocId>
+      <name>WW3_N_IND_180</name>
+      <fullName>Wave Watch 3 North India 180</fullName>
+      <description>regional ocean surface wave model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0250</grib1Id>
+      <fnmocId>0250</fnmocId>
+      <name>NAVDAS</name>
+      <fullName>Navy Atmospheric Vaiational Data Assimilation System</fullName>
+      <description>data assimilation</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0251</grib1Id>
+      <fnmocId>0251</fnmocId>
+      <name>CONAVDAS</name>
+      <fullName>COAMPS Navy Atmospheric Vaiational Data Assimilation System</fullName>
+      <description>data assimilation</description>
+      <status>current</status>
+    </entry>
+  </fnmocTable>
+</pnTable>

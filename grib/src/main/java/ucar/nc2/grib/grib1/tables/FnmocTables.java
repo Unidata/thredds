@@ -44,18 +44,18 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * NCEP overrides of GRIB tables
+ * FNMOC local tables
  *
  * @author caron
- * @since 1/13/12
+ * @since 1/14/12
  */
-public class NcepTables extends Grib1Customizer {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
+public class FnmocTables extends Grib1Customizer {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FnmocTables.class);
 
-  private static HashMap<Integer, String> genProcessMap;  // shared by all instances
   private static HashMap<Integer, Grib1Tables.LevelType> levelTypesMap;  // shared by all instances
+  private static HashMap<Integer, String> genProcessMap;  // shared by all instances
 
-  public NcepTables() {
+  public FnmocTables() {
     super();
   }
 
@@ -63,17 +63,37 @@ public class NcepTables extends Grib1Customizer {
 
   @Override
   public String getTypeGenProcessName(int genProcess) {
-    if (genProcessMap == null) readNcepGenProcess("resources/grib1/ncep/ncepTableA.xml");
+    if (genProcessMap == null) readGenProcess("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterModelTableOrdered.GRIB1.TblA.xml");
     if (genProcessMap == null) return null;
     return genProcessMap.get(genProcess);
   }
 
-  private void readNcepGenProcess(String path) {
+  /*
+  <fnmocTable>
+    <entry>
+      <grib1Id>0004</grib1Id>
+      <fnmocId>0004</fnmocId>
+      <name>MISC_GRIDS</name>
+      <fullName>Miscellaneous Grids</fullName>
+      <description>atmospheric model</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>0008</grib1Id>
+      <fnmocId>0008</fnmocId>
+      <name>STRATO</name>
+      <fullName>NOGAPS Stratosphere Functions</fullName>
+      <description>atmospheric stratosphere model</description>
+      <status>current</status>
+    </entry>
+
+   */
+  private void readGenProcess(String path) {
     InputStream is = null;
     try {
       is = GribResourceReader.getInputStream(path);
       if (is == null) {
-        logger.error("Cant find NCEP Table 1 = " + path);
+        logger.error("Cant find FNMOC gen process table = " + path);
         return;
       }
 
@@ -82,10 +102,11 @@ public class NcepTables extends Grib1Customizer {
       Element root = doc.getRootElement();
 
       HashMap<Integer, String> result = new HashMap<Integer, String>(200);
-      List<Element> params = root.getChildren("parameter");
+      Element fnmocTable = root.getChild("fnmocTable");
+      List<Element> params = fnmocTable.getChildren("entry");
       for (Element elem1 : params) {
-        int code = Integer.parseInt(elem1.getAttributeValue("code"));
-        String desc = elem1.getChildText("description");
+        int code = Integer.parseInt(elem1.getChildText("grib1Id"));
+        String desc = elem1.getChildText("fullName");
         result.put(code, desc);
       }
 
@@ -93,11 +114,11 @@ public class NcepTables extends Grib1Customizer {
       return;
 
     } catch (IOException ioe) {
-      logger.error("Cant read NCEP Table 1 = " + path, ioe);
+      logger.error("Cant read FNMOC Table 1 = " + path, ioe);
       return;
 
     } catch (JDOMException e) {
-      logger.error("Cant parse NCEP Table 1 = " + path, e);
+      logger.error("Cant parse FNMOC Table 1 = " + path, e);
       return;
 
     } finally {
@@ -107,6 +128,7 @@ public class NcepTables extends Grib1Customizer {
       }
     }
   }
+
 
   /// levels
 
@@ -147,14 +169,69 @@ public class NcepTables extends Grib1Customizer {
   }
 
   private Grib1Tables.LevelType getLevelType(int code) {
-    if (code < 129) return null; // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
+    if (code < 129) return null;
     if (levelTypesMap == null)
-      levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");
+      levelTypesMap = readFnmocTable3("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml");
     if (levelTypesMap == null)
       return null;
-
     return levelTypesMap.get(code);
   }
 
+  /*
+  <fnmocTable>
+    <entry>
+      <grib1Id>001</grib1Id>
+      <fnmocId>surface</fnmocId>
+      <name>surface</name>
+      <description>ground or water surface (the atmosphere's lower boundary, land/sea surface)</description>
+      <status>current</status>
+    </entry>
+   */
+  private HashMap<Integer, Grib1Tables.LevelType> readFnmocTable3(String path) {
+    InputStream is = null;
+    try {
+      is = GribResourceReader.getInputStream(path);
+      if (is == null) {
+        logger.error("Cant find FnmocTable3 = " + path);
+        return null;
+      }
+
+      SAXBuilder builder = new SAXBuilder();
+      org.jdom.Document doc = builder.build(is);
+      Element root = doc.getRootElement();
+
+      HashMap<Integer, Grib1Tables.LevelType> result = new HashMap<Integer, Grib1Tables.LevelType>(200);
+      Element fnmocTable = root.getChild("fnmocTable");
+      List<Element> params = fnmocTable.getChildren("entry");
+      for (Element elem1 : params) {
+        int code = Integer.parseInt(elem1.getChildText("grib1Id"));
+        if (code < 129) continue;
+        String desc = elem1.getChildText("description");
+        String abbrev = elem1.getChildText("name");
+        String units = elem1.getChildText("units");
+        String datum = elem1.getChildText("datum");
+        Grib1Tables.LevelType lt = new Grib1Tables.LevelType(code, desc, abbrev, units, datum);
+        lt.isLayer = elem1.getChild("isLayer") != null;
+        lt.isPositiveUp = elem1.getChild("isPositiveUp")  != null;
+        result.put(code, lt);
+      }
+
+      return result;  // all at once - thread safe
+
+    } catch (IOException ioe) {
+      logger.error("Cant read FnmocTable3 = " + path, ioe);
+      return null;
+
+    } catch (JDOMException e) {
+      logger.error("Cant parse FnmocTable3 = " + path, e);
+      return null;
+
+    } finally {
+      if (is != null) try {
+        is.close();
+      } catch (IOException e) {
+      }
+    }
+  }
 
 }
