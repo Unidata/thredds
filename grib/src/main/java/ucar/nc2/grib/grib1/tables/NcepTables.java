@@ -36,6 +36,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
+import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.grib1.Grib1Customizer;
 
 import java.io.IOException;
@@ -53,10 +54,10 @@ public class NcepTables extends Grib1Customizer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
 
   private static HashMap<Integer, String> genProcessMap;  // shared by all instances
-  private static HashMap<Integer, Grib1Tables.LevelType> levelTypesMap;  // shared by all instances
+  private static HashMap<Integer, GribLevelType> levelTypesMap;  // shared by all instances
 
   public NcepTables() {
-    super();
+    super(7);
   }
 
   // genProcess
@@ -112,41 +113,42 @@ public class NcepTables extends Grib1Customizer {
 
   @Override
   public String getLevelNameShort(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelNameShort(code) : lt.abbrev;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.getLevelNameShort(code) : lt.getAbbrev();
   }
 
   @Override
   public String getLevelDescription(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelDescription(code) : lt.desc;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.getLevelDescription(code) : lt.getDesc();
   }
 
   @Override
   public String getLevelUnits(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelUnits(code) : lt.units;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.getLevelUnits(code) : lt.getUnits();
   }
 
   @Override
   public boolean isLayer(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.isLayer(code) : lt.isLayer;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.isLayer(code) : lt.isLayer();
   }
 
   @Override
   public boolean isPositiveUp(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.isPositiveUp(code) : lt.isPositiveUp;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.isPositiveUp(code) : lt.isPositiveUp();
   }
 
   @Override
   public String getDatum(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.getDatum(code) : lt.datum;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.getDatum(code) : lt.getDatum();
   }
 
-  private Grib1Tables.LevelType getLevelType(int code) {
+  @Override
+  protected GribLevelType getLevelType(int code) {
     if (code < 129) return null; // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
     if (levelTypesMap == null)
       levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");

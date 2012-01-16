@@ -1,10 +1,10 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.grib.GribResourceReader;
+import ucar.nc2.grib.grib1.Grib1Customizer;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableLookup;
-import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.ui.dialog.Grib1TableCompareDialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.IndependentWindow;
@@ -390,7 +390,7 @@ public class Grib1TablesViewer extends JPanel {
     }
 
     public String getSubCenter() {
-      return Grib1Tables.getSubCenterName(table.getCenter_id(), table.getSubcenter_id());
+      return Grib1Customizer.getSubCenterName(table.getCenter_id(), table.getSubcenter_id());
     }
 
     public int getSubcenter_id() {

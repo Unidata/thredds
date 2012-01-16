@@ -38,6 +38,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ucar.nc2.grib.GribLevelType;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
@@ -53,8 +54,8 @@ import java.util.*;
  * @since 11/21/11
  */
 public class NcepHtmlScraper {
-  private boolean debug = false;
-  private boolean show = false;
+  private final boolean debug = false;
+  private final boolean show = false;
 
  //////////////////////////////////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
@@ -66,7 +67,7 @@ public class NcepHtmlScraper {
 
     Set<String> abbrevSet = new HashSet<String>();
     Element table = doc.select("table").get(2);
-    List<Grib1Tables.LevelType> stuff = new ArrayList<Grib1Tables.LevelType>();
+    List<GribLevelType> stuff = new ArrayList<GribLevelType>();
     Elements rows = table.select("tr");
     for (Element row : rows) {
       Elements cols = row.select("td");
@@ -91,7 +92,7 @@ public class NcepHtmlScraper {
             if (abbrevSet.contains(abbrev))
               System.out.printf("DUPLICATE ABBREV %s%n", abbrev);
             else
-            stuff.add(new Grib1Tables.LevelType(pnum, desc, abbrev, null, null));
+            stuff.add(new GribLevelType(pnum, desc, abbrev, null, null, false, false));
           }
           //result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
         } catch (NumberFormatException e) {
@@ -103,21 +104,21 @@ public class NcepHtmlScraper {
     writeTable3Xml("NCEP GRIB-1 Table 3", url, "ncepTable3.xml", stuff);
   }
 
-  private void writeTable3Xml(String name, String source, String filename, List<Grib1Tables.LevelType> stuff) throws IOException {
+  private void writeTable3Xml(String name, String source, String filename, List<GribLevelType> stuff) throws IOException {
      org.jdom.Element rootElem = new org.jdom.Element("table3");
      org.jdom.Document doc = new org.jdom.Document(rootElem);
      rootElem.addContent(new org.jdom.Element("title").setText(name));
      rootElem.addContent(new org.jdom.Element("source").setText(source));
 
-     for (Grib1Tables.LevelType p : stuff) {
+     for (GribLevelType p : stuff) {
        org.jdom.Element paramElem = new org.jdom.Element("parameter");
-       paramElem.setAttribute("code", Integer.toString(p.code));
-       paramElem.addContent(new org.jdom.Element("description").setText(p.desc));
-       paramElem.addContent(new org.jdom.Element("abbrev").setText(p.abbrev));
-       if (p.units != null) paramElem.addContent(new org.jdom.Element("units").setText(p.units));
-       if (p.datum != null) paramElem.addContent(new org.jdom.Element("datum").setText(p.datum));
-       if (p.isPositiveUp) paramElem.addContent(new org.jdom.Element("isPositiveUp").setText("true"));
-       if (p.isLayer) paramElem.addContent(new org.jdom.Element("isLayer").setText("true"));
+       paramElem.setAttribute("code", Integer.toString(p.getCode()));
+       paramElem.addContent(new org.jdom.Element("description").setText(p.getDatum()));
+       paramElem.addContent(new org.jdom.Element("abbrev").setText(p.getAbbrev()));
+       if (p.getUnits() != null) paramElem.addContent(new org.jdom.Element("units").setText(p.getUnits()));
+       if (p.getDatum() != null) paramElem.addContent(new org.jdom.Element("datum").setText(p.getDatum()));
+       if (p.isPositiveUp()) paramElem.addContent(new org.jdom.Element("isPositiveUp").setText("true"));
+       if (p.isLayer()) paramElem.addContent(new org.jdom.Element("isLayer").setText("true"));
        rootElem.addContent(paramElem);
      }
 

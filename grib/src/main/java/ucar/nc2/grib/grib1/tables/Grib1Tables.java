@@ -33,20 +33,9 @@
 package ucar.nc2.grib.grib1.tables;
 
 import net.jcip.annotations.Immutable;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import ucar.grib.GribResourceReader;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib1.Grib1Parameter;
-import ucar.nc2.wmo.CommonCodeTable;
-import ucar.unidata.util.StringUtil2;
 
+import ucar.nc2.grib.grib1.Grib1Parameter;
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This is the interface to manage GRIB-1 Code and Param Tables.
@@ -59,25 +48,7 @@ import java.util.Map;
  */
 @Immutable
 public class Grib1Tables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTable.class);
-
-  static public class LevelType {
-    public int code;
-    public String desc;
-    public String abbrev;
-    public String units;
-    public String datum;
-    public boolean isPositiveUp;
-    public boolean isLayer;
-
-    public LevelType(int code, String desc, String abbrev, String units, String datum) {
-      this.code = code;
-      this.desc = desc;
-      this.abbrev = abbrev;
-      this.units = units;
-      this.datum = datum;
-    }
-  }
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Tables.class);
 
   /**
    * Get a Grib1Tables object, optionally specifiying a parameter table or lookup table specific to this dataset.
@@ -141,66 +112,6 @@ public class Grib1Tables {
     return param;
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////
-
-  private static Map<Integer, String> nwsoSubCenter;
-
-  /* TABLE C - SUB-CENTERS FOR CENTER 9  US NWS FIELD STATIONS
-  * from bdgparm.f John Halquist <John.Halquist@noaa.gov> 9/12/2011
-  */
-  public static String getSubCenterName(int center, int subcenter) {
-    if (center == 9) {
-      if (nwsoSubCenter == null) readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
-      if (nwsoSubCenter == null) return null;
-      return nwsoSubCenter.get(subcenter);
-    }
-
-    return CommonCodeTable.getSubCenterName(center, subcenter);
-  }
-
-  // order: num, name, desc, unit
-  private static void readNwsoSubCenter(String path) {
-    HashMap<Integer, String> result = new HashMap<Integer, String>();
-
-    InputStream is = null;
-    try {
-      is = ucar.nc2.grib.GribResourceReader.getInputStream(path);
-      if (is == null) return;
-
-      BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-      // rdg - added the 0 line length check to cover the case of blank lines at
-      //       the end of the parameter table file.
-      while (true) {
-        String line = br.readLine();
-        if (line == null) break;
-        if ((line.length() == 0) || line.startsWith("#")) continue;
-
-        StringBuilder lineb =  new StringBuilder(line);
-        StringUtil2.remove(lineb,"'+,/");
-        String[] flds = lineb.toString().split("[:]");
-
-        int val = Integer.parseInt(flds[0].trim()); // must have a number
-        String name = flds[1].trim() + ": " + flds[2].trim();
-
-        result.put(val, name);
-        if (false) System.out.printf(" %d == %s%n", val, name);
-      }
-
-      nwsoSubCenter = result; // all at once - thread safe
-
-    } catch (IOException ioError) {
-      logger.warn("An error occurred in Grib1Tables while trying to open the table " + path + " : " + ioError);
-
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
-    }
-
-  }
-
   /**
    * Debugging only
    */
@@ -213,10 +124,4 @@ public class Grib1Tables {
     return result;
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////
-
-
-  public static void main(String[] args) {
-     readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
-  }
 }

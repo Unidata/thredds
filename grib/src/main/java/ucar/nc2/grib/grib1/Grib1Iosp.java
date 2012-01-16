@@ -38,7 +38,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -64,17 +63,17 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   static private final boolean debugTime = false, debugRead = false;
 
  static public String makeVariableName(Grib1Customizer cust, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-   return Grib1Utils.makeVariableName(cust, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
+   return cust.makeVariableName(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
            vindex.levelType, vindex.intvType, vindex.intvName);
  }
 
   static public String makeVariableLongName(Grib1Customizer cust, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return Grib1Utils.makeVariableLongName(cust, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
+    return cust.makeVariableLongName(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
             vindex.levelType, vindex.intvType, vindex.intvName, vindex.isLayer, vindex.probabilityName);
   }
 
   static public String makeVariableUnits(Grib1Customizer cust, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return Grib1Utils.makeVariableUnits(cust, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
+    return cust.makeVariableUnits(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +89,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    byte[] b = new byte[Grib1CollectionBuilder.MAGIC_START.length()];  // LOOK NOT also matches GribCollectionTimePartitioned
+    byte[] b = new byte[Grib1CollectionBuilder.MAGIC_START.length()];
     raf.readFully(b);
     String magic = new String(b);
 
@@ -218,7 +217,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
     ncfile.addAttribute(null, new Attribute("Originating or generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
-    val = cust.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
+    val = cust.getSubCenterName( gribCollection.getSubcenter());
     ncfile.addAttribute(null, new Attribute("Originating or generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
     //ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
     //ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
@@ -415,10 +414,10 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
 
     v.addAttribute(new Attribute("GRIB1_level_code", vc.getCode()));
-    VertCoord.VertUnit vu = cust.makeVertUnit(vc.getCode());
+    VertCoord.VertUnit vu = cust.getVertUnit(vc.getCode());
     if (vu != null) {
-      if (vu.datum != null)
-        v.addAttribute(new Attribute("datum", vu.datum));
+      if (vu.getDatum() != null)
+        v.addAttribute(new Attribute("datum", vu.getDatum()));
     }
 
     if (vc.isLayer()) {

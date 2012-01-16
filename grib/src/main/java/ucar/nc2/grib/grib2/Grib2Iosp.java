@@ -187,7 +187,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     raf.readFully(b);
     String magic = new String(b);
     if (magic.equals(Grib2CollectionBuilder.MAGIC_START)) return true;
-    if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START)) return true;
+    if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START)) return true;  // so must be same length as Grib2CollectionBuilder.MAGIC_START
 
     // check for GRIB2 file
     return Grib2RecordScanner.isValidFile(raf);
@@ -384,8 +384,8 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
       v.addAttribute(new Attribute("GRIB2_level_type", vc.getCode()));
       VertCoord.VertUnit vu = Grib2Utils.getLevelUnit(vc.getCode());
       if (vu != null) {
-        if (vu.datum != null)
-          v.addAttribute(new Attribute("datum", vu.datum));
+        if (vu.getDatum() != null)
+          v.addAttribute(new Attribute("datum", vu.getDatum()));
       }
 
       if (vc.isLayer()) {

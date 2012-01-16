@@ -35,20 +35,28 @@ package ucar.nc2.grib.grib1;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import ucar.grib.GribNumbers;
 import ucar.grib.GribResourceReader;
+import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.tables.*;
+import ucar.nc2.wmo.CommonCodeTable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 
 /**
  * Interprets the raw grib1 info in a way that may be customized.
- * This class handles the default casse, using only standard WMO tables.
+ * This class handles the default case, using only standard WMO tables.
  * Subclasses override as needed.
+ *
+ * Bit of a contradiction, since getParamter() allows different center, subcenter, version (the version is for sure needed)
+ * But other tables are fixed by  center.
  *
  * @author caron
  * @since 1/13/12
@@ -67,14 +75,25 @@ public class Grib1Customizer implements GribTables {
     if (center == 7) return new NcepTables();
     else if (center == 9) return new NcepRfcTables();
     else if (center == 58) return new FnmocTables();
-    else return new Grib1Customizer();
+    else return new Grib1Customizer(center);
+  }
+
+  static public String getSubCenterName(int center, int subcenter) {
+    Grib1Customizer cust = Grib1Customizer.factory(center, subcenter, 0);
+    return cust.getSubCenterName( subcenter);
   }
 
   ///////////////////////////////////////
+  private int center;
   private Grib1Tables tables;
 
-  protected Grib1Customizer() {
+  protected Grib1Customizer(int center) {
+    this.center = center;
     this.tables = new Grib1Tables();
+  }
+
+  public int getCenter() {
+    return center;
   }
 
   public Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
@@ -85,8 +104,131 @@ public class Grib1Customizer implements GribTables {
     return null;
   }
 
-  public String getSubCenterName(int center, int subcenter) {
-    return tables.getSubCenterName(center, subcenter);
+  public String getSubCenterName(int subcenter) {
+    return CommonCodeTable.getSubCenterName(center, subcenter);
+  }
+
+  ///////////////////////////////////////////////////
+  // create variable names
+
+  /*
+   http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB
+   The following section gives the algorithm NCL uses to assign names to GRIB1 variables.
+
+   GRIB1 data variable name encoding:
+
+     if entry matching parameter table version and parameter number is found (either in built-in or user-supplied table)
+       and entry contains a short name for the parameter:
+         if recognized as probability product:
+           <probability_parameter_short_name>_<subject_variable_short_name> (ex: PROB_A_PCP)
+         else:
+           <parameter_short_name> (ex: TMP)
+     else:
+        VAR_<parameter_number> (ex: VAR_179)
+
+     if pre-defined grid:
+        _<pre-defined_grid_number> (ex: TMP_6)
+     else if grid defined in GDS (Grid Description Section):
+        _GDS<grid_type_number> (ex: TMP_GDS4)
+
+     _<level_type_abbreviation> (ex: TMP_GDS4_ISBL)
+
+     if not statistically processed variable and not duplicate name the name is complete at this point.
+
+     if statistically-processed variable with constant specified statistical processing duration:
+           _<statistical_processing_type_abbreviation><statistical_processing_duration><duration_units> (ex: ACPCP_44_SFC_acc6h)
+     else if statistically-processed variable with no specified processing duration
+        _<statistical_processing_type_abbreviation> (ex: A_PCP_192_SFC_acc)
+
+     if variable name is duplicate of existing variable name (this should not normally occur):
+        _n (where n begins with 1 for first duplicate) (ex: TMP_GDS4_ISBL_1)
+
+ Notes:
+   * Probability products are properly recognized in version 4.3.0 or later.
+   * NCL uses the generic construction VAR_<parameter_number> in two situations:
+     - The entry in the applicable published table contains no short name suitable for use as a component of an NCL variable name.
+       Users should expect that later revisions to the table may result in the parameter receiving a short name, causing the name to change.
+     - There is no recognized entry for the parameter number. In this case, NCL outputs a warning message. The parameter index
+       could be unrecognized for several reasons:
+         > No parameter table has been supplied for the originating center and the index is greater than 127. (The default GRIB parameter table
+           properly applies only to indexes less than 128.)
+         > The index is not present in the applicable parameter table, perhaps because the table is out of date or is otherwise incorrect.
+         > The GRIB file has been generated incorrectly, perhaps specifying a wrong parameter table or a non-existent index.
+
+   * Pre-defined grids are enumerated in Table B of the NCEP GRIB1 documentation.
+   * GDS Grids types are listed in Table 6 of the NCEP GRIB1 documentation.
+   * Level type abbreviations are taken from Table 3 of the NCEP GRIB1 documentation.
+   * The abbreviations corresponding to the supported statistical processing methods are:
+       ave - average
+       acc - accumulation
+       dif - difference
+   * Note that the duration period and units abbreviation were added in NCL version 4.2.0.a028 in order to handle GRIB files with
+     more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
+     names relative to earlier versions.
+  */
+
+  public String makeVariableName(int center, int subcenter, int version, int paramNo,
+                                 int levelType, int intvType, String intvName) {
+    Formatter f = new Formatter();
+
+    Grib1Parameter param = getParameter(center, subcenter, version, paramNo);
+    if (param == null) {
+      f.format("VAR%d-%d-%d-%d", center, subcenter, version, paramNo);
+    } else {
+      if (param.useName())
+        f.format("%s", param.getName());
+      else
+        f.format("%s", GribUtils.makeNameFromDescription(param.getDescription()));
+    }
+
+    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+      f.format("_%s", getLevelNameShort(levelType)); // code table 3
+      // if (vindex.isLayer) f.format("_layer"); LOOK ? assumes that cant have two variables on same vertical type, differing only by isLayer
+    }
+
+    if (intvType >= 0) {
+      Grib1TimeTypeTable.StatType stype = Grib1TimeTypeTable.getStatType(intvType);
+      if (stype != null) {
+        if (intvName != null) f.format("_%s", intvName);
+        f.format("_%s", stype.name());
+      }
+    }
+
+    return f.toString();
+  }
+
+  public String makeVariableLongName(int center, int subcenter, int version, int paramNo,
+                                     int levelType, int intvType, String intvName, boolean isLayer, String probabilityName) {
+    Formatter f = new Formatter();
+
+    boolean isProb = (probabilityName != null && probabilityName.length() > 0);
+    if (isProb)
+      f.format("Probability ");
+
+    Grib1Parameter param = getParameter(center, subcenter, version, paramNo);
+    if (param == null)
+      f.format("Unknown Parameter %d-%d-%d-%d", center, subcenter, version, paramNo);
+    else
+      f.format("%s", param.getDescription());
+
+    if (intvType >= 0) {
+      Grib1TimeTypeTable.StatType stat = Grib1TimeTypeTable.getStatType(intvType);
+      if (stat != null) f.format(" (%s %s)", intvName, stat.name());
+      else if (intvName != null) f.format(" (%s)", intvName);
+    }
+
+    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+      f.format(" @ %s", getLevelNameShort(levelType));
+      if (isLayer) f.format(" layer");
+    }
+
+    return f.toString();
+  }
+
+  public String makeVariableUnits(int center, int subcenter, int version, int paramNo) {
+    Grib1Parameter param = getParameter(center, subcenter, version, paramNo);
+    String val = (param == null) ? "" : param.getUnit();
+    return (val == null) ? "" : val;
   }
 
   ///////////////////////////////////////////////////
@@ -111,8 +253,8 @@ public class Grib1Customizer implements GribTables {
     return new Grib1ParamLevel(this, pds);
   }
 
-  public VertCoord.VertUnit makeVertUnit(int code) {
-    return new VertCoord.VertUnit(code, getLevelUnits(code), getDatum(code), isPositiveUp(code));
+  public VertCoord.VertUnit getVertUnit(int code) {
+    return getLevelType(code);
   }
 
   public boolean is3D(int levelType) {
@@ -123,42 +265,43 @@ public class Grib1Customizer implements GribTables {
 
   @Override
   public String getLevelNameShort(int levelType) {
-    Grib1Tables.LevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.abbrev;
+    GribLevelType lt = getLevelType(levelType);
+    return (lt == null) ? null : lt.getAbbrev();
   }
 
   public String getLevelDescription(int levelType) {
-    Grib1Tables.LevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.desc;
+    GribLevelType lt = getLevelType(levelType);
+    return (lt == null) ? null : lt.getDesc();
   }
 
   public boolean isLayer(int levelType) {
-    Grib1Tables.LevelType lt = getLevelType(levelType);
-    return (lt == null) ? false : lt.isLayer;
+    GribLevelType lt = getLevelType(levelType);
+    return (lt == null) ? false : lt.isLayer();
   }
 
   // only for 3D
   public boolean isPositiveUp(int levelType) {
-    Grib1Tables.LevelType lt = getLevelType(levelType);
-    return (lt == null) ? false : lt.isPositiveUp;
+    GribLevelType lt = getLevelType(levelType);
+    return (lt == null) ? false : lt.isPositiveUp();
   }
 
   // only for 3D
   public String getLevelUnits(int levelType) {
-    Grib1Tables.LevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.units;
+    GribLevelType lt = getLevelType(levelType);
+    return (lt == null) ? null : lt.getUnits();
   }
 
   // only for 3D
   public String getDatum(int levelType) {
-    Grib1Tables.LevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.datum;
+    GribLevelType lt = getLevelType(levelType);
+    return (lt == null) ? null : lt.getDatum();
   }
 
   ////////////////////////////////////////////////////////////////////////
 
-  private HashMap<Integer, Grib1Tables.LevelType> wmoTable3;
-  private Grib1Tables.LevelType getLevelType(int code) {
+  private HashMap<Integer, GribLevelType> wmoTable3;
+
+  protected GribLevelType getLevelType(int code) {
     if (wmoTable3 == null)
       wmoTable3 = readTable3("resources/grib1/wmoTable3.xml");
     if (wmoTable3 == null)
@@ -167,7 +310,7 @@ public class Grib1Customizer implements GribTables {
     return wmoTable3.get(code);
   }
 
-  protected HashMap<Integer, Grib1Tables.LevelType> readTable3(String path) {
+  protected HashMap<Integer, GribLevelType> readTable3(String path) {
     InputStream is = null;
     try {
       is = GribResourceReader.getInputStream(path);
@@ -180,7 +323,7 @@ public class Grib1Customizer implements GribTables {
       org.jdom.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      HashMap<Integer, Grib1Tables.LevelType> result = new HashMap<Integer, Grib1Tables.LevelType>(200);
+      HashMap<Integer, GribLevelType> result = new HashMap<Integer, GribLevelType>(200);
       List<Element> params = root.getChildren("parameter");
       for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));
@@ -188,9 +331,9 @@ public class Grib1Customizer implements GribTables {
         String abbrev = elem1.getChildText("abbrev");
         String units = elem1.getChildText("units");
         String datum = elem1.getChildText("datum");
-        Grib1Tables.LevelType lt = new Grib1Tables.LevelType(code, desc, abbrev, units, datum);
-        lt.isLayer = elem1.getChild("isLayer") != null;
-        lt.isPositiveUp = elem1.getChild("isPositiveUp")  != null;
+        boolean isLayer = elem1.getChild("isLayer") != null;
+        boolean isPositiveUp = elem1.getChild("isPositiveUp") != null;
+        GribLevelType lt = new GribLevelType(code, desc, abbrev, units, datum, isPositiveUp, isLayer);
         result.put(code, lt);
       }
 
@@ -213,7 +356,7 @@ public class Grib1Customizer implements GribTables {
   }
 
   public static void main(String[] args) {
-    Grib1Customizer cust = new Grib1Customizer();
+    Grib1Customizer cust = new Grib1Customizer(0);
     String units = cust.getLevelUnits(110);
     assert units != null;
   }

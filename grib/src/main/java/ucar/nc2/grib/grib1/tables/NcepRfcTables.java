@@ -32,7 +32,6 @@
 
 package ucar.nc2.grib.grib1.tables;
 
-import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.BufferedReader;
@@ -98,10 +97,16 @@ public class NcepRfcTables extends NcepTables {
     return null;
   }
 
+  ///////////////////////////////////////////////////////////////////////
+  /* TABLE C - SUB-CENTERS FOR CENTER 9  US NWS FIELD STATIONS
+  * from bdgparm.f John Halquist <John.Halquist@noaa.gov> 9/12/2011
+  * These are not in the WMO common tables like NCEP's are
+  */
+
   private static Map<Integer, String> nwsoSubCenter;
 
   @Override
-  public String getSubCenterName(int center, int subcenter) {
+  public String getSubCenterName(int subcenter) {
     if (nwsoSubCenter == null) readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
     if (nwsoSubCenter == null) return null;
     return nwsoSubCenter.get(subcenter);

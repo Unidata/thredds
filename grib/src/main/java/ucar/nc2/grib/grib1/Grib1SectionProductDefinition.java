@@ -315,7 +315,7 @@ public final class Grib1SectionProductDefinition {
   public void showPds(Grib1Customizer cust, Formatter f) {
 
     f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
-    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), cust.getSubCenterName(getCenter(), getSubCenter()));
+    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), cust.getSubCenterName( getSubCenter()));
     f.format("                 Table Version : %d%n", getTableVersion());
 
     Grib1Parameter parameter = cust.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());

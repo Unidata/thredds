@@ -159,5 +159,8 @@ Notes for grib-1 tables (global)
    "The parameters used in the type of levels used in GRIB from the CMC are compatible with tables published in the NCEP Note 388."
    so we will use NCEP tables for center 54, for both grib1 and grib2.
 
-01/14/2012  create wmoTable3.xml
- - put in standard CML form, from old embedded strings.
+01/16/2012  create wmoTable3.xml
+ - start with WMO306_Vol_I.2_2010_en.pdf from http://www.wmo.int/pages/prog/www/WMOCodes/VolumeI2.html#VolumeI2
+ - ftp://ftp.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf
+ - put in standard XML form, from old embedded strings.
+ - all info is now in this table, which must be maintained by hand.

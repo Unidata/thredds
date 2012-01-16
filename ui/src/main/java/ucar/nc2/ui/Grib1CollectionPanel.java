@@ -657,7 +657,7 @@ public class Grib1CollectionPanel extends JPanel {
       if (param == null) return null;
       //TimeCoord tc = timeCoords.get(timeIdx);
       //String intvName = tc.getTimeIntervalName();
-      return Grib1Utils.makeVariableName(cust, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
+      return cust.makeVariableName(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
               pds.getLevelType(), pds.getTimeRangeIndicator(), null);
     }
 
@@ -674,7 +674,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getSubcenter() {
-      return cust.getSubCenterName(pds.getCenter(), pds.getSubCenter());
+      return cust.getSubCenterName(pds.getSubCenter());
     }
 
     public final String getLevelName() {

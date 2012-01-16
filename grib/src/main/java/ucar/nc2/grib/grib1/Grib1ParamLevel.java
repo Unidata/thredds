@@ -36,7 +36,7 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 
 /**
- * Level information from a particular PDS.
+ * Level information contained in a particular PDS.
  *
  * @author caron
  * @since 1/13/12
@@ -201,12 +201,7 @@ public class Grib1ParamLevel {
         value2 = GribNumbers.MISSING;
         break;
 
-      // LOOK NCEP specific
-
-      case 236:
-        value1 = pds11;
-        value2 = pds12;
-        break;
+      // note NCEP level 236 can use default
     }
   }
 

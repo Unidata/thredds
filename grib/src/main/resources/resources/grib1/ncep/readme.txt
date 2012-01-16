@@ -20,6 +20,6 @@
 01/13/2012 also need to use correct tables for FNMOC. see fnmoc readme
 
 01/14/2012 remove resources/grib1/ncep/*.tab (wgrib formatted tables)
- - regenerate with NcepHtmlScraper is needed
+ - regenerate with NcepHtmlScraper, however there are hand corrections to add units, etc
 
 

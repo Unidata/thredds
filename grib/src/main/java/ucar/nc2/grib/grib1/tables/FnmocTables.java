@@ -36,6 +36,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
+import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.grib1.Grib1Customizer;
 
 import java.io.IOException;
@@ -52,11 +53,11 @@ import java.util.List;
 public class FnmocTables extends Grib1Customizer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FnmocTables.class);
 
-  private static HashMap<Integer, Grib1Tables.LevelType> levelTypesMap;  // shared by all instances
+  private static HashMap<Integer, GribLevelType> levelTypesMap;  // shared by all instances
   private static HashMap<Integer, String> genProcessMap;  // shared by all instances
 
   public FnmocTables() {
-    super();
+    super(58);
   }
 
   // genProcess
@@ -86,7 +87,6 @@ public class FnmocTables extends Grib1Customizer {
       <description>atmospheric stratosphere model</description>
       <status>current</status>
     </entry>
-
    */
   private void readGenProcess(String path) {
     InputStream is = null;
@@ -134,42 +134,43 @@ public class FnmocTables extends Grib1Customizer {
 
   @Override
   public String getLevelNameShort(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelNameShort(code) : lt.abbrev;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.getLevelNameShort(code) : lt.getAbbrev();
   }
 
   @Override
   public String getLevelDescription(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelDescription(code) : lt.desc;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.getLevelDescription(code) : lt.getDatum();
   }
 
   @Override
   public String getLevelUnits(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.getLevelUnits(code) : lt.units;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.getLevelUnits(code) : lt.getUnits();
   }
 
   @Override
   public boolean isLayer(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.isLayer(code) : lt.isLayer;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.isLayer(code) : lt.isLayer();
   }
 
   @Override
   public boolean isPositiveUp(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.isPositiveUp(code) : lt.isPositiveUp;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.isPositiveUp(code) : lt.isPositiveUp();
   }
 
   @Override
   public String getDatum(int code) {
-    Grib1Tables.LevelType lt = getLevelType(code);
-    return (lt == null) ? super.getDatum(code) : lt.datum;
+    GribLevelType lt = getLevelType(code);
+    return (lt == null) ? super.getDatum(code) : lt.getDatum();
   }
 
-  private Grib1Tables.LevelType getLevelType(int code) {
-    if (code < 129) return null;
+  @Override
+  protected GribLevelType getLevelType(int code) {
+    if (code < 199) return null;
     if (levelTypesMap == null)
       levelTypesMap = readFnmocTable3("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml");
     if (levelTypesMap == null)
@@ -187,7 +188,7 @@ public class FnmocTables extends Grib1Customizer {
       <status>current</status>
     </entry>
    */
-  private HashMap<Integer, Grib1Tables.LevelType> readFnmocTable3(String path) {
+  private HashMap<Integer, GribLevelType> readFnmocTable3(String path) {
     InputStream is = null;
     try {
       is = GribResourceReader.getInputStream(path);
@@ -200,7 +201,7 @@ public class FnmocTables extends Grib1Customizer {
       org.jdom.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      HashMap<Integer, Grib1Tables.LevelType> result = new HashMap<Integer, Grib1Tables.LevelType>(200);
+      HashMap<Integer, GribLevelType> result = new HashMap<Integer, GribLevelType>(200);
       Element fnmocTable = root.getChild("fnmocTable");
       List<Element> params = fnmocTable.getChildren("entry");
       for (Element elem1 : params) {
@@ -210,9 +211,9 @@ public class FnmocTables extends Grib1Customizer {
         String abbrev = elem1.getChildText("name");
         String units = elem1.getChildText("units");
         String datum = elem1.getChildText("datum");
-        Grib1Tables.LevelType lt = new Grib1Tables.LevelType(code, desc, abbrev, units, datum);
-        lt.isLayer = elem1.getChild("isLayer") != null;
-        lt.isPositiveUp = elem1.getChild("isPositiveUp")  != null;
+        boolean isLayer = elem1.getChild("isLayer") != null;
+        boolean isPositiveUp = elem1.getChild("isPositiveUp")  != null;
+        GribLevelType lt = new GribLevelType(code, desc, abbrev, units, datum, isPositiveUp, isLayer);
         result.put(code, lt);
       }
 

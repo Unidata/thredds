@@ -37,7 +37,6 @@ import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableLookup;
-import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.ui.widget.*;
@@ -335,7 +334,7 @@ public class GribFilesPanel extends JPanel {
     }
 
     public String getSubCenterName() {
-      return Grib1Tables.getSubCenterName(getCenter(), getSubCenter());
+      return Grib1Customizer.getSubCenterName(getCenter(), getSubCenter());
     }
 
     public int getTimeUnit() {

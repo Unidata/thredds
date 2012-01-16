@@ -249,7 +249,7 @@ public class Grib1Rectilyser {
 
   private VertCoord makeVertCoord(VariableBag vb) {
     Grib1SectionProductDefinition pdsFirst = vb.first.getPDSsection();
-    VertCoord.VertUnit vertUnit = cust.makeVertUnit(pdsFirst.getLevelType());
+    VertCoord.VertUnit vertUnit = cust.getVertUnit(pdsFirst.getLevelType());
     boolean isLayer = cust.isLayer(pdsFirst.getLevelType());
 
     //Grib1ParamLevel plevelFirst = pdsFirst.getParamLevel();
@@ -267,7 +267,7 @@ public class Grib1Rectilyser {
 
     List<VertCoord.Level> vlist = new ArrayList<VertCoord.Level>(coords);
     Collections.sort(vlist);
-    if (vertUnit.isPositiveUp)
+    if (vertUnit.isPositiveUp())
       Collections.reverse(vlist);
 
     return new VertCoord(vlist, vertUnit, isLayer);
@@ -407,7 +407,7 @@ public class Grib1Rectilyser {
     f.format("%nVariables%n");
     f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
     for (VariableBag vb : gribvars) {
-      String vname = Grib1Utils.getVariableName(vb.first);
+      String vname = Grib1Utils.makeVariableName(vb.first);
       f.format("  %3d %3d %3d %s records = %d density = %d/%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
                 vname, vb.atomList.size(), vb.countDensity(), vb.recordMap.length);
       if (vb.countDensity() != vb.recordMap.length) f.format(" HEY!!");
@@ -436,7 +436,7 @@ public class Grib1Rectilyser {
 
     @Override
     public int compareTo(VariableBag o) {
-      return Grib1Utils.getVariableName(first).compareTo(Grib1Utils.getVariableName(o.first)); // LOOK
+      return Grib1Utils.makeVariableName(first).compareTo(Grib1Utils.makeVariableName(o.first)); // LOOK
     }
 
     int countDensity() {

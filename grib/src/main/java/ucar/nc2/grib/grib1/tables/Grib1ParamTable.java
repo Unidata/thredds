@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 /**
  * A Grib1 Parameter Table (table 2).
  * This is a map: code -> Grib1Parameter.
- * Handles reading the table in.
+ * Handles reading the table in from various formats
  *
  * @author caron
  * @since 11/16/11

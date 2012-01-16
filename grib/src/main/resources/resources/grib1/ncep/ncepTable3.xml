@@ -126,6 +126,7 @@
   <parameter code="236">
     <description>Layer between two depths below ocean surface depth of upper surface</description>
     <abbrev>OLYR</abbrev>
+    <units/>
     <isLayer>true</isLayer>
   </parameter>
   <parameter code="237">
