@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pnTable>
+  <name>Master Level Type Table</name>
+  <updatedDTG>201110130948</updatedDTG>
+  <tableStatus setDTG="2007050712">current</tableStatus>
+  <fnmocTable>
+    <entry>
+      <grib1Id>001</grib1Id>
+      <fnmocId>surface</fnmocId>
+      <name>surface</name>
+      <description>ground or water surface (the atmosphere's lower boundary, land/sea surface)</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>004</grib1Id>
+      <fnmocId>isth_lvl_0C</fnmocId>
+      <name>isth_lvl_0C</name>
+      <description>level of 0 deg C isotherm</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>006</grib1Id>
+      <fnmocId>max_wnd_lvl</fnmocId>
+      <name>max_wnd_lvl</name>
+      <description>maximum wind level</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>007</grib1Id>
+      <fnmocId>trpp_lvl</fnmocId>
+      <name>trpp_lvl</name>
+      <description>tropopause</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>008</grib1Id>
+      <fnmocId>atms_top</fnmocId>
+      <name>atms_top</name>
+      <description>top of atmosphere (nominal top of atmosphere)</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>020</grib1Id>
+      <fnmocId>isth_lvl</fnmocId>
+      <name>isth_lvl</name>
+      <description>isothermal level</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>100</grib1Id>
+      <fnmocId>isbr_lvl</fnmocId>
+      <name>isbr_lvl</name>
+      <description>isobaric surface (constant pressure)</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>101</grib1Id>
+      <fnmocId>isbr_lay</fnmocId>
+      <name>isbr_lay</name>
+      <description>layer between two isobaric levels</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>102</grib1Id>
+      <fnmocId>msl</fnmocId>
+      <name>msl</name>
+      <description>mean sea level</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>103</grib1Id>
+      <fnmocId>ht_msl</fnmocId>
+      <name>ht_msl</name>
+      <description>height above mean sea level</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>105</grib1Id>
+      <fnmocId>ht_sfc</fnmocId>
+      <name>ht_sfc</name>
+      <description>specific height level above ground (height above earth/sea surface)</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>107</grib1Id>
+      <fnmocId>sgma_lvl</fnmocId>
+      <name>sgma_lvl</name>
+      <description>sigma level</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>112</grib1Id>
+      <fnmocId>grnd_lay</fnmocId>
+      <name>grnd_lay</name>
+      <description>The upper layer of the Earth's ground surface</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>113</grib1Id>
+      <fnmocId>isnt_lvl</fnmocId>
+      <name>isnt_lvl</name>
+      <description>isentropic (theta) level (constant theta)</description>
+      <status>listed</status>
+    </entry>
+    <entry>
+      <grib1Id>160</grib1Id>
+      <fnmocId>dpth_sfc</fnmocId>
+      <name>dpth_sfc</name>
+      <description>depth below sea level (surface)</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>199</grib1Id>
+      <fnmocId>wavelen_sfc</fnmocId>
+      <name>wavelen_sfc</name>
+      <description>A wavelength at the earth's surface. The wavelength, in nanometers, appears in the first level, the
+        sfc layer is in the second level.
+      </description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>200</grib1Id>
+      <fnmocId>sky_cvr</fnmocId>
+      <name>sky_cvr</name>
+      <description>sky cover (entire atmosphere)</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>212</grib1Id>
+      <fnmocId>low_cld</fnmocId>
+      <name>low_cld</name>
+      <description>low cloud layer</description>
+      <status>deprecated</status>
+    </entry>
+    <entry>
+      <grib1Id>219</grib1Id>
+      <fnmocId>isbr_lvl_pa</fnmocId>
+      <name>isbr_lvl_pa</name>
+      <description>isobaric (constant pressure) surface in pascals</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>222</grib1Id>
+      <fnmocId>mid_cld</fnmocId>
+      <name>mid_cld</name>
+      <description>middle cloud layer</description>
+      <status>deprecated</status>
+    </entry>
+    <entry>
+      <grib1Id>232</grib1Id>
+      <fnmocId>hi_cld</fnmocId>
+      <name>hi_cld</name>
+      <description>high cloud layer</description>
+      <status>deprecated</status>
+    </entry>
+    <entry>
+      <grib1Id>241</grib1Id>
+      <fnmocId>dpth_ix</fnmocId>
+      <name>dpth_ix</name>
+      <description>depth index</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>250</grib1Id>
+      <fnmocId>flight_lvl</fnmocId>
+      <name>flight_lvl</name>
+      <description>an altitude above mean sea level.</description>
+      <status>current</status>
+    </entry>
+    <entry>
+      <grib1Id>251</grib1Id>
+      <fnmocId>flight_lvl</fnmocId>
+      <name>flight_lvl</name>
+      <description>altitude above 18,000 feet</description>
+      <status>deprecated</status>
+    </entry>
+    <entry>
+      <grib1Id>252</grib1Id>
+      <fnmocId>flight_lvl</fnmocId>
+      <name>flight_lvl</name>
+      <description>layer below 18,000 feet</description>
+      <status>deprecated</status>
+    </entry>
+    <entry>
+      <grib1Id>253</grib1Id>
+      <fnmocId>flight_lvl</fnmocId>
+      <name>flight_lvl</name>
+      <description>layer in atmosphere 18,000 feet and above.</description>
+      <status>deprecated</status>
+    </entry>
+  </fnmocTable>
+</pnTable>

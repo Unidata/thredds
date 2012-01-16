@@ -34,8 +34,6 @@ package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib1.tables.Grib1LevelTypeTable;
 
 /**
  * Level information from a particular PDS.
@@ -47,7 +45,6 @@ import ucar.nc2.grib.grib1.tables.Grib1LevelTypeTable;
 @Immutable
 public class Grib1ParamLevel {
   private final Grib1Customizer cust;
-  private final int center, subcenter; // in case of center specific processing
   private final int levelType; // code Table 3 (octet 10)
   private final float value1;
   private final float value2;
@@ -62,8 +59,6 @@ public class Grib1ParamLevel {
     this.cust = cust;
 
     // default surface values
-    center = pds.getCenter();
-    subcenter = pds.getSubCenter();
     levelType = pds.getLevelType();
     int pds11 = pds.getLevelValue1();
     int pds12 = pds.getLevelValue2();

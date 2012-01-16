@@ -32,19 +32,18 @@
 
 package ucar.nc2.grib.grib1.tables;
 
-import ucar.nc2.grib.VertCoord;
-
 /**
- * Describe
+ * Standard WMO level types
  *
+ * @author deprecated - moved to resources/grib1/wmoTable3.xml
  * @author caron
  * @since 1/13/12
  */
 public class Grib1LevelTypeTable {
 
-   /**
+  /**
    * type of vertical coordinate: Description or short Name
-   * derived from  ON388 - TABLE 3.
+   * taken from WMO Manual on codes -  GRIB1 Code table 3
    *
    * @param levelType table 3 code
    * @return level description
@@ -152,14 +151,11 @@ public class Grib1LevelTypeTable {
       case 125:
         return "Specified height level above ground";
 
-      case 126:
-        return "Isobaric level";  // LOOK: NCEP specific ? not in manual on codes
-
       case 128:
         return "Layer between 2 sigma levels (hi precision)";
 
       case 141:
-        return "Layer between 2 isobaric surfaces";  // LOOK
+        return "Layer between 2 isobaric surfaces (mixed precision)";
 
       case 160:
         return "Depth below sea level";
@@ -170,81 +166,8 @@ public class Grib1LevelTypeTable {
       case 201:
         return "Entire ocean";
 
-      // LOOK NCEP specific
-      case 204:
-        return "Highest tropospheric freezing level";
-
-      case 206:
-        return "Grid scale cloud bottom level";
-
-      case 207:
-        return "Grid scale cloud top level";
-
-      case 209:
-        return "Boundary layer cloud bottom level";
-
-      case 210: // manual has: Isobaric surface (high precision) Pressure in Pa (2 octets)
-        return "Boundary layer cloud top level";
-
-      case 211:
-        return "Boundary layer cloud layer";
-
-      case 212:
-        return "Low cloud bottom level";
-
-      case 213:
-        return "Low cloud top level";
-
-      case 214:
-        return "Low Cloud Layer";
-
-      case 222:
-        return "Middle cloud bottom level";
-
-      case 223:
-        return "Middle cloud top level";
-
-      case 224:
-        return "Middle Cloud Layer";
-
-      case 232:
-        return "High cloud bottom level";
-
-      case 233:
-        return "High cloud top level";
-
-      case 234:
-        return "High Cloud Layer";
-
-      case 242:
-        return "Convective cloud bottom level";
-
-      case 243:
-        return "Convective cloud top level";
-
-      case 244:
-        return "Convective cloud layer";
-
-      case 245:
-        return "Lowest level of the wet bulb zero";
-
-      case 246:
-        return "Maximum equivalent potential temperature level";
-
-      case 247:
-        return "Equilibrium level";
-
-      case 248:
-        return "Shallow convective cloud bottom level";
-
-      case 249:
-        return "Shallow convective cloud top level";
-
-      case 251:
-        return "Deep convective cloud bottom level";
-
-      case 252:
-        return "Deep convective cloud top level";
+      case 210:
+        return "Isobaric surface (high precision)";
 
       case 255:
         return "Missing";
@@ -259,7 +182,7 @@ public class Grib1LevelTypeTable {
    * short name of level.
    *
    * @param levelType table 3 code
-   * @return short name of level, for use in variable names
+   * @return short name of level, for use in variable names and dimensions
    */
   static public String getNameShort(int levelType) {
 
@@ -361,9 +284,6 @@ public class Grib1LevelTypeTable {
       case 125:
         return "height_above_ground";
 
-      case 126:
-        return "isobaric";
-
       case 128:
         return "layer_between_two_sigmas_hi";
 
@@ -379,101 +299,38 @@ public class Grib1LevelTypeTable {
       case 201:
         return "entire_ocean";
 
-      // LOOK NCEP specific
-      case 204:
-        return "highest_tropospheric_freezing";
-
-      case 206:
-        return "grid_scale_cloud bottom";
-
-      case 207:
-        return "grid_scale_cloud_top";
-
-      case 209:
-        return "boundary_layer_cloud_bottom";
-
       case 210:
-        return "boundary_layer_cloud_top";
-
-      case 211:
-        return "boundary_layer_cloud_layer";
-
-      case 212:
-        return "low_cloud_bottom";
-
-      case 213:
-        return "low_cloud_top";
-
-      case 214:
-        return "low_cloud_layer";
-
-      case 222:
-        return "middle_cloud_bottom";
-
-      case 223:
-        return "middle_cloud_top";
-
-      case 224:
-        return "middle_cloud_layer";
-
-      case 232:
-        return "high_cloud_bottom";
-
-      case 233:
-        return "high_cloud_top";
-
-      case 234:
-        return "high_cloud_layer";
-
-      case 242:
-        return "convective_cloud_bottom";
-
-      case 243:
-        return "convective_cloud_top";
-
-      case 244:
-        return "convective_cloud_layer";
-
-      case 245:
-        return "lowest_level_of_wet_bulb_zero";
-
-      case 246:
-        return "maximum_equivalent_potential_temperature";
-
-      case 247:
-        return "equilibrium";
-
-      case 248:
-        return "shallow_convective_cloud_bottom";
-
-      case 249:
-        return "shallow_convective_cloud_top";
-
-      case 251:
-        return "deep_convective_cloud_bottom";
-
-      case 252:
-        return "deep_convective_cloud_top";
-
-      case 255:
-        return "";
+        return "isobaric_surface";
 
       default:
         return "unknown_" + levelType;
     }
-
-  }  // end getNameShort
+  }
 
   /**
-   * type of vertical coordinate: units
-   * derived from  ON388 - TABLE 3.
+   * units of vertical coordinate.
+   * taken from WMO Manual on codes -  GRIB1 Code table 3
+   * note that some units get converted in Grib1ParamLevel, so these dont always match the manual.
    *
    * @param levelType table 3 code
-   * @return unit as String
+   * @return unit as String, or empty string for no units, or null for 2D surface
    */
   static public String getUnits(int levelType) {
 
     switch (levelType) {
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+      case 9:
+      case 102:
+      case 200:
+      case 201:
+        return null;
 
       case 20:
       case 113:
@@ -506,99 +363,56 @@ public class Grib1LevelTypeTable {
         return "cm";
 
       case 117:
-        return "10-6Km2/kgs";
+        return "1.0E-9 K.kg-1.m2.s-1";    // 10–9 K m2 kg–1 s–1
 
-      case 126:
+      case 210:
         return "Pa";
+
+      default:
+        return "";  // LOOK assume to be UNITLESS  (?)
     }
-    return "";
+
   }
 
- /**
-   * is this a VerticalCoordinate.
-   *
-   * @param levelType table 3 code
-   * @return isVerticalCoordinate
-   */
-  public static boolean isVerticalCoordinate(int levelType) {
-
-    if (levelType == 20) {
-      return true;
-    }
-    if (levelType == 100) {
-      return true;
-    }
-    if (levelType == 101) {
-      return true;
-    }
-    if ((levelType >= 103) && (levelType <= 128)) {
-      return true;
-    }
-    if (levelType == 141) {
-      return true;
-    }
-    if (levelType == 160) {
-      return true;
-    }
-    return false;
-  }
-
+  // datums are only used for 3D variables
   static public String getDatum(int levelType) {
 
-     switch (levelType) {
+    switch (levelType) {
 
-       case 103:
-         return "mean sea level";
+      case 103:
+        return "mean sea level";
 
-       case 105:
-       case 106:
-       case 111:
-       case 112:
-       case 115:
-       case 116:
-       case 125:
-         return "ground";
+      case 105:
+      case 106:
+      case 111:
+      case 112:
+      case 115:
+      case 116:
+      case 125:
+        return "ground";
 
-       case 160:
-         return "sea level";
+      case 160:
+        return "sea level";
 
-
-       default:
-         return null;
-     }
+      default:
+        return null;
+    }
   }
 
-
-
   /**
-   * is this a PositiveUp VerticalCoordinate.
+   * positive up is a CF thing
+   * it means "increasing values of this coordinate are up from the ground".
    *
    * @param levelType table 3 code
-   * @return isPositiveUp
+   * @return true if increasing values go up
    */
   public static boolean isPositiveUp(int levelType) {
 
-    if (levelType == 103) {
-      return true;
-    }
-    if (levelType == 104) {
-      return true;
-    }
-    if (levelType == 105) {
-      return true;
-    }
-    if (levelType == 106) {
-      return true;
-    }
-    if (levelType == 111) {
-      return true;
-    }
-    if (levelType == 112) {
-      return true;
-    }
-    if (levelType == 125) {
-      return true;
-    }
+    if (levelType == 103) return true;
+    if (levelType == 104) return true;
+    if (levelType == 105) return true;
+    if (levelType == 106) return true;
+    if (levelType == 125) return true;
     return false;
   }
 
@@ -624,18 +438,4 @@ public class Grib1LevelTypeTable {
     return false;
   }
 
-   /**
-   * Unit of vertical coordinate.
-   * from Grib2 code table 4.5.
-   * LOOK need scientific vetting, need center specific override - move to GribTables ?
-   *
-   * @param code code from table 4.5
-   * @return level unit, default is empty unit string
-   */
-  static public VertCoord.VertUnit getLevelUnit(int code) {
-    //     public VertUnit(int code, String units, String datum, boolean isPositiveUp)
-    return new VertCoord.VertUnit(code, getUnits(code), getDatum(code), isPositiveUp(code));
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////
 }

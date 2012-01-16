@@ -204,7 +204,7 @@ public class Grib1Rectilyser {
     Grib1ParamTime ptime = cust.getParamTime(pdss);
 
     result += result * 37 + pdss.getLevelType();
-    if (cust.isLayer(pdss)) result += result * 37 + 1;
+    if (cust.isLayer(pdss.getLevelType())) result += result * 37 + 1;
 
     result += result * 37 + pdss.getParameterNumber();
     result += result * 37 + pdss.getTableVersion();
@@ -250,7 +250,7 @@ public class Grib1Rectilyser {
   private VertCoord makeVertCoord(VariableBag vb) {
     Grib1SectionProductDefinition pdsFirst = vb.first.getPDSsection();
     VertCoord.VertUnit vertUnit = cust.makeVertUnit(pdsFirst.getLevelType());
-    boolean isLayer = cust.isLayer(pdsFirst);
+    boolean isLayer = cust.isLayer(pdsFirst.getLevelType());
 
     //Grib1ParamLevel plevelFirst = pdsFirst.getParamLevel();
     //boolean isLayer = plevelFirst.isLayer();

@@ -128,7 +128,7 @@ public abstract class GribCollection {
   protected final Set<String> groupNames = new HashSet<String>(5);
 
   // set by the builder
-  public int center, subcenter, master, local;
+  public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
   public List<String> filenames;
   public List<GroupHcs> groups;

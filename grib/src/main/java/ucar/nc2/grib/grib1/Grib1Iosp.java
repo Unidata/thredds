@@ -159,8 +159,8 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
   @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     super.open(raf, ncfile, cancelTask);
-    Grib1Tables tables = (paramTable != null) ? Grib1Tables.factory(paramTable) : Grib1Tables.factory(paramTablePath, lookupTablePath); // so an iosp message must be received before the open()
-    cust = new Grib1Customizer(tables);
+    //Grib1Tables tables = (paramTable != null) ? Grib1Tables.factory(paramTable) : Grib1Tables.factory(paramTablePath, lookupTablePath); // so an iosp message must be received before the open()
+    //cust = Grib1Customizer.factory(tables);
 
     // create the gbx9 index file if not already there
     boolean isGrib = (raf != null) && Grib1RecordScanner.isValidFile(raf);
@@ -168,6 +168,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       Grib1Index index = new Grib1Index();
       Formatter f= new Formatter();
       this.gribCollection = index.createFromSingleFile(raf, CollectionManager.Force.test, f, 1);
+      cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal());
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor
@@ -176,6 +177,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
         isTimePartitioned = true;
         timePartition = (Grib1TimePartition) gribCollection;
       }
+      cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal());
       addGroup(ncfile, gHcs, false);
 
     } else if (gribCollection != null) { // use the gribCollection set in the constructor
@@ -183,6 +185,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
         isTimePartitioned = true;
         timePartition = (Grib1TimePartition) gribCollection;
       }
+      cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal());
       boolean useGroups = gribCollection.getGroups().size() > 1;
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
         addGroup(ncfile, g, useGroups);
@@ -206,6 +209,7 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
       } else {
         gribCollection = Grib1CollectionBuilder.createFromIndex(name, f.getParentFile(), raf);
       }
+      cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal());
 
       boolean useGroups = gribCollection.getGroups().size() > 1;
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
@@ -214,12 +218,12 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
     ncfile.addAttribute(null, new Attribute("Originating or generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
-    val = tables.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
+    val = cust.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
     ncfile.addAttribute(null, new Attribute("Originating or generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
     //ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
     //ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
 
-    val = tables.getTypeGenProcessName(gribCollection.getCenter(), gribCollection.getGenProcessId());
+    val = cust.getTypeGenProcessName(gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Generating process or model", val));
 

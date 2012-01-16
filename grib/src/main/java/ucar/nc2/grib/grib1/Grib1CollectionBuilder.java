@@ -38,7 +38,6 @@ import thredds.inventory.CollectionManagerSingleFile;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -423,6 +422,7 @@ public class Grib1CollectionBuilder {
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
     int fileno = 0;
+    Grib1Record first = null;
     for (CollectionManager dcm : collections) {
       f.format(" dcm= %s%n", dcm);
       Map<Integer,Integer> gdsConvert = (Map<Integer,Integer>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDSHASH);
@@ -451,6 +451,7 @@ public class Grib1CollectionBuilder {
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
           if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
             gdsHash = (Integer) gdsConvert.get(gdsHash);               // and we need exact hash matching
+          if (first == null) first = gr;
 
           Group g = gdsMap.get(gdsHash);
           if (g == null) {
@@ -466,8 +467,7 @@ public class Grib1CollectionBuilder {
     }
     f.format(" total grib records= %d%n", total);
 
-    Grib1Tables tables = new Grib1Tables();
-    cust = new Grib1Customizer(tables);
+    cust = Grib1Customizer.factory(first);
     Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
@@ -634,7 +634,7 @@ public class Grib1CollectionBuilder {
     b.setParameter(pds.getParameterNumber());
     b.setTableVersion(pds.getTableVersion()); // can differ for variables in the same file
     b.setLevelType(pds.getLevelType());
-    b.setIsLayer(cust.isLayer(pds));
+    b.setIsLayer(cust.isLayer(pds.getLevelType()));
     b.setIntervalType(pds.getTimeRangeIndicator());
     b.setCdmHash(vb.cdmHash);
     b.setRecordsPos(vb.pos);
@@ -698,7 +698,8 @@ public class Grib1CollectionBuilder {
   protected GribCollectionProto.Coord writeCoordProto(VertCoord vc, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setCode(vc.getCode());
-    b.setUnit(vc.getUnits());
+    String units = (vc.getUnits() != null) ? vc.getUnits() : "";
+    b.setUnit(units);
     for (VertCoord.Level coord : vc.getCoords()) {
       if (vc.isLayer()) {
         b.addValues((float) coord.getValue1());
