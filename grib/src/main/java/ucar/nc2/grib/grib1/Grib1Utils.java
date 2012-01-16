@@ -35,9 +35,7 @@ package ucar.nc2.grib.grib1;
 
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.grib1.tables.Grib1Parameter;
-import ucar.nc2.grib.grib1.tables.Grib1Tables;
-import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
 
 import java.util.Formatter;
 
@@ -104,11 +102,11 @@ Notes:
     more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
     names relative to earlier versions.
  */
-  static public String makeVariableName(Grib1Tables tables, int center, int subcenter, int version, int paramNo,
+  static public String makeVariableName(Grib1Customizer cust, int center, int subcenter, int version, int paramNo,
                                         int levelType, int intvType, String intvName) {
     Formatter f = new Formatter();
 
-    Grib1Parameter param = tables.getParameter(center, subcenter, version, paramNo);
+    Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo);
     if (param == null) {
       f.format("VAR%d-%d-%d-%d", center, subcenter, version, paramNo);
     } else {
@@ -119,12 +117,12 @@ Notes:
     }
 
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_%s", tables.getLevelNameShort(levelType)); // code table 3
+      f.format("_%s", cust.getLevelNameShort(levelType)); // code table 3
       // if (vindex.isLayer) f.format("_layer"); LOOK ? assumes that cant have two variables on same vertical type, differing only by isLayer
     }
 
     if (intvType >= 0) {
-      Grib1ParamTime.StatType stype = Grib1ParamTime.getStatType(intvType);
+      Grib1TimeTypeTable.StatType stype = Grib1TimeTypeTable.getStatType(intvType);
       if (stype != null) {
         if (intvName != null) f.format("_%s", intvName);
         f.format("_%s", stype.name());
@@ -134,7 +132,7 @@ Notes:
     return f.toString();
   }
 
-  static public String makeVariableLongName(Grib1Tables tables, int center, int subcenter, int version, int paramNo,
+  static public String makeVariableLongName(Grib1Customizer cust, int center, int subcenter, int version, int paramNo,
                                             int levelType, int intvType, String intvName, boolean isLayer, String probabilityName) {
     Formatter f = new Formatter();
 
@@ -142,28 +140,28 @@ Notes:
     if (isProb)
       f.format("Probability ");
 
-    Grib1Parameter param = tables.getParameter(center, subcenter, version, paramNo);
+    Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo);
     if (param == null)
       f.format("Unknown Parameter %d-%d-%d-%d", center, subcenter, version, paramNo);
     else
       f.format("%s", param.getDescription());
 
     if (intvType >= 0) {
-      Grib1ParamTime.StatType stat = Grib1ParamTime.getStatType(intvType);
+      Grib1TimeTypeTable.StatType stat = Grib1TimeTypeTable.getStatType(intvType);
       if (stat != null) f.format(" (%s %s)", intvName, stat.name());
       else if (intvName != null) f.format(" (%s)", intvName);
     }
 
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", tables.getLevelNameShort(levelType));
+      f.format(" @ %s", cust.getLevelNameShort(levelType));
       if (isLayer) f.format(" layer");
     }
 
     return f.toString();
   }
 
-  static public String makeVariableUnits(Grib1Tables tables, int center, int subcenter, int version, int paramNo) {
-    Grib1Parameter param = tables.getParameter(center, subcenter, version, paramNo);
+  static public String makeVariableUnits(Grib1Customizer cust, int center, int subcenter, int version, int paramNo) {
+    Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo);
     String val = (param == null) ? "" : param.getUnit();
     return (val == null) ? "" : val;
   }

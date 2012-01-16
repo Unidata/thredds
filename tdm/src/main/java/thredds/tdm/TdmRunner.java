@@ -136,9 +136,8 @@ public class TdmRunner {
           logger.debug("**** running TimePartitionBuilder.factory {} thread {}", name, Thread.currentThread().hashCode());
           Formatter f = new Formatter();
           try {
-            GribCollection tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, f);
+            TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, f); // "we know collection has changed, dont test again" ??? LOOK
             tp.close();
-            f.format("**** TimePartitionBuilder complete %s%n", name);
             if (config.tdmConfig.triggerOk) { // send a trigger if enabled
               String url = serverName + "thredds/admin/collection?trigger=true&collection=" + fc.getName();
               int status = sendTrigger(url, f);
@@ -148,7 +147,7 @@ public class TdmRunner {
           } catch (Throwable e) {
             logger.error("TimePartitionBuilder.factory " + name, e);
           }
-          logger.debug("\n{}", f.toString());
+          logger.debug("\n------------------------\n{}\n------------------------\n", f.toString());
 
         } else {
           logger.debug("**** running GribCollectionBuilder.factory {} Thread {}", name, Thread.currentThread().hashCode());
@@ -156,12 +155,12 @@ public class TdmRunner {
           try {
             GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, f);
             gc.close();
-            f.format("**** GribCollectionBuilder.factory complete %s%n", name);
             if (config.tdmConfig.triggerOk) { // LOOK is there any point if you dont have trigger = true ?
               String url = serverName + "thredds/admin/collection?trigger=nocheck&collection=" + fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
             }
+            f.format("**** GribCollectionBuilder.factory complete %s%n", name);
 
           } catch (Throwable e) {
             logger.error("GribCollectionBuilder.factory " + name, e);

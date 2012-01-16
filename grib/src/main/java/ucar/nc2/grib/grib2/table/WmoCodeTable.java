@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib2.table;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import ucar.nc2.grib.GribTables;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -50,11 +51,13 @@ import java.util.*;
 
 public class WmoCodeTable implements Comparable<WmoCodeTable> {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
+  static public final Version standard = Version.GRIB2_8_0_0;
 
   public enum Version {
-    GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0;
+    GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0;
 
     String getResourceName() {
+      if (this == GRIB2_8_0_0) return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
       return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_E.xml";
     }
 
@@ -67,12 +70,27 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
       } else if (this == GRIB2_7_0_0) {
         return new String[]{"Exp_CodeFlag_E", "Title_E", "SubTitle_E", "MeaningParameterDescription_E", "UnitComments_E"};
+
+      } else if (this == GRIB2_8_0_0) {
+        return new String[]{"GRIB2_8_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
+
       }
       return null;
     }
   }
 
   /*
+  <GRIB2_8_0_0_CodeFlag_en>
+    <No>899</No>
+    <Title_en>Code table 4.2 - Parameter number by product discipline and parameter category</Title_en>
+    <SubTitle_en>Product discipline 10 - Oceanographic products, parameter category 2: ice</SubTitle_en>
+    <CodeFlag>0</CodeFlag>
+    <MeaningParameterDescription_en>Ice cover</MeaningParameterDescription_en>
+    <UnitComments_en>Proportion</UnitComments_en>
+    <Status>Operational</Status>
+  </GRIB2_8_0_0_CodeFlag_en>
+
+
   GRIB2_5_2_0:
 
   <ForExport_CodeFlag_E>
@@ -153,11 +171,10 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 /////////////////////////////////////////
 
   private static WmoTables wmoTables = null;
-  private static final Version wmoTable = Version.GRIB2_7_0_0;
 
   static public WmoTables getWmoStandard() throws IOException {
     if (wmoTables == null)
-      wmoTables = readGribCodes(wmoTable);
+      wmoTables = readGribCodes(standard);
     return wmoTables;
   }
 
@@ -395,7 +412,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     return -1;
   }
 
-  public class TableEntry implements Grib2Tables.Parameter, Comparable<TableEntry> {
+  public class TableEntry implements GribTables.Parameter, Comparable<TableEntry> {
     public int start, stop, line;
     public int number = -1;
     public String code, meaning, name, unit, status;
@@ -665,8 +682,8 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     //showTable(gt52.list);
     //showDiffFromCurrent(gt52.list);
 
-    WmoTables gt61 = readGribCodes(Version.GRIB2_6_0_1);
-    //showTable(gt61.list);
+    WmoTables gt61 = readGribCodes(Version.GRIB2_8_0_0);
+    showTable(gt61.list);
     //showDiff(gt52, gt61, true);
     //System.out.printf("%n");
     //showDiff(gt61, gt52, false);

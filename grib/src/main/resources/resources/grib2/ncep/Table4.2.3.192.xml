@@ -73,10 +73,5 @@
     <description>Simulated Brightness Temperature for AMSRE on Aqua, Channel 12</description>
     <units>K</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

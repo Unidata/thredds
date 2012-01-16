@@ -78,10 +78,5 @@
     <description>Reflectivity of Hail</description>
     <units>dB</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

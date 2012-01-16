@@ -269,9 +269,10 @@ public enum CollectionUpdater {
         CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(DCM_NAME);
         logger.debug("Update for {} trigger = {}", manager.getCollectionName(), context.getTrigger().getKey());
         String groupName = context.getTrigger().getKey().getGroup();
-        if (groupName.equals("nocheck"))
+        if (groupName.equals("nocheck")) {
+          manager.scan(false);
           manager.updateNocheck();
-        else
+        } else
           manager.scan(true);
       } catch (Throwable e) {
         logger.error("UpdateCollectionJob.execute failed", e);

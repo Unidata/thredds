@@ -13,10 +13,5 @@
     <description>Meridional Overturning Stream Function</description>
     <units>m3s-1</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

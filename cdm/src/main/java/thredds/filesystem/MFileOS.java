@@ -45,15 +45,17 @@ import ucar.unidata.util.StringUtil2;
 @ThreadSafe
 public class MFileOS implements MFile {
   private final java.io.File file;
+  private final long lastModified;
   private Object auxInfo;
   
   public MFileOS(java.io.File file) {
     this.file = file;
+    this.lastModified = file.lastModified();
   }
 
   @Override
   public long getLastModified() {
-    return file.lastModified();
+    return lastModified;
   }
 
   @Override

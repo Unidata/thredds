@@ -36,7 +36,6 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
-import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib1.*;
 import ucar.unidata.util.StringUtil2;
 
@@ -48,12 +47,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A Grib1 Parameter Table
+ * A Grib1 Parameter Table (table 2).
+ * This is a map: code -> Grib1Parameter.
+ * Handles reading the table in.
  *
  * @author caron
  * @since 11/16/11
  */
-public class Grib1ParamTable implements GribTables {
+public class Grib1ParamTable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTable.class);
   static private final boolean debug = false;
 
@@ -127,7 +128,7 @@ public class Grib1ParamTable implements GribTables {
   }
 
   public int getKey() {
-    return Grib1StandardTables.makeKey(center_id, subcenter_id, version);
+    return Grib1ParamTableLookup.makeKey(center_id, subcenter_id, version);
   }
 
   public String getPath() {
@@ -169,13 +170,6 @@ public class Grib1ParamTable implements GribTables {
       readParameterTable();
     return parameters.get(id);
   }
-
-
-  @Override
-  public String getLevelNameShort(int code) {
-    return Grib1ParamLevel.getNameShort(code);
-  }
-
 
   @Override
   public String toString() {

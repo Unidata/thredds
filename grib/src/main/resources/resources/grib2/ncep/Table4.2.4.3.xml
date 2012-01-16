@@ -43,10 +43,5 @@
     <description>3rd Vector Component of Electric Field</description>
     <units>V m-1</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

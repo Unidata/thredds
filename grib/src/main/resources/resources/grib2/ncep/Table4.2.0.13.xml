@@ -28,10 +28,5 @@
     <description>Integrated column particulate matter (fine)</description>
     <units>log10(g/m3)</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

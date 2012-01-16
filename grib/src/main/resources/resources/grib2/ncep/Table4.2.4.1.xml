@@ -23,10 +23,5 @@
     <description>3rd Vector Component of Velocity (Coordinate system dependent)</description>
     <units>m s-1</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

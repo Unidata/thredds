@@ -32,6 +32,8 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.grib.GribTables;
+
 import java.util.*;
 
 /**
@@ -64,7 +66,7 @@ public abstract class LocalTables extends Grib2Tables {
     if ((category <= 191) && (parameter <= 191))
       return super.getVariableName(discipline, category, parameter);
 
-    Grib2Tables.Parameter te = getParameter(discipline, category, parameter);
+    GribTables.Parameter te = getParameter(discipline, category, parameter);
     if (te == null)
       return super.getVariableName(discipline, category, parameter);
     else

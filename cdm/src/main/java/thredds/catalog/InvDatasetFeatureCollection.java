@@ -177,12 +177,12 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     this.config = config;
 
-    if (config.spec.startsWith(DatasetCollectionMFiles.CATALOG)) {
-      dcm = new DatasetCollectionFromCatalog(config.spec);
+    if (config.spec.startsWith(MFileCollectionManager.CATALOG)) {
+      dcm = new CatalogCollectionManager(config.spec);
 
     } else {
       Formatter errlog = new Formatter();
-      dcm = new DatasetCollectionMFiles(config, errlog);
+      dcm = new MFileCollectionManager(config, errlog);
       String errs = errlog.toString();
       if (errs.length() > 0) logger.debug("DatasetCollectionManager parse error = {} ", errs);
     }
@@ -288,7 +288,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    }
 
   /**
-   * Get one one of the catalogs contained in this dataset,
+   * Get one of the catalogs contained in this collection,
    * called by DataRootHandler.makeDynamicCatalog()
    * @param match match.remaining
    * @param orgPath    the path for the request.

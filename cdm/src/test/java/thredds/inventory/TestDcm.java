@@ -55,7 +55,7 @@ public class TestDcm extends TestCase {
   public void testScan() throws IOException {
     // count scanned files
     Formatter f = new Formatter(System.out);
-    DatasetCollectionMFiles dcm = DatasetCollectionMFiles.open(TestAll.cdmUnitTestDir + "agg/narr/narr-a_221_#yyyyMMdd_HHmm#.*grb$", null, f);
+    MFileCollectionManager dcm = MFileCollectionManager.open(TestAll.cdmUnitTestDir + "agg/narr/narr-a_221_#yyyyMMdd_HHmm#.*grb$", null, f);
     dcm.scan(true);
     List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFiles());
     assert fileList.size() ==  3 : dcm;
@@ -71,14 +71,14 @@ public class TestDcm extends TestCase {
 
   public void testScanOlderThan() throws IOException, InterruptedException {
     Formatter f = new Formatter(System.out);
-    DatasetCollectionMFiles dcm = DatasetCollectionMFiles.open(TestAll.cdmUnitTestDir + "agg/updating/.*nc$", null, f);
+    MFileCollectionManager dcm = MFileCollectionManager.open(TestAll.cdmUnitTestDir + "agg/updating/.*nc$", null, f);
     dcm.scan(true);
     List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFiles());
     assert fileList.size() ==  3 : dcm;
 
     assert touch(TestAll.cdmUnitTestDir + "agg/updating/extra.nc");
 
-    dcm = DatasetCollectionMFiles.open(TestAll.cdmUnitTestDir + "agg/updating/.*nc$", "10 sec", f);
+    dcm = MFileCollectionManager.open(TestAll.cdmUnitTestDir + "agg/updating/.*nc$", "10 sec", f);
     dcm.scan(true);
     fileList = (List<MFile>) Misc.getList(dcm.getFiles());
     assert fileList.size() ==  2 : dcm;
@@ -96,7 +96,7 @@ public class TestDcm extends TestCase {
 
     // count scanned files
     Formatter f = new Formatter(System.out);
-    DatasetCollectionMFiles dcm = new DatasetCollectionMFiles(config, f);
+    MFileCollectionManager dcm = new MFileCollectionManager(config, f);
     dcm.scan(true);
     List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFiles());
     assert fileList.size() ==  2 : dcm;

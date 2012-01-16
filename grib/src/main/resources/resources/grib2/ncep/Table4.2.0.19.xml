@@ -308,10 +308,5 @@
     <description>Icing severity</description>
     <units>non-dim</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

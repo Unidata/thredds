@@ -214,7 +214,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     String problemCat = "http://localhost:8080/thredds/catalog/NOAA/CFSR/timeseries/catalog.xml";
     String server = "http://motherlode.ucar.edu:9080/thredds";
 
-    String catalog = "/idd/modelsNew.xml";
+    String catalog = "/catalog.xml";
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 

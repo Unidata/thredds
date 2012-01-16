@@ -32,16 +32,16 @@
 
 package ucar.nc2.ui;
 
-import thredds.inventory.DatasetCollectionMFiles;
+import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.grib1.tables.Grib1Parameter;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
@@ -110,7 +110,7 @@ public class Grib2CollectionPanel extends JPanel {
           showPdsTemplate(pb.gr.getPDSsection(), f, tables);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
-          infoWindow2.showIfNotIconified();
+          infoWindow2.show();
         }
       }
     });
@@ -120,7 +120,7 @@ public class Grib2CollectionPanel extends JPanel {
         if (pb != null) {
           infoPopup3.setText(pb.toProcessedString());
           infoPopup3.gotoTop();
-          infoWindow3.showIfNotIconified();
+          infoWindow3.show();
         }
       }
     });
@@ -133,7 +133,7 @@ public class Grib2CollectionPanel extends JPanel {
           doAggegator(pb, f);
           infoPopup2.setText(f.toString());
           infoPopup3.gotoTop();
-          infoWindow3.showIfNotIconified();
+          infoWindow3.show();
         }
       }
     }); */
@@ -151,7 +151,7 @@ public class Grib2CollectionPanel extends JPanel {
           compare(bean1, bean2, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
-          infoWindow2.showIfNotIconified();
+          infoWindow2.show();
         }
       }
     });
@@ -166,7 +166,7 @@ public class Grib2CollectionPanel extends JPanel {
         }
         infoPopup.setText(f.toString());
         infoPopup.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -184,7 +184,7 @@ public class Grib2CollectionPanel extends JPanel {
           }
           infoPopup.setText(f.toString());
           infoPopup.gotoTop();
-          infoWindow.showIfNotIconified();
+          infoWindow.show();
         }
       }
     });
@@ -199,7 +199,7 @@ public class Grib2CollectionPanel extends JPanel {
         }
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
-        infoWindow2.showIfNotIconified();
+        infoWindow2.show();
       }
     });
 
@@ -213,7 +213,7 @@ public class Grib2CollectionPanel extends JPanel {
           compareData(bean1, bean2, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
-          infoWindow2.showIfNotIconified();
+          infoWindow2.show();
         }
       }
     });
@@ -226,7 +226,7 @@ public class Grib2CollectionPanel extends JPanel {
           showData(bean, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
-          infoWindow2.showIfNotIconified();
+          infoWindow2.show();
         }
       }
     });
@@ -252,7 +252,7 @@ public class Grib2CollectionPanel extends JPanel {
         showGdsTemplate(bean.gdss, f, tables);
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
-        infoWindow2.showIfNotIconified();
+        infoWindow2.show();
       }
     });
 
@@ -266,7 +266,7 @@ public class Grib2CollectionPanel extends JPanel {
           compare(bean1.gdss, bean2.gdss, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
-          infoWindow2.showIfNotIconified();
+          infoWindow2.show();
         }
       }
     });
@@ -281,7 +281,7 @@ public class Grib2CollectionPanel extends JPanel {
         }
         infoPopup.setText(f.toString());
         infoPopup.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -307,7 +307,7 @@ public class Grib2CollectionPanel extends JPanel {
         }
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
-        infoWindow2.showIfNotIconified();
+        infoWindow2.show();
       }
     });
 
@@ -333,7 +333,7 @@ public class Grib2CollectionPanel extends JPanel {
         bean.gds.testHorizCoordSys(f);
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
-        infoWindow2.showIfNotIconified();
+        infoWindow2.show();
       }
     });
 
@@ -377,9 +377,10 @@ public class Grib2CollectionPanel extends JPanel {
   ///////////////////////////////////////////////
 
   private String spec;
-  private DatasetCollectionMFiles dcm;
+  private MFileCollectionManager dcm;
   private List<MFile> fileList;
   private Grib2Tables tables;
+  private Grib2Customizer cust;
 
   /* public void setCollection(String filename) throws IOException {
     if (filename.endsWith(GribCollection.IDX_EXT)) {
@@ -468,18 +469,18 @@ public class Grib2CollectionPanel extends JPanel {
         gdsSet.put(hash, gds);
     }
 
-    Grib2Rectilyser rect = new Grib2Rectilyser(tables, null, 0, false);
-
+    Grib2Rectilyser rect2 = null;
     for (Grib2Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
-      if (tables == null) {
+      if (rect2 == null) {
         Grib2SectionIdentification ids = gr.getId();
         tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+        cust = new Grib2Customizer(tables);
+        rect2 = new Grib2Rectilyser(cust, null, 0, false);
       }
 
-
-      int id = rect.cdmVariableHash(gr, tables, 0);
+      int id = rect2.cdmVariableHash(gr, 0);
       Grib2ParameterBean bean = pdsSet.get(id);
       if (bean == null) {
         bean = new Grib2ParameterBean(gr);
@@ -490,10 +491,10 @@ public class Grib2CollectionPanel extends JPanel {
     }
   }
 
-  private DatasetCollectionMFiles scanCollection(String spec, Formatter f) {
-    DatasetCollectionMFiles dc = null;
+  private MFileCollectionManager scanCollection(String spec, Formatter f) {
+    MFileCollectionManager dc = null;
     try {
-      dc = DatasetCollectionMFiles.open(spec, null, f);
+      dc = MFileCollectionManager.open(spec, null, f);
       dc.scan(false);
       fileList = (List<MFile>) Misc.getList(dc.getFiles());
       return dc;
@@ -527,7 +528,7 @@ public class Grib2CollectionPanel extends JPanel {
       fileno++;
     }
 
-    Grib2Rectilyser agg = new Grib2Rectilyser(tables, records, 0, false);
+    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, false);
     agg.make(f, new Grib2Rectilyser.Counter());
     agg.dump(f, tables);
 
@@ -548,7 +549,7 @@ public class Grib2CollectionPanel extends JPanel {
   } */
 
   public boolean writeIndex(Formatter f) throws IOException {
-    DatasetCollectionMFiles dcm = scanCollection(spec, f);
+    MFileCollectionManager dcm = scanCollection(spec, f);
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));

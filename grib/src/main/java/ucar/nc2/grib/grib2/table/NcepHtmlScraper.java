@@ -41,7 +41,6 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import ucar.unidata.util.StringUtil2;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -216,7 +215,7 @@ public class NcepHtmlScraper  {
       if (cols.size() == 4) {
         String snum = StringUtil2.cleanup(cols.get(0).text()).trim();
         String desc = StringUtil2.cleanup(cols.get(1).text()).trim();
-        if (snum.contains("Reserved") || desc.contains("Reserved") ) {
+        if (snum.contains("Reserved") || desc.contains("Reserved") || desc.contains("Missing") ) {
           if (debugParam) System.out.printf("*** Skip Reserved %s%n", row.text());
           continue;
         }

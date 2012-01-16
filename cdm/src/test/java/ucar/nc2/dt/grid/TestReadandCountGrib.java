@@ -48,7 +48,7 @@ public class TestReadandCountGrib extends TestCase {
   public void testRead() throws Exception {
     // our grib reader
     doOne("grib1/","cfs.wmo", 51, 4, 6, 3);
-    doOne("grib2/","eta218.wmo", 57, 16, 20, 11);
+    doOne("grib2/","eta218.wmo", 61, 16, 20, 11);
     doOne("grib1/","extended.wmo", 8, 6, 10, 4);
     //doOne("grib1/","ensemble.wmo", 24, 16, 20, 10); not supporting ensembles in GRIB1 yet
     // doOne("grib1/data/","ecmf.wmo", 56, 44, 116, 58);

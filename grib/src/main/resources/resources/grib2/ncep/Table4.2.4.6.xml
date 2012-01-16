@@ -38,10 +38,5 @@
     <description>Solar Radio Emissions</description>
     <units>W m-2Hz-1</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

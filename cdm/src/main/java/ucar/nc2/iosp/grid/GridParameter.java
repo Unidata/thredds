@@ -65,7 +65,7 @@ public class GridParameter {
     if (pos > 0) desc = desc.substring(0,pos);
 
     StringBuilder sb = new StringBuilder(desc.trim());
-    StringUtil2.remove(sb, ".;,=[]()/");
+    StringUtil2.remove(sb, ".;,=[]()/*");
     return sb.toString().trim();
   }
 

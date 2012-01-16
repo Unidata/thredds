@@ -38,10 +38,5 @@
     <description>Probability of Wetting Rain, exceeding in 0.10" in a given time period</description>
     <units>%</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

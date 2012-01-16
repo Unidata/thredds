@@ -48,10 +48,5 @@
     <description>East Longitude (nearest neighbor) (0 - 360)</description>
     <units>deg</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

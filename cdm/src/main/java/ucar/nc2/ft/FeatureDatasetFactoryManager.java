@@ -34,7 +34,7 @@
 package ucar.nc2.ft;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.DatasetCollectionMFiles;
+import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -215,7 +215,7 @@ public class FeatureDatasetFactoryManager {
       // special processing for collection: datasets
     } else if (location.startsWith(ucar.nc2.ft.point.collection.CompositeDatasetFactory.SCHEME)) {
       String spec = location.substring(CompositeDatasetFactory.SCHEME.length());
-      CollectionManager dcm = DatasetCollectionMFiles.open(spec, null, errlog);
+      CollectionManager dcm = MFileCollectionManager.open(spec, null, errlog);
       return CompositeDatasetFactory.factory(location, wantFeatureType, dcm, errlog);
     }
 

@@ -199,6 +199,7 @@ public interface CollectionManager {
 
   public interface ChangeChecker {
     boolean hasChangedSince(MFile file, long when);
+    boolean hasntChangedSince(MFile file, long when);
   }
 
   public void setChangeChecker(ChangeChecker strat);

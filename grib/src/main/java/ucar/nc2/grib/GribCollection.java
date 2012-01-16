@@ -116,6 +116,11 @@ public abstract class GribCollection {
     return Grib2CollectionBuilder.factory(dcm, force, f);
   }
 
+  static public boolean update(boolean isGrib1, CollectionManager dcm, Formatter f) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.update(dcm, f);
+    return Grib2CollectionBuilder.update(dcm, f);
+  }
+
   ////////////////////////////////////////////////////////////////
 
   protected final String name;
@@ -123,7 +128,7 @@ public abstract class GribCollection {
   protected final Set<String> groupNames = new HashSet<String>(5);
 
   // set by the builder
-  public int center, subcenter, master, local;
+  public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
   public List<String> filenames;
   public List<GroupHcs> groups;
@@ -274,11 +279,11 @@ public abstract class GribCollection {
     public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds) {
       this.hcs = hcs;
       this.rawGds = rawGds;
-      setName();
+      setName(hcs.getName() + "-" + hcs.nx + "X" + hcs.ny);
     }
 
-    private void setName() {
-      String base = hcs.getName() + "-" + hcs.nx + "X" + hcs.ny;
+    public void setName(String base) {
+      if (base == null || base.length() == 0) return;
       String tryit = base;
       int count = 1;
       while (groupNames.contains(tryit)) {

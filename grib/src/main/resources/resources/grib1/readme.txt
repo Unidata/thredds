@@ -158,3 +158,6 @@ Notes for grib-1 tables (global)
  - from  http://www.weatheroffice.gc.ca/grib/what_is_GRIB_e.html:
    "The parameters used in the type of levels used in GRIB from the CMC are compatible with tables published in the NCEP Note 388."
    so we will use NCEP tables for center 54, for both grib1 and grib2.
+
+01/14/2012  create wmoTable3.xml
+ - put in standard CML form, from old embedded strings.

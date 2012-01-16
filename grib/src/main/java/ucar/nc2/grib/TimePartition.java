@@ -55,6 +55,11 @@ public abstract class TimePartition extends GribCollection {
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
 
+  static public boolean update(boolean isGrib1, TimePartitionCollection tpc, Formatter f) throws IOException {
+    if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, f);
+    return Grib2TimePartitionBuilder.update(tpc, f);
+  }
+
   static public TimePartition factory(boolean isGrib1, TimePartitionCollection tpc, CollectionManager.Force force, Formatter f) throws IOException {
     if (isGrib1) return Grib1TimePartitionBuilder.factory(tpc, force, f);
     return Grib2TimePartitionBuilder.factory(tpc, force, f);
@@ -206,7 +211,16 @@ public abstract class TimePartition extends GribCollection {
     return partitionMap.get(name);
   }
 
-  GribCollection.VariableIndex makeVariableIndex(GribCollection.GroupHcs group,
+  @Override
+
+  public GribCollection.VariableIndex makeVariableIndex(GroupHcs group, int tableVersion,
+                                                        int discipline, int category, int parameter, int levelType, boolean isLayer,
+                                                        int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                                                        int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
+    throw new UnsupportedOperationException();
+  }
+
+  public GribCollection.VariableIndex makeVariableIndex(GroupHcs group, int tableVersion,
                                                  int discipline, int category, int parameter, int levelType, boolean isLayer, int intvType,
                                                  String intvName, int ensDerivedType, int probType, String probabilityName,
                                                  int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen,

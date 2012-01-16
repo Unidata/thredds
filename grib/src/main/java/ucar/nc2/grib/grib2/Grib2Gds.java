@@ -266,7 +266,7 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       deltaLon = getOctet4(64) * scale;
       float calcDelta = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
       if (!Misc.closeEnough(deltaLon, calcDelta)) {
-        log.debug("deltaLon != calcDeltaLon");
+        log.debug("deltaLon {} != calcDeltaLon {}", deltaLon, calcDelta);
         deltaLon = calcDelta;
       }
 
@@ -274,7 +274,7 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       if (la2 < la1) deltaLat = -deltaLat;
       calcDelta = (la2 - la1) / (ny-1); // more accurate - deltaLat may have roundoff
       if (!Misc.closeEnough(deltaLat, calcDelta)) {
-        log.debug("deltaLat != calcDeltaLat");
+        log.debug("deltaLat {} != calcDeltaLat {}", deltaLat, calcDelta);
         deltaLat = calcDelta;
       }
 

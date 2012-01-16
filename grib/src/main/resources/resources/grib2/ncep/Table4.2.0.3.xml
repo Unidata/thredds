@@ -238,10 +238,5 @@
     <description>Pressure (nearest grid point)</description>
     <units>Pa</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

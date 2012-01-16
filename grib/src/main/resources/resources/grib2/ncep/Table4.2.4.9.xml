@@ -13,15 +13,10 @@
     <description>Hall Conductivity</description>
     <units>S m-1</units>
   </parameter>
-  <parameter code="1">
+  <parameter code="2">
     <shortName>SIGPAR</shortName>
     <description>Parallel Conductivity</description>
     <units>S m-1</units>
-  </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
   </parameter>
 </parameterMap>
 

@@ -108,10 +108,5 @@
     <description>90% Tropical Cyclone Storm Surge Exceedance</description>
     <units>m</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

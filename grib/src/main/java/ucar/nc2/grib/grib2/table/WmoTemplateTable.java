@@ -49,23 +49,28 @@ import java.util.*;
  */
 
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
+  public static final Version standard = Version.GRIB2_8_0_0;
 
   public enum Version {
-    GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0;
+    GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0;
 
     String getResourceName() {
+      if (this == GRIB2_8_0_0) return "/resources/grib2/wmo/" + this.name() + "_Template_en.xml";
       return "/resources/grib2/wmo/" + this.name() + "_Template_E.xml";
     }
 
     String[] getElemNames() {
       if (this == GRIB2_5_2_0) {
-        return new String[]{"ForExport_Templates_E", "TemplateName_E", "Nindicator_E"};
+        return new String[]{"ForExport_Templates_E", "TemplateName_E", "Nindicator_E", "Contents_E"};
 
       } else if (this == GRIB2_6_0_1) {
-        return new String[]{"Exp_template_E", "Title_E", "Note_E"};
+        return new String[]{"Exp_template_E", "Title_E", "Note_E", "Contents_E"};
 
       } else if (this == GRIB2_7_0_0) {
-        return new String[]{"Exp_Temp_E", "Title_E", "Note_E"};
+        return new String[]{"Exp_Temp_E", "Title_E", "Note_E", "Contents_E"};
+
+      } else if (this == GRIB2_8_0_0) {
+        return new String[]{"GRIB2_8_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
       }
       return null;
     }
@@ -82,6 +87,18 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   /*
+
+  <GRIB2_8_0_0_Template_en>
+    <No>1065</No>
+    <Title_en>Product definition template 4.50 - analysis or forecast of a multi component parameter or matrix element
+      at a point in time
+    </Title_en>
+    <OctetNo>18</OctetNo>
+    <Contents_en>Indicator of unit of time range</Contents_en>
+    <Note_en>(see Code table 4.4)</Note_en>
+    <Status>Validation</Status>
+  </GRIB2_8_0_0_Template_en>
+
 
  5.2
 
@@ -117,7 +134,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
 
   */
 
-  static private GribTemplates readXml(Version version) throws IOException {
+  static public GribTemplates readXml(Version version) throws IOException {
     Class c = WmoCodeTable.class;
     InputStream ios = null;
 
@@ -144,7 +161,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
       for (Element elem : featList) {
         String desc = elem.getChildTextNormalize(elems[1]); // 1 = title
         String octet = elem.getChildTextNormalize("OctetNo");
-        String content = elem.getChildTextNormalize("Contents_E");
+        String content = elem.getChildTextNormalize(elems[3]); // 3 = content
         String status = elem.getChildTextNormalize("Status");
         String note = elem.getChildTextNormalize(elems[2]); // 2 == note
 
@@ -364,7 +381,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   public static void main(String arg[]) throws IOException {
-    List<WmoTemplateTable> tlist = readXml(Version.GRIB2_6_0_1).list;
+    List<WmoTemplateTable> tlist = readXml(Version.GRIB2_8_0_0).list;
 
     for (WmoTemplateTable t : tlist) {
       System.out.printf("%n(%s) %s %n", t.name, t.desc);

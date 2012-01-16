@@ -78,10 +78,5 @@
     <description>PM 2.5 Daily Max from 24-hour Average</description>
     <units>?g/m3</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

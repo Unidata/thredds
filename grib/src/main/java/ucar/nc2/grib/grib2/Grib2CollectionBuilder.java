@@ -34,10 +34,11 @@ package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.DatasetCollectionSingleFile;
+import thredds.inventory.CollectionManagerSingleFile;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
@@ -58,6 +59,15 @@ public class Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2CollectionIndex";
   protected static final int version = 6;
   private static final boolean debug = false;
+
+    // called by tdm
+  static public boolean update(CollectionManager dcm, Formatter f) throws IOException {
+    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm);
+    if (!builder.needsUpdate()) return false;
+    builder.readOrCreateIndex(CollectionManager.Force.always, f);
+    builder.gc.close();
+    return true;
+  }
 
   // from a single file, read in the index, create if it doesnt exist
   static public GribCollection createFromSingleFile(File file, CollectionManager.Force force, Formatter f) throws IOException {
@@ -98,7 +108,7 @@ public class Grib2CollectionBuilder {
   private Grib2CollectionBuilder(File file, Formatter f) throws IOException {
     try {
       //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
-      CollectionManager dcm = new DatasetCollectionSingleFile(file);
+      CollectionManager dcm = new CollectionManagerSingleFile(file);
       this.collections.add(dcm);
       this.gc = new Grib2Collection(file.getName(), new File(dcm.getRoot()));
 
@@ -258,6 +268,7 @@ public class Grib2CollectionBuilder {
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
     Grib2Gds gds = gdss.getGDS();
     group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds);
+    group.setName(p.getName()); // optional user-overridden name
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
     for (int i = 0; i < p.getVariablesCount(); i++)
@@ -407,7 +418,6 @@ public class Grib2CollectionBuilder {
     int fileno = 0;
     boolean intvMerge = false;
     for (CollectionManager dcm : collections) {
-      // dcm.scanIfNeeded(); // LOOK ??
       f.format(" dcm= %s%n", dcm);
       Map<Integer,Integer> gdsConvert = (Map<Integer,Integer>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDSHASH);
       intvMerge = dcm.getAuxInfo(FeatureCollectionConfig.AUX_INTERVAL_MERGE) != null; // LOOK
@@ -456,7 +466,7 @@ public class Grib2CollectionBuilder {
     Grib2Rectilyser.Counter c = new Grib2Rectilyser.Counter(); // debugging
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, intvMerge);
+      g.rect = new Grib2Rectilyser(new Grib2Customizer(tables), g.records, g.gdsHash, intvMerge);
       f.format(" GDS hash %d == ", g.gdsHash);
       g.rect.make(f, c);
     }

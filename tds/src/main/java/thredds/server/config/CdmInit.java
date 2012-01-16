@@ -33,10 +33,8 @@
 
 package thredds.server.config;
 
-import thredds.inventory.DatasetCollectionMFiles;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.FmrcInventoryServlet;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
@@ -51,7 +49,6 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * A Singleton class to initialize the CDM, instantiated by Spring.

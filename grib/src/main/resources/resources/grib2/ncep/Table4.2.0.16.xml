@@ -68,10 +68,5 @@
     <description>Hourly Maximum of Simulated Reflectivity at 1 km AGL</description>
     <units>dB</units>
   </parameter>
-  <parameter code="255">
-    <shortName />
-    <description>Missing</description>
-    <units />
-  </parameter>
 </parameterMap>
 

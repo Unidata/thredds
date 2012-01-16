@@ -219,7 +219,7 @@ public class Grib2TablesViewer extends JPanel {
     Formatter f = new Formatter();
 
     f.format("Table 1 = %s%n", id1.name);
-    f.format("Table 1 = %s%n", id2.name);
+    f.format("Table 2 = %s%n", id2.name);
 
     int extra = 0;
     int conflict = 0;

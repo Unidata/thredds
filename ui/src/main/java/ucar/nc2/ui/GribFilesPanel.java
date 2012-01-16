@@ -32,11 +32,11 @@
 
 package ucar.nc2.ui;
 
-import thredds.inventory.DatasetCollectionMFiles;
+import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
-import ucar.nc2.grib.grib1.tables.Grib1StandardTables;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTableLookup;
 import ucar.nc2.grib.grib1.tables.Grib1Tables;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
@@ -261,7 +261,7 @@ public class GribFilesPanel extends JPanel {
 
   public class CollectionBean {
     String spec;
-    DatasetCollectionMFiles dcm;
+    MFileCollectionManager dcm;
     Iterable<MFile> fileList;
 
     // no-arg constructor
@@ -273,9 +273,9 @@ public class GribFilesPanel extends JPanel {
       this.spec = spec;
 
       Formatter f = new Formatter();
-      DatasetCollectionMFiles dc = null;
+      MFileCollectionManager dc = null;
       try {
-        dc = DatasetCollectionMFiles.open(spec, null, f);
+        dc = MFileCollectionManager.open(spec, null, f);
         dc.scan(false);
         fileList = dc.getFiles();
 
@@ -311,7 +311,7 @@ public class GribFilesPanel extends JPanel {
       this.m = m;
       this.first = first;
       pds = first.getPDSsection();
-      table = Grib1StandardTables.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
+      table = Grib1ParamTableLookup.getParameterTable(getCenter(), getSubCenter(), getTableVersion());
     }
 
     public final String getPath() {

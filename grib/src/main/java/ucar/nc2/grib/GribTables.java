@@ -38,7 +38,8 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarDate;
 
 /**
- * Description
+ * Abstraction of GribTable for Grib Collections.
+ * Still figuring out what the minimal need is
  *
  * @author John
  * @since 9/5/11

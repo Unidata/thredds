@@ -106,7 +106,7 @@ public class Grib2Index extends GribIndex {
 
   public boolean readIndex(String filename, long gribLastModified, CollectionManager.Force force) throws IOException {
 
-    File idxFile = new File(filename + IDX_EXT);
+    File idxFile = getIndexFile(filename);
     if (!idxFile.exists()) return false;
     long idxModified = idxFile.lastModified();
     if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
@@ -114,9 +114,11 @@ public class Grib2Index extends GribIndex {
     FileInputStream fin = new FileInputStream(idxFile); // LOOK need DiskCache for non-writeable directories
 
     try {
-      //// header message
-      if (!NcStream.readAndTest(fin, MAGIC_START.getBytes()))
-        throw new IOException("Bad magic number of grib index, should be= " + MAGIC_START);
+        //// check header is ok
+        if (!NcStream.readAndTest(fin, MAGIC_START.getBytes())) {
+          log.debug("Bad magic number of grib index, should be= {}" + MAGIC_START);
+          return false;
+        }
 
       int v = NcStream.readVInt(fin);
       if (v != version) {
@@ -218,8 +220,8 @@ message Grib2Record {
 
   // LOOK what about extending an index ??
   public boolean makeIndex(String filename, Formatter f) throws IOException {
-
-    FileOutputStream fout = new FileOutputStream(filename + IDX_EXT); // LOOK need DiskCache for non-writeable directories
+    File idxFile = getIndexFile(filename);
+    FileOutputStream fout = new FileOutputStream(idxFile);
     RandomAccessFile raf = null;
     try {
       //// header message

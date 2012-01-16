@@ -14,6 +14,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
+import java.util.List;
 
 /**
  * Describe
@@ -73,8 +74,7 @@ public class GribWmoTemplatesPanel extends JPanel {
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
 
-    ///
-
+    /*
     try {
       java.util.List<WmoTemplateTable> codes = WmoTemplateTable.getWmoStandard().list;
       java.util.List<CodeBean> dds = new ArrayList<CodeBean>(codes.size());
@@ -85,7 +85,7 @@ public class GribWmoTemplatesPanel extends JPanel {
 
     } catch (Exception e) {
       e.printStackTrace();
-    }
+    } */
 
   }
 
@@ -98,6 +98,23 @@ public class GribWmoTemplatesPanel extends JPanel {
     //prefs.putInt("splitPos2", split2.getDividerLocation());
     if (fileChooser != null) fileChooser.save();
   }
+
+  public void setTable(WmoTemplateTable.Version v) {
+    try {
+      WmoTemplateTable.GribTemplates wmo = WmoTemplateTable.readXml(v);
+      List<WmoTemplateTable> codes = wmo.list;
+      List<CodeBean> dds = new ArrayList<CodeBean>(codes.size());
+      for (WmoTemplateTable code : codes) {
+        dds.add(new CodeBean(code));
+      }
+      codeTable.setBeans(dds);
+      // currTable = v;
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
 
   public void setEntries(WmoTemplateTable template) {
     java.util.List<EntryBean> beans = new ArrayList<EntryBean>(template.flds.size());
