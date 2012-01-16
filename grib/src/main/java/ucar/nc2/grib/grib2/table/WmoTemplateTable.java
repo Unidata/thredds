@@ -212,7 +212,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   static private Map<String, WmoCodeTable> gribCodes;
 
   public static GribTemplates getWmoStandard() throws IOException {
-    return readXml(Version.GRIB2_6_0_1);
+    return readXml(standard);
   }
 
   ///////////////////////////////////////

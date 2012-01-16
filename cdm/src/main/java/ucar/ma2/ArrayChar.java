@@ -298,9 +298,6 @@ public class ArrayChar extends Array {
    * @throws IllegalArgumentException if rank != 2
    */
   public String getString(int index) {
-    //if (getRank() != 2)
-    //  System.out.println("HEY");
-
     Index ima = getIndex();
     return getString(ima.set(index));
   }

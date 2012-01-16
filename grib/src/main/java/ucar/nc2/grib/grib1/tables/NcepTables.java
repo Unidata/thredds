@@ -114,7 +114,8 @@ public class NcepTables extends Grib1Customizer {
 
   @Override
   protected VertCoord.VertUnit makeVertUnit(int code) {
-    return getLevelType(code);
+    GribLevelType lt = getLevelType(code);
+    return (lt != null) ? lt  : super.makeVertUnit(code);
   }
 
   @Override

@@ -134,7 +134,8 @@ public class FnmocTables extends Grib1Customizer {
   /// levels
   @Override
   protected VertCoord.VertUnit makeVertUnit(int code) {
-    return getLevelType(code);
+    GribLevelType lt = getLevelType(code);
+    return (lt != null) ? lt  : super.makeVertUnit(code);
   }
 
   @Override

@@ -350,12 +350,13 @@ public class Grib1ReportPanel extends JPanel {
     Counter thin = new Counter("thin");
     Counter timeUnit = new Counter("timeUnit");
     Counter vertCoord = new Counter("vertCoord");
+    Counter vertCoordInGDS = new Counter("vertCoordInGDS");
 
     for (MFile mfile : dcm.getFiles()) {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
-      doScanIssues(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord);
+      doScanIssues(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
     }
 
     f.format("SCAN NEW%n");
@@ -363,10 +364,11 @@ public class Grib1ReportPanel extends JPanel {
     thin.show(f);
     timeUnit.show(f);
     vertCoord.show(f);
+    vertCoordInGDS.show(f);
   }
 
   private void doScanIssues(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit,
-                            Counter vertCoord) throws IOException {
+                            Counter vertCoord, Counter vertCoordInGDS) throws IOException {
     boolean showThin = true;
     boolean showPredefined = true;
     boolean showVert = true;
@@ -384,6 +386,7 @@ public class Grib1ReportPanel extends JPanel {
         Grib1SectionProductDefinition pds = gr.getPDSsection();
         String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for CounterS
         timeUnit.count(pds.getTimeRangeIndicator());
+        vertCoord.count(pds.getLevelType());
 
         if (gdss.isThin()) {
           if (showThin) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), ff.getPath());
@@ -399,7 +402,7 @@ public class Grib1ReportPanel extends JPanel {
 
         if (gdss.hasVerticalCoordinateParameters()) {
           if (showVert) fm.format("   Has vertical coordinates in GDS= %s%n", ff.getPath());
-          vertCoord.count(pds.getLevelType());
+          vertCoordInGDS.count(pds.getLevelType());
           showVert = false;
         }
       }

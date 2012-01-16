@@ -214,11 +214,11 @@ public class Grib1Customizer implements GribTables {
     if (intvType >= 0) {
       Grib1TimeTypeTable.StatType stat = Grib1TimeTypeTable.getStatType(intvType);
       if (stat != null) f.format(" (%s %s)", intvName, stat.name());
-      else if (intvName != null) f.format(" (%s)", intvName);
+      else if (intvName != null && intvName.length() > 0) f.format(" (%s)", intvName);
     }
 
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", getLevelNameShort(levelType));
+      f.format(" @ %s", getLevelDescription(levelType));
       if (isLayer) f.format(" layer");
     }
 

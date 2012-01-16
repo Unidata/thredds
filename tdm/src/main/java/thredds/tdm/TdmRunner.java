@@ -387,7 +387,7 @@ public class TdmRunner {
         String[] split = cred.split(":");
         user = split[0];
         pass = split[1];
-        System.out.printf("parse cert %s %s%n", user, pass);
+        // System.out.printf("parse cert %s %s%n", user, pass);
       }
       if (args[i].equalsIgnoreCase("-catalog")) {
         Resource cat = new FileSystemResource(args[i + 1]);

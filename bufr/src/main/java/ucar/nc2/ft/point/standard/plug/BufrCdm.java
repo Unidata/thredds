@@ -160,7 +160,7 @@ public class BufrCdm extends TableConfigurerImpl {
      Structure obsStruct = (Structure) profileStruct.findVariable("struct5");
      obsTable.structName = obsStruct.getFullName();
      obsTable.nestedTableName = obsStruct.getShortName();
-     obsTable.elev = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Pressure.toString()); // HEY not height
+     obsTable.elev = Evaluator.findNameOfVariableWithAttributeValue(obsStruct, _Coordinate.AxisType, AxisType.Pressure.toString()); // LOOK not height
      profileTable.addChild(obsTable);
     
      return profileTable;

@@ -678,13 +678,6 @@ public abstract class ArrayStructure extends Array {
     if (m.getDataType() != DataType.FLOAT)
       throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be float");
     Array data = m.getDataArray();
-
-    /* debug
-    long len = data.getSize();
-    float[] fa = (float []) data.getStorage();
-    if (recnum * m.getSize() >= fa.length)
-      System.out.println("HEY"); // */
-
     return data.getFloat(recnum * m.getSize()); // gets first one in the array
   }
 
