@@ -37,6 +37,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribLevelType;
+import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1Customizer;
 
 import java.io.IOException;
@@ -131,6 +132,10 @@ public class FnmocTables extends Grib1Customizer {
 
 
   /// levels
+  @Override
+  protected VertCoord.VertUnit makeVertUnit(int code) {
+    return getLevelType(code);
+  }
 
   @Override
   public String getLevelNameShort(int code) {
@@ -168,8 +173,7 @@ public class FnmocTables extends Grib1Customizer {
     return (lt == null) ? super.getDatum(code) : lt.getDatum();
   }
 
-  @Override
-  protected GribLevelType getLevelType(int code) {
+  private GribLevelType getLevelType(int code) {
     if (code < 199) return null;
     if (levelTypesMap == null)
       levelTypesMap = readFnmocTable3("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml");

@@ -37,6 +37,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribLevelType;
+import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1Customizer;
 
 import java.io.IOException;
@@ -112,6 +113,11 @@ public class NcepTables extends Grib1Customizer {
   /// levels
 
   @Override
+  protected VertCoord.VertUnit makeVertUnit(int code) {
+    return getLevelType(code);
+  }
+
+  @Override
   public String getLevelNameShort(int code) {
     GribLevelType lt = getLevelType(code);
     return (lt == null) ? super.getLevelNameShort(code) : lt.getAbbrev();
@@ -147,8 +153,7 @@ public class NcepTables extends Grib1Customizer {
     return (lt == null) ? super.getDatum(code) : lt.getDatum();
   }
 
-  @Override
-  protected GribLevelType getLevelType(int code) {
+  private GribLevelType getLevelType(int code) {
     if (code < 129) return null; // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
     if (levelTypesMap == null)
       levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");

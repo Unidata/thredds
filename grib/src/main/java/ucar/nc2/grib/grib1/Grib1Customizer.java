@@ -254,7 +254,7 @@ public class Grib1Customizer implements GribTables {
   }
 
   public VertCoord.VertUnit getVertUnit(int code) {
-    return getLevelType(code);
+    return makeVertUnit(code);
   }
 
   public boolean is3D(int levelType) {
@@ -262,6 +262,10 @@ public class Grib1Customizer implements GribTables {
   }
 
   // below are the methods a subclass may need to override for levels
+
+  protected VertCoord.VertUnit makeVertUnit(int code) {
+    return getLevelType(code);
+  }
 
   @Override
   public String getLevelNameShort(int levelType) {
@@ -301,7 +305,7 @@ public class Grib1Customizer implements GribTables {
 
   private HashMap<Integer, GribLevelType> wmoTable3;
 
-  protected GribLevelType getLevelType(int code) {
+  private GribLevelType getLevelType(int code) {
     if (wmoTable3 == null)
       wmoTable3 = readTable3("resources/grib1/wmoTable3.xml");
     if (wmoTable3 == null)
