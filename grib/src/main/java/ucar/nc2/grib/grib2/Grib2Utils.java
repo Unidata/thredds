@@ -167,13 +167,26 @@ public class Grib2Utils {
         return new GribLevelType(code, "m", null, true);
 
       default:
-        return new GribLevelType(code, "", null, true);
+        return new GribLevelType(code, null, null, true);
     }
   }
 
   static public boolean isLevelUsed(int code) {
     VertCoord.VertUnit vunit = getLevelUnit(code);
     return vunit.isVerticalCoordinate();
+  }
+
+  /**
+   * Check to see if this grid is a layer variable
+   *
+   * @param gr record to check
+   * @return true if a layer
+   */
+  static public boolean isLayer(Grib2Record gr) {
+    Grib2Pds pds = gr.getPDS();
+    if (pds.getLevelType2() == 255 || pds.getLevelType2() == 0)
+      return false;
+    return true;
   }
 
   static public boolean isLatLon(int gridTemplate, int center) {
@@ -193,19 +206,6 @@ public class Grib2Utils {
     else if (desc.contains("Latitude of") || desc.contains("Longitude of")) type = null;
     else type = LatLonCoordType.P;
     return type;
-  }
-
-  /**
-   * Check to see if this grid is a layer variable
-   *
-   * @param gr record to check
-   * @return true if a layer
-   */
-  static public boolean isLayer(Grib2Record gr) {
-    Grib2Pds pds = gr.getPDS();
-    if (pds.getLevelType2() == 255 || pds.getLevelType2() == 0)
-      return false;
-    return true;
   }
 
 }

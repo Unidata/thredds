@@ -113,7 +113,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     String errs = errlog.toString();
-    if (errs.length() > 0) logger.debug("{}: CollectionManager parse error = {} ", name, errs);
+    if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
 
     tmi.setDataType(FeatureType.GRID); // override GRIB
     finish();
@@ -206,7 +206,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     } catch (IOException e) {
       logger.error("Cant updateCollection " + dcm, e);
     }
-    logger.info("{}: Collection was recreated", getName());
+    logger.debug("{}: Collection was recreated", getName());
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////

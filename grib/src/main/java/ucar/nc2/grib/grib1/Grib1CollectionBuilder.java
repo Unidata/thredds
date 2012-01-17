@@ -146,7 +146,7 @@ public class Grib1CollectionBuilder {
     // otherwise, we're good as long as the index file exists
     File idx = gc.getIndexFile();
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
-      logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
+      logger.debug("{}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx, ff, f);        // write out index
       gc.rafLocation = idx.getPath();
       gc.setRaf( new RandomAccessFile(idx.getPath(), "r"));

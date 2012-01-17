@@ -146,7 +146,7 @@ public class Grib2CollectionBuilder {
     // otherwise, we're good as long as the index file exists
     File idx = gc.getIndexFile();
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
-      logger.info("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
+      logger.debug("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx, ff, f);        // write out index
       gc.rafLocation = idx.getPath();
       gc.setRaf( new RandomAccessFile(idx.getPath(), "r"));
@@ -757,7 +757,9 @@ public class Grib2CollectionBuilder {
   protected GribCollectionProto.Coord writeCoordProto(VertCoord vc, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setCode(vc.getCode());
-    b.setUnit(vc.getUnits());
+    String units = vc.getUnits();
+    if (units == null) units = "";
+    if (vc.getUnits() != null) b.setUnit(units);
     for (VertCoord.Level coord : vc.getCoords()) {
       if (vc.isLayer()) {
         b.addValues((float) coord.getValue1());

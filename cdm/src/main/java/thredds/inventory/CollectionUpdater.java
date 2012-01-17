@@ -252,7 +252,7 @@ public enum CollectionUpdater {
             .build();
 
     try {
-      logger.info("Trigger Update for {} type= {}", collectionName, triggerType);
+      logger.debug("Trigger Update for {} type= {}", collectionName, triggerType);
       scheduler.scheduleJob(trigger);
     } catch (SchedulerException e) {
       logger.error("triggerUpdate failed", e);

@@ -207,7 +207,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // check consistency across vert and ens coords
     if (!checkPartitions(canon, f)) {
-      logger.error(" Partition check failed, index not written = "+tp.getName());
+      logger.error(" Partition check failed, index not written on {} message = {}", tp.getName(), f.toString());
       f.format(" FAIL Partition check collection = %s%n", tp.getName());
       return false;
     }
@@ -241,6 +241,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       for (GribCollection.VariableIndex vi : firstGroup.varIndex) {
         TimePartition.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, npart);
         varIndexP.add(vip);
+        if (check.containsKey(vi.cdmHash))
+          System.out.println("HEY DUPLICATE");
         check.put(vi.cdmHash, vip); // replace with its evil twin
       }
       firstGroup.varIndex = varIndexP;// replace with its evil twin
@@ -276,8 +278,11 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
           VertCoord vc1 = vi1.getVertCoord();
           VertCoord vc2 = vi2.getVertCoord();
           if ((vc1 == null) != (vc2 == null)) {
+            vc1 = vi1.getVertCoord();
+            vc2 = vi2.getVertCoord();
             f.format("   ERR Vert coordinates existence on variable %s in %s doesnt match%n",  vi2, tpp.getName());
             ok = false;
+
           } else if ((vc1 != null) && !vc1.equalsData(vc2)) {
             f.format("   ERR Vert coordinates values on variable %s in %s dont match%n",  vi2, tpp.getName());
             f.format("    canon vc = %s%n", vc1);

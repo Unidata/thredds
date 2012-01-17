@@ -183,7 +183,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
 
     // check consistency across vert and ens coords
     if (!checkPartitions(canon, f)) {
-      logger.error(" Partition check failed, index not written = "+tp.getName());
+      logger.error(" Partition check failed, index not written on {} message = {}", tp.getName(), f.toString());
       f.format(" FAIL Partition check collection = %s%n", tp.getName());
       return false;
     }
