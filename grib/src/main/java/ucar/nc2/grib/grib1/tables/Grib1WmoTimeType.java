@@ -32,64 +32,22 @@
 
 package ucar.nc2.grib.grib1.tables;
 
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.grib.GribStatType;
 
 /**
- * Describe
+ * Standard WMO tables for time range indicator - Grib1 table 5.
  *
  * @author caron
  * @since 1/13/12
  */
-public class Grib1TimeTypeTable {
-
-  static public enum StatType {Average, Accumulation, Difference, StdDev, Variance}
-
-  /**
-   * Convert a time unit to a CalendarPeriod
-   *
-   * @param timeUnit (table 4)
-   * @return equivalent CalendarPeriod
-   */
-  static public CalendarPeriod getCalendarPeriod(int timeUnit) {
-    // LOOK - some way to intern these ?
-    switch (timeUnit) { // code table 4.4
-      case 0:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Minute);
-      case 1:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
-      case 2:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Day);
-      case 3:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Month);
-      case 4:
-        return CalendarPeriod.of(1, CalendarPeriod.Field.Year);
-      case 5:
-        return CalendarPeriod.of(10, CalendarPeriod.Field.Year);
-      case 6:
-        return CalendarPeriod.of(30, CalendarPeriod.Field.Year);
-      case 7:
-        return CalendarPeriod.of(100, CalendarPeriod.Field.Year);
-      case 10:
-        return CalendarPeriod.of(3, CalendarPeriod.Field.Hour);
-      case 11:
-        return CalendarPeriod.of(6, CalendarPeriod.Field.Hour);
-      case 12:
-        return CalendarPeriod.of(12, CalendarPeriod.Field.Hour);
-      case 13:
-        return CalendarPeriod.of(15, CalendarPeriod.Field.Minute);
-      case 14:
-        return CalendarPeriod.of(30, CalendarPeriod.Field.Minute);
-      default:
-        throw new UnsupportedOperationException("Unknown time unit = " + timeUnit);
-    }
-  }
+public class Grib1WmoTimeType {
 
   /**
    * The time unit statistical type, derived from code table 5)
    *
    * @return time unit statistical type
    */
-  static public StatType getStatType(int timeRangeIndicator) {
+  public static GribStatType getStatType(int timeRangeIndicator) {
     switch (timeRangeIndicator) {
       case 3:
       case 6:
@@ -99,26 +57,26 @@ public class Grib1TimeTypeTable {
       case 115:
       case 117:
       case 123:
-        return StatType.Average;
+        return GribStatType.Average;
       case 4:
       case 114:
       case 116:
       case 124:
-        return StatType.Accumulation;
+        return GribStatType.Accumulation;
       case 5:
-        return StatType.Difference;
+        return GribStatType.DifferenceFromEnd;
       case 118:
-        return StatType.Variance;
+        return GribStatType.Covariance;
       case 119:
       case 125:
-        return StatType.StdDev;
+        return GribStatType.StandardDeviation;
       default:
         return null;
     }
   }
 
   // code table 5 - 2010 edition of WMO manual on codes
-  static public String getTimeTypeName(int timeRangeIndicator, int p1, int p2) {
+  static public String getTimeTypeName(int timeRangeIndicator) {
     String timeRange;
 
     switch (timeRangeIndicator) {
@@ -127,7 +85,7 @@ public class Grib1TimeTypeTable {
         Uninitialized analysis product for reference time (P1 = 0), or
         Image product for reference time (P1 = 0) */
       case 0:
-        timeRange = (p1 == 0) ? "Uninitialized analysis or image product for reference time" : "Forecast product valid for RT + P1";
+        timeRange = "Uninitialized analysis / image product / forecast product valid for RT + P1";
         break;
 
       // Initialized analysis product for reference time (P1 = 0)
@@ -188,6 +146,7 @@ public class Grib1TimeTypeTable {
         The units of P2 are given by the contents of octet 18 and Code table 4 */
       case 51:
         timeRange = "Climatological mean values from RT to (RT + P2)";
+        // if (p1 == 0) timeRange += " continuous";
         break;
 
       /* Average  of  N  forecasts  (or  initialized  analyses);  each  product  has  forecast  period  of  P1
@@ -263,5 +222,4 @@ public class Grib1TimeTypeTable {
     return timeRange;
   }
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////
 }

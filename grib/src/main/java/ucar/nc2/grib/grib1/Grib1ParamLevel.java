@@ -34,6 +34,7 @@ package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
 /**
  * Level information contained in a particular PDS.

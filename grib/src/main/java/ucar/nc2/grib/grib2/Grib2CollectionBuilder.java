@@ -325,12 +325,14 @@ public class Grib2CollectionBuilder {
       List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
       for (int i = 0; i < pc.getValuesCount(); i++)
         coords.add(new TimeCoord.Tinv((int) pc.getValues(i), (int) pc.getBound(i)));
-      return new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      TimeCoord tc =  new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      return tc.setIndex( pc.getIndex());
     } else {
       List<Integer> coords = new ArrayList<Integer>(pc.getValuesCount());
       for (float value : pc.getValuesList())
         coords.add((int) value);
-      return new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      TimeCoord tc =  new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      return tc.setIndex( pc.getIndex());
     }
   }
 
@@ -739,7 +741,8 @@ public class Grib2CollectionBuilder {
 
   protected GribCollectionProto.Coord writeCoordProto(TimeCoord tc, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setCode(index);
+    b.setIndex(index);
+    b.setCode(tc.getCode());
     b.setUnit(tc.getUnits());
     float scale = (float) tc.getTimeUnitScale(); // deal with, eg, "6 hours" by multiplying values by 6
     if (tc.isInterval()) {
@@ -756,6 +759,7 @@ public class Grib2CollectionBuilder {
 
   protected GribCollectionProto.Coord writeCoordProto(VertCoord vc, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
+    b.setIndex(index);
     b.setCode(vc.getCode());
     String units = vc.getUnits();
     if (units == null) units = "";
@@ -773,6 +777,7 @@ public class Grib2CollectionBuilder {
 
   protected GribCollectionProto.Coord writeCoordProto(EnsCoord ec, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
+    b.setIndex(index);
     b.setCode(0);
     b.setUnit("");
     for (EnsCoord.Coord coord : ec.getCoords()) {

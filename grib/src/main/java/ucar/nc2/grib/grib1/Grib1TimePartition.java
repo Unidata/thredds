@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.TimePartition;
@@ -53,21 +54,29 @@ public class Grib1TimePartition extends TimePartition {
   }
 
   @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException {
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 
     Grib1Iosp iosp = new Grib1Iosp(want);
+    iosp.setLookupTablePath(gribConfig.lookupTablePath);
+    iosp.setParamTablePath(gribConfig.paramTablePath);
+    iosp.setParamTable(gribConfig.paramTable);
+
     NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     return new NetcdfDataset(ncfile);
   }
 
   @Override
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException {
+  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 
     Grib1Iosp iosp = new Grib1Iosp(want);
+    iosp.setLookupTablePath(gribConfig.lookupTablePath);
+    iosp.setParamTablePath(gribConfig.paramTablePath);
+    iosp.setParamTable(gribConfig.paramTable);
+
     NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??

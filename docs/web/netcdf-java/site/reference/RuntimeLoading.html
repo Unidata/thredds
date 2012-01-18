@@ -75,11 +75,12 @@ dl {margin: 10px 5px 5px 15px;)
 <strong>2)</strong> &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;
 <strong>3)</strong> &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type=&quot;vertical&quot; class="my.stuff.atmosSigmaLog"/&gt;
 <strong>4)</strong> &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;
-<strong>5)</strong> &lt;<strong>grib1Table</strong> center="58" subcenter="-1" version="128" filename="C:/grib/tables/ons288.xml"/&gt;
-<strong>6)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/grib/tables/userlookup.lst"/&gt;
-<strong>7)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/grib/tables/grib2userparameters&quot; /&gt;
-<strong>8)</strong> &lt;<strong>bufrtable</strong> filename="C:/my/files/lookup.txt&quot; /&gt;
-9) &lt;grib1Table strict=&quot;false&quot;/&gt;
+<strong>5)</strong> &lt;<strong>gribParameterTable </strong>edition=&quot;1&quot; center="58" subcenter="-1" version="128"&gt;C:/grib/tables/ons288.xml&lt;<strong>/gribParameterTable</strong>&gt;
+<strong>6)</strong> &lt;<strong>gribParameterTableLookup </strong>edition=&quot;1&quot;&gt;C:/grib/tables/ncepLookup.txt&lt;<strong>/gribParameterTableLookup</strong>&gt;
+<strong>7)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/grib/tables/userlookup.lst"/&gt;
+<strong>8)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/grib/tables/grib2userparameters&quot; /&gt;
+<strong>9)</strong> &lt;<strong>bufrtable</strong> filename="C:/my/files/lookup.txt&quot; /&gt;
+10) &lt;grib1Table strict=&quot;false&quot;/&gt;
 &lt;/nj22Config&gt;</pre>
 <ol>
   <li>Loads an <strong>IOServiceProvider</strong> with the given class name</li>
@@ -87,8 +88,9 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Loads a <strong>CoordTransBuilderIF</strong> with the given class name, which looks for the given <strong>transformName </strong>in the dataset. The type must be <em>vertical</em> or <em>projection</em>. </li>
   <li>Loads a <strong>TypedDatasetFactoryIF</strong> with the given class name. Currently supported datatypes are <em>Grid, Point, Station, Trajectory </em>and<em> Radial</em>. Others will be added from the enumeration in <strong>thredds.catalog.DataType</strong>.</li>
   <li>Load a <a href="../formats/GribTables.html">GRIB-1 parameter  table</a> (as of version 4.3)</li>
-  <li>Load a <a href="../formats/GribTables.html">GRIB-1 parameter lookup table</a> (version &lt; 4.3)</li>
-  <li>Load a <a href="../formats/GribTables.html">GRIB-2 parameter lookup table</a> (version &lt; 4.3)</li>
+  <li>Load a <a href="../formats/GribTables.html">GRIB-1 parameter  table lookup</a> (as of version 4.3)</li>
+  <li>Load a <a href="../formats/GribTables.html">GRIB-1 parameter lookup table</a> (versions &lt; 4.3, deprecated)</li>
+  <li>Load a <a href="../formats/GribTables.html">GRIB-2 parameter lookup table</a> (versions &lt; 4.3, deprecated)</li>
   <li>Load a <a href="BufrTables.html">BUFR table lookup</a> file</li>
   <li>Turn <a href="../formats/GribTables.html#strict">strict GRIB1 table handling</a> off. </li>
 </ol>
@@ -117,7 +119,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on November, 2011
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on January, 2012
 </address>
 </body>
 </html>

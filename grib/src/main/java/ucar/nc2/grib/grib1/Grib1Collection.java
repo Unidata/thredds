@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib1;
 
 import thredds.inventory.CollectionManager;
+import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -55,12 +56,16 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
     super(name, directory);
   }
 
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException {
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
       Grib1Iosp iosp = new Grib1Iosp(want);
+      iosp.setLookupTablePath(gribConfig.lookupTablePath);
+      iosp.setParamTablePath(gribConfig.paramTablePath);
+      iosp.setParamTable(gribConfig.paramTable);
+
       NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
       return new NetcdfDataset(ncfile);
 
@@ -72,6 +77,10 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
           GribCollection gc = Grib1CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, f);  // LOOK thread-safety : creating ncx
 
           Grib1Iosp iosp = new Grib1Iosp(gc);
+          iosp.setLookupTablePath(gribConfig.lookupTablePath);
+          iosp.setParamTablePath(gribConfig.paramTablePath);
+          iosp.setParamTable(gribConfig.paramTable);
+
           NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
           return new NetcdfDataset(ncfile);
         }
@@ -80,12 +89,16 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
     }
   }
 
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException {
+  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf
       Grib1Iosp iosp = new Grib1Iosp(want);
+      iosp.setLookupTablePath(gribConfig.lookupTablePath);
+      iosp.setParamTablePath(gribConfig.paramTablePath);
+      iosp.setParamTable(gribConfig.paramTable);
+
       NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
@@ -97,6 +110,10 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
           GribCollection gc = Grib1CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, f);  // LOOK thread-safety : creating ncx
 
           Grib1Iosp iosp = new Grib1Iosp(gc);
+          iosp.setLookupTablePath(gribConfig.lookupTablePath);
+          iosp.setParamTablePath(gribConfig.paramTablePath);
+          iosp.setParamTable(gribConfig.paramTable);
+
           NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
           NetcdfDataset ncd = new NetcdfDataset(ncfile);
           return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??

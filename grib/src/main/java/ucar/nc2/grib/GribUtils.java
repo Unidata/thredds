@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib;
 
+import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -41,6 +42,47 @@ import ucar.unidata.util.StringUtil2;
  * @since 11/16/11
  */
 public class GribUtils {
+
+  /**
+   * Convert a time unit to a CalendarPeriod
+   * GRIB1 and GRIB2 are the same (!)
+   *
+   * @param timeUnit (GRIB1 table 4) (GRIB2   Code table 4.4 – Indicator of unit of time range)
+   * @return equivalent CalendarPeriod
+   */
+  static public CalendarPeriod getCalendarPeriod(int timeUnit) {
+    // LOOK - some way to intern these ? put is hash table
+    switch (timeUnit) { // code table 4.4
+      case 0:
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Minute);
+      case 1:
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
+      case 2:
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Day);
+      case 3:
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Month);
+      case 4:
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Year);
+      case 5:
+        return CalendarPeriod.of(10, CalendarPeriod.Field.Year);
+      case 6:
+        return CalendarPeriod.of(30, CalendarPeriod.Field.Year);
+      case 7:
+        return CalendarPeriod.of(100, CalendarPeriod.Field.Year);
+      case 10:
+        return CalendarPeriod.of(3, CalendarPeriod.Field.Hour);
+      case 11:
+        return CalendarPeriod.of(6, CalendarPeriod.Field.Hour);
+      case 12:
+        return CalendarPeriod.of(12, CalendarPeriod.Field.Hour);
+      case 13:
+        return CalendarPeriod.of(15, CalendarPeriod.Field.Minute);
+      case 14:
+        return CalendarPeriod.of(30, CalendarPeriod.Field.Minute);
+      default:
+        throw new UnsupportedOperationException("Unknown time unit = " + timeUnit);
+    }
+  }
 
   static public String cleanupUnits(String unit) {
     if (unit == null) return null;

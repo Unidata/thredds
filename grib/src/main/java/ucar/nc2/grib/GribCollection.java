@@ -34,6 +34,7 @@ package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
@@ -212,9 +213,9 @@ public abstract class GribCollection {
   /////////////////////////////////////////////
 
   // stuff for InvDatasetFcGrib
-  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException;
+  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException;
 
-  public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException;
+  public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException;
 
   public GroupHcs getGroup(int index) {
     return groups.get(index);

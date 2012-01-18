@@ -46,6 +46,7 @@ public interface CF {
   public static final String AXIS = "axis";
   public static final String BOUNDS = "bounds";
   public static final String CALENDAR = "calendar";
+  public static final String CELL_METHODS = "cell_methods";
   public static final String CF_ROLE = "cf_role";
   public final static String COORDINATES = "coordinates";
   public static final String FEATURE_TYPE = "featureType";
@@ -213,7 +214,7 @@ maybe:
   }
 
   public enum CellMethods {
-    point, sum, mean, maximum, minimum, mid_range, standard_deviation, variance, mode, median;
+    point, sum, maximum, median, mid_range, minimum, mean, mode, standard_deviation, variance;
 
     /*
       static public String codeTable4_10short(int code) {

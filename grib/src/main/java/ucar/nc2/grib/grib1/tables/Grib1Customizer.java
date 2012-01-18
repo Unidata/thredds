@@ -30,18 +30,15 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.grib1;
+package ucar.nc2.grib.grib1.tables;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.GribNumbers;
 import ucar.grib.GribResourceReader;
-import ucar.nc2.grib.GribLevelType;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib1.tables.*;
+import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.*;
 import ucar.nc2.wmo.CommonCodeTable;
 
 import java.io.IOException;
@@ -64,32 +61,32 @@ import java.util.List;
 public class Grib1Customizer implements GribTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Customizer.class);
 
-  static public Grib1Customizer factory(Grib1Record proto) {
+  static public Grib1Customizer factory(Grib1Record proto, Grib1ParamTables tables) {
     int center = proto.getPDSsection().getCenter();
     int subcenter = proto.getPDSsection().getSubCenter();
     int version = proto.getPDSsection().getTableVersion();
-    return factory(center, subcenter, version);
+    return factory(center, subcenter, version, tables);
   }
 
-  static public Grib1Customizer factory(int center, int subcenter, int version) {
-    if (center == 7) return new NcepTables();
-    else if (center == 9) return new NcepRfcTables();
-    else if (center == 58) return new FnmocTables();
-    else return new Grib1Customizer(center);
+  static public Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
+    if (center == 7) return new NcepTables(tables);
+    else if (center == 9) return new NcepRfcTables(tables);
+    else if (center == 58) return new FnmocTables(tables);
+    else return new Grib1Customizer(center, tables);
   }
 
   static public String getSubCenterName(int center, int subcenter) {
-    Grib1Customizer cust = Grib1Customizer.factory(center, subcenter, 0);
+    Grib1Customizer cust = Grib1Customizer.factory(center, subcenter, 0, null);
     return cust.getSubCenterName( subcenter);
   }
 
   ///////////////////////////////////////
   private int center;
-  private Grib1Tables tables;
+  private Grib1ParamTables tables;
 
-  protected Grib1Customizer(int center) {
+  protected Grib1Customizer(int center, Grib1ParamTables tables) {
     this.center = center;
-    this.tables = new Grib1Tables();
+    this.tables = (tables == null) ? new Grib1ParamTables() : tables;
   }
 
   public int getCenter() {
@@ -187,7 +184,7 @@ public class Grib1Customizer implements GribTables {
     }
 
     if (intvType >= 0) {
-      Grib1TimeTypeTable.StatType stype = Grib1TimeTypeTable.getStatType(intvType);
+      GribStatType stype = Grib1WmoTimeType.getStatType(intvType);
       if (stype != null) {
         if (intvName != null) f.format("_%s", intvName);
         f.format("_%s", stype.name());
@@ -212,7 +209,7 @@ public class Grib1Customizer implements GribTables {
       f.format("%s", param.getDescription());
 
     if (intvType >= 0) {
-      Grib1TimeTypeTable.StatType stat = Grib1TimeTypeTable.getStatType(intvType);
+      GribStatType stat = Grib1WmoTimeType.getStatType(intvType);
       if (stat != null) f.format(" (%s %s)", intvName, stat.name());
       else if (intvName != null && intvName.length() > 0) f.format(" (%s)", intvName);
     }
@@ -238,12 +235,12 @@ public class Grib1Customizer implements GribTables {
     return new Grib1ParamTime(this, pds);
   }
 
-  public String getTimeTypeName(int timeRangeIndicator, int p1, int p2) {
-    return Grib1TimeTypeTable.getTimeTypeName(timeRangeIndicator, p1, p2);
+  public String getTimeTypeName(int timeRangeIndicator) {
+    return Grib1WmoTimeType.getTimeTypeName(timeRangeIndicator);
   }
 
-  public Grib1TimeTypeTable.StatType getStatType(int timeRangeIndicator) {
-    return Grib1TimeTypeTable.getStatType(timeRangeIndicator);
+  public GribStatType getStatType(int timeRangeIndicator) {
+    return Grib1WmoTimeType.getStatType(timeRangeIndicator);
   }
 
   /////////////////////////////////////////
@@ -296,7 +293,7 @@ public class Grib1Customizer implements GribTables {
   }
 
   // only for 3D
-  public String getDatum(int levelType) {
+  public String getLevelDatum(int levelType) {
     GribLevelType lt = getLevelType(levelType);
     return (lt == null) ? null : lt.getDatum();
   }
@@ -360,7 +357,7 @@ public class Grib1Customizer implements GribTables {
   }
 
   public static void main(String[] args) {
-    Grib1Customizer cust = new Grib1Customizer(0);
+    Grib1Customizer cust = new Grib1Customizer(0, null);
     String units = cust.getLevelUnits(110);
     assert units != null;
   }

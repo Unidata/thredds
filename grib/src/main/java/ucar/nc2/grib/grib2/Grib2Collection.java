@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib2;
 
 import thredds.inventory.CollectionManager;
+import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -55,7 +56,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
     super(name, directory);
   }
 
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException {
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 
@@ -80,7 +81,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
     }
   }
 
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException {
+  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 

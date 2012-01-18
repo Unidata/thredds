@@ -51,6 +51,7 @@ message Coord {
   required string unit = 2;
   repeated float values = 3;
   repeated float bound = 4; // only used if interval, then = (value, bound)
+  optional int32 index = 5  [default = -1];  // safety check
 }
 
 message Parameter {  // copied from ncStream.proto

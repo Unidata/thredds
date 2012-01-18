@@ -38,6 +38,7 @@ import thredds.inventory.CollectionManagerSingleFile;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -57,7 +58,7 @@ public class Grib1CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
 
   public static final String MAGIC_START = "Grib1CollectionIndex";
-  protected static final int version = 5;
+  protected static final int version = 6;
   private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
@@ -222,7 +223,7 @@ public class Grib1CollectionBuilder {
       gc.genProcessId = proto.getGenProcessId();
       gc.backProcessId = proto.getBackProcessId();
       gc.local = proto.getLocal();
-      //gc.tables = Grib1ParamTable.getParameterTable(gc.getCenter(), gc.getSubcenter(), gc.getMaster());
+      if (cust == null) cust = Grib1Customizer.factory(gc.center, gc.subcenter, gc.local, null); // we need this in readVertCoord()
 
       gc.filenames = new ArrayList<String>(proto.getFilesCount());
       for (int i = 0; i < proto.getFilesCount(); i++)
@@ -333,12 +334,14 @@ public class Grib1CollectionBuilder {
       List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
       for (int i = 0; i < pc.getValuesCount(); i++)
         coords.add(new TimeCoord.Tinv((int) pc.getValues(i), (int) pc.getBound(i)));
-      return new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      TimeCoord tc = new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      return tc.setIndex( pc.getIndex());
     } else {
       List<Integer> coords = new ArrayList<Integer>(pc.getValuesCount());
       for (float value : pc.getValuesList())
         coords.add((int) value);
-      return new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      TimeCoord tc =  new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      return tc.setIndex( pc.getIndex());
     }
   }
 
@@ -347,7 +350,7 @@ public class Grib1CollectionBuilder {
     List<VertCoord.Level> coords = new ArrayList<VertCoord.Level>(pc.getValuesCount());
     for (int i = 0; i < pc.getValuesCount(); i++)
       coords.add(new VertCoord.Level(pc.getValues(i), isLayer ? pc.getBound(i) : 0));
-    return new VertCoord(pc.getCode(), coords, isLayer);
+    return new VertCoord(coords, cust.getVertUnit(pc.getCode()),  isLayer);
   }
 
   private EnsCoord readEnsCoord(GribCollectionProto.Coord pc) throws IOException {
@@ -422,7 +425,6 @@ public class Grib1CollectionBuilder {
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
     int fileno = 0;
-    Grib1Record first = null;
     for (CollectionManager dcm : collections) {
       f.format(" dcm= %s%n", dcm);
       Map<Integer,Integer> gdsConvert = (Map<Integer,Integer>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDSHASH);
@@ -451,7 +453,7 @@ public class Grib1CollectionBuilder {
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
           if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
             gdsHash = (Integer) gdsConvert.get(gdsHash);               // and we need exact hash matching
-          if (first == null) first = gr;
+          if (cust == null) cust = Grib1Customizer.factory(gr, null);
 
           Group g = gdsMap.get(gdsHash);
           if (g == null) {
@@ -467,7 +469,6 @@ public class Grib1CollectionBuilder {
     }
     f.format(" total grib records= %d%n", total);
 
-    cust = Grib1Customizer.factory(first);
     Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
@@ -634,7 +635,7 @@ public class Grib1CollectionBuilder {
     b.setParameter(pds.getParameterNumber());
     b.setTableVersion(pds.getTableVersion()); // can differ for variables in the same file
     b.setLevelType(pds.getLevelType());
-    b.setIsLayer(cust.isLayer(pds.getLevelType()));
+    b.setIsLayer(cust.isLayer(pds.getLevelType())); // LOOK alternatively could store an entire PDS (one for each variable)
     b.setIntervalType(pds.getTimeRangeIndicator());
     b.setCdmHash(vb.cdmHash);
     b.setRecordsPos(vb.pos);
@@ -645,7 +646,7 @@ public class Grib1CollectionBuilder {
     if (vb.ensCoordIndex >= 0)
       b.setEnsIdx(vb.ensCoordIndex);
 
-    Grib1ParamTime ptime = cust.getParamTime(pds);
+    Grib1ParamTime ptime = pds.getParamTime(cust); // LOOK could use  cust.getParamTime(pds) to not retain object
     if (ptime.isInterval()) {
       b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
     }
@@ -680,7 +681,8 @@ public class Grib1CollectionBuilder {
 
   protected GribCollectionProto.Coord writeCoordProto(TimeCoord tc, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setCode(index);
+    b.setIndex(index);
+    b.setCode(tc.getCode());
     b.setUnit(tc.getUnits());
     float scale = (float) tc.getTimeUnitScale(); // deal with, eg, "6 hours" by multiplying values by 6
     if (tc.isInterval()) {
@@ -697,6 +699,7 @@ public class Grib1CollectionBuilder {
 
   protected GribCollectionProto.Coord writeCoordProto(VertCoord vc, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
+    b.setIndex(index);
     b.setCode(vc.getCode());
     String units = (vc.getUnits() != null) ? vc.getUnits() : "";
     b.setUnit(units);
@@ -713,6 +716,7 @@ public class Grib1CollectionBuilder {
 
   protected GribCollectionProto.Coord writeCoordProto(EnsCoord ec, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
+    b.setIndex(index);
     b.setCode(0);
     b.setUnit("");
     for (EnsCoord.Coord coord : ec.getCoords()) {

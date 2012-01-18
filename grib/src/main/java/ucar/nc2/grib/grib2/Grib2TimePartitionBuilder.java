@@ -375,7 +375,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
         }
 
         // union of time coordinates
-        TimeCoordUnion union = new TimeCoordUnion(tcPartitions, tcCanon);
+        TimeCoordUnion union = new TimeCoordUnion(tcCanon.getCode(), tcPartitions, tcCanon);
 
         // store result in the first group
         viCanon.partTimeCoordIdx = TimeCoordUnion.findUnique(unionList, union); // this merges identical TimeCoordUnion

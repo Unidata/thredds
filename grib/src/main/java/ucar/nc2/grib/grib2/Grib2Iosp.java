@@ -518,7 +518,8 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
         v.addAttribute(new Attribute("Time_Interval", vindex.intvName));
       if (vindex.intvType >= 0) {
         v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));
-        CF.CellMethods cm = tables.convertTable4_10(vindex.intvType);
+        GribStatType statType = GribStatType.getStatTypeFromGrib2(vindex.intvType);
+        CF.CellMethods cm = GribStatType.getCFCellMethod( statType);
         if (cm != null)
           v.addAttribute(new Attribute("cell_methods", tcName + ": " + cm.toString()));
       }

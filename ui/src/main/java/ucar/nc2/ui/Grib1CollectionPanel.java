@@ -36,9 +36,12 @@ import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.Grib1Parameter;
-import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -488,7 +491,7 @@ public class Grib1CollectionPanel extends JPanel {
       gr.setFile(fileno);
 
       if (cust == null) { // first record
-        cust = Grib1Customizer.factory(gr);
+        cust = Grib1Customizer.factory(gr, null);
         rect = new Grib1Rectilyser(cust, null, 0);
       }
 
@@ -528,7 +531,7 @@ public class Grib1CollectionPanel extends JPanel {
       ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
 
       if (cust == null) { // first record
-        cust = Grib1Customizer.factory(gr);
+        cust = Grib1Customizer.factory(gr, null);
       }
 
       Grib1SectionProductDefinition pds = gr.getPDSsection();
@@ -687,8 +690,8 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public final String getStatType() {
-      Grib1ParamTime ptime = cust.getParamTime(pds);
-      Grib1TimeTypeTable.StatType stype = ptime.getStatType();
+      Grib1ParamTime ptime = pds.getParamTime(cust);
+      GribStatType stype = ptime.getStatType();
       return (stype == null) ? null : stype.name();
     }
 
@@ -711,7 +714,7 @@ public class Grib1CollectionPanel extends JPanel {
       gds = gr.getGDSsection();
       pds = gr.getPDSsection();
       plevel = cust.getParamLevel(pds);
-      ptime = cust.getParamTime(pds);
+      ptime = pds.getParamTime(cust);
     }
 
 
@@ -720,7 +723,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getPeriod() {
-      return Grib1TimeTypeTable.getCalendarPeriod(pds.getTimeUnit()).toString();
+      return GribUtils.getCalendarPeriod(pds.getTimeUnit()).toString();
     }
 
     public String getTimeTypeName() {

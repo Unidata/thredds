@@ -541,17 +541,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String filename = paths.length == 2 ? paths[1] : null;
 
     if (localState.timePartition == null) {
-      return localState.gribCollection.getGridDataset(paths[0], filename);
+      return localState.gribCollection.getGridDataset(paths[0], filename, gribConfig);
 
     } else {
       if (paths.length < 2) return null;
 
       if (paths[0].equals(localState.timePartition.getName()))
-        return localState.timePartition.getGridDataset(paths[1], null);
+        return localState.timePartition.getGridDataset(paths[1], null, gribConfig);
 
       TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
       if (dcm != null) {
-        return dcm.getGribCollection().getGridDataset(paths[1], filename);
+        return dcm.getGribCollection().getGridDataset(paths[1], filename, gribConfig);
       }
     }
 
@@ -581,21 +581,21 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (n >= 2) { // files
         String group = paths[n - 2];
         String filename = paths[n - 1];
-        return localState.gribCollection.getNetcdfDataset(group, filename);
+        return localState.gribCollection.getNetcdfDataset(group, filename, gribConfig);
       } else {
-        return localState.gribCollection.getNetcdfDataset(paths[0], null);
+        return localState.gribCollection.getNetcdfDataset(paths[0], null, gribConfig);
       }
 
     } else {
       if (paths.length < 2) return null;
 
       if (paths[0].equals(localState.timePartition.getName()))
-        return localState.timePartition.getNetcdfDataset(paths[1], null);
+        return localState.timePartition.getNetcdfDataset(paths[1], null, gribConfig);
 
       TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
       if (dcm != null) {
         String filename = paths.length > 2 ? paths[2] : null;
-        return dcm.getGribCollection().getNetcdfDataset(paths[1], filename);
+        return dcm.getGribCollection().getNetcdfDataset(paths[1], filename, gribConfig);
       }
     }
 

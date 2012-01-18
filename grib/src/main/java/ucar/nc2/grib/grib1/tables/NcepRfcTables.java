@@ -42,13 +42,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Describe
+ * NCEP River Forecast Centers
  *
  * @author caron
  * @since 1/13/12
  */
 public class NcepRfcTables extends NcepTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepRfcTables.class);
+  static private Map<Integer, String> nwsoSubCenter;
+
+  NcepRfcTables(Grib1ParamTables tables) {
+    super(8, tables);
+  }
 
   @Override
   public String getTypeGenProcessName(int genProcess) {
@@ -102,9 +107,6 @@ public class NcepRfcTables extends NcepTables {
   * from bdgparm.f John Halquist <John.Halquist@noaa.gov> 9/12/2011
   * These are not in the WMO common tables like NCEP's are
   */
-
-  private static Map<Integer, String> nwsoSubCenter;
-
   @Override
   public String getSubCenterName(int subcenter) {
     if (nwsoSubCenter == null) readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");

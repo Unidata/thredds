@@ -297,6 +297,8 @@ public class FeatureCollectionConfig {
     public Map<Integer, String> gdsName;
     protected boolean explicit = false;
     public boolean intervalMerge = false;
+    public String lookupTablePath, paramTablePath;
+    public Element paramTable;
 
     public GribConfig() { // defaults
     }

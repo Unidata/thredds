@@ -1390,7 +1390,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @throws InstantiationException if the class cannot be instatiated, eg if it has no nullary constructor
    * @throws IOException            if I/O error
    */
-  protected NetcdfFile(String iospClassName, String iospParam, String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)
+  protected NetcdfFile(String iospClassName, Object iospParam, String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)
           throws IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
     Class iospClass = getClass().getClassLoader().loadClass(iospClassName);
@@ -1449,7 +1449,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
-   * Open an existing netcdf file (read only).
+   * Open an existing netcdf file, passing in the iosp and the raf.
    *
    * @param spi        use this IOServiceProvider instance
    * @param raf        read from this RandomAccessFile
@@ -1507,7 +1507,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (id == null)
       setId(findAttValueIgnoreCase(null, "_Id", null));
     if (title == null)
-      setId(findAttValueIgnoreCase(null, "_Title", null));
+      setTitle(findAttValueIgnoreCase(null, "_Title", null));
 
     finish();
   }

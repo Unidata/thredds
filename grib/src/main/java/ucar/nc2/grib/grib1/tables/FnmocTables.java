@@ -38,7 +38,6 @@ import org.jdom.input.SAXBuilder;
 import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib1.Grib1Customizer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,8 +56,8 @@ public class FnmocTables extends Grib1Customizer {
   private static HashMap<Integer, GribLevelType> levelTypesMap;  // shared by all instances
   private static HashMap<Integer, String> genProcessMap;  // shared by all instances
 
-  public FnmocTables() {
-    super(58);
+  FnmocTables(Grib1ParamTables tables) {
+    super(58, tables);
   }
 
   // genProcess
@@ -169,9 +168,9 @@ public class FnmocTables extends Grib1Customizer {
   }
 
   @Override
-  public String getDatum(int code) {
+  public String getLevelDatum(int code) {
     GribLevelType lt = getLevelType(code);
-    return (lt == null) ? super.getDatum(code) : lt.getDatum();
+    return (lt == null) ? super.getLevelDatum(code) : lt.getDatum();
   }
 
   private GribLevelType getLevelType(int code) {

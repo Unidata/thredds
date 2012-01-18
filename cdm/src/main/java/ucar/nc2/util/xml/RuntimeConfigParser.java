@@ -134,12 +134,38 @@ public class RuntimeConfigParser {
           errlog.append("TypedDatasetFactory " + className + " failed= " + e.getMessage() + "\n");
         }
 
-      } else if (elem.getName().equals("grib1Table")) {
+      } else if (elem.getName().equals("gribParameterTable")) {
+
+        String editionS = elem.getAttributeValue("edition");
+        String centerS = elem.getAttributeValue("center");
+        String subcenterS = elem.getAttributeValue("subcenter");
+        String versionS = elem.getAttributeValue("version");
+        String filename = elem.getText();
+        if ((centerS == null) || (versionS == null) || (filename == null)) {
+          errlog.append("table element must center, version and filename attributes\n");
+          continue;
+        }
+
+        // Grib1ParamTables.addParameterTable(int center, int subcenter, int tableVersion, String filename) {
+        // use reflection to decouple from the grib package
+        try {
+          int center = Integer.parseInt(centerS);
+          int subcenter = (subcenterS == null) ? -1 : Integer.parseInt(subcenterS);
+          int version = Integer.parseInt(versionS);
+
+          Class c = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.grib.grib1.tables.Grib1ParamTables");
+          Method m = c.getMethod("addParameterTable", int.class, int.class, int.class, String.class);
+          m.invoke(null, center, subcenter, version, filename);
+
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
         String strictS = elem.getAttributeValue("strict");
         if (strictS != null) {
           boolean notStrict = strictS.equalsIgnoreCase("false");
           try {
-            Class c = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.grib.grib1.GribPDSParamTable");
+            Class c = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.grib.grib1.tables.Grib1ParamTables");
             Method m = c.getMethod("setStrict", boolean.class);
             m.invoke(null, !notStrict);
 
@@ -150,29 +176,22 @@ public class RuntimeConfigParser {
           continue;
         }
 
-        String centerS = elem.getAttributeValue("center");
-        String subcenterS = elem.getAttributeValue("subcenter");
-        String versionS = elem.getAttributeValue("version");
-        String filename = elem.getAttributeValue("filename");
-        if ((centerS == null) || (versionS == null) || (filename == null)) {
-          errlog.append("table element must center, version and filename attributes\n");
-          continue;
-        }
+      } else if (elem.getName().equals("gribParameterTableLookup")) {
 
-        // GribPDSParamTable.addParameterTable(int center, int subcenter, int tableVersion, String filename) {
+        String editionS = elem.getAttributeValue("edition");
+        String filename = elem.getText();
+
+        // Grib1ParamTables.addParameterTableLookup(String filename) {
         // use reflection to decouple from the grib package
         try {
-          int center = Integer.parseInt(centerS);
-          int subcenter = (subcenterS == null) ? -1 : Integer.parseInt(subcenterS);
-          int version = Integer.parseInt(versionS);
-
-          Class c = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.grib.grib1.GribPDSParamTable");
-          Method m = c.getMethod("addParameterTable", int.class, int.class, int.class, String.class);
-          m.invoke(null, center, subcenter, version, filename);
+          Class c = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.grib.grib1.tables.Grib1ParamTables");
+          Method m = c.getMethod("addParameterTableLookup", String.class);
+          m.invoke(null, filename);
 
         } catch (Exception e) {
           e.printStackTrace();
         }
+
 
       } else if (elem.getName().equals("table")) {
         String type = elem.getAttributeValue("type");

@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib2.table;
 import net.jcip.annotations.Immutable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -506,55 +507,9 @@ Code Table Code table 4.7 - Derived forecast (4.7)
      }
   }
 
-  // (code table 4.10) Statistical process used to calculate the processed field from the field at each time increment during the time range
   public String getIntervalNameShort(int id) {
-    switch (id) {
-      case 0:
-        return "Average";
-      case 1:
-        return "Accumulation";
-      case 2:
-        return "Maximum";
-      case 3:
-        return "Minimum";
-      case 4:
-        return "Difference"; // (Value at the end of time range minus value at the beginning)";
-      case 5:
-        return "RootMeanSquare";
-      case 6:
-        return "StandardDeviation";
-      case 7:
-        return "Covariance"; // (Temporal variance)";
-      case 8:
-        return "Difference"; // (Value at the start of time range minus value at the end)";
-      case 9:
-        return "Ratio";
-      default:
-        return "UnknownIntervalType-" + id;
-    }
-  }
-
-  public  CF.CellMethods convertTable4_10(int code) {
-    switch (code) {
-      case 0:
-        return CF.CellMethods.mean; // "Average";
-      case 1:
-        return CF.CellMethods.sum; // "Accumulation";
-      case 2:
-        return CF.CellMethods.maximum; // "Maximum";
-      case 3:
-        return CF.CellMethods.minimum; // "Minimum";
-      //case 4: return	"Difference"; // (Value at the end of time range minus value at the beginning)";
-      //case 5: return	"RootMeanSquare";
-      case 6:
-        return CF.CellMethods.standard_deviation; // "StandardDeviation";
-      case 7:
-        return CF.CellMethods.variance; // "Covariance"; // (Temporal variance)";
-      //case 8: return	"Difference"; // (Value at the start of time range minus value at the end)";
-      //case 9: return	"Ratio";
-      default:
-        return null;
-    }
+    GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
+    return (stat ==null) ? "" : stat.toString();
   }
 
 }

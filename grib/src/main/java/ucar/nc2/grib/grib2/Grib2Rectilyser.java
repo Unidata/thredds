@@ -314,13 +314,15 @@ public class Grib2Rectilyser {
     }
     List<Integer> tlist = new ArrayList<Integer>(times);
     Collections.sort(tlist);
-    return new TimeCoord(vb.refDate, vb.timeUnit, tlist);
+    return new TimeCoord(0, vb.refDate, vb.timeUnit, tlist);
   }
 
   private TimeCoord makeTimeCoordsIntv(VariableBag vb, boolean uniform) {
+    int timeIntvCode = 999; // avoid negetive
     Set<TimeCoord.Tinv> times = new HashSet<TimeCoord.Tinv>();
     for (Record r : vb.atomList) {
       Grib2Pds pds = r.gr.getPDS();
+      if (timeIntvCode == 999) timeIntvCode = pds.getStatisticalProcessType();
       int[] timeb = cust.getForecastTimeInterval(r.gr);
       if (uniform) {
         r.tcIntvCoord = new TimeCoord.Tinv(timeb[0], timeb[1]);
@@ -334,7 +336,7 @@ public class Grib2Rectilyser {
     }
     List<TimeCoord.Tinv> tlist = new ArrayList<TimeCoord.Tinv>(times);
     Collections.sort(tlist);
-    return new TimeCoord(vb.refDate, vb.timeUnit, tlist);
+    return new TimeCoord(timeIntvCode, vb.refDate, vb.timeUnit, tlist);
   }
 
   public void dump(Formatter f, Grib2Tables tables) {

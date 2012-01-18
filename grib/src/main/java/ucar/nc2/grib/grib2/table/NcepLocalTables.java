@@ -883,7 +883,7 @@ Updated again on 3/26/2008
     }
   }
 
-  public CF.CellMethods convertTable4_10(int code) {
+  /* public CF.CellMethods convertTable4_10(int code) {
     if (code < 192) return super.convertTable4_10(code);
     switch (code) {
       case 193:
@@ -908,7 +908,7 @@ Updated again on 3/26/2008
       default:
         return null;
     }
-  }
+  } */
 
 }
 

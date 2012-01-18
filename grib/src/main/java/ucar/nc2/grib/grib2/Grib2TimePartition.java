@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
@@ -56,7 +57,7 @@ public class Grib2TimePartition extends TimePartition {
 
   // LOOK - needs time partition collection iosp or something
   @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException {
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 
@@ -66,7 +67,7 @@ public class Grib2TimePartition extends TimePartition {
   }
 
   @Override
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException {
+  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
     GroupHcs want = findGroup(groupName);
     if (want == null) return null;
 

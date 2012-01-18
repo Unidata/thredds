@@ -185,7 +185,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    assert 20 == checkPointDataset(CFpointObs_topdir + "kunicki.structs.nc4", FeatureType.STATION, true);
+    assert 40 == checkPointDataset(topdir + "cfPoint/stationProfile/timeSeriesProfile-Ragged-SingleStation-H.5.3.nc", FeatureType.STATION_PROFILE, true);
   }
 
   public void testCF() throws IOException {
@@ -224,6 +224,9 @@ public class TestPointFeatureTypes extends TestCase {
 
     // netcdf4 structs
     assert 20 == checkPointDataset(CFpointObs_topdir + "kunicki.structs.nc4", FeatureType.STATION, true);
+
+    // asa
+    assert 40 == checkPointDataset(topdir + "cfPoint/stationProfile/timeSeriesProfile-Ragged-SingleStation-H.5.3.nc", FeatureType.STATION_PROFILE, true);
   }
 
   public void testPlug() throws IOException {
@@ -1156,6 +1159,40 @@ public class TestPointFeatureTypes extends TestCase {
         PointFeature pf = pfi.next();
         System.out.printf("%d ", count);
         count++;
+      }
+    }
+
+    pods.close();
+
+  }
+
+  public void testAsa() throws IOException {
+    Formatter buf = new Formatter();
+    FeatureDatasetPoint pods =
+        (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(ucar.nc2.constants.FeatureType.STATION_PROFILE,
+                topdir + "cfPoint/stationProfile/timeSeriesProfile-Ragged-SingleStation-H.5.3.nc", null, buf);
+
+    FeatureCollection fc = pods.getPointFeatureCollectionList().get(0);
+    System.out.printf("%s%n", fc.getClass().getName());
+    StationProfileFeatureCollection tcs = (StationProfileFeatureCollection) fc;
+    //TrajectoryFeatureCollection tcs = tc.subset("var1, var2, var3");
+    while (tcs.hasNext()) {
+      int count = 0;
+      StationProfileFeature tf = tcs.next();
+      System.out.printf("%s%n", tf);
+      PointFeatureCollectionIterator pfi = tf.getPointFeatureCollectionIterator(5000);
+      while (pfi.hasNext()) {
+        PointFeatureCollection pfc = pfi.next();
+        System.out.printf( "%d %s%n ", count, pfc);
+        count++;
+
+        int countObs = 0;
+        PointFeatureIterator pfi2 = pfc.getPointFeatureIterator(5000);
+        while (pfi2.hasNext()) {
+          PointFeature pf = pfi2.next();
+          System.out.printf("  %s%n", pf);
+        }
+        System.out.printf("%d%n", countObs);
       }
     }
 
