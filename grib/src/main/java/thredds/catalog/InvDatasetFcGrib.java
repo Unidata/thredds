@@ -42,6 +42,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.Grib1Iosp;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Iosp;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDateRange;
@@ -344,10 +346,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(format.toString());
     for (GribCollection.VariableIndex vindex : group.varIndex) {
       ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
-      VertCoord vc = (vindex.vertIdx < 0) ? null : group.vertCoords.get(vindex.vertIdx);
 
       if (format == DataFormatType.GRIB2) {
-        //GribTables tables = group.getGribCollection().getTables(); // LOOK
         Grib2Tables tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
         tv.setName(Grib2Iosp.makeVariableName(tables, gribCollection, vindex));
@@ -364,9 +364,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         tv.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName);
         vars.addVariable(tv);
 
-      } else {  // LOOK
-      }
+      } else {
+        Grib1Customizer cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), null);
 
+        tv.setName(Grib1Iosp.makeVariableName(cust, gribCollection, vindex));
+        tv.setDescription(Grib1Iosp.makeVariableLongName(cust, gribCollection, vindex));
+        tv.setUnits(Grib1Iosp.makeVariableUnits(cust, gribCollection, vindex));
+        tv.setVocabularyId("1-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
+        vars.addVariable(tv);
+      }
     }
     vars.sort();
     return vars;

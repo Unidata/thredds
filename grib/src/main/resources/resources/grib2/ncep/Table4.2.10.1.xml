@@ -4,12 +4,12 @@
   <title>Currents</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-1.shtml</source>
   <parameter code="0">
-    <shortName>DIR C</shortName>
+    <shortName>DIRC</shortName>
     <description>Current Direction</description>
-    <units>Degree True</units>
+    <units>degree True</units>
   </parameter>
   <parameter code="1">
-    <shortName>SP C</shortName>
+    <shortName>SPC</shortName>
     <description>Current Speed</description>
     <units>m s-1</units>
   </parameter>

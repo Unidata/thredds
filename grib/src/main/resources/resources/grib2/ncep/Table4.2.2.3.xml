@@ -91,7 +91,7 @@
   <parameter code="17">
     <shortName>SATOSM</shortName>
     <description>Saturation Of Soil Moisture</description>
-    <units>kgm-3</units>
+    <units>kg m-3</units>
   </parameter>
   <parameter code="18">
     <shortName>Validation</shortName>
@@ -151,7 +151,7 @@
   <parameter code="198">
     <shortName>EVBS</shortName>
     <description>Direct evaporation from bare soil</description>
-    <units>W/m-2</units>
+    <units>W m-2</units>
   </parameter>
   <parameter code="199">
     <shortName>LSPA</shortName>

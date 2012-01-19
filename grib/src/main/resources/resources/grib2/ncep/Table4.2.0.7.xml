@@ -5,12 +5,12 @@
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-7.shtml</source>
   <parameter code="0">
     <shortName>PLI</shortName>
-    <description>Parcel Lifted Index (to 500 mb)</description>
+    <description>Parcel Lifted Index (to 500 hPa)</description>
     <units>K</units>
   </parameter>
   <parameter code="1">
     <shortName>BLI</shortName>
-    <description>Best Lifted Index (to 500 mb)</description>
+    <description>Best Lifted Index (to 500 hPa)</description>
     <units>K</units>
   </parameter>
   <parameter code="2">

@@ -95,7 +95,7 @@
   </parameter>
   <parameter code="18">
     <shortName>Validation</shortName>
-    <description>Waves Stress</description>
+    <description>Wave Stress</description>
     <units>N m-2</units>
   </parameter>
   <parameter code="19">
@@ -105,7 +105,7 @@
   </parameter>
   <parameter code="20">
     <shortName>Validation</shortName>
-    <description>iMean Square Slope of Waves</description>
+    <description>Mean Square Slope of Waves</description>
     <units>-</units>
   </parameter>
   <parameter code="21">
@@ -160,7 +160,7 @@
   </parameter>
   <parameter code="31">
     <shortName>Validation</shortName>
-    <description>Wave Direction Width</description>
+    <description>Wave Directional Width</description>
     <units>-</units>
   </parameter>
   <parameter code="32">
@@ -170,7 +170,7 @@
   </parameter>
   <parameter code="33">
     <shortName>Validation</shortName>
-    <description>Directional Width Of The Swell</description>
+    <description>Directional Width Of The Total Swell</description>
     <units>-</units>
   </parameter>
   <parameter code="34">

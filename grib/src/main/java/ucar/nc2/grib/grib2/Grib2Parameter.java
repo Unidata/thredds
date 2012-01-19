@@ -30,17 +30,19 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.grib2.table;
+package ucar.nc2.grib.grib2;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.iosp.grid.GridParameter;
 
 /**
- * Describe
+ * A Grib-2 parameter
  *
  * @author caron
  * @since 1/9/12
  */
+@Immutable
 public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Parameter> {
   public int discipline, category, number;
   public String name, unit, abbrev;

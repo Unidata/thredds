@@ -34,7 +34,7 @@
     <units>(m2 s sr)-1</units>
   </parameter>
   <parameter code="6">
-    <shortName>NTRNFUX</shortName>
+    <shortName>NTRNFLUX</shortName>
     <description>Cosmic Ray Neutron Flux</description>
     <units>h-1</units>
   </parameter>

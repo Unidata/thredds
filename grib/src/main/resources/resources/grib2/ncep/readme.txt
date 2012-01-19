@@ -733,3 +733,27 @@ NcepTable{title='Ion-Neutral Coupling', source='http://www.nco.ncep.noaa.gov/pmb
   Missing Grib2Parameter{discipline=4, category=9, number=1, name='Hall Conductivity', unit='S.m-1', abbrev='SIGHAL'}
   Missing Grib2Parameter{discipline=4, category=9, number=2, name='Parallel Conductivity', unit='S.m-1', abbrev='SIGPAR'}
 Conflicts=0 extra=3 udunits=0
+
+01/18/2012 NAM_Firewxnest_20111231_1800.grib2
+ - missing parameter 2-4-3, not in Table4.2.2.4
+
+ <parameterMap>
+  <table>Table4.2.2.4</table>
+  <title>Fire Weather</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-2-4.shtml</source>
+  <parameter code="0">
+    <shortName>FIREOLK</shortName>
+    <description>Fire Outlook</description>
+    <units>See Table 4.224</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>FIREODT</shortName>
+    <description>Fire Outlook Due to Dry Thunderstorm</description>
+    <units>See Table 4.224</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>HINDEX</shortName>
+    <description>Haines Index</description>
+    <units>Numeric</units>
+  </parameter>
+</parameterMap>

@@ -509,7 +509,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
 
   public String getIntervalNameShort(int id) {
     GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
-    return (stat ==null) ? "" : stat.toString();
+    return (stat == null) ? "" : stat.toString();
   }
 
 }

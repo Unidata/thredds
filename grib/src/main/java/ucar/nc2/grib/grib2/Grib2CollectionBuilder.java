@@ -57,7 +57,7 @@ import java.util.*;
 public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   public static final String MAGIC_START = "Grib2CollectionIndex";
-  protected static final int version = 6;
+  protected static final int version = 7;
   private static final boolean debug = false;
 
     // called by tdm

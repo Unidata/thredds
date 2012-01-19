@@ -106,7 +106,7 @@
   <parameter code="20">
     <shortName>Validation</shortName>
     <description>Turbulent Diffusion Coefficient for Heat</description>
-    <units>m-2s-1</units>
+    <units>m2s-1</units>
   </parameter>
   <parameter code="192">
     <shortName>SNOHF</shortName>

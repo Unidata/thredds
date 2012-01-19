@@ -15,7 +15,7 @@
   </parameter>
   <parameter code="192">
     <shortName>SURGE</shortName>
-    <description>Storm Surge</description>
+    <description>Hurricane Storm Surge</description>
     <units>m</units>
   </parameter>
   <parameter code="193">
