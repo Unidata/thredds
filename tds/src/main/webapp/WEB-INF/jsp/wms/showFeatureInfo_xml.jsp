@@ -18,8 +18,8 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
     <longitude>${longitude}</longitude>
     <latitude>${latitude}</latitude>
     <c:if test="${not empty gridCoords}">
-        <iIndex>${gridCoords[0]}</iIndex>
-        <jIndex>${gridCoords[1]}</jIndex>
+        <iIndex>${gridCoords.coordinateValues[0]}</iIndex>
+        <jIndex>${gridCoords.coordinateValues[1]}</jIndex>
         <gridCentreLon>${gridCentre.longitude}</gridCentreLon>
         <gridCentreLat>${gridCentre.latitude}</gridCentreLat>
     </c:if>

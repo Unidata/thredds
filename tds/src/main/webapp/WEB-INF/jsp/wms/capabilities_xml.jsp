@@ -30,7 +30,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
     <Service>
         <Name>WMS</Name>
         <Title><c:out value="${config.title}"/></Title>
-        <Abstract><c:out value="${config.abstract}"/></Abstract>
+        <Abstract><c:out value="${config.serverAbstract}"/></Abstract>
         <KeywordList>
             <%-- forEach recognizes that keywords is a comma-delimited String --%>
             <c:forEach var="keyword" items="${config.keywords}">
@@ -87,7 +87,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
                 <Layer<c:if test="${layer.queryable}"> queryable="1"</c:if>>
                     <Name>${layer.name}</Name>
                     <Title><c:out value="${layer.title}"/></Title>
-                    <Abstract><c:out value="${layer.abstract}"/></Abstract>
+                    <Abstract><c:out value="${layer.layerAbstract}"/></Abstract>
                     <c:set var="bbox" value="${layer.geographicBoundingBox}"/>
                     <EX_GeographicBoundingBox>
                         <westBoundLongitude>${bbox.westBoundLongitude}</westBoundLongitude>

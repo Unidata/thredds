@@ -33,9 +33,9 @@ import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.opengis.metadata.extent.GeographicBoundingBox;
 import thredds.server.wms.config.LayerSettings;
-import uk.ac.rdg.resc.ncwms.coords.HorizontalCoordSys;
+import uk.ac.rdg.resc.edal.coverage.grid.HorizontalGrid;
 import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
-import uk.ac.rdg.resc.ncwms.util.Range;
+import uk.ac.rdg.resc.edal.util.Range;
 import uk.ac.rdg.resc.ncwms.wms.ScalarLayer;
 import uk.ac.rdg.resc.ncwms.wms.VectorLayer;
 
@@ -95,8 +95,8 @@ class ThreddsVectorLayer implements VectorLayer, ThreddsLayer {
         return this.wrappedLayer.getTitle();
     }
 
-    public String getAbstract() {
-        return this.wrappedLayer.getAbstract();
+    public String getLayerAbstract() {
+        return this.wrappedLayer.getLayerAbstract();
     }
 
     public String getUnits() {
@@ -107,8 +107,8 @@ class ThreddsVectorLayer implements VectorLayer, ThreddsLayer {
         return this.wrappedLayer.getGeographicBoundingBox();
     }
 
-    public HorizontalCoordSys getHorizontalCoordSys() {
-        return this.wrappedLayer.getHorizontalCoordSys();
+    public HorizontalGrid getHorizontalGrid() {
+        return this.wrappedLayer.getHorizontalGrid();
     }
 
     public Chronology getChronology() {
@@ -142,7 +142,11 @@ class ThreddsVectorLayer implements VectorLayer, ThreddsLayer {
     public boolean isElevationPositive() {
         return this.wrappedLayer.isElevationPositive();
     }
-
+    
+    public boolean isElevationPressure() { 
+        return this.wrappedLayer.isElevationPressure(); 
+    }   
+    
     public void setLayerSettings(LayerSettings layerSettings) {
         this.layerSettings = layerSettings;
     }
