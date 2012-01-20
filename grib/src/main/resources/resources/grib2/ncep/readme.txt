@@ -757,3 +757,9 @@ Conflicts=0 extra=3 udunits=0
     <units>Numeric</units>
   </parameter>
 </parameterMap>
+
+ - email from boi.vuong@noaa.gov:
+  "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
+   The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."
+  so i could modify the table to duplicate  2-4-2 to 2-4-3 for now (!)
+  really its a defect that should be corrected on the dataset level.

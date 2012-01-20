@@ -33,10 +33,12 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
+import org.jsoup.helper.StringUtil;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
+import ucar.nc2.grib.grib1.Grib1Gds;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
@@ -45,16 +47,16 @@ import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
 
 /**
- * Manage a collection of grib files, and manage grib collection index (ncx).
- * Covers GribCollectionProto, which serializes and deserializes.
- * Rectilyse means to turn the collection into a multidimensional variable.
+ * A collection of grib files as a single logical dataset.
  * Concrete classes are for Grib1 and Grib2.
  * Note that there is no dependence on GRIB tables here.
  *
@@ -124,9 +126,8 @@ public abstract class GribCollection {
 
   ////////////////////////////////////////////////////////////////
 
-  protected final String name;
-  protected final File directory;
-  protected final Set<String> groupNames = new HashSet<String>(5);
+  protected String name;
+  protected File directory;
 
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
@@ -138,6 +139,9 @@ public abstract class GribCollection {
   // need thread safety
   protected RandomAccessFile raf; // this is the raf of the index file
   public String rafLocation;   // this is the raf of the index file
+
+  private Map<Integer,String> gdsNamer;
+  private String groupNamer;
 
   public String getName() {
     return name;
@@ -205,9 +209,13 @@ public abstract class GribCollection {
     return backProcessId;
   }
 
-  protected GribCollection(String name, File directory) {
+  protected GribCollection(String name, File directory, CollectionManager dcm) {
     this.name = name;
     this.directory = directory;
+    if (dcm != null) {
+      gdsNamer = (Map<Integer,String>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDS_NAMER);
+      groupNamer = (String) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAMER);
+    }
   }
 
   /////////////////////////////////////////////
@@ -221,18 +229,18 @@ public abstract class GribCollection {
     return groups.get(index);
   }
 
-  public GroupHcs findGroup(String name) {
+  public GroupHcs findGroupById(String id) {
     for (GroupHcs g : getGroups()) {
-      if (g.getGroupName().equals(name))
+      if (g.getId().equals(id))
         return g;
     }
     return null;
   }
 
-  public int findGroupIdx(String name) {
+  public int findGroupIdxById(String id) {
     for (int i = 0; i < groups.size(); i++) {
       GroupHcs g = groups.get(i);
-      if (g.getGroupName().equals(name)) return i;
+      if (g.getId().equals(id)) return i;
     }
     return -1;
   }
@@ -263,13 +271,15 @@ public abstract class GribCollection {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  // these objects are created from the ncx index.
 
+  // these objects are created from the ncx index.
+  private Set<String> groupNames = new HashSet<String>(5);
   public class GroupHcs implements Comparable<GroupHcs> {
     public GdsHorizCoordSys hcs;
     public byte[] rawGds;
+    public int gdsHash;
 
-    private String name;
+    private String id, description;
     public List<VariableIndex> varIndex;
     public List<TimeCoord> timeCoords;
     public List<VertCoord> vertCoords;
@@ -277,22 +287,54 @@ public abstract class GribCollection {
     public int[] filenose;
     public List<TimeCoordUnion> timeCoordPartitions; // used only for time partitions - DO NOT USE
 
-    public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds) {
+    public void setHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, int gdsHash) {
       this.hcs = hcs;
       this.rawGds = rawGds;
-      setName(hcs.getName() + "-" + hcs.nx + "X" + hcs.ny);
+      this.gdsHash = gdsHash;
     }
 
-    public void setName(String base) {
-      if (base == null || base.length() == 0) return;
+    private String makeId() {
+      // check for user defined group names
+      String result = null;
+      if (gdsNamer != null)
+        result = gdsNamer.get(gdsHash);
+      if (result != null) {
+        return StringUtil2.replace(result, ". ", "p-");
+      }
+      if (groupNamer != null) {
+        File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
+        LatLonPoint centerPoint = hcs.getCenterLatLon();
+        StringBuilder sb = new  StringBuilder(firstFile.getName().substring(15, 26) + "-" + centerPoint.toString());
+        StringUtil2.replace(sb, ". ", "p-");
+        return sb.toString();
+      }
+
+      // default id
+      String base = hcs.makeId();
+      // ensure uniqueness
       String tryit = base;
       int count = 1;
       while (groupNames.contains(tryit)) {
         count++;
         tryit = base + "-" + count;
       }
-      this.name = tryit;
-      groupNames.add(name);
+      groupNames.add(tryit);
+      return tryit;
+    }
+
+    private String makeDescription() {
+      // check for user defined group names
+      String result = null;
+      if (gdsNamer != null)
+        result = gdsNamer.get(gdsHash);
+      if (result != null) return result;
+      if (groupNamer != null) {
+        File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
+        LatLonPoint centerPoint = hcs.getCenterLatLon();
+        return "First Run " + firstFile.getName().substring(15, 26) + ", Center " + centerPoint;
+      }
+
+      return hcs.makeDescription(); // default desc
     }
 
     public GribCollection getGribCollection() {
@@ -300,17 +342,22 @@ public abstract class GribCollection {
     }
 
     // unique name for Group
-    public String getGroupName() {
-      return name;
+    public String getId() {
+      if (id == null) id = makeId();
+      return id;
     }
 
-    //public String getGroupNameOld() {
-    //  return getName() +"/" + hcs.getName();
-    //}
+    // human readable
+    public String getDescription() {
+      if (description == null)
+        description = makeDescription();
+
+      return description;
+    }
 
     @Override
     public int compareTo(GroupHcs o) {
-      return getGroupName().compareTo(o.getGroupName());
+      return getDescription().compareTo(o.getDescription());
     }
 
     public List<String> getFilenames() {
@@ -354,6 +401,21 @@ public abstract class GribCollection {
     }
 
   }
+
+      //Map<Integer,String> gdsNamer = (Map<Integer,String>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDS_NAMER);
+      //String groupNamer = (String) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAMER);
+
+  /* kludge
+  private String setGroupNameOverride(int gdsHash, Map<Integer,String> gdsNamer, String groupNamer, MFile mfile) {
+    String result = null;
+    if (gdsNamer != null)
+      result = gdsNamer.get(gdsHash);
+    if (result != null) return result;
+    if (groupNamer == null) return null;
+    return mfile.getName();
+  }   */
+
+
 
   /* public class HorizCoordSys {
     public Grib2Gds gds;
@@ -453,7 +515,7 @@ public abstract class GribCollection {
     @Override
     public String toString() {
       return "VariableIndex{" +
-              "group=" + group.getGroupName() +
+              "group=" + group.getId() + "(" + group.description +")"+
               ", discipline=" + discipline +
               ", category=" + category +
               ", parameter=" + parameter +
@@ -472,6 +534,7 @@ public abstract class GribCollection {
       final StringBuilder sb = new StringBuilder();
       sb.append("VariableIndex");
       sb.append("{tableVersion=").append(tableVersion);
+      sb.append(", discipline=").append(discipline);
       sb.append(", discipline=").append(discipline);
       sb.append(", category=").append(category);
       sb.append(", parameter=").append(parameter);

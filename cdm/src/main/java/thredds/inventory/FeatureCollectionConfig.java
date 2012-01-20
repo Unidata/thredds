@@ -45,7 +45,8 @@ import java.util.*;
  */
 public class FeatureCollectionConfig {
   static public final String AUX_GDSHASH = "gdsHash";
-  static public final String AUX_GROUP_NAME = "groupName";
+  static public final String AUX_GDS_NAMER = "gdsNamer";
+  static public final String AUX_GROUP_NAMER = "groupNamer";
   static public final String AUX_INTERVAL_MERGE = "intvMerge";
 
   static public enum ProtoChoice {
@@ -294,7 +295,8 @@ public class FeatureCollectionConfig {
   static public class GribConfig  {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
     public Map<Integer, Integer> gdsHash;
-    public Map<Integer, String> gdsName;
+    public Map<Integer, String> gdsNamer;
+    public String groupNamer;
     protected boolean explicit = false;
     public boolean intervalMerge = false;
     public String lookupTablePath, paramTablePath;
@@ -334,11 +336,11 @@ public class FeatureCollectionConfig {
 
     public void addGdsName(String hashS, String name) {
       if (hashS == null || name == null) return;
-      if (gdsName == null) gdsName = new HashMap<Integer, String>(5);
+      if (gdsNamer == null) gdsNamer = new HashMap<Integer, String>(5);
 
       try {
         int hash = Integer.parseInt(hashS);
-        gdsName.put(hash, name);
+        gdsNamer.put(hash, name);
       } catch (Exception e) {
         log.warn("Failed  to parse as Integer = {} {}", hashS, name);
       }

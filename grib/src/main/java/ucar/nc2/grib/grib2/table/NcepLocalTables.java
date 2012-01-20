@@ -65,9 +65,6 @@ public class NcepLocalTables extends Grib2Tables {
     if ((category <= 191) && (parameter <= 191))
       return super.getVariableName(discipline, category, parameter);
 
-    if (category == 16)
-      System.out.println("HEY");
-
     GribTables.Parameter te = getParameter(discipline, category, parameter);
     if (te == null)
       return super.getVariableName(discipline, category, parameter);

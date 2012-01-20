@@ -433,6 +433,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       config.gribConfig.paramTable = gribConfig.getChild( "parameterMap", defNS );
       config.gribConfig.paramTablePath = gribConfig.getChildText( "gribParameterTable", defNS );
       config.gribConfig.lookupTablePath = gribConfig.getChildText( "gribParameterTableLookup", defNS );
+      config.gribConfig.groupNamer = gribConfig.getChildText( "groupNamer", defNS );
     }
 
     FeatureType ft = FeatureType.getType(featureType);

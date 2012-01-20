@@ -521,15 +521,34 @@
 
       <featureCollection name="NAM-Firewxnest" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Firewxnest">
         <metadata inherited="true">
-          <documentation type="summary">???
+          <documentation type="summary">The FWIS runs are high resolution
+            innermost nests of the new NAM that are placeable within either the 4 km
+            CONUS or 6 km Alaska nests that run every cycle of the new NAM (beginning ~20
+            Sept). One FWIS is run each cycle at 00z, 06z, 12z and 18z, with forecasts to 36 hours.
+            If it is placed inside the CONUS, then it runs with a 1.33 km
+            horizontal spacing using a 375x375x60 grid. If it is placed inside Alaska, then it
+            runs with a 1.5 km horizontal spacing using a 333x333x60 grid. FWIS runs on a
+            rotated lat-long grid and uses a B-grid stagger of variables. The vertical
+            coordinate and resolution are identical to NAM and its nests – i.e. sigma-pressure
+            hybrid with a top at 2 mb.
+
+            For FWIS inside CONUS, all output fields are mapped to a 1.27 km Lambert conic conformal grid whose size
+            varies to encompass as completely as possible the
+            FWIS computational domain. For FWIS inside Alaska, all output fields are mapped
+            to a 1.48825 km polar-stereographic grid whose size varies to encompass as
+            completely as possible the FWIS computational domain.
           </documentation>
+          <documentation xlink:href="http://www.emc.ncep.noaa.gov/mmb/mmbpll/firewx/"
+                         xlink:title="NCEP NAM Fire weather product inventory"/>
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/NAM/Firewxnest/.*grib2$"
                     dateFormatMark="#NAM_Firewxnest_#yyyyMMdd_HHmm"
-                    timePartition="1 day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <gdsName groupNaming="Firewxnest"/>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="NAM-Alaska_22km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Alaska_22km">
@@ -673,7 +692,7 @@
       <featureCollection name="NDFD-CONUS-Fireweather" featureType="GRIB" harvest="true"
                          path="grib/NCEP/NDFD/CONUS/Fireweather">
         <metadata inherited="true">
-          <documentation type="summary"> ??
+          <documentation type="summary">??
           </documentation>
         </metadata>
 

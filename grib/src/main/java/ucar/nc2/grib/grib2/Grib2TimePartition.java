@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import thredds.inventory.CollectionManager;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -51,14 +52,14 @@ import java.util.*;
 public class Grib2TimePartition extends TimePartition {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartition.class);
 
-  Grib2TimePartition(String name, File directory) {
-    super(name, directory);
+  Grib2TimePartition(String name, File directory, CollectionManager dcm) {
+    super(name, directory, dcm);
   }
 
   // LOOK - needs time partition collection iosp or something
   @Override
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
-    GroupHcs want = findGroup(groupName);
+    GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
     Grib2Iosp iosp = new Grib2Iosp(want);
@@ -68,7 +69,7 @@ public class Grib2TimePartition extends TimePartition {
 
   @Override
   public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
-    GroupHcs want = findGroup(groupName);
+    GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
     Grib2Iosp iosp = new Grib2Iosp(want);

@@ -424,17 +424,18 @@
 
   <xsd:complexType name="gribConfigType">
     <xsd:sequence>
-      <xsd:element name="gdsHash">
+      <xsd:element name="gdsHash" minOccurs="0">
         <xsd:complexType>
-          <xsd:attribute name="from" type="xsd:int"/>
-          <xsd:attribute name="to" type="xsd:int"/>
+          <xsd:attribute name="from" type="xsd:int" use="required"/>
+          <xsd:attribute name="to" type="xsd:int" use="required"/>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="gdsName">
+      <xsd:element name="gdsName" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="hash" type="xsd:int"/>
           <xsd:attribute name="groupName" type="xsd:string"/>
-        </xsd:complexType>
+          <xsd:attribute name="groupNaming" type="xsd:string"/>
+         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
     <xsd:attribute name="datasetTypes" type="xsd:string"/>

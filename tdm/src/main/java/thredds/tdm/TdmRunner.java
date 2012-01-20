@@ -139,7 +139,7 @@ public class TdmRunner {
             TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, f); // "we know collection has changed, dont test again" ??? LOOK
             tp.close();
             if (config.tdmConfig.triggerOk) { // send a trigger if enabled
-              String url = serverName + "thredds/admin/collection?trigger=true&collection=" + fc.getName();
+              String url = serverName + "thredds/admin/collection/trigger?collection=" + fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
             }
@@ -156,7 +156,7 @@ public class TdmRunner {
             GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, f);
             gc.close();
             if (config.tdmConfig.triggerOk) { // LOOK is there any point if you dont have trigger = true ?
-              String url = serverName + "thredds/admin/collection?trigger=nocheck&collection=" + fc.getName();
+              String url = serverName + "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
             }
@@ -398,7 +398,7 @@ public class TdmRunner {
     session = new HTTPSession(serverName);
     session.setCredentialsProvider(new CredentialsProvider() {
       public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-        System.out.printf("getCredentials called %s %s%n", user, pass);
+        //System.out.printf("getCredentials called %s %s%n", user, pass);
         return new UsernamePasswordCredentials(user, pass);
       }
     });

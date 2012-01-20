@@ -111,7 +111,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private final Grib2TimePartition tp;  // build this object
 
   private Grib2TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc) {
-    this.tp = new Grib2TimePartition(name, directory);
+    this.tp = new Grib2TimePartition(name, directory, tpc);
     this.gc = tp;
     this.tpc = tpc;
   }
@@ -232,7 +232,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // for each group in canonical Partition
     for (GribCollection.GroupHcs firstGroup : canon.getGribCollection(f).getGroups()) {
-      String gname = firstGroup.getGroupName();
+      String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // hash proto variables for quick lookup
@@ -254,7 +254,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
         // get corresponding group
         GribCollection gc = tpp.getGribCollection(f);
-        int groupIdx = gc.findGroupIdx(firstGroup.getGroupName());
+        int groupIdx = gc.findGroupIdxById(firstGroup.getId());
         if (groupIdx < 0) {
           f.format(" Cant find group %s in partition %s%n", gname, tpp.getName());
           ok = false;
@@ -328,13 +328,13 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // for each group in canonical Partition
     for (GribCollection.GroupHcs firstGroup : canon.getGribCollection(f).getGroups()) {
-      String gname = firstGroup.getGroupName();
+      String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // get list of corresponding groups from all the time partition, so we dont have to keep looking it up
       List<PartGroup> pgList = new ArrayList<PartGroup>(partitions.size());
       for (TimePartition.Partition dc : partitions) {
-        GribCollection.GroupHcs gg = dc.getGribCollection(f).findGroup(gname);
+        GribCollection.GroupHcs gg = dc.getGribCollection(f).findGroupById(gname);
         if (gg == null)
           logger.error(" Cant find group {} in partition {}", gname, dc.getName());
         else
@@ -356,7 +356,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
           // get corresponding variable
           GribCollection.VariableIndex vi2 = pg.group.findVariableByHash(viCanon.cdmHash);
           if (vi2 == null) {  // apparently not in the file
-            f.format("   WARN Cant find variable %s in partition %s / %s%n", viCanon, pg.tpp.getName(), pg.group.getGroupName());
+            f.format("   WARN Cant find variable %s in partition %s / %s%n", viCanon, pg.tpp.getName(), pg.group.getId());
             tcPartitions.add(null);
           } else {
             if (vi2.timeIdx < 0 || vi2.timeIdx >= pg.group.timeCoords.size()) {

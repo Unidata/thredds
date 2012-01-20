@@ -141,9 +141,7 @@ public class ToolsUI extends JPanel {
   private GeoGridPanel gridPanel;
   private GribFilesPanel gribFilesPanel;
   private Grib2CollectionPanel gribNewPanel;
-  private Grib1IndexPanel gribIndexPanel;
-  private GribIdxPanel gribIdxPanel;
-  // private GribRawPanel gribRawPanel;
+  private GribCollectionIndexPanel gribIdxPanel;
   private Grib1CollectionPanel grib1RawPanel;
   private Grib1ReportPanel grib1ReportPanel;
   private Grib2ReportPanel grib2ReportPanel;
@@ -326,7 +324,6 @@ public class ToolsUI extends JPanel {
     //griboTabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
     grib1TabPane.addTab("GRIB1collection", new JLabel("GRIB1collection"));
     //grib1TabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
-    //grib1TabPane.addTab("GRIB1-INDEX", new JLabel("GRIB1-INDEX"));
     grib1TabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
     grib1TabPane.addTab("GRIB1-REPORT", new JLabel("GRIB1-REPORT"));
     grib1TabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
@@ -498,12 +495,8 @@ public class ToolsUI extends JPanel {
       c = gribNewPanel;
 
     } else if (title.equals("GRIBindex")) {
-      gribIdxPanel = new GribIdxPanel((PreferencesExt) mainPrefs.node("gribIdx"));
+      gribIdxPanel = new GribCollectionIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
       c = gribIdxPanel;
-
-    } else if (title.equals("GRIB1-INDEX")) {
-      gribIndexPanel = new Grib1IndexPanel((PreferencesExt) mainPrefs.node("grib1idx"));
-      c = gribIndexPanel;
 
     } else if (title.equals("GRIB1-REPORT")) {
       grib1ReportPanel = new Grib1ReportPanel((PreferencesExt) mainPrefs.node("grib1Report"));
@@ -1005,9 +998,7 @@ public class ToolsUI extends JPanel {
     if (gribFilesPanel != null) gribFilesPanel.save();
     if (gribNewPanel != null) gribNewPanel.save();
     if (gribIdxPanel != null) gribIdxPanel.save();
-    //if (gribRawPanel != null) gribRawPanel.save();
     if (grib1RawPanel != null) grib1RawPanel.save();
-    if (gribIndexPanel != null) gribIndexPanel.save();
     if (grib1ReportPanel != null) grib1ReportPanel.save();
     if (grib2ReportPanel != null) grib2ReportPanel.save();
     if (gribCodePanel != null) gribCodePanel.save();
@@ -2663,15 +2654,16 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
-  private class GribIdxPanel extends OpPanel {
-    GribCollectionIndexPanel gribTable;
+  private class GribCollectionIndexPanel extends OpPanel {
+    ucar.nc2.ui.GribCollectionIndexPanel gribTable;
 
     void closeOpenFiles() throws IOException {
+      gribTable.closeOpenFiles();
     }
 
-    GribIdxPanel(PreferencesExt p) {
+    GribCollectionIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
-      gribTable = new GribCollectionIndexPanel(prefs, buttPanel);
+      gribTable = new ucar.nc2.ui.GribCollectionIndexPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
     }
 
@@ -2856,72 +2848,6 @@ public class ToolsUI extends JPanel {
     void save() {
       gribTable.save();
       super.save();
-    }
-
-  }
-
-  /////////////////////////////////////////////////////////////////////
-  // Indexed GRIB, using the IOSP
-  private class Grib1IndexPanel extends OpPanel {
-    GribOldIndexPanel gribTable;
-
-    Grib1IndexPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
-      gribTable = new GribOldIndexPanel(prefs);
-      add(gribTable, BorderLayout.CENTER);
-
-      AbstractAction infoAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
-          try {
-            gribTable.showInfo(f);
-
-          } catch (Exception ioe) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-            ioe.printStackTrace(new PrintStream(bos));
-            detailTA.setText(bos.toString());
-            detailWindow.show();
-            return;
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-        }
-      };
-      BAMutil.setActionProperties(infoAction, "Information", "show Info", false, 'I', -1);
-      BAMutil.addActionToContainer(buttPanel, infoAction);
-    }
-
-    boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      try {
-        gribTable.setGribFile(command);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "Grib2Table cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    void save() {
-      gribTable.save();
-      super.save();
-    }
-
-    void closeOpenFiles() throws IOException {
-      gribTable.closeOpenFiles();
     }
 
   }

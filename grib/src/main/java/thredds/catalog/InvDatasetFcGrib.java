@@ -108,8 +108,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (config.gribConfig != null) {
       if (config.gribConfig.gdsHash != null)
         dcm.putAuxInfo(FeatureCollectionConfig.AUX_GDSHASH, config.gribConfig.gdsHash);
-      if (config.gribConfig.gdsName != null)
-        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAME, config.gribConfig.gdsName);
+      if (config.gribConfig.gdsNamer != null)
+        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GDS_NAMER, config.gribConfig.gdsNamer);
+      if (config.gribConfig.groupNamer != null)
+        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAMER, config.gribConfig.groupNamer);
       if (config.gribConfig.intervalMerge)
         dcm.putAuxInfo(FeatureCollectionConfig.AUX_INTERVAL_MERGE, Boolean.TRUE);
     }
@@ -122,7 +124,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public void update(CollectionManager.Force force) { // this is called from a background thread
+  public void update(CollectionManager.Force force) { // this may be called from a background thread
     if (first) {
       synchronized (lock) {
         this.format = getDataFormatType(); // why wait until now ??
@@ -169,6 +171,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (first) {
         this.format = getDataFormatType(); // for some reason have to wait until first request ??
         firstInit();
+        dcm.scanIfNeeded();
         first  = false;
 
       } else {
@@ -239,7 +242,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (localState.timePartition == null) {
         String[] path = match.split("/");
         if (path.length < 2) return null;
-        GribCollection.GroupHcs group = localState.gribCollection.findGroup(path[0]);
+        GribCollection.GroupHcs group = localState.gribCollection.findGroupById(path[0]);
         if (group != null) {
           return makeFilesCatalog(localState.gribCollection, group, baseURI, localState);
         }
@@ -270,7 +273,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         dc = localState.timePartition.getPartitionByName(path[0]);
         if (dc != null) {
           GribCollection gc = dc.getGribCollection();
-          GribCollection.GroupHcs group = gc.findGroup(path[1]);
+          GribCollection.GroupHcs group = gc.findGroupById(path[1]);
           if (group == null) return null;
           return makeFilesCatalog(gc, group, baseURI, localState);
         }
@@ -295,12 +298,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (localState.timePartition == null) {
 
       for (GribCollection.GroupHcs group : localState.gribCollection.getGroups()) {
-        String name = group.getGroupName();
-        InvDatasetImpl ds = new InvDatasetImpl(this, name);
-        name = StringUtil2.replace(name, ' ', "_");
-        ds.setUrlPath(this.path + "/" + name);
-        ds.setID(id + "/" + name);
-        addFileDatasets(ds, name);
+        String groupId = group.getId();
+        InvDatasetImpl ds = new InvDatasetImpl(this, group.getDescription());
+        //groupId = StringUtil2.replace(groupId, ' ', "_");
+        ds.setUrlPath(this.path + "/" + groupId);
+        ds.setID(id + "/" + groupId);
+        addFileDatasets(ds, groupId);
 
         // metadata is specific to each group
         ds.tmi.addVariables(extractThreddsVariables(localState.gribCollection, group));
@@ -445,11 +448,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (id == null) id = getPath();
 
     for (GribCollection.GroupHcs group : gribCollection.getGroups()) {
-      String name = group.getGroupName();
-      InvDatasetImpl ds = new InvDatasetImpl(this, name + "_" + COLLECTION);
-      name = StringUtil2.replace(name, ' ', "_");
-      ds.setUrlPath(this.path + "/" + collectionName + "/" + name);
-      ds.setID(id + "/" + collectionName + "/" + name);
+      String groupId = group.getId();
+      InvDatasetImpl ds = new InvDatasetImpl(this, groupId + "_" + COLLECTION);
+      //groupId = StringUtil2.replace(groupId, ' ', "_");
+      ds.setUrlPath(this.path + "/" + collectionName + "/" + groupId);
+      ds.setID(id + "/" + collectionName + "/" + groupId);
 
       // metadata is specific to each group
       ds.tmi.addVariables(extractThreddsVariables(gribCollection, group));
@@ -464,7 +467,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       //tm.addVariables(group.getVariables());
 
       if (!(gribCollection instanceof TimePartition)) // dont add files for collection dataset
-        addFileDatasets(ds, collectionName + "/" + name);
+        addFileDatasets(ds, collectionName + "/" + groupId);
       ds.finish();
       top.addDataset(ds);
     }

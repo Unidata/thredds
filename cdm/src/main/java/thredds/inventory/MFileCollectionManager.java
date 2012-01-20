@@ -309,7 +309,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   @Override
   public boolean scanIfNeeded() throws IOException {
-    return isScanNeeded() && scan(true);
+    return (map == null || isScanNeeded()) && scan(true);
   }
 
   protected boolean hasScans() {

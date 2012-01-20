@@ -34,9 +34,11 @@ package ucar.nc2.grib;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.GaussianLatitudes;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * A Horizontal coordinate system generated from a GRIB-1 or GRIB-2 GDS.
@@ -95,6 +97,19 @@ public class GdsHorizCoordSys {
     return proj instanceof LatLonProjection;
   }
 
+  public LatLonPoint getCenterLatLon() {
+    return proj.projToLatLon(startx + dx * nx / 2, starty + dy * ny / 2);
+  }
+
+  public String makeDescription() {
+    return name + "-" + nx + "X" + ny+" (Center "+getCenterLatLon()+")";
+  }
+
+  public String makeId() {
+    StringBuilder result = new StringBuilder(name + "-" + nx + "X" + ny+"-"+getCenterLatLon());
+    StringUtil2.replace(result, ". ","p-");
+    return result.toString();
+  }
 
   // set gaussian weights based on nparellels
   // some wierd adjustment for la1 and la2.

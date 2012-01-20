@@ -97,8 +97,36 @@
         </timeCoverage>
       </metadata>
 
-      <featureCollection name="AMPS" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS">
-        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/**/.*grib1$"
+      <featureCollection name="AMPS-D1" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D1">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D1/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd_HHmm#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="AMPS-D2" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D2">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D2/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd_HHmm#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="AMPS-D3" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D3">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D3/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd_HHmm#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="AMPS-D5" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D5">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D5/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd_HHmm#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="AMPS-D6" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D6">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D6/**/.*grib1$"
                     dateFormatMark="yyyyMMdd_HHmm#.grib1#"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>

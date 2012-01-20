@@ -40,7 +40,6 @@ import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
-import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -253,7 +252,8 @@ public class Grib1Iosp extends AbstractIOServiceProvider {
     String grid_mapping = hcs.getName()+"_Projection";
     Group g;
     if (useGroups) {
-      g = new Group(ncfile, null, gHcs.getGroupName());
+      g = new Group(ncfile, null, gHcs.getId());
+      g.addAttribute(new Attribute(CDM.LONG_NAME, gHcs.getDescription()));
       try {
         ncfile.addGroup(null, g);
       } catch (Exception e) {

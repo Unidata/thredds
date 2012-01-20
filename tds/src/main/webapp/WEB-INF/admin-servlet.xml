@@ -42,6 +42,7 @@
         /log/**=logController
         /roots=logController
         /collection=collectionController
+        /collection/trigger=collectionController
         /*=dirDisplayController
       </value>
     </property>

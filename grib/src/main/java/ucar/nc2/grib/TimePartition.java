@@ -184,8 +184,8 @@ public abstract class TimePartition extends GribCollection {
   protected Map<String, Partition> partitionMap;
   protected List<Partition> partitions;
 
-  protected TimePartition(String name, File directory) {
-    super(name, directory);
+  protected TimePartition(String name, File directory, CollectionManager dcm) {
+    super(name, directory, dcm);
   }
 
   @Override

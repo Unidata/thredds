@@ -305,7 +305,8 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
 
     Group g;
     if (useGroups) {
-      g = new Group(ncfile, null, gHcs.getGroupName());
+      g = new Group(ncfile, null, gHcs.getId());
+      g.addAttribute(new Attribute(CDM.LONG_NAME, gHcs.getDescription()));
       try {
         ncfile.addGroup(null, g);
       } catch (Exception e) {

@@ -52,12 +52,12 @@ import java.util.Formatter;
  */
 public class Grib1Collection extends ucar.nc2.grib.GribCollection {
 
-  public Grib1Collection(String name, File directory) {
-    super(name, directory);
+  public Grib1Collection(String name, File directory, CollectionManager dcm) {
+    super(name, directory, dcm);
   }
 
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
-    GroupHcs want = findGroup(groupName);
+    GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
@@ -90,7 +90,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
   }
 
   public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
-    GroupHcs want = findGroup(groupName);
+    GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf

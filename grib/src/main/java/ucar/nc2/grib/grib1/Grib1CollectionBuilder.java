@@ -47,9 +47,9 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Build a GribCollection object.
- * Rectilyse and manage grib collection index.
- * Covers GribCollectionProto.
+ * Build a GribCollection object for Grib-1 files. Manage grib collection index.
+ * Covers GribCollectionProto, which serializes and deserializes.
+ * Rectilyse means to turn the collection into a multidimensional variable.
  *
  * @author caron
  * @since 4/6/11
@@ -111,7 +111,7 @@ public class Grib1CollectionBuilder {
       //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
       CollectionManager dcm = new CollectionManagerSingleFile(file);
       this.collections.add(dcm);
-      this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()));
+      this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()), dcm);
 
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -123,11 +123,11 @@ public class Grib1CollectionBuilder {
 
   private Grib1CollectionBuilder(CollectionManager dcm) {
     this.collections.add(dcm);
-    this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()));
+    this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), dcm);
   }
 
   private Grib1CollectionBuilder(String name, File directory) {
-    this.gc = new Grib1Collection(name, directory);
+    this.gc = new Grib1Collection(name, directory, null);
   }
 
   protected Grib1CollectionBuilder() {
@@ -239,6 +239,9 @@ public class Grib1CollectionBuilder {
       for (int i = 0; i < proto.getGroupsCount(); i++)
         gc.groups.add(readGroup(proto.getGroups(i), gc.makeGroup(), gc.center));
       Collections.sort(gc.groups);
+      //int count = 0;
+      //for (GribCollection.GroupHcs gh : gc.groups)
+      //  gh.setId("group"+(count++));
 
       gc.params = new ArrayList<Parameter>(proto.getParamsCount());
       for (int i = 0; i < proto.getParamsCount(); i++)
@@ -276,8 +279,7 @@ public class Grib1CollectionBuilder {
       Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(rawGds);
       gds = gdss.getGDS();
     }
-    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds);
-    group.setName(p.getName()); // optional user-overridden name
+    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gds.hashCode());
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
     for (int i = 0; i < p.getVariablesCount(); i++)
@@ -428,7 +430,6 @@ public class Grib1CollectionBuilder {
     for (CollectionManager dcm : collections) {
       f.format(" dcm= %s%n", dcm);
       Map<Integer,Integer> gdsConvert = (Map<Integer,Integer>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDSHASH);
-      Map<Integer,String> gdsName = (Map<Integer,String>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAME);
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -459,7 +460,7 @@ public class Grib1CollectionBuilder {
           if (g == null) {
             g = new Group(gr.getGDSsection(), gdsHash);
             gdsMap.put(gdsHash, g);
-            g.nameOverride = (gdsName == null) ? null : gdsName.get(gdsHash);  // allow external config to rename groups
+            //g.nameOverride = setGroupNameOverride(gdsHash, gdsNamer, groupNamer, mfile);
           }
           g.records.add(gr);
           total++;
@@ -480,7 +481,6 @@ public class Grib1CollectionBuilder {
 
     return result;
   }
-
   public String getMagicStart() {
     return MAGIC_START;
   }
@@ -528,7 +528,7 @@ public class Grib1CollectionBuilder {
 
       if (first == null) {
         logger.error("GribCollection {}: has no files\n{}", gc.getName(), f.toString());
-        throw new IllegalArgumentException("GribCollection " + gc.getName() + " has no files");
+        throw new IOException("GribCollection " + gc.getName() + " has no files");
       }
 
       long pos = raf.getFilePointer();
