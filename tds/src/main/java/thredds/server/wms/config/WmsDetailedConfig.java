@@ -42,8 +42,8 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 import thredds.server.wms.ThreddsLayer;
 import ucar.nc2.units.SimpleUnit;
-import uk.ac.rdg.resc.ncwms.util.Range;
-import uk.ac.rdg.resc.ncwms.util.Ranges;
+import uk.ac.rdg.resc.edal.util.Range;
+import uk.ac.rdg.resc.edal.util.Ranges;
 
 /**
  * Encapsulates the sysadmin's settings of the detailed configuration of the WMS

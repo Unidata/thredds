@@ -32,14 +32,12 @@
 
 package thredds.server.wms;
 
+import java.io.IOException;
 import org.joda.time.DateTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
-import uk.ac.rdg.resc.ncwms.cdm.AbstractScalarLayerBuilder;
-import uk.ac.rdg.resc.ncwms.cdm.CdmUtils;
-import uk.ac.rdg.resc.ncwms.cdm.DataReadingStrategy;
-import uk.ac.rdg.resc.ncwms.cdm.LayerBuilder;
+import uk.ac.rdg.resc.edal.cdm.CdmUtils;
+import uk.ac.rdg.resc.edal.cdm.DataReadingStrategy;
 import uk.ac.rdg.resc.ncwms.util.WmsUtils;
 import uk.ac.rdg.resc.ncwms.wms.Dataset;
 import uk.ac.rdg.resc.ncwms.wms.Layer;
@@ -47,6 +45,10 @@ import uk.ac.rdg.resc.ncwms.wms.VectorLayer;
 
 import java.util.*;
 import thredds.server.wms.config.WmsDetailedConfig;
+import ucar.nc2.dt.GridDatatype;
+import uk.ac.rdg.resc.edal.cdm.PixelMap;
+import uk.ac.rdg.resc.edal.coverage.CoverageMetadata;
+import uk.ac.rdg.resc.edal.coverage.grid.HorizontalGrid;
 
 /**
  * A {@link uk.ac.rdg.resc.ncwms.wms.Dataset} that provides access to layers read from
@@ -65,51 +67,29 @@ public class ThreddsDataset implements Dataset
           new LinkedHashMap<String, ThreddsVectorLayer>();
 
   /**
-   * LayerBuilder used to create ThreddsLayers in CdmUtils.findAndUpdateLayers
-   */
-  private static final LayerBuilder<ThreddsScalarLayer> THREDDS_LAYER_BUILDER = new AbstractScalarLayerBuilder<ThreddsScalarLayer>()
-  {
-    @Override
-    public ThreddsScalarLayer newLayer( String id )
-    {
-      return new ThreddsScalarLayer( id );
-    }
-
-    @Override
-    public void setTimeValues( ThreddsScalarLayer layer, List<DateTime> times )
-    {
-      layer.setTimeValues( times );
-    }
-
-    @Override
-    public void setGridDatatype( ThreddsScalarLayer layer, GridDatatype grid )
-    {
-      layer.setGridDatatype( grid );
-    }
-  };
-
-  /**
    * Creates a new ThreddsDataset with the given id from the given NetcdfDataset
    */
-  public ThreddsDataset( String urlPath, GridDataset gridDataset, WmsDetailedConfig wmsConfig )
+  public ThreddsDataset( String urlPath, GridDataset gridDataset, WmsDetailedConfig wmsConfig ) throws IOException
   {
     this.urlPath = urlPath;
     this.title = gridDataset.getTitle();
     
     NetcdfDataset ncDataset = (NetcdfDataset) gridDataset.getNetcdfFile();
-
-    // Get the most appropriate data-reading strategy for this dataset
-    DataReadingStrategy drStrategy = CdmUtils.getOptimumDataReadingStrategy( ncDataset );
-
-    // Now load the scalar layers
-    CdmUtils.findAndUpdateLayers( gridDataset, THREDDS_LAYER_BUILDER, this.scalarLayers );
-    // Set the extra properties of each layer
-    for ( ThreddsScalarLayer layer : this.scalarLayers.values() )
-    {
-      layer.setDataReadingStrategy( drStrategy );
-      layer.setDataset( this );
-      layer.setLayerSettings(wmsConfig.getSettings(layer));
+    
+    // Now load the scalar layers    
+    Collection<CoverageMetadata> ccm =CdmUtils.readCoverageMetadata(gridDataset);
+    Iterator<CoverageMetadata> icm = ccm.iterator();
+    while ( icm.hasNext()  ){    
+      CoverageMetadata cm  = icm.next();
+      // Get the most appropriate data-reading strategy for this dataset
+      PixelMap pxm = new PixelMap(cm.getHorizontalGrid(), null);
+      DataReadingStrategy drStrategy = CdmUtils.getOptimumDataReadingStrategy( pxm, ncDataset );
+      GridDatatype gdt = gridDataset.findGridDatatype(cm.getId());
+      ThreddsScalarLayer tsl = ThreddsScalarLayer.getNewLayer(cm, gdt, drStrategy, this, wmsConfig);
+      this.scalarLayers.put( tsl.getName()  , tsl);
     }
+    //CdmUtils.findAndUpdateLayers( gridDataset, THREDDS_LAYER_BUILDER, this.scalarLayers );
+    
 
     // Find the vector quantities
     Collection<VectorLayer> vectorLayersColl = WmsUtils.findVectorLayers( this.scalarLayers.values() );
