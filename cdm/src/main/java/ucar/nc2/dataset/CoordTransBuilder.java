@@ -86,7 +86,10 @@ public class CoordTransBuilder {
 
     //-sachin 03/25/09
     registerTransform("ocean_s_coordinate_g1", VOceanSG1.class);
-    registerTransform("ocean_s_coordinate_g2", VOceanSG2.class);   
+    registerTransform("ocean_s_coordinate_g2", VOceanSG2.class);
+
+    // ghansham@sac.isro.gov.in 1/8/2012
+    registerTransform("polyconic", PolyconicProjection.class);
 
     // further calls to registerTransform are by the user
     userMode = true;
