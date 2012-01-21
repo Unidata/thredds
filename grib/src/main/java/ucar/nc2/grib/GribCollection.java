@@ -173,6 +173,13 @@ public abstract class GribCollection {
     return indexFile;
   }
 
+  public File makeNewIndexFile() {
+    if (indexFile != null && indexFile.exists())
+      indexFile.delete();
+    indexFile = null;
+    return getIndexFile();
+  }
+
   public List<GroupHcs> getGroups() {
     return groups;
   }
@@ -299,13 +306,15 @@ public abstract class GribCollection {
       if (gdsNamer != null)
         result = gdsNamer.get(gdsHash);
       if (result != null) {
-        return StringUtil2.replace(result, ". ", "p-");
+        StringBuilder sb = new  StringBuilder(result);
+        StringUtil2.replace(sb, ". :", "p--");
+        return sb.toString();
       }
       if (groupNamer != null) {
         File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         StringBuilder sb = new  StringBuilder(firstFile.getName().substring(15, 26) + "-" + centerPoint.toString());
-        StringUtil2.replace(sb, ". ", "p-");
+        StringUtil2.replace(sb, ". :", "p--");
         return sb.toString();
       }
 

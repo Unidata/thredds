@@ -129,7 +129,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       synchronized (lock) {
         this.format = getDataFormatType(); // why wait until now ??
         firstInit(); // why ??
-        first  = false;
+        first = false;
       }
     }
 
@@ -144,7 +144,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     // do the update in a local object
     StateGrib localState = new StateGrib((StateGrib) state);
-    updateCollection(localState, force);
+    try {
+      updateCollection(localState, force);
+    } catch (IOException e) {
+      logger.error("Fail to update collection", e);
+    }
     makeTopDatasets(localState);
     localState.lastInvChange = System.currentTimeMillis();
 
@@ -172,7 +176,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         this.format = getDataFormatType(); // for some reason have to wait until first request ??
         firstInit();
         dcm.scanIfNeeded();
-        first  = false;
+        first = false;
 
       } else {
         if (!dcm.scanIfNeeded())
@@ -194,22 +198,18 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
-  private void updateCollection(StateGrib localState, CollectionManager.Force force) {
-    try {
-      if (config.timePartition != null) {
-        TimePartition previous = localState.timePartition;
-        localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, new Formatter());
-        localState.gribCollection = null;
-        if (previous != null) previous.close(); // LOOK thread safety
+  private void updateCollection(StateGrib localState, CollectionManager.Force force) throws IOException {
+    if (config.timePartition != null) {
+      TimePartition previous = localState.timePartition;
+      localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, new Formatter());
+      localState.gribCollection = null;
+      if (previous != null) previous.close(); // LOOK thread safety
 
-      } else { // WTF? open and close every time (!)
-        GribCollection previous = localState.gribCollection;
-        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, new Formatter());
-        localState.timePartition = null;
-        if (previous != null) previous.close(); // LOOK thread safety
-      }
-    } catch (IOException e) {
-      logger.error("Cant updateCollection " + dcm, e);
+    } else { // WTF? open and close every time (!)
+      GribCollection previous = localState.gribCollection;
+      localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, new Formatter());
+      localState.timePartition = null;
+      if (previous != null) previous.close(); // LOOK thread safety
     }
     logger.debug("{}: Collection was recreated", getName());
   }
@@ -517,7 +517,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     for (String f : group.getFilenames()) {
       if (!f.startsWith(topDirectory))
         System.out.println("HEY");
-      String fname = f.substring(topDirectory.length()+1);
+      String fname = f.substring(topDirectory.length() + 1);
       String path = FILES + "/" + fname;
       InvDatasetImpl ds = new InvDatasetImpl(this, fname);
       ds.setUrlPath(this.path + "/" + path);

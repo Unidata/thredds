@@ -529,7 +529,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, false);
-    agg.make(f, new Grib2Rectilyser.Counter());
+    agg.make(f, new Grib2Rectilyser.Counter(), null);
     agg.dump(f, tables);
 
     f.format("total records= %d%n", records.size());

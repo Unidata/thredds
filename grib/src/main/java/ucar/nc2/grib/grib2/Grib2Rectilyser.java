@@ -51,6 +51,8 @@ import java.util.*;
  * @since 3/30/11
  */
 public class Grib2Rectilyser {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
+
   private final Grib2Customizer cust;
   private final int gdsHash;
   private final boolean intvMerge;
@@ -90,7 +92,9 @@ public class Grib2Rectilyser {
     return ensCoords;
   }
 
-  public void make(Formatter f, Counter counter) throws IOException {
+  List<String> filenames = null; // temp debug
+  public void make(Formatter f, Counter counter, List<String> filenames) throws IOException {
+    this.filenames = filenames;
     // unique variables using Grib2Record.cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
     for (Grib2Record gr : records) {
@@ -429,7 +433,14 @@ public class Grib2Rectilyser {
     result += result * 37 + pds2.getTemplateNumber();
 
     if (pds2.isInterval()) {
-      double size = cust.getForecastTimeIntervalSize(gr, CalendarPeriod.Hour); // using an Hour here, but will need to make this configurable
+      double size = 0;
+      try {
+        size = cust.getForecastTimeIntervalSize(gr, CalendarPeriod.Hour); // using an Hour here, but will need to make this configurable
+      } catch (Throwable t) {
+        logger.error("bad", t);
+        if (filenames != null)
+          logger.error("Failed on file = "+filenames.get(gr.getFile()));
+      }
       if (!intvMerge) result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - configurable
       result += result * 37 + pds2.getStatisticalProcessType(); // create new variable for each stat type
     }

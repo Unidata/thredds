@@ -145,8 +145,9 @@ public class Grib1CollectionBuilder {
     boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate()));
 
     // otherwise, we're good as long as the index file exists
-    File idx = gc.getIndexFile();
+    File idx = gc.getIndexFile(); // LOOK problem - index exists but its out of date - trigger rewrite, but not writeable.
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
+      idx = gc.makeNewIndexFile(); // make sure we have a writeable index
       logger.debug("{}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx, ff, f);        // write out index
       gc.rafLocation = idx.getPath();

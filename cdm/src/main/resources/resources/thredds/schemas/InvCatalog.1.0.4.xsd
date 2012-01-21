@@ -434,9 +434,9 @@
         <xsd:complexType>
           <xsd:attribute name="hash" type="xsd:int"/>
           <xsd:attribute name="groupName" type="xsd:string"/>
-          <xsd:attribute name="groupNaming" type="xsd:string"/>
          </xsd:complexType>
       </xsd:element>
+      <xsd:element name="groupNamer" minOccurs="0" />
     </xsd:sequence>
     <xsd:attribute name="datasetTypes" type="xsd:string"/>
   </xsd:complexType>

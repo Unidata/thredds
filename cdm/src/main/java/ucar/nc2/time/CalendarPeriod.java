@@ -162,7 +162,7 @@ public class CalendarPeriod {
      else if (field == CalendarPeriod.Field.Day)
        return 24 * 60 * 60 * 1000 * value;
 
-     else throw new IllegalStateException();
+     else throw new IllegalStateException("Illegal Field = "+field);
    }
 
   @Override

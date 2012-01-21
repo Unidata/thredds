@@ -59,7 +59,7 @@ public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   public static final String MAGIC_START = "Grib2CollectionIndex";
   protected static final int version = 7;
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
     // called by tdm
   static public boolean update(CollectionManager dcm, Formatter f) throws IOException {
@@ -147,7 +147,8 @@ public class Grib2CollectionBuilder {
     // otherwise, we're good as long as the index file exists
     File idx = gc.getIndexFile();
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
-      logger.debug("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
+      idx = gc.makeNewIndexFile(); // make sure we have a writeable index
+      logger.info("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx, ff, f);        // write out index
       gc.rafLocation = idx.getPath();
       gc.setRaf( new RandomAccessFile(idx.getPath(), "r"));
@@ -413,7 +414,7 @@ public class Grib2CollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  public List<Group> makeAggregatedGroups(ArrayList<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
+  public List<Group> makeAggregatedGroups(List<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
@@ -474,7 +475,7 @@ public class Grib2CollectionBuilder {
     for (Group g : result) {
       g.rect = new Grib2Rectilyser(new Grib2Customizer(tables), g.records, g.gdsHash, intvMerge);
       f.format(" GDS hash %d == ", g.gdsHash);
-      g.rect.make(f, c);
+      g.rect.make(f, c, filenames);
     }
     f.format(" Rectilyser: nvars=%d records unique=%d total=%d dups=%d (%f) %n", c.vars, c.recordsUnique, c.records, c.dups, ((float) c.dups) / c.records);
 

@@ -547,7 +547,7 @@
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig>
-          <gdsName groupNaming="Firewxnest"/>
+          <groupNamer>Firewxnest</groupNamer>
         </gribConfig>
       </featureCollection>
 
