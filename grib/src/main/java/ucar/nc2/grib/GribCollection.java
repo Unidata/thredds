@@ -33,12 +33,10 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
-import org.jsoup.helper.StringUtil;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
-import ucar.nc2.grib.grib1.Grib1Gds;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
@@ -128,6 +126,7 @@ public abstract class GribCollection {
 
   protected String name;
   protected File directory;
+  protected FeatureCollectionConfig.GribConfig config;
 
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
@@ -140,8 +139,8 @@ public abstract class GribCollection {
   protected RandomAccessFile raf; // this is the raf of the index file
   public String rafLocation;   // this is the raf of the index file
 
-  private Map<Integer,String> gdsNamer;
-  private String groupNamer;
+  //private Map<Integer,String> gdsNamer;
+  //private String groupNamer;
 
   public String getName() {
     return name;
@@ -219,10 +218,7 @@ public abstract class GribCollection {
   protected GribCollection(String name, File directory, CollectionManager dcm) {
     this.name = name;
     this.directory = directory;
-    if (dcm != null) {
-      gdsNamer = (Map<Integer,String>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDS_NAMER);
-      groupNamer = (String) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAMER);
-    }
+    this.config = (dcm == null) ? null : (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
   }
 
   /////////////////////////////////////////////
@@ -303,14 +299,14 @@ public abstract class GribCollection {
     private String makeId() {
       // check for user defined group names
       String result = null;
-      if (gdsNamer != null)
-        result = gdsNamer.get(gdsHash);
+      if (config != null && config.gdsNamer != null)
+        result = config.gdsNamer.get(gdsHash);
       if (result != null) {
         StringBuilder sb = new  StringBuilder(result);
         StringUtil2.replace(sb, ". :", "p--");
         return sb.toString();
       }
-      if (groupNamer != null) {
+      if (config != null && config.groupNamer != null) {
         File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         StringBuilder sb = new  StringBuilder(firstFile.getName().substring(15, 26) + "-" + centerPoint.toString());
@@ -334,10 +330,10 @@ public abstract class GribCollection {
     private String makeDescription() {
       // check for user defined group names
       String result = null;
-      if (gdsNamer != null)
-        result = gdsNamer.get(gdsHash);
+      if (config != null && config.gdsNamer != null)
+        result = config.gdsNamer.get(gdsHash);
       if (result != null) return result;
-      if (groupNamer != null) {
+      if (config != null && config.groupNamer != null) {
         File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         return "First Run " + firstFile.getName().substring(15, 26) + ", Center " + centerPoint;

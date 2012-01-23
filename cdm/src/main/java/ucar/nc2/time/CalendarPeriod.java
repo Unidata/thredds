@@ -113,7 +113,7 @@ public class CalendarPeriod {
 
   public int subtract(CalendarDate start, CalendarDate end) {
     if (field == CalendarPeriod.Field.Month || field == CalendarPeriod.Field.Year) {
-      log.warn(" CalendarDate.subtracct on Month or Year");
+      log.warn(" CalendarDate.subtract on Month or Year");
       long diff = end.getDifferenceInMsecs(start);
       return (int) (diff / getValueInMillisecs());
     } else {

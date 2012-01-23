@@ -38,8 +38,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
@@ -58,11 +57,11 @@ import java.util.Formatter;
  * @author caron
  * @since 4/6/11
  */
-public class Grib2Iosp extends AbstractIOServiceProvider {
+public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
   static private final boolean debugTime = false, debugRead = false, debugName = false;
 
-  static public String makeVariableName(Grib2Tables tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+  static public String makeVariableName(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
     //f.format("P%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
@@ -129,7 +128,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     return f.toString();
   } */
 
-  static public String makeVariableLongName(Grib2Tables tables, GribCollection.VariableIndex vindex) {
+  static public String makeVariableLongName(Grib2Customizer tables, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
     boolean isProb = (vindex.probabilityName != null && vindex.probabilityName.length() > 0);
@@ -159,12 +158,12 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     return f.toString();
   }
 
-  static public String makeVariableUnits(Grib2Tables tables, GribCollection.VariableIndex vindex) {
+  static public String makeVariableUnits(Grib2Customizer tables, GribCollection.VariableIndex vindex) {
     if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) return "%";
     return getVindexUnits(tables, vindex);
   }
 
-  static private String getVindexUnits(Grib2Tables tables, GribCollection.VariableIndex vindex) {
+  static private String getVindexUnits(Grib2Customizer tables, GribCollection.VariableIndex vindex) {
     GribTables.Parameter gp = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
     String val = (gp == null) ? "" : gp.getUnit();
     return (val == null) ? "" : val;
@@ -174,7 +173,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
 
   private Grib2TimePartition timePartition;
   private GribCollection gribCollection;
-  private Grib2Tables tables;
+  private Grib2Customizer tables;
   private GribCollection.GroupHcs gHcs;
   private boolean isTimePartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
@@ -225,7 +224,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
     if (isGribFile) {
       Grib2Index index = new Grib2Index();
       Formatter f= new Formatter();
-      this.gribCollection = index.createFromSingleFile(raf, CollectionManager.Force.test, f, 2);
+      this.gribCollection = index.createFromSingleFile(raf, gribConfig, CollectionManager.Force.test, f, 2);
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor
@@ -234,7 +233,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
         isTimePartitioned = true;
         timePartition = (Grib2TimePartition) gribCollection;
       }
-      tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+      tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
       addGroup(ncfile, gHcs, false);
 
     } else if (gribCollection != null) { // use the gribCollection that was set in the constructor
@@ -242,7 +241,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
         isTimePartitioned = true;
         timePartition = (Grib2TimePartition) gribCollection;
       }
-      tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+      tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
       boolean useGroups = gribCollection.getGroups().size() > 1;
       for (GribCollection.GroupHcs g : gribCollection.getGroups())
         addGroup(ncfile, g, useGroups);
@@ -267,7 +266,7 @@ public class Grib2Iosp extends AbstractIOServiceProvider {
         gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf);
       }
 
-      tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+      tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
       boolean useGroups = gribCollection.getGroups().size() > 1;
       for (GribCollection.GroupHcs g : gribCollection.getGroups())

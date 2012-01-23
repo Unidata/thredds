@@ -42,7 +42,7 @@ import java.util.Map;
  * @since 1/18/12
  */
 public class NcepLocalParamsOld {
-  final Map<Integer, Grib2Tables.TableEntry> local = new HashMap<Integer, Grib2Tables.TableEntry>(100);
+  final Map<Integer, Grib2Customizer.TableEntry> local = new HashMap<Integer, Grib2Customizer.TableEntry>(100);
 
 
   void NcepLocalParamsOld() {
@@ -420,7 +420,7 @@ public class NcepLocalParamsOld {
   }
 
   private void add(int discipline, int category, int number, String abbrev, String name, String unit) {
-    local.put(Grib2Tables.makeHash(discipline, category, number), new Grib2Tables.TableEntry(discipline, category, number, name, unit, abbrev));
+    local.put(Grib2Customizer.makeHash(discipline, category, number), new Grib2Customizer.TableEntry(discipline, category, number, name, unit, abbrev));
   }
 
 }

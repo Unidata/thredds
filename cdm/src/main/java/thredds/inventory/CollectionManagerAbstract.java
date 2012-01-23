@@ -97,7 +97,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
 
   @Override
   public void putAuxInfo(String key, Object value) {
-    if (auxInfo == null)auxInfo = new HashMap<String, Object>();
+    if (auxInfo == null) auxInfo = new HashMap<String, Object>();
     auxInfo.put(key, value);
   }
 

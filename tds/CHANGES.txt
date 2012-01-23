@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
+Release Details 4.3:
+  GribCollections: tdsTrigger role to allow tdm triggers
+
 Release Details 4.2:
  4.2.8 (2011-07-20)
   CollectionUpdater- use config.name, not config.spec for Job, Task names

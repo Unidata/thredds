@@ -85,10 +85,6 @@ public abstract class Grib2Pds {
   // opitional cooordinates start after this
   public abstract int templateLength();
 
-  public CalendarPeriod getTimeDuration() {
-    return Grib2Utils.getCalendarPeriod(getTimeUnit());
-  }
-
   /**
    * Number of coordinate values at end of template.
    *
@@ -1080,7 +1076,7 @@ public abstract class Grib2Pds {
   /**
    * Product definition template 4.30 - satellite product
    *
-   * @deprecated
+   * @deprecated  4.31 should bw used
    */
   static private class Grib2Pds30 extends Grib2Pds {
 

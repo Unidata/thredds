@@ -155,7 +155,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     assert null != time;
     assert time.getShortName().equals(varName);
     assert time.getRank() == 2;
-    assert time.getSize() == nagg * ntimes;
+    assert time.getSize() == nagg * ntimes : time.getSize() +" != "+  nagg * ntimes;
     assert time.getShape()[0] == nagg;
     assert time.getShape()[1] == ntimes;
     assert time.getDataType() == DataType.DOUBLE;

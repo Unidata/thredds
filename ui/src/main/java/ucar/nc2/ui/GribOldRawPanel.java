@@ -35,7 +35,7 @@ package ucar.nc2.ui;
 
 import ucar.grib.GribPds;
 import ucar.grib.NoValidGribException;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
@@ -676,7 +676,7 @@ public class GribOldRawPanel extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  Grib2Tables tables = null;
+  Grib2Customizer tables = null;
 
   void setGribFile2(RandomAccessFile raf) throws IOException {
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, param2BeanTable, record2BeanTable);
@@ -715,7 +715,7 @@ public class GribOldRawPanel extends JPanel {
 
       if (first) {
         Grib2IdentificationSection ids = gr.getId();
-        tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+        tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
         first = false;
       }
     }

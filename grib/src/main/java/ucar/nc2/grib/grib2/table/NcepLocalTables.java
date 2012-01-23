@@ -44,7 +44,7 @@ import java.util.*;
  * @author caron
  * @since 4/3/11
  */
-public class NcepLocalTables extends Grib2Tables {
+public class NcepLocalTables extends Grib2Customizer {
   // final Map<Integer, Grib2Tables.TableEntry> local;
 
   NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
@@ -476,7 +476,7 @@ Updated again on 3/26/2008
     NcepLocalParamsOld ncepOld = new NcepLocalParamsOld();
 
     for (int key : ncepOld.local.keySet()) {
-      Grib2Tables.Parameter p = ncepOld.local.get(key);
+      Grib2Customizer.Parameter p = ncepOld.local.get(key);
       map.put(key, new CompTable(key, p, null));
     }
 

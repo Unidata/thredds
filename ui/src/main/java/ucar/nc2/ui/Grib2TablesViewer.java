@@ -32,7 +32,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.ui.dialog.Grib1TableDialog;
 import ucar.nc2.ui.widget.BAMutil;
@@ -132,9 +132,9 @@ public class Grib2TablesViewer extends JPanel {
     buttPanel.add(infoButton);
 
     try {
-      java.util.List<Grib2Tables.GribTableId> tables = Grib2Tables.getLocalTableIds();
+      java.util.List<Grib2Customizer.GribTableId> tables = Grib2Customizer.getLocalTableIds();
       java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.size());
-      for (Grib2Tables.GribTableId t : tables) {
+      for (Grib2Customizer.GribTableId t : tables) {
         beans.add(new TableBean(t));
       }
       Collections.sort(beans);
@@ -155,12 +155,12 @@ public class Grib2TablesViewer extends JPanel {
     // if (fileChooser != null) fileChooser.save();
   }
 
-  public void setEntries(Grib2Tables.GribTableId tableId) {
-    Grib2Tables gt = Grib2Tables.factory(tableId.center, tableId.subCenter, tableId.masterVersion, tableId.localVersion);
+  public void setEntries(Grib2Customizer.GribTableId tableId) {
+    Grib2Customizer gt = Grib2Customizer.factory(tableId.center, tableId.subCenter, tableId.masterVersion, tableId.localVersion);
     List params = gt.getParameters();
     java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
     for (Object p : params) {
-      beans.add(new EntryBean((Grib2Tables.Parameter) p));
+      beans.add(new EntryBean((Grib2Customizer.Parameter) p));
     }
     entryTable.setBeans(beans);
   }
@@ -173,7 +173,7 @@ public class Grib2TablesViewer extends JPanel {
 
     f.format("non-udunits%n");
     for (Object t : entryTable.getBeans()) {
-      Grib2Tables.Parameter p = ((EntryBean) t).param;
+      Grib2Customizer.Parameter p = ((EntryBean) t).param;
       if (p.getUnit() == null) continue;
       if (p.getUnit().length() == 0) continue;
       try {
@@ -194,8 +194,8 @@ public class Grib2TablesViewer extends JPanel {
     int conflict = 0;
     f.format("Conflicts with WMO%n");
     for (Object t : entryTable.getBeans()) {
-      Grib2Tables.Parameter p = ((EntryBean) t).param;
-      if (Grib2Tables.isLocal(p)) continue;
+      Grib2Customizer.Parameter p = ((EntryBean) t).param;
+      if (Grib2Customizer.isLocal(p)) continue;
       WmoCodeTable.TableEntry wmo = WmoCodeTable.getParameterEntry(p.getDiscipline(), p.getCategory(), p.getNumber());
       if (wmo == null) {
         extra++;
@@ -212,9 +212,9 @@ public class Grib2TablesViewer extends JPanel {
     infoWindow.show();
   }
 
-  public void compareTables(Grib2Tables.GribTableId id1, Grib2Tables.GribTableId id2) {
-    Grib2Tables t1 = Grib2Tables.factory(id1.center, id1.subCenter, id1.masterVersion, id1.localVersion);
-    Grib2Tables t2 = Grib2Tables.factory(id2.center, id2.subCenter, id2.masterVersion, id2.localVersion);
+  public void compareTables(Grib2Customizer.GribTableId id1, Grib2Customizer.GribTableId id2) {
+    Grib2Customizer t1 = Grib2Customizer.factory(id1.center, id1.subCenter, id1.masterVersion, id1.localVersion);
+    Grib2Customizer t2 = Grib2Customizer.factory(id2.center, id2.subCenter, id2.masterVersion, id2.localVersion);
 
     Formatter f = new Formatter();
 
@@ -225,8 +225,8 @@ public class Grib2TablesViewer extends JPanel {
     int conflict = 0;
     f.format("Table 1 : %n");
     for (Object t : t1.getParameters()) {
-      Grib2Tables.Parameter p1 = (Grib2Tables.Parameter) t;
-      Grib2Tables.Parameter  p2 = t2.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      Grib2Customizer.Parameter p1 = (Grib2Customizer.Parameter) t;
+      Grib2Customizer.Parameter  p2 = t2.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p2 == null) {
         extra++;
         f.format(" Missing %s in table 2%n", p1);
@@ -242,8 +242,8 @@ public class Grib2TablesViewer extends JPanel {
     extra = 0;
     f.format("Table 2 : %n");
     for (Object t : t2.getParameters()) {
-      Grib2Tables.Parameter p2 = (Grib2Tables.Parameter) t;
-      Grib2Tables.Parameter  p1 = t2.getParameter(p2.getDiscipline(), p2.getCategory(), p2.getNumber());
+      Grib2Customizer.Parameter p2 = (Grib2Customizer.Parameter) t;
+      Grib2Customizer.Parameter  p1 = t2.getParameter(p2.getDiscipline(), p2.getCategory(), p2.getNumber());
       if (p1 == null) {
         extra++;
         f.format(" Missing %s in table 1%n", p2);
@@ -256,12 +256,12 @@ public class Grib2TablesViewer extends JPanel {
   }
 
   public class TableBean implements Comparable<TableBean> {
-    Grib2Tables.GribTableId table;
+    Grib2Customizer.GribTableId table;
 
     public TableBean() {
     }
 
-    public TableBean(Grib2Tables.GribTableId table) {
+    public TableBean(Grib2Customizer.GribTableId table) {
       this.table = table;
     }
 
@@ -297,13 +297,13 @@ public class Grib2TablesViewer extends JPanel {
   }
 
   public class EntryBean {
-    Grib2Tables.Parameter param;
+    Grib2Customizer.Parameter param;
 
     // no-arg constructor
     public EntryBean() {
     }
 
-    public EntryBean(Grib2Tables.Parameter param) {
+    public EntryBean(Grib2Customizer.Parameter param) {
       this.param = param;
     }
 

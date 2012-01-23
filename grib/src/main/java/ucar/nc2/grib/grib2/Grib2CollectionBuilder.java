@@ -39,7 +39,6 @@ import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -71,8 +70,9 @@ public class Grib2CollectionBuilder {
   }
 
   // from a single file, read in the index, create if it doesnt exist
-  static public GribCollection createFromSingleFile(File file, CollectionManager.Force force, Formatter f) throws IOException {
-    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, f);
+  static public GribCollection createFromSingleFile(File file, CollectionManager.Force force, FeatureCollectionConfig.GribConfig config,
+                                                    Formatter f) throws IOException {
+    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, config, f);
     builder.readOrCreateIndex(force, f);
     return builder.gc;
   }
@@ -103,13 +103,14 @@ public class Grib2CollectionBuilder {
 
   private final List<CollectionManager> collections = new ArrayList<CollectionManager>(); // are there every more than one ?
   protected GribCollection gc;
-  protected Grib2Tables tables; // only gets created in makeAggGroups
+  protected Grib2Customizer tables; // only gets created in makeAggGroups
 
   // single file
-  private Grib2CollectionBuilder(File file, Formatter f) throws IOException {
+  private Grib2CollectionBuilder(File file, FeatureCollectionConfig.GribConfig config, Formatter f) throws IOException {
     try {
       //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
       CollectionManager dcm = new CollectionManagerSingleFile(file);
+      if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
       this.collections.add(dcm);
       this.gc = new Grib2Collection(file.getName(), new File(dcm.getRoot()), dcm);
 
@@ -416,17 +417,18 @@ public class Grib2CollectionBuilder {
   // for each group, run rectlizer to derive the coordinates and variables
   public List<Group> makeAggregatedGroups(List<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
+    Map<Integer, Integer> gdsConvert = null;
+    Map<Integer, Integer> timeUnitConvert = null;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
     int fileno = 0;
-    boolean intvMerge = false;
+    //boolean intvMerge = false;  // LOOK
     for (CollectionManager dcm : collections) {
       f.format(" dcm= %s%n", dcm);
-      Map<Integer,Integer> gdsConvert = (Map<Integer,Integer>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDSHASH);
-      //Map<Integer,String> gdsNamer = (Map<Integer,String>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDS_NAMER);
-      //String groupNamer = (String) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAMER);
-      intvMerge = dcm.getAuxInfo(FeatureCollectionConfig.AUX_INTERVAL_MERGE) != null; // LOOK
+      FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+      if (config != null)  gdsConvert = config.gdsHash;
+      if (config != null) timeUnitConvert = config.timeUnitHash;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -448,19 +450,17 @@ public class Grib2CollectionBuilder {
         for (Grib2Record gr : index.getRecords()) {
           if (this.tables == null) {
             Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
-            this.tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+            this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
           }
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
-          if (gdsConvert != null && gdsConvert.get(gdsHash) != null) { // allow external config to muck with gdsHash. Why? because of error in encoding
-            gdsHash = (Integer) gdsConvert.get(gdsHash);               // and we need exact hash matching
-          }
+          if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
+            gdsHash = (Integer) gdsConvert.get(gdsHash);             // and we need exact hash matching
 
           Group g = gdsMap.get(gdsHash);
           if (g == null) {
             g = new Group(gr.getGDSsection(), gdsHash);
             gdsMap.put(gdsHash, g);
-            //g.nameOverride = setGroupNameOverride(g, gdsNamer, groupNamer, dcm.extractRunDate(mfile));
           }
           g.records.add(gr);
           total++;
@@ -473,7 +473,7 @@ public class Grib2CollectionBuilder {
     Grib2Rectilyser.Counter c = new Grib2Rectilyser.Counter(); // debugging
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib2Rectilyser(new Grib2Customizer(tables), g.records, g.gdsHash, intvMerge);
+      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, timeUnitConvert);
       f.format(" GDS hash %d == ", g.gdsHash);
       g.rect.make(f, c, filenames);
     }

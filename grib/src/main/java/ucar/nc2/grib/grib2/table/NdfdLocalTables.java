@@ -40,7 +40,7 @@ import java.util.*;
  * Ndfd local tables
  */
 
-public class NdfdLocalTables extends Grib2Tables {
+public class NdfdLocalTables extends Grib2Customizer {
   private final Map<Integer, TableEntry> local = new HashMap<Integer, TableEntry>(100);
 
   NdfdLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
@@ -66,7 +66,7 @@ public class NdfdLocalTables extends Grib2Tables {
   }
 
   @Override
-  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
+  public Grib2Customizer.Parameter getParameter(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191))
       return WmoCodeTable.getParameterEntry(discipline, category, number);
 

@@ -48,7 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Interprets the raw grib1 info in a way that may be customized.
+ * Interprets grib1 info in a way that may be customized.
  * This class handles the default case, using only standard WMO tables.
  * Subclasses override as needed.
  *

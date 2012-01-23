@@ -62,8 +62,9 @@ public class Grib1CollectionBuilder {
   private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
-  static public GribCollection createFromSingleFile(File file, CollectionManager.Force force, Formatter f) throws IOException {
-    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(file, f);
+  static public GribCollection createFromSingleFile(File file, CollectionManager.Force force,
+                                                    FeatureCollectionConfig.GribConfig config, Formatter f) throws IOException {
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(file, config, f);
     builder.readOrCreateIndex(force, f);
     return builder.gc;
   }
@@ -106,11 +107,12 @@ public class Grib1CollectionBuilder {
   protected Grib1Customizer cust;
 
   // single file
-  private Grib1CollectionBuilder(File file, Formatter f) throws IOException {
+  private Grib1CollectionBuilder(File file, FeatureCollectionConfig.GribConfig config, Formatter f) throws IOException {
     try {
       //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
       CollectionManager dcm = new CollectionManagerSingleFile(file);
       this.collections.add(dcm);
+      if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
       this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()), dcm);
 
     } catch (Exception e) {
@@ -424,13 +426,17 @@ public class Grib1CollectionBuilder {
   // for each group, run rectlizer to derive the coordinates and variables
   public List<Group> makeAggregatedGroups(ArrayList<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
+    Map<Integer, Integer> gdsConvert = null;
+    Map<Integer, Integer> timeUnitConvert = null;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
     int fileno = 0;
     for (CollectionManager dcm : collections) {
       f.format(" dcm= %s%n", dcm);
-      Map<Integer,Integer> gdsConvert = (Map<Integer,Integer>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDSHASH);
+      FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+      if (config != null) gdsConvert = config.gdsHash;
+      if (config != null) timeUnitConvert = config.timeUnitHash;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -474,7 +480,7 @@ public class Grib1CollectionBuilder {
     Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash);
+      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash, timeUnitConvert);
       f.format(" GDS hash %d == ", g.gdsHash);
       g.rect.make(f, c);
     }

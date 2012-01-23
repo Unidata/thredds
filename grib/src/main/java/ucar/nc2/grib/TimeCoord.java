@@ -70,6 +70,7 @@ public class TimeCoord {
   private int index;
   private final int code; // GRIB1 timeRangeIndicator,
 
+  // from reading ncx
   public TimeCoord(int code, String units, List coords) {
     this.code = code;
     this.units = units;
@@ -89,6 +90,7 @@ public class TimeCoord {
     }
   }
 
+  // when writing an ncx file
   public TimeCoord(int code, CalendarDate runDate, CalendarPeriod timeUnit, List coords) {
     this.code = code;
     this.runDate = runDate;

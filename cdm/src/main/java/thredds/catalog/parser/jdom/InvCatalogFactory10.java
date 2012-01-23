@@ -418,22 +418,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     // gribConfig element optional
     Element gribConfig = dsElem.getChild( "gribConfig", defNS );
     if (gribConfig != null) {
-      String datasetTypes = gribConfig.getAttributeValue("datasetTypes");
-      if (null != datasetTypes)
-        config.gribConfig.addDatasetType(datasetTypes);
-
-      List<Element> gdsElems = gribConfig.getChildren( "gdsHash", defNS );
-      for (Element gds : gdsElems)
-        config.gribConfig.addGdsHash(gds.getAttributeValue("from"), gds.getAttributeValue("to"));
-
-      gdsElems = gribConfig.getChildren( "gdsName", defNS );
-      for (Element gds : gdsElems)
-        config.gribConfig.addGdsName(gds.getAttributeValue("hash"), gds.getAttributeValue("groupName"));
-
-      config.gribConfig.paramTable = gribConfig.getChild( "parameterMap", defNS );
-      config.gribConfig.paramTablePath = gribConfig.getChildText( "gribParameterTable", defNS );
-      config.gribConfig.lookupTablePath = gribConfig.getChildText( "gribParameterTableLookup", defNS );
-      config.gribConfig.groupNamer = gribConfig.getChildText( "groupNamer", defNS );
+      config.gribConfig.configFromXml(gribConfig, defNS);
     }
 
     FeatureType ft = FeatureType.getType(featureType);

@@ -45,7 +45,7 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Iosp;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.StringUtil2;
@@ -105,16 +105,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     // sneak in extra config info
-    if (config.gribConfig != null) {
-      if (config.gribConfig.gdsHash != null)
-        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GDSHASH, config.gribConfig.gdsHash);
-      if (config.gribConfig.gdsNamer != null)
-        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GDS_NAMER, config.gribConfig.gdsNamer);
-      if (config.gribConfig.groupNamer != null)
-        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAMER, config.gribConfig.groupNamer);
-      if (config.gribConfig.intervalMerge)
-        dcm.putAuxInfo(FeatureCollectionConfig.AUX_INTERVAL_MERGE, Boolean.TRUE);
-    }
+    if (config.gribConfig != null)
+      dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
     String errs = errlog.toString();
     if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
@@ -351,7 +343,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
 
       if (format == DataFormatType.GRIB2) {
-        Grib2Tables tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+        Grib2Customizer tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
         tv.setName(Grib2Iosp.makeVariableName(tables, gribCollection, vindex));
         tv.setDescription(Grib2Iosp.makeVariableLongName(tables, vindex));

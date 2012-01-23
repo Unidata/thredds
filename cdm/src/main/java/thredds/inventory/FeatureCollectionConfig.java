@@ -33,6 +33,7 @@
 package thredds.inventory;
 
 import org.jdom.Element;
+import org.jdom.Namespace;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
@@ -44,10 +45,7 @@ import java.util.*;
  * @since Mar 30, 2010
  */
 public class FeatureCollectionConfig {
-  static public final String AUX_GDSHASH = "gdsHash";
-  static public final String AUX_GDS_NAMER = "gdsNamer";
-  static public final String AUX_GROUP_NAMER = "groupNamer";
-  static public final String AUX_INTERVAL_MERGE = "intvMerge";
+  static public final String AUX_GRIB_CONFIG = "gribConfig";
 
   static public enum ProtoChoice {
     First, Random, Latest, Penultimate, Run
@@ -295,6 +293,7 @@ public class FeatureCollectionConfig {
   static public class GribConfig  {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
     public Map<Integer, Integer> gdsHash;
+    public Map<Integer, Integer> timeUnitHash;
     public Map<Integer, String> gdsNamer;
     public String groupNamer;
     protected boolean explicit = false;
@@ -303,6 +302,33 @@ public class FeatureCollectionConfig {
     public Element paramTable;
 
     public GribConfig() { // defaults
+    }
+
+    public void configFromXml(Element configElem, Namespace ns) {
+      String datasetTypes = configElem.getAttributeValue("datasetTypes");
+      if (null != datasetTypes)
+        addDatasetType(datasetTypes);
+
+      List<Element> gdsElems = configElem.getChildren( "gdsHash", ns );
+      for (Element gds : gdsElems)
+        addGdsHash(gds.getAttributeValue("from"), gds.getAttributeValue("to"));
+
+      List<Element> tuElems = configElem.getChildren( "timeUnitConvert", ns );
+      for (Element tu : tuElems)
+        addTimeUnitConvert(tu.getAttributeValue("from"), tu.getAttributeValue("to"));
+
+      gdsElems = configElem.getChildren( "gdsName", ns );
+      for (Element gds : gdsElems)
+        addGdsName(gds.getAttributeValue("hash"), gds.getAttributeValue("groupName"));
+
+      if (configElem.getChild( "parameterMap", ns ) != null)
+        paramTable = configElem.getChild( "parameterMap", ns );
+      if (configElem.getChild( "gribParameterTable", ns ) != null)
+        paramTablePath = configElem.getChildText( "gribParameterTable", ns );
+      if (configElem.getChild( "gribParameterTableLookup", ns ) != null)
+        lookupTablePath = configElem.getChildText( "gribParameterTableLookup", ns );
+      if (configElem.getChild( "groupNamer", ns ) != null)
+        groupNamer = configElem.getChildText( "groupNamer", ns );
     }
 
     public void addDatasetType(String datasetTypes) {
@@ -329,6 +355,19 @@ public class FeatureCollectionConfig {
         int from = Integer.parseInt(fromS);
         int to = Integer.parseInt(toS);
         gdsHash.put(from,to);
+      } catch (Exception e) {
+        log.warn("Failed  to parse as Integer = {} {}", fromS, toS);
+      }
+    }
+
+    public void addTimeUnitConvert(String fromS, String toS) {
+      if (fromS == null || toS == null) return;
+      if (timeUnitHash == null) timeUnitHash = new HashMap<Integer, Integer>(5);
+
+      try {
+        int from = Integer.parseInt(fromS);
+        int to = Integer.parseInt(toS);
+        timeUnitHash.put(from,to);
       } catch (Exception e) {
         log.warn("Failed  to parse as Integer = {} {}", fromS, toS);
       }

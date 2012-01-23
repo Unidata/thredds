@@ -61,6 +61,7 @@ public class Grib1Rectilyser {
   private Grib1Customizer cust;
   private final List<Grib1Record> records;
   private final int gdsHash;
+  private final Map<Integer, Integer> timeUnitConvert;
 
   private List<VariableBag> gribvars;
 
@@ -69,10 +70,11 @@ public class Grib1Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib1Rectilyser(Grib1Customizer cust, List<Grib1Record> records, int gdsHash) {
+  public Grib1Rectilyser(Grib1Customizer cust, List<Grib1Record> records, int gdsHash, Map<Integer, Integer> timeUnitConvert) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
+    this.timeUnitConvert = timeUnitConvert;
   }
 
   public List<Grib1Record> getRecords() {
@@ -293,6 +295,16 @@ public class Grib1Rectilyser {
     return new EnsCoord(elist);
   }
 
+  private int convertUnit(int timeUnit) {
+    if (timeUnitConvert == null) return timeUnit;
+    Integer convert = timeUnitConvert.get(timeUnit);
+    return (convert == null) ? timeUnit : convert;
+  }
+
+  private CalendarPeriod convertTimeDuration(int timeUnit) {
+    return GribUtils.getCalendarPeriod( convertUnit(timeUnit));
+  }
+
   /**
    * check if refDate and timeUnit is the same for all atoms.
    * set vb refDate, timeUnit fields as side effect. if not true, refDate is earliest
@@ -309,7 +321,7 @@ public class Grib1Rectilyser {
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
 
-      int unit = pds.getTimeUnit();
+      int unit = convertUnit(pds.getTimeUnit());
       if (timeUnit < 0) { // first one
         timeUnit = unit;
         vb.timeUnit = GribUtils.getCalendarPeriod(timeUnit);
@@ -356,7 +368,7 @@ public class Grib1Rectilyser {
       if (timeType < 0) timeType = pds.getTimeRangeIndicator();
       Grib1ParamTime ptime = pds.getParamTime(cust);
       int time = ptime.getForecastTime();
-      CalendarPeriod duration = GribUtils.getCalendarPeriod(pds.getTimeUnit());
+      CalendarPeriod duration = convertTimeDuration(pds.getTimeUnit());
 
       if (uniform) {
         r.tcCoord = time;
@@ -385,7 +397,7 @@ public class Grib1Rectilyser {
         times.add(r.tcIntvCoord);
       } else {
         TimeCoord.Tinv org = new TimeCoord.Tinv(timeb[0], timeb[1]);
-        CalendarPeriod fromUnit = GribUtils.getCalendarPeriod(pds.getTimeUnit());
+        CalendarPeriod fromUnit = convertTimeDuration(pds.getTimeUnit());
         r.tcIntvCoord =  org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit);
         times.add(r.tcIntvCoord);
       }

@@ -215,7 +215,7 @@ public class NcepLocalParams {
 
   //////////////////////////////////////////////////////////////////////////
 
-  private static void compareTables(NcepLocalParams test, Grib2Tables current) {
+  private static void compareTables(NcepLocalParams test, Grib2Customizer current) {
     Formatter f = new Formatter();
     //f.format("Table 1 = %s%n", test.tableName);
     //f.format("Table 2 = %s%n", "currentNcep");
@@ -225,7 +225,7 @@ public class NcepLocalParams {
     int conflict = 0;
     // f.format("Table 1 : %n");
     for (Grib2Parameter p1 : test.getParameters()) {
-      Grib2Tables.Parameter  p2 = current.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      Grib2Customizer.Parameter  p2 = current.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p2 == null) {
         extra++;
         if (p1.getNumber() < 192) f.format("  Missing %s%n", p1);
@@ -301,7 +301,7 @@ public class NcepLocalParams {
     boolean test1 = isUnitless("See.Table.4.201");
     boolean test2 = isUnitless("(Code.table.4.201)");
 
-    Grib2Tables current = Grib2Tables.factory(7, -1, -1, -1);
+    Grib2Customizer current = Grib2Customizer.factory(7, -1, -1, -1);
 
     File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
     for (File f : dir.listFiles()) {
@@ -317,7 +317,7 @@ public class NcepLocalParams {
     GribTables.Parameter p = getParameter(0, 16, 195);
     System.out.printf("%s%n", p);
 
-    Grib2Tables tables = Grib2Tables.factory(7, 0, 0, 0);
+    Grib2Customizer tables = Grib2Customizer.factory(7, 0, 0, 0);
     GribTables.Parameter p2 = tables.getParameter(0, 16, 195);
     System.out.printf("%s%n", p2);
   }

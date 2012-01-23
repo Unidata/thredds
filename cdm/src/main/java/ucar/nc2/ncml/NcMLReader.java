@@ -381,8 +381,8 @@ public class NcMLReader {
     String iospS = netcdfElem.getAttributeValue("iosp");
     Object iospParam = netcdfElem.getAttributeValue("iospParam");
     if (iospParam == null) {
-      // look for parameter tables being added
-      iospParam = netcdfElem.getChild("parameterMap", ncNS); // LOOK namespace ??
+      // can pass iosp a JDOM tree
+      iospParam = netcdfElem.getChild("iospParam", ncNS); // LOOK namespace ??
     }
 
     String bufferSizeS = netcdfElem.getAttributeValue("buffer_size");
