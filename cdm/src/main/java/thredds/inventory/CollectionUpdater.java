@@ -3,6 +3,7 @@ package thredds.inventory;
 import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import thredds.featurecollection.FeatureCollectionConfig;
 
 import java.util.Date;
 

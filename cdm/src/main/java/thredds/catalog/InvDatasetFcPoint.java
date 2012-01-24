@@ -1,8 +1,8 @@
 package thredds.catalog;
 
 import org.slf4j.Logger;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;

@@ -33,8 +33,8 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;

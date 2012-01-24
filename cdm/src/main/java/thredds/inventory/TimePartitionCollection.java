@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.filter.WildcardMatchOnName;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;

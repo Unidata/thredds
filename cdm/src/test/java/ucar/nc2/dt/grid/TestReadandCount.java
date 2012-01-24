@@ -183,9 +183,8 @@ public class TestReadandCount extends TestCase {
     gridDs.close();
   }
 
-  public void utestProblem() throws Exception {
-    doOne( grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
-    doOne( grib2dir,"ndfd.wmo", 1, -1, -1, -1);
+  public void testProblem() throws Exception {
+    doOne(griddir+"mars/","temp_air_01082000.ncml", 1, 1, 4, 1); // uses GDV
   }
 
   public void utestReadNcMLInputStream() throws Exception {

@@ -121,6 +121,7 @@ public class StringUtil2 {
   }
 
   public static String cleanup(String s) {
+    if (s == null) return null;
     return cleanup(s.getBytes());
   }
 

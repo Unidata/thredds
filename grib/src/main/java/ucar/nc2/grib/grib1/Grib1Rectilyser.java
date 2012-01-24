@@ -61,7 +61,6 @@ public class Grib1Rectilyser {
   private Grib1Customizer cust;
   private final List<Grib1Record> records;
   private final int gdsHash;
-  private final Map<Integer, Integer> timeUnitConvert;
 
   private List<VariableBag> gribvars;
 
@@ -70,11 +69,10 @@ public class Grib1Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib1Rectilyser(Grib1Customizer cust, List<Grib1Record> records, int gdsHash, Map<Integer, Integer> timeUnitConvert) {
+  public Grib1Rectilyser(Grib1Customizer cust, List<Grib1Record> records, int gdsHash) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
-    this.timeUnitConvert = timeUnitConvert;
   }
 
   public List<Grib1Record> getRecords() {
@@ -295,14 +293,8 @@ public class Grib1Rectilyser {
     return new EnsCoord(elist);
   }
 
-  private int convertUnit(int timeUnit) {
-    if (timeUnitConvert == null) return timeUnit;
-    Integer convert = timeUnitConvert.get(timeUnit);
-    return (convert == null) ? timeUnit : convert;
-  }
-
   private CalendarPeriod convertTimeDuration(int timeUnit) {
-    return GribUtils.getCalendarPeriod( convertUnit(timeUnit));
+    return GribUtils.getCalendarPeriod( cust.convertTimeUnit(timeUnit));
   }
 
   /**
@@ -321,7 +313,7 @@ public class Grib1Rectilyser {
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
 
-      int unit = convertUnit(pds.getTimeUnit());
+      int unit = cust.convertTimeUnit(pds.getTimeUnit());
       if (timeUnit < 0) { // first one
         timeUnit = unit;
         vb.timeUnit = GribUtils.getCalendarPeriod(timeUnit);

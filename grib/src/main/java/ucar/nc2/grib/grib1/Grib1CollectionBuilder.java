@@ -33,9 +33,9 @@
 package ucar.nc2.grib.grib1;
 
 import com.google.protobuf.ByteString;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionManagerSingleFile;
-import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -226,7 +226,9 @@ public class Grib1CollectionBuilder {
       gc.genProcessId = proto.getGenProcessId();
       gc.backProcessId = proto.getBackProcessId();
       gc.local = proto.getLocal();
-      if (cust == null) cust = Grib1Customizer.factory(gc.center, gc.subcenter, gc.local, null); // we need this in readVertCoord()
+      if (cust == null) {
+        cust = Grib1Customizer.factory(gc.center, gc.subcenter, gc.local, null); // we need this in readVertCoord()
+      }
 
       gc.filenames = new ArrayList<String>(proto.getFilesCount());
       for (int i = 0; i < proto.getFilesCount(); i++)
@@ -436,7 +438,6 @@ public class Grib1CollectionBuilder {
       f.format(" dcm= %s%n", dcm);
       FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
       if (config != null) gdsConvert = config.gdsHash;
-      if (config != null) timeUnitConvert = config.timeUnitHash;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -461,7 +462,10 @@ public class Grib1CollectionBuilder {
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
           if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
             gdsHash = (Integer) gdsConvert.get(gdsHash);               // and we need exact hash matching
-          if (cust == null) cust = Grib1Customizer.factory(gr, null);
+          if (cust == null)
+            cust = Grib1Customizer.factory(gr, null);
+          if (config != null)
+            cust.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt work with multiple collections
 
           Group g = gdsMap.get(gdsHash);
           if (g == null) {
@@ -480,7 +484,7 @@ public class Grib1CollectionBuilder {
     Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash, timeUnitConvert);
+      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash);
       f.format(" GDS hash %d == ", g.gdsHash);
       g.rect.make(f, c);
     }

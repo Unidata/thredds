@@ -32,8 +32,8 @@
 
 package ucar.nc2.grib.grib2;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;

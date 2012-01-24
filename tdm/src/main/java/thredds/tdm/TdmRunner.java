@@ -45,11 +45,11 @@ import org.springframework.core.io.Resource;
 
 import thredds.catalog.DataFormatType;
 import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.TimePartition;
-import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;

@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib1.tables;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import thredds.featurecollection.TimeUnitConverter;
 import ucar.grib.GribNumbers;
 import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.*;
@@ -296,6 +297,18 @@ public class Grib1Customizer implements GribTables {
   public String getLevelDatum(int levelType) {
     GribLevelType lt = getLevelType(levelType);
     return (lt == null) ? null : lt.getDatum();
+  }
+
+  /////////////////////////////////////////////
+  private TimeUnitConverter timeUnitConverter;
+
+  public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
+    this.timeUnitConverter = timeUnitConverter;
+  }
+
+  public int convertTimeUnit(int timeUnit) {
+    if (timeUnitConverter == null) return timeUnit;
+    return timeUnitConverter.convertTimeUnit(timeUnit);
   }
 
   ////////////////////////////////////////////////////////////////////////

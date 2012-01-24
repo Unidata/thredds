@@ -33,11 +33,9 @@
 package ucar.nc2.grib;
 
 import org.jdom.Element;
-import thredds.inventory.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.ncml.NcMLReader;
-
-import java.util.List;
 
 /**
  * Superclass for Grib1Iosp and Grib2Iosp

@@ -32,10 +32,7 @@
 
 package ucar.nc2.grib.grib2;
 
-import ucar.nc2.grib.EnsCoord;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
@@ -55,7 +52,6 @@ public class Grib2Rectilyser {
   private final Grib2Customizer cust;
   private final int gdsHash;
   private final boolean intvMerge;
-  private final  Map<Integer, Integer> timeUnitConvert;
 
   private final List<Grib2Record> records;
   private List<VariableBag> gribvars;
@@ -65,12 +61,11 @@ public class Grib2Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash,  Map<Integer, Integer> timeUnitConvert) {
+  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
     this.intvMerge = false;
-    this.timeUnitConvert = timeUnitConvert;
   }
 
   public List<Grib2Record> getRecords() {
@@ -248,14 +243,8 @@ public class Grib2Rectilyser {
     return new EnsCoord(elist);
   }
 
-  private int convertUnit(int timeUnit) {
-    if (timeUnitConvert == null) return timeUnit;
-    Integer convert = timeUnitConvert.get(timeUnit);
-    return (convert == null) ? timeUnit : convert;
-  }
-
   private CalendarPeriod convertTimeDuration(int timeUnit) {
-    return Grib2Utils.getCalendarPeriod( convertUnit(timeUnit));
+    return Grib2Utils.getCalendarPeriod( cust.convertTimeUnit(timeUnit));
   }
 
   /**
@@ -273,7 +262,7 @@ public class Grib2Rectilyser {
 
     for (Record r : vb.atomList) {
       Grib2Pds pds = r.gr.getPDS();
-      int unit = convertUnit(pds.getTimeUnit());
+      int unit = cust.convertTimeUnit(pds.getTimeUnit());
       if (timeUnit < 0) { // first one
         timeUnit = unit;
         vb.timeUnit = Grib2Utils.getCalendarPeriod(timeUnit);
@@ -344,7 +333,7 @@ public class Grib2Rectilyser {
         times.add(r.tcIntvCoord);
       } else {
         TimeCoord.Tinv org = new TimeCoord.Tinv(timeb[0], timeb[1]);
-        int timeUnit = convertUnit(pds.getTimeUnit());
+        int timeUnit = cust.convertTimeUnit(pds.getTimeUnit());
         CalendarPeriod fromUnit = Grib2Utils.getCalendarPeriod(timeUnit);
         r.tcIntvCoord = org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit);
         times.add(r.tcIntvCoord);

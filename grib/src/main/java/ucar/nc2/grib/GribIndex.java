@@ -33,7 +33,7 @@
 package ucar.nc2.grib;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 //import ucar.nc2.grib.grib2.Grib2Index;

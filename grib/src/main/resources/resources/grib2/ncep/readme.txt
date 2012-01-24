@@ -763,3 +763,13 @@ Conflicts=0 extra=3 udunits=0
    The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."
   so i could modify the table to duplicate  2-4-2 to 2-4-3 for now (!)
   really its a defect that should be corrected on the dataset level.
+
+01/23/2012 E:/datasets/cfsr/dss/flxf01.gdas.2008080100.grb2
+ - missing parameter 2-0-209
+  Discipline   2     = Land surface products
+  Category   0       = Maintenance mode
+
+ - missing in resources\grib2\ncep\Table4.2.2.0.xml
+ - present in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-2-0.shtml
+   so perhaps was updated or bug in scraper ?
+ = messing up because dint have an abbreviation (name). seems to be the only one. now fixed.

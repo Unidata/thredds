@@ -33,7 +33,6 @@
 package ucar.nc2.grib;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;

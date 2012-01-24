@@ -33,11 +33,13 @@
 package ucar.nc2.grib.grib2.table;
 
 import net.jcip.annotations.Immutable;
+import thredds.featurecollection.TimeUnitConverter;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.grib.grib2.Grib2SectionIdentification;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.time.CalendarDate;
@@ -55,9 +57,14 @@ import java.util.List;
  * @since 4/3/11
  */
 @Immutable
-public class Grib2Customizer implements ucar.nc2.grib.GribTables {
+public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConverter {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
   static private Grib2Customizer wmoTables, ncepTables, ndfdTables, kmaTables, dssTables;
+
+  static public Grib2Customizer factory(Grib2Record gr) {
+    Grib2SectionIdentification ids = gr.getId();
+    return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+  }
 
   static public Grib2Customizer factory(int center, int subCenter, int masterVersion, int localVersion) {
     /* if ((center == 7) && (masterVersion == 2)&& (localVersion == 1)) { // FAKE
@@ -237,7 +244,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables {
       val = pds.getForecastTime();
     }
 
-    return null; // gr.getReferenceDate().add( pds.getTimeDuration().multiply(val));
+    CalendarPeriod period = Grib2Utils.getCalendarPeriod( convertTimeUnit(pds.getTimeUnit()));
+    return gr.getReferenceDate().add( period.multiply(val));
   }
 
   /*
@@ -280,13 +288,13 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables {
     */
     if (!gr.getPDS().isInterval()) return null;
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
-    int timeUnit = gr.getPDS().getTimeUnit();
+    int timeUnitOrg = gr.getPDS().getTimeUnit();
 
     // calculate total "range"
     int range = 0;
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-      if ((ti.timeRangeUnit != timeUnit) || (ti.timeIncrementUnit != timeUnit && ti.timeIncrementUnit != 255)) {
-        log.warn("TimeInterval has different units timeUnit= " + timeUnit + " TimeInterval=" + ti);
+      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255)) {
+        log.warn("TimeInterval has different units timeUnit= " + timeUnitOrg + " TimeInterval=" + ti);
       }
 
       range += ti.timeRangeLength;
@@ -303,7 +311,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables {
 
     } else {
       // End of Interval in units of getTimeUnit() since reference time
-      CalendarPeriod period = Grib2Utils.getCalendarPeriod(timeUnit);
+      CalendarPeriod period = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
       int val = period.subtract(gr.getReferenceDate(), EI);
 
       result[1] = val;
@@ -321,13 +329,13 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables {
    */
   public double getForecastTimeIntervalSize(Grib2Record gr, CalendarPeriod wantPeriod) {
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
-    int timeUnit = gr.getPDS().getTimeUnit();
+    int timeUnitOrg = gr.getPDS().getTimeUnit();
 
     // calculate total "range" in units of timeUnit
     int range = 0;
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-      if ((ti.timeRangeUnit != timeUnit) || (ti.timeIncrementUnit != timeUnit && ti.timeIncrementUnit != 255)) {
-        log.warn("TimeInterval has different units timeUnit= " + timeUnit + " TimeInterval=" + ti);
+      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255)) {
+        log.warn("TimeInterval has different units timeUnit= " + timeUnitOrg + " TimeInterval=" + ti);
       }
 
       range += ti.timeRangeLength;
@@ -335,7 +343,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables {
     }
 
     // now convert that range to units of the requested period.
-    CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(timeUnit);
+    CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
     if (timeUnitPeriod.equals(wantPeriod)) return range;
     double fac = wantPeriod.getConvertFactor(timeUnitPeriod);
     return fac * range;
@@ -506,6 +514,18 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   public String getIntervalNameShort(int id) {
     GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
     return (stat == null) ? "" : stat.toString();
+  }
+
+  /////////////////////////////////////////////
+  private TimeUnitConverter timeUnitConverter;
+
+  public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
+    this.timeUnitConverter = timeUnitConverter;
+  }
+
+  public int convertTimeUnit(int timeUnit) {
+    if (timeUnitConverter == null) return timeUnit;
+    return timeUnitConverter.convertTimeUnit(timeUnit);
   }
 
 }

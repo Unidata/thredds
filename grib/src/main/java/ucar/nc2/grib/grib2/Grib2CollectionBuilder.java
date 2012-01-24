@@ -33,9 +33,9 @@
 package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionManagerSingleFile;
-import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -418,7 +418,6 @@ public class Grib2CollectionBuilder {
   public List<Group> makeAggregatedGroups(List<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<Integer, Integer> gdsConvert = null;
-    Map<Integer, Integer> timeUnitConvert = null;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
@@ -428,7 +427,6 @@ public class Grib2CollectionBuilder {
       f.format(" dcm= %s%n", dcm);
       FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
       if (config != null)  gdsConvert = config.gdsHash;
-      if (config != null) timeUnitConvert = config.timeUnitHash;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -451,6 +449,7 @@ public class Grib2CollectionBuilder {
           if (this.tables == null) {
             Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
             this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+            if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt really work with multiple collections
           }
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
@@ -473,7 +472,7 @@ public class Grib2CollectionBuilder {
     Grib2Rectilyser.Counter c = new Grib2Rectilyser.Counter(); // debugging
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, timeUnitConvert);
+      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash);
       f.format(" GDS hash %d == ", g.gdsHash);
       g.rect.make(f, c, filenames);
     }

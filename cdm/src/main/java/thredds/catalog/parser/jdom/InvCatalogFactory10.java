@@ -33,8 +33,7 @@
 
 package thredds.catalog.parser.jdom;
 
-import thredds.inventory.CollectionManager;
-import thredds.inventory.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.util.PathAliasReplacement;
 import thredds.catalog.*;
 import thredds.crawlabledataset.*;

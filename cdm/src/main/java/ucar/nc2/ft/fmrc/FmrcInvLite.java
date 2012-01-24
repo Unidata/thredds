@@ -32,7 +32,7 @@
 
 package ucar.nc2.ft.fmrc;
 
-import thredds.inventory.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 

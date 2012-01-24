@@ -33,7 +33,7 @@
 package ucar.nc2.ft.fmrc;
 
 import net.jcip.annotations.ThreadSafe;
-import thredds.inventory.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
 import ucar.nc2.dt.GridCoordSystem;

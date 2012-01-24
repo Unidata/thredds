@@ -33,6 +33,7 @@
 package thredds.inventory;
 
 import net.jcip.annotations.ThreadSafe;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 

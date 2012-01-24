@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -30,50 +30,14 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.grib.grib2;
-
-import thredds.inventory.CollectionManager;
-import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.TimePartition;
-
-import java.io.File;
-import java.io.IOException;
+package thredds.featurecollection;
 
 /**
- * Concrete TimePartition for Grib-2
+ * Interface for user configured change to time unit.
  *
  * @author caron
- * @since 1/4/12
+ * @since 1/23/12
  */
-public class Grib2TimePartition extends TimePartition {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartition.class);
-
-  Grib2TimePartition(String name, File directory, CollectionManager dcm) {
-    super(name, directory, dcm);
-  }
-
-  // LOOK - needs time partition collection iosp or something
-  @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
-    GroupHcs want = findGroupById(groupName);
-    if (want == null) return null;
-
-    Grib2Iosp iosp = new Grib2Iosp(want);
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-    return new NetcdfDataset(ncfile);
-  }
-
-  @Override
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
-    GroupHcs want = findGroupById(groupName);
-    if (want == null) return null;
-
-    Grib2Iosp iosp = new Grib2Iosp(want);
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
-    return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
-  }
-
+public interface TimeUnitConverter {
+  public int convertTimeUnit(int timUnit);
 }

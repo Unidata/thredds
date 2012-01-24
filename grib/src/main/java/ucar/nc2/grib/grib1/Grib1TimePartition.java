@@ -32,7 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
-import thredds.inventory.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;

@@ -474,9 +474,8 @@ public class Grib2CollectionPanel extends JPanel {
       gr.setFile(fileno);
 
       if (rect2 == null) {
-        Grib2SectionIdentification ids = gr.getId();
-        cust = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
-        rect2 = new Grib2Rectilyser(cust, null, 0, null);
+        cust = Grib2Customizer.factory(gr);
+        rect2 = new Grib2Rectilyser(cust, null, 0);
       }
 
       int id = rect2.cdmVariableHash(gr, 0);
@@ -527,7 +526,7 @@ public class Grib2CollectionPanel extends JPanel {
       fileno++;
     }
 
-    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, null);
+    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0);
     agg.make(f, new Grib2Rectilyser.Counter(), null);
     agg.dump(f, cust);
 
@@ -1231,12 +1230,18 @@ public class Grib2CollectionPanel extends JPanel {
   ////////////////////////////////////////////////////////
   private void showProcessedPds(Grib2Pds pds, int discipline, Formatter f) {
     int template = pds.getTemplateNumber();
-    f.format(" Product Template = %3d %s%n", template, cust.getTableValue("4.0", template));
-    f.format(" Parameter Category = %3d %s%n", pds.getParameterCategory(), cust.getTableValue("4.0" + discipline,
+    f.format(" Product Template %3d = %s%n", template, cust.getTableValue("4.0", template));
+    f.format(" Discipline %3d     = %s%n", discipline, cust.getTableValue("0.0", discipline));
+    f.format(" Category %3d       = %s%n", pds.getParameterCategory(), cust.getTableValue("4.1" + discipline,
             pds.getParameterCategory()));
     Grib2Customizer.Parameter entry = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
-    f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(), entry.getName());
-    f.format(" Parameter Units    = %s %n", entry.getUnit());
+    if (entry != null) {
+      f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(), entry.getName());
+      f.format(" Parameter Units    = %s %n", entry.getUnit());
+    } else {
+      f.format(" Unknown Parameter  = %d-%d-%d %n", discipline, pds.getParameterCategory(), pds.getParameterNumber());
+      cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber()); // debug
+    }
 
     int tgp = pds.getGenProcessType();
     f.format(" Generating Process Type = %3d %s %n", tgp, cust.getTableValue("4.3", tgp));

@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.inventory;
+package thredds.featurecollection;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -290,18 +290,21 @@ public class FeatureCollectionConfig {
   static private Set<GribDatasetType> defaultGribDatasetTypes =
           Collections.unmodifiableSet(EnumSet.of(GribDatasetType.Collection, GribDatasetType.Files));
 
-  static public class GribConfig  {
+  static public class GribConfig {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
     public Map<Integer, Integer> gdsHash;
-    public Map<Integer, Integer> timeUnitHash;
     public Map<Integer, String> gdsNamer;
     public String groupNamer;
+    private TimeUnitConverterHash tuc;
     protected boolean explicit = false;
-    public boolean intervalMerge = false;
     public String lookupTablePath, paramTablePath;
     public Element paramTable;
 
     public GribConfig() { // defaults
+    }
+
+    public TimeUnitConverter getTimeUnitConverter() {
+      return tuc;
     }
 
     public void configFromXml(Element configElem, Namespace ns) {
@@ -309,26 +312,26 @@ public class FeatureCollectionConfig {
       if (null != datasetTypes)
         addDatasetType(datasetTypes);
 
-      List<Element> gdsElems = configElem.getChildren( "gdsHash", ns );
+      List<Element> gdsElems = configElem.getChildren("gdsHash", ns);
       for (Element gds : gdsElems)
         addGdsHash(gds.getAttributeValue("from"), gds.getAttributeValue("to"));
 
-      List<Element> tuElems = configElem.getChildren( "timeUnitConvert", ns );
+      List<Element> tuElems = configElem.getChildren("timeUnitConvert", ns);
       for (Element tu : tuElems)
         addTimeUnitConvert(tu.getAttributeValue("from"), tu.getAttributeValue("to"));
 
-      gdsElems = configElem.getChildren( "gdsName", ns );
+      gdsElems = configElem.getChildren("gdsName", ns);
       for (Element gds : gdsElems)
         addGdsName(gds.getAttributeValue("hash"), gds.getAttributeValue("groupName"));
 
-      if (configElem.getChild( "parameterMap", ns ) != null)
-        paramTable = configElem.getChild( "parameterMap", ns );
-      if (configElem.getChild( "gribParameterTable", ns ) != null)
-        paramTablePath = configElem.getChildText( "gribParameterTable", ns );
-      if (configElem.getChild( "gribParameterTableLookup", ns ) != null)
-        lookupTablePath = configElem.getChildText( "gribParameterTableLookup", ns );
-      if (configElem.getChild( "groupNamer", ns ) != null)
-        groupNamer = configElem.getChildText( "groupNamer", ns );
+      if (configElem.getChild("parameterMap", ns) != null)
+        paramTable = configElem.getChild("parameterMap", ns);
+      if (configElem.getChild("gribParameterTable", ns) != null)
+        paramTablePath = configElem.getChildText("gribParameterTable", ns);
+      if (configElem.getChild("gribParameterTableLookup", ns) != null)
+        lookupTablePath = configElem.getChildText("gribParameterTableLookup", ns);
+      if (configElem.getChild("groupNamer", ns) != null)
+        groupNamer = configElem.getChildText("groupNamer", ns);
     }
 
     public void addDatasetType(String datasetTypes) {
@@ -354,7 +357,7 @@ public class FeatureCollectionConfig {
       try {
         int from = Integer.parseInt(fromS);
         int to = Integer.parseInt(toS);
-        gdsHash.put(from,to);
+        gdsHash.put(from, to);
       } catch (Exception e) {
         log.warn("Failed  to parse as Integer = {} {}", fromS, toS);
       }
@@ -362,12 +365,12 @@ public class FeatureCollectionConfig {
 
     public void addTimeUnitConvert(String fromS, String toS) {
       if (fromS == null || toS == null) return;
-      if (timeUnitHash == null) timeUnitHash = new HashMap<Integer, Integer>(5);
+      if (tuc == null) tuc = new TimeUnitConverterHash();
 
       try {
         int from = Integer.parseInt(fromS);
         int to = Integer.parseInt(toS);
-        timeUnitHash.put(from,to);
+        tuc.map.put(from, to);
       } catch (Exception e) {
         log.warn("Failed  to parse as Integer = {} {}", fromS, toS);
       }
@@ -390,6 +393,16 @@ public class FeatureCollectionConfig {
       Formatter f = new Formatter();
       f.format("GribConfig: datasetTypes=%s", datasets);
       return f.toString();
+    }
+  }
+
+  private static class TimeUnitConverterHash implements TimeUnitConverter {
+    Map<Integer, Integer> map = new HashMap<Integer, Integer>(5);
+
+    public int convertTimeUnit(int timeUnit) {
+      if (map == null) return timeUnit;
+      Integer convert = map.get(timeUnit);
+      return (convert == null) ? timeUnit : convert;
     }
   }
 
