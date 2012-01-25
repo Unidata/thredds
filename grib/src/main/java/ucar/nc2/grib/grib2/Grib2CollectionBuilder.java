@@ -567,7 +567,6 @@ public class Grib2CollectionBuilder {
 
     } finally {
       f.format("  file size =  %d bytes%n", raf.length());
-      raf.close();
       if (raf != null) raf.close();
     }
   }

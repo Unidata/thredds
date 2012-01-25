@@ -684,7 +684,6 @@
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig>
           <gdsHash from="-2121584860" to="28944332"/>
-          <timeUnitConvert from="3" to="2" />
         </gribConfig>
       </featureCollection>
 

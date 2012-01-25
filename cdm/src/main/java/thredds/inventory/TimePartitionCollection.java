@@ -239,50 +239,6 @@ public class TimePartitionCollection extends MFileCollectionManager {
     return result;
   }
 
-  /*
-  @Override
-  public boolean scan(boolean sendEvent) throws IOException {
-    // LOOK ????
-    sendEvent(new TriggerEvent(this, TriggerType.update));  // watch out for infinite loop
-    return false;
-  }
-
-  @Override
-  public boolean isScanNeeded() {
-    return false;
-  }
-
-  @Override
-  public boolean scanIfNeeded() throws IOException {
-    return false;
-  }
-
-  @Override
-  public long getLastScanned() {
-    return 0;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  @Override
-  public Iterable<MFile> getFiles() {
-    throw new UnsupportedOperationException();
-    //return Collections.emptyList();
-  }
-
-  @Override
-  public String getRoot() {
-    return sp.getRootDir();
-  }
-
-  @Override
-  public CalendarDate extractRunDate(MFile mfile) {
-    return dateExtractor.getCalendarDate(mfile);
-  }
-
-  @Override
-  public boolean hasDateExtractor() {
-    return true;
-  } */
-
   @Override
   public CalendarDate getStartCollection() {
     return null;  //To change body of implemented methods use File | Settings | File Templates.

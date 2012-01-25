@@ -37,6 +37,8 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
@@ -316,6 +318,16 @@ public class CF1Convention extends CSMConvention {
     if ((at == null) && avhrr_oiv2) {
       if (v.getShortName().equals("zlev"))
         return AxisType.Height;
+    }
+
+    if (at == null) {
+      try {
+        String units = v.getUnitsString();
+        CalendarDateUnit cd = CalendarDateUnit.of(null, units);
+        if (cd != null) return AxisType.Time;
+      } catch (Throwable t) {
+        // pass through
+      }
     }
 
     return at;

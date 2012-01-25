@@ -436,7 +436,7 @@ public class Grib2Rectilyser {
     if (pds2.isInterval()) {
       double size = 0;
       try {
-        size = cust.getForecastTimeIntervalSize(gr, CalendarPeriod.Hour); // using an Hour here, but will need to make this configurable
+        size = cust.getForecastTimeIntervalSizeInHours(gr); // LOOK using an Hour here, but will need to make this configurable
       } catch (Throwable t) {
         logger.error("bad", t);
         if (filenames != null)

@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  7: (2012-01-xx)
+  GRIB TimeCoord uses extended date format when unit is month or year.
+  CF1Convention accepts extended date format as time coordinate: "CALENDAR period SINCE reference_date"
   NcML can be configured with <iospParam>
   FeatureCollectionConfig.GribConfig can change timeUnits, rename groups, consolidate gds
   GribIosp common superclass

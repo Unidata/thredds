@@ -147,8 +147,8 @@ public class MSGnavigation extends ProjectionImpl {
    * <p/>
    * ================================
    * From simon.elliott@eumetsat.int
-   * As explained in notes 4 and 6 to the GRIB definition (and evidenced by drawing a sketch of the Earth and satellite in the equatorial plane and looking down from above),
-   * we have the following from GRIB:
+   * As explained in notes 4 and 6 to the GRIB definition (and evidenced by drawing a sketch of the Earth and satellite
+   * in the equatorial plane and looking down from above), we have the following from GRIB:
    * <p/>
    * # The distance from the Earth's centre to the satellite is Nr (in units of Earth equatorial radius and multiplied by 10^6.
    * # The distance from the Earth's centre to the tangent point on the equator is the Earths equatorial radius

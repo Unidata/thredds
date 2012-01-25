@@ -111,7 +111,7 @@ public class Grib2Index extends GribIndex {
     long idxModified = idxFile.lastModified();
     if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
-    FileInputStream fin = new FileInputStream(idxFile); // LOOK need DiskCache for non-writeable directories
+    FileInputStream fin = new FileInputStream(idxFile);
 
     try {
         //// check header is ok
@@ -159,7 +159,8 @@ public class Grib2Index extends GribIndex {
       return false;
 
     } finally {
-      if (fin != null) fin.close();
+      if (fin != null)
+        fin.close();
     }
 
     return true;

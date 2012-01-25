@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CF;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
@@ -104,8 +105,8 @@ public class CSMConvention extends COARDSConvention {
     if (unit == null)
       return null;
 
-    if (SimpleUnit.isDateUnit(unit) || SimpleUnit.isTimeUnit(unit))
-      return AxisType.Time;
+    //if (SimpleUnit.isDateUnit(unit) || SimpleUnit.isTimeUnit(unit)) comment out 1/24/2012 - case already covered in COARDS
+    //   return AxisType.Time;
 
     return null;
   }

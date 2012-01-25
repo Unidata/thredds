@@ -156,7 +156,11 @@ public class TimeCoord {
 
   public String getUnits() {
     if (units != null) return units;
-    return timeUnit.getField().toString() + " since " + runDate;
+    CalendarPeriod.Field cf = timeUnit.getField();
+    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
+      return "calendar "+ cf.toString() + " since " + runDate;
+    else
+      return timeUnit.getField().toString() + " since " + runDate;
   }
 
   public double getTimeUnitScale() {

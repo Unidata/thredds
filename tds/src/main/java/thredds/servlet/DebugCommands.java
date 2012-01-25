@@ -43,6 +43,7 @@ import java.io.PrintStream;
 import javax.servlet.http.HttpServletRequest;
 
 import thredds.filesystem.CacheManager;
+import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
@@ -67,14 +68,27 @@ public class DebugCommands {
     act = new DebugHandler.Action("showCaches", "Show File Object Caches") {
       public void doAction(DebugHandler.Event e) {
         Formatter f = new Formatter(e.pw);
-        f.format("NetcdfFileCache contents\n");
-        NetcdfDataset.getNetcdfFileCache().showCache(f);
 
-        f.format("GribCollectionFileCache contents\n");
-        GribCollection.getFileCache().showCache(f);
+        FileCache fc = NetcdfDataset.getNetcdfFileCache();
+        if (fc == null) f.format("NetcdfFileCache : turned off\n");
+        else {
+          f.format("\nNetcdfFileCache contents\n");
+          fc.showCache(f);
+        }
 
-        f.format("HTTPFileCache contents\n");
-        ServletUtil.getFileCache().showCache(f);
+        fc = GribCollection.getFileCache();
+        if (fc == null) f.format("\nGribCollectionFileCache : turned off\n");
+        else {
+          f.format("\nGribCollectionFileCache contents\n");
+          fc.showCache(f);
+        }
+
+        fc = ServletUtil.getFileCache();
+        if (fc == null) f.format("\nHTTPFileCache : turned off\n");
+        else {
+          f.format("\nHTTPFileCache contents\n");
+          fc.showCache(f);
+        }
 
         e.pw.flush();
       }
@@ -82,16 +96,24 @@ public class DebugCommands {
     debugHandler.addAction(act);
 
     act = new DebugHandler.Action("clearCache", "Clear File Object Caches") {
-      public void doAction(DebugHandler.Event e) {
-        NetcdfDataset.getNetcdfFileCache().clearCache(false);
-        GribCollection.getFileCache().clearCache(false);
-        ServletUtil.getFileCache().clearCache(false);
-        e.pw.println("  ClearCache ok");
-      }
-    };
-    debugHandler.addAction(act);
+       public void doAction(DebugHandler.Event e) {
+         NetcdfDataset.getNetcdfFileCache().clearCache(false);
+         GribCollection.getFileCache().clearCache(false);
+         ServletUtil.getFileCache().clearCache(false);
+         e.pw.println("  ClearCache ok");
+       }
+     };
+     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("forceNCCache", "Force clear NetcdfFile Cache") {
+    act = new DebugHandler.Action("disableNetcdfCache", "Disable NetcdfFile Cache") {
+       public void doAction(DebugHandler.Event e) {
+         NetcdfDataset.disableNetcdfFileCache();
+         e.pw.println("  Disable NetcdfFile Cache ok");
+       }
+     };
+     debugHandler.addAction(act);
+
+     act = new DebugHandler.Action("forceNCCache", "Force clear NetcdfFile Cache") {
       public void doAction(DebugHandler.Event e) {
         NetcdfDataset.getNetcdfFileCache().clearCache(true);
         e.pw.println("  NetcdfFileCache force clearCache done");
@@ -102,7 +124,7 @@ public class DebugCommands {
     act = new DebugHandler.Action("forceGCCache", "Force clear GribCollection Cache") {
       public void doAction(DebugHandler.Event e) {
         NetcdfDataset.getNetcdfFileCache().clearCache(true);
-        e.pw.println("  NetcdfFileCache force clearCache done");
+        e.pw.println("  GribCollection force clearCache done");
       }
     };
     debugHandler.addAction(act);
@@ -124,16 +146,7 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("disableCache", "Disable NetcdfFile Caches") {
-      public void doAction(DebugHandler.Event e) {
-        NetcdfDataset.disableNetcdfFileCache();
-        ServletUtil.setFileCache(null);
-        e.pw.println("  disableCache ok");
-      }
-    };
-    debugHandler.addAction(act);
-
-    act = new DebugHandler.Action("disableCache", "Disable HTTP File Caches") {
+    act = new DebugHandler.Action("disableHttpCache", "Disable HTTP File Caches") {
       public void doAction(DebugHandler.Event e) {
         ServletUtil.setFileCache(null);
         e.pw.println("  disableCache ok");
@@ -162,7 +175,9 @@ public class DebugCommands {
     act = new DebugHandler.Action("showRafHandles", "Show open RAF") {
       public void doAction(DebugHandler.Event e) {
         try {
-          for (String s : RandomAccessFile.getOpenFiles()) {
+          List<String> names = RandomAccessFile.getOpenFiles();
+          e.pw.println("count=" + names.size());
+          for (String s : names) {
             e.pw.println("  " + s);
           }
         } catch (Exception ioe) {

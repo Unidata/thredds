@@ -106,6 +106,13 @@ public class CalendarDateRange {
     return start.equals(end);
   }
 
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append(start).append(" - ").append(end);
+    return sb.toString();
+  }
+
   ///////////////////////////////////////////////
   // barf
   static public CalendarDateRange of(DateRange dr) {

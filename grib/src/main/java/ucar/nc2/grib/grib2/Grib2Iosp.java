@@ -566,6 +566,8 @@ public class Grib2Iosp extends GribIosp {
   public void close() throws java.io.IOException {
     if (!owned && gribCollection != null) // klugerino
       gribCollection.close();
+    gribCollection = null;
+    super.close();
   }
 
   @Override

@@ -324,10 +324,9 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   /**
    * Get interval size in units of wantPeriod
    * @param gr must be an interval
-   * @param wantPeriod in these units
    * @return  interval size in units of wantPeriod
    */
-  public double getForecastTimeIntervalSize(Grib2Record gr, CalendarPeriod wantPeriod) {
+  public double getForecastTimeIntervalSizeInHours(Grib2Record gr) {
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
     int timeUnitOrg = gr.getPDS().getTimeUnit();
 
@@ -344,8 +343,16 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
     // now convert that range to units of the requested period.
     CalendarPeriod timeUnitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
-    if (timeUnitPeriod.equals(wantPeriod)) return range;
-    double fac = wantPeriod.getConvertFactor(timeUnitPeriod);
+    if (timeUnitPeriod.equals(CalendarPeriod.Hour)) return range;
+
+    double fac;
+    if (timeUnitPeriod.getField() == CalendarPeriod.Field.Month) {
+       fac = 30.0 * 24.0;  // nominal hours in a month
+    } else if (timeUnitPeriod.getField() == CalendarPeriod.Field.Year) {
+       fac = 365.0 * 24.0; // nominal hours in a year
+    } else {
+      fac = CalendarPeriod.Hour.getConvertFactor(timeUnitPeriod);
+    }
     return fac * range;
   }
 
