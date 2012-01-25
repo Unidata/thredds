@@ -271,30 +271,40 @@ The last two items are optional. If missing, then the client will
 accept any certificate sent to it by the server. This includes,
 specifically, self-signed certificates.
 <h4>Setting Credentials</h4>
-The primary credentialling method in
-<i>HTTPSession</i>
-is as follows.
+There are three  primary credentialling methods in
+<i>HTTPSession</i>:
+<ol>
+<li> Insert an arbitrary entry into the auth store.
+Its signature is as follows.
 <pre>
-public void setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
+static public void setAnyCredentialsProvider(HTTPAuthScheme scheme, String url,  CredentialsProvider provider)
 </pre>
+<li> Set it for all sessions, which means it will be applied to any url
+unless overridden by a more specific entry in the auth store.
+Its signature is as follows.
+<pre>
+static public void setGlobalCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
+</pre>
+<li> Set the credentials on a per-session basis, using the url
+defined for that session.
+Its signature is as follows.
+<pre>
+public void setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
+</pre>
+</ol>
 <p>
-A somewhat simpler method is available that only takes
-a credentials provider as argument.
+For backward compatibility, the following two methods are defined.
+They use the Basic scheme for the scheme.
+<ol>
+<li>
+<pre>
+static public void setGlobalCredentialsProvider(CredentialsProvider provider)
+</pre>
+<li>
 <pre>
 public void setCredentialsProvider(CredentialsProvider provider)
 </pre>
-It is defined as:
-<pre>
-    setCredentialsProvider(HTTPAuthScheme.BASIC,url,provider);
-</pre>
-where the url argument is the session's url.
-<p>
-Finally, it is also possible to establish a "global"
-credentials provider that is used for any combination
-of scheme + url as a last resort.
-<pre>
-static synchronized public void setGlobalCredentialsProvider(CredentialsProvider cp)
-</pre>
+</ol>
 
 <h2><a name="Noapi"><u>Command Line Access to the Authorization Mechanism</u></a></h2>
 Before the introduction of the authorization mechanisms described
@@ -342,15 +352,6 @@ should be referenced to see any modifications.
      <li> Set the max number of threads that will be supported.
      </ul>
 <li>static int getGlobalThreadCount()
-<li>static void
-setGlobalCredentialsProvider(CredentialsProvider)
-     <ul>
-     <li> For Backward compatibility; this methods will create a row
-          in <i>HTTPAuthStore</i> and an instance of
-          <i>HTTPCreds</i> supporting global authorization
-          using the specified credentials provider.
-     <li> throws HTTPException
-     </ul>
 <li>static Cookie[] getGlobalCookies()
      <ul>
      <li> Returns the set of cookies available on a generic session.
@@ -359,16 +360,56 @@ setGlobalCredentialsProvider(CredentialsProvider)
      <ul>
      <li> Specifies that all HTTPSession instances should use global preemption
      </ul>
-<li>static void setGlobalCredentialsProvider(CredentialsProvider cp)
-     <ul>
-     <li> Last resort credentials provider.
-     </ul>
-<li>static void 
-<a name="setGlobalSimpleProxy>setGlobalSimpleProxy(String host, int port)</a>
+<li>
+<a name="setGlobalSimpleProxy">
+static void setGlobalSimpleProxy(String host, int port)
+</a>
      <ul>
      <li> Force use of a proxy at host:port
     </ul>
 </ul>
+
+<h4>Set Credentials Provider(s)</h4>
+<ul>
+<li>
+static void setAnyCredentialsProvider(HTTPAuthScheme scheme, String url,  CredentialsProvider provider)
+    <ul>
+    <li>Insert an arbitrary entry into the auth store.
+    <li> throws HTTPException
+    </ul>
+<li>
+static void setGlobalCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
+    <ul>
+    <li> Set provider for all sessions, which means it will be applied to any url
+         unless overridden by a more specific entry in the auth store.
+     <li> throws HTTPException
+    </ul>
+<li>
+public void setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
+     <ul>
+     <li> Set the credentials on a per-session basis, using the url
+          defined for that session.
+     <li> throws HTTPException
+     </ul>
+<li>
+static void setGlobalCredentialsProvider(CredentialsProvider cp)
+     <ul>
+     <li> For Backward compatibility; this method will create a row
+          in <i>HTTPAuthStore</i> and an instance of
+          <i>HTTPCreds</i> supporting global authorization
+          using the specified credentials provider and the Basic scheme.
+     <li> throws HTTPException
+     </ul>
+<li>
+static void setCredentialsProvider(CredentialsProvider)
+     <ul>
+     <li> For Backward compatibility; this method will create a row
+          in <i>HTTPAuthStore</i> and an instance of
+          <i>HTTPCreds</i> supporting authorization for the session's url,
+          using the specified credentials provider and the Basic scheme.
+     <li> throws HTTPException
+     </ul>
+</ul
 
 <h4>Constructor(s)</h4>
 <ul>

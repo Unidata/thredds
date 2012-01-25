@@ -255,10 +255,7 @@ static {
                      new Protocol("https",
                                   new EasySSLProtocolSocketFactory(),
                                   8443)); // std tomcat https entry
-    registerProtocol("https", 8843,
-                     new Protocol("https",
-                                  new EasySSLProtocolSocketFactory(),
-                                  8843)); // client-side keys test https entry
+
     sessionList = new ArrayList<HTTPSession>(); // see kill function
     setGlobalConnectionTimeout(DFALTTIMEOUT);
     setGlobalSoTimeout(DFALTTIMEOUT);
@@ -342,8 +339,12 @@ protected void construct(String legalurl)
 
         if(globalSoTimeout > 0)
             setSoTimeout(globalSoTimeout);
+
         if(globalConnectionTimeout > 0)
             setConnectionTimeout(globalConnectionTimeout);
+
+        if(globalAgent != null)
+            setUserAgent(globalAgent); // May get overridden by setUserAgent
 
         setAuthenticationPreemptive(globalauthpreemptive);
 
@@ -617,8 +618,8 @@ public void setGlobalAuthenticationPreemptive(boolean tf)
     globalauthpreemptive = tf;
 }
 
-static public void
-setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
+static synchronized private void
+defineCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
 {
     // Add/remove entry to AuthStore
     try {
@@ -632,20 +633,39 @@ setCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider pr
     }
 }
 
+static public void
+setAnyCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider provider)
+{
+  defineCredentialsProvider(scheme,url,provider);
+}
+
+static public void
+setGlobalCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
+{
+  globalProvider = provider;
+  setAnyCredentialsProvider(scheme,HTTPAuthStore.ANY_URL,provider);
+}
+
+static public void
+setGlobalCredentialsProvider(CredentialsProvider provider)
+{
+    setGlobalCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME,provider);
+}
+
+// per-session versions
+
+public void
+setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
+{
+  sessionProvider = provider;
+  defineCredentialsProvider(scheme,legalurl,provider);
+}
+
 public void
 setCredentialsProvider(CredentialsProvider provider)
 {
-    sessionProvider = provider;
-    setCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME,legalurl,provider);
+   setCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME,provider);
 }
-
-static synchronized public void
-setGlobalCredentialsProvider(CredentialsProvider provider)
-{
-    globalProvider = provider;
-    setCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME,HTTPAuthStore.ANY_URL,provider);
-}
-
 
 // Provide for backward compatibility
 // through the -D properties
@@ -661,7 +681,7 @@ setGlobalKeyStore()
     if(keypath != null || trustpath != null) { // define conditionally
         HTTPSSLProvider sslprovider = new HTTPSSLProvider(keypath,keypassword,
 						      trustpath,trustpassword);
-        setCredentialsProvider(HTTPAuthScheme.SSL,HTTPAuthStore.ANY_URL,sslprovider);
+        setAnyCredentialsProvider(HTTPAuthScheme.SSL,HTTPAuthStore.ANY_URL,sslprovider);
     }
 }
 

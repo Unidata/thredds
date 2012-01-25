@@ -258,7 +258,8 @@ public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
       }
 
       HTTPSSLProvider sslprovider = (creds == null ? null : (HTTPSSLProvider) creds);
-      if (sslprovider == null) return stdauthenticate();
+      if (sslprovider == null)
+          return stdauthenticate();
 
       keypath = (String) sslprovider.getKeystore();
       keypassword = (String) sslprovider.getKeypassword();

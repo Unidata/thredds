@@ -91,6 +91,8 @@ public class TestTdsLocal extends TestCase {
     suite.addTest(new TestSuite(TestWaveModel.class));
     //suite.addTest(new TestSuite(TestTdsNetcdfSubsetService.class));
     //suite.addTest(new TestSuite(TestTdsWxs.class));
+    suite.addTest(new TestSuite(ucar.nc2.util.net.TestHTTPSession.class));
+
 
     return suite;
   }

@@ -229,7 +229,9 @@ static public class Entry implements Serializable, Comparable
     // Uses in insert and remove
     static public boolean identical(Entry e1, Entry e2)
     {
-        return (e1.scheme == e2.scheme &&  e1.url.equals(e2.url));
+        return (e1.scheme == e2.scheme &&
+                (e1.url == e2.url // null test
+                 || e1.url.equals(e2.url)));
     }
 
 

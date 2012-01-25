@@ -40,6 +40,7 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.protocol.Protocol;
 import org.junit.Test;
 
 import java.io.*;
@@ -63,6 +64,14 @@ public class TestAuth extends ucar.nc2.util.TestCommon
     // Mnemonics for xfail
     static final boolean MUSTFAIL = true;
     static final boolean MUSTPASS = false;
+
+    static {
+    // Register the 8843 protocol to test client side keys
+    HTTPSession.registerProtocol("https", 8843,
+                     new Protocol("https",
+                                  new EasySSLProtocolSocketFactory(),
+                                  8843));
+    }
 
     //////////////////////////////////////////////////
     // Provide a non-interactive CredentialsProvider to hold
@@ -164,9 +173,9 @@ public class TestAuth extends ucar.nc2.util.TestCommon
         }
     }
 
-    @Test
+    //@Test
     public void
-    testBasic() throws Exception
+    xtestBasic() throws Exception
     {
         AuthDataBasic[] basictests = {
             new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
@@ -219,9 +228,9 @@ public class TestAuth extends ucar.nc2.util.TestCommon
         }
     }
 
-    //@Test
+    @Test
     public void
-    xtestKeystore() throws Exception
+    testKeystore() throws Exception
     {
         System.out.println("*** Testing: Client-side Key based Authorization");
 
@@ -239,29 +248,32 @@ public class TestAuth extends ucar.nc2.util.TestCommon
         System.out.println("*** URL: " + url);
 
         // See if the client keystore exists
-        String keystore = threddsRoot + "/" + KEYDIR + "/" + CLIENTKEY;
+        String keystore = threddsRoot + KEYDIR + "/" + CLIENTKEY;
         File tmp = new File(keystore);
         if(!tmp.exists() || !tmp.canRead())
             throw new Exception("Cannot read client key store: "+keystore);
 
-            HTTPSession session = new HTTPSession(url);
-            CredentialsProvider provider = new HTTPSSLProvider(keystore,CLIENTPWD);
-            session.setCredentialsProvider(provider);
+        CredentialsProvider provider = new HTTPSSLProvider(keystore,CLIENTPWD);
+        HTTPSession.setGlobalCredentialsProvider(HTTPAuthScheme.SSL,provider);
 
-            HTTPMethod method = HTTPMethod.Get(session);
+        HTTPSession session = new HTTPSession(url);
 
-            int status = method.execute();
-            System.out.printf("Execute: status code = %d\n", status);
-            pass = (status == 200);
+        //session.setCredentialsProvider(provider);
+
+        HTTPMethod method = HTTPMethod.Get(session);
+
+        int status = method.execute();
+        System.out.printf("Execute: status code = %d\n", status);
+        pass = (status == 200);
         if(pass)
                 junit.framework.Assert.assertTrue("testKeystore", true);
             else
                 junit.framework.Assert.assertTrue("testKeystore", false);
         }
 
-        @Test
+        //@Test
         public void
-        testSerialize() throws Exception
+        xtestSerialize() throws Exception
         {
             System.out.println("*** Testing: HTTPAuthStore (de-)serialization");
 
