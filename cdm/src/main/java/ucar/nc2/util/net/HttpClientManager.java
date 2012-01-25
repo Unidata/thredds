@@ -312,4 +312,14 @@ public class HttpClientManager {
     f.format("%n");
   }
 
+  public static void main(String[] args) throws IOException {
+    HTTPSession.setGlobalUserAgent("TestUserAgent123global");
+    HttpClientManager.getContentAsString(null, "http://motherlode.ucar.edu:9080/thredds/catalog.html");
+
+    HTTPSession sess = new HTTPSession("http://motherlode.ucar.edu:9080/thredds/catalog.html");
+    sess.setUserAgent("TestUserAgent123session");
+    HttpClientManager.getContentAsString(sess, "http://motherlode.ucar.edu:9080/thredds/catalog.html");
+
+  }
+
 }

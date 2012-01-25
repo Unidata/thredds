@@ -566,10 +566,16 @@ public class EscapeStrings {
     }
   }
 
-  public static void main(String[] args) {
+  public static void main2(String[] args) {
     String s = "http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-15T00:00:00Z.html.asc?Total_cloud_cover_low_cloud%5B1:1:1%5D%5B0:1:360%5D%5B0:1:719%5D";
     LogStream.out.printf("%s%n", s);
     LogStream.out.printf("%s%n", unescapeURL(s));
+  }
+
+  public static void main(String[] args) {
+    String s = "https://localhost:8443/thredds/admin/log/access/";
+    System.out.printf("%s%n", s);
+    System.out.printf("%s%n", escapeURL(s));
   }
 
     public static void mainOld(String[] args) throws Exception
@@ -655,5 +661,6 @@ public static String normalizeToXML(String s)
     return (sb.toString());
 
 }
+
 
 }

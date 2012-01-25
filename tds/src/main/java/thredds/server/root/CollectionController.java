@@ -160,7 +160,7 @@ public class CollectionController extends AbstractController {
     pw.printf("%n%-100s %-20s %9.3s %s%n", "Path", "Last Modified", "MB", "Aux");
     for (MFile mfile : dcm.getFiles())
       pw.printf("%-100s %-20s %9.3f %s%n", mfile.getPath(), CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified())),
-              (double) mfile.getLength() / 1000 * 1000, mfile.getAuxInfo());
+              (double) mfile.getLength() / (1000 * 1000), mfile.getAuxInfo());
     pw.printf("</pre>%n");
   }
 

@@ -82,6 +82,7 @@ public class TdsDownloader {
     this.cancel = _cancel;
 
     String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/";
+    ta.append(String.format("Download URL = %s%n", urls));
 
     final String contents;
     try {

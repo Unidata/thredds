@@ -47,6 +47,7 @@ import java.util.*;
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.*;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.net.HTTPSession;
 
 import javax.swing.*;
 
@@ -210,6 +211,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
 
   public static void main(String args[]) throws IOException {
     ThreddsDataFactory.setPreferCdm(true);
+    HTTPSession.setGlobalUserAgent("TestMotherlodeModels");
 
     String problemCat = "http://localhost:8080/thredds/catalog/NOAA/CFSR/timeseries/catalog.xml";
     String server = "http://motherlode.ucar.edu:9080/thredds";
