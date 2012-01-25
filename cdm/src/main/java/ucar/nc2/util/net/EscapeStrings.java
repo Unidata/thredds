@@ -338,8 +338,10 @@ public class EscapeStrings {
             // Encode pieces between '/'
             String pieces[] = path.split("[/]+");
             for(String p: pieces)  {
-                if(p == null || p.length() == 0) continue;
-                url += ("/"+urlEncode(p));
+                if(p == null || p.length() == 0)
+		    url += "/";
+		else
+                    url += ("/"+urlEncode(p));
             }
         }
         if(query != null && query.length() > 0)
