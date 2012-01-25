@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
@@ -51,12 +52,12 @@ import java.util.Formatter;
  */
 public class Grib2Collection extends ucar.nc2.grib.GribCollection {
 
-  public Grib2Collection(String name, File directory) {
-    super(name, directory);
+  public Grib2Collection(String name, File directory, CollectionManager dcm) {
+    super(name, directory, dcm);
   }
 
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException {
-    GroupHcs want = findGroup(groupName);
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
+    GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
@@ -69,7 +70,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
       for (String file : filenames) { // LOOK linear lookup
         if (file.endsWith(filename)) {
           Formatter f = new Formatter();
-          GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck,f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
 
           Grib2Iosp iosp = new Grib2Iosp(gc);
           NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
@@ -80,8 +81,8 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
     }
   }
 
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException {
-    GroupHcs want = findGroup(groupName);
+  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
+    GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf
@@ -94,7 +95,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
       for (String file : filenames) {  // LOOK linear lookup
         if (file.endsWith(filename)) {
           Formatter f = new Formatter();
-          GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck,f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
 
           Grib2Iosp iosp = new Grib2Iosp(gc);
           NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);

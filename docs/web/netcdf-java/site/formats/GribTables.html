@@ -11,7 +11,7 @@ dl {margin: 10px 5px 5px 15px;}
 <body>
 <h1> GRIB  in CDM</h1>
 <p>The following assumes that you want generic software like the netCDF-Java library to be able to correctly read the GRIB files that you write, or need to read.</p>
-<p>In principle, if everything is done right, the reader ends up using the table that the writer used. In practice, there are many ways for that to fail. In order to increase the reliability of table-based file formats, I have <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib">proposed</a> a web registry of tables, which would create a unique id for each registered table. The writer would then embed the id into the GRIB or BUFR message (possibly in the &quot;local use&quot; section of GRIB-2, or  GRIB-1 octets &gt; 41 in PDS), and the reader could use the id to unambiguously retrieve the table from the web registry. Stay tuned for further details and a trial implementation.</p>
+<p>In principle, if everything is done right, the reader ends up using the table that the writer used. In practice, there are many ways for that to fail. In order to increase the reliability of table-based file formats, I have <a href="http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf">proposed</a> a web registry of tables, which would create a unique id for each registered table. The writer would then embed the id into the GRIB or BUFR message (possibly in the &quot;local use&quot; section of GRIB-2, or  GRIB-1 octets &gt; 41 in PDS), and the reader could use the id to unambiguously retrieve the table from the web registry. Stay tuned for further details and a trial implementation.</p>
 <p><strong>Contents:</strong>
 </p>
 <ul>
@@ -54,7 +54,6 @@ dl {margin: 10px 5px 5px 15px;}
 <p>The CDM library makes certain assumptions about collections of GRIB records, called <strong><em>homogeneity requirements</em></strong>:</p>
 <ul>
   <li>The center, subcenter ids are assumed constant for all records. This effects which  tables are used, and also global attributes added to the file.</li>
-  <li>Records that are on different coordinate reference systems (CRS) are put in a seperate group.</li>
   <li>The table version may differ across records.</li>
   <li>The reference dates may differ across records.</li>
   <li>Records on different Grids (different GDS) are put in seperate CDM Groups.</li>
@@ -123,40 +122,54 @@ dl {margin: 10px 5px 5px 15px;}
 <p>Many  GRIB datasets have an incorrect center/subcenter/version id, which means that the CDM would read from a different table than the one used to write the file. In this case, you dont want to override the correct table in the table map, rather you want to fix the problem for just the incorrect dataset. Here are the ways that can be done:</p>
 <blockquote>
   <h4>Directly embed table in NcML</h4>
-  <p>You can directly embed the table in NcML, using the <a href="#DefineGrib1Params">XML Schema for declaring Grib-1 Parameters</a>. For example:</p>
-  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"&gt;<br>  &lt;parameterMap&gt;
-    &lt;parameter code=&quot;2&quot;&gt;<br>      &lt;description&gt;Pressure reduced to MSL&lt;/description&gt;<br>      &lt;units&gt;Pa&lt;/units&gt;<br>      &lt;name&gt;PRMSL&lt;/name&gt;<br>    &lt;/parameter&gt;<br>    &lt;parameter code=&quot;3&quot;&gt;<br>      &lt;description&gt;Pressure tendency&lt;/description&gt;<br>      &lt;units&gt;Pa/s&lt;/units&gt;<br>      &lt;name&gt;PTEND&lt;/name&gt;<br>      &lt;CF&gt;tendency_of_air_pressure&lt;/CF&gt;<br>      &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Pressure Tendency&lt;/GCMD&gt;<br>    &lt;/parameter&gt;
-    ...<br>  &lt;/parameterMap&gt;<br>&lt;/netcdf&gt;</pre>
-  <h4>Reference to a Grib Parameter table in NcML</h4>
-  <p>You can reference the table in NcML, with the table being in  any <a href="GribParameterFormats">GRIB parameter table format</a> that that CDM recognizes. To do so, you pass the string <strong>&quot;GribParameterTable=&lt;absolute file path to table&gt;&quot;</strong> in the iospParam attribute of the netcdf element:</p>
-  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;GribParameterTable=/data/NCEP/grib1/version123.tab&quot;</strong>&gt;<br>&lt;/netcdf&gt;</pre>
-  <h4></h4>
-  <h4>Reference to a Grib Parameter table lookup in NcML</h4>
-  <p>You can reference a <a href="tableMap">table map</a> in NcML by passing the string <strong>&quot;GribParameterTableLookup=&lt;absolute file path to table map&gt;&quot;</strong> in the iospParam attribute of the netcdf element:</p>
-  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;GribParameterTableLookup=/data/NCEP/grib1/lookupTable.txt&quot;</strong>&gt;<br>&lt;/netcdf&gt;
-</pre>
-  <h4>Directly embed table in TDS configuration catalog (not implemented yet)</h4>
-  <p>You can directly embed an XML table in a featureCollection element of type GRIB  in a TDS configuration catalog:</p>
-  <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
-  &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
-  &lt;parameterMap&gt;
+  <p>You can directly embed the table in NcML, using the <a href="#DefineGrib1Params">XML Schema for declaring Grib-1 Parameters</a>. Place the table inside of a &lt;iospParam&gt; element. For example:</p>
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"&gt;
+ &lt;iospParam&gt;<br>  &lt;parameterMap&gt;
     &lt;parameter code=&quot;2&quot;&gt;<br>      &lt;description&gt;Pressure reduced to MSL&lt;/description&gt;<br>      &lt;units&gt;Pa&lt;/units&gt;<br>      &lt;name&gt;PRMSL&lt;/name&gt;<br>    &lt;/parameter&gt;<br>    &lt;parameter code=&quot;3&quot;&gt;<br>      &lt;description&gt;Pressure tendency&lt;/description&gt;<br>      &lt;units&gt;Pa/s&lt;/units&gt;<br>      &lt;name&gt;PTEND&lt;/name&gt;<br>      &lt;CF&gt;tendency_of_air_pressure&lt;/CF&gt;<br>      &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Pressure Tendency&lt;/GCMD&gt;<br>    &lt;/parameter&gt;
     ...<br>  &lt;/parameterMap&gt;
-&lt;/featureCollection&gt;</pre>
-  <h4>Reference a table in TDS configuration catalog (not implemented yet)</h4>
-  <p>You can reference a table in a featureCollection element of type GRIB  in a TDS configuration catalog:</p>
-  <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
-  &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
-  <strong>&lt;GribParameterTable path=&quot;/data/NCEP/grib1/version123.tab&quot;&gt;</strong>
-&lt;/featureCollection&gt;</pre>
-  <h4>Reference a table map in TDS configuration catalog (not implemented yet)</h4>
-  <p>You can reference a table map in a featureCollection element of type GRIB  in a TDS configuration catalog:</p>
-  <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
-  &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
-  <strong>&lt;GribParameterTableLookup path=&quot;/data/NCEP/grib1/lookupTable.txt&quot;&gt;</strong>
-&lt;/featureCollection&gt;</pre>
-  <p>&nbsp;</p>
+ &lt;/iospParam&gt;<br>&lt;/netcdf&gt;</pre>
+  <h4>Reference to a Grib Parameter table in NcML</h4>
+  <p>You can reference the table in NcML, with the table being in  any <a href="GribParameterFormats">GRIB parameter table format</a> that that CDM recognizes. To do so, you pass the string <strong>&quot;GribParameterTable=&lt;absolute file path to table&gt;&quot;</strong> in the iospParam attribute of the netcdf element:</p>
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;gribParameterTable=/data/NCEP/grib1/version123.tab&quot;</strong>&gt;<br>&lt;/netcdf&gt;</pre>
+  <h4>Reference to a Grib Parameter table lookup in NcML</h4>
+  <p>You can reference a <a href="tableMap">table map</a> in NcML by passing the string <strong>&quot;GribParameterTableLookup=&lt;absolute file path to table map&gt;&quot;</strong> in the iospParam attribute of the netcdf element:</p>
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;gribParameterTableLookup=/data/NCEP/grib1/lookupTable.txt&quot;</strong>&gt;<br>&lt;/netcdf&gt;
+</pre>
+  <p>You can specify a parameterMap or an iospParam, but not both.</p>
 </blockquote>
+<h3>Correcting Grib-1 files in a GRIB Feature Collection in a THREDDS Data Server</h3>
+<p>The above methods of adding or referencing tables in NcML will not work for GRIB Feature Collections. In this case, you need to do one of the following:</p>
+<blockquote>
+  <h4>Directly embed table in featureCollection element of the TDS configuration catalog</h4>
+  <p>You can directly embed an XML table (use the <a href="DefineGrib1Params">standard XML schema</a>) in a featureCollection element of type GRIB  in a TDS configuration catalog: </p>
+  <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
+  &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot; name=&quot;GFS_Global_0p5deg&quot; /&gt;
+  &lt;gribConfig&gt;
+   &lt;parameterMap&gt;
+    &lt;parameter code=&quot;2&quot;&gt;<br>      &lt;description&gt;Pressure reduced to MSL&lt;/description&gt;<br>      &lt;units&gt;Pa&lt;/units&gt;<br>      &lt;name&gt;PRMSL&lt;/name&gt;<br>    &lt;/parameter&gt;<br>    &lt;parameter code=&quot;3&quot;&gt;<br>      &lt;description&gt;Pressure tendency&lt;/description&gt;<br>      &lt;units&gt;Pa/s&lt;/units&gt;<br>      &lt;name&gt;PTEND&lt;/name&gt;<br>      &lt;CF&gt;tendency_of_air_pressure&lt;/CF&gt;<br>      &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Pressure Tendency&lt;/GCMD&gt;<br>    &lt;/parameter&gt;
+    ...<br>
+  &lt;/parameterMap&gt;
+
+ &lt;/gribConfig&gt;
+&lt;/featureCollection&gt;</pre>
+  <h4>Reference a table in  in featureCollection element of the TDS configuration catalog</h4>
+  <p>You can add a table in a featureCollection element of type GRIB  in a TDS configuration catalog:</p>
+  <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
+  &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
+  &lt;gribConfig&gt;
+    <strong>&lt;gribParameterTable&gt;/data/NCEP/grib1/version123.tab&lt;/gribParameterTable&gt;</strong>
+  &lt;/gribConfig&gt;
+&lt;/featureCollection&gt;</pre>
+  <h4>Reference a table map in  in featureCollection element of the TDS configuration catalog:</h4>
+  <p>You can add a table lookup in a featureCollection element of type GRIB  in a TDS configuration catalog:</p>
+  <pre>&lt;featureCollection name=&quot;NCEP-GFS-Global_0p5deg&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/Global_0p5deg&quot;&gt;
+  &lt;collection spec=&quot;/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$&quot;  name=&quot;GFS_Global_0p5deg&quot; /&gt;
+  &lt;gribConfig&gt;
+    <strong>&lt;gribParameterTableLookup&gt;/data/NCEP/grib1/version123.txt&lt;/gribParameterTableLookup&gt;</strong>
+  &lt;/gribConfig&gt;
+&lt;/featureCollection&gt;</pre>
+</blockquote>
+<p>In all these cases, the table that you specify will take precedence over any standard tables. However, you only need to specify the changes/additions; when a parameter is not found in your table, the standard tables are used.</p>
 <hr WIDTH="100%">
 <h2>XML Schema for defining Grib-1 Parameters<a name="DefineGrib1Params" id="DefineGrib1Params"></a></h2>
   <p>Derived from NCAR DSS format with additional &quot;name&quot; element.</p>
@@ -239,7 +252,7 @@ Notes:
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 8, 2011
+<img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated January 22, 2012
 </address>
 </body>
 </html>

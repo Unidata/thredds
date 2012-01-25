@@ -34,9 +34,11 @@ package ucar.nc2.grib.grib1.tables;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.*;
+import ucar.nc2.ncml.NcMLReader;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -49,7 +51,7 @@ import java.util.regex.Pattern;
 /**
  * A Grib1 Parameter Table (table 2).
  * This is a map: code -> Grib1Parameter.
- * Handles reading the table in.
+ * Handles reading the table in from various formats
  *
  * @author caron
  * @since 11/16/11
@@ -103,8 +105,8 @@ public class Grib1ParamTable {
    */
   public Grib1ParamTable(org.jdom.Element paramTableElem) throws IOException {
     this.name = paramTableElem.getChildText("title");
-    DssParser p = new DssParser();
-    p.parseXml(paramTableElem);
+    DssParser p = new DssParser(NcMLReader.ncNS);
+    this.parameters = p.parseXml(paramTableElem);
   }
 
   public int getCenter_id() {
@@ -128,7 +130,7 @@ public class Grib1ParamTable {
   }
 
   public int getKey() {
-    return Grib1ParamTableLookup.makeKey(center_id, subcenter_id, version);
+    return Grib1ParamTables.makeKey(center_id, subcenter_id, version);
   }
 
   public String getPath() {
@@ -199,7 +201,7 @@ public class Grib1ParamTable {
     else if (name.endsWith(".dss"))
       readParameterTableSplit("\t", new int[]{0, -1, 1, 2}); // NCAR DSS
     else if (name.endsWith(".xml"))
-      readParameterTableXml(new DssParser());// NCAR DSS XML format
+      readParameterTableXml(new DssParser(Namespace.NO_NAMESPACE));// NCAR DSS XML format
     else
       logger.warn("Dont know how to read " + name + " file=" + path);
     return parameters;
@@ -436,24 +438,30 @@ TBLE2 cptec_254_params[] = {
   }
 
   private class DssParser implements XmlTableParser {
-    /* http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.60-1.3.xml
+
+    private Namespace ns;
+    DssParser(Namespace ns) {
+      this.ns = ns;
+    }
+
+   /* http://dss.ucar.edu/metadata/ParameterTables/WMO_GRIB1.60-1.3.xml
     <parameter code="5">
     <description>ICAO Standard Atmosphere reference height</description>
     <units>m</units>
     </parameter>
     */
-
-    public HashMap<Integer, Grib1Parameter> parseXml(Element root) {
+   public HashMap<Integer, Grib1Parameter> parseXml(Element root) {
       HashMap<Integer, Grib1Parameter> result = new HashMap<Integer, Grib1Parameter>();
-      List<Element> params = root.getChildren("parameter");
+      List<Element> params = root.getChildren("parameter", ns);
       for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));
-        String desc = elem1.getChildText("description");
+        String desc = elem1.getChildText("description", ns);
         if (desc == null) continue;
-        String units = elem1.getChildText("units");
+        String units = elem1.getChildText("units", ns);
         if (units == null) units = "";
-        String name = elem1.getChildText("shortName");
-        String cf = elem1.getChildText("CF");
+        String name = elem1.getChildText("name", ns);
+        if (name == null) name = elem1.getChildText("shortName", ns);
+        String cf = elem1.getChildText("CF", ns);
         Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTable.this, code, name, desc, units, cf);
         result.put(parameter.getNumber(), parameter);
         if (debug) System.out.printf(" %s%n", parameter);

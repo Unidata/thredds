@@ -37,8 +37,10 @@ package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
-import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
+import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
@@ -312,10 +314,18 @@ public final class Grib1SectionProductDefinition {
     return rawData[index - 1] & 0xff;
   }
 
+  /////////////////////////////////////////////////////////////////////
+
+  private Grib1ParamTime ptime;
+  public Grib1ParamTime getParamTime(Grib1Customizer cust) {
+    if (ptime == null) ptime = new Grib1ParamTime(cust, this);
+    return ptime;
+  }
+
   public void showPds(Grib1Customizer cust, Formatter f) {
 
     f.format("            Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
-    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), cust.getSubCenterName(getCenter(), getSubCenter()));
+    f.format("         Originating SubCenter : (%d) %s%n", getSubCenter(), cust.getSubCenterName( getSubCenter()));
     f.format("                 Table Version : %d%n", getTableVersion());
 
     Grib1Parameter parameter = cust.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
@@ -329,11 +339,11 @@ public final class Grib1SectionProductDefinition {
       f.format("               Parameter %d not found%n", getParameterNumber());
     }
 
-    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), cust.getTypeGenProcessName(getCenter(), getGenProcess()));
+    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), cust.getTypeGenProcessName(getGenProcess()));
 
     f.format("                Reference Time : %s%n", getReferenceDate());
-    f.format("                    Time Units : (%d) %s%n", getTimeUnit(), Grib1TimeTypeTable.getCalendarPeriod(getTimeUnit()));
-    Grib1ParamTime ptime = cust.getParamTime(this);
+    f.format("                    Time Units : (%d) %s%n", getTimeUnit(), GribUtils.getCalendarPeriod(getTimeUnit()));
+    Grib1ParamTime ptime = getParamTime(cust);
     f.format("          Time Range Indicator : (%d) %s%n", getTimeRangeIndicator(), ptime.getTimeTypeName());
     f.format("                   Time 1 (P1) : %d%n", getTimeValue1());
     f.format("                   Time 2 (P2) : %d%n", getTimeValue2());
@@ -349,7 +359,7 @@ public final class Grib1SectionProductDefinition {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
-  // LOOK - from old
+  // LOOK - from old - not yet implemented
 
   public boolean isEnsemble() {
     return false;

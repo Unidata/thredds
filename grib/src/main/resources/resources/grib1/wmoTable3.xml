@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table3>
+  <title>WMO GRIB-1 Table 3</title>
+  <source>Unidata transcribe WMO306_Vol_I.2_2010_en.pdf</source>
+  <parameter code="1">
+    <description>Ground or water surface</description>
+    <abbrev>surface</abbrev>
+  </parameter>
+  <parameter code="2">
+    <description>Cloud base level</description>
+    <abbrev>cloud_base</abbrev>
+  </parameter>
+  <parameter code="3">
+    <description>Level of cloud tops</description>
+    <abbrev>cloud_tops</abbrev>
+  </parameter>
+  <parameter code="4">
+    <description>Level of 0deg C isotherm</description>
+    <abbrev>zeroDegC_isotherm</abbrev>
+  </parameter>
+  <parameter code="5">
+    <description>Level of adiabatic condensation lifted from the surface</description>
+    <abbrev>adiabatic_condensation_lifted</abbrev>
+  </parameter>
+  <parameter code="6">
+    <description>Maximum wind level</description>
+    <abbrev>maximum_wind</abbrev>
+  </parameter>
+  <parameter code="7">
+    <description>Tropopause</description>
+    <abbrev>tropopause</abbrev>
+  </parameter>
+  <parameter code="8">
+    <description>Nominal top of the atmosphere</description>
+    <abbrev>atmosphere_top</abbrev>
+  </parameter>
+  <parameter code="9">
+    <description>Sea bottom</description>
+    <abbrev>sea_bottom</abbrev>
+  </parameter>
+  <parameter code="20">
+    <description>Isothermal level</description>
+    <abbrev>isotherm</abbrev>
+    <units>K</units>
+  </parameter>
+  <parameter code="100">
+    <description>Isobaric surface</description>
+    <abbrev>isobaric</abbrev>
+    <units>hPa</units>
+  </parameter>
+  <parameter code="101">
+    <description>Layer between 2 isobaric levels</description>
+    <abbrev>layer_between_two_isobaric</abbrev>
+    <units>hPa</units>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="102">
+    <description>Mean sea level</description>
+    <abbrev>msl</abbrev>
+  </parameter>
+  <parameter code="103">
+    <description>Altitude above mean sea level</description>
+    <abbrev>altitude_above_msl</abbrev>
+    <units>m</units>
+    <datum>mean sea level</datum>
+    <isPositiveUp>true</isPositiveUp>
+  </parameter>
+  <parameter code="104">
+    <description>Layer between 2 altitudes above msl</description>
+    <abbrev>layer_between_two_altitudes_above_msl</abbrev>
+    <units>m</units>
+    <isPositiveUp>true</isPositiveUp>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="105">
+    <description>Specified height level above ground</description>
+    <abbrev>height_above_ground</abbrev>
+    <units>m</units>
+    <datum>ground</datum>
+    <isPositiveUp>true</isPositiveUp>
+  </parameter>
+  <parameter code="106">
+    <description>Layer between 2 specified height level above ground</description>
+    <abbrev>layer_between_two_heights_above_ground</abbrev>
+    <units>m</units>
+    <datum>ground</datum>
+    <isPositiveUp>true</isPositiveUp>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="107">
+    <description>Sigma level</description>
+    <abbrev>sigma</abbrev>
+    <units>sigma</units>
+  </parameter>
+  <parameter code="108">
+    <description>Layer between 2 sigma levels</description>
+    <abbrev>layer_between_two_sigmas</abbrev>
+    <units>sigma</units>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="109">
+    <description>Hybrid level</description>
+    <abbrev>hybrid</abbrev>
+    <units />
+  </parameter>
+  <parameter code="110">
+    <description>Layer between 2 hybrid levels</description>
+    <abbrev>layer_between_two_hybrids</abbrev>
+    <units />
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="111">
+    <description>Depth below land surface</description>
+    <abbrev>depth_below_surface</abbrev>
+    <units>cm</units>
+    <datum>ground</datum>
+  </parameter>
+  <parameter code="112">
+    <description>Layer between 2 depths below land surface</description>
+    <abbrev>layer_between_two_depths_below_surface</abbrev>
+    <units>cm</units>
+    <datum>ground</datum>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="113">
+    <description>Isentropic theta level</description>
+    <abbrev>isentrope</abbrev>
+    <units>K</units>
+  </parameter>
+  <parameter code="114">
+    <description>Layer between 2 isentropic levels</description>
+    <abbrev>layer_between_two_isentrope</abbrev>
+    <units>K</units>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="115">
+    <description>Level at specified pressure difference from ground to level</description>
+    <abbrev>pressure_difference</abbrev>
+    <units>hPa</units>
+    <datum>ground</datum>
+  </parameter>
+  <parameter code="116">
+    <description>Layer between 2 level at pressure difference from ground to level</description>
+    <abbrev>layer_between_two_pressure_difference_from_ground</abbrev>
+    <units>hPa</units>
+    <datum>ground</datum>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="117">
+    <description>Potential vorticity surface</description>
+    <abbrev>potential_vorticity_surface</abbrev>
+    <units>1.0E-9 K.kg-1.m2.s-1</units>
+  </parameter>
+  <parameter code="119">
+    <description>Eta level</description>
+    <abbrev>eta</abbrev>
+    <units />
+  </parameter>
+  <parameter code="120">
+    <description>Layer between 2 Eta levels</description>
+    <abbrev>layer_between_two_eta</abbrev>
+    <units />
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="121">
+    <description>Layer between 2 isobaric levels</description>
+    <abbrev>layer_between_two_isobaric_surfaces</abbrev>
+    <units>hPa</units>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="125">
+    <description>Specified height level above ground</description>
+    <abbrev>height_above_ground</abbrev>
+    <units>cm</units>
+    <datum>ground</datum>
+    <isPositiveUp>true</isPositiveUp>
+  </parameter>
+  <parameter code="128">
+    <description>Layer between 2 sigma levels (hi precision)</description>
+    <abbrev>layer_between_two_sigmas_hi</abbrev>
+    <units>sigma</units>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="141">
+    <description>Layer between 2 isobaric surfaces (mixed precision)</description>
+    <abbrev>layer_between_two_isobaric_surfaces</abbrev>
+    <units>hPa</units>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="160">
+    <description>Depth below sea level</description>
+    <abbrev>depth_below_sea</abbrev>
+    <units>m</units>
+    <datum>sea level</datum>
+  </parameter>
+  <parameter code="200">
+    <description>Entire atmosphere</description>
+    <abbrev>entire_atmosphere</abbrev>
+  </parameter>
+  <parameter code="201">
+    <description>Entire ocean</description>
+    <abbrev>entire_ocean</abbrev>
+  </parameter>
+  <parameter code="210">
+    <description>Isobaric surface (high precision)</description>
+    <abbrev>isobaric_surface</abbrev>
+    <units>Pa</units>
+  </parameter>
+</table3>
+

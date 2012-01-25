@@ -5,7 +5,7 @@
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-18.shtml</source>
   <parameter code="0">
     <shortName>ACCES</shortName>
-    <description>Air Concentration of Cesium 137</description>
+    <description>Air Concentration of Caesium 137</description>
     <units>Bq m-3</units>
   </parameter>
   <parameter code="1">
@@ -20,7 +20,7 @@
   </parameter>
   <parameter code="3">
     <shortName>GDCES</shortName>
-    <description>Ground Deposition of Cesium 137</description>
+    <description>Ground Deposition of Caesium 137</description>
     <units>Bq m-2</units>
   </parameter>
   <parameter code="4">
@@ -36,17 +36,17 @@
   <parameter code="6">
     <shortName>TIACCP</shortName>
     <description>Time Integrated Air Concentration of Cesium Pollutant*</description>
-    <units>Bq m-3</units>
+    <units>Bq s m-3</units>
   </parameter>
   <parameter code="7">
     <shortName>TIACIP</shortName>
     <description>Time Integrated Air Concentration of Iodine Pollutant*</description>
-    <units>Bq m-3</units>
+    <units>Bq s m-3</units>
   </parameter>
   <parameter code="8">
     <shortName>TIACRP</shortName>
     <description>Time Integrated Air Concentration of Radioactive Pollutant*</description>
-    <units>Bq m-3</units>
+    <units>Bq s m-3</units>
   </parameter>
   <parameter code="10">
     <shortName>AIRCON</shortName>
@@ -63,7 +63,7 @@
     <description>Dry Deposition</description>
     <units>Bq m-2</units>
   </parameter>
-  <parameter code="12">
+  <parameter code="13">
     <shortName>TOTLWD</shortName>
     <description>Total Deposition (Wet + Dry)</description>
     <units>Bq m-2</units>

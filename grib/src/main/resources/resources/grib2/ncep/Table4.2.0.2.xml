@@ -80,12 +80,12 @@
   </parameter>
   <parameter code="15">
     <shortName>VUCSH</shortName>
-    <description>Vertical U-Component of Shear</description>
+    <description>Vertical U-Component Shear</description>
     <units>s-1</units>
   </parameter>
   <parameter code="16">
     <shortName>VVCSH</shortName>
-    <description>Vertical V-Component of Shear</description>
+    <description>Vertical V-Component Shear</description>
     <units>s-1</units>
   </parameter>
   <parameter code="17">
@@ -130,7 +130,7 @@
   </parameter>
   <parameter code="25">
     <shortName>VWSH</shortName>
-    <description>Vertical speed sheer</description>
+    <description>Vertical Speed Shear</description>
     <units>s-1</units>
   </parameter>
   <parameter code="26">
@@ -174,8 +174,8 @@
     <units>m</units>
   </parameter>
   <parameter code="192">
-    <shortName>VW SH</shortName>
-    <description>Vertical speed sheer</description>
+    <shortName>VWSH</shortName>
+    <description>Vertical Speed Shear</description>
     <units>s-1</units>
   </parameter>
   <parameter code="193">

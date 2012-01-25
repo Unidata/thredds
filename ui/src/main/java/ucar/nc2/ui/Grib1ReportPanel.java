@@ -40,7 +40,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTableLookup;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -207,7 +207,7 @@ public class Grib1ReportPanel extends JPanel {
       Attribute gatt = ncfile.findGlobalAttributeIgnoreCase("GRIB table");
       if (gatt != null) {
         String[] s = gatt.getStringValue().split("-");
-        Grib1ParamTable gtable = Grib1ParamTableLookup.getParameterTable(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
+        Grib1ParamTable gtable = new Grib1ParamTables().getParameterTable(Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
         fm.format("  %s == %s%n", gatt, gtable.getPath());
       }
       for (GridDatatype dt : ncfile.getGrids()) {
@@ -327,8 +327,8 @@ public class Grib1ReportPanel extends JPanel {
         if (pds.getParameterNumber() > 127)
           local.count(key);
 
-        Grib1ParamTable table = Grib1ParamTableLookup.getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
-        if (table == null && useIndex) table = Grib1ParamTableLookup.getDefaultTable();
+        Grib1ParamTable table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
+        if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
         if (table == null || null == table.getParameter(pds.getParameterNumber()))
           missing.count(key);
       }
@@ -350,12 +350,13 @@ public class Grib1ReportPanel extends JPanel {
     Counter thin = new Counter("thin");
     Counter timeUnit = new Counter("timeUnit");
     Counter vertCoord = new Counter("vertCoord");
+    Counter vertCoordInGDS = new Counter("vertCoordInGDS");
 
     for (MFile mfile : dcm.getFiles()) {
       String path = mfile.getPath();
       if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) continue;
       f.format(" %s%n", path);
-      doScanIssues(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord);
+      doScanIssues(f, mfile, useIndex, predefined, thin, timeUnit, vertCoord, vertCoordInGDS);
     }
 
     f.format("SCAN NEW%n");
@@ -363,10 +364,11 @@ public class Grib1ReportPanel extends JPanel {
     thin.show(f);
     timeUnit.show(f);
     vertCoord.show(f);
+    vertCoordInGDS.show(f);
   }
 
   private void doScanIssues(Formatter fm, MFile ff, boolean useIndex, Counter predefined, Counter thin, Counter timeUnit,
-                            Counter vertCoord) throws IOException {
+                            Counter vertCoord, Counter vertCoordInGDS) throws IOException {
     boolean showThin = true;
     boolean showPredefined = true;
     boolean showVert = true;
@@ -384,6 +386,7 @@ public class Grib1ReportPanel extends JPanel {
         Grib1SectionProductDefinition pds = gr.getPDSsection();
         String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion(); // for CounterS
         timeUnit.count(pds.getTimeRangeIndicator());
+        vertCoord.count(pds.getLevelType());
 
         if (gdss.isThin()) {
           if (showThin) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), ff.getPath());
@@ -399,7 +402,7 @@ public class Grib1ReportPanel extends JPanel {
 
         if (gdss.hasVerticalCoordinateParameters()) {
           if (showVert) fm.format("   Has vertical coordinates in GDS= %s%n", ff.getPath());
-          vertCoord.count(pds.getLevelType());
+          vertCoordInGDS.count(pds.getLevelType());
           showVert = false;
         }
       }

@@ -32,12 +32,8 @@
 
 package ucar.nc2.grib.grib2;
 
-import ucar.nc2.grib.EnsCoord;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -51,6 +47,8 @@ import java.util.*;
  * @since 3/30/11
  */
 public class Grib2Rectilyser {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
+
   private final Grib2Customizer cust;
   private final int gdsHash;
   private final boolean intvMerge;
@@ -63,11 +61,11 @@ public class Grib2Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, boolean intvMerge) {
+  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
-    this.intvMerge = intvMerge;
+    this.intvMerge = false;
   }
 
   public List<Grib2Record> getRecords() {
@@ -90,7 +88,9 @@ public class Grib2Rectilyser {
     return ensCoords;
   }
 
-  public void make(Formatter f, Counter counter) throws IOException {
+  List<String> filenames = null; // temp debug
+  public void make(Formatter f, Counter counter, List<String> filenames) throws IOException {
+    this.filenames = filenames;
     // unique variables using Grib2Record.cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
     for (Grib2Record gr : records) {
@@ -221,7 +221,7 @@ public class Grib2Rectilyser {
 
     List<VertCoord.Level> vlist = new ArrayList<VertCoord.Level>(coords);
     Collections.sort(vlist);
-    if (!vertUnit.isPositiveUp) {
+    if (!vertUnit.isPositiveUp()) {
       Collections.reverse(vlist);
     }
 
@@ -243,6 +243,10 @@ public class Grib2Rectilyser {
     return new EnsCoord(elist);
   }
 
+  private CalendarPeriod convertTimeDuration(int timeUnit) {
+    return Grib2Utils.getCalendarPeriod( cust.convertTimeUnit(timeUnit));
+  }
+
   /**
    * check if refDate and timeUnit is the same for all atoms.
    * set vb refDate, timeUnit fields as side effect. if not true, refDate is earliest
@@ -258,7 +262,7 @@ public class Grib2Rectilyser {
 
     for (Record r : vb.atomList) {
       Grib2Pds pds = r.gr.getPDS();
-      int unit = pds.getTimeUnit();
+      int unit = cust.convertTimeUnit(pds.getTimeUnit());
       if (timeUnit < 0) { // first one
         timeUnit = unit;
         vb.timeUnit = Grib2Utils.getCalendarPeriod(timeUnit);
@@ -301,7 +305,7 @@ public class Grib2Rectilyser {
     for (Record r : vb.atomList) {
       Grib2Pds pds = r.gr.getPDS();
       int time = pds.getForecastTime();
-      CalendarPeriod duration = pds.getTimeDuration();
+      CalendarPeriod duration = convertTimeDuration(pds.getTimeUnit());
 
       if (uniform) {
         r.tcCoord = time;
@@ -314,30 +318,33 @@ public class Grib2Rectilyser {
     }
     List<Integer> tlist = new ArrayList<Integer>(times);
     Collections.sort(tlist);
-    return new TimeCoord(vb.refDate, vb.timeUnit, tlist);
+    return new TimeCoord(0, vb.refDate, vb.timeUnit, tlist);
   }
 
   private TimeCoord makeTimeCoordsIntv(VariableBag vb, boolean uniform) {
+    int timeIntvCode = 999; // avoid negetive
     Set<TimeCoord.Tinv> times = new HashSet<TimeCoord.Tinv>();
     for (Record r : vb.atomList) {
       Grib2Pds pds = r.gr.getPDS();
+      if (timeIntvCode == 999) timeIntvCode = pds.getStatisticalProcessType();
       int[] timeb = cust.getForecastTimeInterval(r.gr);
       if (uniform) {
         r.tcIntvCoord = new TimeCoord.Tinv(timeb[0], timeb[1]);
         times.add(r.tcIntvCoord);
       } else {
         TimeCoord.Tinv org = new TimeCoord.Tinv(timeb[0], timeb[1]);
-        CalendarPeriod fromUnit = Grib2Utils.getCalendarPeriod(pds.getTimeUnit());
+        int timeUnit = cust.convertTimeUnit(pds.getTimeUnit());
+        CalendarPeriod fromUnit = Grib2Utils.getCalendarPeriod(timeUnit);
         r.tcIntvCoord = org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit);
         times.add(r.tcIntvCoord);
       }
     }
     List<TimeCoord.Tinv> tlist = new ArrayList<TimeCoord.Tinv>(times);
     Collections.sort(tlist);
-    return new TimeCoord(vb.refDate, vb.timeUnit, tlist);
+    return new TimeCoord(timeIntvCode, vb.refDate, vb.timeUnit, tlist);
   }
 
-  public void dump(Formatter f, Grib2Tables tables) {
+  public void dump(Formatter f, Grib2Customizer tables) {
     f.format("%nTime Coordinates%n");
     for (int i = 0; i < timeCoords.size(); i++) {
       TimeCoord time = timeCoords.get(i);
@@ -427,7 +434,14 @@ public class Grib2Rectilyser {
     result += result * 37 + pds2.getTemplateNumber();
 
     if (pds2.isInterval()) {
-      double size = cust.getForecastTimeIntervalSize(gr, CalendarPeriod.Hour); // using an Hour here, but will need to make this configurable
+      double size = 0;
+      try {
+        size = cust.getForecastTimeIntervalSizeInHours(gr); // LOOK using an Hour here, but will need to make this configurable
+      } catch (Throwable t) {
+        logger.error("bad", t);
+        if (filenames != null)
+          logger.error("Failed on file = "+filenames.get(gr.getFile()));
+      }
       if (!intvMerge) result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - configurable
       result += result * 37 + pds2.getStatisticalProcessType(); // create new variable for each stat type
     }

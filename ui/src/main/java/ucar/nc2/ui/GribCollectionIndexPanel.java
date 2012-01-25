@@ -129,17 +129,32 @@ public class GribCollectionIndexPanel extends JPanel {
           setGroup(bean.group);
       }
     });
+    
+    varPopup = new PopupMenu(groupTable.getJTable(), "Options");
+    varPopup.addAction("Show Files Used", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f= new Formatter();
+          bean.showFilesUsed(f);
+          
+          infoPopup.setText(f.toString());
+          infoPopup.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
 
     varTable = new BeanTableSorted(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false);
+    
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
-
     varPopup.addAction("Show Variable", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VarBean bean = (VarBean) varTable.getSelectedBean();
         if (bean != null) {
           infoPopup.setText(bean.v.toStringComplete());
           infoPopup.gotoTop();
-          infoWindow.showIfNotIconified();
+          infoWindow.show();
         }
       }
     });
@@ -151,7 +166,7 @@ public class GribCollectionIndexPanel extends JPanel {
           bean.showRecords(f);
           infoPopup.setText(f.toString());
           infoPopup.gotoTop();
-          infoWindow.showIfNotIconified();
+          infoWindow.show();
         }
       }
     });
@@ -165,7 +180,7 @@ public class GribCollectionIndexPanel extends JPanel {
         if (bean != null) {
           infoPopup.setText(bean.vc.toString());
           infoPopup.gotoTop();
-          infoWindow.showIfNotIconified();
+          infoWindow.show();
         }
       }
     });
@@ -179,7 +194,7 @@ public class GribCollectionIndexPanel extends JPanel {
         if (bean != null) {
           infoPopup.setText(bean.tc.toString());
           infoPopup.gotoTop();
-          infoWindow.showIfNotIconified();
+          infoWindow.show();
         }
       }
     });
@@ -218,6 +233,11 @@ public class GribCollectionIndexPanel extends JPanel {
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
     if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
+  }
+
+  public void closeOpenFiles() throws IOException {
+    if (gc != null) gc.close();
+    gc = null;
   }
 
   private void compareFiles(Formatter f) throws IOException {
@@ -359,8 +379,18 @@ public class GribCollectionIndexPanel extends JPanel {
       this.group = g;
     }
 
-    public String getGroupName() {
-      return group.getGroupName();
+    public String getGroupId() {
+      return group.getId();
+    }
+    
+    public String getDescription() {
+      return group.getDescription();
+    }
+
+    void showFilesUsed(Formatter f) {
+      for (int i: group.filenose) {
+        f.format(" %d:%s", i, gc.filenames.get(i)); 
+      }
     }
 
   }
@@ -401,8 +431,8 @@ public class GribCollectionIndexPanel extends JPanel {
       return v.cdmHash;
     }
 
-    public String getGroup() {
-      return group.getGroupName();
+    public String getGroupId() {
+      return group.getId();
     }
 
     public String getVariableId() {

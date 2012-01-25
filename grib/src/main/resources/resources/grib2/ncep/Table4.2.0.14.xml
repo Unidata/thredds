@@ -25,7 +25,7 @@
   </parameter>
   <parameter code="193">
     <shortName>OZCON</shortName>
-    <description>Ozone Concentration (PPB)</description>
+    <description>Ozone Concentration</description>
     <units>PPB</units>
   </parameter>
   <parameter code="194">

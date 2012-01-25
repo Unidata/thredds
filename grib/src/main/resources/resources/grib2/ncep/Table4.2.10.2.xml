@@ -4,7 +4,7 @@
   <title>Ice</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-2.shtml</source>
   <parameter code="0">
-    <shortName>ICE C</shortName>
+    <shortName>ICEC</shortName>
     <description>Ice Cover</description>
     <units>Proportion</units>
   </parameter>
@@ -16,7 +16,7 @@
   <parameter code="2">
     <shortName>DICED</shortName>
     <description>Direction of Ice Drift</description>
-    <units>Degree True</units>
+    <units>degree True</units>
   </parameter>
   <parameter code="3">
     <shortName>SICED</shortName>
@@ -24,27 +24,27 @@
     <units>m s-1</units>
   </parameter>
   <parameter code="4">
-    <shortName>U ICE</shortName>
+    <shortName>UICE</shortName>
     <description>U-Component of Ice Drift</description>
     <units>m s-1</units>
   </parameter>
   <parameter code="5">
-    <shortName>V ICE</shortName>
+    <shortName>VICE</shortName>
     <description>V-Component of Ice Drift</description>
     <units>m s-1</units>
   </parameter>
   <parameter code="6">
-    <shortName>ICE G</shortName>
+    <shortName>ICEG</shortName>
     <description>Ice Growth Rate</description>
     <units>m s-1</units>
   </parameter>
   <parameter code="7">
-    <shortName>ICE D</shortName>
+    <shortName>ICED</shortName>
     <description>Ice Divergence</description>
     <units>s-1</units>
   </parameter>
   <parameter code="8">
-    <shortName>ICE T</shortName>
+    <shortName>ICET</shortName>
     <description>Ice Temperature</description>
     <units>K</units>
   </parameter>

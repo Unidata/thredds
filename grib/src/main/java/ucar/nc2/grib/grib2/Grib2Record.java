@@ -1,6 +1,5 @@
 package ucar.nc2.grib.grib2;
 
-import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 

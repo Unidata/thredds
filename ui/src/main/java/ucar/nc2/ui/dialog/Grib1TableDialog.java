@@ -8,8 +8,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import com.jgoodies.forms.factories.*;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTableLookup;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
+import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 
 /**
  * @author John Caron
@@ -203,7 +203,7 @@ public class Grib1TableDialog extends JDialog {
         int center_id = Integer.parseInt( center.getText());
         int subcenter_id = Integer.parseInt( subcenter.getText());
         int version_id = Integer.parseInt( version.getText());
-        Grib1ParamTable t = Grib1ParamTableLookup.getParameterTable(center_id, subcenter_id, version_id);
+        Grib1ParamTable t = new Grib1ParamTables().getParameterTable(center_id, subcenter_id, version_id);
         if (t == null)
           result.setText("NOT FOUND");
         else

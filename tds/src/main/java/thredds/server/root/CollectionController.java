@@ -35,6 +35,7 @@ public class CollectionController extends AbstractController {
   private static final String PATH = "/admin/collection";
   private static final String COLLECTION = "collection";
   private static final String TRIGGER = "trigger";
+  private static final String NOCHECK = "nocheck";
   private final TdsContext tdsContext;
   //private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
 
@@ -105,9 +106,12 @@ public class CollectionController extends AbstractController {
 
     // find the collection
     String collectName = req.getParameter(COLLECTION);
-    String triggerS = req.getParameter(TRIGGER);
-    boolean trigger = (triggerS != null) && triggerS.equalsIgnoreCase("true");
-    boolean nocheck = (triggerS != null) && triggerS.equalsIgnoreCase("nocheck");
+    boolean trigger = false;
+    boolean nocheck = false;
+    if (path.equals("/"+COLLECTION+"/"+TRIGGER)) {
+      trigger = true;
+      nocheck = req.getParameter(NOCHECK) != null;
+    }
     InvDatasetFeatureCollection fc = DataRootHandler.getInstance().getFeatureCollection(collectName);
     if (fc == null) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
@@ -120,7 +124,7 @@ public class CollectionController extends AbstractController {
     CollectionManager dcm = fc.getDatasetCollectionManager();
     pw.printf("<h3>Collection Name %s</h3>%n", dcm.getCollectionName());
 
-    if (trigger || nocheck) {
+    if (trigger) {
       // see if trigger is allowed
       if (!fc.getConfig().updateConfig.triggerOk && !fc.getConfig().tdmConfig.triggerOk) {
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
@@ -130,13 +134,13 @@ public class CollectionController extends AbstractController {
         return null;
       }
 
-      CollectionUpdater.INSTANCE.triggerUpdate(dcm.getCollectionName(), trigger ? "trigger" : "nocheck");
+      CollectionUpdater.INSTANCE.triggerUpdate(dcm.getCollectionName(), nocheck ? NOCHECK : TRIGGER);
       pw.printf(" TRIGGER SENT%n");
 
     } else {
       showFiles(pw, dcm);
       String ename = StringUtil2.escape(fc.getName(), "");
-      String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + ename + "&trigger=true";
+      String url = tdsContext.getContextPath() + PATH + "/trigger?" + COLLECTION + "=" + ename;
       pw.printf("<p/><a href='%s'>Trigger rescan for %s</a>%n", url, fc.getName());
     }
 
@@ -156,7 +160,7 @@ public class CollectionController extends AbstractController {
     pw.printf("%n%-100s %-20s %9.3s %s%n", "Path", "Last Modified", "MB", "Aux");
     for (MFile mfile : dcm.getFiles())
       pw.printf("%-100s %-20s %9.3f %s%n", mfile.getPath(), CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified())),
-              (double) mfile.getLength() / 1000 * 1000, mfile.getAuxInfo());
+              (double) mfile.getLength() / (1000 * 1000), mfile.getAuxInfo());
     pw.printf("</pre>%n");
   }
 

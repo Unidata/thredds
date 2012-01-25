@@ -34,16 +34,18 @@ package thredds.catalog;
 
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFileCollectionManager;
-import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.grib1.Grib1Iosp;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.StringUtil2;
@@ -103,29 +105,23 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     // sneak in extra config info
-    if (config.gribConfig != null) {
-      if (config.gribConfig.gdsHash != null)
-        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GDSHASH, config.gribConfig.gdsHash);
-      if (config.gribConfig.gdsName != null)
-        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GROUP_NAME, config.gribConfig.gdsName);
-      if (config.gribConfig.intervalMerge)
-        dcm.putAuxInfo(FeatureCollectionConfig.AUX_INTERVAL_MERGE, Boolean.TRUE);
-    }
+    if (config.gribConfig != null)
+      dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
 
     String errs = errlog.toString();
-    if (errs.length() > 0) logger.debug("{}: CollectionManager parse error = {} ", name, errs);
+    if (errs.length() > 0) logger.warn("{}: CollectionManager parse error = {} ", name, errs);
 
     tmi.setDataType(FeatureType.GRID); // override GRIB
     finish();
   }
 
   @Override
-  public void update(CollectionManager.Force force) { // this is called from a background thread
+  public void update(CollectionManager.Force force) { // this may be called from a background thread
     if (first) {
       synchronized (lock) {
         this.format = getDataFormatType(); // why wait until now ??
         firstInit(); // why ??
-        first  = false;
+        first = false;
       }
     }
 
@@ -140,7 +136,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     // do the update in a local object
     StateGrib localState = new StateGrib((StateGrib) state);
-    updateCollection(localState, force);
+    try {
+      updateCollection(localState, force);
+    } catch (IOException e) {
+      logger.error("Fail to update collection", e);
+    }
     makeTopDatasets(localState);
     localState.lastInvChange = System.currentTimeMillis();
 
@@ -167,7 +167,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (first) {
         this.format = getDataFormatType(); // for some reason have to wait until first request ??
         firstInit();
-        first  = false;
+        dcm.scanIfNeeded();
+        first = false;
 
       } else {
         if (!dcm.scanIfNeeded())
@@ -189,24 +190,20 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
   }
 
-  private void updateCollection(StateGrib localState, CollectionManager.Force force) {
-    try {
-      if (config.timePartition != null) {
-        TimePartition previous = localState.timePartition;
-        localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, new Formatter());
-        localState.gribCollection = null;
-        if (previous != null) previous.close(); // LOOK thread safety
+  private void updateCollection(StateGrib localState, CollectionManager.Force force) throws IOException {
+    if (config.timePartition != null) {
+      TimePartition previous = localState.timePartition;
+      localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, new Formatter());
+      localState.gribCollection = null;
+      if (previous != null) previous.close(); // LOOK thread safety
 
-      } else { // WTF? open and close every time (!)
-        GribCollection previous = localState.gribCollection;
-        localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, new Formatter());
-        localState.timePartition = null;
-        if (previous != null) previous.close(); // LOOK thread safety
-      }
-    } catch (IOException e) {
-      logger.error("Cant updateCollection " + dcm, e);
+    } else { // WTF? open and close every time (!)
+      GribCollection previous = localState.gribCollection;
+      localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, new Formatter());
+      localState.timePartition = null;
+      if (previous != null) previous.close(); // LOOK thread safety
     }
-    logger.info("{}: Collection was recreated", getName());
+    logger.debug("{}: Collection was recreated", getName());
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -237,7 +234,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (localState.timePartition == null) {
         String[] path = match.split("/");
         if (path.length < 2) return null;
-        GribCollection.GroupHcs group = localState.gribCollection.findGroup(path[0]);
+        GribCollection.GroupHcs group = localState.gribCollection.findGroupById(path[0]);
         if (group != null) {
           return makeFilesCatalog(localState.gribCollection, group, baseURI, localState);
         }
@@ -268,7 +265,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         dc = localState.timePartition.getPartitionByName(path[0]);
         if (dc != null) {
           GribCollection gc = dc.getGribCollection();
-          GribCollection.GroupHcs group = gc.findGroup(path[1]);
+          GribCollection.GroupHcs group = gc.findGroupById(path[1]);
           if (group == null) return null;
           return makeFilesCatalog(gc, group, baseURI, localState);
         }
@@ -293,12 +290,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (localState.timePartition == null) {
 
       for (GribCollection.GroupHcs group : localState.gribCollection.getGroups()) {
-        String name = group.getGroupName();
-        InvDatasetImpl ds = new InvDatasetImpl(this, name);
-        name = StringUtil2.replace(name, ' ', "_");
-        ds.setUrlPath(this.path + "/" + name);
-        ds.setID(id + "/" + name);
-        addFileDatasets(ds, name);
+        String groupId = group.getId();
+        InvDatasetImpl ds = new InvDatasetImpl(this, group.getDescription());
+        //groupId = StringUtil2.replace(groupId, ' ', "_");
+        ds.setUrlPath(this.path + "/" + groupId);
+        ds.setID(id + "/" + groupId);
+        addFileDatasets(ds, groupId);
 
         // metadata is specific to each group
         ds.tmi.addVariables(extractThreddsVariables(localState.gribCollection, group));
@@ -344,11 +341,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(format.toString());
     for (GribCollection.VariableIndex vindex : group.varIndex) {
       ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
-      VertCoord vc = (vindex.vertIdx < 0) ? null : group.vertCoords.get(vindex.vertIdx);
 
       if (format == DataFormatType.GRIB2) {
-        //GribTables tables = group.getGribCollection().getTables(); // LOOK
-        Grib2Tables tables = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+        Grib2Customizer tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
         tv.setName(Grib2Iosp.makeVariableName(tables, gribCollection, vindex));
         tv.setDescription(Grib2Iosp.makeVariableLongName(tables, vindex));
@@ -364,9 +359,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         tv.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName);
         vars.addVariable(tv);
 
-      } else {  // LOOK
-      }
+      } else {
+        Grib1Customizer cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), null);
 
+        tv.setName(Grib1Iosp.makeVariableName(cust, gribCollection, vindex));
+        tv.setDescription(Grib1Iosp.makeVariableLongName(cust, gribCollection, vindex));
+        tv.setUnits(Grib1Iosp.makeVariableUnits(cust, gribCollection, vindex));
+        tv.setVocabularyId("1-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
+        vars.addVariable(tv);
+      }
     }
     vars.sort();
     return vars;
@@ -439,11 +440,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     if (id == null) id = getPath();
 
     for (GribCollection.GroupHcs group : gribCollection.getGroups()) {
-      String name = group.getGroupName();
-      InvDatasetImpl ds = new InvDatasetImpl(this, name + "_" + COLLECTION);
-      name = StringUtil2.replace(name, ' ', "_");
-      ds.setUrlPath(this.path + "/" + collectionName + "/" + name);
-      ds.setID(id + "/" + collectionName + "/" + name);
+      String groupId = group.getId();
+      InvDatasetImpl ds = new InvDatasetImpl(this, groupId + "_" + COLLECTION);
+      //groupId = StringUtil2.replace(groupId, ' ', "_");
+      ds.setUrlPath(this.path + "/" + collectionName + "/" + groupId);
+      ds.setID(id + "/" + collectionName + "/" + groupId);
 
       // metadata is specific to each group
       ds.tmi.addVariables(extractThreddsVariables(gribCollection, group));
@@ -458,7 +459,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       //tm.addVariables(group.getVariables());
 
       if (!(gribCollection instanceof TimePartition)) // dont add files for collection dataset
-        addFileDatasets(ds, collectionName + "/" + name);
+        addFileDatasets(ds, collectionName + "/" + groupId);
       ds.finish();
       top.addDataset(ds);
     }
@@ -508,7 +509,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     for (String f : group.getFilenames()) {
       if (!f.startsWith(topDirectory))
         System.out.println("HEY");
-      String fname = f.substring(topDirectory.length()+1);
+      String fname = f.substring(topDirectory.length() + 1);
       String path = FILES + "/" + fname;
       InvDatasetImpl ds = new InvDatasetImpl(this, fname);
       ds.setUrlPath(this.path + "/" + path);
@@ -541,17 +542,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String filename = paths.length == 2 ? paths[1] : null;
 
     if (localState.timePartition == null) {
-      return localState.gribCollection.getGridDataset(paths[0], filename);
+      return localState.gribCollection.getGridDataset(paths[0], filename, gribConfig);
 
     } else {
       if (paths.length < 2) return null;
 
       if (paths[0].equals(localState.timePartition.getName()))
-        return localState.timePartition.getGridDataset(paths[1], null);
+        return localState.timePartition.getGridDataset(paths[1], null, gribConfig);
 
       TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
       if (dcm != null) {
-        return dcm.getGribCollection().getGridDataset(paths[1], filename);
+        return dcm.getGribCollection().getGridDataset(paths[1], filename, gribConfig);
       }
     }
 
@@ -581,21 +582,21 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (n >= 2) { // files
         String group = paths[n - 2];
         String filename = paths[n - 1];
-        return localState.gribCollection.getNetcdfDataset(group, filename);
+        return localState.gribCollection.getNetcdfDataset(group, filename, gribConfig);
       } else {
-        return localState.gribCollection.getNetcdfDataset(paths[0], null);
+        return localState.gribCollection.getNetcdfDataset(paths[0], null, gribConfig);
       }
 
     } else {
       if (paths.length < 2) return null;
 
       if (paths[0].equals(localState.timePartition.getName()))
-        return localState.timePartition.getNetcdfDataset(paths[1], null);
+        return localState.timePartition.getNetcdfDataset(paths[1], null, gribConfig);
 
       TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
       if (dcm != null) {
         String filename = paths.length > 2 ? paths[2] : null;
-        return dcm.getGribCollection().getNetcdfDataset(paths[1], filename);
+        return dcm.getGribCollection().getNetcdfDataset(paths[1], filename, gribConfig);
       }
     }
 

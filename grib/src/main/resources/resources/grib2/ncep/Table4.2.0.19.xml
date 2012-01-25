@@ -90,7 +90,7 @@
   </parameter>
   <parameter code="17">
     <shortName>MXSALB</shortName>
-    <description>Maximum Snow Albedosee Note 2</description>
+    <description>Maximum Snow Albedosee Note 1</description>
     <units>%</units>
   </parameter>
   <parameter code="18">

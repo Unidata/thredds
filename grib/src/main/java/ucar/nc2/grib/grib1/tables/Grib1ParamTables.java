@@ -32,41 +32,41 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import net.jcip.annotations.Immutable;
+
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
 import java.io.*;
-
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Manage lookup of Grib-1 parameter tables (table 2).
+ * This is the interface to manage GRIB-1 Parameter Tables (table 2).
  * These are the tables that are loaded at runtime, matching center and versions.
- * Handles just the lookup.
- * Should be package private but we expose for debugging.
+ * <p/>
+ * Allow different table versions in the same file.
+ * Allow overriding standard grib1 tables on the dataset level.
+ *
  * @author caron
- * @since 11/16/11
+ * @since 9/13/11
  */
-public class Grib1ParamTableLookup {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTableLookup.class);
+@Immutable
+public class Grib1ParamTables {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTables.class);
 
   static private final Object lock = new Object();
-  static private int standardTablesStart = 0; // heres where the standard tables start - keep track to user additions can go first
+  static private int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions can go first
 
   static private final boolean warn = false;
 
   static private final Lookup standardLookup;
   static private final Grib1ParamTable defaultTable;
-
-  // This is a mapping from (center,subcenter,version)-> Param table for any data that has been loaded
-  //static private Map<Integer, Grib1ParamTable> tableMap = new ConcurrentHashMap<Integer, Grib1ParamTable>();
-
-  // a list of all the tables
-  //static private List<Grib1ParamTable> paramTables;
 
   static {
     try {
@@ -79,7 +79,7 @@ public class Grib1ParamTableLookup {
       standardLookup.readLookupTable("resources/grib1/wrf/lookupTables.txt"); // */
       // lookup.readLookupTable("resources/grib1/tablesOld/lookupTables.txt");  // too many problems - must check every one !
       standardLookup.tables = new CopyOnWriteArrayList<Grib1ParamTable>(standardLookup.tables); // in case user adds tables
-      defaultTable = getParameterTable(0, -1, -1); // user cannot override default
+      defaultTable = standardLookup.getParameterTable(0, -1, -1); // user cannot override default
 
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
@@ -95,43 +95,113 @@ public class Grib1ParamTableLookup {
   /**
    * Set strict mode.
    * <li>If strict:
-   *   <ol>Must find a match in the tables. Otherwise, use default</ol>
-   *   <ol>Tables cannot override standard WMO parameters. Thus param_no < 128 and version < 128 must use default table</ol>
+   * <ol>Must find a match in the tables. Otherwise, use default</ol>
+   * <ol>Tables cannot override standard WMO parameters. Thus param_no < 128 and version < 128 must use default table</ol>
    * </li>
+   *
    * @param strict true for strict mode.
    */
   public static void setStrict(boolean strict) {
-    Grib1ParamTableLookup.strict = strict;
+    Grib1ParamTables.strict = strict;
   }
 
   public static Grib1ParamTable getDefaultTable() {
     return defaultTable;
   }
 
-  // debugging
-  public static List<Grib1ParamTable> getStandardParameterTables() {
-    return standardLookup.tables;
+  static public int makeKey(int center, int subcenter, int version) {
+    if (center < 0) center = 255;
+    if (subcenter < 0) subcenter = 255;
+    if (version < 0) version = 255;
+    return center * 1000 * 1000 + subcenter * 1000 + version;
   }
 
-  public static Grib1Parameter getParameter(Grib1Record record) {
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Get a Grib1ParamTables object, optionally specifying a parameter table or lookup table specific to this dataset.
+   *
+   * @param paramTablePath  path to a parameter table, in format Grib1ParamTable can read.
+   * @param lookupTablePath path to a lookup table, in format Lookup.readLookupTable() can read.
+   * @return Grib1Tables
+   * @throws IOException on read error
+   */
+  static public Grib1ParamTables factory(String paramTablePath, String lookupTablePath) throws IOException {
+    if (paramTablePath == null && lookupTablePath == null) return new Grib1ParamTables();
+
+    Grib1ParamTables result = new Grib1ParamTables();
+    if (paramTablePath != null) {
+      result.override = new Grib1ParamTable(paramTablePath);
+      if (result.override == null)
+        throw new FileNotFoundException("cant read parameter table=" + paramTablePath);
+    }
+    if (lookupTablePath != null) {
+      result.lookup = new Lookup();
+      if (!result.lookup.readLookupTable(lookupTablePath))
+        throw new FileNotFoundException("cant read lookup table=" + lookupTablePath);
+    }
+
+    return result;
+  }
+
+  /**
+   * Get a Grib1Tables object, optionally specifiying a parameter table in XML specific to this dataset.
+   *
+   * @param paramTableElem parameter table in XML
+   * @return Grib1Tables
+   * @throws IOException on read error
+   */
+  static public Grib1ParamTables factory(org.jdom.Element paramTableElem) throws IOException {
+    if (paramTableElem == null) return new Grib1ParamTables();
+
+    Grib1ParamTables result = new Grib1ParamTables();
+    result.override = new Grib1ParamTable(paramTableElem);
+
+    return result;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
+
+  private Lookup lookup; // if lookup table was set
+  private Grib1ParamTable override; // if parameter table was set
+
+  public Grib1ParamTables() {
+  }
+
+  public Grib1Parameter getParameter(Grib1Record record) {
     Grib1SectionProductDefinition pds = record.getPDSsection();
     return getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
   }
 
-  public static Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
-    return standardLookup.getParameter(center, subcenter, tableVersion, param_number);
+  public Grib1Parameter getParameter(int center, int subcenter, int tableVersion, int param_number) {
+    Grib1Parameter param = null;
+    if (override != null)
+      param = override.getParameter(param_number);
+    if (param == null && lookup != null)
+      param = lookup.getParameter(center, subcenter, tableVersion, param_number);
+    if (param == null)
+      param = standardLookup.getParameter(center, subcenter, tableVersion, param_number); // standard tables
+    return param;
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////
+
   /**
-   * Looks for the parameter table which matches the center, subcenter and table version.
-   *
-   * @param center       - integer from PDS octet 5, representing Center.
-   * @param subcenter    - integer from PDS octet 26, representing Subcenter
-   * @param tableVersion - integer from PDS octet 4, representing Parameter Table Version
-   * @return Grib1ParamTable matching center, subcenter, and number, or null if not found
+   * Debugging only
    */
-  public static Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {
-    return standardLookup.getParameterTable(center, subcenter, tableVersion);
+  public Grib1ParamTable getParameterTable(int center, int subcenter, int tableVersion) {
+    Grib1ParamTable result = null;
+    if (lookup != null)
+      result = lookup.getParameterTable(center, subcenter, tableVersion);
+    if (result == null)
+      result = standardLookup.getParameterTable(center, subcenter, tableVersion); // standard tables
+
+    return result;
+  }
+
+  // debugging
+  public static List<Grib1ParamTable> getStandardParameterTables() {
+    return standardLookup.tables;
   }
 
   /**
@@ -317,11 +387,4 @@ public class Grib1ParamTableLookup {
 
   }  // Lookup
 
-  static public int makeKey(int center, int subcenter, int version) {
-    if (center < 0) center = 255;
-    if (subcenter < 0) subcenter = 255;
-    if (version < 0) version = 255;
-    return center * 1000 * 1000 + subcenter * 1000 + version;
-  }
 }
-

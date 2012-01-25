@@ -32,6 +32,8 @@
 
 package ucar.nc2.grib.grib1;
 
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.TimePartition;
@@ -48,26 +50,34 @@ import java.io.IOException;
 public class Grib1TimePartition extends TimePartition {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1TimePartition.class);
 
-  Grib1TimePartition(String name, File directory) {
-    super(name, directory);
+  Grib1TimePartition(String name, File directory, TimePartitionCollection tpc) {
+    super(name, directory, tpc);
   }
 
   @Override
-  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException {
-    GroupHcs want = findGroup(groupName);
+  public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
+    GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
     Grib1Iosp iosp = new Grib1Iosp(want);
+    iosp.setLookupTablePath(gribConfig.lookupTablePath);
+    iosp.setParamTablePath(gribConfig.paramTablePath);
+    iosp.setParamTable(gribConfig.paramTable);
+
     NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     return new NetcdfDataset(ncfile);
   }
 
   @Override
-  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException {
-    GroupHcs want = findGroup(groupName);
+  public ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
+    GroupHcs want = findGroupById(groupName);
     if (want == null) return null;
 
     Grib1Iosp iosp = new Grib1Iosp(want);
+    iosp.setLookupTablePath(gribConfig.lookupTablePath);
+    iosp.setParamTablePath(gribConfig.paramTablePath);
+    iosp.setParamTable(gribConfig.paramTable);
+
     NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??

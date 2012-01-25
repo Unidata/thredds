@@ -111,12 +111,14 @@ public class Grib2Index extends GribIndex {
     long idxModified = idxFile.lastModified();
     if ((force != CollectionManager.Force.nocheck) && (idxModified < gribLastModified)) return false; // force new index if file was updated
 
-    FileInputStream fin = new FileInputStream(idxFile); // LOOK need DiskCache for non-writeable directories
+    FileInputStream fin = new FileInputStream(idxFile);
 
     try {
-      //// header message
-      if (!NcStream.readAndTest(fin, MAGIC_START.getBytes()))
-        throw new IOException("Bad magic number of grib index, should be= " + MAGIC_START);
+        //// check header is ok
+        if (!NcStream.readAndTest(fin, MAGIC_START.getBytes())) {
+          log.debug("Bad magic number of grib index, should be= {}" + MAGIC_START);
+          return false;
+        }
 
       int v = NcStream.readVInt(fin);
       if (v != version) {
@@ -157,7 +159,8 @@ public class Grib2Index extends GribIndex {
       return false;
 
     } finally {
-      if (fin != null) fin.close();
+      if (fin != null)
+        fin.close();
     }
 
     return true;

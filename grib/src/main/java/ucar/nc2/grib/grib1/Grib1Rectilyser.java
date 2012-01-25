@@ -33,7 +33,7 @@
 package ucar.nc2.grib.grib1;
 
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -41,7 +41,18 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Turn a collection of Grib1Records into a rectangular array
+ * Turn a collection of Grib1Records into a rectangular array.
+ *
+ * Use of Grib1Customizer:
+ * <ul>
+ *   <li>Needs to know if its a time interval, and if so, what the statistical type is</li>
+ *   <li>Needs to extract the time value(s)</li>
+ *   <li>Needs to know if its a level layer</li>
+ *   <li>Needs to extract the level value(s)</li>
+ * </ul>
+ *
+ * Note that the GribParameter Tables are <strong>not</strong> used. So they can be overrided and only the IOSP needs to
+ * deal with that.
  *
  * @author caron
  * @since 3/30/11
@@ -105,7 +116,7 @@ public class Grib1Rectilyser {
       TimeCoord use;
       boolean isUniform = checkTimeCoordsUniform(vb);
       Grib1SectionProductDefinition pds = vb.first.getPDSsection();
-      Grib1ParamTime ptime = cust.getParamTime(pds);
+      Grib1ParamTime ptime = pds.getParamTime(cust);
       if (ptime.isInterval()) {
         use = makeTimeCoordsIntv(vb, isUniform);
       } else {
@@ -201,19 +212,19 @@ public class Grib1Rectilyser {
       result += result * 37 + gdsHash;
 
     Grib1SectionProductDefinition pdss = gr.getPDSsection();
-    Grib1ParamTime ptime = cust.getParamTime(pdss);
-
     result += result * 37 + pdss.getLevelType();
-    if (cust.isLayer(pdss)) result += result * 37 + 1;
+    if (cust.isLayer(pdss.getLevelType())) result += result * 37 + 1;
 
     result += result * 37 + pdss.getParameterNumber();
     result += result * 37 + pdss.getTableVersion();
 
+    Grib1ParamTime ptime = pdss.getParamTime(cust);
     if (ptime.isInterval()) {
       result += result * 37 + ptime.getIntervalSize();  // create new variable for each interval size
       if (ptime.getStatType() != null) result += result * 37 + ptime.getStatType().ordinal(); // create new variable for each stat type
     }
 
+    // LOOK maybe we should always add ??
     // if this uses any local tables, then we have to add the center id, and subcenter if present
     if (pdss.getParameterNumber() > 127) {
       result += result * 37 + pdss.getCenter();
@@ -249,15 +260,10 @@ public class Grib1Rectilyser {
 
   private VertCoord makeVertCoord(VariableBag vb) {
     Grib1SectionProductDefinition pdsFirst = vb.first.getPDSsection();
-    VertCoord.VertUnit vertUnit = cust.makeVertUnit(pdsFirst.getLevelType());
-    boolean isLayer = cust.isLayer(pdsFirst);
-
-    //Grib1ParamLevel plevelFirst = pdsFirst.getParamLevel();
-    //boolean isLayer = plevelFirst.isLayer();
-    //boolean isPositiveUp = plevelFirst.isPositiveUp();
+    VertCoord.VertUnit vertUnit = cust.getVertUnit(pdsFirst.getLevelType());
+    boolean isLayer = cust.isLayer(pdsFirst.getLevelType());
 
     Set<VertCoord.Level> coords = new HashSet<VertCoord.Level>();
-
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
       Grib1ParamLevel plevel = cust.getParamLevel(pds);
@@ -267,7 +273,7 @@ public class Grib1Rectilyser {
 
     List<VertCoord.Level> vlist = new ArrayList<VertCoord.Level>(coords);
     Collections.sort(vlist);
-    if (vertUnit.isPositiveUp)
+    if (vertUnit.isPositiveUp())
       Collections.reverse(vlist);
 
     return new VertCoord(vlist, vertUnit, isLayer);
@@ -287,6 +293,10 @@ public class Grib1Rectilyser {
     return new EnsCoord(elist);
   }
 
+  private CalendarPeriod convertTimeDuration(int timeUnit) {
+    return GribUtils.getCalendarPeriod( cust.convertTimeUnit(timeUnit));
+  }
+
   /**
    * check if refDate and timeUnit is the same for all atoms.
    * set vb refDate, timeUnit fields as side effect. if not true, refDate is earliest
@@ -303,10 +313,10 @@ public class Grib1Rectilyser {
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
 
-      int unit = pds.getTimeUnit();
+      int unit = cust.convertTimeUnit(pds.getTimeUnit());
       if (timeUnit < 0) { // first one
         timeUnit = unit;
-        vb.timeUnit = Grib1TimeTypeTable.getCalendarPeriod(timeUnit);
+        vb.timeUnit = GribUtils.getCalendarPeriod(timeUnit);
 
       } else if (unit != timeUnit) {
         isUniform = false;
@@ -323,9 +333,9 @@ public class Grib1Rectilyser {
       }
 
       // LOOK - cant you just compare time units ??
-      Grib1ParamTime ptime = cust.getParamTime(pds);
+      Grib1ParamTime ptime = pds.getParamTime(cust);
       int time = ptime.getForecastTime();
-      CalendarDate date1 = cd.add( Grib1TimeTypeTable.getCalendarPeriod(unit).multiply(time));  // actual forecast date
+      CalendarDate date1 = cd.add( GribUtils.getCalendarPeriod(unit).multiply(time));  // actual forecast date
       int offset = TimeCoord.getOffset(refDate, date1, vb.timeUnit);
       CalendarDate date2 = refDate.add( vb.timeUnit.multiply(offset));  // forecast date using offset
       if (!date1.equals(date2)) {
@@ -337,18 +347,20 @@ public class Grib1Rectilyser {
     if (!timeUnitOk)
       timeUnit = 0; // minutes
 
-    vb.timeUnit = Grib1TimeTypeTable.getCalendarPeriod(timeUnit);
+    vb.timeUnit = GribUtils.getCalendarPeriod(timeUnit);
     vb.refDate = refDate;
     return isUniform;
   }
 
   private TimeCoord makeTimeCoords(VariableBag vb, boolean uniform) {
+    int timeType = -1;
     Set<Integer> times = new HashSet<Integer>();
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
-      Grib1ParamTime ptime = cust.getParamTime(pds);
+      if (timeType < 0) timeType = pds.getTimeRangeIndicator();
+      Grib1ParamTime ptime = pds.getParamTime(cust);
       int time = ptime.getForecastTime();
-      CalendarPeriod duration = Grib1TimeTypeTable.getCalendarPeriod(pds.getTimeUnit());
+      CalendarPeriod duration = convertTimeDuration(pds.getTimeUnit());
 
       if (uniform) {
         r.tcCoord = time;
@@ -361,28 +373,30 @@ public class Grib1Rectilyser {
     }
     List<Integer> tlist = new ArrayList<Integer>(times);
     Collections.sort(tlist);
-    return new TimeCoord(vb.refDate, vb.timeUnit, tlist);
+    return new TimeCoord(timeType, vb.refDate, vb.timeUnit, tlist);
   }
 
   private TimeCoord makeTimeCoordsIntv(VariableBag vb, boolean uniform) {
+    int timeType = -1;
     Set<TimeCoord.Tinv> times = new HashSet<TimeCoord.Tinv>();
     for (Record r : vb.atomList) {
       Grib1SectionProductDefinition pds = r.gr.getPDSsection();
-      Grib1ParamTime ptime = cust.getParamTime(pds);
+      if (timeType < 0) timeType = pds.getTimeRangeIndicator();
+      Grib1ParamTime ptime = pds.getParamTime(cust);
       int[] timeb = ptime.getInterval();
       if (uniform) {
         r.tcIntvCoord = new TimeCoord.Tinv(timeb[0], timeb[1]);
         times.add(r.tcIntvCoord);
       } else {
         TimeCoord.Tinv org = new TimeCoord.Tinv(timeb[0], timeb[1]);
-        CalendarPeriod fromUnit = Grib1TimeTypeTable.getCalendarPeriod(pds.getTimeUnit());
+        CalendarPeriod fromUnit = convertTimeDuration(pds.getTimeUnit());
         r.tcIntvCoord =  org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit);
         times.add(r.tcIntvCoord);
       }
     }
     List<TimeCoord.Tinv> tlist = new ArrayList<TimeCoord.Tinv>(times);
     Collections.sort(tlist);
-    return new TimeCoord(vb.refDate, vb.timeUnit, tlist);
+    return new TimeCoord(timeType, vb.refDate, vb.timeUnit, tlist);
   }
 
   public void dump(Formatter f) {
@@ -407,7 +421,7 @@ public class Grib1Rectilyser {
     f.format("%nVariables%n");
     f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
     for (VariableBag vb : gribvars) {
-      String vname = Grib1Utils.getVariableName(vb.first);
+      String vname = Grib1Utils.makeVariableName(vb.first);
       f.format("  %3d %3d %3d %s records = %d density = %d/%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
                 vname, vb.atomList.size(), vb.countDensity(), vb.recordMap.length);
       if (vb.countDensity() != vb.recordMap.length) f.format(" HEY!!");
@@ -436,7 +450,7 @@ public class Grib1Rectilyser {
 
     @Override
     public int compareTo(VariableBag o) {
-      return Grib1Utils.getVariableName(first).compareTo(Grib1Utils.getVariableName(o.first)); // LOOK
+      return Grib1Utils.makeVariableName(first).compareTo(Grib1Utils.makeVariableName(o.first)); // LOOK
     }
 
     int countDensity() {

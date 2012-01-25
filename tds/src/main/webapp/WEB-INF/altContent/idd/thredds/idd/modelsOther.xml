@@ -21,73 +21,116 @@
 
   <dataset name="Other Model Data">
 
+    <metadata inherited="true">
+      <serviceName>fullServices</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>GRID</dataType>
+      <documentation type="rights">Freely available</documentation>
+      <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
+      <documentation type="processing_level">Read by CDM Forecast Model Run Collection.</documentation>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>45 days</duration>
+      </timeCoverage>
+    </metadata>
+
     <dataset name="NWS National Precipitation Verification Unit">
 
       <metadata inherited="true">
-        <serviceName>fullServices</serviceName>
-        <authority>edu.ucar.unidata</authority>
-        <dataType>GRID</dataType>
         <dataFormat>GRIB-1</dataFormat>
-        <documentation type="rights">Freely available</documentation>
-        <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
-        <documentation type="processing_level">Read by CDM Forecast Model Run Collection.</documentation>
         <documentation xlink:href="http://www.hpc.ncep.noaa.gov/npvu/"
                        xlink:title="National Precipitation Verification Unit Page"/>
-
+        <documentation
+            xlink:href="http://origin.hpc.ncep.noaa.gov/npvu/confpres/rfcworkshop07/NPVUatRFC_Verification_Workshop_2007.ppt"
+            xlink:title="NPVU Overview (ppt)"/>
         <creator>
           <name vocabulary="DIF">DOC/NOAA/NWS/NPVU</name>
           <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
         </creator>
-        <publisher>
-          <name vocabulary="DIF">UCAR/UNIDATA</name>
-          <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
-        </publisher>
+      </metadata>
+
+      <featureCollection name="RFC" featureType="GRIB" harvest="true" path="grib/NPVU/RFC">
+        <collection spec="/data/ldm/pub/native/grid/NPVU/RFC/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <gribConfig>
+          <gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/>
+          <gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/>
+          <gdsName hash='-1571856555' groupName='KORN:Lower Mississippi RFC'/>
+          <gdsName hash='-1491065322' groupName='KKRF:Missouri Basin RFC'/>
+          <gdsName hash='-1017807718' groupName='TSJU:San Juan PR WFO'/>
+          <gdsName hash='-1003775954' groupName='NCEP-QPE National Mosaic'/>
+          <gdsName hash='-529497359' groupName='KRHA:Middle Atlantic RFC'/>
+          <gdsName hash='289752153' groupName='KRSA:California-Nevada RFC-6hr'/>
+          <gdsName hash='424971237' groupName='KRSA:California-Nevada RFC-1hr'/>
+          <gdsName hash='511861653' groupName='KTIR:Ohio Basin RFC'/>
+          <gdsName hash='880498701' groupName='KPTR:Northwest RFC'/>
+          <gdsName hash='1123818409' groupName='KTAR:Northeast RFC'/>
+          <gdsName hash='1174418106' groupName='KNES-National Satellite Analysis'/>
+          <gdsName hash='1193085709' groupName='KMSR:North Central RFC'/>
+          <gdsName hash='1464276934' groupName='KSTR:Colorado Basin RFC'/>
+          <gdsName hash='1815048381' groupName='KALR:Southeast RFC'/>
+        </gribConfig>
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="NCAR Antarctic Mesoscale Prediction System (AMPS)">
+
+      <metadata inherited="true">
+        <dataFormat>GRIB-1</dataFormat>
+        <documentation xlink:href="http://www.mmm.ucar.edu/rt/wrf/amps/"
+                       xlink:title="AMPS Home Page"/>
+        <creator>
+          <name vocabulary="DIF">UCAR/NCAR/MMM</name>
+          <contact url="http://www.mmm.ucar.edu/rt/wrf/amps/" email="kmanning@ucar.edu"/>
+        </creator>
         <timeCoverage>
           <end>present</end>
-          <duration>45 days</duration>
+          <duration>7 days</duration>
         </timeCoverage>
       </metadata>
 
-      <dataset name="River Forecast Center (RFC)">
-        <metadata inherited="true">
-          <documentation type="summary">
-            Stuff, good.
-          </documentation>
-        </metadata>
+      <featureCollection name="AMPS-D1" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D1">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D1/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd_HHmm#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
 
-        <featureCollection name="RFC" featureType="GRIB" harvest="true" path="grib/NPVU/RFC">
-          <metadata inherited="true">
-            <documentation type="summary">
-              QPE stuff
-            </documentation>
-          </metadata>
+      <featureCollection name="AMPS-D2" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D2">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D2/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd_HHmm#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
 
-          <collection spec="/data/ldm/pub/native/grid/NPVU/RFC/**/.*grib1$"
-                      dateFormatMark="yyyyMMdd#.grib1#"
-                      olderThan="5 min"/>
-          <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      <featureCollection name="AMPS-D3" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D3">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D3/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd_HHmm#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
 
-          <gribConfig>
-            <gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/>
-            <gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/>
-            <gdsName hash='-1571856555' groupName='KORN:Lower Mississippi RFC'/>
-            <gdsName hash='-1491065322' groupName='KKRF:Missouri Basin RFC'/>
-            <gdsName hash='-1017807718' groupName='TSJU:San Juan PR WFO'/>
-            <gdsName hash='-1003775954' groupName='NCEP-QPE National Mosaic'/>
-            <gdsName hash='-529497359' groupName='KRHA:Middle Atlantic RFC'/>
-            <gdsName hash='289752153' groupName='KRSA:California-Nevada RFC-6hr'/>
-            <gdsName hash='424971237' groupName='KRSA:California-Nevada RFC-1hr'/>
-            <gdsName hash='511861653' groupName='KTIR:Ohio Basin RFC'/>
-            <gdsName hash='880498701' groupName='KPTR:Northwest RFC'/>
-            <gdsName hash='1123818409' groupName='KTAR:Northeast RFC'/>
-            <gdsName hash='1174418106' groupName='KNES-National Satellite Analysis'/>
-            <gdsName hash='1193085709' groupName='KMSR:North Central RFC'/>
-            <gdsName hash='1464276934' groupName='KSTR:Colorado Basin RFC'/>
-            <gdsName hash='1815048381' groupName='KALR:Southeast RFC'/>
-          </gribConfig>
-        </featureCollection>
+      <featureCollection name="AMPS-D5" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D5">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D5/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd_HHmm#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
 
-      </dataset>
+      <featureCollection name="AMPS-D6" featureType="GRIB" harvest="true" path="grib/NCAR/AMPS/D6">
+        <collection spec="/data/ldm/pub/native/grid/NCAR/AMPS/WRF/D6/**/.*grib1$"
+                    dateFormatMark="yyyyMMdd_HHmm#.grib1#"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
 
     </dataset>
   </dataset>

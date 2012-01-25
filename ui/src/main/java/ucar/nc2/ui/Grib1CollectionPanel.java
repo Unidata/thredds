@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -36,10 +36,12 @@ import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.Grib1Parameter;
-import ucar.nc2.grib.grib1.tables.Grib1Tables;
-import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -76,7 +78,7 @@ public class Grib1CollectionPanel extends JPanel {
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private FileManager fileChooser;
-  private Grib1Customizer cust = new Grib1Customizer(new Grib1Tables()); // LOOK fake
+  private Grib1Customizer cust = null;
 
   public Grib1CollectionPanel(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
@@ -422,7 +424,6 @@ public class Grib1CollectionPanel extends JPanel {
 
   public void setCollection(String spec) throws IOException {
     this.spec = spec;
-    //this.tables = null;
 
     Formatter f = new Formatter();
     this.dcm = scanCollection(spec, f);
@@ -483,16 +484,16 @@ public class Grib1CollectionPanel extends JPanel {
         gdsSet.put(hash, gds);
     }
 
-    Grib1Customizer cust = new Grib1Customizer(new Grib1Tables()); // LOOK fake
-    Grib1Rectilyser rect = new Grib1Rectilyser(cust, null, 0);
+    this.cust = null; // LOOK reset for each file (?)
+    Grib1Rectilyser rect = null;
 
     for (Grib1Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
-      //if (tables == null) {
-      //  Grib1SectionIdentification ids = gr.getId();
-      //  tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
-      //}
+      if (cust == null) { // first record
+        cust = Grib1Customizer.factory(gr, null);
+        rect = new Grib1Rectilyser(cust, null, 0);
+      }
 
       int id = rect.cdmVariableHash(gr, 0);
       ParameterBean bean = pdsSet.get(id);
@@ -523,10 +524,16 @@ public class Grib1CollectionPanel extends JPanel {
     raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
     raf.seek(0);
 
+    this.cust = null;
     int count = 0;
     Grib1RecordScanner reader = new Grib1RecordScanner(raf);
     while (reader.hasNext()) {
       ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+
+      if (cust == null) { // first record
+        cust = Grib1Customizer.factory(gr, null);
+      }
+
       Grib1SectionProductDefinition pds = gr.getPDSsection();
       ParameterBean bean = pdsSet.get(makeUniqueId(pds));
       if (bean == null) {
@@ -653,7 +660,7 @@ public class Grib1CollectionPanel extends JPanel {
       if (param == null) return null;
       //TimeCoord tc = timeCoords.get(timeIdx);
       //String intvName = tc.getTimeIntervalName();
-      return Grib1Utils.makeVariableName(cust, pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
+      return cust.makeVariableName(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
               pds.getLevelType(), pds.getTimeRangeIndicator(), null);
     }
 
@@ -670,7 +677,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getSubcenter() {
-      return cust.getSubCenterName(pds.getCenter(), pds.getSubCenter());
+      return cust.getSubCenterName(pds.getSubCenter());
     }
 
     public final String getLevelName() {
@@ -683,8 +690,8 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public final String getStatType() {
-      Grib1ParamTime ptime = cust.getParamTime(pds);
-      Grib1TimeTypeTable.StatType stype = ptime.getStatType();
+      Grib1ParamTime ptime = pds.getParamTime(cust);
+      GribStatType stype = ptime.getStatType();
       return (stype == null) ? null : stype.name();
     }
 
@@ -707,7 +714,7 @@ public class Grib1CollectionPanel extends JPanel {
       gds = gr.getGDSsection();
       pds = gr.getPDSsection();
       plevel = cust.getParamLevel(pds);
-      ptime = cust.getParamTime(pds);
+      ptime = pds.getParamTime(cust);
     }
 
 
@@ -716,7 +723,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getPeriod() {
-      return Grib1TimeTypeTable.getCalendarPeriod(pds.getTimeUnit()).toString();
+      return GribUtils.getCalendarPeriod(pds.getTimeUnit()).toString();
     }
 
     public String getTimeTypeName() {
@@ -760,7 +767,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
 
     public String getLevel() {
-      if (cust.isLayer(pds)) {
+      if (cust.isLayer(pds.getLevelType())) {
         return plevel.getValue1() + "-" + plevel.getValue2();
       }
       return Float.toString(plevel.getValue1());

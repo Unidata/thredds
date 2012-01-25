@@ -26,12 +26,12 @@
   <parameter code="4">
     <shortName>ESTUGRD</shortName>
     <description>Estimated u-Component of Wind</description>
-    <units>m-1</units>
+    <units>m s-1</units>
   </parameter>
   <parameter code="5">
     <shortName>ESTVGRD</shortName>
     <description>Estimated v-Component of Wind</description>
-    <units>m-1</units>
+    <units>m s-1</units>
   </parameter>
   <parameter code="6">
     <shortName>NPIXU</shortName>
@@ -88,7 +88,7 @@
     <description>Cloudy Radiance (with respect to wave number)</description>
     <units>W m-1sr-1</units>
   </parameter>
-  <parameter code="16">
+  <parameter code="17">
     <shortName>CSKYRAD</shortName>
     <description>Clear Sky Radiance (with respect to wave number)</description>
     <units>W m-1sr-1</units>
@@ -96,7 +96,7 @@
   <parameter code="19">
     <shortName>WINDS</shortName>
     <description>Wind Speed</description>
-    <units>ms-1</units>
+    <units>m s-1</units>
   </parameter>
   <parameter code="20">
     <shortName>AOT06</shortName>
@@ -115,7 +115,7 @@
   </parameter>
   <parameter code="23">
     <shortName>ANGCOE</shortName>
-    <description>Angstrom Coefficien</description>
+    <description>Angstrom Coefficient</description>
     <units />
   </parameter>
   <parameter code="192">

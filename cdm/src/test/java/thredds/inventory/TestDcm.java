@@ -33,6 +33,7 @@
 package thredds.inventory;
 
 import junit.framework.TestCase;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.TestAll;
 import ucar.nc2.util.Misc;
 
@@ -89,7 +90,7 @@ public class TestDcm extends TestCase {
   }
 
   public void testScanFromConfig() throws IOException {
-    FeatureCollectionConfig config = new  FeatureCollectionConfig("testScanFromConfig", TestAll.cdmUnitTestDir + "agg/updating/.*nc$",
+    FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", TestAll.cdmUnitTestDir + "agg/updating/.*nc$",
             null, "10 sec", null, null, null, null);
 
     assert touch(TestAll.cdmUnitTestDir + "agg/updating/extra.nc");

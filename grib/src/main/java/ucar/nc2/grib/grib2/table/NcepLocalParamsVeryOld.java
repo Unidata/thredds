@@ -41,7 +41,7 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * NCEP local tables.
+ * NCEP local parameter tables - old.
  * grib2StdQuantities.xml appears to capture NCEP docs on
  * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2.shtml
  *
@@ -49,7 +49,7 @@ import java.util.*;
  * @see "http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2.shtml"
  * @since 4/3/11
  */
-public class NcepCodeTable {
+public class NcepLocalParamsVeryOld {
 
   static private enum Version {
     Current;
@@ -66,10 +66,10 @@ public class NcepCodeTable {
                 description="Temperature" />
    */
 
-  static private Map<String, Grib2Tables.TableEntry> readParameters(Version version) throws IOException {
+  static private Map<String, Grib2Customizer.TableEntry> readParameters(Version version) throws IOException {
     InputStream ios = null;
     try {
-      Class c = NcepCodeTable.class;
+      Class c = NcepLocalParamsVeryOld.class;
       ios = c.getResourceAsStream(version.getResourceName());
       if (ios == null) {
         System.out.printf("cant open %s%n", version.getResourceName());
@@ -85,7 +85,7 @@ public class NcepCodeTable {
       }
       Element root = doc.getRootElement();
 
-      Map<String, Grib2Tables.TableEntry> map = new HashMap<String, Grib2Tables.TableEntry>();
+      Map<String, Grib2Customizer.TableEntry> map = new HashMap<String, Grib2Customizer.TableEntry>();
 
       List<Element> disciplines = root.getChildren("discipline");
       for (Element elem1 : disciplines) {
@@ -100,7 +100,7 @@ public class NcepCodeTable {
             String name = elem3.getAttributeValue("id");
             String unit = elem3.getAttributeValue("unit");
             String id = makeId(discipline, category, number);
-            map.put(id, new Grib2Tables.TableEntry(discipline, category, number, name, unit, null));
+            map.put(id, new Grib2Customizer.TableEntry(discipline, category, number, name, unit, null));
           }
         }
       }
@@ -117,10 +117,10 @@ public class NcepCodeTable {
 
   /////////////////////////////////////////////
   private Version version;
-  private Map<String, Grib2Tables.TableEntry> paramMap;
+  private Map<String, Grib2Customizer.TableEntry> paramMap;
   private Map<String, String> codeMap;
 
-  public NcepCodeTable(Version version, Map<String, Grib2Tables.TableEntry> paramMap, Map<String, String> codeMap) {
+  public NcepLocalParamsVeryOld(Version version, Map<String, Grib2Customizer.TableEntry> paramMap, Map<String, String> codeMap) {
     this.version = version;
     this.paramMap = paramMap;
     this.codeMap = codeMap;
@@ -130,7 +130,7 @@ public class NcepCodeTable {
     return codeMap.get(tableName + "." + code);
   }
 
-  public Grib2Tables.TableEntry getParameter(int discipline, int category, int number) {
+  public Grib2Customizer.TableEntry getParameter(int discipline, int category, int number) {
     return paramMap.get(makeId(discipline, category, number));
   }
 
@@ -138,16 +138,16 @@ public class NcepCodeTable {
     return "P"+discipline + "." + category + "." + number;
   }
 
-  private static NcepCodeTable currentTable;
+  private static NcepLocalParamsVeryOld currentTable;
 
-  static Map<String, Grib2Tables.TableEntry> getParamMap() { return currentTable.paramMap; }
+  static Map<String, Grib2Customizer.TableEntry> getParamMap() { return currentTable.paramMap; }
 
   public static String getTableValueFromCurrent(String tableName, int code) {
     init();
     return currentTable.getTableValue(tableName, code);
   }
 
-  public static Grib2Tables.TableEntry getParameterFromCurrent(int discipline, int category, int number) {
+  public static Grib2Customizer.TableEntry getParameterFromCurrent(int discipline, int category, int number) {
     init();
     return currentTable.getParameter(discipline, category, number);
   }
@@ -155,9 +155,9 @@ public class NcepCodeTable {
   static void init(){
     if (currentTable == null)
       try {
-        Map<String, Grib2Tables.TableEntry> paramMap = readParameters(Version.Current);
+        Map<String, Grib2Customizer.TableEntry> paramMap = readParameters(Version.Current);
         Map<String, String> codeMap = readCodes(Version.Current);
-        currentTable = new NcepCodeTable(Version.Current, paramMap, codeMap);
+        currentTable = new NcepLocalParamsVeryOld(Version.Current, paramMap, codeMap);
       } catch (IOException e) {
         throw new IllegalStateException("cant open wmo tables");
       }

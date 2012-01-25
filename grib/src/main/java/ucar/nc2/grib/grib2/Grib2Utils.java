@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.time.CalendarPeriod;
@@ -110,68 +111,82 @@ public class Grib2Utils {
    */
   static public VertCoord.VertUnit getLevelUnit(int code) {
     //     public VertUnit(int code, String units, String datum, boolean isPositiveUp)
-
+    //     GribLevelType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
+    // need to read what can be read from the GRIB tables
     switch (code) {
 
       case 11:
       case 12:
-        return new VertCoord.VertUnit(code, "m", null, true);
+        return new GribLevelType(code, "m", null, true);
 
       case 20:
-        return new VertCoord.VertUnit(code, "K", null, false);
+        return new GribLevelType(code, "K", null, false);
 
       case 100:
-        return new VertCoord.VertUnit(code, "Pa", null, false);
+        return new GribLevelType(code, "Pa", null, false);
 
       case 102:
-        return new VertCoord.VertUnit(code, "m", "mean sea level", true);
+        return new GribLevelType(code, "m", "mean sea level", true);
 
       case 103:
-        return new VertCoord.VertUnit(code, "m", "ground", true);
+        return new GribLevelType(code, "m", "ground", true);
 
       case 104:
       case 105:
-        return new VertCoord.VertUnit(code, "sigma", null, false); // positive?
+        return new GribLevelType(code, "sigma", null, false); // positive?
 
       case 106:
-        return new VertCoord.VertUnit(code, "m", "land surface", false);
+        return new GribLevelType(code, "m", "land surface", false);
 
       case 107:
-        return new VertCoord.VertUnit(code, "K", null, true); // positive?
+        return new GribLevelType(code, "K", null, true); // positive?
 
       case 108:
-        return new VertCoord.VertUnit(code, "Pa", "ground", true);
+        return new GribLevelType(code, "Pa", "ground", true);
 
       case 109:
-        return new VertCoord.VertUnit(code, "K m2 kg-1 s-1", null, true);// positive?
+        return new GribLevelType(code, "K m2 kg-1 s-1", null, true);// positive?
 
       case 117:
-        return new VertCoord.VertUnit(code, "m", null, true);
+        return new GribLevelType(code, "m", null, true);
 
       case 119:
-        return new VertCoord.VertUnit(code, "Pa", null, false); // ??
+        return new GribLevelType(code, "Pa", null, false); // ??
 
       case 160:
-        return new VertCoord.VertUnit(code, "m", "sea level", false);
+        return new GribLevelType(code, "m", "sea level", false);
 
       // LOOK NCEP specific
       case 235:
-        return new VertCoord.VertUnit(code, "0.1 C", null, true);
+        return new GribLevelType(code, "0.1 C", null, true);
 
       case 237:
-        return new VertCoord.VertUnit(code, "m", null, true);
+        return new GribLevelType(code, "m", null, true);
 
       case 238:
-        return new VertCoord.VertUnit(code, "m", null, true);
+        return new GribLevelType(code, "m", null, true);
 
       default:
-        return new VertCoord.VertUnit(code, "", null, true);
+        return new GribLevelType(code, null, null, true);
     }
   }
 
   static public boolean isLevelUsed(int code) {
     VertCoord.VertUnit vunit = getLevelUnit(code);
-    return vunit.units.length() > 0;
+    return vunit.isVerticalCoordinate();
+  }
+
+  /**
+   * Check to see if this grid is a layer variable
+   *
+   * @param gr record to check
+   * @return true if a layer
+   */
+  static public boolean isLayer(Grib2Record gr) {
+    Grib2Pds pds = gr.getPDS();
+    if (pds.getLevelType2() == 255 || pds.getLevelType2() == 0)
+      return false;
+    return true;
   }
 
   static public boolean isLatLon(int gridTemplate, int center) {
@@ -191,19 +206,6 @@ public class Grib2Utils {
     else if (desc.contains("Latitude of") || desc.contains("Longitude of")) type = null;
     else type = LatLonCoordType.P;
     return type;
-  }
-
-  /**
-   * Check to see if this grid is a layer variable
-   *
-   * @param gr record to check
-   * @return true if a layer
-   */
-  static public boolean isLayer(Grib2Record gr) {
-    Grib2Pds pds = gr.getPDS();
-    if (pds.getLevelType2() == 255 || pds.getLevelType2() == 0)
-      return false;
-    return true;
   }
 
 }

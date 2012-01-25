@@ -33,8 +33,7 @@
 package ucar.nc2.ft;
 
 import junit.framework.TestCase;
-import thredds.inventory.FeatureCollectionConfig;
-import thredds.inventory.bdb.MetadataManager;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.TestAll;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -45,7 +44,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
 
-import java.io.File;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;

@@ -76,7 +76,7 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"coards/","inittest24.QRIDV07200.ncml", 1, 1, 3, 1);
 //    doOne(griddir+"avhrr/","amsr-avhrr-v2.20040729.nc", 4, 1, 4, 1);
 
-    doOne(griddir+"csm/","o3monthly.nc", 4, 1, 7, 2);
+//    doOne(griddir+"csm/","o3monthly.nc", 4, 1, 7, 2);
     doOne(griddir+"csm/","ha0001.nc", 35, 3, 5, 2); //
 
     doOne(griddir+"cf/","cf1.nc", 1,1,5,2);
@@ -92,7 +92,7 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"gdv/","OceanDJF.nc", 15, 1, 4, 1);
 
     // uses GDV as default
-    doOne(griddir+"mars/","temp_air_01082000.nc", 1, 1, 4, 1); // uses GDV
+    doOne(griddir+"mars/","temp_air_01082000.ncml", 1, 1, 4, 1); // uses GDV
     //doOne("C:/data/conventions/mm5/","n040.nc", -1, -1, -1, -1); // no Conventions code
 
     doOne(griddir+"m3io/","agg.cctmJ3fx.b312.nh3c1.dep_wa.annual.2001base.nc", 13, 1, 5, 1); // m3io
@@ -183,9 +183,8 @@ public class TestReadandCount extends TestCase {
     gridDs.close();
   }
 
-  public void utestProblem() throws Exception {
-    doOne( grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
-    doOne( grib2dir,"ndfd.wmo", 1, -1, -1, -1);
+  public void testProblem() throws Exception {
+    doOne(griddir+"mars/","temp_air_01082000.ncml", 1, 1, 4, 1); // uses GDV
   }
 
   public void utestReadNcMLInputStream() throws Exception {

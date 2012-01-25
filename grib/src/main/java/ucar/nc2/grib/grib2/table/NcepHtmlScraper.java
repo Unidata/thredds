@@ -55,7 +55,7 @@ import java.util.List;
  * @since 1/7/12
  */
 public class NcepHtmlScraper  {
-  String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep\\";
+  String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\temp\\";
 
   private boolean debugParam = false;
   private boolean debug = false;
@@ -181,7 +181,7 @@ public class NcepHtmlScraper  {
 
     Elements links = doc.select("a[href]");
     for (Element link : links) {
-      System.out.printf("link = %s%n", link);
+      //System.out.printf("link = %s%n", link);
       //for (Node sib : link.siblingNodes()) System.out.printf("  %s%n", sib);
       //System.out.printf("%n");
       parseParamTable(link.attr("abs:href"), link.text());
@@ -231,7 +231,25 @@ public class NcepHtmlScraper  {
           System.out.printf("*** Cant parse %s == %s%n", snum, row.text());
         }
 
+      } else if (cols.size() == 3) {
+        String snum = StringUtil2.cleanup(cols.get(0).text()).trim();
+        String desc = StringUtil2.cleanup(cols.get(1).text()).trim();
+        if (snum.contains("Reserved") || desc.contains("Reserved") || desc.contains("Missing") ) {
+          if (debugParam) System.out.printf("*** Skip Reserved %s%n", row.text());
+          continue;
+        }
+
+        try {
+          int pnum = Integer.parseInt(snum);
+          String units = cols.get(2).text();
+          if (debugParam) System.out.printf("val %d == %s %s%n", pnum, desc, units);
+          stuff.add(new Param(pnum, desc, units, null));
+
+        } catch (NumberFormatException e) {
+          System.out.printf("*** Cant parse %s == %s%n", snum, row.text());
+        }
       }
+
     }
 
     // grib2_table4-2-0-0.shtml

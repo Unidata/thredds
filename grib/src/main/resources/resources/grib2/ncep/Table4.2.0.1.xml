@@ -25,7 +25,7 @@
   </parameter>
   <parameter code="4">
     <shortName>VAPP</shortName>
-    <description>Vapor Pressure</description>
+    <description>Vapour Pressure</description>
     <units>Pa</units>
   </parameter>
   <parameter code="5">
@@ -165,7 +165,7 @@
   </parameter>
   <parameter code="32">
     <shortName>GRLE</shortName>
-    <description>Grauple</description>
+    <description>Graupel</description>
     <units>kg kg-1</units>
   </parameter>
   <parameter code="33">
@@ -220,7 +220,7 @@
   </parameter>
   <parameter code="43">
     <shortName>FRAIN</shortName>
-    <description>Rain Fraction of Total Liquid Water</description>
+    <description>Rain Fraction of Total Cloud Water</description>
     <units>Proportion</units>
   </parameter>
   <parameter code="44">
@@ -366,7 +366,7 @@
   <parameter code="73">
     <shortName>Validation</shortName>
     <description>Hail Prepitation Rate</description>
-    <units>kg m-2m-1</units>
+    <units>kg m-2s-1</units>
   </parameter>
   <parameter code="74">
     <shortName>TCOLG</shortName>
@@ -376,17 +376,17 @@
   <parameter code="75">
     <shortName>Validation</shortName>
     <description>Graupel (Snow Pellets) Prepitation Rate</description>
-    <units>kg m-2m-1</units>
+    <units>kg m-2s-1</units>
   </parameter>
   <parameter code="76">
     <shortName>Validation</shortName>
     <description>Convective Rain Rate</description>
-    <units>kg m-2m-1</units>
+    <units>kg m-2s-1</units>
   </parameter>
   <parameter code="77">
     <shortName>Validation</shortName>
     <description>Large Scale Rain Rate</description>
-    <units>kg m-2m-1</units>
+    <units>kg m-2s-1</units>
   </parameter>
   <parameter code="78">
     <shortName>TCOLWA</shortName>
@@ -396,7 +396,7 @@
   <parameter code="79">
     <shortName>Validation</shortName>
     <description>Evaporation Rate</description>
-    <units>kg m-2m-1</units>
+    <units>kg m-2s-1</units>
   </parameter>
   <parameter code="80">
     <shortName>Validation</shortName>

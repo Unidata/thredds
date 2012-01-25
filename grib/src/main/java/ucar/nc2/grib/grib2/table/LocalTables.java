@@ -42,7 +42,7 @@ import java.util.*;
  * @author John
  * @since 6/22/11
  */
-public abstract class LocalTables extends Grib2Tables {
+public abstract class LocalTables extends Grib2Customizer {
   protected final Map<Integer, TableEntry> local = new HashMap<Integer, TableEntry>(100);
 
   LocalTables(int center, int subCenter, int masterVersion, int localVersion) {
@@ -74,7 +74,7 @@ public abstract class LocalTables extends Grib2Tables {
   }
 
   @Override
-  public Grib2Tables.Parameter getParameter(int discipline, int category, int number) {
+  public Grib2Customizer.Parameter getParameter(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191))
       return WmoCodeTable.getParameterEntry(discipline, category, number);
     return local.get(makeHash(discipline, category, number));

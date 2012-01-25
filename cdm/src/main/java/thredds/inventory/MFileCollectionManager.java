@@ -33,6 +33,7 @@
 package thredds.inventory;
 
 import net.jcip.annotations.ThreadSafe;
+import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 
@@ -309,7 +310,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   @Override
   public boolean scanIfNeeded() throws IOException {
-    return isScanNeeded() && scan(true);
+    return (map == null || isScanNeeded()) && scan(true);
   }
 
   protected boolean hasScans() {

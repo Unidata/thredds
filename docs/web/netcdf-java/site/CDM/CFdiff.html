@@ -26,7 +26,7 @@
     <ul>
       <li>Also accepts time coordinates as ISO formatted Strings. The variable data type may be String or Char.</li>
       <li>As of CDM 4.3, <a href="http://joda-time.sourceforge.net/">joda time</a> is used to parse time units, instead of udunits. This allows the CDM to process the <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#calendar">CF 'calendar' attribute</a>. </li>
-      <li>An extended date syntax is also supported.</li>
+      <li>An extended date syntax is also supported : &quot;CALENDAR period SINCE reference_date&quot;</li>
     </ul>
   </li>
   <li>Default calendar: for udunits, and therefore for CF, the default calendar is <em>gregorian</em> (&quot;Mixed Gregorian/Julian calendar&quot;). For CDM, the default calendar is <em>proleptic_gregorian</em> (ISO8601 standard). This only matters for dates before 1582.</li>

@@ -34,7 +34,9 @@ package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.grib1.tables.Grib1TimeTypeTable;
+import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 
 /**
  * Time coordinate from the PDS.
@@ -299,14 +301,14 @@ public class Grib1ParamTime {
    * @return time unit name
    */
   public String getTimeTypeName() {
-    return cust.getTimeTypeName(timeRangeIndicator, p1, p2);
+    return cust.getTimeTypeName(timeRangeIndicator);
   }
 
    /**
    * The time unit statistical type, derived from code table 5)
    * @return time unit statistical type
    */
-  public Grib1TimeTypeTable.StatType getStatType() {
+  public GribStatType getStatType() {
     return cust.getStatType(timeRangeIndicator);
   }
 

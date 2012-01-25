@@ -1,7 +1,6 @@
 package ucar.nc2.time;
 
 import junit.framework.TestCase;
-import org.easymock.internal.matchers.Null;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.units.*;

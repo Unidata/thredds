@@ -3,6 +3,7 @@ package thredds.inventory;
 import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import thredds.featurecollection.FeatureCollectionConfig;
 
 import java.util.Date;
 
@@ -252,7 +253,7 @@ public enum CollectionUpdater {
             .build();
 
     try {
-      logger.info("Trigger Update for {}", collectionName);
+      logger.debug("Trigger Update for {} type= {}", collectionName, triggerType);
       scheduler.scheduleJob(trigger);
     } catch (SchedulerException e) {
       logger.error("triggerUpdate failed", e);
@@ -270,7 +271,7 @@ public enum CollectionUpdater {
         logger.debug("Update for {} trigger = {}", manager.getCollectionName(), context.getTrigger().getKey());
         String groupName = context.getTrigger().getKey().getGroup();
         if (groupName.equals("nocheck")) {
-          manager.scan(false);
+          //manager.scan(false);
           manager.updateNocheck();
         } else
           manager.scan(true);

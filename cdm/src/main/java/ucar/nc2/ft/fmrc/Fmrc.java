@@ -34,6 +34,7 @@ package ucar.nc2.ft.fmrc;
 
 import net.jcip.annotations.ThreadSafe;
 import org.jdom.Element;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;

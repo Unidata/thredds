@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.ListenerManager;
@@ -97,7 +98,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
 
   @Override
   public void putAuxInfo(String key, Object value) {
-    if (auxInfo == null)auxInfo = new HashMap<String, Object>();
+    if (auxInfo == null) auxInfo = new HashMap<String, Object>();
     auxInfo.put(key, value);
   }
 

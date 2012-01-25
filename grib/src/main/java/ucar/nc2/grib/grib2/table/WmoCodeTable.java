@@ -73,7 +73,6 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
       } else if (this == GRIB2_8_0_0) {
         return new String[]{"GRIB2_8_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
-
       }
       return null;
     }
@@ -422,6 +421,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       this.code = code;
       this.meaning = meaning;
       this.status = status;
+      this.unit = unit;
 
       try {
         int pos = code.indexOf('-');

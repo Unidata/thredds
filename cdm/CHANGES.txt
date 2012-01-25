@@ -3,7 +3,18 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 6: (2012-01-06)
+ 7: (2012-01-xx)
+  GRIB TimeCoord uses extended date format when unit is month or year.
+  CF1Convention accepts extended date format as time coordinate: "CALENDAR period SINCE reference_date"
+  NcML can be configured with <iospParam>
+  FeatureCollectionConfig.GribConfig can change timeUnits, rename groups, consolidate gds
+  GribIosp common superclass
+
+ 6: (2012-01-20)
+  Add polyconic projection from ghansham@sac.isro.gov.in
+  GribCollections: more work on triggers/updating, not quite there yet.
+  Grib1 : refactor local table overrides
+  Grib2: use new screen scraped NCEP tables
   GribCollections: consistent use of DiskCache for indexes
   DatasetCollectionMFiles checks index file date against oldFile date
   MFileOS captures lastModified at the time of object creation.

@@ -256,10 +256,15 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   public static void main(String[] args) {
-    CalendarDate dt = CalendarDate.parseISOformat("", "2008-08-01 01:00:00Z");
+    CalendarDate dt;
+
+    /* dt = CalendarDate.parseISOformat("", "2008-08-01 01:00:00Z");
     System.out.printf("%s%n", dt);
-    CalendarDate dt2 = CalendarDate.parseISOformat("", "2005-05-12T00:52:56");
-    System.out.printf("%s%n", dt2);
+    dt = CalendarDate.parseISOformat("", "2005-05-12T00:52:56");
+    System.out.printf("%s%n", dt); */
+
+    dt = CalendarDate.parseUdunits(null, "calendar Month since 2012-01-19T18:00:00.000Z");
+    System.out.printf("%s%n", dt);
   }
 
 }

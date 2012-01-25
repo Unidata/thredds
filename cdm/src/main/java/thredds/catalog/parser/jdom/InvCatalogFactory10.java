@@ -33,8 +33,7 @@
 
 package thredds.catalog.parser.jdom;
 
-import thredds.inventory.CollectionManager;
-import thredds.inventory.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.util.PathAliasReplacement;
 import thredds.catalog.*;
 import thredds.crawlabledataset.*;
@@ -418,18 +417,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     // gribConfig element optional
     Element gribConfig = dsElem.getChild( "gribConfig", defNS );
     if (gribConfig != null) {
-      String datasetTypes = gribConfig.getAttributeValue("datasetTypes");
-      if (null != datasetTypes)
-        config.gribConfig.addDatasetType(datasetTypes);
-
-      List<Element> gdsElems = gribConfig.getChildren( "gdsHash", defNS );
-      for (Element gds : gdsElems)
-        config.gribConfig.addGdsHash(gds.getAttributeValue("from"), gds.getAttributeValue("to"));
-
-      gdsElems = gribConfig.getChildren( "gdsName", defNS );
-      for (Element gds : gdsElems)
-        config.gribConfig.addGdsName(gds.getAttributeValue("hash"), gds.getAttributeValue("groupName"));
-
+      config.gribConfig.configFromXml(gribConfig, defNS);
     }
 
     FeatureType ft = FeatureType.getType(featureType);

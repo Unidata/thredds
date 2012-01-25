@@ -102,7 +102,7 @@ public class VertCoord { // implements Comparable<VertCoord> {
    * @return if vert dimension should be used
    */
   public boolean isVertDimensionUsed() {
-    return (coords.size() == 1) ? unit.isVerticalCoordinate : true;
+    return (coords.size() == 1) ? unit.isVerticalCoordinate() : true;
   }
 
   public boolean isLayer() {
@@ -110,7 +110,7 @@ public class VertCoord { // implements Comparable<VertCoord> {
   }
 
   public boolean isPositiveUp() {
-    return unit.isPositiveUp;
+    return unit.isPositiveUp();
   }
 
   public List<Level> getCoords() {
@@ -118,11 +118,11 @@ public class VertCoord { // implements Comparable<VertCoord> {
   }
 
   public int getCode() {
-    return unit.code;
+    return unit.getCode();
   }
 
   public String getUnits() {
-    return unit.units;
+    return unit.getUnits();
   }
 
   public int getSize() {
@@ -138,7 +138,7 @@ public class VertCoord { // implements Comparable<VertCoord> {
   }
 
   public boolean equalsData(VertCoord other) {
-    if (unit.code != other.unit.code)
+    if (unit.getCode() != other.unit.getCode())
       return false;
 
     if (isLayer != other.isLayer)
@@ -248,22 +248,19 @@ public class VertCoord { // implements Comparable<VertCoord> {
   }
 
   @Immutable
-  static public class VertUnit {
-    public final int code;
-    public final String units;
-    public final String datum;
-    //public final boolean isLayer;
-    public final boolean isPositiveUp;
-    public final boolean isVerticalCoordinate;
+  static public interface VertUnit {
 
-    public VertUnit(int code, String units, String datum, boolean isPositiveUp) {
-      this.code = code;
-      this.units = units;
-      this.datum = datum;
-      //this.isLayer = isLayer;
-      this.isPositiveUp = isPositiveUp;
-      this.isVerticalCoordinate = (units.length() != 0);
-    }
+    public int getCode();
+
+    public String getUnits();
+
+    public String getDatum();
+
+    public boolean isLayer();
+
+    public boolean isPositiveUp();
+
+    public boolean isVerticalCoordinate();
   }
 }
 

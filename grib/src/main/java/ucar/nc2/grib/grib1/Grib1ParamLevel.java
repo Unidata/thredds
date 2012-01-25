@@ -34,11 +34,10 @@ package ucar.nc2.grib.grib1;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib1.tables.Grib1LevelTypeTable;
+import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
 /**
- * Level information from a particular PDS.
+ * Level information contained in a particular PDS.
  *
  * @author caron
  * @since 1/13/12
@@ -47,7 +46,6 @@ import ucar.nc2.grib.grib1.tables.Grib1LevelTypeTable;
 @Immutable
 public class Grib1ParamLevel {
   private final Grib1Customizer cust;
-  private final int center, subcenter; // in case of center specific processing
   private final int levelType; // code Table 3 (octet 10)
   private final float value1;
   private final float value2;
@@ -62,8 +60,6 @@ public class Grib1ParamLevel {
     this.cust = cust;
 
     // default surface values
-    center = pds.getCenter();
-    subcenter = pds.getSubCenter();
     levelType = pds.getLevelType();
     int pds11 = pds.getLevelValue1();
     int pds12 = pds.getLevelValue2();
@@ -206,12 +202,7 @@ public class Grib1ParamLevel {
         value2 = GribNumbers.MISSING;
         break;
 
-      // LOOK NCEP specific
-
-      case 236:
-        value1 = pds11;
-        value2 = pds12;
-        break;
+      // note NCEP level 236 can use default
     }
   }
 

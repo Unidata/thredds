@@ -109,7 +109,7 @@
     <units>m</units>
   </parameter>
   <parameter code="21">
-    <shortName>AOSGSO</shortName>
+    <shortName>ASGSO</shortName>
     <description>Angle Of Sub-Grid Scale Orography</description>
     <units>Rad</units>
   </parameter>
@@ -119,8 +119,8 @@
     <units>Numeric</units>
   </parameter>
   <parameter code="23">
-    <shortName>GSGSO</shortName>
-    <description>Gravity Of Sub-Grid Scale Orography</description>
+    <shortName>GWD</shortName>
+    <description>Gravity Wave Dissipation</description>
     <units>W m-2</units>
   </parameter>
   <parameter code="24">

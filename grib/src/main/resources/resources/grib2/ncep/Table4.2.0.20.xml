@@ -24,12 +24,12 @@
     <units>kg m-2s-1</units>
   </parameter>
   <parameter code="4">
-    <shortName>ANPMFLX</shortName>
+    <shortName>APMFLX</shortName>
     <description>Atmosphere Net Production Mass Flux</description>
     <units>kg m-2s-1</units>
   </parameter>
   <parameter code="5">
-    <shortName>ANPEMFLX</shortName>
+    <shortName>APEMFLX</shortName>
     <description>Atmosphere Net Production And Emision Mass Flux</description>
     <units>kg m-2s-1</units>
   </parameter>
@@ -54,7 +54,7 @@
     <units>kg m-2s-1</units>
   </parameter>
   <parameter code="10">
-    <shortName>WCONMFLX</shortName>
+    <shortName>WDCPMFLX</shortName>
     <description>Wet Deposition by Convective Precipitation Mass Flux</description>
     <units>kg m-2s-1</units>
   </parameter>

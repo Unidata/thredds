@@ -111,7 +111,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private final Grib2TimePartition tp;  // build this object
 
   private Grib2TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc) {
-    this.tp = new Grib2TimePartition(name, directory);
+    this.tp = new Grib2TimePartition(name, directory, tpc);
     this.gc = tp;
     this.tpc = tpc;
   }
@@ -207,7 +207,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // check consistency across vert and ens coords
     if (!checkPartitions(canon, f)) {
-      logger.error(" Partition check failed, index not written = "+tp.getName());
+      logger.error(" Partition check failed, index not written on {} message = {}", tp.getName(), f.toString());
       f.format(" FAIL Partition check collection = %s%n", tp.getName());
       return false;
     }
@@ -232,7 +232,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // for each group in canonical Partition
     for (GribCollection.GroupHcs firstGroup : canon.getGribCollection(f).getGroups()) {
-      String gname = firstGroup.getGroupName();
+      String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // hash proto variables for quick lookup
@@ -241,6 +241,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       for (GribCollection.VariableIndex vi : firstGroup.varIndex) {
         TimePartition.VariableIndexPartitioned vip = tp.makeVariableIndexPartitioned(vi, npart);
         varIndexP.add(vip);
+        if (check.containsKey(vi.cdmHash))
+          System.out.println("HEY DUPLICATE");
         check.put(vi.cdmHash, vip); // replace with its evil twin
       }
       firstGroup.varIndex = varIndexP;// replace with its evil twin
@@ -252,7 +254,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
         // get corresponding group
         GribCollection gc = tpp.getGribCollection(f);
-        int groupIdx = gc.findGroupIdx(firstGroup.getGroupName());
+        int groupIdx = gc.findGroupIdxById(firstGroup.getId());
         if (groupIdx < 0) {
           f.format(" Cant find group %s in partition %s%n", gname, tpp.getName());
           ok = false;
@@ -276,8 +278,11 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
           VertCoord vc1 = vi1.getVertCoord();
           VertCoord vc2 = vi2.getVertCoord();
           if ((vc1 == null) != (vc2 == null)) {
+            vc1 = vi1.getVertCoord();
+            vc2 = vi2.getVertCoord();
             f.format("   ERR Vert coordinates existence on variable %s in %s doesnt match%n",  vi2, tpp.getName());
             ok = false;
+
           } else if ((vc1 != null) && !vc1.equalsData(vc2)) {
             f.format("   ERR Vert coordinates values on variable %s in %s dont match%n",  vi2, tpp.getName());
             f.format("    canon vc = %s%n", vc1);
@@ -323,13 +328,13 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
     // for each group in canonical Partition
     for (GribCollection.GroupHcs firstGroup : canon.getGribCollection(f).getGroups()) {
-      String gname = firstGroup.getGroupName();
+      String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // get list of corresponding groups from all the time partition, so we dont have to keep looking it up
       List<PartGroup> pgList = new ArrayList<PartGroup>(partitions.size());
       for (TimePartition.Partition dc : partitions) {
-        GribCollection.GroupHcs gg = dc.getGribCollection(f).findGroup(gname);
+        GribCollection.GroupHcs gg = dc.getGribCollection(f).findGroupById(gname);
         if (gg == null)
           logger.error(" Cant find group {} in partition {}", gname, dc.getName());
         else
@@ -351,7 +356,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
           // get corresponding variable
           GribCollection.VariableIndex vi2 = pg.group.findVariableByHash(viCanon.cdmHash);
           if (vi2 == null) {  // apparently not in the file
-            f.format("   WARN Cant find variable %s in partition %s / %s%n", viCanon, pg.tpp.getName(), pg.group.getGroupName());
+            f.format("   WARN Cant find variable %s in partition %s / %s%n", viCanon, pg.tpp.getName(), pg.group.getId());
             tcPartitions.add(null);
           } else {
             if (vi2.timeIdx < 0 || vi2.timeIdx >= pg.group.timeCoords.size()) {
@@ -370,7 +375,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
         }
 
         // union of time coordinates
-        TimeCoordUnion union = new TimeCoordUnion(tcPartitions, tcCanon);
+        TimeCoordUnion union = new TimeCoordUnion(tcCanon.getCode(), tcPartitions, tcCanon);
 
         // store result in the first group
         viCanon.partTimeCoordIdx = TimeCoordUnion.findUnique(unionList, union); // this merges identical TimeCoordUnion
@@ -558,12 +563,12 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     List<TimeCoord> list = new ArrayList<TimeCoord>(proto.getTimeCoordUnionsCount());
     for (int i = 0; i < proto.getTimeCoordUnionsCount(); i++) {
       GribCollectionProto.TimeCoordUnion tpu = proto.getTimeCoordUnions(i);
-      list.add(readTimePartition(tpu));
+      list.add(readTimePartition(tpu, i));
     }
     group.timeCoords = list;
   }
 
-  protected TimeCoordUnion readTimePartition(GribCollectionProto.TimeCoordUnion pc) {
+  protected TimeCoord readTimePartition(GribCollectionProto.TimeCoordUnion pc, int timeIndex) {
     int[] partition = new int[pc.getPartitionCount()];
     int[] index = new int[pc.getPartitionCount()];  // better be the same
     for (int i = 0; i < pc.getPartitionCount(); i++) {
@@ -575,13 +580,15 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
       for (int i = 0; i < pc.getValuesCount(); i++)
         coords.add(new TimeCoord.Tinv((int) pc.getValues(i), (int) pc.getBound(i)));
-      return new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      TimeCoordUnion tc =  new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      return tc.setIndex( timeIndex);
 
     } else {
       List<Integer> coords = new ArrayList<Integer>(pc.getValuesCount());
       for (float value : pc.getValuesList())
         coords.add((int) value);
-      return new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      TimeCoordUnion tc = new TimeCoordUnion(pc.getCode(), pc.getUnit(), coords, partition, index);
+      return tc.setIndex( timeIndex);
     }
   }
 

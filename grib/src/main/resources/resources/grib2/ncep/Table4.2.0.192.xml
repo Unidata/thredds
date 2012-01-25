@@ -10,7 +10,7 @@
   </parameter>
   <parameter code="2">
     <shortName>COVTZ</shortName>
-    <description>Covariance between izonal component of the wind and temperature. Defined as [uT]-[u][T], where "[]" indicates the mean over the indicated time span.</description>
+    <description>Covariance between zonal component of the wind and temperature. Defined as [uT]-[u][T], where "[]" indicates the mean over the indicated time span.</description>
     <units>K*m/s</units>
   </parameter>
   <parameter code="3">

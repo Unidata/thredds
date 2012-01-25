@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tableB>
+<tableA>
   <title>NCEP GRIB-1 Table A</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html</source>
   <parameter code="2">
@@ -314,5 +314,5 @@
   <parameter code="255">
     <description>Missing</description>
   </parameter>
-</tableB>
+</tableA>
 

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table3>
+  <title>NCEP GRIB-1 Table 3</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table3.html</source>
+  <parameter code="1">
+    <description>Ground or water surface</description>
+    <abbrev>SFC</abbrev>
+  </parameter>
+  <parameter code="2">
+    <description>Cloud base level</description>
+    <abbrev>CBL</abbrev>
+  </parameter>
+  <parameter code="3">
+    <description>Cloud top level</description>
+    <abbrev>CTL</abbrev>
+  </parameter>
+  <parameter code="4">
+    <description>Level of 0 deg (C) isotherm</description>
+    <abbrev>0DEG</abbrev>
+  </parameter>
+  <parameter code="5">
+    <description>Level of adiabatic condensation lifted from the surface</description>
+    <abbrev>ADCL</abbrev>
+  </parameter>
+  <parameter code="6">
+    <description>Maximum wind level</description>
+    <abbrev>MWSL</abbrev>
+  </parameter>
+  <parameter code="7">
+    <description>Tropopause</description>
+    <abbrev>TRO</abbrev>
+  </parameter>
+  <parameter code="8">
+    <description>Nominal top of atmosphere</description>
+    <abbrev>NTAT</abbrev>
+  </parameter>
+  <parameter code="9">
+    <description>Sea bottom</description>
+    <abbrev>SEAB</abbrev>
+  </parameter>
+  <parameter code="20">
+    <description>Isothermal level (temperature in 1/100 K in octets 11 and 12)</description>
+    <abbrev>TMPL</abbrev>
+  </parameter>
+  <parameter code="204">
+    <description>Highest tropospheric freezing level</description>
+    <abbrev>HTFL</abbrev>
+  </parameter>
+  <parameter code="206">
+    <description>Grid scale cloud bottom level</description>
+    <abbrev>GCBL</abbrev>
+  </parameter>
+  <parameter code="207">
+    <description>Grid scale cloud top level</description>
+    <abbrev>GCTL</abbrev>
+  </parameter>
+  <parameter code="209">
+    <description>Boundary layer cloud bottom level</description>
+    <abbrev>BCBL</abbrev>
+  </parameter>
+  <parameter code="210">
+    <description>Boundary layer cloud top level</description>
+    <abbrev>BCTL</abbrev>
+  </parameter>
+  <parameter code="211">
+    <description>Boundary layer cloud layer</description>
+    <abbrev>BCY</abbrev>
+  </parameter>
+  <parameter code="212">
+    <description>Low cloud bottom level</description>
+    <abbrev>LCBL</abbrev>
+  </parameter>
+  <parameter code="213">
+    <description>Low cloud top level</description>
+    <abbrev>LCTL</abbrev>
+  </parameter>
+  <parameter code="214">
+    <description>Low cloud layer</description>
+    <abbrev>LCY</abbrev>
+  </parameter>
+  <parameter code="215">
+    <description>Cloud ceiling</description>
+    <abbrev>CEIL</abbrev>
+  </parameter>
+  <parameter code="216">
+    <description>Cumulonimbus Base</description>
+    <abbrev>CBB</abbrev>
+  </parameter>
+  <parameter code="217">
+    <description>Cumulonimbus Top</description>
+    <abbrev>CBT</abbrev>
+  </parameter>
+  <parameter code="220">
+    <description>Planetary Boundary Layer (derived from Richardson number)</description>
+    <abbrev>PBLRI</abbrev>
+  </parameter>
+  <parameter code="222">
+    <description>Middle cloud bottom level</description>
+    <abbrev>MCBL</abbrev>
+  </parameter>
+  <parameter code="223">
+    <description>Middle cloud top level</description>
+    <abbrev>MCTL</abbrev>
+  </parameter>
+  <parameter code="224">
+    <description>Middle cloud layer</description>
+    <abbrev>MCY</abbrev>
+  </parameter>
+  <parameter code="232">
+    <description>High cloud bottom level</description>
+    <abbrev>HCBL</abbrev>
+  </parameter>
+  <parameter code="233">
+    <description>High cloud top level</description>
+    <abbrev>HCTL</abbrev>
+  </parameter>
+  <parameter code="234">
+    <description>High cloud layer</description>
+    <abbrev>HCY</abbrev>
+  </parameter>
+  <parameter code="235">
+    <description>Ocean Isotherm Level (1/10 deg C)</description>
+    <abbrev>OITL</abbrev>
+    <units>.1 C</units>
+  </parameter>
+  <parameter code="236">
+    <description>Layer between two depths below ocean surface depth of upper surface</description>
+    <abbrev>OLYR</abbrev>
+    <units/>
+    <isLayer>true</isLayer>
+  </parameter>
+  <parameter code="237">
+    <description>Bottom of Ocean Mixed Layer (m)</description>
+    <abbrev>OBML</abbrev>
+    <units>m</units>
+  </parameter>
+  <parameter code="238">
+    <description>Bottom of Ocean Isothermal Layer (m)</description>
+    <abbrev>OBIL</abbrev>
+    <units>m</units>
+  </parameter>
+  <parameter code="239">
+    <description>Layer Ocean Surface and 26C Ocean Isothermal Level</description>
+    <abbrev>S26CY</abbrev>
+  </parameter>
+  <parameter code="240">
+    <description>Ocean Mixed Layer</description>
+    <abbrev>OMXL</abbrev>
+  </parameter>
+  <parameter code="241">
+    <description>Ordered Sequence of Data</description>
+    <abbrev>OSEQD</abbrev>
+  </parameter>
+  <parameter code="242">
+    <description>Convective cloud bottom level</description>
+    <abbrev>CCBL</abbrev>
+  </parameter>
+  <parameter code="243">
+    <description>Convective cloud top level</description>
+    <abbrev>CCTL</abbrev>
+  </parameter>
+  <parameter code="244">
+    <description>Convective cloud layer</description>
+    <abbrev>CCY</abbrev>
+  </parameter>
+  <parameter code="245">
+    <description>Lowest level of the wet bulb zero</description>
+    <abbrev>LLTW</abbrev>
+  </parameter>
+  <parameter code="246">
+    <description>Maximum equivalent potential temperature level</description>
+    <abbrev>MTHE</abbrev>
+  </parameter>
+  <parameter code="247">
+    <description>Equilibrium level</description>
+    <abbrev>EHLT</abbrev>
+  </parameter>
+  <parameter code="248">
+    <description>Shallow convective cloud bottom level</description>
+    <abbrev>SCBL</abbrev>
+  </parameter>
+  <parameter code="249">
+    <description>Shallow convective cloud top level</description>
+    <abbrev>SCTL</abbrev>
+  </parameter>
+  <parameter code="251">
+    <description>Deep convective cloud bottom level</description>
+    <abbrev>DCBL</abbrev>
+  </parameter>
+  <parameter code="252">
+    <description>Deep convective cloud top level</description>
+    <abbrev>DCTL</abbrev>
+  </parameter>
+  <parameter code="253">
+    <description>Lowest bottom level of supercooled liquid water layer</description>
+    <abbrev>LBLSW</abbrev>
+  </parameter>
+  <parameter code="254">
+    <description>Highest top level of supercooled liquid water layer</description>
+    <abbrev>HTLSW</abbrev>
+  </parameter>
+</table3>
+

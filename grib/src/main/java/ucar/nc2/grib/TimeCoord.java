@@ -67,8 +67,10 @@ public class TimeCoord {
   protected List<Tinv> intervals;
 
   private String units;
-  private int code = -1;
+  private int index;
+  private final int code; // GRIB1 timeRangeIndicator,
 
+  // from reading ncx
   public TimeCoord(int code, String units, List coords) {
     this.code = code;
     this.units = units;
@@ -88,7 +90,9 @@ public class TimeCoord {
     }
   }
 
-  public TimeCoord(CalendarDate runDate, CalendarPeriod timeUnit, List coords) {
+  // when writing an ncx file
+  public TimeCoord(int code, CalendarDate runDate, CalendarPeriod timeUnit, List coords) {
+    this.code = code;
     this.runDate = runDate;
     this.timeUnit = timeUnit;
 
@@ -114,6 +118,11 @@ public class TimeCoord {
       this.coords = coords;
       this.intervals = null;
     }
+  }
+
+  public TimeCoord setIndex(int index) {
+    this.index = index;
+    return this;
   }
 
   public CalendarDate getRunDate() {
@@ -147,7 +156,11 @@ public class TimeCoord {
 
   public String getUnits() {
     if (units != null) return units;
-    return timeUnit.getField().toString() + " since " + runDate;
+    CalendarPeriod.Field cf = timeUnit.getField();
+    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
+      return "calendar "+ cf.toString() + " since " + runDate;
+    else
+      return timeUnit.getField().toString() + " since " + runDate;
   }
 
   public double getTimeUnitScale() {
@@ -163,7 +176,7 @@ public class TimeCoord {
   }
 
   public String getName() {
-    return (code == 0) ? "time": "time"+code;
+    return (index == 0) ? "time": "time"+index;
   }
 
   public String getType() {

@@ -379,7 +379,12 @@ public class NcMLReader {
 
     // they can specify the iosp to use - but must be file based
     String iospS = netcdfElem.getAttributeValue("iosp");
-    String iospParam = netcdfElem.getAttributeValue("iospParam");
+    Object iospParam = netcdfElem.getAttributeValue("iospParam");
+    if (iospParam == null) {
+      // can pass iosp a JDOM tree
+      iospParam = netcdfElem.getChild("iospParam", ncNS); // LOOK namespace ??
+    }
+
     String bufferSizeS = netcdfElem.getAttributeValue("buffer_size");
     int buffer_size = -1;
     if (bufferSizeS != null)
@@ -437,7 +442,7 @@ public class NcMLReader {
   // need access to protected constructor
 
   private static class NcMLNetcdfFile extends NetcdfFile {
-    NcMLNetcdfFile(String iospClassName, String iospParam, String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)
+    NcMLNetcdfFile(String iospClassName, Object iospParam, String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask)
             throws IOException, IllegalAccessException, ClassNotFoundException, InstantiationException {
 
       super(iospClassName, iospParam, location, buffer_size, cancelTask);
@@ -507,19 +512,7 @@ public class NcMLReader {
     if ((addRecords != null) && addRecords.equalsIgnoreCase("true"))
       targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-    // look for parameter tables being added
-    Element parameterMapElem = netcdfElem.getChild("parameterMap", ncNS); // LOOK namespace ??
-    if (parameterMapElem != null)
-      targetDS.sendIospMessage(parameterMapElem);
   }
-
-  /* public void merge(NetcdfDataset targetDS, Element parentElem) throws IOException {
-    // the root group
-    readGroup(targetDS, targetDS, null, null, parentElem);
-    // transfer from groups to global containers
-    targetDS.finish();
-  } */
-
 
   ////////////////////////////////////////////////////////////////////////
 

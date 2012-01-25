@@ -33,6 +33,7 @@
 package ucar.nc2.grib;
 
 import thredds.inventory.CollectionManager;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 //import ucar.nc2.grib.grib2.Grib2Index;
@@ -81,7 +82,8 @@ public abstract class GribIndex {
     return gribCC;
   }
 
-  public GribCollection createFromSingleFile(RandomAccessFile dataRaf, CollectionManager.Force force, Formatter f, int edition) throws IOException {
+  public GribCollection createFromSingleFile(RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
+                                             CollectionManager.Force force, Formatter f, int edition) throws IOException {
 
     String filename = dataRaf.getLocation();
     File dataFile = new File(filename);
@@ -102,9 +104,9 @@ public abstract class GribIndex {
 
     // heres where the ncx file date is checked against the data file
     if (edition == 1)
-      return Grib1CollectionBuilder.createFromSingleFile(dataFile, force, f);
+      return Grib1CollectionBuilder.createFromSingleFile(dataFile, force, config, f);
     else
-      return Grib2CollectionBuilder.createFromSingleFile(dataFile, force, f);
+      return Grib2CollectionBuilder.createFromSingleFile(dataFile, force, config, f);
   }
 
   /**

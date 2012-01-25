@@ -203,7 +203,7 @@ The XML Schema definition for the update element:
   <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated by an external program (or person) sending an explicit &quot;trigger&quot; URL to the server. 
     This URL is protected by HTTPS, so you must <a href="http://www.unidata.ucar.edu/staff/caron/bufr/">enable remote access</a> for this to work.<ol>
       <li>You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page <strong>https://server:port/thredds/admin/debug?Collections/showCollection</strong></li>
-      <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection?trigger=true&amp;collection=&lt;<em>name</em>&gt;</strong>, where <em>name</em> is the collection name.</li>
+      <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;</strong>, where <em>name</em> is the collection name.</li>
       </ol>
   </li>
   <li><strong>deleteAfter</strong>: ONLY FOR TDM. Delete any files that are older than this.</li>

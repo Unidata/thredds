@@ -33,13 +33,12 @@
 package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionManagerSingleFile;
-import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -48,8 +47,9 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Build a GribCollection object. Rectilyse and manage grib collection index.
- * Covers GribCollectionProto.
+ * Build a GribCollection object for Grib-2 files. Manage grib collection index.
+ * Covers GribCollectionProto, which serializes and deserializes.
+ * Rectilyse means to turn the collection into a multidimensional variable.
  *
  * @author caron
  * @since 4/6/11
@@ -57,7 +57,7 @@ import java.util.*;
 public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   public static final String MAGIC_START = "Grib2CollectionIndex";
-  protected static final int version = 6;
+  protected static final int version = 7;
   private static final boolean debug = false;
 
     // called by tdm
@@ -70,8 +70,9 @@ public class Grib2CollectionBuilder {
   }
 
   // from a single file, read in the index, create if it doesnt exist
-  static public GribCollection createFromSingleFile(File file, CollectionManager.Force force, Formatter f) throws IOException {
-    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, f);
+  static public GribCollection createFromSingleFile(File file, CollectionManager.Force force, FeatureCollectionConfig.GribConfig config,
+                                                    Formatter f) throws IOException {
+    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(file, config, f);
     builder.readOrCreateIndex(force, f);
     return builder.gc;
   }
@@ -102,15 +103,16 @@ public class Grib2CollectionBuilder {
 
   private final List<CollectionManager> collections = new ArrayList<CollectionManager>(); // are there every more than one ?
   protected GribCollection gc;
-  protected Grib2Tables tables; // only gets created in makeAggGroups
+  protected Grib2Customizer tables; // only gets created in makeAggGroups
 
   // single file
-  private Grib2CollectionBuilder(File file, Formatter f) throws IOException {
+  private Grib2CollectionBuilder(File file, FeatureCollectionConfig.GribConfig config, Formatter f) throws IOException {
     try {
       //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
       CollectionManager dcm = new CollectionManagerSingleFile(file);
+      if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
       this.collections.add(dcm);
-      this.gc = new Grib2Collection(file.getName(), new File(dcm.getRoot()));
+      this.gc = new Grib2Collection(file.getName(), new File(dcm.getRoot()), dcm);
 
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -122,11 +124,11 @@ public class Grib2CollectionBuilder {
 
   private Grib2CollectionBuilder(CollectionManager dcm) {
     this.collections.add(dcm);
-    this.gc = new Grib2Collection(dcm.getCollectionName(), new File(dcm.getRoot()));
+    this.gc = new Grib2Collection(dcm.getCollectionName(), new File(dcm.getRoot()), dcm);
   }
 
   private Grib2CollectionBuilder(String name, File directory) {
-    this.gc = new Grib2Collection(name, directory);
+    this.gc = new Grib2Collection(name, directory, null);
   }
 
   protected Grib2CollectionBuilder() {
@@ -146,6 +148,7 @@ public class Grib2CollectionBuilder {
     // otherwise, we're good as long as the index file exists
     File idx = gc.getIndexFile();
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
+      idx = gc.makeNewIndexFile(); // make sure we have a writeable index
       logger.info("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx, ff, f);        // write out index
       gc.rafLocation = idx.getPath();
@@ -236,6 +239,9 @@ public class Grib2CollectionBuilder {
       for (int i = 0; i < proto.getGroupsCount(); i++)
         gc.groups.add(readGroup(proto.getGroups(i), gc.makeGroup()));
       Collections.sort(gc.groups);
+      //int count = 0;
+      //for (GribCollection.GroupHcs gh : gc.groups)
+      //  gh.setId("group"+(count++));
 
       gc.params = new ArrayList<Parameter>(proto.getParamsCount());
       for (int i = 0; i < proto.getParamsCount(); i++)
@@ -267,8 +273,7 @@ public class Grib2CollectionBuilder {
     byte[] rawGds = p.getGds().toByteArray();
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
     Grib2Gds gds = gdss.getGDS();
-    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds);
-    group.setName(p.getName()); // optional user-overridden name
+    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gds.hashCode());
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
     for (int i = 0; i < p.getVariablesCount(); i++)
@@ -325,12 +330,14 @@ public class Grib2CollectionBuilder {
       List<TimeCoord.Tinv> coords = new ArrayList<TimeCoord.Tinv>(pc.getValuesCount());
       for (int i = 0; i < pc.getValuesCount(); i++)
         coords.add(new TimeCoord.Tinv((int) pc.getValues(i), (int) pc.getBound(i)));
-      return new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      TimeCoord tc =  new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      return tc.setIndex( pc.getIndex());
     } else {
       List<Integer> coords = new ArrayList<Integer>(pc.getValuesCount());
       for (float value : pc.getValuesList())
         coords.add((int) value);
-      return new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      TimeCoord tc =  new TimeCoord(pc.getCode(), pc.getUnit(), coords);
+      return tc.setIndex( pc.getIndex());
     }
   }
 
@@ -380,14 +387,12 @@ public class Grib2CollectionBuilder {
     public int gdsHash; // may have been modified
     public Grib2Rectilyser rect;
     public List<Grib2Record> records = new ArrayList<Grib2Record>();
-    public String name;
+    public String nameOverride;
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
     private Group(Grib2SectionGridDefinition gdss, int gdsHash) {
       this.gdss = gdss;
       this.gdsHash = gdsHash;
-      Grib2Gds gds = gdss.getGDS();
-      name = gds.getNameShort() + "-" + gds.ny + "X" + gds.nx;
     }
   }
 
@@ -410,17 +415,18 @@ public class Grib2CollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  public List<Group> makeAggregatedGroups(ArrayList<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
+  public List<Group> makeAggregatedGroups(List<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
+    Map<Integer, Integer> gdsConvert = null;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
     int fileno = 0;
-    boolean intvMerge = false;
+    //boolean intvMerge = false;  // LOOK
     for (CollectionManager dcm : collections) {
       f.format(" dcm= %s%n", dcm);
-      Map<Integer,Integer> gdsConvert = (Map<Integer,Integer>) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GDSHASH);
-      intvMerge = dcm.getAuxInfo(FeatureCollectionConfig.AUX_INTERVAL_MERGE) != null; // LOOK
+      FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+      if (config != null)  gdsConvert = config.gdsHash;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -442,13 +448,13 @@ public class Grib2CollectionBuilder {
         for (Grib2Record gr : index.getRecords()) {
           if (this.tables == null) {
             Grib2SectionIdentification ids = gr.getId(); // so all records must use the same table (!)
-            this.tables = Grib2Tables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+            this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+            if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt really work with multiple collections
           }
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
-          if (gdsConvert != null && gdsConvert.get(gdsHash) != null) { // allow external config to muck with gdsHash. Why? because of error in encoding
-            gdsHash = (Integer) gdsConvert.get(gdsHash);               // and we need exact hash matching
-          }
+          if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
+            gdsHash = (Integer) gdsConvert.get(gdsHash);             // and we need exact hash matching
 
           Group g = gdsMap.get(gdsHash);
           if (g == null) {
@@ -466,9 +472,9 @@ public class Grib2CollectionBuilder {
     Grib2Rectilyser.Counter c = new Grib2Rectilyser.Counter(); // debugging
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib2Rectilyser(new Grib2Customizer(tables), g.records, g.gdsHash, intvMerge);
+      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash);
       f.format(" GDS hash %d == ", g.gdsHash);
-      g.rect.make(f, c);
+      g.rect.make(f, c, filenames);
     }
     f.format(" Rectilyser: nvars=%d records unique=%d total=%d dups=%d (%f) %n", c.vars, c.recordsUnique, c.records, c.dups, ((float) c.dups) / c.records);
 
@@ -518,7 +524,7 @@ public class Grib2CollectionBuilder {
 
       if (first == null) {
         logger.error("GribCollection {}: has no files\n{}", gc.getName(), f.toString());
-        throw new IllegalArgumentException("GribCollection " + gc.getName() + " has no files");
+        throw new IOException("GribCollection " + gc.getName() + " has no files");
       }
 
       long pos = raf.getFilePointer();
@@ -561,7 +567,6 @@ public class Grib2CollectionBuilder {
 
     } finally {
       f.format("  file size =  %d bytes%n", raf.length());
-      raf.close();
       if (raf != null) raf.close();
     }
   }
@@ -682,6 +687,9 @@ public class Grib2CollectionBuilder {
     for (Integer aFileSet : g.fileSet)
       b.addFileno(aFileSet);
 
+    if (g.nameOverride != null)
+      b.setName(g.nameOverride);
+
     return b.build();
   }
 
@@ -739,7 +747,8 @@ public class Grib2CollectionBuilder {
 
   protected GribCollectionProto.Coord writeCoordProto(TimeCoord tc, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
-    b.setCode(index);
+    b.setIndex(index);
+    b.setCode(tc.getCode());
     b.setUnit(tc.getUnits());
     float scale = (float) tc.getTimeUnitScale(); // deal with, eg, "6 hours" by multiplying values by 6
     if (tc.isInterval()) {
@@ -756,8 +765,11 @@ public class Grib2CollectionBuilder {
 
   protected GribCollectionProto.Coord writeCoordProto(VertCoord vc, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
+    b.setIndex(index);
     b.setCode(vc.getCode());
-    b.setUnit(vc.getUnits());
+    String units = vc.getUnits();
+    if (units == null) units = "";
+    b.setUnit(units);
     for (VertCoord.Level coord : vc.getCoords()) {
       if (vc.isLayer()) {
         b.addValues((float) coord.getValue1());
@@ -771,6 +783,7 @@ public class Grib2CollectionBuilder {
 
   protected GribCollectionProto.Coord writeCoordProto(EnsCoord ec, int index) throws IOException {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
+    b.setIndex(index);
     b.setCode(0);
     b.setUnit("");
     for (EnsCoord.Coord coord : ec.getCoords()) {

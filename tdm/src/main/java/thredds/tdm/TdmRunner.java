@@ -45,11 +45,11 @@ import org.springframework.core.io.Resource;
 
 import thredds.catalog.DataFormatType;
 import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.TimePartition;
-import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;
@@ -139,7 +139,7 @@ public class TdmRunner {
             TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, f); // "we know collection has changed, dont test again" ??? LOOK
             tp.close();
             if (config.tdmConfig.triggerOk) { // send a trigger if enabled
-              String url = serverName + "thredds/admin/collection?trigger=true&collection=" + fc.getName();
+              String url = serverName + "thredds/admin/collection/trigger?collection=" + fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
             }
@@ -156,7 +156,7 @@ public class TdmRunner {
             GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, f);
             gc.close();
             if (config.tdmConfig.triggerOk) { // LOOK is there any point if you dont have trigger = true ?
-              String url = serverName + "thredds/admin/collection?trigger=nocheck&collection=" + fc.getName();
+              String url = serverName + "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
             }
@@ -387,7 +387,7 @@ public class TdmRunner {
         String[] split = cred.split(":");
         user = split[0];
         pass = split[1];
-        System.out.printf("parse cert %s %s%n", user, pass);
+        // System.out.printf("parse cert %s %s%n", user, pass);
       }
       if (args[i].equalsIgnoreCase("-catalog")) {
         Resource cat = new FileSystemResource(args[i + 1]);
@@ -398,7 +398,7 @@ public class TdmRunner {
     session = new HTTPSession(serverName);
     session.setCredentialsProvider(new CredentialsProvider() {
       public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-        System.out.printf("getCredentials called %s %s%n", user, pass);
+        //System.out.printf("getCredentials called %s %s%n", user, pass);
         return new UsernamePasswordCredentials(user, pass);
       }
     });

@@ -56,8 +56,8 @@ public class TimeCoordUnion  extends TimeCoord {
    * @param canon use baseDate, units, isInterval from here
    * @return List<TimeCoordUval>
    */
-  public TimeCoordUnion(List<TimeCoord> timeCoords, TimeCoord canon){
-    super(canon.getRunDate(), canon.getTimeUnit(), null);
+  public TimeCoordUnion(int code, List<TimeCoord> timeCoords, TimeCoord canon){
+    super(code, canon.getRunDate(), canon.getTimeUnit(), null);
     if (canon.isInterval()) {
       this.values =  makeUnionIntv(timeCoords);
       this.intervals = new ArrayList<Tinv>(this.values.size());

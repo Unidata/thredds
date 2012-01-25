@@ -38,14 +38,18 @@ dl {margin: 10px 5px 5px 15px;}
 <hr />
 <h3>gribConfig element</h3>
 <p>The schema definition:</p>
-<pre>  &lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;<br />    &lt;xsd:sequence&gt;<br />      &lt;xsd:element name=&quot;gdsHash&quot;&gt;<br />        &lt;xsd:complexType&gt;<br />          &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot;/&gt;<br />          &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot;/&gt;<br />          &lt;xsd:attribute name=&quot;groupName&quot; type=&quot;xsd:string&quot;/&gt;<br />			&lt;/xsd:complexType&gt;<br />      &lt;/xsd:element&gt;<br />    &lt;/xsd:sequence&gt;<br />    &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;<br />  &lt;/xsd:complexType&gt;</pre>
+<pre>  &lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;<br />    &lt;xsd:sequence&gt;<br />      &lt;xsd:element name=&quot;gdsHash&quot; minOccurs=&quot;0&quot;&gt;<br />        &lt;xsd:complexType&gt;<br />          &lt;xsd:attribute name=&quot;from&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;<br />          &lt;xsd:attribute name=&quot;to&quot; type=&quot;xsd:int&quot; use=&quot;required&quot;/&gt;<br />        &lt;/xsd:complexType&gt;<br />      &lt;/xsd:element&gt;<br />      &lt;xsd:element name=&quot;gdsName&quot; minOccurs=&quot;0&quot;&gt;<br />        &lt;xsd:complexType&gt;<br />          &lt;xsd:attribute name=&quot;hash&quot; type=&quot;xsd:int&quot;/&gt;<br />          &lt;xsd:attribute name=&quot;groupName&quot; type=&quot;xsd:string&quot;/&gt;<br />         &lt;/xsd:complexType&gt;<br />      &lt;/xsd:element&gt;<br />    &lt;/xsd:sequence&gt;<br />    &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;<br />  &lt;/xsd:complexType&gt;<br />
+</pre>
 <p>Defines options on feature collections with <strong> featureType</strong>=&quot;GRIB&quot;. Example:</p>
 <pre>1) &lt;gribConfig datasetTypes=&quot;Collection Files&quot; &gt;
-2)   &lt;gdsHash from=&quot;-2121584860&quot; to=&quot;28944332&quot;/&gt;<br />3)   &lt;gdsHash to=&quot;28944332&quot; groupName=&quot;KTAL&quot;/&gt;<br />4)   &lt;intervalMerge/&gt;<br />   &lt;/gribConfig&gt;</pre>
+2)   &lt;gdsHash from=&quot;-2121584860&quot; to=&quot;28944332&quot;/&gt;<br />3)   &lt;gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/&gt;<br />     &lt;gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/&gt;<br />   &lt;/gribConfig&gt;
+
+</pre>
 <ol>
   <li><strong>datasetTypes</strong>: define which 
   datasets are available in the TDS catalog
-  <ol>
+  (default is both)
+    <ol>
     <li>
       <strong>Collection</strong>: the collection level dataset</li>
     <li><strong>Files</strong>:
@@ -54,8 +58,7 @@ dl {margin: 10px 5px 5px 15px;}
     </ol>
   </li>
   <li><strong>gdsHash</strong>: translate any gds hash that equals &quot;-2121584860&quot; to &quot;28944332&quot;. This is used to fix minor errors in the GDS encoding.</li>
-  <li><strong>groupName</strong>: use the name &quot;KTAL&quot; for the group with gdsHash &quot;28944332&quot;.</li>
-  <li><strong>intervalMerge</strong>: normally, time coordinates with seperate intervals are kept seperate.</li>
+  <li><strong>gdsName</strong>: use the name &quot;KTUA:Arkansas-Red River RFC&quot; for the group with gdsHash &quot;-1960629519'&quot;, etc.</li>
 </ol>
 <hr />
 <h2>Implementation Notes</h2>

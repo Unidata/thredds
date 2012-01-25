@@ -183,8 +183,8 @@ public abstract class TimePartition extends GribCollection {
   protected Map<String, Partition> partitionMap;
   protected List<Partition> partitions;
 
-  protected TimePartition(String name, File directory) {
-    super(name, directory);
+  protected TimePartition(String name, File directory, CollectionManager dcm) {
+    super(name, directory, dcm);
   }
 
   @Override
@@ -267,13 +267,6 @@ public abstract class TimePartition extends GribCollection {
     if (null != p.getDcm())
       partitionMap.remove(p.getDcm().getCollectionName());
   }
-
-  // LOOK - needs time partition collection iosp or something
-  @Override
-  public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename) throws IOException;
-
-  @Override
-  public abstract ucar.nc2.dt.GridDataset getGridDataset(String groupName, String filename) throws IOException;
 
   public void showIndex(Formatter f) {
     List<Partition> plist = getPartitions();
