@@ -505,6 +505,26 @@ public abstract class Grib1Gds {
     }
 
     @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      GaussianLatLon that = (GaussianLatLon) o;
+
+      if (nparellels != that.nparellels) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = super.hashCode();
+      result = 31 * result + nparellels;
+      return result;
+    }
+
+    @Override
     public String toString() {
       final StringBuilder sb = new StringBuilder();
       sb.append(super.toString());
@@ -712,7 +732,6 @@ Grid definition –   polar stereographic
       return dY;
     }
 
-    /*
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
@@ -721,38 +740,79 @@ Grid definition –   polar stereographic
 
       LambertConformal that = (LambertConformal) o;
 
-      if (hdX != that.hdX) return false;
-      if (hdY != that.hdY) return false;
-      if (hla1 != that.hla1) return false;
-      if (hlad != that.hlad) return false;
-      if (hlatin1 != that.hlatin1) return false;
-      if (hlatin2 != that.hlatin2) return false;
-      if (hlo1 != that.hlo1) return false;
-      if (hlov != that.hlov) return false;
+      if (Float.compare(that.dX, dX) != 0) return false;
+      if (Float.compare(that.dY, dY) != 0) return false;
+      if (Float.compare(that.la1, la1) != 0) return false;
+      if (Float.compare(that.lad, lad) != 0) return false;
+      if (Float.compare(that.latSouthPole, latSouthPole) != 0) return false;
+      if (Float.compare(that.latin1, latin1) != 0) return false;
+      if (Float.compare(that.latin2, latin2) != 0) return false;
+      if (Float.compare(that.lo1, lo1) != 0) return false;
+      if (Float.compare(that.lonSouthPole, lonSouthPole) != 0) return false;
+      if (Float.compare(that.lov, lov) != 0) return false;
+      if (projCenterFlag != that.projCenterFlag) return false;
 
       return true;
     }
 
     @Override
     public int hashCode() {
-      if (hashCode == 0) {
-        int result = super.hashCode();
-        result = 31 * result + hla1;
-        result = 31 * result + hlo1;
-        result = 31 * result + hlov;
-        result = 31 * result + hlad;
-        result = 31 * result + hdX;
-        result = 31 * result + hdY;
-        result = 31 * result + hlatin1;
-        result = 31 * result + hlatin2;
-        hashCode = result;
-      }
-      return hashCode;
+      int result = super.hashCode();
+      result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0);
+      result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
+      result = 31 * result + (lov != +0.0f ? Float.floatToIntBits(lov) : 0);
+      result = 31 * result + (lad != +0.0f ? Float.floatToIntBits(lad) : 0);
+      result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
+      result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
+      result = 31 * result + (latin1 != +0.0f ? Float.floatToIntBits(latin1) : 0);
+      result = 31 * result + (latin2 != +0.0f ? Float.floatToIntBits(latin2) : 0);
+      result = 31 * result + (latSouthPole != +0.0f ? Float.floatToIntBits(latSouthPole) : 0);
+      result = 31 * result + (lonSouthPole != +0.0f ? Float.floatToIntBits(lonSouthPole) : 0);
+      result = 31 * result + projCenterFlag;
+      return result;
     }
 
-    private static int round(int a) { // NCEP rounding (!)
-      return (a + 5) / 10;
-    }  */
+    /*
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+
+    LambertConformal that = (LambertConformal) o;
+
+    if (hdX != that.hdX) return false;
+    if (hdY != that.hdY) return false;
+    if (hla1 != that.hla1) return false;
+    if (hlad != that.hlad) return false;
+    if (hlatin1 != that.hlatin1) return false;
+    if (hlatin2 != that.hlatin2) return false;
+    if (hlo1 != that.hlo1) return false;
+    if (hlov != that.hlov) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    if (hashCode == 0) {
+      int result = super.hashCode();
+      result = 31 * result + hla1;
+      result = 31 * result + hlo1;
+      result = 31 * result + hlov;
+      result = 31 * result + hlad;
+      result = 31 * result + hdX;
+      result = 31 * result + hdY;
+      result = 31 * result + hlatin1;
+      result = 31 * result + hlatin2;
+      hashCode = result;
+    }
+    return hashCode;
+  }
+
+  private static int round(int a) { // NCEP rounding (!)
+    return (a + 5) / 10;
+  }  */
 
     public GdsHorizCoordSys makeHorizCoordSys() {
       ProjectionImpl proj = null;

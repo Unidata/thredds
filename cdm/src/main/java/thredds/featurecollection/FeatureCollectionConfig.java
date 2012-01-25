@@ -77,7 +77,7 @@ public class FeatureCollectionConfig {
   //////////////////////////////////////////////
 
   public String name, spec, dateFormatMark, olderThan, timePartition;
-  public UpdateConfig tdmConfig = new UpdateConfig();
+  public UpdateConfig tdmConfig;
   public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
   public FmrcConfig fmrcConfig = new FmrcConfig();
@@ -101,6 +101,11 @@ public class FeatureCollectionConfig {
     this.timePartition = timePartition;
     this.useIndexOnly = useIndexOnlyS != null && useIndexOnlyS.equalsIgnoreCase("true");
     this.innerNcml = innerNcml;
+  }
+
+   public boolean isTrigggerOk() {
+    if (updateConfig.triggerOk) return true;
+    return (tdmConfig != null) && tdmConfig.triggerOk;
   }
 
   @Override

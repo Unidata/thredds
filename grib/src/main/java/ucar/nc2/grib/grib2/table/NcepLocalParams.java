@@ -228,7 +228,7 @@ public class NcepLocalParams {
       Grib2Customizer.Parameter  p2 = current.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p2 == null) {
         extra++;
-        if (p1.getNumber() < 192) f.format("  Missing %s%n", p1);
+        if (p1.getNumber() < 192) f.format("  WMO missing %s%n", p1);
 
       } else {
         String p1n = StringUtil2.substitute(GridParameter.cleanupDescription(p1.getName()), "-", " ");
@@ -297,23 +297,22 @@ public class NcepLocalParams {
   }
 
 
-  public static void compare() {
-    boolean test1 = isUnitless("See.Table.4.201");
-    boolean test2 = isUnitless("(Code.table.4.201)");
+  public static void main(String[] args) {
 
-    Grib2Customizer current = Grib2Customizer.factory(7, -1, -1, -1);
+    //Grib2Customizer current = Grib2Customizer.factory(7, -1, -1, -1);
+    Grib2Customizer wmo = Grib2Customizer.factory(0, 0, 0, 0);
 
     File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
     for (File f : dir.listFiles()) {
       if (f.getName().startsWith(match)) {
         NcepLocalParams nt = new NcepLocalParams(f.getPath());
         System.out.printf("%s%n", nt);
-        compareTables(nt, current);
+        compareTables(nt, wmo);
       }
     }
   }
 
-  public static void main(String[] args) {
+  public static void main2(String[] args) {
     GribTables.Parameter p = getParameter(0, 16, 195);
     System.out.printf("%s%n", p);
 

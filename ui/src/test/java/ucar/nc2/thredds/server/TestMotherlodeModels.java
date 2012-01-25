@@ -32,6 +32,7 @@
  */
 package ucar.nc2.thredds.server;
 
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ui.widget.StopButton;
@@ -69,6 +70,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private int countDatasets, countNoAccess, countNoOpen;
   private boolean verbose = true;
   private boolean compareCdm = false;
+  private boolean checkUnknown = true;
 
   TestMotherlodeModels(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
     this.catUrl = catURL;
@@ -146,7 +148,15 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
         else if (verbose)
           out.printf("   %d %s OK%n", n, gds.getLocationURI());
 
-        if (compareCdm) compareCdm(ds, ncd);
+        if (compareCdm)
+          compareCdm(ds, ncd);
+
+        if (checkUnknown) {
+          for (GridDatatype vs : grids) {
+            if (vs.getDescription().startsWith("Unknown"))
+              out.printf("  %s == %s%n", vs.getFullName(), vs.getDescription());
+          }
+        }
       }
 
     } catch (Exception e) {

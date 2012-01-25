@@ -36,6 +36,7 @@ import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
+import thredds.inventory.CollectionUpdater;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.constants.FeatureType;
@@ -175,10 +176,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           return (StateGrib) state;
       }
 
+     // if this is the TDS, and its using the TDM, then your not allowed to update
+      boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
+
       // update local copy of state, then switch all at once
-      // i think this is "copy on write"
       StateGrib localState = new StateGrib((StateGrib) state);
-      updateCollection(localState, CollectionManager.Force.test);
+      updateCollection(localState, tdsUsingTdm ? CollectionManager.Force.nocheck : CollectionManager.Force.test);
 
       makeTopDatasets(localState);
       localState.lastInvChange = System.currentTimeMillis();
@@ -197,7 +200,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       localState.gribCollection = null;
       if (previous != null) previous.close(); // LOOK thread safety
 
-    } else { // WTF? open and close every time (!)
+    } else {
       GribCollection previous = localState.gribCollection;
       localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, new Formatter());
       localState.timePartition = null;

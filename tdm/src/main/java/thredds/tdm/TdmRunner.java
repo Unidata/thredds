@@ -127,9 +127,9 @@ public class TdmRunner {
         thredds.catalog.DataFormatType format = fc.getDataFormatType();
 
         // delete any files first
-        if (config.tdmConfig.deleteAfter != null) {
-          doManage(config.tdmConfig.deleteAfter);
-        }
+        //if (config.tdmConfig.deleteAfter != null) {
+        //  doManage(config.tdmConfig.deleteAfter);
+        //}
 
         if (dcm instanceof TimePartitionCollection) {
           TimePartitionCollection tpc = (TimePartitionCollection) dcm;
@@ -139,7 +139,7 @@ public class TdmRunner {
             TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, f); // "we know collection has changed, dont test again" ??? LOOK
             tp.close();
             if (config.tdmConfig.triggerOk) { // send a trigger if enabled
-              String url = serverName + "thredds/admin/collection/trigger?collection=" + fc.getName();
+              String url = serverName + "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
             }

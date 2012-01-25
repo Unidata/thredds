@@ -133,6 +133,35 @@
       </featureCollection>
 
     </dataset>
+
+    <!-- dataset name="Unidata Real-Time Regional Model">
+
+      <metadata inherited="true">
+        <dataFormat>GRIB-1</dataFormat>
+        <documentation xlink:href="http://www.unidata.ucar.edu/software/gempak/rtmodel/" xlink:title="Unidata documentation" />
+        <creator>
+          <name vocabulary="DIF">UCAR/UNIDATA</name>
+          <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+        </creator>
+        <timeCoverage>
+          <end>present</end>
+          <duration>2 days</duration>
+        </timeCoverage>
+      </metadata>
+
+      <featureCollection name="Unidata-RTmodel-Primary" featureType="GRIB" harvest="true" path="grib/Unidata/rtmodel/primary">
+        <collection spec="/data/ldm/pub/rtmodel/.*nmm\.Grb.*00"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+      <featureCollection name="Unidata-RTmodel-Alt" featureType="GRIB" harvest="true" path="grib/Unidata/rtmodel/alt">
+        <collection spec="/data/ldm/pub/rtmodel/.*nmm_alt1\.Grb.*00"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      </featureCollection>
+
+    </dataset -->
   </dataset>
 
 </catalog>

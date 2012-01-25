@@ -388,7 +388,7 @@ public class Grib1Iosp extends GribIosp {
     String vcName = vc.getName();
     ncfile.addDimension(g, new Dimension(vcName, n));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
-    v.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
+    if (vc.getUnits() != null) v.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
     v.addAttribute(new Attribute(CDM.LONG_NAME, cust.getLevelDescription(vc.getCode())));
     v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
 

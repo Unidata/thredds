@@ -389,7 +389,7 @@ public class GribCollectionIndexPanel extends JPanel {
 
     void showFilesUsed(Formatter f) {
       for (int i: group.filenose) {
-        f.format(" %d:%s", i, gc.filenames.get(i)); 
+        f.format(" %d:%s%n", i, gc.filenames.get(i));
       }
     }
 

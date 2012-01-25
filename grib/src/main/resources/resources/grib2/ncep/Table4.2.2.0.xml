@@ -254,7 +254,7 @@
     <units>m s-1</units>
   </parameter>
   <parameter code="209">
-    <shortName />
+    <shortName>AKMS</shortName>
     <description>Surface exchange coefficients for U and V divided by delta z</description>
     <units>m s-1</units>
   </parameter>

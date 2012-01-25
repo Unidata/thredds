@@ -79,6 +79,7 @@ public class Grib1CollectionPanel extends JPanel {
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
   private FileManager fileChooser;
   private Grib1Customizer cust = null;
+  private Grib1Rectilyser rect = null;
 
   public Grib1CollectionPanel(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
@@ -438,6 +439,7 @@ public class Grib1CollectionPanel extends JPanel {
     java.util.List<ParameterBean> params = new ArrayList<ParameterBean>();
     java.util.List<Gds1Bean> gdsList = new ArrayList<Gds1Bean>();
 
+    this.cust = null; // LOOK reset for each file (?)
     int fileno = 0;
     for (MFile mfile : fileList) {
       f.format("%n %s%n", mfile.getPath());
@@ -484,15 +486,12 @@ public class Grib1CollectionPanel extends JPanel {
         gdsSet.put(hash, gds);
     }
 
-    this.cust = null; // LOOK reset for each file (?)
-    Grib1Rectilyser rect = null;
-
     for (Grib1Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
       if (cust == null) { // first record
         cust = Grib1Customizer.factory(gr, null);
-        rect = new Grib1Rectilyser(cust, null, 0);
+        rect = new Grib1Rectilyser(cust, null, 0); // just needed for cdmVariableHash
       }
 
       int id = rect.cdmVariableHash(gr, 0);

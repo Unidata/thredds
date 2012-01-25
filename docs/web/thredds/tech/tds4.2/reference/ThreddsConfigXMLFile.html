@@ -393,12 +393,13 @@ pronounced difference with and without this cache. </p>
 <hr style="width: 100%; height: 2px;">
  <h2>Object Caching</h2>
  <h3><a name="FileCache"></a><strong><a name="NetcdfFileCache"></a><a name="FileHandles"></a>NetcdfFile</strong> Object and  File Handle Caching </h3>
- <pre>  &lt;<strong>NetcdfFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;50&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;100&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;<br>  &lt;/NetcdfFileCache&gt;</pre>
- <pre>  &lt;<strong>HTTPFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;5&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;10&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;12 min&lt;/scour&gt;<br>  &lt;/HTTPFileCache&gt;</pre>
- <pre>  &lt;<strong>GribCollection</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;100&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;200&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;15 min&lt;/scour&gt;<br>  &lt;/GribCollection</pre>
+ <pre>  &lt;<strong>NetcdfFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;50&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;100&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;11 min&lt;/scour&gt;<br>  &lt;/NetcdfFileCache&gt;</pre>
+ <pre>  &lt;<strong>HTTPFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;10&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;20&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;17 min&lt;/scour&gt;<br>  &lt;/HTTPFileCache&gt;</pre>
+ <pre>  &lt;<strong>GribCollection</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;50&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;100&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;13 min&lt;/scour&gt;<br>  &lt;/GribCollection</pre>
  <p>These elements control the size of the TDS cache for objects/open file handles for 1) <strong>NetcdfFile</strong> objects, 2) files served through <strong>HTTP Range-Byte</strong> requests,and 3) <strong>GribCollection</strong> files, respectively. Up to <strong>maxFiles</strong> objects will be cached, and every <strong>scour</strong> amount of time, older items in the cache will be released, until only <strong>minFiles</strong> objects are left. The <strong>scour</strong> element uses any valid <strong><em>udunits</em></strong> time string, such as <em><strong>sec, min, hour, day</strong></em>. To disable the cache, set <strong>maxFiles</strong> to 0. </p>
+ <p><strong>LOOK the following may not be working</strong></p>
  <p>You may also set <em>cache=false</em> on a <strong>datasetRoot</strong> element. This controls whether a file is put in the NetcdfFile object cache. All files that are found through that datasetRoot are affected. Example:</p>
- <pre wrap="">&lt;catalog xmlns=<a href="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0">"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"</a>    
+<pre wrap="">&lt;catalog xmlns=<a href="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0">"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"</a>    
   xmlns:xlink=<a href="http://www.w3.org/1999/xlink">"http://www.w3.org/1999/xlink"</a> name="THREDDS Catalog for  NetCDF Files" version="1.0.3"&gt;      
      
   &lt;service name="ncdods" serviceType="OpenDAP" base="<em>/thredds/dodsC/</em>"/&gt;      

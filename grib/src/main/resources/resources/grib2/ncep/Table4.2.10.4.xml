@@ -64,7 +64,7 @@
     <units>m</units>
   </parameter>
   <parameter code="15">
-    <shortName>WTMP</shortName>
+    <shortName>WTMPSS</shortName>
     <description>Water Temperature</description>
     <units>K</units>
   </parameter>

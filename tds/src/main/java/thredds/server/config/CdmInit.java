@@ -123,28 +123,28 @@ public class CdmInit {
     //AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
     // FmrcInventoryServlet.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
 
-    // NetcdfFileCache : default is allow 50 - 100 open files, cleanup every 10 minutes
+    // NetcdfFileCache : default is allow 50 - 100 open files, cleanup every 11 minutes
     int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 50);
     int max = ThreddsConfig.getInt("NetcdfFileCache.maxFiles", 100);
-    int secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 10 * 60);
+    int secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 11 * 60);
     if (max > 0) {
       NetcdfDataset.initNetcdfFileCache(min, max, secs);
       startupLog.info("CdmInit: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
-    // GribCollection : default is allow 100 - 200 open files, cleanup every 15 minutes
-    min = ThreddsConfig.getInt("GribCollection.minFiles", 100);
-    max = ThreddsConfig.getInt("GribCollection.maxFiles", 200);
-    secs = ThreddsConfig.getSeconds("GribCollection.scour", 15 * 60);
+    // GribCollection : default is allow 50 - 100 open files, cleanup every 13 minutes
+    min = ThreddsConfig.getInt("GribCollection.minFiles", 50);
+    max = ThreddsConfig.getInt("GribCollection.maxFiles", 100);
+    secs = ThreddsConfig.getSeconds("GribCollection.scour", 13 * 60);
     if (max > 0) {
       GribCollection.initFileCache(min, max, secs);
       startupLog.info("CdmInit: GribCollection.initFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
-    // HTTP file access : // allow 5 - 10 open datasets, cleanup every 12 minutes
-    min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 5);
-    max = ThreddsConfig.getInt("HTTPFileCache.maxFiles", 10);
-    secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 12 * 60);
+    // HTTP file access : // allow 10 - 20 open datasets, cleanup every 17 minutes
+    min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 10);
+    max = ThreddsConfig.getInt("HTTPFileCache.maxFiles", 20);
+    secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 17 * 60);
     if (max > 0) {
       ServletUtil.setFileCache( new FileCache("HTTP File Cache", min, max, -1, secs));
       startupLog.info("CdmInit: HTTPFileCache.initCache= [" + min + "," + max + "] scour = " + secs);

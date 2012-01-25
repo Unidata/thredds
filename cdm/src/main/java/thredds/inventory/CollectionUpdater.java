@@ -34,6 +34,10 @@ public enum CollectionUpdater {
     isTdm = tdm;
   }
 
+  public boolean isTdm() {
+    return isTdm;
+  }
+
   private CollectionUpdater() {
     try {
       scheduler = StdSchedulerFactory.getDefaultScheduler();
@@ -271,10 +275,10 @@ public enum CollectionUpdater {
         logger.debug("Update for {} trigger = {}", manager.getCollectionName(), context.getTrigger().getKey());
         String groupName = context.getTrigger().getKey().getGroup();
         if (groupName.equals("nocheck")) {
-          //manager.scan(false);
           manager.updateNocheck();
-        } else
+        } else {
           manager.scan(true);
+        }
       } catch (Throwable e) {
         logger.error("UpdateCollectionJob.execute failed", e);
       }

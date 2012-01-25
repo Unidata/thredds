@@ -209,11 +209,16 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   @Override
   // DatasetCollectionManager was changed asynchronously
   public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
+    // if this is the TDS, and its using the TDM, then your not allowed to update
+    boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
+
     if (event.getType() == CollectionManager.TriggerType.updateNocheck)
       update(CollectionManager.Force.nocheck);
-    if (event.getType() == CollectionManager.TriggerType.update)
-      update(CollectionManager.Force.test);
-    if (event.getType() == CollectionManager.TriggerType.proto)
+
+    else if (event.getType() == CollectionManager.TriggerType.update)
+      update(tdsUsingTdm ? CollectionManager.Force.nocheck : CollectionManager.Force.test);
+
+    else if (event.getType() == CollectionManager.TriggerType.proto)
       updateProto();
    }
 

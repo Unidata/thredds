@@ -102,7 +102,10 @@
 </ol>
 <p>&nbsp;</p>
 <h3>Indexing</h3>
-<p>Rule of thumb is ~ 500 bytes / GRIB record. (check with GRIB1). So a collection of 7M records cost 3.5 Gb. If TdmRunner has 4 threads, can get OOM error. Solution is probably to use time partitions.<br />
+<p>Rule of thumb is ~ 500 bytes / GRIB record. (check with GRIB1). So a collection of 7M records cost 3.5 Gb. If TdmRunner has 4 threads, can get OOM error. Solution is probably to use time partitions.</p>
+<p>&nbsp;</p>
+<h2>Time partitions</h2>
+<p>It appears that all the partitions are open at once, rather than opening and closing as needed. each partition is a grib collection with  an open ncx RAF..<br />
 </p>
 <hr width="100%" />
 <address>

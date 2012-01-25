@@ -125,8 +125,7 @@ public class CollectionController extends AbstractController {
     pw.printf("<h3>Collection Name %s</h3>%n", dcm.getCollectionName());
 
     if (trigger) {
-      // see if trigger is allowed
-      if (!fc.getConfig().updateConfig.triggerOk && !fc.getConfig().tdmConfig.triggerOk) {
+      if (!fc.getConfig().isTrigggerOk()) {
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
         res.setStatus(HttpServletResponse.SC_FORBIDDEN);
         pw.printf(" TRIGGER NOT ENABLED%n");

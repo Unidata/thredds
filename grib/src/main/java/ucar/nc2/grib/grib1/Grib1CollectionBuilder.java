@@ -58,7 +58,7 @@ public class Grib1CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
 
   public static final String MAGIC_START = "Grib1CollectionIndex";
-  protected static final int version = 6;
+  protected static final int version = 7;
   private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
