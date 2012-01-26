@@ -37,6 +37,7 @@ import thredds.featurecollection.TimeUnitConverter;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2SectionIdentification;
@@ -235,17 +236,16 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   public CalendarDate getForecastDate(Grib2Record gr) {
-    int val;
     Grib2Pds pds = gr.getPDS();
     if (pds.isInterval()) {
-      int[] intv = getForecastTimeInterval(gr);
-      val = intv[1];
-    } else {
-      val = pds.getForecastTime();
-    }
+      TimeCoord.TinvDate intv = getForecastTimeInterval(gr);
+      return intv.getEnd();
 
-    CalendarPeriod period = Grib2Utils.getCalendarPeriod( convertTimeUnit(pds.getTimeUnit()));
-    return gr.getReferenceDate().add( period.multiply(val));
+    } else {
+      int val = pds.getForecastTime();
+      CalendarPeriod period = Grib2Utils.getCalendarPeriod( convertTimeUnit(pds.getTimeUnit()));
+      return gr.getReferenceDate().add( period.multiply(val));
+    }
   }
 
   /*
@@ -275,7 +275,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
    * @param gr Grib record
    * @return time interval in units of gr.getPDS().getTimeUnit()
    */
-  public int[] getForecastTimeInterval(Grib2Record gr) {
+  public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
     // note  from Arthur Taylor (degrib):
     /* If there was a range I used:
 
@@ -293,7 +293,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     // calculate total "range"
     int range = 0;
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255)) {
+      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
         log.warn("TimeInterval has different units timeUnit= " + timeUnitOrg + " TimeInterval=" + ti);
       }
 
@@ -302,29 +302,22 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     }
 
     int[] result = new int[2];
+    CalendarPeriod unitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
+    CalendarPeriod period = unitPeriod.multiply(range);
 
     // End of Interval as date
     CalendarDate EI = pdsIntv.getIntervalTimeEnd();
     if (EI == null) {  // all values were set to zero   LOOK guessing!
-      result[1] = range;
-      result[0] = 0;
-
+      return new TimeCoord.TinvDate(gr.getReferenceDate(), period);
     } else {
-      // End of Interval in units of getTimeUnit() since reference time
-      CalendarPeriod period = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
-      int val = period.subtract(gr.getReferenceDate(), EI);
-
-      result[1] = val;
-      result[0] = result[1] - range;
+      return new TimeCoord.TinvDate(period, EI);
     }
-
-    return result;
   }
 
   /**
-   * Get interval size in units of wantPeriod
+   * Get interval size in units of hours
    * @param gr must be an interval
-   * @return  interval size in units of wantPeriod
+   * @return  interval size in units of hours
    */
   public double getForecastTimeIntervalSizeInHours(Grib2Record gr) {
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
@@ -333,7 +326,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     // calculate total "range" in units of timeUnit
     int range = 0;
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255)) {
+      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
         log.warn("TimeInterval has different units timeUnit= " + timeUnitOrg + " TimeInterval=" + ti);
       }
 

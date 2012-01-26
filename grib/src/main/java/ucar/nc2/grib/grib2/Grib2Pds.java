@@ -1205,7 +1205,7 @@ public abstract class Grib2Pds {
     public int timeIncrement; // Time increment between successive fields, in units defined by the previous octet
 
     public void show(Formatter f) {
-      f.format("TimeInterval: statProcessType= %d, timeIncrementType= %d, timeRangeUnit= %d, timeRangeLength= %d, timeIncrementUnit= %d, timeIncrement=%d%n",
+      f.format("  TimeInterval: statProcessType= %d, timeIncrementType= %d, timeRangeUnit= %d, timeRangeLength= %d, timeIncrementUnit= %d, timeIncrement=%d%n",
               statProcessType, timeIncrementType, timeRangeUnit, timeRangeLength, timeIncrementUnit, timeIncrement);
     }
   }

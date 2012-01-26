@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  7: (2012-01-xx)
+  CalendarPeriod.getOffset() finds difference between two CalendarDates.
+  GRIB2 intervals: use the end date as end of interval, shape the coordinates from there, allow calendar fields
   GRIB Collections: if tdsUsingTdm, no updating
   GRIB TimeCoord uses extended date format when unit is month or year.
   CF1Convention accepts extended date format as time coordinate: "CALENDAR period SINCE reference_date"

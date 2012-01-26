@@ -33,6 +33,9 @@
 package ucar.nc2.time;
 
 import net.jcip.annotations.Immutable;
+import org.joda.time.DurationFieldType;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 
 /**
  * A CalendarPeriod is a logical duration of time, it requires a Calendar to convert to an actual duration of time.
@@ -48,7 +51,13 @@ public class CalendarPeriod {
   static public final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
 
   public enum Field {
-    Millisec, Second, Minute, Hour, Day, Month, Year
+    Millisec(PeriodType.millis()), Second(PeriodType.seconds()), Minute(PeriodType.minutes()), Hour(PeriodType.hours()),
+    Day(PeriodType.days()), Month(PeriodType.months()), Year(PeriodType.years());
+
+    PeriodType p;
+    Field(PeriodType p) {
+      this.p = p;
+    }
   }
 
   /**
@@ -112,15 +121,11 @@ public class CalendarPeriod {
   }
 
   public int subtract(CalendarDate start, CalendarDate end) {
-    if (field == CalendarPeriod.Field.Month || field == CalendarPeriod.Field.Year) {
-      log.warn(" CalendarDate.subtract on Month or Year");
-      long diff = end.getDifferenceInMsecs(start);
-      return (int) (diff / getValueInMillisecs());
-    } else {
-      long diff = end.getDifferenceInMsecs(start);
-      return (int) (diff / millisecs());
-
-    }
+    long diff = end.getDifferenceInMsecs(start);
+    int thislen = millisecs();
+    if ((diff % thislen != 0))
+      log.warn("roundoff error");
+    return (int) (diff / thislen);
   }
 
   /**
@@ -165,6 +170,20 @@ public class CalendarPeriod {
      else throw new IllegalStateException("Illegal Field = "+field);
    }
 
+  // offset from start to end, in these units
+  public int getOffset(CalendarDate start, CalendarDate end) {
+    Period p = new Period(start.getDateTime(), end.getDateTime(), getPeriodType());
+    return p.get(getDurationFieldType());
+  }
+
+  PeriodType getPeriodType() {
+    return getField().p;
+  }
+
+  DurationFieldType getDurationFieldType() {
+    return getField().p.getFieldType(0);
+  }
+
   @Override
   public String toString() {
     return value + " " + field;
@@ -188,5 +207,13 @@ public class CalendarPeriod {
     int result = value;
     result = 31 * result + (field != null ? field.hashCode() : 0);
     return result;
+  }
+
+  public static void main(String[] args) {
+    CalendarPeriod cp = new CalendarPeriod(1, Field.Day);
+    CalendarDate start =  CalendarDate.parseUdunits(null, "3 days since 1970-01-01 12:00");
+    CalendarDate end =  CalendarDate.parseUdunits(null, "6 days since 1970-01-01 12:00");
+    int offset = cp.getOffset(start, end);
+    System.out.printf("offset=%d%n", offset);
   }
 }

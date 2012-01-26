@@ -377,9 +377,12 @@ public class Grib2Iosp extends GribIosp {
       String vcName = vc.getName().toLowerCase();
       ncfile.addDimension(g, new Dimension(vcName, n));
       Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
-      if (vc.getUnits() != null) v.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
-      v.addAttribute(new Attribute(CDM.LONG_NAME, tables.getTableValue("4.5", vc.getCode())));
-      v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+      if (vc.getUnits() != null) {
+        v.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
+        String desc = tables.getTableValue("4.5", vc.getCode());
+        if (desc != null) v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
+        v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+      }
 
       v.addAttribute(new Attribute("GRIB2_level_type", vc.getCode()));
       VertCoord.VertUnit vu = Grib2Utils.getLevelUnit(vc.getCode());
@@ -764,9 +767,8 @@ public class Grib2Iosp extends GribIosp {
             f.format("  Parameter=%s%n", tables.getVariableName(gr));
             f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
             f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
-            int[] tinv = tables.getForecastTimeInterval(gr);
-            if (tinv != null)
-              f.format("  TimeInterval=(%d,%d)%n",tinv[0],tinv[1]);
+            TimeCoord.Tinv tinv = tables.getForecastTimeInterval(gr);
+            if (tinv != null) f.format("  TimeInterval=%s%n",tinv);
             f.format("%n");
             gr.getPDS().show(f);
             System.out.printf(" Grib2Record.readData at drsPos %d = %s%n", dr.drsPos, f.toString());
@@ -877,9 +879,8 @@ public class Grib2Iosp extends GribIosp {
             f.format("  Parameter=%s%n", tables.getVariableName(gr));
             f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
             f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
-            int[] tinv = tables.getForecastTimeInterval(gr);
-            if (tinv != null)
-              f.format("  TimeInterval=(%d,%d)%n",tinv[0],tinv[1]);
+            TimeCoord.Tinv tinv = tables.getForecastTimeInterval(gr);
+            if (tinv != null) f.format("  TimeInterval=%s%n",tinv);
             f.format("  ");
             gr.getPDS().show(f);
             System.out.printf("%nGrib2Record.readData at drsPos %d = %s%n", dr.drsPos, f.toString());

@@ -47,7 +47,7 @@ import java.util.*;
  * <li> "n unit since refDate"</li>
  * <li> "Date"</li>
  * <li> interval (start,end) using "n unit since refDate"</li>
- * <li> interval (startDate,endDate)</li>
+ * <li> interval (startDate, endDate)</li>
  * </ol>
  *
  * @author caron
@@ -61,6 +61,11 @@ public class TimeCoord {
     return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
   }
 
+  public static int getCalendarOffset(CalendarDate refDate, CalendarDate cd, CalendarPeriod timeUnit) {
+    long msecs = cd.getDifferenceInMsecs(refDate);
+    return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
+  }
+
   private CalendarDate runDate;
   private CalendarPeriod timeUnit;
   protected List<Integer> coords;
@@ -68,14 +73,14 @@ public class TimeCoord {
 
   private String units;
   private int index;
-  private final int code; // GRIB1 timeRangeIndicator,
+  private final int code; // GRIB1 timeRangeIndicator, GRIB2 not used yet
 
   // from reading ncx
-  public TimeCoord(int code, String units, List coords) {
+  public TimeCoord(int code, String udunitString, List coords) {
     this.code = code;
-    this.units = units;
+    this.units = udunitString;
 
-    CalendarDateUnit cdu = CalendarDateUnit.of(null, units);
+    CalendarDateUnit cdu = CalendarDateUnit.of(null, udunitString);
     this.runDate = cdu.getBaseCalendarDate();
     this.timeUnit = cdu.getTimeUnit();
 
@@ -109,6 +114,26 @@ public class TimeCoord {
       }
       this.coords = offsets;
       this.intervals = null;
+
+    } else if (atom instanceof TinvDate) {
+      CalendarDate startDate = null;
+      for (Object coord : coords) {
+        TinvDate tinvd = (TinvDate) coord;
+        //if (!tinvd.getPeriod().equals(timeUnit))
+        //  throw new IllegalStateException("Mixed Periods in coordinate "+timeUnit+" != "+tinvd.getPeriod());
+        if (startDate == null) startDate = tinvd.start;
+        else if (startDate.isAfter(tinvd.start)) startDate = tinvd.start;
+      }
+      int count = 0;
+      List<Tinv> offsets = new ArrayList<Tinv>(coords.size());
+      for (Object coord : coords) {
+        TinvDate tinvd = (TinvDate) coord;
+        tinvd.index = count++;
+        offsets.add(tinvd.convertReferenceDate(startDate, timeUnit));
+      }
+      this.runDate = startDate;
+      this.coords = null;
+      this.intervals = offsets;
 
     } else if (atom instanceof Tinv) {
       this.intervals = coords;
@@ -336,5 +361,71 @@ public class TimeCoord {
 
   }
 
+  // use for time intervals not represented by integer bounds from reference
+  public static class TinvDate implements Comparable<TinvDate>  {
+    private final CalendarDate start, end;
+    //private final CalendarPeriod period;
+    public int index = -1; // LOOK
+
+    public TinvDate(CalendarPeriod period, CalendarDate end) {
+      //super(0, period.getValue()); // kludge
+      //this.period = period;
+      this.end = end;
+      this.start = end.subtract(period);
+    }
+
+    public TinvDate(CalendarDate start, CalendarPeriod period) {
+      //super(0, period.getValue()); // kludge
+      //this.period = period;
+      this.start = start;
+      this.end = start.add(period);
+    }
+
+    public CalendarDate getStart() {
+      return start;
+    }
+
+    public CalendarDate getEnd() {
+      return end;
+    }
+
+    public Tinv convertReferenceDate(CalendarDate refDate, CalendarPeriod timeUnit) {
+      int startOffset = timeUnit.getOffset(refDate, start);
+      int endOffset = timeUnit.getOffset(refDate, end);
+      return new TimeCoord.Tinv(startOffset, endOffset);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      TinvDate tinvDate = (TinvDate) o;
+      if (end != null ? !end.equals(tinvDate.end) : tinvDate.end != null) return false;
+      if (start != null ? !start.equals(tinvDate.start) : tinvDate.start != null) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = start != null ? start.hashCode() : 0;
+      result = 31 * result + (end != null ? end.hashCode() : 0);
+      return result;
+    }
+
+    public int compareTo(TinvDate that) {
+      int c1 = start.compareTo(that.start);
+      return (c1 == 0) ? end.compareTo(that.end) : c1;
+    }
+
+    @Override
+    public String toString() {
+      Formatter out = new Formatter();
+      out.format("(%s,%s)", start, end);
+      return out.toString();
+    }
+
+  }
 
 }

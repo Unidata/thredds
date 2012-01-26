@@ -44,6 +44,7 @@ import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 
+import javax.print.DocFlavor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -388,9 +389,12 @@ public class Grib1Iosp extends GribIosp {
     String vcName = vc.getName();
     ncfile.addDimension(g, new Dimension(vcName, n));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
-    if (vc.getUnits() != null) v.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, cust.getLevelDescription(vc.getCode())));
-    v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+    if (vc.getUnits() != null) {
+      v.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
+      String desc = cust.getLevelDescription(vc.getCode());
+      if (desc != null) v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
+      v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+    }
 
     v.addAttribute(new Attribute("GRIB1_level_code", vc.getCode()));
     String datum = cust.getLevelDatum(vc.getCode());
