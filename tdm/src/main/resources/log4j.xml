@@ -32,7 +32,7 @@
   </logger>
 
   <logger name="ucar.nc2.grib" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="consoleLogger"/>
     <appender-ref ref="fileLogger" />
   </logger>

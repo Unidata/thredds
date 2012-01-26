@@ -767,7 +767,7 @@ public class Grib2Iosp extends GribIosp {
             f.format("  Parameter=%s%n", tables.getVariableName(gr));
             f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
             f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
-            TimeCoord.Tinv tinv = tables.getForecastTimeInterval(gr);
+            TimeCoord.TinvDate tinv = tables.getForecastTimeInterval(gr);
             if (tinv != null) f.format("  TimeInterval=%s%n",tinv);
             f.format("%n");
             gr.getPDS().show(f);
@@ -879,7 +879,7 @@ public class Grib2Iosp extends GribIosp {
             f.format("  Parameter=%s%n", tables.getVariableName(gr));
             f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
             f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
-            TimeCoord.Tinv tinv = tables.getForecastTimeInterval(gr);
+            TimeCoord.TinvDate tinv = tables.getForecastTimeInterval(gr);
             if (tinv != null) f.format("  TimeInterval=%s%n",tinv);
             f.format("  ");
             gr.getPDS().show(f);

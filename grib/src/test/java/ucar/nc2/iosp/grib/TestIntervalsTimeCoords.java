@@ -76,11 +76,11 @@ public class TestIntervalsTimeCoords extends TestCase {
   }
 
   static String[] testdata = {
-      TestAll.cdmUnitTestDir +"tds/normal/GFS_Puerto_Rico_191km_20100515_0000.grib1", "Total_precipitation", "bounds0",
-      TestAll.cdmUnitTestDir +"tds/normal/GFS_CONUS_80km_20100513_0600.grib1", "Total_precipitation", "bounds1",
-      TestAll.cdmUnitTestDir +"tds/normal/NAM_CONUS_12km_20100913_0000.grib2", "Total_precipitation", "bounds2",
-      TestAll.cdmUnitTestDir +"formats/grib1/QPE.20101005.009.157", "Total_column_ozone_concentration", "boundsQPE",
-      TestAll.cdmUnitTestDir +"formats/grib1/QPE.20101005.009.157", "Total_precipitation", "boundsQPE2",
+      TestAll.cdmUnitTestDir +"tds/ncep/GFS_Puerto_Rico_191km_20100515_0000.grib1", "Total_precipitation_surface_12_Hour_Accumulation", "bounds0",
+      TestAll.cdmUnitTestDir +"tds/ncep/GFS_CONUS_80km_20100513_0600.grib1", "Total_precipitation_surface_6_Hour_Accumulation", "bounds1",
+      TestAll.cdmUnitTestDir +"tds/ncep/NAM_CONUS_80km_20100508_1200.grib1", "Total_precipitation_surface_12_Hour_Accumulation", "bounds2",
+      TestAll.cdmUnitTestDir +"formats/grib1/QPE.20101005.009.157", "Total_precipitation_surface_1_Hour_Accumulation", "boundsQPE",
+      // TestAll.cdmUnitTestDir +"formats/grib1/QPE.20101005.009.157", "Total_precipitation", "boundsQPE2",
       // TestAll.testdataDir +"cdmUnitTest/tds/normal/SREF_Alaska_45km_ensprod_20100525_0300.grib2",  "Total_precipitation_probability_above_0p25", "bounds3",
       // TestAll.testdataDir +"cdmUnitTest/tds/normal/RUC2_CONUS_20km_pressure_20100509_1300.grib2", "Convective_precipitation", "bounds4",
       // TestAll.testdataDir +"cdmUnitTest/tds/normal/GFS_Global_2p5deg_20100602_1200.grib2",  "Total_precipitation", "bounds5",
@@ -94,24 +94,71 @@ public class TestIntervalsTimeCoords extends TestCase {
   };
 
   static int[][] bounds1 = {
-    {0, 6}, {6, 12}, {12, 18}, {18, 24}, {24, 30}, {30, 36}, {36, 42}, {42, 48}, {48, 54},
-    {54, 60}, {60, 66}, {66, 72}, {72, 78}, {78, 84}, {84, 90}, {90, 96}, {96, 102},
-    {102, 108}, {108, 114}, {114, 120}, {120, 126}, {126, 132}, {132, 138}, {138, 144},
-    {144, 150}, {150, 156}, {156, 162}, {162, 168}, {168, 174}, {174, 180}, {180, 192},
-    {192, 204}, {204, 216}, {216, 228}, {228, 240}
+    {0, 6},
+    {6, 12},
+    {12, 18},
+    {18, 24},
+    {24, 30},
+    {30, 36},
+    {36, 42},
+    {42, 48},
+    {48, 54},
+    {54, 60},
+    {60, 66},
+    {66, 72},
+    {72, 78},
+    {78, 84},
+    {84, 90},
+    {90, 96},
+    {96, 102},
+    {102, 108},
+    {108, 114},
+    {114, 120},
+    {120, 126},
+    {126, 132},
+    {132, 138},
+    {138, 144},
+    {144, 150},
+    {150, 156},
+    {156, 162},
+    {162, 168},
+    {168, 174},
+    {174, 180}
   };
 
   static int[][] bounds2 = {
-    {0, 3}, {3, 6}, {6, 9}, {9, 12}, {12, 15}, {15, 18}, {18, 21}, {21, 24}, {24, 27},
-    {27, 30}, {30, 33}, {33, 36}, {36, 39}, {39, 42}, {42, 45}, {45, 48}, {48, 51},
-    {51, 54}, {54, 57}, {57, 60}, {60, 63}, {63, 66}, {66, 69}, {69, 72}, {72, 75},
-    {75, 78}, {78, 81}, {81, 84}
+    {0, 12},
+    {12, 24},
+    {24, 36},
+    {36, 48},
+    {48, 60}
   };
 
   static int[][] boundsQPE = {
-    {0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}, {9, 10},
-    {10, 11}, {11, 12}, {12, 13}, {13, 14}, {14, 15}, {15, 16}, {16, 17}, {17, 18}, {18, 19}, {19, 20},
-    {20, 21}, {21, 22}, {22, 23}, {23, 24}
+   {0, 1},
+    {1, 2},
+    {2, 3},
+    {3, 4},
+    {4, 5},
+    {5, 6},
+    {6, 7},
+    {7, 8},
+    {8, 9},
+    {9, 10},
+    {10, 11},
+    {11, 12},
+    {12, 13},
+    {13, 14},
+    {14, 15},
+    {15, 16},
+    {16, 17},
+    {17, 18},
+    {18, 19},
+    {19, 20},
+    {20, 21},
+    {21, 22},
+    {22, 23},
+    {23, 24}
   };
 
   static int[][] boundsQPE2 = {
