@@ -45,7 +45,7 @@ public class TestCommon extends TestCase
 {
     static public boolean debug = false;
 
-    static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
+    static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 
     // Look for these to verify we have found the thredds root
     static final String[] SUBROOTS = new String[] {"cdm", "tds", "opendap"} ;

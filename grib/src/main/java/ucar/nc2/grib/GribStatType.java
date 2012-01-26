@@ -35,7 +35,7 @@ package ucar.nc2.grib;
 import ucar.nc2.constants.CF;
 
 /**
- * Grib1 derived from Code table 5 – Time range indicator
+ * Grib1 derived from Code table 5 : Time range indicator
  * Grib2 code table 4.10: Statistical process used to calculate the processed field from the field at each time increment during the time range
  * These are the standard WMO tables only.
  *

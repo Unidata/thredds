@@ -336,12 +336,12 @@ public class EscapeStrings {
         url = protocol + "://" + authority;
         if(path != null && path.length() > 0) {
             // Encode pieces between '/'
-            String pieces[] = path.split("[/]+");
-            for(String p: pieces)  {
-                if(p == null || p.length() == 0)
-		    url += "/";
-		else
-                    url += ("/"+urlEncode(p));
+            String pieces[] = path.split("[/]",-1);
+            for(int i=0;i<pieces.length;i++)  {
+                String p = pieces[i];
+                if(p == null) p = "";
+                if(i > 0) url += "/";
+                url += urlEncode(p);
             }
         }
         if(query != null && query.length() > 0)

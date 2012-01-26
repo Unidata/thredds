@@ -47,7 +47,7 @@ public class GribUtils {
    * Convert a time unit to a CalendarPeriod
    * GRIB1 and GRIB2 are the same (!)
    *
-   * @param timeUnit (GRIB1 table 4) (GRIB2   Code table 4.4 – Indicator of unit of time range)
+   * @param timeUnit (GRIB1 table 4) (GRIB2   Code table 4.4 : Indicator of unit of time range)
    * @return equivalent CalendarPeriod
    */
   static public CalendarPeriod getCalendarPeriod(int timeUnit) {
