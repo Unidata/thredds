@@ -35,10 +35,7 @@ package ucar.nc2.ui;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
-import ucar.nc2.grib.GdsHorizCoordSys;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.GribUtils;
+import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
@@ -52,7 +49,6 @@ import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
 
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -1173,11 +1169,8 @@ public class Grib2CollectionPanel extends JPanel {
     f.format("%nGrib2ProductDefinitionSection%n");
     Grib2Pds pds = pdss.getPDS();
     if (pds.isInterval()) {
-      int[] intv = cust.getForecastTimeInterval(gr);
-      if (intv != null) {
-        f.format(" Start interval     = %d%n", intv[0]);
-        f.format(" End   interval     = %d%n", intv[1]);
-      }
+      TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
+      if (intv != null) f.format(" Interval     = %s%n", intv);
     }
     showPdsTemplate(pdss, f, cust);
     if (pds.getHybridCoordinatesCount() > 0) {
@@ -1274,7 +1267,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public String getHeader() {
-      return StringUtil2.cleanup(gr.getHeader());
+      return Grib2Utils.cleanupHeader(gr.getHeader());
     }
 
     /* public final long getPDShash() {
@@ -1335,8 +1328,8 @@ public class Grib2CollectionPanel extends JPanel {
 
     public String getIntv() {
       if (pds.isInterval() && cust != null) {
-        int[] intv = cust.getForecastTimeInterval(gr);
-        return intv[0] + "-" + intv[1];
+        TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
+        return intv.toString();
       }
       return "";
     }
@@ -1390,9 +1383,8 @@ public class Grib2CollectionPanel extends JPanel {
       f.format("  Parameter=%s%n", cust.getVariableName(gr));
       f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
       f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
-      int[] tinv = cust.getForecastTimeInterval(gr);
-      if (tinv != null)
-        f.format("  TimeInterval=(%d,%d)%n", tinv[0], tinv[1]);
+      TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
+      if (intv != null) f.format("  TimeInterval=%s%n", intv);
       f.format("%n");
       pds.show(f);
       return f.toString();

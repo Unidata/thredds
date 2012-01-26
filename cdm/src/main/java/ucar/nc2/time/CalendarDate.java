@@ -242,6 +242,27 @@ public class CalendarDate implements Comparable<CalendarDate> {
     throw new UnsupportedOperationException("period units = "+period);
   }
 
+  // calendar date field
+  public CalendarDate subtract(CalendarPeriod period) {
+    switch (period.getField()) {
+      case Millisec:
+        return new CalendarDate(cal, dateTime.minusMillis( period.getValue() ));
+      case Second:
+        return new CalendarDate(cal, dateTime.minusSeconds( period.getValue() ));
+      case Minute:
+        return new CalendarDate(cal, dateTime.minusMinutes(period.getValue()));
+      case Hour:
+        return new CalendarDate(cal, dateTime.minusHours(period.getValue()));
+      case Day:
+        return new CalendarDate(cal, dateTime.minusDays( period.getValue() ));
+      case Month:
+        return new CalendarDate(cal, dateTime.minusMonths( period.getValue() ));
+      case Year:
+        return new CalendarDate(cal, dateTime.minusYears( period.getValue() ));
+    }
+    throw new UnsupportedOperationException("period units = "+period);
+  }
+
   public Date toDate() {
     return dateTime.toDate();
   }

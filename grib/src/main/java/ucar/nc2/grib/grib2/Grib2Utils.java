@@ -208,4 +208,11 @@ public class Grib2Utils {
     return type;
   }
 
+  static public String cleanupHeader(byte[] raw) {
+    String result = StringUtil2.cleanup(raw);
+    int pos = result.indexOf("data");
+    if (pos > 0) result = result.substring(pos);
+    return result;
+  }
+
 }

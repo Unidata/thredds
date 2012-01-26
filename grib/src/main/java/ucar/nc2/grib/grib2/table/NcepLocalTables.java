@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 
@@ -97,8 +98,8 @@ public class NcepLocalTables extends Grib2Customizer {
 
   }
 
-  @Override
-  public int[] getForecastTimeInterval(Grib2Record gr) {
+  /* @Override
+  public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
     if (!gr.getPDS().isInterval()) return null;
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
     Grib2Pds.TimeInterval[] ti = pdsIntv.getTimeIntervals();
@@ -109,8 +110,8 @@ public class NcepLocalTables extends Grib2Customizer {
     int[] result = new int[2];
     result[0] = pdsIntv.getForecastTime();
     result[1] = pdsIntv.getForecastTime() + tiUse.timeRangeLength * tiUse.timeIncrement; // kludge
-    return result;
-  }
+    return new TimeCoord.Tinv(result[0], result[1]);
+  }  */
 
   @Override
   public String getLevelNameShort(int id) {

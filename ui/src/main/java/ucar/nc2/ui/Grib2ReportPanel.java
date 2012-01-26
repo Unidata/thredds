@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class Grib2ReportPanel extends JPanel {
   public static enum Report {
-    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
+    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord
   }
 
   private PreferencesExt prefs;
@@ -129,6 +129,9 @@ public class Grib2ReportPanel extends JPanel {
           break;
         case idProblems:
           doIdProblems(f, dcm, useIndex);
+          break;
+        case timeCoord:
+          doTimeCoord(f, dcm, useIndex);
           break;
       }
     }
@@ -489,7 +492,7 @@ public class Grib2ReportPanel extends JPanel {
       }
 
       processId.count(pds.getGenProcessId());
-      if (pds.getLevelScale() > 127 ) {
+      if (pds.getLevelScale() > 127) {
         if (Grib2Utils.isLevelUsed(pds.getLevelType1())) {
           System.out.printf(" LevelScale > 127: %s %s == %d%n", mf.getPath(), gr.getPDS().getParameterNumber(), pds.getLevelScale());
           scale.count(pds.getLevelScale());
@@ -685,6 +688,69 @@ public class Grib2ReportPanel extends JPanel {
       else
         gdsSet.put(template, count + 1);
     }
+  }
+
+  ///////////////////////////////////////////////////////////////////
+
+  private void doTimeCoord(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+    Counter templateSet = new Counter("template");
+    Counter timeUnitSet = new Counter("timeUnit");
+    Counter statTypeSet = new Counter("statType");
+    Counter NTimeIntervals = new Counter("NumberTimeIntervals");
+    Counter TinvDiffer = new Counter("TimeIntervalsDiffer");
+
+    int count = 0;
+    for (MFile mfile : dcm.getFiles()) {
+      f.format(" %s%n", mfile.getPath());
+      count += doTimeCoord(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, TinvDiffer);
+    }
+
+    f.format("total records = %d%n", count);
+
+    templateSet.show(f);
+    timeUnitSet.show(f);
+    statTypeSet.show(f);
+    NTimeIntervals.show(f);
+    TinvDiffer.show(f);
+
+  }
+
+
+  private int doTimeCoord(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter statTypeSet, Counter NTimeIntervals,
+                          Counter TinvDiffer) throws IOException {
+    boolean showTinvDiffers = true;
+
+    Grib2Index index = createIndex(mf, f);
+    if (index == null) return 0;
+
+    int count = 0;
+    for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
+      Grib2Pds pds = gr.getPDS();
+      templateSet.count(pds.getTemplateNumber());
+      int timeUnit = pds.getTimeUnit();
+      timeUnitSet.count(timeUnit);
+
+      if (pds instanceof Grib2Pds.PdsInterval) {
+        Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
+        for (Grib2Pds.TimeInterval ti : pdsi.getTimeIntervals()) {
+          statTypeSet.count(ti.statProcessType);
+
+          if ((ti.timeRangeUnit != timeUnit) || (ti.timeIncrementUnit != timeUnit && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
+            TinvDiffer.count(ti.timeRangeUnit);
+            if (showTinvDiffers) {
+              f.format("  TimeInterval has different units timeUnit= %s file=%s%n  ", timeUnit, mf.getName());
+              pds.show(f);
+              f.format("%n");
+            }
+          }
+        }
+        NTimeIntervals.count(pdsi.getTimeIntervals().length);
+      }
+
+      count++;
+    }
+
+    return count;
   }
 
 }

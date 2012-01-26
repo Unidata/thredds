@@ -151,9 +151,9 @@ public class Grib2Rectilyser {
       int dups = 0;
 
       for (Record r : vb.atomList) {
-        int timeIdx = (r.tcIntvCoord != null) ? tc.findInterval(r.tcIntvCoord) : tc.findIdx(r.tcCoord);
+        int timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord);
         if (timeIdx < 0) {
-          timeIdx = (r.tcIntvCoord != null) ? tc.findInterval(r.tcIntvCoord) : tc.findIdx(r.tcCoord); // debug
+          timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord); // debug
           throw new IllegalStateException("Cant find time coord " + r.tcCoord);
         }
 
@@ -197,7 +197,7 @@ public class Grib2Rectilyser {
   public class Record {
     Grib2Record gr;
     int tcCoord;
-    TimeCoord.Tinv tcIntvCoord;
+    TimeCoord.TinvDate tcIntvCoord;
     VertCoord.Level vcCoord;
     EnsCoord.Coord ecCoord;
 
@@ -322,24 +322,29 @@ public class Grib2Rectilyser {
   }
 
   private TimeCoord makeTimeCoordsIntv(VariableBag vb, boolean uniform) {
-    int timeIntvCode = 999; // avoid negetive
-    Set<TimeCoord.Tinv> times = new HashSet<TimeCoord.Tinv>();
+    int timeIntvCode = 999; // just for documentation in the time coord attribute
+    Map<Integer, TimeCoord.TinvDate> times = new HashMap<Integer, TimeCoord.TinvDate>();
     for (Record r : vb.atomList) {
       Grib2Pds pds = r.gr.getPDS();
       if (timeIntvCode == 999) timeIntvCode = pds.getStatisticalProcessType();
-      int[] timeb = cust.getForecastTimeInterval(r.gr);
-      if (uniform) {
-        r.tcIntvCoord = new TimeCoord.Tinv(timeb[0], timeb[1]);
+      TimeCoord.TinvDate mine = cust.getForecastTimeInterval(r.gr);
+      TimeCoord.TinvDate org = times.get(mine.hashCode());
+      if (org == null) times.put(mine.hashCode(), mine);
+      r.tcIntvCoord = (org == null) ? mine : org; // always point to the one thats in the HashMap
+    }
+
+     /* if (uniform) {
+        r.tcIntvCoord = org;
         times.add(r.tcIntvCoord);
+
       } else {
-        TimeCoord.Tinv org = new TimeCoord.Tinv(timeb[0], timeb[1]);
         int timeUnit = cust.convertTimeUnit(pds.getTimeUnit());
         CalendarPeriod fromUnit = Grib2Utils.getCalendarPeriod(timeUnit);
-        r.tcIntvCoord = org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit);
+        r.tcIntvCoord = org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit); // LOOK heres the magic
         times.add(r.tcIntvCoord);
       }
-    }
-    List<TimeCoord.Tinv> tlist = new ArrayList<TimeCoord.Tinv>(times);
+    } */
+    List<TimeCoord.TinvDate> tlist = new ArrayList<TimeCoord.TinvDate>(times.values());
     Collections.sort(tlist);
     return new TimeCoord(timeIntvCode, vb.refDate, vb.timeUnit, tlist);
   }
