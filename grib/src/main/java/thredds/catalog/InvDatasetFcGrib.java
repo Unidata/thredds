@@ -347,34 +347,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private ThreddsMetadata.Variables extractThreddsVariables(GribCollection gribCollection, GribCollection.GroupHcs group) {
     ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(format.toString());
     for (GribCollection.VariableIndex vindex : group.varIndex) {
-      ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
-
-      if (format == DataFormatType.GRIB2) {
-        Grib2Customizer tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
-
-        tv.setName(Grib2Iosp.makeVariableName(tables, gribCollection, vindex));
-        tv.setDescription(Grib2Iosp.makeVariableLongName(tables, vindex));
-        tv.setUnits(Grib2Iosp.makeVariableUnits(tables, vindex));
-
-        tv.setVocabularyId("2-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
-
-        String paramDisc = tables.getTableValue("0.0", vindex.discipline);
-        if (paramDisc == null) paramDisc = "Unknown";
-        String paramCategory = tables.getTableValue("4.1." + vindex.discipline, vindex.category);
-        if (paramCategory == null) paramCategory = "Unknown";
-        String paramName = tables.getVariableName(vindex.discipline, vindex.category, vindex.parameter);
-        tv.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName);
-        vars.addVariable(tv);
-
-      } else {
-        Grib1Customizer cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), null);
-
-        tv.setName(Grib1Iosp.makeVariableName(cust, gribCollection, vindex));
-        tv.setDescription(Grib1Iosp.makeVariableLongName(cust, gribCollection, vindex));
-        tv.setUnits(Grib1Iosp.makeVariableUnits(cust, gribCollection, vindex));
-        tv.setVocabularyId("1-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
-        vars.addVariable(tv);
-      }
+      vars.addVariable(gribCollection.extractThreddsVariables(vindex));
     }
     vars.sort();
     return vars;
@@ -486,7 +459,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   // this catalog lists the individual files comprising a grib collection.
-  // cat use InvDatasetScan because we might have multiple hcs
+  // cant use InvDatasetScan because we might have multiple hcs
   private InvCatalogImpl makeFilesCatalog(GribCollection gc, GribCollection.GroupHcs group, URI baseURI, State localState) throws IOException {
 
     String collectionName = gc.getName();
@@ -559,7 +532,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
       if (tpp != null) {
-        return tpp.getGribCollection().getGridDataset(paths[1], filename, gribConfig);
+        GribCollection gc =  tpp.getGribCollection();
+        ucar.nc2.dt.GridDataset result = gc.getGridDataset(paths[1], filename, gribConfig);
+        // LOOK WRONG gc.close();
+        return result;
       }
     }
 

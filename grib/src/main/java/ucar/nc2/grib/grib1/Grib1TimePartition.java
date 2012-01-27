@@ -64,7 +64,7 @@ public class Grib1TimePartition extends TimePartition {
     iosp.setParamTablePath(gribConfig.paramTablePath);
     iosp.setParamTable(gribConfig.paramTable);
 
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+    NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     return new NetcdfDataset(ncfile);
   }
 
@@ -78,7 +78,7 @@ public class Grib1TimePartition extends TimePartition {
     iosp.setParamTablePath(gribConfig.paramTablePath);
     iosp.setParamTable(gribConfig.paramTable);
 
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+    NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
   }

@@ -38,7 +38,6 @@ import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
-import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -67,7 +66,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
       iosp.setParamTablePath(gribConfig.paramTablePath);
       iosp.setParamTable(gribConfig.paramTable);
 
-      NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+      NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
       return new NetcdfDataset(ncfile);
 
     } else {
@@ -82,7 +81,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
           iosp.setParamTablePath(gribConfig.paramTablePath);
           iosp.setParamTable(gribConfig.paramTable);
 
-          NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+          NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
           return new NetcdfDataset(ncfile);
         }
       }
@@ -100,7 +99,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
       iosp.setParamTablePath(gribConfig.paramTablePath);
       iosp.setParamTable(gribConfig.paramTable);
 
-      NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+      NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
@@ -115,7 +114,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
           iosp.setParamTablePath(gribConfig.paramTablePath);
           iosp.setParamTable(gribConfig.paramTable);
 
-          NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+          NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
           NetcdfDataset ncd = new NetcdfDataset(ncfile);
           return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
         }

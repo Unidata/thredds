@@ -61,7 +61,7 @@ public class Grib2TimePartition extends TimePartition {
     if (want == null) return null;
 
     Grib2Iosp iosp = new Grib2Iosp(want);
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+    NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     return new NetcdfDataset(ncfile);
   }
 
@@ -71,7 +71,7 @@ public class Grib2TimePartition extends TimePartition {
     if (want == null) return null;
 
     Grib2Iosp iosp = new Grib2Iosp(want);
-    NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+    NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile);
     return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
   }

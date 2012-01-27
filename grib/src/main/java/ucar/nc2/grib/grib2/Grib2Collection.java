@@ -62,7 +62,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
 
     if (filename == null) {  // LOOK thread-safety : sharing this, raf
       Grib2Iosp iosp = new Grib2Iosp(want);
-      NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+      NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
       return new NetcdfDataset(ncfile);
 
     } else {
@@ -73,7 +73,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
           GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
 
           Grib2Iosp iosp = new Grib2Iosp(gc);
-          NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+          NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
           return new NetcdfDataset(ncfile);
         }
       }
@@ -87,7 +87,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf
       Grib2Iosp iosp = new Grib2Iosp(want);
-      NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+      NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
@@ -98,7 +98,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
           GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
 
           Grib2Iosp iosp = new Grib2Iosp(gc);
-          NetcdfFile ncfile = new MyNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+          NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
           NetcdfDataset ncd = new NetcdfDataset(ncfile);
           return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
         }

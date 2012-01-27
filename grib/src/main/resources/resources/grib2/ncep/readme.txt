@@ -772,4 +772,21 @@ Conflicts=0 extra=3 udunits=0
  - missing in resources\grib2\ncep\Table4.2.2.0.xml
  - present in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-2-0.shtml
    so perhaps was updated or bug in scraper ?
- = messing up because dint have an abbreviation (name). seems to be the only one. now fixed.
+ = messing up because didnt have an abbreviation (name). seems to be the only one. now fixed.
+
+01/25/2012  RUC2 CONUS 20 km on pressure levels
+ - Im seeing a parameter 0-19-242 not in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-19.shtml
+
+ -reply from boi:
+     The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in
+     http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
+
+     It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in
+     June or July, 2012.
+
+     RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242
+
+  - so in NcepLocalParam, redirect
+     0-19-242 -> 0-1-242
+     2-4-3    -> 2-4-2
+

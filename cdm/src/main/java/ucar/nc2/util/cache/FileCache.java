@@ -85,7 +85,7 @@ public class FileCache {
   static private ScheduledExecutorService exec;
   static boolean debug = false;
   static boolean debugPrint = false;
-  static boolean debugCleanup = true;
+  static boolean debugCleanup = false;
 
   /**
    * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.

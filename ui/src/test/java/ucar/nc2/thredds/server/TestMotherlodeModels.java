@@ -153,7 +153,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
 
         if (checkUnknown) {
           for (GridDatatype vs : grids) {
-            if (vs.getDescription().startsWith("Unknown"))
+            if (vs.getDescription().contains("Unknown"))
               out.printf("  %s == %s%n", vs.getFullName(), vs.getDescription());
           }
         }
@@ -244,8 +244,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL_DIRECT, false);
-    //TestMotherlodeModels job = new TestMotherlodeModels("dev", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    //TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL_DIRECT, false);
+    TestMotherlodeModels job = new TestMotherlodeModels("dev", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();

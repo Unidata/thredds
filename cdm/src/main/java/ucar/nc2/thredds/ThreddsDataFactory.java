@@ -465,7 +465,7 @@ public class ThreddsDataFactory {
 
     // open DODS type
     if ((serviceType == ServiceType.OPENDAP) || (serviceType == ServiceType.DODS)) {
-      String curl =  (datasetLocation.startsWith("http:")) ? "dods:" + datasetLocation.substring(5) : datasetLocation; // LOOK needed?
+      String curl =  (datasetLocation.startsWith("http:")) ? "dods:" + datasetLocation.substring(5) : datasetLocation;
       ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
@@ -475,17 +475,11 @@ public class ThreddsDataFactory {
       ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
-    /* open ADDE type
-   else if (serviceType == ServiceType.ADDE) {
-     try {
-       ds = ucar.nc2.adde.AddeDatasetFactory.openDataset(access, task);
-
-     } catch (IOException e) {
-       log.append("Cant open as ADDE dataset= "+datasetLocation);
-       accessList.remove( access);
-       continue;
-     }
-   } */
+    // open CdmRemote
+    else if ((serviceType == ServiceType.HTTP) || (serviceType == ServiceType.HTTPServer)) {
+      String curl =  (datasetLocation.startsWith("http:")) ? "nodods:" + datasetLocation.substring(5) : datasetLocation;
+      ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
+    }
 
     else {
       // open through NetcdfDataset API
@@ -543,9 +537,9 @@ public class ThreddsDataFactory {
         // these are the file types we can read
         if ((DataFormatType.BUFR == format) || (DataFormatType.GINI == format) || (DataFormatType.GRIB1 == format)
                 || (DataFormatType.GRIB2 == format) || (DataFormatType.HDF5 == format) || (DataFormatType.NCML == format)
-                || (DataFormatType.NETCDF == format) || (DataFormatType.NEXRAD2 == format) || (DataFormatType.NIDS == format)
-                )
+                || (DataFormatType.NETCDF == format) || (DataFormatType.NEXRAD2 == format) || (DataFormatType.NIDS == format)) {
           access = tryAccess;
+        }
       }
     }
 

@@ -68,8 +68,7 @@ import ucar.nc2.ParsedSectionSpec;
  * @since May 28, 2009
  */
 public class CdmRemoteController extends AbstractCommandController implements LastModified {
-  private static final Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
-  private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmRemoteController.class);
   private static boolean debug = false, showTime = false, showReq=false;
 
   private TdsContext tdsContext;
@@ -130,6 +129,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
       ncfile = DatasetHandler.getNetcdfFile(req, res, path);
       if (ncfile == null) {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        log.debug("DatasetHandler.FAIL path={}", path);
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         return null;
       }
@@ -204,6 +204,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
 
     } catch (FileNotFoundException e) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
+      log.debug("FAIL", e);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (IllegalArgumentException e) { // ParsedSectionSpec failed

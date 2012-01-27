@@ -75,12 +75,25 @@ public class NcepLocalTables extends Grib2Customizer {
 
   @Override
   public GribTables.Parameter getParameter(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191))
-      return WmoCodeTable.getParameterEntry(discipline, category, number);
+    if ((category <= 191) && (number <= 191)) {
+      GribTables.Parameter p = WmoCodeTable.getParameterEntry(discipline, category, number);
+      if (p != null) return p; // allow ncep to use values not already in use by WMO (!)
+    }
 
-    // return NcepCodeTable.getParameterFromCurrent(discipline, category, number);
+    /* email from boi.vuong@noaa.gov 1/19/2012
+     "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
+      The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."  */
+    if (makeHash(discipline, category, number) == makeHash(2,4,3))
+      return getParameter(2,4,2);
+
+    /* email from boi.vuong@noaa.gov 1/26/2012
+     The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
+     It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in June or July, 2012.
+     RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242  */
+    if (makeHash(discipline, category, number) == makeHash(0,19,242))
+      return getParameter(0,1,242);
+
     return NcepLocalParams.getParameter(discipline, category, number);
-
   }
 
   @Override
