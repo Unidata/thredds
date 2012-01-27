@@ -151,9 +151,8 @@ public class Grib2CollectionBuilder {
       idx = gc.makeNewIndexFile(); // make sure we have a writeable index
       logger.info("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx, ff, f);        // write out index
-      gc.rafLocation = idx.getPath();
-      gc.setRaf( new RandomAccessFile(idx.getPath(), "r"));
-      readIndex(gc.getRaf()); // read back in index
+      gc.setIndexRaf(new RandomAccessFile(idx.getPath(), "r"));
+      readIndex(gc.getIndexRaf()); // read back in index
     }
   }
 
@@ -184,7 +183,7 @@ public class Grib2CollectionBuilder {
   }
 
   public boolean readIndex(RandomAccessFile raf) {
-    gc.setRaf( raf); // LOOK leaving the raf open in the GribCollection
+    gc.setIndexRaf(raf); // LOOK leaving the raf open in the GribCollection
     try {
       raf.order(RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);

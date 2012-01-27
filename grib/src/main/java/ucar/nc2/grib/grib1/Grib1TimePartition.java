@@ -51,7 +51,7 @@ public class Grib1TimePartition extends TimePartition {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1TimePartition.class);
 
   Grib1TimePartition(String name, File directory, TimePartitionCollection tpc) {
-    super(name, directory, tpc);
+    super(name, directory, tpc, true);
   }
 
   @Override

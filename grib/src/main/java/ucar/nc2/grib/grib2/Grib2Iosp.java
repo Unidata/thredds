@@ -598,60 +598,6 @@ public class Grib2Iosp extends GribIosp {
     return result;
   }
 
-  /* private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
-    TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject();
-
-    // canonical order: time, ens, z, y, x
-    int rangeIdx = 0;
-    Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range ensRange = (vindexP.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range levRange = (vindexP.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range yRange = section.getRange(rangeIdx++);
-    Range xRange = section.getRange(rangeIdx);
-
-    DataReceiver dataReceiver = new DataReceiver(section, yRange, xRange);
-    DataReaderPartitioned dataReader = new DataReaderPartitioned();
-
-    TimePartition.TimeCoordPartitioned timeCoord = vindexP.getTimeCoord();
-    int firstPartition = timeCoord.findPartition(timeRange.first());
-
-    List<TimePartition.Partition> partitions = timePartition.getPartitions();
-    for (int partno = firstPartition; partno < partitions.size(); partno++) {
-
-      Range localRange = timeCoord.getLocalRange(partno, timeRange);
-      if (localRange == null) {
-        if (timeCoord.after(partno, timeRange.last())) break; // termination condition
-        continue; // no intersection
-      }
-      //if (debug)
-      //  System.out.println("   agg use " + nested.aggStart + ":" + nested.aggEnd + " range= " + nestedJoinRange + " file " + nested.getLocation());
-
-      // at this point, we need to instantiate the Partition and the vindex.records
-      GribCollection.VariableIndex vindex = vindexP.getVindex(partno);
-
-      // collect all the records from this partition that need to be read
-      for (int timeIdx = localRange.first(); timeIdx <= localRange.last(); timeIdx += localRange.stride()) {
-        for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
-          for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
-
-            // where this particular record fits into the result array, modulo horiz
-            int globalTimeIndex = timeRange.index(timeCoord.startingIndexGlobal(partno) + timeIdx);
-
-            //   public static int calcIndex(int timeIdx, int vertIdx, int ensIdx, int nens, int nverts) {
-            int resultIndex = GribCollection.calcIndex(globalTimeIndex, ensRange.index(ensIdx), levRange.index(levelIdx),
-                    ensRange.length(), levRange.length());
-
-            dataReader.addRecord(partno, vindex, timeIdx, ensIdx, levelIdx, resultIndex);
-          }
-        }
-      }
-    }
-
-    // sort by file and position, then read
-    dataReader.read(dataReceiver);
-    return dataReceiver.getArray();
-  } */
-
   private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
     TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject();
 
@@ -694,44 +640,12 @@ public class Grib2Iosp extends GribIosp {
 
     // sort by file and position, then read
     dataReader.read(dataReceiver);
+
+    // close partitions as needed
+    vindexP.cleanup();
+
     return dataReceiver.getArray();
   }
-
-  /* private Array readDataFromPartition2(Variable v, Section section) throws IOException, InvalidRangeException {
-    TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v.getSPobject();
-
-    // first time, read records and keep in memory
-    if (vindex.records == null)
-      vindex.readRecords();
-
-    // canonical order: time, ens, z, y, x
-    int rangeIdx = 0;
-    Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range ensRange = (vindexP.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range levRange = (vindexP.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range yRange = section.getRange(rangeIdx++);
-    Range xRange = section.getRange(rangeIdx);
-
-    DataReceiver dataReceiver = new DataReceiver(section, yRange, xRange);
-    DataReaderPartitioned dataReader = new DataReaderPartitioned();
-
-    // collect all the records that need to be read
-    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
-      for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
-        for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
-          // where this particular record fits into the result array, modulo horiz
-          int resultIndex = GribCollection.calcIndex(timeRange.index(timeIdx), ensRange.index(ensIdx),levRange.index(levelIdx),
-                  ensRange.length(), levRange.length());
-          dataReader.addRecord(ensIdx, timeIdx, levelIdx, resultIndex);
-        }
-      }
-    }
-
-    // sort by file and position, then read
-    dataReader.read(dataReceiver);
-    return dataReceiver.getArray();
-  }  */
-
 
   private class DataReaderPartitioned {
     List<DataRecord> records = new ArrayList<DataRecord>();
@@ -760,19 +674,7 @@ public class Grib2Iosp extends GribIosp {
         if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
 
         if (debugRead) { // for validation
-          Grib2Record gr = Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos);
-          if (gr != null) {
-            Formatter f = new Formatter();
-            f.format("File=%s%n", rafData.getLocation());
-            f.format("  Parameter=%s%n", tables.getVariableName(gr));
-            f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
-            f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
-            TimeCoord.TinvDate tinv = tables.getForecastTimeInterval(gr);
-            if (tinv != null) f.format("  TimeInterval=%s%n",tinv);
-            f.format("%n");
-            gr.getPDS().show(f);
-            System.out.printf(" Grib2Record.readData at drsPos %d = %s%n", dr.drsPos, f.toString());
-          }
+          show( Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
         float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.vindex.group.hcs.gdsNumberPoints, dr.vindex.group.hcs.scanMode, dr.vindex.group.hcs.nx);
@@ -865,26 +767,14 @@ public class Grib2Iosp extends GribIosp {
       for (DataRecord dr : records) {
         if (dr.fileno != currFile) {
           if (rafData != null) rafData.close();
-          rafData = gribCollection.getRaf(dr.fileno);
+          rafData = gribCollection.getDataRaf(dr.fileno);
           currFile = dr.fileno;
         }
 
         if (dr.drsPos == GribCollection.MISSING_RECORD) continue;
 
         if (debugRead) { // for validation
-          Grib2Record gr = Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos);
-          if (gr != null) {
-            Formatter f = new Formatter();
-            f.format("File=%s%n", raf.getLocation());
-            f.format("  Parameter=%s%n", tables.getVariableName(gr));
-            f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
-            f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
-            TimeCoord.TinvDate tinv = tables.getForecastTimeInterval(gr);
-            if (tinv != null) f.format("  TimeInterval=%s%n",tinv);
-            f.format("  ");
-            gr.getPDS().show(f);
-            System.out.printf("%nGrib2Record.readData at drsPos %d = %s%n", dr.drsPos, f.toString());
-          }
+          show(Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
         float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
@@ -950,71 +840,19 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////
-
-  /*
-  public Array readDataOld(Variable v2, Section section) throws IOException, InvalidRangeException {
-    long start = System.currentTimeMillis();
-
-    Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
-    GribCollection.VariableIndex vindex = (GribCollection.VariableIndex) v2.getSPobject();
-    if (vindex.records == null) // first time, read records and keep in memory
-      vindex.readRecords(raf);
-
-    // Canonical ordering is ens, time, level, lat, lon
-    int rangeIdx = 0;
-    Range ensRange = (vindex.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range levRange = (vindex.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
-    Range yRange = section.getRange(rangeIdx++);
-    Range xRange = section.getRange(rangeIdx);
-
-    IndexIterator ii = dataArray.getIndexIterator();
-
-    // loop over ens
-    for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
-      //loop over time
-      for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
-        //loop over level
-        for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
-          readXYold(v2, vindex, ensIdx, timeIdx, levelIdx, yRange, xRange, ii);
-        }
-      }
-    }
-
-    long took = System.currentTimeMillis() - start;
-    System.out.println("  read data took=" + took + " msec ");
-
-    return dataArray;
+  private void show(Grib2Record gr, long pos) {
+    if (gr != null) {
+       Formatter f = new Formatter();
+       f.format("File=%s%n", raf.getLocation());
+       f.format("  Parameter=%s%n", tables.getVariableName(gr));
+       f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
+       f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
+       TimeCoord.TinvDate tinv = tables.getForecastTimeInterval(gr);
+       if (tinv != null) f.format("  TimeInterval=%s%n",tinv);
+       f.format("  ");
+       gr.getPDS().show(f);
+       System.out.printf("%nGrib2Record.readData at drsPos %d = %s%n", pos, f.toString());
+     }
   }
 
-  private void readXYold(Variable v2, GribCollection.VariableIndex vindex, int ensIdx, int timeIdx, int levIdx, Range yRange, Range xRange, IndexIterator ii)
-          throws IOException, InvalidRangeException {
-
-    int index = GribCollection.calcIndex(timeIdx, levIdx, ensIdx, vindex.ntimes, vindex.nens, vindex.nverts);
-    GribCollection.Record record = vindex.records[index];
-
-    if (record == null) {
-      Attribute att = v2.findAttribute("missing_value");
-      float missing_value = (att == null) ? Float.NaN : att.getNumericValue().floatValue();
-
-      int xyCount = yRange.length() * xRange.length();
-      for (int j = 0; j < xyCount; j++) {
-        ii.setFloatNext(missing_value);
-      }
-      return;
-    }
-
-    //   static public float[] readData(RandomAccessFile raf, long drsPos, int gdsNumberPoints, int scanMode, int nx) throws IOException {
-    RandomAccessFile rafData = getRaf(record.fileno);
-    float[] data = Grib2Record.readData(rafData, record.drsPos, vindex.hcs.nPoints, vindex.hcs.scanMode, vindex.hcs.nx);
-
-    int nx = vindex.hcs.nx;
-    for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
-      for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
-        int idx = y * nx + x;
-        ii.setFloatNext(data[idx]);
-      }
-    }
-  }  */
 }

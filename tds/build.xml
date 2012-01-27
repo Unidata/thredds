@@ -81,7 +81,7 @@
   <property name="netcdf.jar" value="release/netcdf-4.3.jar"/>
   <property name="opendap.jar" value="release/opendap-4.3.jar"/>
   <property name="threddsIso.jar" value="release/threddsIso-1.2.2.jar"/>
-  <property name="visadCdm.jar" value="release/visadCdm.jar"/>
+  <property name="visadCdm.jar" value="release/visadCdm-4.3.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
   <property name="bdb.jar" value="external/je-4.0.71.jar"/>

@@ -46,15 +46,15 @@ import ucar.nc2.util.CancelTask;
 /**
  * Keep cache of open FileCacheable objects, for example NetcdfFile.
  * The FileCacheable object typically contains a RandomAccessFile object that wraps a system resource like a file handle.
- * These are left open when the NetcdfFile is in the cache. The maximum number of these is bounded, though not strictly.
+ * These are left open when the FileCacheable is in the cache. The maximum number of these is bounded, though not strictly.
  * A cleanup routine reduces cache size to a minimum number. This cleanup is called periodically in a background thread,
  * and also when the maximum cache size is reached.
  * <ol>
  * <li>The FileCacheable object must not be modified.
  * <li>The hashKey must uniquely define the FileCacheable object.
  * <li>The location must be usable in a FileFactory.open().
- * <li>If the FileCacheable is acquired from the cache (ie already open), ncfile.sync() is called on it.
- * <li>Make sure you call NetcdfDataset.shutdown() when exiting the program, in order to shut down the cleanup thread.
+ * <li>If the FileCacheable is acquired from the cache (ie already open), sync() is called on it.
+ * <li>Make sure you call shutdown() when exiting the program, in order to shut down the cleanup thread.
  * </ol>
  *
  * Normal usage is through the NetcdfDataset interface:
@@ -102,8 +102,7 @@ public class FileCache {
   private final int softLimit, minElements, hardLimit;
 
   private final ConcurrentHashMap<Object, CacheElement> cache; // unique files (by key, often = filename)
-  private final ConcurrentHashMap<Object, CacheElement.CacheFile> files; // list of all files in the cache
-  //private final AtomicInteger counter = new AtomicInteger(); // how many files in the cache
+  private final ConcurrentHashMap<FileCacheable, CacheElement.CacheFile> files; // list of all files in the cache
   private final AtomicBoolean hasScheduled = new AtomicBoolean(false); // a cleanup is scheduled
   private final AtomicBoolean disabled = new AtomicBoolean(false);  // cache is disabled
 
@@ -151,7 +150,7 @@ public class FileCache {
     this.hardLimit = hardLimit;
 
     cache = new ConcurrentHashMap<Object, CacheElement>(2 * softLimit, 0.75f, 8);
-    files = new ConcurrentHashMap<Object, CacheElement.CacheFile>(4 * softLimit, 0.75f, 8);
+    files = new ConcurrentHashMap<FileCacheable, CacheElement.CacheFile>(4 * softLimit, 0.75f, 8);
 
     if (period > 0) {
       if (exec == null)
@@ -351,6 +350,36 @@ public class FileCache {
     }
     throw new IOException("FileCache " + name + " release does not have file in cache = " + ncfile.getLocation());
   }
+
+  /*
+   * Remove all copies of the file from the cache.
+   *
+   * @param ncfile remove this file.
+   * @throws IOException if file not in cache.
+   *
+  public void remove(FileCacheable ncfile) throws IOException {
+    if (ncfile == null) return;
+
+    if (disabled.get()) {
+      ncfile.setFileCache(null); // prevent infinite loops
+      ncfile.close();
+      return;
+    }
+
+    // find it in the file cache
+    CacheElement.CacheFile file = files.get(ncfile); // using hashCode of the FileCacheable
+    if (file != null) {
+      if (!file.isLocked.get())
+        cacheLog.warn("FileCache " + name + " release " + ncfile.getLocation() + " not locked");
+      file.lastAccessed = System.currentTimeMillis();
+      file.countAccessed++;
+      file.isLocked.set(false);
+      if (cacheLog.isDebugEnabled()) cacheLog.debug("FileCache " + name + " release " + ncfile.getLocation());
+      if (debugPrint) System.out.println("  FileCache " + name + " release " + ncfile.getLocation());
+      return;
+    }
+    throw new IOException("FileCache " + name + " release does not have file in cache = " + ncfile.getLocation());
+  } */
 
   // debug
   public String getInfo(FileCacheable ncfile) throws IOException {
@@ -562,6 +591,7 @@ public class FileCache {
     }
   }
 
+  // not private for testing
   class CacheElement {
     @GuardedBy("this")
     List<CacheFile> list = new LinkedList<CacheFile>(); // may have multiple copies of the same file opened

@@ -33,10 +33,8 @@
 
 package ucar.nc2.util.cache;
 
-import java.io.IOException;
-
 /**
- * Class Description.
+ * A FileCache that does nothing when release() is called.
  *
  * @author caron
  * @since Mar 3, 2009
@@ -47,7 +45,7 @@ public class FileCacheNOP extends FileCache {
     super("FileCacheNOP", 0, 0, 0, 0);
   }
 
-  public void release(FileCacheable ncfile) throws IOException {
+  public void release(FileCacheable ncfile) {
     // no - op
   }
 

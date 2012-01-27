@@ -212,7 +212,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
-  // LOOK maybe we should ehcache some or all of this ??
   @Override
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {
     //logger.debug("{}: make catalog for {} {}", name, match, baseURI);
@@ -242,15 +241,18 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           return makeFilesCatalog(localState.gribCollection, group, baseURI, localState);
         }
 
-      } else {
+      } else { // time partitions
 
         if (match.equals(COLLECTION)) {
           return makeGribCollectionCatalog(localState.timePartition, baseURI, localState);
         }
 
-        TimePartition.Partition dc = localState.timePartition.getPartitionByName(match);
-        if (dc != null) {
-          return makeGribCollectionCatalog(dc.getGribCollection(), baseURI, localState);
+        TimePartition.Partition tpp = localState.timePartition.getPartitionByName(match);
+        if (tpp != null) {
+          GribCollection gc = tpp.getGribCollection();
+          InvCatalogImpl result = makeGribCollectionCatalog(gc, baseURI, localState);
+          gc.close();
+          return result;
         }
 
         // files catalogs
@@ -265,12 +267,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         } */
 
         // otherwise of form <partition>/<hcs>/files eg 200808/LatLon-181X360/files
-        dc = localState.timePartition.getPartitionByName(path[0]);
-        if (dc != null) {
-          GribCollection gc = dc.getGribCollection();
+        tpp = localState.timePartition.getPartitionByName(path[0]);
+        if (tpp != null) {
+          GribCollection gc = tpp.getGribCollection();
           GribCollection.GroupHcs group = gc.findGroupById(path[1]);
           if (group == null) return null;
-          return makeFilesCatalog(gc, group, baseURI, localState);
+          InvCatalogImpl result =  makeFilesCatalog(gc, group, baseURI, localState);
+          gc.close();
+          return result;
         }
       }
 
@@ -553,9 +557,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       if (paths[0].equals(localState.timePartition.getName()))
         return localState.timePartition.getGridDataset(paths[1], null, gribConfig);
 
-      TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
-      if (dcm != null) {
-        return dcm.getGribCollection().getGridDataset(paths[1], filename, gribConfig);
+      TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
+      if (tpp != null) {
+        return tpp.getGribCollection().getGridDataset(paths[1], filename, gribConfig);
       }
     }
 

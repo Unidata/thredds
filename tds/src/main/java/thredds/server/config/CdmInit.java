@@ -38,6 +38,7 @@ import thredds.servlet.ServletUtil;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.TimePartition;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.DiskCache2;
@@ -132,13 +133,22 @@ public class CdmInit {
       startupLog.info("CdmInit: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
-    // GribCollection : default is allow 50 - 100 open files, cleanup every 13 minutes
+    // GribCollection partitions: default is allow 50 - 100 open files, cleanup every 12 minutes
+    min = ThreddsConfig.getInt("TimePartition.minFiles", 50);
+    max = ThreddsConfig.getInt("TimePartition.maxFiles", 100);
+    secs = ThreddsConfig.getSeconds("TimePartition.scour", 12 * 60);
+    if (max > 0) {
+      TimePartition.initPartitionCache(min, max, secs);
+      startupLog.info("CdmInit: TimePartition.initPartitionCache= ["+min+","+max+"] scour = "+secs);
+    }
+
+    // GribCollection data files : default is allow 50 - 100 open files, cleanup every 13 minutes
     min = ThreddsConfig.getInt("GribCollection.minFiles", 50);
     max = ThreddsConfig.getInt("GribCollection.maxFiles", 100);
     secs = ThreddsConfig.getSeconds("GribCollection.scour", 13 * 60);
     if (max > 0) {
-      GribCollection.initFileCache(min, max, secs);
-      startupLog.info("CdmInit: GribCollection.initFileCache= ["+min+","+max+"] scour = "+secs);
+      GribCollection.initDataRafCache(min, max, secs);
+      startupLog.info("CdmInit: GribCollection.initDataRafCache= ["+min+","+max+"] scour = "+secs);
     }
 
     // HTTP file access : // allow 10 - 20 open datasets, cleanup every 17 minutes
@@ -198,7 +208,7 @@ public class CdmInit {
   // should be called when tomcat exits
   public void destroy() throws Exception {
     if (timer != null) timer.cancel();
-    NetcdfDataset.shutdown();
+    FileCache.shutdown();
     if (aggCache != null) aggCache.exit();
     if (gcCache != null) gcCache.exit();
     if (cacheManager != null) cacheManager.close();

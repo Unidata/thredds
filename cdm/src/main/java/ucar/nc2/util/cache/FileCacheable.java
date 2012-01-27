@@ -68,13 +68,11 @@ public interface FileCacheable {
    * If the FileCache is set, the FileCacheable object must store it and call FileCache.release() on FileCacheable.close():
   <pre>
   public synchronized void close() throws java.io.IOException {
-    if (isClosed) return;
     if (cache != null) {
       cache.release(this);
     } else {
       reallyClose();
     }
-    isClosed = true;
    </pre>
    *
    * @param fileCache must store this, use it on close as above.

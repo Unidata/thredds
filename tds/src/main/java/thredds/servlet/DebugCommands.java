@@ -35,6 +35,7 @@ package thredds.servlet;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.TimePartition;
 import ucar.nc2.util.IO;
 
 import java.util.*;
@@ -76,10 +77,17 @@ public class DebugCommands {
           fc.showCache(f);
         }
 
-        fc = GribCollection.getFileCache();
-        if (fc == null) f.format("\nGribCollectionFileCache : turned off\n");
+        fc = GribCollection.getDataRafCache();
+        if (fc == null) f.format("\nGribCollectionDataCache : turned off\n");
         else {
-          f.format("\nGribCollectionFileCache contents\n");
+          f.format("\nGribCollectionDataCache contents\n");
+          fc.showCache(f);
+        }
+
+        fc = TimePartition.getPartitionCache();
+        if (fc == null) f.format("\nTimePartitionIndexCache : turned off\n");
+        else {
+          f.format("\nTimePartitionIndexCache contents\n");
           fc.showCache(f);
         }
 
@@ -95,10 +103,10 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("clearCache", "Clear File Object Caches") {
+    act = new DebugHandler.Action("clearCaches", "Clear File Object Caches") {
        public void doAction(DebugHandler.Event e) {
          NetcdfDataset.getNetcdfFileCache().clearCache(false);
-         GribCollection.getFileCache().clearCache(false);
+         GribCollection.getDataRafCache().clearCache(false);
          ServletUtil.getFileCache().clearCache(false);
          e.pw.println("  ClearCache ok");
        }
@@ -121,17 +129,52 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
+    act = new DebugHandler.Action("disableGribCollectionCache", "Disable GribCollection Cache") {
+       public void doAction(DebugHandler.Event e) {
+         GribCollection.disableNetcdfFileCache();
+         e.pw.println("  Disable GribCollection Cache ok");
+       }
+     };
+     debugHandler.addAction(act);
+
     act = new DebugHandler.Action("forceGCCache", "Force clear GribCollection Cache") {
       public void doAction(DebugHandler.Event e) {
-        NetcdfDataset.getNetcdfFileCache().clearCache(true);
+        GribCollection.getDataRafCache().clearCache(true);
         e.pw.println("  GribCollection force clearCache done");
       }
     };
     debugHandler.addAction(act);
 
+    act = new DebugHandler.Action("disableTimePartitionCache", "Disable TimePartition Cache") {
+       public void doAction(DebugHandler.Event e) {
+         TimePartition.disableNetcdfFileCache();
+         e.pw.println("  Disable TimePartition Cache ok");
+       }
+     };
+     debugHandler.addAction(act);
+
+    act = new DebugHandler.Action("forceGCCache", "Force clear TimePartition Cache") {
+      public void doAction(DebugHandler.Event e) {
+        TimePartition.getPartitionCache().clearCache(true);
+        e.pw.println("  TimePartition force clearCache done");
+      }
+    };
+    debugHandler.addAction(act);
+
+    act = new DebugHandler.Action("disableHttpCache", "Disable HTTP Cache") {
+       public void doAction(DebugHandler.Event e) {
+         FileCache fc = ServletUtil.getFileCache();
+         if (fc != null) fc.disable();
+         ServletUtil.setFileCache(null);
+         e.pw.println("  Disable HTTP Cache ok");
+       }
+     };
+     debugHandler.addAction(act);
+
     act = new DebugHandler.Action("forceRAFCache", "Force clear HTTP File Cache") {
       public void doAction(DebugHandler.Event e) {
-        ServletUtil.getFileCache().clearCache(true);
+        FileCache fc = ServletUtil.getFileCache();
+         if (fc != null) fc.clearCache(true);
         e.pw.println("  RAF FileCache force clearCache done ");
       }
     };
@@ -142,14 +185,6 @@ public class DebugCommands {
         Formatter f = new Formatter(e.pw);
         f.format("MFile Directory Cache %n %s %n", CacheManager.show("directories"));
         e.pw.flush();
-      }
-    };
-    debugHandler.addAction(act);
-
-    act = new DebugHandler.Action("disableHttpCache", "Disable HTTP File Caches") {
-      public void doAction(DebugHandler.Event e) {
-        ServletUtil.setFileCache(null);
-        e.pw.println("  disableCache ok");
       }
     };
     debugHandler.addAction(act);

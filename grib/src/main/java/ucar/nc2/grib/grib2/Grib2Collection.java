@@ -53,7 +53,7 @@ import java.util.Formatter;
 public class Grib2Collection extends ucar.nc2.grib.GribCollection {
 
   public Grib2Collection(String name, File directory, CollectionManager dcm) {
-    super(name, directory, dcm);
+    super(name, directory, dcm, false);
   }
 
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {

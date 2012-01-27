@@ -40,6 +40,7 @@ import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
+import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.grib.GribCollection;
@@ -5834,7 +5835,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
     if (cache != null)
       cache.clearCache(true);
-    NetcdfDataset.shutdown(); // shutdown threads
+    FileCache.shutdown(); // shutdown threads
     if (cacheManager != null) cacheManager.close(); // shutdown ehcache
     MetadataManager.closeAll(); // shutdown bdb
 
@@ -6031,7 +6032,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
 
-    GribCollection.initFileCache(100, 200, -1);
+    GribCollection.initDataRafCache(100, 200, -1);
 
 
     /* No longer needed

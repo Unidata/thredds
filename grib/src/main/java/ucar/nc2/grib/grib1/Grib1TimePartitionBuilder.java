@@ -157,12 +157,12 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     List<TimePartition.Partition> bad = new ArrayList<TimePartition.Partition>();
     for (TimePartition.Partition dc : tp.getPartitions()) {
       try {
-        dc.getGribCollection(f);         // ensure collection has been read successfully
+        dc.makeGribCollection(f);         // ensure collection has been read successfully
         if (trace) f.format(" Open partition %s%n", dc.getDcm().getCollectionName());
       } catch (Throwable t) {
         logger.error(" Failed to open partition " + dc.getName(), t);
         f.format(" FAIL on partition %s (remove) %n", dc.getDcm().getCollectionName());
-        bad.add(dc);
+        bad.add(dc);  // LOOK may be a file leak ?
       }
     }
 
@@ -194,6 +194,9 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     // ready to write the index file
     writeIndex(canon, f);
 
+    // close open gc's
+    tp.cleanup();
+
     long took = System.currentTimeMillis() - start;
     f.format(" CreatePartitionedIndex took %d msecs%n", took);
     return true;
@@ -207,7 +210,8 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     boolean ok = true;
 
     // for each group in canonical Partition
-    for (GribCollection.GroupHcs firstGroup : canon.getGribCollection(f).getGroups()) {
+    GribCollection canonGc = canon.makeGribCollection(f);
+    for (GribCollection.GroupHcs firstGroup : canonGc.getGroups()) {
       String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
@@ -227,7 +231,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
         if (trace) f.format(" Check Partition %s%n",  tpp.getName());
 
         // get corresponding group
-        GribCollection gc = tpp.getGribCollection(f);
+        GribCollection gc = tpp.makeGribCollection(f);
         int groupIdx = gc.findGroupIdxById(firstGroup.getId());
         if (groupIdx < 0) {
           f.format(" Cant find group %s in partition %s%n", gname, tpp.getName());
@@ -298,14 +302,14 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     boolean ok = true;
 
     // for each group in canonical Partition
-    for (GribCollection.GroupHcs firstGroup : canon.getGribCollection(f).getGroups()) {
+    for (GribCollection.GroupHcs firstGroup : canon.makeGribCollection(f).getGroups()) {
       String gname = firstGroup.getId();
       if (trace) f.format(" Check Group %s%n",  gname);
 
       // get list of corresponding groups from all the time partition, so we dont have to keep looking it up
       List<PartGroup> pgList = new ArrayList<PartGroup>(partitions.size());
       for (TimePartition.Partition dc : partitions) {
-        GribCollection.GroupHcs gg = dc.getGribCollection(f).findGroupById(gname);
+        GribCollection.GroupHcs gg = dc.makeGribCollection(f).findGroupById(gname);
         if (gg == null)
           logger.error(" Cant find group {} in partition {}", gname, dc.getName());
         else
@@ -401,14 +405,14 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
       GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
       indexBuilder.setName(tp.getName());
 
-      GribCollection canonGc = canon.getGribCollection(f);
+      GribCollection canonGc = canon.makeGribCollection(f);
       for (GribCollection.GroupHcs g : canonGc.getGroups())
         indexBuilder.addGroups(writeGroupProto(g));
 
-      indexBuilder.setCenter(canonGc.center);
-      indexBuilder.setSubcenter(canonGc.subcenter);
-      indexBuilder.setMaster(canonGc.master);
-      indexBuilder.setLocal(canonGc.local);
+      indexBuilder.setCenter(canonGc.getCenter());
+      indexBuilder.setSubcenter(canonGc.getSubcenter());
+      indexBuilder.setMaster(canonGc.getMaster());
+      indexBuilder.setLocal(canonGc.getLocal());
 
       for (TimePartition.Partition p : tp.getPartitions()) {
         indexBuilder.addPartitions(writePartitionProto(p.getName(), (TimePartition.Partition) p));
@@ -507,7 +511,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
   private GribCollectionProto.Partition writePartitionProto(String name, TimePartition.Partition p) throws IOException {
     GribCollectionProto.Partition.Builder b = GribCollectionProto.Partition.newBuilder();
 
-    b.setFilename(p.getFilename());
+    b.setFilename(p.getIndexFilename());
     b.setName(name);
 
     return b.build();

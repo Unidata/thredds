@@ -38,6 +38,7 @@ import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -53,7 +54,7 @@ import java.util.Formatter;
 public class Grib1Collection extends ucar.nc2.grib.GribCollection {
 
   public Grib1Collection(String name, File directory, CollectionManager dcm) {
-    super(name, directory, dcm);
+    super(name, directory, dcm, true);
   }
 
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(String groupName, String filename, FeatureCollectionConfig.GribConfig gribConfig) throws IOException {
@@ -160,5 +161,4 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
     // "G:/nomads/timeseries/200808/.*grb2$"
     // readIndex2("G:/nomads/timeseries/200808/GaussLatLon-576X1152.ncx");
   }
-
 }

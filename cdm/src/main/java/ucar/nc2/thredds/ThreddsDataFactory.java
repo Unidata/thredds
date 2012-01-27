@@ -520,20 +520,16 @@ public class ThreddsDataFactory {
     if (accessList.size() == 0)
       return null;
 
-    InvAccess access = null;
-    if (preferCdm)
-      access = findAccessByServiceType(accessList, ServiceType.CdmRemote);
-
-    if (access == null)
-      access = findAccessByServiceType(accessList, ServiceType.FILE); // should mean that it can be opened through netcdf API
-    if (access == null)
-      access = findAccessByServiceType(accessList, ServiceType.NETCDF); //  ServiceType.NETCDF is deprecated, use FILE
+    // the order indicates preference
+    InvAccess access = findAccessByServiceType(accessList, ServiceType.CdmRemote);
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.DODS);
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.OPENDAP);
     if (access == null)
-      access = findAccessByServiceType(accessList, ServiceType.CdmRemote);
+      access = findAccessByServiceType(accessList, ServiceType.FILE); // should mean that it can be opened through netcdf API
+    if (access == null)
+      access = findAccessByServiceType(accessList, ServiceType.NETCDF); //  ServiceType.NETCDF is deprecated, use FILE
 
     // look for HTTP with format we can read
     if (access == null) {

@@ -322,7 +322,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static public void disableNetcdfFileCache() {
     if (null != fileCache) fileCache.disable();
     fileCache = null;
-    shutdown();
   }
 
   // no state, so a singleton is ok

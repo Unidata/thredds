@@ -35,8 +35,11 @@ package ucar.nc2.grib;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
-import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2TimePartitionBuilder;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.cache.FileCache;
+import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -46,14 +49,40 @@ import java.util.*;
 /**
  * A collection of GribCollection objects which are Time Partitioned.
  * A TimePartition is the collection; a TimePartition.Partition represents one of the GribCollection.
- * Everything is done with lazy instantiation.
  *
  * @author caron
  * @since 4/17/11
  */
 public abstract class TimePartition extends GribCollection {
-
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
+
+  //////////////////////////////////////////////////////////
+  // object cache for index files - these are opened only as GribCollection
+  private static FileCache partitionCache;
+
+  static public void initPartitionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
+    partitionCache = new ucar.nc2.util.cache.FileCache("GribCollectionPartitionCache ", minElementsInMemory, maxElementsInMemory, -1, period);
+  }
+
+  static public FileCache getPartitionCache() {
+    return partitionCache;
+  }
+
+  static private final ucar.nc2.util.cache.FileFactory partitionFactory = new FileFactory() {
+    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      File f = new File(location);
+      RandomAccessFile raf = new RandomAccessFile(location, "r");
+      Partition p = (Partition) iospMessage;
+      return GribCollection.createFromIndex(false, p.getName(), f.getParentFile(), raf); // LOOK not sure what the parent directory is for
+    }
+  };
+
+  static public void disableNetcdfFileCache() {
+    if (null != partitionCache) partitionCache.disable();
+    partitionCache = null;
+  }
+
+  ///////////////////////////////////////////////////////////////////////
 
   static public boolean update(boolean isGrib1, TimePartitionCollection tpc, Formatter f) throws IOException {
     if (isGrib1) return Grib1TimePartitionBuilder.update(tpc, f);
@@ -67,54 +96,36 @@ public abstract class TimePartition extends GribCollection {
 
   // wrapper around a GribCollection
   public class Partition implements Comparable<Partition> {
-    protected CollectionManager dcm;
     private GribCollection gribCollection;
-    private String name, filename;
-    private RandomAccessFile raf;
+    private String name, indexFilename;
 
     // constructor from ncx
-    public Partition(String name, String filename) {
+    public Partition(String name, String indexFilename) {
       this.name = name;
-      this.filename = filename; // grib collection ncx
-    }
-
-    // constructor from a TimePartition object
-    public Partition(CollectionManager dcm) {
-      this.dcm = dcm;
-      this.name = dcm.getCollectionName();
+      this.indexFilename = indexFilename; // grib collection ncx
     }
 
     public String getName() {
       return name;
     }
 
-    public String getFilename() {
-      return filename;
+    public String getIndexFilename() {
+      return indexFilename;
     }
 
-    // not present if it come from the index
+    // null if it came from the index
     public CollectionManager getDcm() {
       return dcm;
     }
 
-    // LOOK use ehcache here ??
+    // construct GribCollection - caller must call gc.close() or tp.cleanup()
     public GribCollection getGribCollection() throws IOException {
-      return getGribCollection(new Formatter()); // throw away the log info
-    }
-
-    public GribCollection getGribCollection(Formatter f) throws IOException {
       if (gribCollection == null) {
-        GribCollection gc;
-        if (dcm != null) {
-          gc = Grib2CollectionBuilder.factory(dcm, CollectionManager.Force.test, f);
+        if (partitionCache != null) {
+          gribCollection = (GribCollection) partitionCache.acquire(partitionFactory, indexFilename, indexFilename, -1, null, this);
         } else {
-          raf = new RandomAccessFile(filename, "r");
-          rafLocation = filename;
-          gc = Grib2CollectionBuilder.createFromIndex(name, null, raf); // LOOK
+          gribCollection = (GribCollection) partitionFactory.open(indexFilename, -1, null, this);
         }
-
-        gribCollection = gc; // dont set until init() works
-        filename = gc.getIndexFile().getPath();
       }
       return gribCollection;
     }
@@ -129,9 +140,28 @@ public abstract class TimePartition extends GribCollection {
       return "Partition{" +
               "dcm=" + dcm +
               ", name='" + name + '\'' +
-              ", filename='" + filename + '\'' +
+              ", filename='" + indexFilename + '\'' +
               '}';
     }
+
+    /////////////////////////////////////////////
+    // only used during creation of index
+    private CollectionManager dcm;
+
+    // constructor from a TimePartition object
+    public Partition(CollectionManager dcm) {
+      this.dcm = dcm;
+      this.name = dcm.getCollectionName();
+    }
+
+    public GribCollection makeGribCollection(Formatter f) throws IOException {
+      if (gribCollection == null) {
+        gribCollection = GribCollection.factory(isGrib1, dcm, CollectionManager.Force.test, f);  // LOOK why test ??
+        indexFilename = gribCollection.getIndexFile().getPath();
+      }
+      return gribCollection;
+    }
+
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
@@ -155,7 +185,7 @@ public abstract class TimePartition extends GribCollection {
       Partition p = getPartitions().get(partno);
       GribCollection gc = p.getGribCollection(); // ensure that its read in
 
-      // the group and varible index may vary across partitions
+      // the group and variable index may vary across partitions
       GribCollection.GroupHcs g = gc.groups.get(groupno[partno]);
       GribCollection.VariableIndex vindex = g.varIndex.get(varno[partno]);
       vindex.readRecords();
@@ -176,6 +206,11 @@ public abstract class TimePartition extends GribCollection {
       sb.append(super.toStringComplete());
       return sb.toString();
     }
+
+    // doesnt work because not threadsafe
+    public void cleanup() throws IOException {
+      TimePartition.this.cleanup();
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,8 +218,8 @@ public abstract class TimePartition extends GribCollection {
   protected Map<String, Partition> partitionMap;
   protected List<Partition> partitions;
 
-  protected TimePartition(String name, File directory, CollectionManager dcm) {
-    super(name, directory, dcm);
+  protected TimePartition(String name, File directory, CollectionManager dcm, boolean isGrib1) {
+    super(name, directory, dcm, isGrib1);
   }
 
   @Override
@@ -192,7 +227,7 @@ public abstract class TimePartition extends GribCollection {
     if (filenames == null || filenames.size() == 0) {
       List<Partition> parts = getPartitions();
       filenames = new ArrayList<String>(parts.size());
-      for (Partition p : parts) filenames.add(p.filename);
+      for (Partition p : parts) filenames.add(p.indexFilename);
     }
     return filenames;
   }
@@ -211,8 +246,13 @@ public abstract class TimePartition extends GribCollection {
     return partitionMap.get(name);
   }
 
-  @Override
+  public void cleanup() throws IOException {
+    for (TimePartition.Partition p : partitions)
+      if (p.gribCollection != null)
+        p.gribCollection.close();
+  }
 
+  @Override
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs group, int tableVersion,
                                                         int discipline, int category, int parameter, int levelType, boolean isLayer,
                                                         int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
@@ -283,14 +323,16 @@ public abstract class TimePartition extends GribCollection {
 
   public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
     Partition part = getPartitions().get(partno);
-    return part.gribCollection.getRaf(fileno);
+    GribCollection gc =  part.getGribCollection();
+    return gc.getDataRaf(fileno);
   }
 
   public void close() throws java.io.IOException {
-    super.close();
-    for (Partition part : getPartitions()) {
-      if (part.gribCollection != null)
-        part.gribCollection.close();
+    if (fileCache != null) {
+      fileCache.release(this);
+    } else if (indexRaf != null) {
+      cleanup();
+      super.close();
     }
   }
 

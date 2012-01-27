@@ -51,7 +51,7 @@ public class Grib2TimePartition extends TimePartition {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartition.class);
 
   Grib2TimePartition(String name, File directory, CollectionManager dcm) {
-    super(name, directory, dcm);
+    super(name, directory, dcm, false);
   }
 
   // LOOK - needs time partition collection iosp or something

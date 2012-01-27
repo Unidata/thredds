@@ -62,35 +62,35 @@ import java.util.*;
  * @since 4/6/11
  */
 @ThreadSafe
-public abstract class GribCollection {
+public abstract class GribCollection implements FileCacheable {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
   public static final String IDX_EXT = ".ncx";
   public static final long MISSING_RECORD = -1;
 
-  /* disk cache for .ncx files
-  private static DiskCache2 diskCache = null;
-  static public void setDiskCache(DiskCache2 dc) {
-    diskCache = dc;
-  } */
+  //////////////////////////////////////////////////////////
+  // object cache for data files - these are opened only as raf, not netcdfFile
+  private static FileCache dataRafCache;
 
-  // object cache for raf files
-  private static FileCache fileCache;
-
-  static public void initFileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    fileCache = new ucar.nc2.util.cache.FileCache("GribCollectionRafCache ", minElementsInMemory, maxElementsInMemory, -1, period);
+  static public void initDataRafCache(int minElementsInMemory, int maxElementsInMemory, int period) {
+    dataRafCache = new ucar.nc2.util.cache.FileCache("GribCollectionDataRafCache ", minElementsInMemory, maxElementsInMemory, -1, period);
   }
 
-  static public FileCache getFileCache() {
-    return fileCache;
+  static public FileCache getDataRafCache() {
+    return dataRafCache;
   }
 
-  private static final ucar.nc2.util.cache.FileFactory fileFactory = new FileFactory() {
+  static private final ucar.nc2.util.cache.FileFactory dataRafFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       return new RandomAccessFile(location, "r");
     }
   };
 
-  ////////
+  static public void disableNetcdfFileCache() {
+    if (null != dataRafCache) dataRafCache.disable();
+    dataRafCache = null;
+  }
+
+  //////////////////////////////////////////////////////////
 
   // canonical order (time, ens, vert)
   public static int calcIndex(int timeIdx, int ensIdx, int vertIdx, int nens, int nverts) {
@@ -117,6 +117,11 @@ public abstract class GribCollection {
     return Grib2CollectionBuilder.factory(dcm, force, f);
   }
 
+  static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.createFromIndex(name, directory, raf);
+    return Grib2CollectionBuilder.createFromIndex(name, directory, raf);
+  }
+
   static public boolean update(boolean isGrib1, CollectionManager dcm, Formatter f) throws IOException {
     if (isGrib1) return Grib1CollectionBuilder.update(dcm, f);
     return Grib2CollectionBuilder.update(dcm, f);
@@ -127,6 +132,7 @@ public abstract class GribCollection {
   protected String name;
   protected File directory;
   protected FeatureCollectionConfig.GribConfig config;
+  protected boolean isGrib1;
 
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
@@ -135,31 +141,23 @@ public abstract class GribCollection {
   public List<GroupHcs> groups;
   public List<Parameter> params;
 
-  // need thread safety
-  protected RandomAccessFile raf; // this is the raf of the index file
-  public String rafLocation;   // this is the raf of the index file
-
-  //private Map<Integer,String> gdsNamer;
-  //private String groupNamer;
+  // LOOK need thread safety
+  protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file
 
   public String getName() {
     return name;
-  }
-
-  public File getDirectory() {
-    return directory;
   }
 
   public List<String> getFilenames() {
     return filenames;
   }
 
-  public RandomAccessFile getRaf() {
-    return raf;
+  public RandomAccessFile getIndexRaf() {
+    return indexRaf;
   }
 
-  public void setRaf(RandomAccessFile raf) {
-    this.raf = raf;
+  public void setIndexRaf(RandomAccessFile indexRaf) {
+    this.indexRaf = indexRaf;
   }
 
   private File indexFile;
@@ -215,10 +213,11 @@ public abstract class GribCollection {
     return backProcessId;
   }
 
-  protected GribCollection(String name, File directory, CollectionManager dcm) {
+  protected GribCollection(String name, File directory, CollectionManager dcm, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
     this.config = (dcm == null) ? null : (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.isGrib1 = isGrib1;
   }
 
   /////////////////////////////////////////////
@@ -251,28 +250,50 @@ public abstract class GribCollection {
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
 
-  public RandomAccessFile getRaf(int fileno) throws IOException {
+  public RandomAccessFile getDataRaf(int fileno) throws IOException {
     String filename = filenames.get(fileno);
-    RandomAccessFile want = getRaf(filename);
+    RandomAccessFile want = getDataRaf(filename);
     want.order(RandomAccessFile.BIG_ENDIAN);
     return want;
   }
 
-  private RandomAccessFile getRaf(String location) throws IOException {
-    if (fileCache != null) {
-      return (RandomAccessFile) fileCache.acquire(fileFactory, location, null);
+  private RandomAccessFile getDataRaf(String location) throws IOException {
+    if (dataRafCache != null) {
+      return (RandomAccessFile) dataRafCache.acquire(dataRafFactory, location, null);
     } else {
       return new RandomAccessFile(location, "r");
     }
   }
 
   public void close() throws java.io.IOException {
-    if (raf != null) {
-      raf.close();
-      raf = null;
+    if (fileCache != null) {
+      fileCache.release(this);
+    } else if (indexRaf != null) {
+      indexRaf.close();
+      indexRaf = null;
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // stuff for FileCacheable
+
+  @Override
+  public String getLocation() {
+    if (indexRaf != null) return indexRaf.getLocation();
+    return getIndexFile().getPath();
+  }
+
+  @Override
+  public boolean sync() throws IOException {
+    return false;
+  }
+
+  @Override
+  public void setFileCache(FileCache fileCache) {
+    this.fileCache = fileCache;
+  }
+
+  protected FileCache fileCache = null;
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // these objects are created from the ncx index.
@@ -577,9 +598,9 @@ public abstract class GribCollection {
       byte[] b = new byte[recordsLen];
 
       // synchronize to protect the raf, and records[]
-      synchronized (raf) {
-        raf.seek(recordsPos);
-        raf.readFully(b);
+      synchronized (indexRaf) {
+        indexRaf.seek(recordsPos);
+        indexRaf.readFully(b);
       }
 
       // synchronize to protect records[]

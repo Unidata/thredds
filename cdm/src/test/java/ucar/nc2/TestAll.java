@@ -44,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileFilter;
 
+import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.TestDiskCacheUtils;
 import ucar.ma2.Section;
@@ -199,7 +200,7 @@ public class TestAll {
         ucar.nc2.util.cache.FileCache fc = NetcdfDataset.getNetcdfFileCache(); 
         if (fc != null) fc.clearCache(true); // give messages on files not closed
         checkLeaks();
-        NetcdfDataset.shutdown();
+        FileCache.shutdown();
 
         double took = (System.currentTimeMillis() - startTime) * .001;
         System.out.println(" that took= "+took+" secs");
