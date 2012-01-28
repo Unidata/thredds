@@ -32,10 +32,8 @@
 
 package thredds.inventory;
 
-import thredds.filesystem.MFileOS;
 import ucar.nc2.time.CalendarDate;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,9 +47,9 @@ import java.util.List;
 public class CollectionManagerSingleFile extends CollectionManagerAbstract {
   private MFile mfile;
 
-  public CollectionManagerSingleFile(File file) {
+  public CollectionManagerSingleFile(MFile file) {
     super(file.getPath());
-    this.mfile = new MFileOS(file);
+    this.mfile = file;
   }
 
   @Override

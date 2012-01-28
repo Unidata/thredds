@@ -62,8 +62,8 @@ public class Grib1CollectionBuilder {
   private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
-  static public GribCollection createFromSingleFile(File file, CollectionManager.Force force,
-                                                    FeatureCollectionConfig.GribConfig config, Formatter f) throws IOException {
+  static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionManager.Force force,
+                                                               FeatureCollectionConfig.GribConfig config, Formatter f) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(file, config, f);
     builder.readOrCreateIndex(force, f);
     return builder.gc;
@@ -105,9 +105,11 @@ public class Grib1CollectionBuilder {
   private final List<CollectionManager> collections = new ArrayList<CollectionManager>();
   protected GribCollection gc;
   protected Grib1Customizer cust;
+  protected boolean isSingleFile;
 
   // single file
-  private Grib1CollectionBuilder(File file, FeatureCollectionConfig.GribConfig config, Formatter f) throws IOException {
+  private Grib1CollectionBuilder(MFile file, FeatureCollectionConfig.GribConfig config, Formatter f) throws IOException {
+    this.isSingleFile = true;
     try {
       //String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
       CollectionManager dcm = new CollectionManagerSingleFile(file);
@@ -163,7 +165,7 @@ public class Grib1CollectionBuilder {
   }
 
   private boolean needsUpdate(long idxLastModified) {
-    CollectionManager.ChangeChecker cc = Grib1Index.getChangeChecker();
+    CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
     for (CollectionManager dcm : collections) {
       for (MFile mfile : dcm.getFiles()) {
         if (cc.hasChangedSince(mfile, idxLastModified))
@@ -428,7 +430,6 @@ public class Grib1CollectionBuilder {
   public List<Group> makeAggregatedGroups(ArrayList<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<Integer, Integer> gdsConvert = null;
-    Map<Integer, Integer> timeUnitConvert = null;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
@@ -442,17 +443,13 @@ public class Grib1CollectionBuilder {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
         filenames.add(mfile.getPath());
 
-        Grib1Index index = new Grib1Index();
+        Grib1Index index = null;
         try {
-          if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked against the data file
-            index.makeIndex(mfile.getPath(), f);
-            f.format("  Index written: %s == %d records %n", mfile.getName() + Grib1Index.IDX_EXT, index.getRecords().size());
-          } else if (debug) {
-            f.format("  Index read: %s == %d records %n", mfile.getName() + Grib1Index.IDX_EXT, index.getRecords().size());
-          }
+          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, !isSingleFile, mfile, config, force, f);
+
         } catch (IOException ioe) {
           logger.warn("GribCollectionBuilder {}: reading/Creating gbx9 index failed err={}", gc.getName(), ioe.getMessage());
-          f.format("GribCollectionBuilder: reading/Creating gbx9 index failed err=%s%n  skipping %s%n", ioe.getMessage(), mfile.getPath() + Grib1Index.IDX_EXT);
+          f.format("GribCollectionBuilder: reading/Creating gbx9 index failed err=%s%n  skipping %s%n", ioe.getMessage(), mfile.getPath() + GribIndex.IDX_EXT);
           continue;
         }
 

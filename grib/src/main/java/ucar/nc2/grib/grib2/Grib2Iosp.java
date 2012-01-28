@@ -222,9 +222,8 @@ public class Grib2Iosp extends GribIosp {
 
     boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
     if (isGribFile) {
-      Grib2Index index = new Grib2Index();
-      Formatter f= new Formatter();
-      this.gribCollection = index.createFromSingleFile(raf, gribConfig, CollectionManager.Force.test, f, 2);
+      this.gribCollection = GribIndex.makeGribCollectionFromSingleFile(false, raf, gribConfig, CollectionManager.Force.test, new Formatter());
+      tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor

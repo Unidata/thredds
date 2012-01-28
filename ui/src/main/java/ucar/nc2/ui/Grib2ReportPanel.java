@@ -420,7 +420,7 @@ public class Grib2ReportPanel extends JPanel {
     Grib2Index index = createIndex(ff, fm);
     if (index == null) return;
 
-    GribCollection gc = Grib2CollectionBuilder.createFromSingleFile(new File(path), CollectionManager.Force.nocheck, null, fm);
+    GribCollection gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(ff, CollectionManager.Force.nocheck, null, fm);
     gc.close();
 
     GridDataset ncfile = null;

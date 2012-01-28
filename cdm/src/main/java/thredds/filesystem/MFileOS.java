@@ -36,6 +36,8 @@ import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.File;
+
 /**
  * Implements thredds.inventory.MFile using regular OS files.
  *
@@ -50,6 +52,11 @@ public class MFileOS implements MFile {
   
   public MFileOS(java.io.File file) {
     this.file = file;
+    this.lastModified = file.lastModified();
+  }
+
+  public MFileOS(String filename) {
+    this.file = new File(filename);
     this.lastModified = file.lastModified();
   }
 

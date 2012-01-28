@@ -32,6 +32,8 @@
  */
 package ucar.nc2.thredds.server;
 
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -71,6 +73,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private boolean verbose = true;
   private boolean compareCdm = false;
   private boolean checkUnknown = true;
+  private boolean checkGroups = true;
 
   TestMotherlodeModels(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
     this.catUrl = catURL;
@@ -155,6 +158,15 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
           for (GridDatatype vs : grids) {
             if (vs.getDescription().contains("Unknown"))
               out.printf("  %s == %s%n", vs.getFullName(), vs.getDescription());
+          }
+        }
+
+        if (checkGroups) {
+          NetcdfFile nc = gds.getNetcdfFile();
+          Group root = nc.getRootGroup();
+          if (root.getGroups().size() > 0) {
+             out.printf("  GROUPS in %s%n", gds.getLocation());
+            for (Group g : root.getGroups()) System.out.printf("%s%n", g.getName());
           }
         }
       }

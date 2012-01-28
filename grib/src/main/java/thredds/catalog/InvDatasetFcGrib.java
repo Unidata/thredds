@@ -305,7 +305,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         addFileDatasets(ds, groupId);
 
         // metadata is specific to each group
-        ds.tmi.addVariables(extractThreddsVariables(localState.gribCollection, group));
+        //ds.tmi.addVariables(extractThreddsVariables(localState.gribCollection, group));
         ds.tmi.setGeospatialCoverage(extractGeospatial(group));
         CalendarDateRange cdr = extractCalendarDateRange(group);
         if (cdr != null) ds.tmi.setTimeCoverage(cdr);
@@ -346,9 +346,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   private ThreddsMetadata.Variables extractThreddsVariables(GribCollection gribCollection, GribCollection.GroupHcs group) {
     ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(format.toString());
-    for (GribCollection.VariableIndex vindex : group.varIndex) {
-      vars.addVariable(gribCollection.extractThreddsVariables(vindex));
-    }
+    for (GribCollection.VariableIndex vindex : group.varIndex)
+      vars.addVariable(extractThreddsVariables(gribCollection, vindex));
     vars.sort();
     return vars;
   }
@@ -427,7 +426,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       ds.setID(id + "/" + collectionName + "/" + groupId);
 
       // metadata is specific to each group
-      ds.tmi.addVariables(extractThreddsVariables(gribCollection, group));
+      //ds.tmi.addVariables(extractThreddsVariables(gribCollection, group));
       ds.tmi.setGeospatialCoverage(extractGeospatial(group));
       CalendarDateRange cdr = extractCalendarDateRange(group);
       if (cdr != null) ds.tmi.setTimeCoverage(cdr);
@@ -584,6 +583,52 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     return null;
+  }
+
+    // we need to cache this by variable to reduce duplication
+  private Map<Integer, ThreddsMetadata.Variable> map = null;
+  private Grib1Customizer cust1 = null;
+  private Grib2Customizer cust2 = null;
+
+  public ThreddsMetadata.Variable extractThreddsVariables(GribCollection gc, GribCollection.VariableIndex vindex) {
+    if (map == null) map = new HashMap<Integer, ThreddsMetadata.Variable>(100);
+
+    ThreddsMetadata.Variable tv = map.get(vindex.cdmHash);
+    if (tv != null) return tv;
+    tv = new ThreddsMetadata.Variable();
+
+    if (gc.isGrib1()) {
+      if (cust1 == null) cust1 = Grib1Customizer.factory(gc.getCenter(), gc.getSubcenter(), gc.getLocal(), null);
+      tv.setName(Grib1Iosp.makeVariableName(cust1, gc, vindex));
+      tv.setDescription(Grib1Iosp.makeVariableLongName(cust1, gc, vindex));
+      tv.setUnits(Grib1Iosp.makeVariableUnits(cust1, gc, vindex));
+      tv.setVocabularyId("1-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
+
+      map.put(vindex.cdmHash, tv);
+      return tv;
+
+    } else {
+      if (cust2 == null) cust2 = Grib2Customizer.factory(gc.getCenter(), gc.getSubcenter(), gc.getMaster(), gc.getLocal());
+
+      tv.setName(Grib2Iosp.makeVariableName(cust2, gc, vindex));
+      tv.setDescription(Grib2Iosp.makeVariableLongName(cust2, vindex));
+      tv.setUnits(Grib2Iosp.makeVariableUnits(cust2, vindex));
+      tv.setVocabularyId("2-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
+
+      String paramDisc = cust2.getTableValue("0.0", vindex.discipline);
+      if (paramDisc == null) paramDisc = "Unknown";
+      String paramCategory = cust2.getTableValue("4.1." + vindex.discipline, vindex.category);
+      if (paramCategory == null) paramCategory = "Unknown";
+      String paramName = cust2.getVariableName(vindex.discipline, vindex.category, vindex.parameter);
+      tv.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName);
+      map.put(vindex.cdmHash, tv);
+      return tv;
+    }
+  }
+
+  private class Vhash {
+    int center, subcenter, local, master;
+    int discipline, category, param;
   }
 
 }

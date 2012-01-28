@@ -100,6 +100,10 @@ public class Grib2Index extends GribIndex {
     return records;
   }
 
+  public int getNRecords() {
+    return records.size();
+  }
+
   public boolean readIndex(String filename, long gribLastModified) throws IOException {
     return readIndex(filename, gribLastModified, CollectionManager.Force.test);
   }

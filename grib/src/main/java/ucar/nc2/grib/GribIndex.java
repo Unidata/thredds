@@ -32,12 +32,15 @@
 
 package ucar.nc2.grib;
 
+import thredds.filesystem.MFileOS;
 import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
 //import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
+import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.util.DiskCache;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -48,7 +51,8 @@ import java.util.Formatter;
 /**
  * Abstract superclass for Grib1Index and Grib2Index.
  * Handles gbx9 index for grib.
- * Also creating an ncx file for a single file.
+ * <p/>
+ * Static methods for creating gbx9 and ncx indices for a single file.
  *
  * @author John
  * @since 9/5/11
@@ -82,31 +86,84 @@ public abstract class GribIndex {
     return gribCC;
   }
 
-  public GribCollection createFromSingleFile(RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
-                                             CollectionManager.Force force, Formatter f, int edition) throws IOException {
+  /**
+   * Create a gbx9 and ncx index and a grib collection from a single grib1 or grib2 file.
+   * Use the existing index is it already exists.
+   *
+   * @param isGrib1 true if grib1
+   * @param dataRaf the grib file already open
+   * @param config  special configuration
+   * @param force  force writing index
+   * @param f      put info here
+   * @return the resulting GribCollection
+   * @throws IOException on io error
+   */
+  public static GribCollection makeGribCollectionFromSingleFile(boolean isGrib1, RandomAccessFile dataRaf, FeatureCollectionConfig.GribConfig config,
+                                                                CollectionManager.Force force, Formatter f) throws IOException {
+
+    GribIndex gribIndex = isGrib1 ? new Grib1Index() : new Grib2Index() ;
 
     String filename = dataRaf.getLocation();
     File dataFile = new File(filename);
     boolean readOk;
     try {
-      readOk = readIndex(filename, dataFile.lastModified(), force); // heres where the gbx9 file date is checked against the data file
+      readOk = gribIndex.readIndex(filename, dataFile.lastModified(), force); // heres where the gbx9 file date is checked against the data file
     } catch (IOException ioe) {
       readOk = false;
     }
 
     // make or remake the index
     if (!readOk) {
-      makeIndex(filename, f);
+      gribIndex.makeIndex(filename, f);
       f.format("  Index written: %s%n", filename + IDX_EXT);
     } else if (debug) {
       f.format("  Index read: %s%n", filename + IDX_EXT);
     }
 
     // heres where the ncx file date is checked against the data file
-    if (edition == 1)
-      return Grib1CollectionBuilder.createFromSingleFile(dataFile, force, config, f);
+    MFile mfile = new MFileOS(dataFile);
+    if (isGrib1)
+      return Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, f);
     else
-      return Grib2CollectionBuilder.createFromSingleFile(dataFile, force, config, f);
+      return Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, f);
+  }
+
+  /**
+   * Create a gbx9 and ncx index from a single grib1 or grib2 file.
+   * Use the existing index is it already exists.
+   *
+   * @param isGrib1 true if grib1
+   * @param createCollectionIndex true is you also want the ncx file to be created
+   * @param mfile the grib file
+   * @param config  special configuration
+   * @param force  force writing index
+   * @param f      put info here
+   * @return the resulting GribIndex
+   * @throws IOException on io error
+   */
+  public static GribIndex readOrCreateIndexFromSingleFile(boolean isGrib1, boolean createCollectionIndex,
+         MFile mfile, FeatureCollectionConfig.GribConfig config, CollectionManager.Force force, Formatter f) throws IOException {
+
+    GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
+
+    if (!index.readIndex(mfile.getPath(), mfile.getLastModified(), force)) { // heres where the index date is checked against the data file
+      index.makeIndex(mfile.getPath(), f);
+      f.format("  Index written: %s == %d records %n", mfile.getName() + IDX_EXT, index.getNRecords());
+    } else if (debug) {
+      f.format("  Index read: %s == %d records %n", mfile.getName() + IDX_EXT, index.getNRecords());
+    }
+
+    if (!createCollectionIndex) return index;
+
+     // heres where the ncx file date is checked against the data file
+    GribCollection gc;
+    if (isGrib1)
+      gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, f);
+    else
+      gc = Grib2CollectionBuilder.readOrCreateIndexFromSingleFile(mfile, force, config, f);
+    gc.close(); // dont need this right now
+
+    return index;
   }
 
   /**
@@ -130,5 +187,9 @@ public abstract class GribIndex {
    */
   public abstract boolean makeIndex(String location, Formatter f) throws IOException;
 
-
+  /**
+   * The number of records in the index.
+   * @return The number of records in the index.
+   */
+  public abstract int getNRecords();
 }

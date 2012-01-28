@@ -135,9 +135,7 @@ public class Grib1Iosp extends GribIosp {
     // create the gbx9 index file if not already there
     boolean isGrib = (raf != null) && Grib1RecordScanner.isValidFile(raf);
     if (isGrib) {
-      Grib1Index index = new Grib1Index();
-      Formatter f = new Formatter();
-      this.gribCollection = index.createFromSingleFile(raf, gribConfig, CollectionManager.Force.test, f, 1);
+      this.gribCollection = GribIndex.makeGribCollectionFromSingleFile(true, raf, gribConfig, CollectionManager.Force.test, new Formatter());
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
     }
 

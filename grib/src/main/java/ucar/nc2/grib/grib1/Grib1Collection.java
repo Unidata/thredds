@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import thredds.filesystem.MFileOS;
 import thredds.inventory.CollectionManager;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFileCollectionManager;
@@ -74,7 +75,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
       for (String file : filenames) { // LOOK linear lookup
         if (file.endsWith(filename)) {
           Formatter f = new Formatter();
-          GribCollection gc = Grib1CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
 
           Grib1Iosp iosp = new Grib1Iosp(gc);
           iosp.setLookupTablePath(gribConfig.lookupTablePath);
@@ -107,7 +108,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
       for (String file : filenames) {  // LOOK linear lookup
         if (file.endsWith(filename)) {
           Formatter f = new Formatter();
-          GribCollection gc = Grib1CollectionBuilder.createFromSingleFile(new File(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
+          GribCollection gc = Grib1CollectionBuilder.readOrCreateIndexFromSingleFile(new MFileOS(file), CollectionManager.Force.nocheck, gribConfig, f);  // LOOK thread-safety : creating ncx
 
           Grib1Iosp iosp = new Grib1Iosp(gc);
           iosp.setLookupTablePath(gribConfig.lookupTablePath);

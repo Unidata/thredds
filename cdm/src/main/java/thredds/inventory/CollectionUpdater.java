@@ -155,6 +155,7 @@ public enum CollectionUpdater {
     if (disabled || failed) return;
 
     FeatureCollectionConfig.UpdateConfig useConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
+    if (useConfig == null) return;
     //if (!useConfig.startup && (useConfig.rescan == null) && (config.protoConfig.change == null))
     //  return;
 

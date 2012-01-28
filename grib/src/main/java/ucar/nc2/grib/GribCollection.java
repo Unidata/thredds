@@ -219,6 +219,10 @@ public abstract class GribCollection implements FileCacheable {
     return backProcessId;
   }
 
+  public boolean isGrib1() {
+    return isGrib1;
+  }
+
   protected GribCollection(String name, File directory, CollectionManager dcm, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
@@ -683,48 +687,6 @@ public abstract class GribCollection implements FileCacheable {
   static protected class GcNetcdfFile extends NetcdfFile {
     public GcNetcdfFile(IOServiceProvider spi, RandomAccessFile raf, String location, CancelTask cancelTask) throws IOException {
       super(spi, raf, location, cancelTask);
-    }
-  }
-
-  // we need to cache this by variable to reduce duplication
-  private Map<Integer, ThreddsMetadata.Variable> map = null;
-  private Grib1Customizer cust1 = null;
-  private Grib2Customizer cust2 = null;
-
-  public ThreddsMetadata.Variable extractThreddsVariables(GribCollection.VariableIndex vindex) {
-    if (map == null) map = new HashMap<Integer, ThreddsMetadata.Variable>(100);
-
-    ThreddsMetadata.Variable tv = map.get(vindex.cdmHash);
-    if (tv != null) return tv;
-    tv = new ThreddsMetadata.Variable();
-
-    if (isGrib1) {
-      if (cust1 == null) cust1 = Grib1Customizer.factory(getCenter(), getSubcenter(), getLocal(), null);
-      tv.setName(Grib1Iosp.makeVariableName(cust1, this, vindex));
-      tv.setDescription(Grib1Iosp.makeVariableLongName(cust1, this, vindex));
-      tv.setUnits(Grib1Iosp.makeVariableUnits(cust1, this, vindex));
-      tv.setVocabularyId("1-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
-
-      map.put(vindex.cdmHash, tv);
-      return tv;
-
-    } else {
-      if (cust2 == null) cust2 = Grib2Customizer.factory(getCenter(), getSubcenter(), getMaster(), getLocal());
-
-      tv.setName(Grib2Iosp.makeVariableName(cust2, this, vindex));
-      tv.setDescription(Grib2Iosp.makeVariableLongName(cust2, vindex));
-      tv.setUnits(Grib2Iosp.makeVariableUnits(cust2, vindex));
-      tv.setVocabularyId("2-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);
-
-      String paramDisc = cust2.getTableValue("0.0", vindex.discipline);
-      if (paramDisc == null) paramDisc = "Unknown";
-      String paramCategory = cust2.getTableValue("4.1." + vindex.discipline, vindex.category);
-      if (paramCategory == null) paramCategory = "Unknown";
-      String paramName = cust2.getVariableName(vindex.discipline, vindex.category, vindex.parameter);
-      tv.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName);
-      map.put(vindex.cdmHash, tv);
-      return tv;
-
     }
   }
 
