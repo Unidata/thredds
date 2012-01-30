@@ -294,7 +294,7 @@ class ASTsegment extends AST
         components = getSdds().search(name,components);
         if(slices != null && slices.size() > 0) {
             try {
-                bt = (BaseType)components.peek();
+                bt = (SDArray)components.peek();
             } catch (ClassCastException cce) {
                     String msg = "Attempt to treat the variable `" + name
                                  + "' as if it is an array.";
