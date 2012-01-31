@@ -4828,7 +4828,7 @@
     <SubTitle_en>Product discipline 0 - Meteorological products, parameter category 15: radar</SubTitle_en>
     <CodeFlag>3</CodeFlag>
     <MeaningParameterDescription_en>Vertically-integrated liquid</MeaningParameterDescription_en>
-    <UnitComments_en>kg/m</UnitComments_en>
+    <UnitComments_en>kg m-2</UnitComments_en>
     <Status>Operational</Status>
   </GRIB2_8_0_0_CodeFlag_en>
   <GRIB2_8_0_0_CodeFlag_en>

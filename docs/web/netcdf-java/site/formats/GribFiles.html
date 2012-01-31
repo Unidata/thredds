@@ -107,7 +107,10 @@
 <h2>Time partitions</h2>
 <p>It appears that all the partitions are open at once, rather than opening and closing as needed. each partition is a grib collection with  an open ncx RAF..</p>
 <p>leave top collections open, but manage time partitions in a cache.</p>
-<p>Memory use</p>
+<p>&nbsp;</p>
+<p>time partition indexes have to be deleted by hand when the underlying indexes need updating.</p>
+<p>ncx indices need to be deleted by hand if you want to modify them with gribConfig or code changes, unless I update the version.</p>
+<h2>Memory use</h2>
 <p>top level gc are kept in memory. 68 total 42 M, avg = 600K.<br />
 </p>
 <hr width="100%" />

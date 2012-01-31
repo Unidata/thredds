@@ -106,7 +106,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
    public static class TableEntry implements GribTables.Parameter, Comparable<Grib2Customizer.TableEntry> {
     public int discipline, category, number;
-    public String name, unit, abbrev;
+    public String name, unit, abbrev, desc;
 
     public TableEntry(int discipline, int category, int number, String name, String unit, String abbrev) {
       this.discipline = discipline;
@@ -155,11 +155,17 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
       return unit;
     }
 
+     @Override
     public String getAbbrev() {
       return abbrev;
     }
 
-    @Override
+     @Override
+     public String getDescription() {
+       return desc;
+     }
+
+     @Override
     public String toString() {
       return "TableEntry{" +
               "discipline=" + discipline +
@@ -513,7 +519,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
 
   public String getIntervalNameShort(int id) {
     GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
-    return (stat == null) ? "" : stat.toString();
+    return (stat == null) ?"UnknownStatType-" + id : stat.toString();
   }
 
   /////////////////////////////////////////////

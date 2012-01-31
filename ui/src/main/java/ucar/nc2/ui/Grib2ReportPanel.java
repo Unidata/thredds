@@ -172,15 +172,15 @@ public class Grib2ReportPanel extends JPanel {
           int discipline = (Integer) att.getValue(0);
           int category = (Integer) att.getValue(1);
           int number = (Integer) att.getValue(2);
-          if (number >= 192) {
-            fm.format("  local parameter = %s (%d %d %d) units=%s %n", currName, discipline, category, number, dt.getUnitsString());
+          if ((category > 191) || (number > 191)) {
+            fm.format("  local parameter (%d %d %d) = %s units=%s %n", discipline, category, number, currName, dt.getUnitsString());
             local++;
             continue;
           }
 
           WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
           if (entry == null) {
-            fm.format("  Missing parameter = %s (%d %d %d) %n", currName, discipline, category, number);
+            fm.format("  missing from WMO table (%d %d %d) = %s units=%s %n", discipline, category, number, currName, dt.getUnitsString());
             miss++;
             continue;
           }
@@ -719,6 +719,8 @@ public class Grib2ReportPanel extends JPanel {
   private int doTimeCoord(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter statTypeSet, Counter NTimeIntervals,
                           Counter TinvDiffer) throws IOException {
     boolean showTinvDiffers = true;
+    boolean showNint = true;
+    boolean shutup = false;
 
     Grib2Index index = createIndex(mf, f);
     if (index == null) return 0;
@@ -745,12 +747,20 @@ public class Grib2ReportPanel extends JPanel {
           }
         }
         NTimeIntervals.count(pdsi.getTimeIntervals().length);
+        if (showNint && !shutup && pdsi.getTimeIntervals().length > 1) {
+          f.format("  TimeIntervals > 1 = %s file=%s%n  ", getId(pds), mf.getName());
+          shutup = true;
+        }
       }
 
       count++;
     }
 
     return count;
+  }
+
+  String getId(Grib2Pds pds) {
+    return pds.getParameterCategory()+ "-" + pds.getParameterNumber();
   }
 
 }

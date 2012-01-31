@@ -4077,6 +4077,10 @@ public final class GribCollectionProto {
     // optional string name = 10;
     boolean hasName();
     String getName();
+    
+    // optional sint32 gdsHash = 11;
+    boolean hasGdsHash();
+    int getGdsHash();
   }
   public static final class Group extends
       com.google.protobuf.GeneratedMessage
@@ -4299,6 +4303,16 @@ public final class GribCollectionProto {
       }
     }
     
+    // optional sint32 gdsHash = 11;
+    public static final int GDSHASH_FIELD_NUMBER = 11;
+    private int gdsHash_;
+    public boolean hasGdsHash() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public int getGdsHash() {
+      return gdsHash_;
+    }
+    
     private void initFields() {
       predefinedGds_ = 0;
       gds_ = com.google.protobuf.ByteString.EMPTY;
@@ -4310,6 +4324,7 @@ public final class GribCollectionProto {
       fileno_ = java.util.Collections.emptyList();;
       timeCoordUnions_ = java.util.Collections.emptyList();
       name_ = "";
+      gdsHash_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -4389,6 +4404,9 @@ public final class GribCollectionProto {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBytes(10, getNameBytes());
       }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeSInt32(11, gdsHash_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -4442,6 +4460,10 @@ public final class GribCollectionProto {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(10, getNameBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSInt32Size(11, gdsHash_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4615,6 +4637,8 @@ public final class GribCollectionProto {
         }
         name_ = "";
         bitField0_ = (bitField0_ & ~0x00000200);
+        gdsHash_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000400);
         return this;
       }
       
@@ -4724,6 +4748,10 @@ public final class GribCollectionProto {
           to_bitField0_ |= 0x00000004;
         }
         result.name_ = name_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.gdsHash_ = gdsHash_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4915,6 +4943,9 @@ public final class GribCollectionProto {
         if (other.hasName()) {
           setName(other.getName());
         }
+        if (other.hasGdsHash()) {
+          setGdsHash(other.getGdsHash());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -5045,6 +5076,11 @@ public final class GribCollectionProto {
             case 82: {
               bitField0_ |= 0x00000200;
               name_ = input.readBytes();
+              break;
+            }
+            case 88: {
+              bitField0_ |= 0x00000400;
+              gdsHash_ = input.readSInt32();
               break;
             }
           }
@@ -6293,6 +6329,27 @@ public final class GribCollectionProto {
         bitField0_ |= 0x00000200;
         name_ = value;
         onChanged();
+      }
+      
+      // optional sint32 gdsHash = 11;
+      private int gdsHash_ ;
+      public boolean hasGdsHash() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      public int getGdsHash() {
+        return gdsHash_;
+      }
+      public Builder setGdsHash(int value) {
+        bitField0_ |= 0x00000400;
+        gdsHash_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearGdsHash() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        gdsHash_ = 0;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:gribCollectionIndex.Group)
@@ -9511,7 +9568,7 @@ public final class GribCollectionProto {
       "Name\030\023 \001(\t\"U\n\005Coord\022\014\n\004code\030\001 \002(\005\022\014\n\004uni" +
       "t\030\002 \002(\t\022\016\n\006values\030\003 \003(\002\022\r\n\005bound\030\004 \003(\002\022\021" +
       "\n\005index\030\005 \001(\005:\002-1\"6\n\tParameter\022\014\n\004name\030\001" +
-      " \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"\370\002\n\005Gr" +
+      " \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"\211\003\n\005Gr" +
       "oup\022\025\n\rpredefinedGds\030\001 \001(\005\022\013\n\003gds\030\002 \001(\014\022",
       "0\n\tvariables\030\003 \003(\0132\035.gribCollectionIndex" +
       ".Variable\022.\n\ntimeCoords\030\004 \003(\0132\032.gribColl" +
@@ -9521,20 +9578,20 @@ public final class GribCollectionProto {
       "ms\030\007 \003(\0132\036.gribCollectionIndex.Parameter" +
       "\022\016\n\006fileno\030\010 \003(\005\022<\n\017timeCoordUnions\030\t \003(" +
       "\0132#.gribCollectionIndex.TimeCoordUnion\022\014" +
-      "\n\004name\030\n \001(\t\"m\n\016TimeCoordUnion\022\014\n\004code\030\001" +
-      " \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006values\030\003 \003(\002\022\r\n\005bo",
-      "und\030\004 \003(\002\022\021\n\tpartition\030\005 \003(\005\022\r\n\005index\030\006 " +
-      "\003(\005\"+\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020\n\010filena" +
-      "me\030\002 \002(\t\"\311\002\n\023GribCollectionIndex\022\014\n\004name" +
-      "\030\001 \002(\t\022\r\n\005files\030\002 \003(\t\022*\n\006groups\030\003 \003(\0132\032." +
-      "gribCollectionIndex.Group\022.\n\006params\030\004 \003(" +
-      "\0132\036.gribCollectionIndex.Parameter\022\016\n\006cen" +
-      "ter\030\005 \002(\005\022\021\n\tsubcenter\030\006 \002(\005\022\016\n\006master\030\007" +
-      " \002(\005\022\r\n\005local\030\010 \002(\005\022\026\n\016genProcessType\030\n " +
-      "\001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProcess" +
-      "Id\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.gribColle",
-      "ctionIndex.PartitionB$\n\rucar.nc2.gribB\023G" +
-      "ribCollectionProto"
+      "\n\004name\030\n \001(\t\022\017\n\007gdsHash\030\013 \001(\021\"m\n\016TimeCoo" +
+      "rdUnion\022\014\n\004code\030\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006v",
+      "alues\030\003 \003(\002\022\r\n\005bound\030\004 \003(\002\022\021\n\tpartition\030" +
+      "\005 \003(\005\022\r\n\005index\030\006 \003(\005\"+\n\tPartition\022\014\n\004nam" +
+      "e\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\"\311\002\n\023GribCollec" +
+      "tionIndex\022\014\n\004name\030\001 \002(\t\022\r\n\005files\030\002 \003(\t\022*" +
+      "\n\006groups\030\003 \003(\0132\032.gribCollectionIndex.Gro" +
+      "up\022.\n\006params\030\004 \003(\0132\036.gribCollectionIndex" +
+      ".Parameter\022\016\n\006center\030\005 \002(\005\022\021\n\tsubcenter\030" +
+      "\006 \002(\005\022\016\n\006master\030\007 \002(\005\022\r\n\005local\030\010 \002(\005\022\026\n\016" +
+      "genProcessType\030\n \001(\005\022\024\n\014genProcessId\030\013 \001" +
+      "(\005\022\025\n\rbackProcessId\030\014 \001(\005\0222\n\npartitions\030",
+      "\r \003(\0132\036.gribCollectionIndex.PartitionB$\n" +
+      "\rucar.nc2.gribB\023GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -9586,7 +9643,7 @@ public final class GribCollectionProto {
           internal_static_gribCollectionIndex_Group_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Group_descriptor,
-              new java.lang.String[] { "PredefinedGds", "Gds", "Variables", "TimeCoords", "VertCoords", "EnsCoords", "Params", "Fileno", "TimeCoordUnions", "Name", },
+              new java.lang.String[] { "PredefinedGds", "Gds", "Variables", "TimeCoords", "VertCoords", "EnsCoords", "Params", "Fileno", "TimeCoordUnions", "Name", "GdsHash", },
               ucar.nc2.grib.GribCollectionProto.Group.class,
               ucar.nc2.grib.GribCollectionProto.Group.Builder.class);
           internal_static_gribCollectionIndex_TimeCoordUnion_descriptor =

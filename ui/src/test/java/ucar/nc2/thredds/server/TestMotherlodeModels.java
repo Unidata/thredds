@@ -236,7 +236,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     HTTPSession.setGlobalUserAgent("TestMotherlodeModels");
 
     //String problemCat = "http://localhost:8080/thredds/catalog/NOAA/CFSR/timeseries/catalog.xml";
-    String problemCat = "http://localhost:8080/thredds/enhancedCatalog.xml";
+    //String problemCat = "http://localhost:8080/thredds/catalog/grib/CFSR/catalog.xml";
+    String problemCat = "http://motherlode.ucar.edu:9080/thredds/grib/NCDC/CFSR/catalog.xml";
 
     String server = "http://motherlode.ucar.edu:9080/thredds";
     String catalog = "/catalog.xml";
@@ -256,8 +257,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    //TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL_DIRECT, false);
-    TestMotherlodeModels job = new TestMotherlodeModels("dev", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL_DIRECT, false);
+    //TestMotherlodeModels job = new TestMotherlodeModels("dev", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();

@@ -1,0 +1,89 @@
+Notes on CFSR dataset
+
+ - 01/28/2012 from email from bob dattore
+
+    In ds093.2, the monthly mean dataset, we did not make any modifications, but NCEP did not encode the statistical processing fields
+    (octets 47-58 and 59-70) according to the GRIB2 standard.  Instead, they did their own thing, which is described here:
+    http://dss.ucar.edu/datasets/ds093.2/docs/time_ranges.html.
+
+    ds093.2 CFSR Time Range Specification
+    NCEP does not follow the GRIB2 standard to indicate the statistical processing time range for the CFSR monthly means.
+    Instead, they specify octets 47-58 and 59-70 in Product Template 4.8 as follows:
+
+    Octet(s)	Description
+        47	From NCEP Code Table 4.10
+        48	Should be ignored
+        49	Should be ignored
+        50-53	Number of grids used in the average
+        54	Should be ignored
+        55-58	This is "P2" from the GRIB1 format
+        59	From NCEP Code Table 4.10
+        60	Should be ignored
+        61	Should be ignored
+        62-65	This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+        66	Should be ignored
+        67-70	Should be ignored
+
+    It is unlikely that current GRIB decoders will understand this time range specification, so the times and product types
+    for the grids may appear as something very different than what they should. One alternative is to convert the grids to GRIB1 format.
+
+ -01/28/2012 notes
+
+   so for template 8, the following are affected by octets >= 47 :   TimeInterval[] readTimeIntervals().
+   so the time unit is ok:
+         47: Statistical process == 193 (table 4.10: Average of N forecasts)
+
+   special handling:
+      55-58: This is "P2" from the GRIB1 format
+      62-65: This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+
+ -01/28/2012 an example from this dataset:
+
+    File=G:/nomads/cfsr/monthly/200808/flxf01.gdas.200808.grb2 (0)
+      Parameter=Momentum flux, u-component
+      ReferenceDate=2008-08-01T00:00:00.000Z
+      ForecastDate=2008-10-01T13:00:00.000Z
+      TimeInterval=(2008-09-26T07:00:00.000Z,2008-10-01T13:00:00.000Z)
+
+    Grib2Pds{ id=2-17 template=8, forecastTime= 0 timeUnit=1 }
+       Grib2Pds8: endInterval=2008-10-01T13:00:00.000Z
+      TimeInterval: statProcessType= 205, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 124, timeIncrementUnit= 1, timeIncrement=1
+      TimeInterval: statProcessType= 205, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 1, timeIncrementUnit= 1, timeIncrement=0
+
+
+    4.8) Product definition template 4.8 - average, accumulation and/or extreme values or other statistically-processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval
+      1:                                                                                 PDS length == 70
+      5:                                                                                    Section == 4
+      6:                                                Number of coordinates values after Template == 0
+      8:                                                         Product Definition Template Number == 8
+     10:                                                                         Parameter category == 2
+     11:                                                                           Parameter number == 17
+     12:                                                                 Type of generating process == 2 (table 4.3: Forecast)
+     13:                   Background generating process identifier (defined by originating centre) == 0 (table ProcessId: Table ProcessId code 0 not found)
+     14:         Analysis or forecast generating process identifier (defined by originating centre) == 82 (table ProcessId: Analysis from GDAS (Global Data Assimilation System))
+     15:                                                  Hours after reference time of data cutoff == 0
+     17:                                                Minutes after reference time of data cutoff == 0
+     18:                                                            Indicator of unit of time range == 1 (table 4.4: Hour)
+     19:                                                 Forecast time in units defined by octet 18 == 0
+     23:                                                                Type of first fixed surface == 1 (table 4.5: Ground or water surface)
+     24:                                                        Scale factor of first fixed surface == 0
+     25:                                                        Scaled value of first fixed surface == 0
+     29:                                                               Type of second fixed surface == 255 (table 4.5: Missing)
+     30:                                                       Scale factor of second fixed surface == 0
+     31:                                                       Scaled value of second fixed surface == 0
+     35:                                                Year - time of end of overall time interval == 2008
+     37:                                               Month - time of end of overall time interval == 10
+     38:                                                 Day - time of end of overall time interval == 1
+     39:                                                Hour - time of end of overall time interval == 13
+     40:                                              Minute - time of end of overall time interval == 0
+     41:                                              Second - time of end of overall time interval == 0
+     42: n - number of time range specifications describing the time intervals used to calculate the statistically-processed field == 2
+     43:                                 Total number of data values missing in statistical process == 0
+     47: Statistical process used to calculate the processed field from the field at each time increment during the time range == 205 (table 4.10: Average of forecast averages)
+     48:        Type of time increment between successive fields used in the statistical processing == 1 (table 4.11: Successive times processed have same forecast time, start time of forecast is incremented)
+     49:         Indicator of unit of time for time range over which statistical processing is done == 1 (table 4.4: Hour)
+     50: Length of the time range over which statistical processing is done, in units defined by the previous octet == 124
+     54:             Indicator of unit of time for the increment between the successive fields used == 1 (table 4.4: Hour)
+     55:           Time increment between successive fields, in units defined by the previous octet == 1
+     59:                                      As octets 47 to 58, next innermost step of processing == -9999
+     71: Additional time range specifications, included in accordance with the value of n. Contents as octets 47 to 58, repeated as necessary == -9999

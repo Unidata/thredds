@@ -50,7 +50,7 @@ import java.io.IOException;
 public class Grib2TimePartition extends TimePartition {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartition.class);
 
-  Grib2TimePartition(String name, File directory, CollectionManager dcm) {
+  Grib2TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm) {
     super(name, directory, dcm, false);
   }
 

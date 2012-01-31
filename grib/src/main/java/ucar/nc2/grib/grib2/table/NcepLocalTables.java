@@ -32,10 +32,14 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.grib.grib2.Grib2Utils;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarPeriod;
 
 import java.util.*;
 
@@ -53,13 +57,36 @@ public class NcepLocalTables extends Grib2Customizer {
     initCodes();
   }
 
-  /* @Override
-  public List getParameters() {
-    List<TableEntry> result = new ArrayList<TableEntry>();
-    for (TableEntry p : local.values()) result.add(p);
-    Collections.sort(result);
-    return result;
-  } */
+  // temp for cfsr
+  public TimeCoord.TinvDate getForecastTimeIntervalCrsrMonthly(Grib2Record gr) {
+    if (!gr.getPDS().isInterval()) return null;
+    Grib2Pds pds = gr.getPDS();
+    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
+    int timeUnitOrg = pds.getTimeUnit();
+
+    /*     Octet(s)	Description
+        47	From NCEP Code Table 4.10
+        48	Should be ignored
+        49	Should be ignored
+        50-53	Number of grids used in the average
+        54	Should be ignored
+        55-58	This is "P2" from the GRIB1 format
+        59	From NCEP Code Table 4.10
+        60	Should be ignored
+        61	Should be ignored
+        62-65	This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+        66	Should be ignored
+        67-70	Should be ignored */
+
+    int statType = pds.getOctet(47);
+    int statType2 = pds.getOctet(59);
+    int ngrids = GribNumbers.int4(pds.getOctet(50), pds.getOctet(51), pds.getOctet(52), pds.getOctet(53));
+    int p2 = GribNumbers.int4(pds.getOctet(55), pds.getOctet(56), pds.getOctet(57), pds.getOctet(58));
+    int p2mp1 = GribNumbers.int4(pds.getOctet(62), pds.getOctet(63), pds.getOctet(64), pds.getOctet(65));
+
+    return super.getForecastTimeInterval(gr);
+  }
+
 
   @Override
   public String getVariableName(int discipline, int category, int parameter) {
@@ -260,6 +287,7 @@ public class NcepLocalTables extends Grib2Customizer {
 
   /////////////////////////////////////////////////////////////////
   // generating process ids for NCEP
+  // GRIB1 TableA - can share (?)
 
   private Map<Integer, String> processIdMap = null;
 

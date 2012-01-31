@@ -53,7 +53,7 @@ import java.util.Formatter;
  */
 public class Grib1Collection extends ucar.nc2.grib.GribCollection {
 
-  public Grib1Collection(String name, File directory, CollectionManager dcm) {
+  public Grib1Collection(String name, File directory, FeatureCollectionConfig.GribConfig dcm) {
     super(name, directory, dcm, true);
   }
 
@@ -153,7 +153,7 @@ public class Grib1Collection extends ucar.nc2.grib.GribCollection {
       } else if (arg.equalsIgnoreCase("-read")) {
         File f = new File(args[i+1]);
         RandomAccessFile raf = new RandomAccessFile(f.getPath(), "r");
-        GribCollection gc = Grib1CollectionBuilder.createFromIndex(f.getName(), f.getParentFile(), raf);
+        GribCollection gc = Grib1CollectionBuilder.createFromIndex(f.getName(), f.getParentFile(), raf, null);
         gc.showIndex(new Formatter(System.out));
         break;
       }

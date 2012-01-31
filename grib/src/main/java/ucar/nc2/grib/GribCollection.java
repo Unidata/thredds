@@ -33,17 +33,11 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
-import thredds.catalog.DataFormatType;
-import thredds.catalog.ThreddsMetadata;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
-import ucar.nc2.grib.grib1.Grib1Iosp;
-import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
-import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -123,9 +117,9 @@ public abstract class GribCollection implements FileCacheable {
     return Grib2CollectionBuilder.factory(dcm, force, f);
   }
 
-  static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf) throws IOException {
-    if (isGrib1) return Grib1CollectionBuilder.createFromIndex(name, directory, raf);
-    return Grib2CollectionBuilder.createFromIndex(name, directory, raf);
+  static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.createFromIndex(name, directory, raf, config);
+    return Grib2CollectionBuilder.createFromIndex(name, directory, raf, config);
   }
 
   static public boolean update(boolean isGrib1, CollectionManager dcm, Formatter f) throws IOException {
@@ -137,7 +131,7 @@ public abstract class GribCollection implements FileCacheable {
 
   protected String name;
   protected File directory;
-  protected FeatureCollectionConfig.GribConfig config;
+  protected FeatureCollectionConfig.GribConfig gribConfig;
   protected boolean isGrib1;
 
   // set by the builder
@@ -223,10 +217,11 @@ public abstract class GribCollection implements FileCacheable {
     return isGrib1;
   }
 
-  protected GribCollection(String name, File directory, CollectionManager dcm, boolean isGrib1) {
+  protected GribCollection(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
-    this.config = (dcm == null) ? null : (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    // this.config = (dcm == null) ? null : (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.gribConfig = dcm;
     this.isGrib1 = isGrib1;
   }
 
@@ -330,14 +325,14 @@ public abstract class GribCollection implements FileCacheable {
     private String makeId() {
       // check for user defined group names
       String result = null;
-      if (config != null && config.gdsNamer != null)
-        result = config.gdsNamer.get(gdsHash);
+      if (gribConfig != null && gribConfig.gdsNamer != null)
+        result = gribConfig.gdsNamer.get(gdsHash);
       if (result != null) {
         StringBuilder sb = new  StringBuilder(result);
         StringUtil2.replace(sb, ". :", "p--");
         return sb.toString();
       }
-      if (config != null && config.groupNamer != null) {
+      if (gribConfig != null && gribConfig.groupNamer != null) {
         File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         StringBuilder sb = new  StringBuilder(firstFile.getName().substring(15, 26) + "-" + centerPoint.toString());
@@ -361,10 +356,10 @@ public abstract class GribCollection implements FileCacheable {
     private String makeDescription() {
       // check for user defined group names
       String result = null;
-      if (config != null && config.gdsNamer != null)
-        result = config.gdsNamer.get(gdsHash);
+      if (gribConfig != null && gribConfig.gdsNamer != null)
+        result = gribConfig.gdsNamer.get(gdsHash);
       if (result != null) return result;
-      if (config != null && config.groupNamer != null) {
+      if (gribConfig != null && gribConfig.groupNamer != null) {
         File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         return "First Run " + firstFile.getName().substring(15, 26) + ", Center " + centerPoint;

@@ -1380,7 +1380,21 @@ public class Grib2CollectionPanel extends JPanel {
 
     public String showProcessedGridRecord(Formatter f) {
       f.format("%nFile=%s (%d)%n", fileList.get(gr.getFile()).getPath(), gr.getFile());
-      f.format("  Parameter=%s%n", cust.getVariableName(gr));
+      GribTables.Parameter param = cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+      f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
+
+      VertCoord.VertUnit levelUnit = Grib2Utils.getLevelUnit(pds.getLevelType1());
+      f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(), cust.getLevelNameShort(pds.getLevelType1()));
+
+      String intvName = "none";
+      if (pds instanceof Grib2Pds.PdsInterval) {
+        Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
+        Grib2Pds.TimeInterval[] ti = pdsi.getTimeIntervals();
+        int statType = ti[0].statProcessType;
+        intvName = cust.getIntervalNameShort(statType);
+      }
+
+      f.format("  Time Unit=%s ;Stat=%s%n", Grib2Utils.getCalendarPeriod( pds.getTimeUnit()), intvName);
       f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
       f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
       TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);

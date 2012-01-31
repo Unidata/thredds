@@ -46,8 +46,10 @@ public interface CDM {
 
   // from the Netcdf Users Guide
   // http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions
+  public static final String ABBREV = "abbreviation";
   public static final String ADD_OFFSET = "add_offset";
   public static final String CONVENTIONS = "Conventions";
+  public static final String DESCRIPTION = "description";
   public static final String HISTORY = "history";
   public static final String LONG_NAME = "long_name";
   public static final String MISSING_VALUE = "missing_value";

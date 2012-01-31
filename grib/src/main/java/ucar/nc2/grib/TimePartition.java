@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
@@ -73,7 +74,7 @@ public abstract class TimePartition extends GribCollection {
       File f = new File(location);
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCollection.createFromIndex(false, p.getName(), f.getParentFile(), raf); // LOOK not sure what the parent directory is for
+      return GribCollection.createFromIndex(false, p.getName(), f.getParentFile(), raf, p.getConfig()); // LOOK not sure what the parent directory is for
     }
   };
 
@@ -111,6 +112,10 @@ public abstract class TimePartition extends GribCollection {
 
     public String getIndexFilename() {
       return indexFilename;
+    }
+
+    public FeatureCollectionConfig.GribConfig getConfig() {
+      return gribConfig;
     }
 
     // null if it came from the index
@@ -218,7 +223,7 @@ public abstract class TimePartition extends GribCollection {
   protected Map<String, Partition> partitionMap;
   protected List<Partition> partitions;
 
-  protected TimePartition(String name, File directory, CollectionManager dcm, boolean isGrib1) {
+  protected TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1) {
     super(name, directory, dcm, isGrib1);
   }
 
@@ -247,6 +252,7 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public void cleanup() throws IOException {
+    if (partitions == null) return;
     for (TimePartition.Partition p : partitions)
       if (p.gribCollection != null)
         p.gribCollection.close();

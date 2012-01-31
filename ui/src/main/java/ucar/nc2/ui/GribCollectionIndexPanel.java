@@ -256,7 +256,7 @@ public class GribCollectionIndexPanel extends JPanel {
     int total = 0;
     for (File file : files) {
       RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-      GribCollection cgc = Grib2CollectionBuilder.createFromIndex(file.getPath(), null, raf);
+      GribCollection cgc = Grib2CollectionBuilder.createFromIndex(file.getPath(), file.getParentFile(), raf, null);
       List<String> cfiles = new ArrayList<String>(cgc.getFilenames());
       Collections.sort(cfiles);
       f.format("Compare files in %s to canonical files in %s%n", file.getPath(), idxFile.getPath());
@@ -314,9 +314,9 @@ public class GribCollectionIndexPanel extends JPanel {
     raf.read(b);
     String magic = new String(b);
     if (magic.equals(Grib2CollectionBuilder.MAGIC_START))
-      gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf);
+      gc = Grib2CollectionBuilder.createFromIndex(indexFile, null, raf, null);
     else if (magic.equals(Grib1CollectionBuilder.MAGIC_START))
-      gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf);
+      gc = Grib1CollectionBuilder.createFromIndex(indexFile, null, raf, null);
     else if (magic.equals(Grib2TimePartitionBuilder.MAGIC_START))
       gc = Grib2TimePartitionBuilder.createFromIndex(indexFile, null, raf);
     else if (magic.equals(Grib1TimePartitionBuilder.MAGIC_START))
@@ -383,6 +383,10 @@ public class GribCollectionIndexPanel extends JPanel {
       return group.getId();
     }
     
+    public int getGdsHash() {
+      return group.gdsHash;
+    }
+
     public String getDescription() {
       return group.getDescription();
     }

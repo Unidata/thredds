@@ -357,7 +357,7 @@ public class FeatureCollectionConfig {
 
     public void addGdsHash(String fromS, String toS) {
       if (fromS == null || toS == null) return;
-      if (gdsHash == null) gdsHash = new HashMap<Integer, Integer>(5);
+      if (gdsHash == null) gdsHash = new HashMap<Integer, Integer>(10);
 
       try {
         int from = Integer.parseInt(fromS);

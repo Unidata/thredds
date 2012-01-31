@@ -141,8 +141,11 @@ public class Grib2Iosp extends GribIosp {
     else
       f.format("%s", gp.getName());
 
-    if (vindex.intvType >= 0)
-      f.format(" (%s %s)", vindex.intvName, tables.getTableValue("4.10", vindex.intvType));
+    if (vindex.intvType >= 0) {
+      String intvName = tables.getTableValue("4.10", vindex.intvType);
+      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = tables.getIntervalNameShort(vindex.intvType);
+      f.format(" (%s %s)", vindex.intvName, intvName);
+    }
 
     if (vindex.ensDerivedType >= 0)
       f.format(" (%s)", tables.getTableValue("4.7", vindex.ensDerivedType));
@@ -262,7 +265,7 @@ public class Grib2Iosp extends GribIosp {
         timePartition = Grib2TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf);
+        gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf, gribConfig);
       }
 
       tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
@@ -291,6 +294,7 @@ public class Grib2Iosp extends GribIosp {
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib2Collection"));
     ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
+    ncfile.addAttribute(null, new Attribute("file format", "GRIB-2"));
 
     for (Parameter p : gribCollection.getParams())
       ncfile.addAttribute(null, new Attribute(p));
@@ -499,6 +503,14 @@ public class Grib2Iosp extends GribIosp {
       v.addAttribute(new Attribute(CDM.UNITS, makeVariableUnits(tables, vindex)));
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, Float.NaN));
 
+      GribTables.Parameter gp = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+      if (gp != null) {
+        if (gp.getDescription() != null)
+          v.addAttribute(new Attribute(CDM.DESCRIPTION, gp.getDescription()));
+        if (gp.getAbbrev() != null)
+          v.addAttribute(new Attribute(CDM.ABBREV, gp.getAbbrev()));
+      }
+
       if (is2D) {
         String s = searchCoord(gribCollection, Grib2Utils.getLatLon2DcoordType(desc), gHcs.varIndex);
         if (s == null) { // its a lat/lon coordinate
@@ -514,12 +526,12 @@ public class Grib2Iosp extends GribIosp {
       }
 
       int[] param = new int[] {vindex.discipline,vindex.category,vindex.parameter};
-      v.addAttribute(new Attribute("Grib_Parameter", Array.factory(param)));
-      v.addAttribute(new Attribute("Grib_Level_Type", vindex.levelType));
+      v.addAttribute(new Attribute("Grib2_Parameter", Array.factory(param)));
+      v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
       if ( vindex.intvName != null && vindex.intvName.length() != 0)
         v.addAttribute(new Attribute("Time_Interval", vindex.intvName));
       if (vindex.intvType >= 0) {
-        v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));
+        v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", vindex.intvType));
         GribStatType statType = GribStatType.getStatTypeFromGrib2(vindex.intvType);
         if (statType != null) {
           CF.CellMethods cm = GribStatType.getCFCellMethod( statType);
@@ -527,9 +539,9 @@ public class Grib2Iosp extends GribIosp {
         }
       }
       if (vindex.ensDerivedType >= 0)
-        v.addAttribute(new Attribute("Grib_Ensemble_Derived_Type", vindex.ensDerivedType));
+        v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.ensDerivedType));
       else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0)
-        v.addAttribute(new Attribute("Grib_Probability_Type", vindex.probabilityName));
+        v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.probabilityName));
 
       v.setSPobject(vindex);
     }

@@ -139,8 +139,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     StateGrib localState = new StateGrib((StateGrib) state);
     try {
       updateCollection(localState, force);
-    } catch (IOException e) {
-      logger.error("Fail to update collection", e);
+    } catch (Throwable e) {
+      logger.error("Fail to create/update collection", e);
+      return;
     }
     makeTopDatasets(localState);
     localState.lastInvChange = System.currentTimeMillis();

@@ -87,8 +87,8 @@ public class Grib1CollectionBuilder {
   }
 
   // read in the index, index raf already open
-  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile indexRaf) throws IOException {
-    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(name, directory);
+  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile indexRaf, FeatureCollectionConfig.GribConfig config) throws IOException {
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(name, directory, config);
     if (builder.readIndex(indexRaf))
       return builder.gc;
     throw new IOException("Reading index failed");
@@ -115,7 +115,7 @@ public class Grib1CollectionBuilder {
       CollectionManager dcm = new CollectionManagerSingleFile(file);
       this.collections.add(dcm);
       if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
-      this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()), dcm);
+      this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()), config);
 
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -127,11 +127,12 @@ public class Grib1CollectionBuilder {
 
   private Grib1CollectionBuilder(CollectionManager dcm) {
     this.collections.add(dcm);
-    this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), dcm);
+    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), config);
   }
 
-  private Grib1CollectionBuilder(String name, File directory) {
-    this.gc = new Grib1Collection(name, directory, null);
+  private Grib1CollectionBuilder(String name, File directory, FeatureCollectionConfig.GribConfig config) {
+    this.gc = new Grib1Collection(name, directory, config);
   }
 
   protected Grib1CollectionBuilder() {
@@ -285,7 +286,8 @@ public class Grib1CollectionBuilder {
       Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(rawGds);
       gds = gdss.getGDS();
     }
-    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gds.hashCode());
+    int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
+    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash);
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
     for (int i = 0; i < p.getVariablesCount(); i++)
@@ -606,8 +608,10 @@ public class Grib1CollectionBuilder {
 
     if (g.gdss.getPredefinedGridDefinition() >= 0)
       b.setPredefinedGds(g.gdss.getPredefinedGridDefinition());
-    else
+    else {
       b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
+      b.setGdsHash(g.gdsHash);
+  }
 
     for (Grib1Rectilyser.VariableBag vb : g.rect.getGribvars())
       b.addVariables(writeVariableProto(g.rect, vb));
@@ -643,7 +647,6 @@ public class Grib1CollectionBuilder {
     b.setTableVersion(pds.getTableVersion()); // can differ for variables in the same file
     b.setLevelType(pds.getLevelType());
     b.setIsLayer(cust.isLayer(pds.getLevelType())); // LOOK alternatively could store an entire PDS (one for each variable)
-    b.setIntervalType(pds.getTimeRangeIndicator());
     b.setCdmHash(vb.cdmHash);
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
@@ -655,6 +658,7 @@ public class Grib1CollectionBuilder {
 
     Grib1ParamTime ptime = pds.getParamTime(cust); // LOOK could use  cust.getParamTime(pds) to not retain object
     if (ptime.isInterval()) {
+      b.setIntervalType(pds.getTimeRangeIndicator());
       b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
     }
 

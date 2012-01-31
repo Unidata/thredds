@@ -578,6 +578,11 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     }
 
     @Override
+    public String getDescription() {
+      return null;
+    }
+
+    @Override
     public String getUnit() {
       return unit;
     }

@@ -45,15 +45,16 @@ import ucar.nc2.iosp.grid.GridParameter;
 @Immutable
 public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Parameter> {
   public int discipline, category, number;
-  public String name, unit, abbrev;
+  public String name, unit, abbrev, desc;
 
-  public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev) {
+  public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev, String desc) {
     this.discipline = discipline;
     this.category = category;
     this.number = number;
     this.name = name.trim();
     this.abbrev = abbrev;
     this.unit = GridParameter.cleanupUnits(unit);
+    this.desc = desc;
   }
 
   public String getId() {
@@ -93,8 +94,14 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     return unit;
   }
 
+  @Override
   public String getAbbrev() {
     return abbrev;
+  }
+
+  @Override
+  public String getDescription() {
+    return desc;
   }
 
   @Override
@@ -106,6 +113,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
             ", name='" + name + '\'' +
             ", unit='" + unit + '\'' +
             ", abbrev='" + abbrev + '\'' +
+            ", desc='" + desc + '\'' +
             '}';
   }
 }

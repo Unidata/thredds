@@ -86,8 +86,8 @@ public class Grib2CollectionBuilder {
   }
 
   // read in the index, index raf already open
-  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile raf) throws IOException {
-    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(name, directory);
+  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config) throws IOException {
+    Grib2CollectionBuilder builder = new Grib2CollectionBuilder(name, directory, config);
     if (builder.readIndex(raf))
       return builder.gc;
     throw new IOException("Reading index failed");
@@ -114,7 +114,7 @@ public class Grib2CollectionBuilder {
       CollectionManager dcm = new CollectionManagerSingleFile(file);
       if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
       this.collections.add(dcm);
-      this.gc = new Grib2Collection(file.getName(), new File(dcm.getRoot()), dcm);
+      this.gc = new Grib2Collection(file.getName(), new File(dcm.getRoot()), config);
 
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -126,11 +126,12 @@ public class Grib2CollectionBuilder {
 
   private Grib2CollectionBuilder(CollectionManager dcm) {
     this.collections.add(dcm);
-    this.gc = new Grib2Collection(dcm.getCollectionName(), new File(dcm.getRoot()), dcm);
+    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.gc = new Grib2Collection(dcm.getCollectionName(), new File(dcm.getRoot()), config);
   }
 
-  private Grib2CollectionBuilder(String name, File directory) {
-    this.gc = new Grib2Collection(name, directory, null);
+  private Grib2CollectionBuilder(String name, File directory, FeatureCollectionConfig.GribConfig config) {
+    this.gc = new Grib2Collection(name, directory, config);
   }
 
   protected Grib2CollectionBuilder() {
@@ -274,7 +275,8 @@ public class Grib2CollectionBuilder {
     byte[] rawGds = p.getGds().toByteArray();
     Grib2SectionGridDefinition gdss = new Grib2SectionGridDefinition(rawGds);
     Grib2Gds gds = gdss.getGDS();
-    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gds.hashCode());
+    int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
+    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash);
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
     for (int i = 0; i < p.getVariablesCount(); i++)
@@ -667,6 +669,7 @@ public class Grib2CollectionBuilder {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
+    b.setGdsHash(g.gdsHash);
 
     for (Grib2Rectilyser.VariableBag vb : g.rect.getGribvars())
       b.addVariables(writeVariableProto(g.rect, vb));
