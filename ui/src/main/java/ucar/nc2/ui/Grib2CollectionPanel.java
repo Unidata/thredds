@@ -829,6 +829,9 @@ public class Grib2CollectionPanel extends JPanel {
   }
 
   private void compare(Grib2SectionGridDefinition gdss1, Grib2SectionGridDefinition gdss2, Formatter f) {
+    f.format("1 GribGDS hash = %s%n", gdss1.getGDS().hashCode());
+    f.format("2 GribGDS hash = %s%n", gdss2.getGDS().hashCode());
+
     f.format("%nCompare Gds%n");
     byte[] raw1 = gdss1.getRawBytes();
     byte[] raw2 = gdss2.getRawBytes();

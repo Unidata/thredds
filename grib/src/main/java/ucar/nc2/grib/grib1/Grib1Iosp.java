@@ -282,10 +282,14 @@ public class Grib1Iosp extends GribIosp {
       v.addAttribute(new Attribute(CDM.LONG_NAME, cust.getTimeTypeName(tc.getCode())));
       if (tc.isInterval()) {
         GribStatType statType = cust.getStatType(tc.getCode());
-        v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
-        CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
-        if (cm != null)
-          v.addAttribute(new Attribute("CF cell_methods", tcName + ": " + cm.toString()));
+        if (statType == null) {
+          v.addAttribute(new Attribute("Grib1 statistical type", tc.getCode()));
+        } else {
+          v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
+          CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
+          if (cm != null)
+            v.addAttribute(new Attribute("CF cell_methods", tcName + ": " + cm.toString()));
+        }
       }
 
       int[] data = new int[n];

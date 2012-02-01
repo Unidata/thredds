@@ -71,6 +71,7 @@ public class ThreddsMetadata {
   protected List<InvProperty> properties = new ArrayList<InvProperty>(); //
   protected List<Source> publishers = new ArrayList<Source>(); //
   protected List<Variables> variables = new ArrayList<Variables>();  //
+  protected String variableMapLink;
 
   // singles
   protected GeospatialCoverage gc;
@@ -327,6 +328,18 @@ public class ThreddsMetadata {
    */
   public List<Variables> getVariables() {
     return variables;
+  }
+
+  /**
+   * Add a variable Map link
+   * @param xlinkHref         : URI of xlink
+   * */
+  public void addVariableMapLink(String xlinkHref) {
+    variableMapLink = xlinkHref;
+  }
+
+  public String getVariableMap() {
+    return variableMapLink;
   }
 
   /**

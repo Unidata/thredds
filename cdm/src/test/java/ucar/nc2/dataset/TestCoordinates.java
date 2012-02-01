@@ -113,7 +113,7 @@ public class TestCoordinates extends TestCase {
                     "    <values start='10' increment='5' />\n" +
                     "  </variable>\n" +
                     "  <variable name='time' shape='time' type='int'>\n" +
-                    "    <attribute name='units' value='hours since 1970-01-01:12:00' />\n" +
+                    "    <attribute name='units' value='hours since 1970-01-01T12:00' />\n" +
                     "    <values start='1' increment='1' />\n" +
                     "  </variable>\n" +
                     "  <variable name='lat' shape='lat' type='float'>\n" +
@@ -135,6 +135,8 @@ public class TestCoordinates extends TestCase {
     System.out.println("testTimeUnitErrorMessage=\n" + ncml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
     NetcdfDataset ncd = new NetcdfDataset(ncfile, true);
+    System.out.printf("%n%s%n", ncd);
+
     VariableDS v = (VariableDS) ncd.findVariable("time");
     assert v != null;
     assert v.getDataType() == DataType.INT;

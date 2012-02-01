@@ -3,7 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 7: (2012-01-xx)
+ 7: (2012-02-01)
+  GRIB-1 thin grids bugs.
+  GRIB-1 ensembles : special coding for NCEP, ECMWF
+  TimePartition by directory
   CalendarPeriod.getOffset() finds difference between two CalendarDates.
   GRIB2 intervals: use the end date as end of interval, shape the coordinates from there, allow calendar fields
   GRIB Collections: if tdsUsingTdm, no updating
