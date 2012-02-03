@@ -191,7 +191,7 @@ public class Grib1Iosp extends GribIosp {
     //ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
     //ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
 
-    val = cust.getTypeGenProcessName(gribCollection.getGenProcessId());
+    val = cust.getGeneratingProcessName(gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Generating process or model", val));
 

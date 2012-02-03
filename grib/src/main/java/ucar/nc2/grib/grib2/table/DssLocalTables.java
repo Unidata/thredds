@@ -32,15 +32,18 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Formatter;
 
 /**
- * Read screen scraped DSS tables
+ * Read screen scraped DSS tables.
+ * CFSR 093 not needed - screen scraped NCEP ok 2/2/2012
  *
  * @author caron
  * @since 11/3/11
@@ -89,7 +92,7 @@ public class DssLocalTables extends LocalTables {
          b.append(flds[count++]).append(' ');
        String unit = b.toString().trim();
 
-       TableEntry s = new TableEntry(p1,p2,p3,name,unit,abbrev);
+       Grib2Parameter s = new Grib2Parameter(p1,p2,p3,name,unit,abbrev,null);
        local.put(makeHash(p1,p2,p3), s);
        if (debug) System.out.printf(" %s%n", s);
      }
@@ -106,9 +109,15 @@ public class DssLocalTables extends LocalTables {
 0	0	6	DPT	. Dewpoint temperature	. K
 */
 
-  public static void main(String arg[]) {
+  public static void main(String[] args) {
     DssLocalTables t = new DssLocalTables(7,0,0,0);
-    t.initLocalTable();
-  }
+    Formatter f = new Formatter();
+    Grib2Parameter.compareTables("DSS-093", "Standard WMO version 8", t.getParameters(), Grib2Customizer.factory(0,0,0,0), f);
+    System.out.printf("%s%n", f);
 
+    Formatter f2 = new Formatter();
+    Grib2Parameter.compareTables("DSS-093", "NCEP Table", t.getParameters(), Grib2Customizer.factory(7,0,0,0), f2);
+    System.out.printf("%s%n", f2);
+
+  }
 }

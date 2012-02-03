@@ -1,4 +1,4 @@
-11/21/2011 screen scrape http://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html
+11/21/2011 screen scrape http://www.nco.ncep.noaa.gov/pmb/docs/on388/
  - use program ucar.nc2.grib.grib1.tables.NcepHtmlScraper
 
 01/13/2012 also need to deal with the following tables for NCEP:

@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.grib2.Grib2Parameter;
 
 import java.util.*;
 
@@ -41,7 +42,7 @@ import java.util.*;
  */
 
 public class NdfdLocalTables extends Grib2Customizer {
-  private final Map<Integer, TableEntry> local = new HashMap<Integer, TableEntry>(100);
+  private final Map<Integer, Grib2Parameter> local = new HashMap<Integer, Grib2Parameter>(100);
 
   NdfdLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
@@ -50,8 +51,8 @@ public class NdfdLocalTables extends Grib2Customizer {
 
     @Override
   public List getParameters() {
-    List<TableEntry> result = new ArrayList<TableEntry>();
-    for (TableEntry p : local.values()) result.add(p);
+    List<Grib2Parameter> result = new ArrayList<Grib2Parameter>();
+    for (Grib2Parameter p : local.values()) result.add(p);
     Collections.sort(result);
     return result;
   }
@@ -117,7 +118,7 @@ public class NdfdLocalTables extends Grib2Customizer {
   }
 
   private void add(int discipline, int category, int number, String abbrev, String name, String unit) {
-    local.put(makeHash(discipline, category, number), new TableEntry(discipline, category, number, name, unit, abbrev));
+    local.put(makeHash(discipline, category, number), new Grib2Parameter(discipline, category, number, name, unit, abbrev, null));
   }
 
 }

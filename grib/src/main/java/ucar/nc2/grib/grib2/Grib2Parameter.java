@@ -34,7 +34,13 @@ package ucar.nc2.grib.grib2;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.iosp.grid.GridParameter;
+import ucar.nc2.units.SimpleUnit;
+import ucar.unidata.util.StringUtil2;
+
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * A Grib-2 parameter
@@ -46,6 +52,10 @@ import ucar.nc2.iosp.grid.GridParameter;
 public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Parameter> {
   public int discipline, category, number;
   public String name, unit, abbrev, desc;
+
+  protected Grib2Parameter() {
+
+  }
 
   public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev, String desc) {
     this.discipline = discipline;
@@ -116,5 +126,96 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
             ", desc='" + desc + '\'' +
             '}';
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  public static void compareTables(String name1, String name2, List<Grib2Parameter> test, Grib2Customizer reference, Formatter f) {
+
+    int extra = 0;
+    int udunits = 0;
+    int conflict = 0;
+    f.format("Table 1 : %s%n", name1);
+    f.format("Table 2 : %s%n", name2);
+    for (Grib2Parameter p1 : test) {
+      Grib2Customizer.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      if (p2 == null) {
+        if (p1.getCategory() < 192 && p1.getNumber() < 192) {
+          extra++;
+          f.format("  WMO missing %s%n", p1);
+        }
+
+      } else {
+        String p1n = mungeDescription(p1.getName());
+        String p2n = mungeDescription(p2.getName());
+
+        if (!p1n.equalsIgnoreCase(p2n)) {
+          f.format("  p1=%10s %40s %15s %15s %s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev(), p1.getDescription());
+          f.format("  p2=%10s %40s %15s %15s %s%n%n", p2.getId(), p2.getName(), p2.getUnit(), p2.getAbbrev(), p2.getDescription());
+          conflict++;
+        }
+
+        if (!p1.getUnit().equalsIgnoreCase(p2.getUnit())) {
+          String cu1 = GridParameter.cleanupUnits(p1.getUnit());
+          String cu2 = GridParameter.cleanupUnits(p2.getUnit());
+
+          // eliminate common non-udunits
+          boolean isUnitless1 = isUnitless(cu1);
+          boolean isUnitless2 = isUnitless(cu2);
+
+          if (isUnitless1 != isUnitless2) {
+            f.format("  ud=%10s %s != %s for %s (%s)%n%n", p1.getId(), cu1, cu2, p1.getId(), p1.getName());
+            udunits++;
+
+          } else if (!isUnitless1) {
+
+            try {
+              SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
+              if (!su1.isCompatible(cu2)) {
+                f.format("  ud=%10s %s (%s) != %s for %s (%s)%n%n", p1.getId(), cu1, su1, cu2, p1.getId(), p1.getName());
+                udunits++;
+              }
+            } catch (Exception e) {
+              f.format("  udunits cant parse=%10s %15s %15s%n", p1.getId(), cu1, cu2);
+            }
+          }
+
+        }
+      }
+    }
+    f.format("Conflicts=%d extra=%d udunits=%d%n%n", conflict, extra, udunits);
+
+    f.format("Parameters in %s not in %s%n", name1, name2);
+    int local = 0;
+    for (Grib2Parameter p1 : test) {
+      Grib2Customizer.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      if (p2 == null) {
+        local++;
+        f.format("  %s%n", p1);
+      }
+    }
+    f.format(" missing=%d%n%n", local);
+
+  }
+
+  static boolean isUnitless(String unit) {
+    if (unit == null) return true;
+    String munge = unit.toLowerCase().trim();
+    munge = StringUtil2.remove(munge, '(');
+    return munge.length()  == 0 ||
+            munge.startsWith("numeric") || munge.startsWith("non-dim") || munge.startsWith("see") ||
+            munge.startsWith("proportion") || munge.startsWith("code") || munge.startsWith("0=") ||
+            munge.equals("1") ;
+  }
+
+  static public String mungeDescription(String desc) {
+    if (desc == null) return null;
+    int pos = desc.indexOf("(see");
+    if (pos > 0) desc = desc.substring(0,pos);
+
+    StringBuilder sb = new StringBuilder(desc.trim());
+    StringUtil2.remove(sb, ".;,=[]()/*- ");
+    return sb.toString().trim();
+  }
+
 }
 

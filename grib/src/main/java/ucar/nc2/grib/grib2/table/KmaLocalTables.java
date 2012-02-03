@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.util.TableParser;
 
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class KmaLocalTables extends LocalTables {
         int param = (Integer) record.get(4);
         String unit = (String) record.get(5);
 
-        TableEntry s = new TableEntry(disc,cat,param,name,unit,null);
+        Grib2Parameter s = new Grib2Parameter(disc,cat,param,name,unit,null,null);
         local.put(makeHash(disc,cat,param), s);
         if (debug) System.out.printf(" %s%n", s);
       }

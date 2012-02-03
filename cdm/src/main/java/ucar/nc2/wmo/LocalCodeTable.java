@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -33,23 +33,10 @@
 package ucar.nc2.wmo;
 
 /**
- * Description
+ * Describe
  *
- * @author John
- * @since 8/10/11
+ * @author caron
+ * @since 2/1/12
  */
-public class Utils {
-
-  public static String getCenterShortName(int center) {
-    switch (center) {
-      case 0 : return "WMO";
-      case 7 : return "NCEP";
-      case 46 : return "INPE";
-      case 58 : return "FNMC";
-      case 59 : return "FSL";
-      case 98 : return "ECMWF";
-      case 254 : return "EUMETSAT";
-    }
-    return null;
-  }
+public class LocalCodeTable {
 }

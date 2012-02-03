@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * NCEP overrides of GRIB tables
@@ -54,7 +55,7 @@ import java.util.List;
 public class NcepTables extends Grib1Customizer {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
 
-  private static HashMap<Integer, String> genProcessMap;  // shared by all instances
+  private static Map<Integer, String> genProcessMap;  // shared by all instances
   private static HashMap<Integer, GribLevelType> levelTypesMap;  // shared by all instances
 
   NcepTables(Grib1ParamTables tables) {
@@ -168,19 +169,22 @@ public class NcepTables extends Grib1Customizer {
   // genProcess
 
   @Override
-  public String getTypeGenProcessName(int genProcess) {
-    if (genProcessMap == null) readNcepGenProcess("resources/grib1/ncep/ncepTableA.xml");
+  public String getGeneratingProcessName(int genProcess) {
+    if (genProcessMap == null) genProcessMap = getNcepGenProcess();
     if (genProcessMap == null) return null;
     return genProcessMap.get(genProcess);
   }
 
-  private void readNcepGenProcess(String path) {
+  // public so can be called from Grib2
+  static public Map<Integer, String> getNcepGenProcess() {
+    if (genProcessMap != null) return genProcessMap;
+    String path = "resources/grib1/ncep/ncepTableA.xml";
     InputStream is = null;
     try {
       is = GribResourceReader.getInputStream(path);
       if (is == null) {
         logger.error("Cant find NCEP Table 1 = " + path);
-        return;
+        return null;
       }
 
       SAXBuilder builder = new SAXBuilder();
@@ -195,17 +199,14 @@ public class NcepTables extends Grib1Customizer {
         result.put(code, desc);
       }
 
-      genProcessMap = result;  // all at once - thread safe
-      return;
+      return result;  // all at once - thread safe
 
     } catch (IOException ioe) {
       logger.error("Cant read NCEP Table 1 = " + path, ioe);
-      return;
-
+      return null;
     } catch (JDOMException e) {
       logger.error("Cant parse NCEP Table 1 = " + path, e);
-      return;
-
+      return null;
     } finally {
       if (is != null) try {
         is.close();

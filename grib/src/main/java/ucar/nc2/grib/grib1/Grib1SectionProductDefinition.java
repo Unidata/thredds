@@ -40,7 +40,6 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTable;
-import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
@@ -339,7 +338,7 @@ public final class Grib1SectionProductDefinition {
       f.format("               Parameter %d not found%n", getParameterNumber());
     }
 
-    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), cust.getTypeGenProcessName(getGenProcess()));
+    f.format("       Generating Process Type : (%d) %s%n", getGenProcess(), cust.getGeneratingProcessName(getGenProcess()));
 
     f.format("                Reference Time : %s%n", getReferenceDate());
     f.format("                    Time Units : (%d) %s%n", getTimeUnit(), GribUtils.getCalendarPeriod(getTimeUnit()));

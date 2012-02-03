@@ -56,7 +56,7 @@ public class NcepRfcTables extends NcepTables {
   }
 
   @Override
-  public String getTypeGenProcessName(int genProcess) {
+  public String getGeneratingProcessName(int genProcess) {
     switch (genProcess) {
       case 150:
         return "NWS River Forecast System (NWSRFS)";

@@ -277,17 +277,17 @@ public class Grib2Iosp extends GribIosp {
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
     ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
-    val = CommonCodeTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
+    val = tables.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
     ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
     ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.getMaster() + "/" + gribCollection.getLocal()));
 
     val = tables.getTableValue("4.3", gribCollection.getGenProcessType());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Type of generating process", val));
-    val = tables.getTableValue("ProcessId", gribCollection.getGenProcessId());
+    val = tables.getGeneratingProcessName(gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Analysis or forecast generating process identifier (defined by originating centre)", val));
-    val = tables.getTableValue("ProcessId", gribCollection.getBackProcessId());
+    val = tables.getGeneratingProcessName(gribCollection.getBackProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Background generating process identifier (defined by originating centre)", val));
 
