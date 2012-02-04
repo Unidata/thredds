@@ -59,6 +59,7 @@ public class Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2CollectionIndex";
   protected static final int version = 7;
   private static final boolean debug = false;
+  private static final boolean mergeIntvDefault = true;
 
     // called by tdm
   static public boolean update(CollectionManager dcm, Formatter f) throws IOException {
@@ -420,16 +421,18 @@ public class Grib2CollectionBuilder {
   // for each group, run rectlizer to derive the coordinates and variables
   public List<Group> makeAggregatedGroups(List<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
-    Map<Integer, Integer> gdsConvert = null;
+    boolean intvMerge = mergeIntvDefault;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
     int fileno = 0;
-    //boolean intvMerge = false;  // LOOK
+
     for (CollectionManager dcm : collections) {
       f.format(" dcm= %s%n", dcm);
       FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
-      if (config != null)  gdsConvert = config.gdsHash;
+      Map<Integer, Integer> gdsConvert = (config != null) ?  config.gdsHash : null;
+      FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
+      intvMerge = (config == null) || (config.intvMerge == null) ? mergeIntvDefault : config.intvMerge;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -452,6 +455,8 @@ public class Grib2CollectionBuilder {
             this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
             if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt really work with multiple collections
           }
+          if (intvMap != null && filterTinv(gr, intvMap, f)) continue; // skip
+
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
           if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
@@ -473,13 +478,41 @@ public class Grib2CollectionBuilder {
     Grib2Rectilyser.Counter c = new Grib2Rectilyser.Counter(); // debugging
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash);
+      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, intvMerge);
       f.format(" GDS hash %d == ", g.gdsHash);
       g.rect.make(f, c, filenames);
     }
     f.format(" Rectilyser: nvars=%d records unique=%d total=%d dups=%d (%f) %n", c.vars, c.recordsUnique, c.records, c.dups, ((float) c.dups) / c.records);
 
     return result;
+  }
+
+  private boolean filterTinv(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter, Formatter f) {
+    int[] intv = tables.getForecastTimeIntervalOld(gr);
+    if (intv == null) return false;
+    int haveLength = intv[1] - intv[0];
+
+    // HACK
+    if (haveLength == 0 && intvFilter.isZeroExcluded()) {  // discard 0,0
+      if ((intv[0] == 0) && (intv[1] == 0)) {
+        f.format(" FILTER INTV [0, 0] %s%n", gr);
+        return true;
+      }
+      return false;
+
+    } else {
+      int discipline = gr.getIs().getDiscipline();
+      int category = gr.getPDS().getParameterCategory();
+      int number = gr.getPDS().getParameterNumber();
+      int id = (discipline << 16) + (category << 8) + number;
+      Integer needLength = intvFilter.getLengthById(id);
+
+      if (needLength != null && needLength != haveLength) {
+        f.format(" FILTER INTV [%d != %d] %s%n", haveLength, needLength, gr);
+        return true;
+      }
+    }
+    return false;
   }
 
   /*

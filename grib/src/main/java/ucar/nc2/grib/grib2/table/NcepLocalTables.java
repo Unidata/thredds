@@ -272,6 +272,8 @@ public class NcepLocalTables extends Grib2Customizer {
         return "AverageForecastAccumulations-206";
       case 207:
         return "AverageForecastAverages-207";
+      case 255:
+        return null; // this suppresses using a name in the variable (!)
       default:
         return super.getIntervalNameShort(id);
     }

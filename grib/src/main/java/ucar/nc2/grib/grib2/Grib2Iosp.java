@@ -88,7 +88,8 @@ public class Grib2Iosp extends GribIosp {
 
     if (vindex.intvType >= 0) {
       f.format("_%s", vindex.intvName);
-      f.format("_%s", tables.getIntervalNameShort(vindex.intvType));
+      String statName = tables.getIntervalNameShort(vindex.intvType);
+      if (statName != null) f.format("_%s", statName);
     }
 
     if (vindex.ensDerivedType >= 0) {
@@ -142,6 +143,7 @@ public class Grib2Iosp extends GribIosp {
       f.format("%s", gp.getName());
 
     if (vindex.intvType >= 0) {
+      //String statName = tables.getIntervalNameShort(vindex.intvType);
       String intvName = tables.getTableValue("4.10", vindex.intvType);
       if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = tables.getIntervalNameShort(vindex.intvType);
       f.format(" (%s %s)", vindex.intvName, intvName);

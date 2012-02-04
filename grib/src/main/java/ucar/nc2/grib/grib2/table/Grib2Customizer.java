@@ -466,7 +466,6 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     return timeUnitConverter.convertTimeUnit(timeUnit);
   }
 
-
   //////////////
 
   public String getSubCenterName(int center_id, int subcenter_id) {

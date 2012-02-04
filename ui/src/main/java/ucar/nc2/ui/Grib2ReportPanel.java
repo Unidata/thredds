@@ -10,6 +10,7 @@ import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
+import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.Misc;
@@ -698,11 +699,12 @@ public class Grib2ReportPanel extends JPanel {
     Counter statTypeSet = new Counter("statType");
     Counter NTimeIntervals = new Counter("NumberTimeIntervals");
     Counter TinvDiffer = new Counter("TimeIntervalsDiffer");
+    Counter TinvLength = new Counter("TimeIntervalsLength");
 
     int count = 0;
     for (MFile mfile : dcm.getFiles()) {
       f.format(" %s%n", mfile.getPath());
-      count += doTimeCoord(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, TinvDiffer);
+      count += doTimeCoord(f, mfile, templateSet, timeUnitSet, statTypeSet, NTimeIntervals, TinvDiffer, TinvLength);
     }
 
     f.format("total records = %d%n", count);
@@ -712,18 +714,19 @@ public class Grib2ReportPanel extends JPanel {
     statTypeSet.show(f);
     NTimeIntervals.show(f);
     TinvDiffer.show(f);
-
+    TinvLength.show(f);
   }
 
 
   private int doTimeCoord(Formatter f, MFile mf, Counter templateSet, Counter timeUnitSet, Counter statTypeSet, Counter NTimeIntervals,
-                          Counter TinvDiffer) throws IOException {
+                          Counter TinvDiffer, Counter TinvLength) throws IOException {
     boolean showTinvDiffers = true;
     boolean showNint = true;
     boolean shutup = false;
 
     Grib2Index index = createIndex(mf, f);
     if (index == null) return 0;
+    Grib2Customizer cust = null;
 
     int count = 0;
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
@@ -746,10 +749,19 @@ public class Grib2ReportPanel extends JPanel {
             }
           }
         }
+
         NTimeIntervals.count(pdsi.getTimeIntervals().length);
         if (showNint && !shutup && pdsi.getTimeIntervals().length > 1) {
-          f.format("  TimeIntervals > 1 = %s file=%s%n  ", getId(pds), mf.getName());
+          f.format("  TimeIntervals > 1 = %s file=%s%n  ", getId(gr), mf.getName());
           shutup = true;
+        }
+
+        if (cust == null) cust = Grib2Customizer.factory(gr);
+        double len = cust.getForecastTimeIntervalSizeInHours(gr);
+        TinvLength.count((int) len);
+        int[] intv = cust.getForecastTimeIntervalOld(gr);
+        if ((intv[0] == 0) && (intv[1] == 0)) {
+          f.format("  TimeInterval [0,0] = %s file=%s%n  ", getId(gr), mf.getName());
         }
       }
 
@@ -759,8 +771,10 @@ public class Grib2ReportPanel extends JPanel {
     return count;
   }
 
-  String getId(Grib2Pds pds) {
-    return pds.getParameterCategory()+ "-" + pds.getParameterNumber();
+  String getId(Grib2Record gr) {
+    Grib2SectionIndicator is = gr.getIs();
+    Grib2Pds pds = gr.getPDS();
+    return is.getDiscipline()+"-"+pds.getParameterCategory()+ "-" + pds.getParameterNumber();
   }
 
 }

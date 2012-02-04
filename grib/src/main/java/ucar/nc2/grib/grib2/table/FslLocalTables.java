@@ -110,6 +110,13 @@ public class FslLocalTables extends LocalTables {
     }
   }
 
+  public String getIntervalNameShort(int id) {
+    switch (id) {
+      case 255: return null;
+    }
+    return super.getIntervalNameShort(id);
+  }
+
   @Override
   protected void initLocalTable() {
     ClassLoader cl = getClass().getClassLoader();

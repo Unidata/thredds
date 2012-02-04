@@ -377,6 +377,7 @@ public class Grib2CollectionPanel extends JPanel {
   private MFileCollectionManager dcm;
   private List<MFile> fileList;
   private Grib2Customizer cust;
+  private Grib2Rectilyser rect2;
 
   /* public void setCollection(String filename) throws IOException {
     if (filename.endsWith(GribCollection.IDX_EXT)) {
@@ -421,6 +422,7 @@ public class Grib2CollectionPanel extends JPanel {
   public void setCollection(String spec) throws IOException {
     this.spec = spec;
     this.cust = null;
+    this.rect2 = null;
 
     Formatter f = new Formatter();
     this.dcm = scanCollection(spec, f);
@@ -465,13 +467,12 @@ public class Grib2CollectionPanel extends JPanel {
         gdsSet.put(hash, gds);
     }
 
-    Grib2Rectilyser rect2 = null;
     for (Grib2Record gr : index.getRecords()) {
       gr.setFile(fileno);
 
       if (rect2 == null) {
         cust = Grib2Customizer.factory(gr);
-        rect2 = new Grib2Rectilyser(cust, null, 0);
+        rect2 = new Grib2Rectilyser(cust, null, 0, true);
       }
 
       int id = rect2.cdmVariableHash(gr, 0);
@@ -522,7 +523,7 @@ public class Grib2CollectionPanel extends JPanel {
       fileno++;
     }
 
-    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0);
+    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, true);
     agg.make(f, new Grib2Rectilyser.Counter(), null);
     agg.dump(f, cust);
 
@@ -1333,6 +1334,14 @@ public class Grib2CollectionPanel extends JPanel {
       if (pds.isInterval() && cust != null) {
         TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
         return intv.toString();
+      }
+      return "";
+    }
+
+    public String getIntv2() {
+      if (pds.isInterval() && cust != null) {
+        int[] intv = cust.getForecastTimeIntervalOld(gr);
+        return intv[0]+"-"+intv[1];
       }
       return "";
     }

@@ -61,11 +61,11 @@ public class Grib2Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash) {
+  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, boolean intvMerge) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
-    this.intvMerge = false;
+    this.intvMerge = intvMerge;
   }
 
   public List<Grib2Record> getRecords() {

@@ -110,9 +110,20 @@
 <p>&nbsp;</p>
 <p>time partition indexes have to be deleted by hand when the underlying indexes need updating.</p>
 <p>ncx indices need to be deleted by hand if you want to modify them with gribConfig or code changes, unless I update the version.</p>
+<p>&nbsp;</p>
+<p>partition by day reads all file in, then divides them up by date.</p>
+<p>partition by directory looks at each directory seperately, not all files at once.</p>
 <h2>Memory use</h2>
-<p>top level gc are kept in memory. 68 total 42 M, avg = 600K.<br />
-</p>
+<p>top level gc are kept in memory. 68 total 42 M, avg = 600K.</p>
+<p>&nbsp;</p>
+<h2>NcML</h2>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;E:/ncep/NDFD_CONUS_5km_conduit_20120119_1800.grib2&quot;&gt;
+ &lt;iospParam&gt;
+   &lt;gdsHash from=&quot;-2121584860&quot; to=&quot;28944332&quot;/&gt;
+ &lt;/iospParam&gt;
+&lt;/netcdf&gt;
+ </pre>
 <hr width="100%" />
 <address>
 <img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 26, 2011
