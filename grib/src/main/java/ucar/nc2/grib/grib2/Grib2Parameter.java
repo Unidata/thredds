@@ -53,10 +53,6 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
   public int discipline, category, number;
   public String name, unit, abbrev, desc;
 
-  protected Grib2Parameter() {
-
-  }
-
   public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev, String desc) {
     this.discipline = discipline;
     this.category = category;

@@ -108,11 +108,15 @@ public class Grib2Rectilyser {
     // create and assign time coordinate
     // uniform or not X isInterval or not
     for (VariableBag vb : gribvars) {
+      if (vb.cdmHash == -1931372723)
+        System.out.println("HEY");
+
+      setTimeUnit(vb);
       TimeCoord use = null;
-      boolean isUniform = checkTimeCoordsUniform(vb);
       if (vb.first.getPDS().isInterval()) {
-        use = makeTimeCoordsIntv(vb, isUniform);
+        use = makeTimeCoordsIntv(vb);
       } else {
+        boolean isUniform = checkTimeCoordsUniform(vb);
         use = makeTimeCoords(vb, isUniform);
       }
       vb.timeCoordIndex = TimeCoord.findCoord(timeCoords, use); // share coordinates when possible
@@ -247,6 +251,13 @@ public class Grib2Rectilyser {
     return Grib2Utils.getCalendarPeriod( cust.convertTimeUnit(timeUnit));
   }
 
+  private void setTimeUnit(VariableBag vb) {
+    Record first = vb.atomList.get(0);
+    Grib2Pds pds = first.gr.getPDS();
+    int unit = cust.convertTimeUnit(pds.getTimeUnit());
+    vb.timeUnit = Grib2Utils.getCalendarPeriod(unit);
+  }
+
   /**
    * check if refDate and timeUnit is the same for all atoms.
    * set vb refDate, timeUnit fields as side effect. if not true, refDate is earliest
@@ -265,8 +276,6 @@ public class Grib2Rectilyser {
       int unit = cust.convertTimeUnit(pds.getTimeUnit());
       if (timeUnit < 0) { // first one
         timeUnit = unit;
-        vb.timeUnit = Grib2Utils.getCalendarPeriod(timeUnit);
-
       } else if (unit != timeUnit) {
         isUniform = false;
       }
@@ -321,10 +330,12 @@ public class Grib2Rectilyser {
     return new TimeCoord(0, vb.refDate, vb.timeUnit, tlist);
   }
 
-  private TimeCoord makeTimeCoordsIntv(VariableBag vb, boolean uniform) {
+  private TimeCoord makeTimeCoordsIntv(VariableBag vb) {
     int timeIntvCode = 999; // just for documentation in the time coord attribute
     Map<Integer, TimeCoord.TinvDate> times = new HashMap<Integer, TimeCoord.TinvDate>();
     for (Record r : vb.atomList) {
+      if (r.gr.getDataSection().getStartingPosition() == 18848284)
+        System.out.println("HEY");
       Grib2Pds pds = r.gr.getPDS();
       if (timeIntvCode == 999) timeIntvCode = pds.getStatisticalProcessType();
       TimeCoord.TinvDate mine = cust.getForecastTimeInterval(r.gr);
@@ -372,8 +383,8 @@ public class Grib2Rectilyser {
     f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
     for (VariableBag vb : gribvars) {
       String vname = tables.getVariableName(vb.first);
-      f.format("  %3d %3d %3d %s records = %d density = %d/%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
-              vname, vb.atomList.size(), vb.countDensity(), vb.recordMap.length);
+      f.format("  %3d %3d %3d %s records = %d density = %d/%d hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
+              vname, vb.atomList.size(), vb.countDensity(), vb.recordMap.length, vb.cdmHash);
       if (vb.countDensity() != vb.recordMap.length) f.format(" HEY!!");
       f.format("%n");
     }

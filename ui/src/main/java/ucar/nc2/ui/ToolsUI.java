@@ -3572,7 +3572,8 @@ public class ToolsUI extends JPanel {
             location = location.substring(0, pos);
           String filename = fileChooser.chooseFilenameToSave(location + ".ncml");
           if (filename == null) return;
-          doSave(editor.getText(), filename);
+          if (doSave(editor.getText(), filename))
+            ncmlLocation = filename;
         }
       };
       BAMutil.setActionProperties(saveAction, "Save", "Save NcML", false, 'S', -1);
@@ -3713,18 +3714,29 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    void doSave(String text, String filename) {
+    boolean doSave(String text, String filename) {
       if (debugNcmlWrite) {
         System.out.println("filename=" + filename);
         System.out.println("text=" + text);
       }
 
+      File out = new File(filename);
+      if (out.exists()) {
+        int val = JOptionPane.showConfirmDialog(parentFrame,
+                filename + " already exists. Do you want to overrwrite?",
+                 "WARNING",
+                JOptionPane.YES_NO_OPTION);
+        if (val != JOptionPane.YES_OPTION) return false;
+      }
+
       try {
-        IO.writeToFile(text, new File(filename));
+        IO.writeToFile(text, out);
         JOptionPane.showMessageDialog(this, "File successfully written");
+        return true;
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
         ioe.printStackTrace();
+        return false;
       }
       // saveNcmlDialog.setVisible(false);
     }

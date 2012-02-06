@@ -759,7 +759,7 @@ public class Grib2ReportPanel extends JPanel {
         if (cust == null) cust = Grib2Customizer.factory(gr);
         double len = cust.getForecastTimeIntervalSizeInHours(gr);
         TinvLength.count((int) len);
-        int[] intv = cust.getForecastTimeIntervalOld(gr);
+        int[] intv = cust.getForecastTimeIntervalOffset(gr);
         if ((intv[0] == 0) && (intv[1] == 0)) {
           f.format("  TimeInterval [0,0] = %s file=%s%n  ", getId(gr), mf.getName());
         }

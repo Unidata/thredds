@@ -430,7 +430,11 @@ public class FeatureCollectionConfig {
     }
 
     public Integer getLengthById(int varId) {
-      return map.get(varId);
+      return (map == null) ? null : map.get(varId);
+    }
+
+    public boolean hasMap() {
+      return (map != null);
     }
 
     void addVariable(int intvLength, String ids) {

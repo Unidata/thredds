@@ -116,7 +116,7 @@ public class TimeCoord {
       this.intervals = null;
 
     } else if (atom instanceof TinvDate) {
-      CalendarDate startDate = null;
+      CalendarDate startDate = null; // earliest starting date
       for (Object coord : coords) {
         TinvDate tinvd = (TinvDate) coord;
         //if (!tinvd.getPeriod().equals(timeUnit))
@@ -228,7 +228,7 @@ public class TimeCoord {
       firstValue = (int) (firstValue * getTimeUnitScale());
       return firstValue + "_" + timeUnit.getField().toString();
     } else {
-      return "MixedIntervals";
+      return "Mixed_intervals";
     }
   }
 
@@ -427,7 +427,7 @@ public class TimeCoord {
       return result;
     }
 
-    public int compareTo(TinvDate that) {
+    public int compareTo(TinvDate that) {  // first compare start, then end
       int c1 = start.compareTo(that.start);
       return (c1 == 0) ? end.compareTo(that.end) : c1;
     }

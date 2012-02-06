@@ -1340,7 +1340,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public String getIntv2() {
       if (pds.isInterval() && cust != null) {
-        int[] intv = cust.getForecastTimeIntervalOld(gr);
+        int[] intv = cust.getForecastTimeIntervalOffset(gr);
         return intv[0]+"-"+intv[1];
       }
       return "";

@@ -199,7 +199,7 @@ public abstract class Grib2Pds {
 
   /**
    * Forecast time in units of getTimeUnit() (bytes 19-22)
-   * forecast time for points, beginning of interval for intervals ??
+   * forecast time for points, should not be used for intervals
    * @return Forecast time
    */
   public int getForecastTime() {

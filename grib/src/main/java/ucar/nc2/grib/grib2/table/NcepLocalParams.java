@@ -58,7 +58,7 @@ public class NcepLocalParams {
   private static boolean debug = false;
   private static Map<Integer, NcepLocalParams> tableMap = new HashMap<Integer, NcepLocalParams>(30);
 
-  public static GribTables.Parameter getParameter(int discipline, int category, int number) {
+  public static Grib2Parameter getParameter(int discipline, int category, int number) {
     int key = (discipline << 8) + category;
     NcepLocalParams params = tableMap.get( key);
     if (params == null) {

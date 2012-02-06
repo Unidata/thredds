@@ -117,8 +117,8 @@ public class GribUtils {
     if (pos > 0) desc = desc.substring(0, pos);
 
     StringBuilder sb = new StringBuilder(desc.trim());
-    StringUtil2.remove(sb, ".;,=[]()/");
-    StringUtil2.replace(sb, ' ', "_");
+    StringUtil2.replace(sb, "/. ", "-p_");
+    StringUtil2.remove(sb, ";,=[]()");
     return sb.toString();
   }
 }

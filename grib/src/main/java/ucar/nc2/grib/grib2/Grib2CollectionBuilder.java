@@ -57,7 +57,7 @@ import java.util.*;
 public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   public static final String MAGIC_START = "Grib2CollectionIndex";
-  protected static final int version = 7;
+  protected static final int version = 8;
   private static final boolean debug = false;
   private static final boolean mergeIntvDefault = true;
 
@@ -488,7 +488,7 @@ public class Grib2CollectionBuilder {
   }
 
   private boolean filterTinv(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter, Formatter f) {
-    int[] intv = tables.getForecastTimeIntervalOld(gr);
+    int[] intv = tables.getForecastTimeIntervalOffset(gr);
     if (intv == null) return false;
     int haveLength = intv[1] - intv[0];
 
@@ -500,7 +500,7 @@ public class Grib2CollectionBuilder {
       }
       return false;
 
-    } else {
+    } else if (intvFilter.hasMap()) {
       int discipline = gr.getIs().getDiscipline();
       int category = gr.getPDS().getParameterCategory();
       int number = gr.getPDS().getParameterNumber();

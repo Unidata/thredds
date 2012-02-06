@@ -146,7 +146,8 @@ public class Grib2Iosp extends GribIosp {
       //String statName = tables.getIntervalNameShort(vindex.intvType);
       String intvName = tables.getTableValue("4.10", vindex.intvType);
       if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = tables.getIntervalNameShort(vindex.intvType);
-      f.format(" (%s %s)", vindex.intvName, intvName);
+      if (intvName == null) f.format(" (%s)", vindex.intvName);
+      else f.format(" (%s %s)", vindex.intvName, intvName);
     }
 
     if (vindex.ensDerivedType >= 0)
@@ -531,7 +532,7 @@ public class Grib2Iosp extends GribIosp {
       v.addAttribute(new Attribute("Grib2_Parameter", Array.factory(param)));
       v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
       if ( vindex.intvName != null && vindex.intvName.length() != 0)
-        v.addAttribute(new Attribute("Time_Interval", vindex.intvName));
+        v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
       if (vindex.intvType >= 0) {
         v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", vindex.intvType));
         GribStatType statType = GribStatType.getStatTypeFromGrib2(vindex.intvType);

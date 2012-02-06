@@ -112,7 +112,7 @@ public class FslLocalTables extends LocalTables {
 
   public String getIntervalNameShort(int id) {
     switch (id) {
-      case 255: return null;
+      case 255: return "Interval";
     }
     return super.getIntervalNameShort(id);
   }

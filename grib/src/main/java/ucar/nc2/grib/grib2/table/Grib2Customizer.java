@@ -235,7 +235,6 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
       if (ti.timeIncrementUnit != 255) range += ti.timeIncrement;
     }
 
-    int[] result = new int[2];
     CalendarPeriod unitPeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(timeUnitOrg));
     CalendarPeriod period = unitPeriod.multiply(range);
 
@@ -283,50 +282,14 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return fac * range;
   }
 
-  public int[] getForecastTimeIntervalOld(Grib2Record gr) {
-    // note  from Arthur Taylor (degrib):
-    /* If there was a range I used:
-
-    End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
-    C1) End of Interval = EI;      Begin of Interval = EI - range
-
-    and if there was no interval then I used:
-    C2) End of Interval = Begin of Interval = Ref + ForeT.
-    */
-    if (!gr.getPDS().isInterval()) return null;
-    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
-    int timeUnit = gr.getPDS().getTimeUnit();
-
-    // calculate total "range"
-    int range = 0;
-    for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-      if ((ti.timeRangeUnit != timeUnit) || (ti.timeIncrementUnit != timeUnit && ti.timeIncrementUnit != 255)) {
-        log.warn("TimeInterval has different units timeUnit= " + timeUnit + " TimeInterval=" + ti);
-      }
-
-      range += ti.timeRangeLength;
-      if (ti.timeIncrementUnit != 255) range += ti.timeIncrement;
-    }
-
+  public int[] getForecastTimeIntervalOffset(Grib2Record gr) {
+    TimeCoord.TinvDate tinvd = getForecastTimeInterval(gr);
+    Grib2Pds pds = gr.getPDS();
+    int unit = convertTimeUnit(pds.getTimeUnit());
+    TimeCoord.Tinv tinv = tinvd.convertReferenceDate(gr.getReferenceDate(), Grib2Utils.getCalendarPeriod(unit));
     int[] result = new int[2];
-
-    // End of Interval as date
-    CalendarDate EI = pdsIntv.getIntervalTimeEnd();
-    if (EI == null) {  // all values were set to zero   LOOK guessing!
-      //EI = gr.getReferenceDate();
-      result[1] = range;
-      result[0] = 0;
-
-    } else {
-      // End of Interval in units of getTimeUnit() since reference time
-      long msecs = EI.getDifferenceInMsecs(gr.getReferenceDate());
-      CalendarPeriod duration = Grib2Utils.getCalendarPeriod(timeUnit);
-      int val = (int) Math.round(msecs / duration.getValueInMillisecs());
-
-      result[1] = val;
-      result[0] = result[1] - range;
-    }
-
+    result[0] = tinv.getBounds1();
+    result[1] = tinv.getBounds2();
     return result;
   }
 

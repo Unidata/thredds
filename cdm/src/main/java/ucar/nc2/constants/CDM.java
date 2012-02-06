@@ -54,6 +54,7 @@ public interface CDM {
   public static final String LONG_NAME = "long_name";
   public static final String MISSING_VALUE = "missing_value";
   public static final String SCALE_FACTOR = "scale_factor";
+  public static final String TIME_INTERVAL = "time_interval";
   public static final String TITLE = "title";
   public static final String UNITS = "units";
 

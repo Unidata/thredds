@@ -393,6 +393,9 @@
                     dateFormatMark="#NAM_Alaska_11km_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="NAM-Alaska_45km-conduit" featureType="GRIB" harvest="true"
@@ -411,6 +414,9 @@
                     timePartition="1 day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="NAM-CONUS_12km-noaaport" featureType="GRIB" harvest="true"
@@ -429,6 +435,13 @@
                     dateFormatMark="#NAM_CONUS_12km_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+         <gribConfig>
+          <intvFilter excludeZero="true"/>
+          <intvFilter intvLength="3">
+            <variable id="0-1-8"/>
+            <variable id="0-1-10"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="NAM-CONUS_12km-conduit" featureType="GRIB" harvest="true"
@@ -448,6 +461,13 @@
             dateFormatMark="#NAM_CONUS_12km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+          <intvFilter intvLength="3">
+            <variable id="0-1-8"/>
+            <variable id="0-1-10"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="NAM-CONUS_20km-surface" featureType="GRIB" harvest="true"
@@ -465,6 +485,13 @@
                     dateFormatMark="#NAM_CONUS_20km_surface_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+          <intvFilter intvLength="3">
+            <variable id="0-1-8"/>
+            <variable id="0-1-10"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="NAM-CONUS_20km-selectsurface" featureType="GRIB" harvest="true"
@@ -483,6 +510,13 @@
                     dateFormatMark="#NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+          <intvFilter intvLength="3">
+            <variable id="0-1-8"/>
+            <variable id="0-1-10"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="NAM-CONUS_40km-conduit" featureType="GRIB" harvest="true"
@@ -501,6 +535,13 @@
                     timePartition="1 day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+          <intvFilter intvLength="3">
+            <variable id="0-1-8"/>
+            <variable id="0-1-10"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="NAM-Polar_90km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Polar_90km">
@@ -517,6 +558,9 @@
                     timePartition="1 day"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="NAM-Firewxnest" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Firewxnest">
@@ -546,6 +590,7 @@
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <gribConfig>
           <groupNamer>Firewxnest</groupNamer>
+          <intvFilter excludeZero="true"/>
         </gribConfig>
       </featureCollection>
 
@@ -788,6 +833,13 @@
             dateFormatMark="#RUC2_CONUS_20km_surface_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+          <intvFilter intvLength="1">
+            <variable id="0-1-9"/>
+            <variable id="0-1-10"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="RUC2-CONUS_20km-pressure" featureType="GRIB" harvest="true"
@@ -807,6 +859,13 @@
             timePartition="1 day"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+          <intvFilter intvLength="1">
+            <variable id="0-1-9"/>
+            <variable id="0-1-10"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="RUC2-CONUS_20km-hybrid" featureType="GRIB" harvest="true"
