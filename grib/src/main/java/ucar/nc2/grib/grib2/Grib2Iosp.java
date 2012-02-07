@@ -101,6 +101,12 @@ public class Grib2Iosp extends GribIosp {
       f.format("_Prob_%s", s);
     }
 
+    if (vindex.genProcessType >= 0) {
+      String genType = tables.getGeneratingProcessTypeName(vindex.genProcessType);
+      String s = StringUtil2.substitute(genType, " ", "_");
+      f.format("_%s", s);
+    }
+
     return f.toString();
   }
 
@@ -155,6 +161,10 @@ public class Grib2Iosp extends GribIosp {
 
     else if (isProb)
       f.format(" %s %s", vindex.probabilityName, getVindexUnits(tables, vindex)); // add data units here
+
+    if (vindex.genProcessType >= 0) {
+      f.format(" %s", tables.getGeneratingProcessTypeName(vindex.genProcessType));
+    }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format(" @ %s", tables.getTableValue("4.5", vindex.levelType));

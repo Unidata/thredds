@@ -621,7 +621,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     List<Integer> varnoList = pv.getVarnoList();
 
     return tp.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
-            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen,
+            ensDerivedType, probType, probabilityName, -1, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen,
             groupnoList, varnoList);
   }
 

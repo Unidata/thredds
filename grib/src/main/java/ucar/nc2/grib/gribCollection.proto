@@ -44,6 +44,7 @@ message Variable {
   optional uint32 tableVersion = 18;      // grib1 table Version, grib2 local
 
   optional string intvName = 19;
+  optional int32 genProcessType = 20  [default = -1];    // if set, then the generating process type was used
 }
 
 message Coord {

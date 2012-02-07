@@ -303,6 +303,7 @@ public class FeatureCollectionConfig {
     public String lookupTablePath, paramTablePath;
     public Element paramTable;
     public Boolean intvMerge = null;
+    public Boolean useGenType = null;
     public GribIntvFilter intvFilter;
 
     private TimeUnitConverterHash tuc;
@@ -357,6 +358,8 @@ public class FeatureCollectionConfig {
 
       if (configElem.getChild("intvMerge", ns) != null)
         intvMerge = true;
+      if (configElem.getChild("useGenType", ns) != null)
+        useGenType = true;
     }
 
     public void addDatasetType(String datasetTypes) {

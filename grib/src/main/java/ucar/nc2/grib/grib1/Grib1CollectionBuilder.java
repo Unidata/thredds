@@ -390,7 +390,7 @@ public class Grib1CollectionBuilder {
     int ensIdx = pv.getEnsIdx();
 
     return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
-            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            ensDerivedType, probType, probabilityName, -1, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -432,6 +432,7 @@ public class Grib1CollectionBuilder {
   public List<Group> makeAggregatedGroups(ArrayList<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<Integer, Integer> gdsConvert = null;
+    Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
@@ -475,19 +476,16 @@ public class Grib1CollectionBuilder {
           total++;
         }
         fileno++;
+        c.recordsTotal += index.getRecords().size();
       }
     }
-    f.format(" total grib records= %d%n", total);
-
-    Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
       g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash);
-      f.format(" GDS hash %d == ", g.gdsHash);
-      g.rect.make(f, c);
+      g.rect.make(c);
     }
-    f.format(" Rectilyser: nvars=%d records unique=%d total=%d dups=%d (%f) %n", c.vars, c.recordsUnique, c.records, c.dups, ((float) c.dups) / c.records);
 
+    c.show(f);
     return result;
   }
   public String getMagicStart() {

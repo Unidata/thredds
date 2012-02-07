@@ -377,7 +377,6 @@
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
         <documentation xlink:href="http://www.nco.ncep.noaa.gov/pmb/products/nam/"
                        xlink:title="NCEP NAM product inventory"/>
-        http://www.nco.ncep.noaa.gov/pmb/products/nam/
       </metadata>
 
       <featureCollection name="NAM-Alaska_11km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Alaska_11km">
@@ -772,6 +771,9 @@
             dateFormatMark="#RTMA_CONUS_2p5km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <useGenType/>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="RTMA-GUAM_2p5km" featureType="GRIB" harvest="true" path="grib/NCEP/RTMA/GUAM_2p5km">
@@ -787,6 +789,9 @@
             dateFormatMark="#RTMA_GUAM_2p5km_#yyyyMMdd_HHmm"
             olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <useGenType/>
+        </gribConfig>
       </featureCollection>
 
     </dataset>

@@ -160,6 +160,7 @@
           <gdsName hash='-1857264615' groupName='LatLon0p5wind'/>
           <gdsName hash='823344589' groupName='LatLon1p0'/>
           <gdsName hash='-829780679' groupName='LatLon2p5'/>
+          <intvFilter excludeZero="true"/>
         </gribConfig>
       </featureCollection>
     </dataset>

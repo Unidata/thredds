@@ -472,7 +472,7 @@ public class Grib2CollectionPanel extends JPanel {
 
       if (rect2 == null) {
         cust = Grib2Customizer.factory(gr);
-        rect2 = new Grib2Rectilyser(cust, null, 0, true);
+        rect2 = new Grib2Rectilyser(cust, null, 0, true, false);
       }
 
       int id = rect2.cdmVariableHash(gr, 0);
@@ -523,11 +523,13 @@ public class Grib2CollectionPanel extends JPanel {
       fileno++;
     }
 
-    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, true);
-    agg.make(f, new Grib2Rectilyser.Counter(), null);
+    Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
+    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, true, false);
+    agg.make(stats, null);
     agg.dump(f, cust);
+    stats.recordsTotal = records.size();
 
-    f.format("total records= %d%n", records.size());
+    stats.show(f);
   }
 
   /* public void runCollate(Formatter f) throws IOException {
@@ -1006,16 +1008,16 @@ public class Grib2CollectionPanel extends JPanel {
       return pds.getLevelType1();
     }
 
-    public String getLevelName() {
-      return cust.getTableValue("4.5", pds.getLevelType1());
+    public int getGenType() {
+      return pds.getGenProcessType();
     }
 
-    public String getLevelNameShort() {
+    public String getLevelName() {
       return cust.getLevelNameShort(pds.getLevelType1());
     }
 
-    public int getHybrid() {
-      return pds.getHybridCoordinatesCount();
+    public int getNExtra() {
+      return pds.getExtraCoordinatesCount();
     }
 
     public final String getStatType() {
@@ -1081,9 +1083,9 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public final String getCenter() {
-      String center = CommonCodeTable.getCenterName(id.getCenter_id(), 2);
-      String subcenter = cust.getSubCenterName(id.getCenter_id(), id.getSubcenter_id());
-      return id.getCenter_id() + "/" + id.getSubcenter_id() + " (" + center + "/" + subcenter + ")";
+      //String center = CommonCodeTable.getCenterName(id.getCenter_id(), 2);
+      //String subcenter = cust.getSubCenterName(id.getCenter_id(), id.getSubcenter_id());
+      return id.getCenter_id() + "/" + id.getSubcenter_id(); // + " (" + center + "/" + subcenter + ")";
     }
 
     public final String getTable() {
@@ -1177,8 +1179,8 @@ public class Grib2CollectionPanel extends JPanel {
       if (intv != null) f.format(" Interval     = %s%n", intv);
     }
     showPdsTemplate(pdss, f, cust);
-    if (pds.getHybridCoordinatesCount() > 0) {
-      float[] coords = pds.getHybridCoordinates();
+    if (pds.getExtraCoordinatesCount() > 0) {
+      float[] coords = pds.getExtraCoordinates();
       f.format("Hybrid Coordinates (%d) %n  ", coords.length);
       for (float fc : coords) f.format("%10.5f ", fc);
       f.format("%n%n");
@@ -1247,6 +1249,8 @@ public class Grib2CollectionPanel extends JPanel {
     f.format(" First Surface value= %3f %n", pds.getLevelValue1());
     f.format(" Second Surface Type= %3d %s %n", pds.getLevelType2(), cust.getLevelNameShort(pds.getLevelType2()));
     f.format(" Second Surface val = %3f %n", pds.getLevelValue2());
+    f.format("%n Level Name (from table 4.5) = %3s %n", cust.getTableValue("4.5", pds.getLevelType1()));
+    f.format(" Gen Process Ttype (from table 4.3) = %3s %n", cust.getTableValue("4.3", pds.getGenProcessType()));
   }
 
   public class Grib2RecordBean {

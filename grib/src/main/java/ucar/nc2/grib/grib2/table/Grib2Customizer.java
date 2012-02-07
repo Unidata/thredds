@@ -284,6 +284,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   public int[] getForecastTimeIntervalOffset(Grib2Record gr) {
     TimeCoord.TinvDate tinvd = getForecastTimeInterval(gr);
+    if (tinvd == null) return null;
+
     Grib2Pds pds = gr.getPDS();
     int unit = convertTimeUnit(pds.getTimeUnit());
     TimeCoord.Tinv tinv = tinvd.convertReferenceDate(gr.getReferenceDate(), Grib2Utils.getCalendarPeriod(unit));
@@ -437,6 +439,10 @@ Code Table Code table 4.7 - Derived forecast (4.7)
 
   public String getGeneratingProcessName(int genProcess) {
     return null;
+  }
+
+  public String getGeneratingProcessTypeName(int genProcess) {
+    return getTableValue("4.3", genProcess);
   }
 
 

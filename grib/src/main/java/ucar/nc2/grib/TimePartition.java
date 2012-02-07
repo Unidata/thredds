@@ -174,10 +174,11 @@ public abstract class TimePartition extends GribCollection {
 
     public VariableIndexPartitioned(GribCollection.GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
                                     int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                                    int genProcessType,
                                     int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
       super(g, 0, discipline, category, parameter, levelType, isLayer, intvType, intvName, ensDerivedType, probType, probabilityName,
-              cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+              genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
     }
 
     public void setPartitionIndex(int partno, int groupIdx, int varIdx) {
@@ -262,6 +263,7 @@ public abstract class TimePartition extends GribCollection {
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs group, int tableVersion,
                                                         int discipline, int category, int parameter, int levelType, boolean isLayer,
                                                         int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                                                        int genProcessType,
                                                         int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
     throw new UnsupportedOperationException();
   }
@@ -269,11 +271,12 @@ public abstract class TimePartition extends GribCollection {
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs group, int tableVersion,
                                                  int discipline, int category, int parameter, int levelType, boolean isLayer, int intvType,
                                                  String intvName, int ensDerivedType, int probType, String probabilityName,
+                                                 int genProcessType,
                                                  int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen,
                                                  List<Integer> groupnoList, List<Integer> varnoList) {
 
     VariableIndexPartitioned vip = new VariableIndexPartitioned(group, discipline, category, parameter, levelType, isLayer, intvType,
-            intvName, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            intvName, ensDerivedType, probType, probabilityName, genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
 
     int nparts = varnoList.size();
     vip.groupno = new int[nparts];
@@ -287,8 +290,8 @@ public abstract class TimePartition extends GribCollection {
 
   public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi, int nparts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(vi.group, vi.discipline, vi.category, vi.parameter, vi.levelType,
-            vi.isLayer, vi.intvType, vi.intvName,
-            vi.ensDerivedType, vi.probType, vi.probabilityName, vi.cdmHash, vi.timeIdx, vi.vertIdx, vi.ensIdx, vi.recordsPos, vi.recordsLen);
+            vi.isLayer, vi.intvType, vi.intvName, vi.ensDerivedType, vi.probType, vi.probabilityName,
+            vi.genProcessType, vi.cdmHash, vi.timeIdx, vi.vertIdx, vi.ensIdx, vi.recordsPos, vi.recordsLen);
 
     vip.groupno = new int[nparts];
     vip.varno = new int[nparts];

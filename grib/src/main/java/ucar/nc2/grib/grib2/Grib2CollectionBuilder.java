@@ -378,9 +378,10 @@ public class Grib2CollectionBuilder {
     int vertIdx = pv.getVertIdx();
     int ensIdx = pv.getEnsIdx();
     int tableVersion = pv.getTableVersion();
+    int genProcessType = pv.getGenProcessType();
 
     return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
-            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            ensDerivedType, probType, probabilityName, genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -422,10 +423,11 @@ public class Grib2CollectionBuilder {
   public List<Group> makeAggregatedGroups(List<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     boolean intvMerge = mergeIntvDefault;
+    boolean useGenType = false;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
-    int total = 0;
     int fileno = 0;
+    Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter(); // debugging
 
     for (CollectionManager dcm : collections) {
       f.format(" dcm= %s%n", dcm);
@@ -433,11 +435,11 @@ public class Grib2CollectionBuilder {
       Map<Integer, Integer> gdsConvert = (config != null) ?  config.gdsHash : null;
       FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
       intvMerge = (config == null) || (config.intvMerge == null) ? mergeIntvDefault : config.intvMerge;
+      useGenType = (config == null) || (config.useGenType == null) ? false : config.useGenType;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
         filenames.add(mfile.getPath());
-
 
         Grib2Index index = null;
         try {
@@ -455,7 +457,10 @@ public class Grib2CollectionBuilder {
             this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
             if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt really work with multiple collections
           }
-          if (intvMap != null && filterTinv(gr, intvMap, f)) continue; // skip
+          if (intvMap != null && filterTinv(gr, intvMap, f)) {
+            stats.filter++;
+            continue; // skip
+          }
 
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
@@ -468,21 +473,20 @@ public class Grib2CollectionBuilder {
             gdsMap.put(gdsHash, g);
           }
           g.records.add(gr);
-          total++;
         }
         fileno++;
+        stats.recordsTotal += index.getRecords().size();
       }
     }
-    f.format(" total grib records= %d%n", total);
 
-    Grib2Rectilyser.Counter c = new Grib2Rectilyser.Counter(); // debugging
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, intvMerge);
-      f.format(" GDS hash %d == ", g.gdsHash);
-      g.rect.make(f, c, filenames);
+      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, intvMerge, useGenType);
+      g.rect.make(stats, filenames);
     }
-    f.format(" Rectilyser: nvars=%d records unique=%d total=%d dups=%d (%f) %n", c.vars, c.recordsUnique, c.records, c.dups, ((float) c.dups) / c.records);
+
+    // debugging and validation
+    stats.show(f);
 
     return result;
   }
@@ -495,7 +499,7 @@ public class Grib2CollectionBuilder {
     // HACK
     if (haveLength == 0 && intvFilter.isZeroExcluded()) {  // discard 0,0
       if ((intv[0] == 0) && (intv[1] == 0)) {
-        f.format(" FILTER INTV [0, 0] %s%n", gr);
+        //f.format(" FILTER INTV [0, 0] %s%n", gr);
         return true;
       }
       return false;
@@ -508,7 +512,7 @@ public class Grib2CollectionBuilder {
       Integer needLength = intvFilter.getLengthById(id);
 
       if (needLength != null && needLength != haveLength) {
-        f.format(" FILTER INTV [%d != %d] %s%n", haveLength, needLength, gr);
+        //f.format(" FILTER INTV [%d != %d] %s%n", haveLength, needLength, gr);
         return true;
       }
     }
@@ -759,9 +763,11 @@ public class Grib2CollectionBuilder {
       b.setProbabilityType(pdsProb.getProbabilityType());
     }
 
-    if (pds.isInterval()) {
+    if (pds.isInterval())
       b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
-    }
+
+    if (vb.useGenType)
+      b.setGenProcessType(pds.getGenProcessType());
 
     return b.build();
   }

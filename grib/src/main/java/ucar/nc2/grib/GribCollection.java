@@ -484,10 +484,11 @@ public abstract class GribCollection implements FileCacheable {
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int tableVersion,
                                                         int discipline, int category, int parameter, int levelType, boolean isLayer,
                                                         int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                                                        int genProcessType,
                                                         int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
     return new VariableIndex(g, tableVersion, discipline, category, parameter, levelType, isLayer,
-            intvType, intvName, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            intvType, intvName, ensDerivedType, probType, probabilityName, genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   public class VariableIndex implements Comparable<VariableIndex> {
@@ -496,6 +497,7 @@ public abstract class GribCollection implements FileCacheable {
     public final String intvName;                                                                     // uniquely identifies the variable
     public final String probabilityName;                                                              // uniquely identifies the variable
     public final boolean isLayer;                                                                     // uniquely identifies the variable
+    public final int genProcessType;
     public final int cdmHash;                  // unique hashCode - from Grib2Record, but works here also
     public final int timeIdx, vertIdx, ensIdx; // which time, vert and ens coordinates to use (in group)
     public final long recordsPos;              // where the records array is stored in the index
@@ -510,6 +512,7 @@ public abstract class GribCollection implements FileCacheable {
     public VariableIndex(GroupHcs g, int tableVersion,
                          int discipline, int category, int parameter, int levelType, boolean isLayer,
                          int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                         int genProcessType,
                          int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
       this.group = g;
       this.tableVersion = tableVersion;
@@ -523,6 +526,7 @@ public abstract class GribCollection implements FileCacheable {
       this.ensDerivedType = ensDerivedType;
       this.probabilityName = probabilityName;
       this.probType = probType;
+      this.genProcessType = genProcessType;
       this.cdmHash = cdmHash;
       this.timeIdx = timeIdx;
       this.vertIdx = vertIdx;

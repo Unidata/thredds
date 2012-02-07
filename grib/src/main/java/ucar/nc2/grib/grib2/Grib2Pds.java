@@ -3,11 +3,9 @@ package ucar.nc2.grib.grib2;
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 
-import javax.naming.ldap.StartTlsRequest;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.zip.CRC32;
@@ -90,12 +88,12 @@ public abstract class Grib2Pds {
    *
    * @return Coordinates number
    */
-  public int getHybridCoordinatesCount() {
+  public int getExtraCoordinatesCount() {
     return GribNumbers.int2(getOctet(6), getOctet(7));
   }
 
-  public final float[] getHybridCoordinates() {
-    int n =  getHybridCoordinatesCount();
+  public final float[] getExtraCoordinates() {
+    int n =  getExtraCoordinatesCount();
     if (n == 0) return null;
     float[] result = new float[n];
     int count = templateLength() + 1;

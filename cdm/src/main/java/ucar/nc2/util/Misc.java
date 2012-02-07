@@ -184,6 +184,8 @@ public class Misc {
   }
 
   static public void compare(byte[] raw1, byte[] raw2, Formatter f) {
+    if (raw1 == null || raw2 == null) return;
+
     if (raw1.length != raw2.length) {
       f.format("length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
     }

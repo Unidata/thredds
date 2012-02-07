@@ -52,6 +52,7 @@ public class Grib2Rectilyser {
   private final Grib2Customizer cust;
   private final int gdsHash;
   private final boolean intvMerge;
+  private final boolean useGenType;
 
   private final List<Grib2Record> records;
   private List<VariableBag> gribvars;
@@ -61,11 +62,12 @@ public class Grib2Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, boolean intvMerge) {
+  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, boolean intvMerge, boolean useGenType) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
     this.intvMerge = intvMerge;
+    this.useGenType = useGenType;
   }
 
   public List<Grib2Record> getRecords() {
@@ -89,8 +91,9 @@ public class Grib2Rectilyser {
   }
 
   List<String> filenames = null; // temp debug
-  public void make(Formatter f, Counter counter, List<String> filenames) throws IOException {
+  public void make(Counter counter, List<String> filenames) throws IOException {
     this.filenames = filenames;
+
     // unique variables using Grib2Record.cdmVariableHash()
     Map<Integer, VariableBag> vbHash = new HashMap<Integer, VariableBag>(100);
     for (Grib2Record gr : records) {
@@ -99,6 +102,7 @@ public class Grib2Rectilyser {
       if (bag == null) {
         bag = new VariableBag(gr, cdmHash);
         vbHash.put(cdmHash, bag);
+        bag.useGenType = useGenType;
       }
       bag.atomList.add(new Record(gr));
     }
@@ -138,8 +142,7 @@ public class Grib2Rectilyser {
       }
     }
 
-    int tot_recordMap = 0;
-    int tot_records = 0;
+    int tot_used = 0;
     int tot_dups = 0;
 
     // for each variable, create recordMap, which maps index (time, ens, vert) -> Grib2Record
@@ -152,7 +155,6 @@ public class Grib2Rectilyser {
       int nverts = (vc == null) ? 1 : vc.getSize();
       int nens = (ec == null) ? 1 : ec.getSize();
       vb.recordMap = new Record[ntimes * nverts * nens];
-      int dups = 0;
 
       for (Record r : vb.atomList) {
         int timeIdx = (r.tcIntvCoord != null) ? r.tcIntvCoord.index : tc.findIdx(r.tcCoord);
@@ -175,27 +177,30 @@ public class Grib2Rectilyser {
 
         // later records overwrite earlier ones with same index. so atomList must be ordered
         int index = GribCollection.calcIndex(timeIdx, ensIdx, vertIdx, nens, nverts);
-        if (vb.recordMap[index] != null) dups++;
+        if (vb.recordMap[index] != null) tot_dups++; else tot_used++;
         vb.recordMap[index] = r;
       }
       //System.out.printf("%d: recordMap %d = records %d - dups %d (%d)%n", vb.first.cdmVariableHash(),
       //        vb.recordMap.length, vb.atomList.size(), dups, vb.atomList.size() - vb.recordMap.length);
-      tot_recordMap += vb.recordMap.length;
-      tot_records += vb.atomList.size();
-      tot_dups += dups;
     }
-    f.format("records unique=%d total=%d dups=%d (%f) %n", tot_recordMap, tot_records, tot_dups, ((float) tot_dups) / tot_records);
-    counter.recordsUnique += tot_recordMap;
-    counter.records += tot_records;
+    counter.recordsUnique += tot_used;
     counter.dups += tot_dups;
     counter.vars += gribvars.size();
   }
 
   static public class Counter {
-    int recordsUnique;
-    int records;
-    int dups;
-    int vars;
+    public int recordsTotal;
+    public int recordsUnique;
+    public int dups;
+    public int filter;
+    public int vars;
+
+    public void show (Formatter f) {
+      // debugging and validation
+      float dupPercent = ((float) dups) / (recordsTotal - filter);
+      f.format(" Rectilyser2: nvars=%d records total=%d filtered=%d unique=%d dups=%d (%f)%n",
+              vars, recordsTotal, filter, recordsUnique, dups, dupPercent);
+    }
   }
 
   public class Record {
@@ -393,6 +398,7 @@ public class Grib2Rectilyser {
   public class VariableBag implements Comparable<VariableBag> {
     Grib2Record first;
     int cdmHash;
+    boolean useGenType;
 
     List<Record> atomList = new ArrayList<Record>(100);
     int timeCoordIndex = -1;
@@ -491,6 +497,9 @@ public class Grib2Rectilyser {
       if (id.getSubcenter_id() > 0)
         result += result * 37 + id.getSubcenter_id();
     }
+
+    if (useGenType)
+      result += result * 37 + pds2.getGenProcessType();
 
     return result;
   }

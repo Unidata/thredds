@@ -589,7 +589,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     int tableVersion = pv.getTableVersion();
 
     return tp.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
-            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            ensDerivedType, probType, probabilityName, -1, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   public static void main(String[] args) throws IOException {
