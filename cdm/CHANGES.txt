@@ -3,7 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 7: (2012-02-01)
+ 7: (2012-02-06)
+  GRIB2 useGenType option
   GRIB-1 thin grids bugs.
   GRIB-1 ensembles : special coding for NCEP, ECMWF
   TimePartition by directory
