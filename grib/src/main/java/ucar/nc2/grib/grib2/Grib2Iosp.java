@@ -60,11 +60,11 @@ import java.util.Formatter;
 public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
   static private final boolean debugTime = false, debugRead = false, debugName = false;
+  static private boolean useGenType = false; // LOOK dummy for now
 
   static public String makeVariableName(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
-    //f.format("P%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
     GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
 
     if (param == null) {
@@ -73,13 +73,9 @@ public class Grib2Iosp extends GribIosp {
       f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
     }
 
-    /* if this uses any local tables, then we have to add the center id
-    if ((vindex.category > 191) || (vindex.parameter > 191) || (vindex.levelType > 191) || (vindex.intvType > 191)
-            || (vindex.ensDerivedType > 191) || (vindex.probType > 191)) {
-      f.format("_C%d", gribCollection.getCenter());
-      if (gribCollection.getSubcenter() > 0)
-        f.format("-%d", gribCollection.getSubcenter());
-    } */
+    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) { // LOOK
+      f.format("_error");
+    }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_%s", tables.getLevelNameShort(vindex.levelType)); // vindex.levelType); // code table 4.5
@@ -101,7 +97,7 @@ public class Grib2Iosp extends GribIosp {
       f.format("_Prob_%s", s);
     }
 
-    if (vindex.genProcessType >= 0) {
+    if (vindex.genProcessType >= 0 && useGenType) {
       String genType = tables.getGeneratingProcessTypeName(vindex.genProcessType);
       String s = StringUtil2.substitute(genType, " ", "_");
       f.format("_%s", s);
@@ -162,7 +158,9 @@ public class Grib2Iosp extends GribIosp {
     else if (isProb)
       f.format(" %s %s", vindex.probabilityName, getVindexUnits(tables, vindex)); // add data units here
 
-    if (vindex.genProcessType >= 0) {
+    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) {
+      f.format(" error");
+    } else if (useGenType && vindex.genProcessType >= 0) {
       f.format(" %s", tables.getGeneratingProcessTypeName(vindex.genProcessType));
     }
 
@@ -555,6 +553,8 @@ public class Grib2Iosp extends GribIosp {
         v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.ensDerivedType));
       else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0)
         v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.probabilityName));
+      if (vindex.genProcessType >= 0)
+        v.addAttribute(new Attribute("Grib2_Generating_Process_Type", tables.getGeneratingProcessTypeName(vindex.genProcessType)));
 
       v.setSPobject(vindex);
     }

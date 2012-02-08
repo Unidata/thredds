@@ -69,7 +69,7 @@ public abstract class TimePartition extends GribCollection {
     return partitionCache;
   }
 
-  static private final ucar.nc2.util.cache.FileFactory partitionFactory = new FileFactory() {
+  static private final ucar.nc2.util.cache.FileFactory collectionFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       File f = new File(location);
       RandomAccessFile raf = new RandomAccessFile(location, "r");
@@ -127,9 +127,9 @@ public abstract class TimePartition extends GribCollection {
     public GribCollection getGribCollection() throws IOException {
       if (gribCollection == null) {
         if (partitionCache != null) {
-          gribCollection = (GribCollection) partitionCache.acquire(partitionFactory, indexFilename, indexFilename, -1, null, this);
+          gribCollection = (GribCollection) partitionCache.acquire(collectionFactory, indexFilename, indexFilename, -1, null, this);
         } else {
-          gribCollection = (GribCollection) partitionFactory.open(indexFilename, -1, null, this);
+          gribCollection = (GribCollection) collectionFactory.open(indexFilename, -1, null, this);
         }
       }
       return gribCollection;

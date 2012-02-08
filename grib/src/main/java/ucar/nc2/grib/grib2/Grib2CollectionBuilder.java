@@ -57,8 +57,7 @@ import java.util.*;
 public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   public static final String MAGIC_START = "Grib2CollectionIndex";
-  protected static final int version = 8;
-  private static final boolean debug = false;
+  protected static final int version = 9;
   private static final boolean mergeIntvDefault = true;
 
     // called by tdm
@@ -97,7 +96,7 @@ public class Grib2CollectionBuilder {
   // this writes the index always
   static public boolean writeIndexFile(File indexFile, CollectionManager dcm, Formatter f) throws IOException {
     Grib2CollectionBuilder builder = new Grib2CollectionBuilder(dcm);
-    return builder.createIndex(indexFile, CollectionManager.Force.always, f);
+    return builder.createIndex(indexFile, f);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -154,7 +153,7 @@ public class Grib2CollectionBuilder {
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       idx = gc.makeNewIndexFile(); // make sure we have a writeable index
       logger.info("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
-      createIndex(idx, ff, f);        // write out index
+      createIndex(idx, f);        // write out index
       gc.setIndexRaf(new RandomAccessFile(idx.getPath(), "r"));
       readIndex(gc.getIndexRaf()); // read back in index
     }
@@ -198,9 +197,9 @@ public class Grib2CollectionBuilder {
         return false;
       }
 
-      int v = raf.readInt();
-      if (v != getVersion()) {
-        logger.warn("GribCollection {}: index found version={}, want version= {} on file {}", new Object[]{gc.getName(), v, version, raf.getLocation()});
+      gc.version = raf.readInt();
+      if (gc.version != getVersion()) {
+        logger.warn("GribCollection {}: index found version={}, want version= {} on file {}", new Object[]{gc.getName(), gc.version, version, raf.getLocation()});
         return false;
       }
 
@@ -404,11 +403,11 @@ public class Grib2CollectionBuilder {
   ///////////////////////////////////////////////////
   // create the index
 
-  private boolean createIndex(File indexFile, CollectionManager.Force ff, Formatter f) throws IOException {
+  private boolean createIndex(File indexFile, Formatter f) throws IOException {
     long start = System.currentTimeMillis();
 
     ArrayList<String> filenames = new ArrayList<String>();
-    List<Group> groups = makeAggregatedGroups(filenames, ff, f);
+    List<Group> groups = makeAggregatedGroups(filenames, f);
     createIndex(indexFile, groups, filenames, f);
 
     long took = System.currentTimeMillis() - start;
@@ -420,10 +419,10 @@ public class Grib2CollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  public List<Group> makeAggregatedGroups(List<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
+  public List<Group> makeAggregatedGroups(List<String> filenames, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     boolean intvMerge = mergeIntvDefault;
-    boolean useGenType = false;
+    //boolean useGenType = false;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int fileno = 0;
@@ -435,7 +434,7 @@ public class Grib2CollectionBuilder {
       Map<Integer, Integer> gdsConvert = (config != null) ?  config.gdsHash : null;
       FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
       intvMerge = (config == null) || (config.intvMerge == null) ? mergeIntvDefault : config.intvMerge;
-      useGenType = (config == null) || (config.useGenType == null) ? false : config.useGenType;
+      //useGenType = (config == null) || (config.useGenType == null) ? false : config.useGenType;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -443,7 +442,7 @@ public class Grib2CollectionBuilder {
 
         Grib2Index index = null;
         try {
-          index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, !isSingleFile, mfile, config, force, f);
+          index = (Grib2Index) GribIndex.readOrCreateIndexFromSingleFile(false, !isSingleFile, mfile, config, CollectionManager.Force.test, f);
 
         } catch (IOException ioe) {
           logger.warn("GribCollectionBuilder {}: reading/Creating gbx9 index failed err={}", gc.getName(), ioe.getMessage());
@@ -481,7 +480,7 @@ public class Grib2CollectionBuilder {
 
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, intvMerge, useGenType);
+      g.rect = new Grib2Rectilyser(tables, g.records, g.gdsHash, intvMerge);
       g.rect.make(stats, filenames);
     }
 
@@ -766,7 +765,8 @@ public class Grib2CollectionBuilder {
     if (pds.isInterval())
       b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
 
-    if (vb.useGenType)
+    int genType = pds.getGenProcessType();
+    if (genType != GribNumbers.UNDEFINED)
       b.setGenProcessType(pds.getGenProcessType());
 
     return b.build();

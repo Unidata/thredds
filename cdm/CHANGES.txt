@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
+ 8: (2012-02-xx)
+  redo useGenType - make it automatic, variable name changed only if type == error. so varHash changes
+
  7: (2012-02-06)
   GRIB2 useGenType option
   GRIB-1 thin grids bugs.

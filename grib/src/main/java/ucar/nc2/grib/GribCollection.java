@@ -133,6 +133,7 @@ public abstract class GribCollection implements FileCacheable {
   protected File directory;
   protected FeatureCollectionConfig.GribConfig gribConfig;
   protected boolean isGrib1;
+  public int version;
 
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
@@ -656,6 +657,7 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   public void showIndex(Formatter f) {
+    f.format("%s%n%n", toString());
     f.format("Class (%s)%n", getClass().getName());
     f.format("Files (%d)%n", filenames.size());
     for (String file : filenames)
@@ -675,6 +677,26 @@ public abstract class GribCollection implements FileCacheable {
         f.format(" %d: %s%n", i, tc);
       }
     }
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("GribCollection");
+    sb.append("{\n name='").append(name).append('\'');
+    sb.append("\n directory=").append(directory);
+    sb.append("\n isGrib1=").append(isGrib1);
+    sb.append("\n version=").append(version);
+    sb.append("\n center=").append(center);
+    sb.append("\n subcenter=").append(subcenter);
+    sb.append("\n master=").append(master);
+    sb.append("\n local=").append(local);
+    sb.append("\n genProcessType=").append(genProcessType);
+    sb.append("\n genProcessId=").append(genProcessId);
+    sb.append("\n backProcessId=").append(backProcessId);
+    sb.append("\n indexFile=").append(indexFile);
+    sb.append('}');
+    return sb.toString();
   }
 
   public GribCollection.GroupHcs makeGroup() {

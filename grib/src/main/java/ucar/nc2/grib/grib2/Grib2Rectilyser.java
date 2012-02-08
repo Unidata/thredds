@@ -52,7 +52,7 @@ public class Grib2Rectilyser {
   private final Grib2Customizer cust;
   private final int gdsHash;
   private final boolean intvMerge;
-  private final boolean useGenType;
+  //private final boolean useGenType;
 
   private final List<Grib2Record> records;
   private List<VariableBag> gribvars;
@@ -62,12 +62,12 @@ public class Grib2Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, boolean intvMerge, boolean useGenType) {
+  public Grib2Rectilyser(Grib2Customizer cust, List<Grib2Record> records, int gdsHash, boolean intvMerge) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
     this.intvMerge = intvMerge;
-    this.useGenType = useGenType;
+    //this.useGenType = useGenType;
   }
 
   public List<Grib2Record> getRecords() {
@@ -102,7 +102,7 @@ public class Grib2Rectilyser {
       if (bag == null) {
         bag = new VariableBag(gr, cdmHash);
         vbHash.put(cdmHash, bag);
-        bag.useGenType = useGenType;
+        //bag.useGenType = useGenType;
       }
       bag.atomList.add(new Record(gr));
     }
@@ -398,7 +398,7 @@ public class Grib2Rectilyser {
   public class VariableBag implements Comparable<VariableBag> {
     Grib2Record first;
     int cdmHash;
-    boolean useGenType;
+    //boolean useGenType;
 
     List<Record> atomList = new ArrayList<Record>(100);
     int timeCoordIndex = -1;
@@ -498,8 +498,10 @@ public class Grib2Rectilyser {
         result += result * 37 + id.getSubcenter_id();
     }
 
-    if (useGenType)
-      result += result * 37 + pds2.getGenProcessType();
+    // always use the GenProcessType 2/7/2012
+    int genType = pds2.getGenProcessType();
+    if (genType != GribNumbers.UNDEFINED)
+      result += result * 37 + genType;
 
     return result;
   }
@@ -508,6 +510,5 @@ public class Grib2Rectilyser {
     TimeCoord tc = timeCoords.get(timeIdx);
     return tc.getTimeIntervalName();
   }
-
 
 }

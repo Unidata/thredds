@@ -472,7 +472,7 @@ public class Grib2CollectionPanel extends JPanel {
 
       if (rect2 == null) {
         cust = Grib2Customizer.factory(gr);
-        rect2 = new Grib2Rectilyser(cust, null, 0, true, false);
+        rect2 = new Grib2Rectilyser(cust, null, 0, true);
       }
 
       int id = rect2.cdmVariableHash(gr, 0);
@@ -524,7 +524,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     Grib2Rectilyser.Counter stats = new Grib2Rectilyser.Counter();
-    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, true, false);
+    Grib2Rectilyser agg = new Grib2Rectilyser(cust, records, 0, true);
     agg.make(stats, null);
     agg.dump(f, cust);
     stats.recordsTotal = records.size();

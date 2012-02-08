@@ -59,7 +59,6 @@ public class Grib1CollectionBuilder {
 
   public static final String MAGIC_START = "Grib1CollectionIndex";
   protected static final int version = 7;
-  private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
   static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionManager.Force force,
@@ -97,7 +96,7 @@ public class Grib1CollectionBuilder {
   // this writes the index always
   static public boolean writeIndexFile(File indexFile, CollectionManager dcm, Formatter f) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm);
-    return builder.createIndex(indexFile, CollectionManager.Force.always, f);
+    return builder.createIndex(indexFile, f);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -154,7 +153,7 @@ public class Grib1CollectionBuilder {
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       idx = gc.makeNewIndexFile(); // make sure we have a writeable index
       logger.debug("{}: createIndex {}", gc.getName(), idx.getPath());
-      createIndex(idx, ff, f);        // write out index
+      createIndex(idx, f);        // write out index
       gc.setIndexRaf(new RandomAccessFile(idx.getPath(), "r"));
       readIndex(gc.getIndexRaf()); // read back in index
     }
@@ -413,11 +412,11 @@ public class Grib1CollectionBuilder {
   ///////////////////////////////////////////////////
   // create the index
 
-  private boolean createIndex(File indexFile, CollectionManager.Force ff, Formatter f) throws IOException {
+  private boolean createIndex(File indexFile, Formatter f) throws IOException {
     long start = System.currentTimeMillis();
 
     ArrayList<String> filenames = new ArrayList<String>();
-    List<Group> groups = makeAggregatedGroups(filenames, ff, f);
+    List<Group> groups = makeAggregatedGroups(filenames, f);
     createIndex(indexFile, groups, filenames, f);
 
     long took = System.currentTimeMillis() - start;
@@ -429,7 +428,7 @@ public class Grib1CollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  public List<Group> makeAggregatedGroups(ArrayList<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
+  public List<Group> makeAggregatedGroups(ArrayList<String> filenames, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<Integer, Integer> gdsConvert = null;
     Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
@@ -448,7 +447,7 @@ public class Grib1CollectionBuilder {
 
         Grib1Index index = null;
         try {
-          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, !isSingleFile, mfile, config, force, f);
+          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, !isSingleFile, mfile, config, CollectionManager.Force.test, f);
 
         } catch (IOException ioe) {
           logger.warn("GribCollectionBuilder {}: reading/Creating gbx9 index failed err={}", gc.getName(), ioe.getMessage());
