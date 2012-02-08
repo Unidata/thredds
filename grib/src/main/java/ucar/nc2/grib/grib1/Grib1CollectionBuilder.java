@@ -56,9 +56,10 @@ import java.util.*;
  */
 public class Grib1CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
+  protected static final int version = 8;
+  private static final boolean intvMergeDefault = true;
 
   public static final String MAGIC_START = "Grib1CollectionIndex";
-  protected static final int version = 7;
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
   static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionManager.Force force,
@@ -432,6 +433,7 @@ public class Grib1CollectionBuilder {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<Integer, Integer> gdsConvert = null;
     Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
+    boolean intvMerge = intvMergeDefault;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
@@ -440,6 +442,7 @@ public class Grib1CollectionBuilder {
       f.format(" dcm= %s%n", dcm);
       FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
       if (config != null) gdsConvert = config.gdsHash;
+      intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -480,7 +483,7 @@ public class Grib1CollectionBuilder {
     }
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash);
+      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash, intvMerge);
       g.rect.make(c);
     }
 

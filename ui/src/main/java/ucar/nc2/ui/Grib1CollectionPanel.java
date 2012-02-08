@@ -521,7 +521,7 @@ public class Grib1CollectionPanel extends JPanel {
 
       if (cust == null) { // first record
         cust = Grib1Customizer.factory(gr, null);
-        rect = new Grib1Rectilyser(cust, null, 0); // just needed for cdmVariableHash
+        rect = new Grib1Rectilyser(cust, null, 0, true); // just needed for cdmVariableHash
       }
 
       int id = rect.cdmVariableHash(gr, 0);

@@ -48,6 +48,7 @@ import java.util.*;
  */
 public class Grib2Rectilyser {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
+  static private final boolean useGenType = false; // LOOK dummy for now
 
   private final Grib2Customizer cust;
   private final int gdsHash;
@@ -456,15 +457,17 @@ public class Grib2Rectilyser {
     result += result * 37 + pds2.getTemplateNumber();
 
     if (pds2.isInterval()) {
-      double size = 0;
-      try {
-        size = cust.getForecastTimeIntervalSizeInHours(gr); // LOOK using an Hour here, but will need to make this configurable
-      } catch (Throwable t) {
-        logger.error("bad", t);
-        if (filenames != null)
-          logger.error("Failed on file = "+filenames.get(gr.getFile()));
+      if (!intvMerge) {
+        double size = 0;
+        try {
+          size = cust.getForecastTimeIntervalSizeInHours(gr); // LOOK using an Hour here, but will need to make this configurable
+        } catch (Throwable t) {
+          logger.error("bad", t);
+          if (filenames != null)
+            logger.error("Failed on file = "+filenames.get(gr.getFile()));
+        }
+        result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - default not
       }
-      if (!intvMerge) result += result * (int) (37 + (1000 * size)); // create new variable for each interval size - configurable
       result += result * 37 + pds2.getStatisticalProcessType(); // create new variable for each stat type
     }
 
@@ -498,10 +501,11 @@ public class Grib2Rectilyser {
         result += result * 37 + id.getSubcenter_id();
     }
 
-    // always use the GenProcessType 2/7/2012
+    // only use the GenProcessType when "error" 2/8/2012
     int genType = pds2.getGenProcessType();
-    if (genType != GribNumbers.UNDEFINED)
+    if (useGenType || (genType == 6 || genType == 7)) {
       result += result * 37 + genType;
+    }
 
     return result;
   }

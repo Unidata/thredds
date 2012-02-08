@@ -57,8 +57,8 @@ import java.util.*;
 public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   public static final String MAGIC_START = "Grib2CollectionIndex";
-  protected static final int version = 9;
-  private static final boolean mergeIntvDefault = true;
+  protected static final int version = 10;
+  private static final boolean intvMergeDefault = true;
 
     // called by tdm
   static public boolean update(CollectionManager dcm, Formatter f) throws IOException {
@@ -421,7 +421,7 @@ public class Grib2CollectionBuilder {
   // for each group, run rectlizer to derive the coordinates and variables
   public List<Group> makeAggregatedGroups(List<String> filenames, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
-    boolean intvMerge = mergeIntvDefault;
+    boolean intvMerge = intvMergeDefault;
     //boolean useGenType = false;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
@@ -433,7 +433,7 @@ public class Grib2CollectionBuilder {
       FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
       Map<Integer, Integer> gdsConvert = (config != null) ?  config.gdsHash : null;
       FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
-      intvMerge = (config == null) || (config.intvMerge == null) ? mergeIntvDefault : config.intvMerge;
+      intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
       //useGenType = (config == null) || (config.useGenType == null) ? false : config.useGenType;
 
       for (MFile mfile : dcm.getFiles()) {

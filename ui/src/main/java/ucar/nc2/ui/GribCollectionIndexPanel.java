@@ -431,6 +431,34 @@ public class GribCollectionIndexPanel extends JPanel {
       return v.ensIdx;
     }
 
+    public int getLevelType() {
+      return v.levelType;
+    }
+
+    public int getIntvType() {
+      return v.intvType;
+    }
+
+    public int getProbType() {
+      return v.probType;
+    }
+
+    public int getEnsType() {
+      return v.ensDerivedType;
+    }
+
+    public int getGenType() {
+      return v.genProcessType;
+    }
+
+    public String getIntvName() {
+      return v.intvName;
+    }
+
+    public String getProbName() {
+      return v.probabilityName;
+    }
+
     public int getHash() {
       return v.cdmHash;
     }

@@ -57,7 +57,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2Partition0Index";
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartitionBuilder.class);
-  static private final int versionTP = 3;  // this needs to update when grib2collection version does
+  static private final int versionTP = 4;  // this needs to update when grib2collection version does
   static private final boolean trace = false;
 
   // called by tdm

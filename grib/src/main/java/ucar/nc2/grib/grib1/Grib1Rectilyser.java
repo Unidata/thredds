@@ -61,6 +61,7 @@ public class Grib1Rectilyser {
   private Grib1Customizer cust;
   private final List<Grib1Record> records;
   private final int gdsHash;
+  private final boolean intvMerge;
 
   private List<VariableBag> gribvars;
 
@@ -69,10 +70,11 @@ public class Grib1Rectilyser {
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>();
 
   // records must be sorted - later ones override earlier ones with the same index
-  public Grib1Rectilyser(Grib1Customizer cust, List<Grib1Record> records, int gdsHash) {
+  public Grib1Rectilyser(Grib1Customizer cust, List<Grib1Record> records, int gdsHash, boolean intvMerge) {
     this.cust = cust;
     this.records = records;
     this.gdsHash = gdsHash;
+    this.intvMerge = intvMerge;
   }
 
   public List<Grib1Record> getRecords() {
@@ -213,7 +215,7 @@ public class Grib1Rectilyser {
 
     Grib1ParamTime ptime = pdss.getParamTime(cust);
     if (ptime.isInterval()) {
-      result += result * 37 + ptime.getIntervalSize();  // create new variable for each interval size
+      if (!intvMerge) result += result * 37 + ptime.getIntervalSize();  // create new variable for each interval size
       if (ptime.getStatType() != null) result += result * 37 + ptime.getStatType().ordinal(); // create new variable for each stat type
     }
 

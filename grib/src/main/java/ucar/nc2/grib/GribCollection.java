@@ -550,20 +550,30 @@ public abstract class GribCollection implements FileCacheable {
 
     @Override
     public String toString() {
-      return "VariableIndex{" +
-              "group=" + group.getId() + "(" + group.description +")"+
-              ", discipline=" + discipline +
-              ", category=" + category +
-              ", parameter=" + parameter +
-              ", levelType=" + levelType +
-              ", intvType=" + intvType +
-              ", ensDerivedType=" + ensDerivedType +
-              ", probabilityName='" + probabilityName + '\'' +
-              ", cdmHash=" + cdmHash +
-              ", timeIdx=" + timeIdx +
-              ", vertIdx=" + vertIdx +
-              ", ensIdx=" + ensIdx +
-              '}';
+      final StringBuilder sb = new StringBuilder();
+      sb.append("VariableIndex");
+      sb.append("{tableVersion=").append(tableVersion);
+      sb.append(", discipline=").append(discipline);
+      sb.append(", category=").append(category);
+      sb.append(", parameter=").append(parameter);
+      sb.append(", levelType=").append(levelType);
+      sb.append(", intvType=").append(intvType);
+      sb.append(", ensDerivedType=").append(ensDerivedType);
+      sb.append(", probType=").append(probType);
+      sb.append(", intvName='").append(intvName).append('\'');
+      sb.append(", probabilityName='").append(probabilityName).append('\'');
+      sb.append(", isLayer=").append(isLayer);
+      sb.append(", genProcessType=").append(genProcessType);
+      sb.append(", cdmHash=").append(cdmHash);
+      sb.append(", timeIdx=").append(timeIdx);
+      sb.append(", vertIdx=").append(vertIdx);
+      sb.append(", ensIdx=").append(ensIdx);
+      sb.append(", ntimes=").append(ntimes);
+      sb.append(", nverts=").append(nverts);
+      sb.append(", nens=").append(nens);
+      sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
+      sb.append('}');
+      return sb.toString();
     }
 
     public String toStringComplete() {

@@ -74,7 +74,7 @@ public class Grib2Iosp extends GribIosp {
     }
 
     if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) { // LOOK
-      f.format("_error");
+      f.format("_error");  // its an "error" type variable - add to name
     }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
