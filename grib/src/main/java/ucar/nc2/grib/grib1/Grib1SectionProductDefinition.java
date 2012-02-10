@@ -361,6 +361,7 @@ public final class Grib1SectionProductDefinition {
   // Ensembles
 
 /* http://www.ecmwf.int/publications/manuals/d/gribapi/fm92/grib1/show/local/
+   1)
    see " local definition # 1"
    from Ernst de Vreede via Jitka 01/31/2012
   ECMWF operational Ensemble Prediction System (EPS) have extra information in the PDS:
@@ -373,6 +374,9 @@ public final class Grib1SectionProductDefinition {
 
   The really distinguishing octets are: octet 41 =1, octet 42=1, octet 43=10 or 11, octet 51>0 with octet 50 giving the perturbation number.
   The other parameters octets 42 (operational stream) and octet 44/45 might be too specific, might narrow down too much.
+
+  2)
+  http://www.ecmwf.int/publications/manuals/d/gribapi/fm92/grib1/detail/local/30/
 */
 
   /*
@@ -389,7 +393,9 @@ public final class Grib1SectionProductDefinition {
           return true;
 
       case 98:
-        if ((rawData.length >= 51) && (getOctet(41) == 1) && (getOctet(43) == 10 || getOctet(43) == 11))
+        if ((rawData.length >= 51) &&
+            (getOctet(41) == 1 || getOctet(41) == 30) &&
+            (getOctet(43) == 10 || getOctet(43) == 11))
           return true;
     }
     return false;

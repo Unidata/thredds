@@ -16,7 +16,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.3.5-SNAPSHOT</version>
+  <version>4.3.8-SNAPSHOT</version>
   <name>Unidata THREDDS parent</name>
   <description>
     The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and

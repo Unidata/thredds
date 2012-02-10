@@ -157,7 +157,7 @@ public class BufrTables {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrTables.class);
 
   private static final boolean debugTable = false;
-  private static final boolean showTables = true;
+  private static final boolean showTables = false;
   private static final boolean showReadErrs = true;
 
   private static List<TableConfig> tables;
