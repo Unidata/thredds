@@ -33,17 +33,11 @@
 package ucar.nc2.grib;
 
 import net.jcip.annotations.ThreadSafe;
-import thredds.catalog.DataFormatType;
-import thredds.catalog.ThreddsMetadata;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.grib1.Grib1CollectionBuilder;
-import ucar.nc2.grib.grib1.Grib1Iosp;
-import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
-import ucar.nc2.grib.grib2.Grib2Iosp;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
@@ -123,9 +117,9 @@ public abstract class GribCollection implements FileCacheable {
     return Grib2CollectionBuilder.factory(dcm, force, f);
   }
 
-  static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf) throws IOException {
-    if (isGrib1) return Grib1CollectionBuilder.createFromIndex(name, directory, raf);
-    return Grib2CollectionBuilder.createFromIndex(name, directory, raf);
+  static public GribCollection createFromIndex(boolean isGrib1, String name, File directory, RandomAccessFile raf, FeatureCollectionConfig.GribConfig config) throws IOException {
+    if (isGrib1) return Grib1CollectionBuilder.createFromIndex(name, directory, raf, config);
+    return Grib2CollectionBuilder.createFromIndex(name, directory, raf, config);
   }
 
   static public boolean update(boolean isGrib1, CollectionManager dcm, Formatter f) throws IOException {
@@ -137,8 +131,9 @@ public abstract class GribCollection implements FileCacheable {
 
   protected String name;
   protected File directory;
-  protected FeatureCollectionConfig.GribConfig config;
+  protected FeatureCollectionConfig.GribConfig gribConfig;
   protected boolean isGrib1;
+  public int version;
 
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
@@ -223,10 +218,11 @@ public abstract class GribCollection implements FileCacheable {
     return isGrib1;
   }
 
-  protected GribCollection(String name, File directory, CollectionManager dcm, boolean isGrib1) {
+  protected GribCollection(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1) {
     this.name = name;
     this.directory = directory;
-    this.config = (dcm == null) ? null : (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    // this.config = (dcm == null) ? null : (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.gribConfig = dcm;
     this.isGrib1 = isGrib1;
   }
 
@@ -330,14 +326,14 @@ public abstract class GribCollection implements FileCacheable {
     private String makeId() {
       // check for user defined group names
       String result = null;
-      if (config != null && config.gdsNamer != null)
-        result = config.gdsNamer.get(gdsHash);
+      if (gribConfig != null && gribConfig.gdsNamer != null)
+        result = gribConfig.gdsNamer.get(gdsHash);
       if (result != null) {
         StringBuilder sb = new  StringBuilder(result);
         StringUtil2.replace(sb, ". :", "p--");
         return sb.toString();
       }
-      if (config != null && config.groupNamer != null) {
+      if (gribConfig != null && gribConfig.groupNamer != null) {
         File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         StringBuilder sb = new  StringBuilder(firstFile.getName().substring(15, 26) + "-" + centerPoint.toString());
@@ -361,10 +357,10 @@ public abstract class GribCollection implements FileCacheable {
     private String makeDescription() {
       // check for user defined group names
       String result = null;
-      if (config != null && config.gdsNamer != null)
-        result = config.gdsNamer.get(gdsHash);
+      if (gribConfig != null && gribConfig.gdsNamer != null)
+        result = gribConfig.gdsNamer.get(gdsHash);
       if (result != null) return result;
-      if (config != null && config.groupNamer != null) {
+      if (gribConfig != null && gribConfig.groupNamer != null) {
         File firstFile = new File(filenames.get(filenose[0])); //  NAM_Firewxnest_20111215_0600.grib2
         LatLonPoint centerPoint = hcs.getCenterLatLon();
         return "First Run " + firstFile.getName().substring(15, 26) + ", Center " + centerPoint;
@@ -489,10 +485,11 @@ public abstract class GribCollection implements FileCacheable {
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs g, int tableVersion,
                                                         int discipline, int category, int parameter, int levelType, boolean isLayer,
                                                         int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                                                        int genProcessType,
                                                         int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
     return new VariableIndex(g, tableVersion, discipline, category, parameter, levelType, isLayer,
-            intvType, intvName, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            intvType, intvName, ensDerivedType, probType, probabilityName, genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   public class VariableIndex implements Comparable<VariableIndex> {
@@ -501,6 +498,7 @@ public abstract class GribCollection implements FileCacheable {
     public final String intvName;                                                                     // uniquely identifies the variable
     public final String probabilityName;                                                              // uniquely identifies the variable
     public final boolean isLayer;                                                                     // uniquely identifies the variable
+    public final int genProcessType;
     public final int cdmHash;                  // unique hashCode - from Grib2Record, but works here also
     public final int timeIdx, vertIdx, ensIdx; // which time, vert and ens coordinates to use (in group)
     public final long recordsPos;              // where the records array is stored in the index
@@ -515,6 +513,7 @@ public abstract class GribCollection implements FileCacheable {
     public VariableIndex(GroupHcs g, int tableVersion,
                          int discipline, int category, int parameter, int levelType, boolean isLayer,
                          int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                         int genProcessType,
                          int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
       this.group = g;
       this.tableVersion = tableVersion;
@@ -528,6 +527,7 @@ public abstract class GribCollection implements FileCacheable {
       this.ensDerivedType = ensDerivedType;
       this.probabilityName = probabilityName;
       this.probType = probType;
+      this.genProcessType = genProcessType;
       this.cdmHash = cdmHash;
       this.timeIdx = timeIdx;
       this.vertIdx = vertIdx;
@@ -550,20 +550,30 @@ public abstract class GribCollection implements FileCacheable {
 
     @Override
     public String toString() {
-      return "VariableIndex{" +
-              "group=" + group.getId() + "(" + group.description +")"+
-              ", discipline=" + discipline +
-              ", category=" + category +
-              ", parameter=" + parameter +
-              ", levelType=" + levelType +
-              ", intvType=" + intvType +
-              ", ensDerivedType=" + ensDerivedType +
-              ", probabilityName='" + probabilityName + '\'' +
-              ", cdmHash=" + cdmHash +
-              ", timeIdx=" + timeIdx +
-              ", vertIdx=" + vertIdx +
-              ", ensIdx=" + ensIdx +
-              '}';
+      final StringBuilder sb = new StringBuilder();
+      sb.append("VariableIndex");
+      sb.append("{tableVersion=").append(tableVersion);
+      sb.append(", discipline=").append(discipline);
+      sb.append(", category=").append(category);
+      sb.append(", parameter=").append(parameter);
+      sb.append(", levelType=").append(levelType);
+      sb.append(", intvType=").append(intvType);
+      sb.append(", ensDerivedType=").append(ensDerivedType);
+      sb.append(", probType=").append(probType);
+      sb.append(", intvName='").append(intvName).append('\'');
+      sb.append(", probabilityName='").append(probabilityName).append('\'');
+      sb.append(", isLayer=").append(isLayer);
+      sb.append(", genProcessType=").append(genProcessType);
+      sb.append(", cdmHash=").append(cdmHash);
+      sb.append(", timeIdx=").append(timeIdx);
+      sb.append(", vertIdx=").append(vertIdx);
+      sb.append(", ensIdx=").append(ensIdx);
+      sb.append(", ntimes=").append(ntimes);
+      sb.append(", nverts=").append(nverts);
+      sb.append(", nens=").append(nens);
+      sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
+      sb.append('}');
+      return sb.toString();
     }
 
     public String toStringComplete() {
@@ -657,6 +667,7 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   public void showIndex(Formatter f) {
+    f.format("%s%n%n", toString());
     f.format("Class (%s)%n", getClass().getName());
     f.format("Files (%d)%n", filenames.size());
     for (String file : filenames)
@@ -676,6 +687,26 @@ public abstract class GribCollection implements FileCacheable {
         f.format(" %d: %s%n", i, tc);
       }
     }
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("GribCollection");
+    sb.append("{\n name='").append(name).append('\'');
+    sb.append("\n directory=").append(directory);
+    sb.append("\n isGrib1=").append(isGrib1);
+    sb.append("\n version=").append(version);
+    sb.append("\n center=").append(center);
+    sb.append("\n subcenter=").append(subcenter);
+    sb.append("\n master=").append(master);
+    sb.append("\n local=").append(local);
+    sb.append("\n genProcessType=").append(genProcessType);
+    sb.append("\n genProcessId=").append(genProcessId);
+    sb.append("\n backProcessId=").append(backProcessId);
+    sb.append("\n indexFile=").append(indexFile);
+    sb.append('}');
+    return sb.toString();
   }
 
   public GribCollection.GroupHcs makeGroup() {

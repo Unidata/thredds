@@ -32,6 +32,8 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.grib.grib2.Grib2Parameter;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +44,7 @@ import java.util.Map;
  * @since 1/18/12
  */
 public class NcepLocalParamsOld {
-  final Map<Integer, Grib2Customizer.TableEntry> local = new HashMap<Integer, Grib2Customizer.TableEntry>(100);
+  final Map<Integer, Grib2Parameter> local = new HashMap<Integer, Grib2Parameter>(100);
 
 
   void NcepLocalParamsOld() {
@@ -420,7 +422,7 @@ public class NcepLocalParamsOld {
   }
 
   private void add(int discipline, int category, int number, String abbrev, String name, String unit) {
-    local.put(Grib2Customizer.makeHash(discipline, category, number), new Grib2Customizer.TableEntry(discipline, category, number, name, unit, abbrev));
+    local.put(Grib2Customizer.makeHash(discipline, category, number), new Grib2Parameter(discipline, category, number, name, unit, abbrev, null));
   }
 
 }

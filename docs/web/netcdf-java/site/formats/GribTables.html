@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>GRIB in CDM</title>
+<title>GRIB Tables in CDM</title>
 <style type="text/css">
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
@@ -9,7 +9,7 @@ dl {margin: 10px 5px 5px 15px;}
 </head>
 
 <body>
-<h1> GRIB  in CDM</h1>
+<h1> GRIB  Tables in CDM</h1>
 <p>The following assumes that you want generic software like the netCDF-Java library to be able to correctly read the GRIB files that you write, or need to read.</p>
 <p>In principle, if everything is done right, the reader ends up using the table that the writer used. In practice, there are many ways for that to fail. In order to increase the reliability of table-based file formats, I have <a href="http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf">proposed</a> a web registry of tables, which would create a unique id for each registered table. The writer would then embed the id into the GRIB or BUFR message (possibly in the &quot;local use&quot; section of GRIB-2, or  GRIB-1 octets &gt; 41 in PDS), and the reader could use the id to unambiguously retrieve the table from the web registry. Stay tuned for further details and a trial implementation.</p>
 <p><strong>Contents:</strong>

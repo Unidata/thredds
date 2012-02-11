@@ -98,7 +98,7 @@ public class Grib1Customizer implements GribTables {
     return tables.getParameter(center, subcenter, tableVersion, param_number);
   }
 
-  public String getTypeGenProcessName(int genProcess) {
+  public String getGeneratingProcessName(int genProcess) {
     return null;
   }
 
@@ -189,6 +189,9 @@ public class Grib1Customizer implements GribTables {
       if (stype != null) {
         if (intvName != null) f.format("_%s", intvName);
         f.format("_%s", stype.name());
+      } else {
+        if (intvName != null) f.format("_%s", intvName);
+        f.format("_%d", intvType);
       }
     }
 

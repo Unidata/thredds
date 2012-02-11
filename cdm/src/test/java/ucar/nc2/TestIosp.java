@@ -57,9 +57,6 @@ public class TestIosp {
 
     suite.addTest( new TestSuite( TestGribMiscCoordinates.class));
     suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestOfsData.class));
-    // suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestGridGribIosp.class));
-    
-    //suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIndexUpdating.class));
 
     suite.addTest( new TestSuite( ucar.nc2.iosp.dmsp.TestDmspIosp.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.gini.TestGini.class));
@@ -71,6 +68,9 @@ public class TestIosp {
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIntervalsTimeCoords.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.gempak.TestReadingGempak.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.TestMiscIosp.class));
+
+    // in other modules
+    suite.addTest(ucar.nc2.grib.TestGrib.suite()); //*/
     suite.addTest( new TestSuite( ucar.nc2.iosp.bufr.TestBufrRead.class));
 
     // slow !!

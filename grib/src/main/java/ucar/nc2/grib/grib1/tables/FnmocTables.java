@@ -63,7 +63,7 @@ public class FnmocTables extends Grib1Customizer {
   // genProcess
 
   @Override
-  public String getTypeGenProcessName(int genProcess) {
+  public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null) readGenProcess("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterModelTableOrdered.GRIB1.TblA.xml");
     if (genProcessMap == null) return null;
     return genProcessMap.get(genProcess);

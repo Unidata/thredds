@@ -1494,8 +1494,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
   }
 
-  protected void readThreddsMetadata( InvCatalog catalog, InvDatasetImpl dataset,
-                                      Element parent, ThreddsMetadata tmg) {
+  protected void readThreddsMetadata( InvCatalog catalog, InvDatasetImpl dataset, Element parent, ThreddsMetadata tmg) {
     List<Element> list;
 
      // look for creators - kind of a Source
@@ -2560,6 +2559,14 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     List<ThreddsMetadata.Variables> varList = tmg.getVariables();
     for ( ThreddsMetadata.Variables v : varList ) {
       elem.addContent( writeVariables(v));
+    }
+
+    String varMapLink = tmg.getVariableMap();
+    if (varMapLink != null) {
+      Element velem = new Element("variableMap", defNS);
+      velem.setAttribute("href", varMapLink, xlinkNS);
+      velem.setAttribute("title", "variables", xlinkNS);
+      elem.addContent( velem);
     }
   }
 

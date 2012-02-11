@@ -279,6 +279,9 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   public List<TableEntry> entries = new ArrayList<TableEntry>();
   public Map<Integer, TableEntry> entryMap;
 
+  WmoCodeTable() {
+  }
+
   WmoCodeTable(String name) {
     this.tableName = name;
     String[] s = name.split(" ");
@@ -316,8 +319,10 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     isParameter = (discipline >= 0) && (category >= 0);
   }
 
-  private void add(String line, String code, String meaning, String unit, String status) {
-    entries.add(new TableEntry(line, code, meaning, unit, status));
+  private TableEntry add(String line, String code, String meaning, String unit, String status) {
+   TableEntry te = new TableEntry(line, code, meaning, unit, status);
+    entries.add(te);
+    return te;
   }
 
   TableEntry get(int value) {
@@ -440,7 +445,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       }
 
       if (isParameter) {
-        StringBuilder sb = new StringBuilder(meaning); // all lower case, but first char gets capitalized below
+        /* StringBuilder sb = new StringBuilder(meaning); // all lower case, but first char gets capitalized below
 
         // some need the () comment removed - must be hand specified
         if (remove(this)) {
@@ -480,7 +485,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
             sb.setCharAt(i, Character.toLowerCase(c));
         }
 
-        //this.name = sb.toString().trim(); // now its good for netcdf-3 name
+        //this.name = sb.toString().trim(); // now its good for netcdf-3 name  */
 
         // skip all that 6/6/2011
         this.name = meaning;
@@ -575,6 +580,11 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     @Override
     public String getName() {
       return name;
+    }
+
+    @Override
+    public String getDescription() {
+      return meaning;
     }
 
     @Override
@@ -682,10 +692,17 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     //showTable(gt52.list);
     //showDiffFromCurrent(gt52.list);
 
-    WmoTables gt61 = readGribCodes(Version.GRIB2_8_0_0);
-    showTable(gt61.list);
+    //WmoTables gt61 = readGribCodes(Version.GRIB2_8_0_0);
+    //showTable(gt61.list);
     //showDiff(gt52, gt61, true);
     //System.out.printf("%n");
     //showDiff(gt61, gt52, false);
+
+    WmoCodeTable table = new WmoCodeTable();
+    table.isParameter = true;
+    String name = "Probability of 0.01 inch of precipitation (POP)";
+    TableEntry te = table.add("1", "1-1-1", name, "", "");
+    System.out.printf("%s%n", te);
+
   }
 }

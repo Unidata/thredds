@@ -530,6 +530,11 @@ public class InvCatalogRef extends InvDatasetImpl {
   }
 
   @Override
+  public String getVariableMapLink() {
+    return !useProxy ? super.getVariableMapLink() : proxy.getVariableMapLink();
+  }
+
+  @Override
   public boolean hasAccess() {
     return !useProxy ? super.hasAccess() : proxy.hasAccess();
   }

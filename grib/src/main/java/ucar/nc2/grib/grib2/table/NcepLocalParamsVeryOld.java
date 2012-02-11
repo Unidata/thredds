@@ -35,6 +35,7 @@ package ucar.nc2.grib.grib2.table;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import ucar.nc2.grib.grib2.Grib2Parameter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,7 +67,7 @@ public class NcepLocalParamsVeryOld {
                 description="Temperature" />
    */
 
-  static private Map<String, Grib2Customizer.TableEntry> readParameters(Version version) throws IOException {
+  static private Map<String, Grib2Parameter> readParameters(Version version) throws IOException {
     InputStream ios = null;
     try {
       Class c = NcepLocalParamsVeryOld.class;
@@ -85,7 +86,7 @@ public class NcepLocalParamsVeryOld {
       }
       Element root = doc.getRootElement();
 
-      Map<String, Grib2Customizer.TableEntry> map = new HashMap<String, Grib2Customizer.TableEntry>();
+      Map<String, Grib2Parameter> map = new HashMap<String, Grib2Parameter>();
 
       List<Element> disciplines = root.getChildren("discipline");
       for (Element elem1 : disciplines) {
@@ -100,7 +101,7 @@ public class NcepLocalParamsVeryOld {
             String name = elem3.getAttributeValue("id");
             String unit = elem3.getAttributeValue("unit");
             String id = makeId(discipline, category, number);
-            map.put(id, new Grib2Customizer.TableEntry(discipline, category, number, name, unit, null));
+            map.put(id, new Grib2Parameter(discipline, category, number, name, unit, null, null));
           }
         }
       }
@@ -117,10 +118,10 @@ public class NcepLocalParamsVeryOld {
 
   /////////////////////////////////////////////
   private Version version;
-  private Map<String, Grib2Customizer.TableEntry> paramMap;
+  private Map<String, Grib2Parameter> paramMap;
   private Map<String, String> codeMap;
 
-  public NcepLocalParamsVeryOld(Version version, Map<String, Grib2Customizer.TableEntry> paramMap, Map<String, String> codeMap) {
+  public NcepLocalParamsVeryOld(Version version, Map<String, Grib2Parameter> paramMap, Map<String, String> codeMap) {
     this.version = version;
     this.paramMap = paramMap;
     this.codeMap = codeMap;
@@ -130,7 +131,7 @@ public class NcepLocalParamsVeryOld {
     return codeMap.get(tableName + "." + code);
   }
 
-  public Grib2Customizer.TableEntry getParameter(int discipline, int category, int number) {
+  public Grib2Parameter getParameter(int discipline, int category, int number) {
     return paramMap.get(makeId(discipline, category, number));
   }
 
@@ -140,14 +141,14 @@ public class NcepLocalParamsVeryOld {
 
   private static NcepLocalParamsVeryOld currentTable;
 
-  static Map<String, Grib2Customizer.TableEntry> getParamMap() { return currentTable.paramMap; }
+  static Map<String, Grib2Parameter> getParamMap() { return currentTable.paramMap; }
 
   public static String getTableValueFromCurrent(String tableName, int code) {
     init();
     return currentTable.getTableValue(tableName, code);
   }
 
-  public static Grib2Customizer.TableEntry getParameterFromCurrent(int discipline, int category, int number) {
+  public static Grib2Parameter getParameterFromCurrent(int discipline, int category, int number) {
     init();
     return currentTable.getParameter(discipline, category, number);
   }
@@ -155,7 +156,7 @@ public class NcepLocalParamsVeryOld {
   static void init(){
     if (currentTable == null)
       try {
-        Map<String, Grib2Customizer.TableEntry> paramMap = readParameters(Version.Current);
+        Map<String, Grib2Parameter> paramMap = readParameters(Version.Current);
         Map<String, String> codeMap = readCodes(Version.Current);
         currentTable = new NcepLocalParamsVeryOld(Version.Current, paramMap, codeMap);
       } catch (IOException e) {

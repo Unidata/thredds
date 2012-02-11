@@ -134,6 +134,37 @@
 
     </dataset>
 
+    <dataset name="NCDC-NOMADS TEST data">
+
+      <featureCollection name="CFSR" featureType="GRIB" harvest="true" path="grib/NCDC/CFSR">
+        <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
+          <documentation xlink:href="http://nomads.ncdc.noaa.gov/data.php#cfs-refor"
+                         xlink:title="NOMADS CFSR Page"/>
+          <creator>
+            <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+            <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+          </creator>
+
+        </metadata>
+
+        <collection spec="/data/thredds/ncdc/cfsr/timeseries/**/.*grb2$"
+                    timePartition="directory"
+                    dateFormatMark="#timeseries/#yyyyMM"/>
+        <update startup="true"/>
+        <gribConfig>
+          <gdsHash from="1450218978" to="1450192070"/>
+          <gdsName hash='1450192070' groupName='Gaussian T382'/>
+          <gdsName hash='2079260842' groupName='Gaussian T62'/>
+          <gdsName hash='-175190888' groupName='LatLon0p5'/>
+          <gdsName hash='-1857264615' groupName='LatLon0p5wind'/>
+          <gdsName hash='823344589' groupName='LatLon1p0'/>
+          <gdsName hash='-829780679' groupName='LatLon2p5'/>
+          <intvFilter excludeZero="true"/>
+        </gribConfig>
+      </featureCollection>
+    </dataset>
+
     <!-- dataset name="Unidata Real-Time Regional Model">
 
       <metadata inherited="true">

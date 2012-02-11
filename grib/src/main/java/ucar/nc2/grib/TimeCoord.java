@@ -116,7 +116,7 @@ public class TimeCoord {
       this.intervals = null;
 
     } else if (atom instanceof TinvDate) {
-      CalendarDate startDate = null;
+      CalendarDate startDate = null; // earliest starting date
       for (Object coord : coords) {
         TinvDate tinvd = (TinvDate) coord;
         //if (!tinvd.getPeriod().equals(timeUnit))
@@ -214,9 +214,22 @@ public class TimeCoord {
 
   public String getTimeIntervalName() {
     if (!isInterval()) return null;
-    Tinv first = intervals.get(0); // they should all be the same
-    int value = (int) ((first.b2 - first.b1) * getTimeUnitScale());
-    return value + "_" + timeUnit.getField().toString();
+
+    // are they the same length ?
+    int firstValue = -1;
+    boolean same = true;
+    for (Tinv tinv : intervals) {
+      int value = (int) (tinv.b2 - tinv.b1);
+      if (firstValue < 0) firstValue = value;
+      else if (value != firstValue) same = false;
+    }
+
+    if (same) {
+      firstValue = (int) (firstValue * getTimeUnitScale());
+      return firstValue + "_" + timeUnit.getField().toString();
+    } else {
+      return "Mixed_intervals";
+    }
   }
 
   @Override
@@ -414,7 +427,7 @@ public class TimeCoord {
       return result;
     }
 
-    public int compareTo(TinvDate that) {
+    public int compareTo(TinvDate that) {  // first compare start, then end
       int c1 = start.compareTo(that.start);
       return (c1 == 0) ? end.compareTo(that.end) : c1;
     }

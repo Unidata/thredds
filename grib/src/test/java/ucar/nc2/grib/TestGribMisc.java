@@ -51,9 +51,26 @@ public class TestGribMisc extends TestCase {
   public void testPdsScaleOverflow() throws Exception {
     String filename = TestAll.cdmUnitTestDir + "formats/grib2/pdsScale.grib2";
     NetcdfFile ncfile = NetcdfFile.open(filename, null);
-    Variable v = ncfile.findVariable("Pressure");
+    Variable v = ncfile.findVariable("pressure");
     float val = v.readScalarFloat();
     assert TestAll.closeEnough(val, 92500.0) : val;
     ncfile.close();
   }
+
+  public void testPdsGenType() throws Exception {
+    // this one has a analysis and forecast in same variable
+    String filename = TestAll.cdmUnitTestDir + "formats/grib2/08Aug08.12z.cras45_NA.grib2";
+    NetcdfFile ncfile = NetcdfFile.open(filename, null);
+    Variable v = ncfile.findVariable("Temperature_Surface");
+    assert v != null;
+    ncfile.close();
+
+    // this one has a forecast and error = must be seperate variables
+    filename = TestAll.cdmUnitTestDir + "formats/grib2/RTMA_CONUS_2p5km_20111225_0000.grib2";
+    ncfile = NetcdfFile.open(filename, null);
+    assert ncfile.findVariable("Pressure_Surface") != null;
+    assert ncfile.findVariable("Pressure_error_Surface") != null;
+    ncfile.close();
+  }
+
 }

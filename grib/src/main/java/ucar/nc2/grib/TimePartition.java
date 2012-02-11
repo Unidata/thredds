@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib;
 
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.grib.grib1.Grib1TimePartitionBuilder;
@@ -68,12 +69,12 @@ public abstract class TimePartition extends GribCollection {
     return partitionCache;
   }
 
-  static private final ucar.nc2.util.cache.FileFactory partitionFactory = new FileFactory() {
+  static private final ucar.nc2.util.cache.FileFactory collectionFactory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       File f = new File(location);
       RandomAccessFile raf = new RandomAccessFile(location, "r");
       Partition p = (Partition) iospMessage;
-      return GribCollection.createFromIndex(false, p.getName(), f.getParentFile(), raf); // LOOK not sure what the parent directory is for
+      return GribCollection.createFromIndex(false, p.getName(), f.getParentFile(), raf, p.getConfig()); // LOOK not sure what the parent directory is for
     }
   };
 
@@ -113,6 +114,10 @@ public abstract class TimePartition extends GribCollection {
       return indexFilename;
     }
 
+    public FeatureCollectionConfig.GribConfig getConfig() {
+      return gribConfig;
+    }
+
     // null if it came from the index
     public CollectionManager getDcm() {
       return dcm;
@@ -122,9 +127,9 @@ public abstract class TimePartition extends GribCollection {
     public GribCollection getGribCollection() throws IOException {
       if (gribCollection == null) {
         if (partitionCache != null) {
-          gribCollection = (GribCollection) partitionCache.acquire(partitionFactory, indexFilename, indexFilename, -1, null, this);
+          gribCollection = (GribCollection) partitionCache.acquire(collectionFactory, indexFilename, indexFilename, -1, null, this);
         } else {
-          gribCollection = (GribCollection) partitionFactory.open(indexFilename, -1, null, this);
+          gribCollection = (GribCollection) collectionFactory.open(indexFilename, -1, null, this);
         }
       }
       return gribCollection;
@@ -169,10 +174,11 @@ public abstract class TimePartition extends GribCollection {
 
     public VariableIndexPartitioned(GribCollection.GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
                                     int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                                    int genProcessType,
                                     int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
 
       super(g, 0, discipline, category, parameter, levelType, isLayer, intvType, intvName, ensDerivedType, probType, probabilityName,
-              cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+              genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
     }
 
     public void setPartitionIndex(int partno, int groupIdx, int varIdx) {
@@ -218,7 +224,7 @@ public abstract class TimePartition extends GribCollection {
   protected Map<String, Partition> partitionMap;
   protected List<Partition> partitions;
 
-  protected TimePartition(String name, File directory, CollectionManager dcm, boolean isGrib1) {
+  protected TimePartition(String name, File directory, FeatureCollectionConfig.GribConfig dcm, boolean isGrib1) {
     super(name, directory, dcm, isGrib1);
   }
 
@@ -247,6 +253,7 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public void cleanup() throws IOException {
+    if (partitions == null) return;
     for (TimePartition.Partition p : partitions)
       if (p.gribCollection != null)
         p.gribCollection.close();
@@ -256,6 +263,7 @@ public abstract class TimePartition extends GribCollection {
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs group, int tableVersion,
                                                         int discipline, int category, int parameter, int levelType, boolean isLayer,
                                                         int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
+                                                        int genProcessType,
                                                         int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen) {
     throw new UnsupportedOperationException();
   }
@@ -263,11 +271,12 @@ public abstract class TimePartition extends GribCollection {
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs group, int tableVersion,
                                                  int discipline, int category, int parameter, int levelType, boolean isLayer, int intvType,
                                                  String intvName, int ensDerivedType, int probType, String probabilityName,
+                                                 int genProcessType,
                                                  int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen,
                                                  List<Integer> groupnoList, List<Integer> varnoList) {
 
     VariableIndexPartitioned vip = new VariableIndexPartitioned(group, discipline, category, parameter, levelType, isLayer, intvType,
-            intvName, ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            intvName, ensDerivedType, probType, probabilityName, genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
 
     int nparts = varnoList.size();
     vip.groupno = new int[nparts];
@@ -281,8 +290,8 @@ public abstract class TimePartition extends GribCollection {
 
   public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi, int nparts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(vi.group, vi.discipline, vi.category, vi.parameter, vi.levelType,
-            vi.isLayer, vi.intvType, vi.intvName,
-            vi.ensDerivedType, vi.probType, vi.probabilityName, vi.cdmHash, vi.timeIdx, vi.vertIdx, vi.ensIdx, vi.recordsPos, vi.recordsLen);
+            vi.isLayer, vi.intvType, vi.intvName, vi.ensDerivedType, vi.probType, vi.probabilityName,
+            vi.genProcessType, vi.cdmHash, vi.timeIdx, vi.vertIdx, vi.ensIdx, vi.recordsPos, vi.recordsLen);
 
     vip.groupno = new int[nparts];
     vip.varno = new int[nparts];

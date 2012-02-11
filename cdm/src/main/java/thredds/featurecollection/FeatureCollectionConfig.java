@@ -103,7 +103,7 @@ public class FeatureCollectionConfig {
     this.innerNcml = innerNcml;
   }
 
-   public boolean isTrigggerOk() {
+  public boolean isTrigggerOk() {
     if (updateConfig.triggerOk) return true;
     return (tdmConfig != null) && tdmConfig.triggerOk;
   }
@@ -300,10 +300,14 @@ public class FeatureCollectionConfig {
     public Map<Integer, Integer> gdsHash;
     public Map<Integer, String> gdsNamer;
     public String groupNamer;
-    private TimeUnitConverterHash tuc;
-    protected boolean explicit = false;
     public String lookupTablePath, paramTablePath;
     public Element paramTable;
+    public Boolean intvMerge = null;
+    public Boolean useGenType = null;
+    public GribIntvFilter intvFilter;
+
+    private TimeUnitConverterHash tuc;
+    private boolean explicitDatasets = false;
 
     public GribConfig() { // defaults
     }
@@ -337,12 +341,31 @@ public class FeatureCollectionConfig {
         lookupTablePath = configElem.getChildText("gribParameterTableLookup", ns);
       if (configElem.getChild("groupNamer", ns) != null)
         groupNamer = configElem.getChildText("groupNamer", ns);
+
+      List<Element> intvElems = configElem.getChildren("intvFilter", ns);
+      for (Element intvElem : intvElems) {
+        if (intvFilter == null) intvFilter = new GribIntvFilter();
+        String excludeZero = intvElem.getAttributeValue("excludeZero");
+        if (excludeZero != null) intvFilter.isZeroExcluded = true;
+        String intvLengthS = intvElem.getAttributeValue("intvLength");
+        if (intvLengthS == null) continue;
+        int intvLength = Integer.parseInt(intvLengthS);
+        List<Element> varElems = intvElem.getChildren("variable", ns);
+        for (Element varElem : varElems) {
+          intvFilter.addVariable(intvLength, varElem.getAttributeValue("id"));
+        }
+      }
+
+      if (configElem.getChild("intvMerge", ns) != null)
+        intvMerge = true;
+      if (configElem.getChild("useGenType", ns) != null)
+        useGenType = true;
     }
 
     public void addDatasetType(String datasetTypes) {
       // if they list datasetType explicitly, remove defaults
-      if (!explicit) datasets = EnumSet.noneOf(GribDatasetType.class);
-      explicit = true;
+      if (!explicitDatasets) datasets = EnumSet.noneOf(GribDatasetType.class);
+      explicitDatasets = true;
 
       String[] types = StringUtil2.splitString(datasetTypes);
       for (String type : types) {
@@ -357,7 +380,7 @@ public class FeatureCollectionConfig {
 
     public void addGdsHash(String fromS, String toS) {
       if (fromS == null || toS == null) return;
-      if (gdsHash == null) gdsHash = new HashMap<Integer, Integer>(5);
+      if (gdsHash == null) gdsHash = new HashMap<Integer, Integer>(10);
 
       try {
         int from = Integer.parseInt(fromS);
@@ -400,6 +423,49 @@ public class FeatureCollectionConfig {
       return f.toString();
     }
   }
+
+  static public class GribIntvFilter {
+    Map<Integer, Integer> map;
+    boolean isZeroExcluded;
+
+    public boolean isZeroExcluded() {
+      return isZeroExcluded;
+    }
+
+    public Integer getLengthById(int varId) {
+      return (map == null) ? null : map.get(varId);
+    }
+
+    public boolean hasMap() {
+      return (map != null);
+    }
+
+    void addVariable(int intvLength, String ids) {
+      if (ids == null) {
+        log.warn("Error on intvFilter: must have an id attribute");
+        return;
+      }
+
+      String[] s = ids.split("-");
+      if (s.length != 3) {
+        log.warn("Error on intvFilter: id attribute must be of format 'discipline-category-number'");
+        return;
+      }
+
+      try {
+        int discipline = Integer.parseInt(s[0]);
+        int category = Integer.parseInt(s[1]);
+        int number = Integer.parseInt(s[2]);
+        int id = (discipline << 16) + (category << 8) + number;
+        if (map == null) map = new HashMap<Integer, Integer>(10);
+        map.put(id, intvLength);
+      } catch (NumberFormatException e) {
+        log.info("Error on intvFilter element - include attribute must be an integer");
+      }
+    }
+
+  }
+
 
   private static class TimeUnitConverterHash implements TimeUnitConverter {
     Map<Integer, Integer> map = new HashMap<Integer, Integer>(5);

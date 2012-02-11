@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -109,7 +110,7 @@ public class CoordSysTable extends JPanel {
         infoTA.appendLine(v.toString());
         infoTA.appendLine(showMissing(v));
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -121,7 +122,7 @@ public class CoordSysTable extends JPanel {
         infoTA.clear();
         infoTA.appendLine(tryGrid(v));
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -155,7 +156,7 @@ public class CoordSysTable extends JPanel {
 
         }
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -169,7 +170,7 @@ public class CoordSysTable extends JPanel {
         infoTA.appendLine(axis.toString());
         infoTA.appendLine(showMissing(axis));
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -203,7 +204,7 @@ public class CoordSysTable extends JPanel {
           infoTA.appendLine(e1.getMessage());
         }
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
     axisPopup.addAction("Show Value Differences", new AbstractAction() {
@@ -226,7 +227,7 @@ public class CoordSysTable extends JPanel {
           infoTA.appendLine(e1.getMessage());
         }
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -274,7 +275,7 @@ public class CoordSysTable extends JPanel {
         }
 
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -559,6 +560,11 @@ public class CoordSysTable extends JPanel {
 
     public String getUnits() {
       return units;
+    }
+
+    public String getAbbrev() {
+      Attribute att = ve.findAttributeIgnoreCase(CDM.ABBREV);
+      return (att == null) ? null : att.getStringValue();
     }
 
     public void setUnits(String units) {

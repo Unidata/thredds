@@ -62,7 +62,7 @@ public class CdmRemote {
     return bytes;
   }
 
-  static boolean show = true;
+  static boolean show = false;
   static boolean verbose = false;
   static int max_size = 1000 * 1000 * 10;
   static Section makeSubset(Variable v) throws InvalidRangeException {

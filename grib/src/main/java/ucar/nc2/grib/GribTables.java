@@ -93,6 +93,8 @@ public interface GribTables {
 
     public String getAbbrev();
 
+    public String getDescription();
+
     public String getId();
   }
 

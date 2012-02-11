@@ -74,7 +74,7 @@ public class InvDatasetImpl extends InvDataset {
   private List<InvAccess> accessLocal = new ArrayList<InvAccess>();
   private List<InvService> servicesLocal = new ArrayList<InvService>();
   protected ThreddsMetadata tm = new ThreddsMetadata(false); // all local metadata kept here. This may include
-                                                             // inheritable InvMetadata
+  // inheritable InvMetadata
   protected ThreddsMetadata tmi = new ThreddsMetadata(true); // local inheritable metadata (canonicalization)
   protected ThreddsMetadata tmi6 = new ThreddsMetadata(true); // local catalog 0.6 inheritable metadata
   protected org.jdom.Element ncmlElement;
@@ -259,6 +259,8 @@ public class InvDatasetImpl extends InvDataset {
     projects.addAll(tmd.getProjects());
     publishers.addAll(tmd.getPublishers());
     variables.addAll(tmd.getVariables());
+    if (variableMapLink == null)
+      variableMapLink = tmd.variableMapLink;
 
     for (InvMetadata meta : tmd.getMetadata()) {
       if (meta.isInherited() || inheritAll) {
@@ -296,12 +298,12 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * transfer inherited metadata, consolidating it into target
+   *
    * @param fromDs transfer from here, plus its parents
    * @param target transfer to here
    */
   private void transferInheritableMetadata(InvDatasetImpl fromDs, ThreddsMetadata target,
-                                           boolean copyInheritedMetadataFromParents)
-  {
+                                           boolean copyInheritedMetadataFromParents) {
     if (fromDs == null) return;
     if (debugInherit2) System.out.println(" transferInheritedMetadata= " + fromDs.getName());
 
@@ -324,7 +326,7 @@ public class InvDatasetImpl extends InvDataset {
     }   */
 
     // now do the same for the parents
-    if ( copyInheritedMetadataFromParents)
+    if (copyInheritedMetadataFromParents)
       transferInheritableMetadata((InvDatasetImpl) fromDs.getParent(), target, true);
   }
 
@@ -405,6 +407,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * copy constructor
+   *
    * @param from copy from here
    */
   public InvDatasetImpl(InvDatasetImpl from) {
@@ -432,6 +435,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set alias for this Dataset
+   *
    * @param alias ID of another Dataset
    */
   public void setAlias(String alias) {
@@ -441,6 +445,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set the containing catalog; use only for top level dataset.
+   *
    * @param catalog the containing catalog for the top level dataset.
    */
   public void setCatalog(InvCatalog catalog) {
@@ -459,6 +464,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Get urlPath for this Dataset
+   *
    * @return urlPath for this Dataset
    */
   public String getUrlPath() {
@@ -467,6 +473,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set the urlPath for this InvDatasetImpl
+   *
    * @param urlPath the urlPath for this InvDatasetImpl
    */
   public void setUrlPath(String urlPath) {
@@ -476,6 +483,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set authorityName for this Dataset
+   *
    * @param authorityName for this Dataset
    */
   public void setAuthority(String authorityName) {
@@ -488,6 +496,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set collectionType
+   *
    * @param collectionType the collection type
    */
   public void setCollectionType(CollectionType collectionType) {
@@ -497,6 +506,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set harvest
+   *
    * @param harvest true if this dataset should be harvested for Digital Libraries
    */
   public void setHarvest(boolean harvest) {
@@ -506,6 +516,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set the ID for this Dataset
+   *
    * @param id unique ID
    */
   public void setID(String id) {
@@ -515,6 +526,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set name of this Dataset.
+   *
    * @param name of the dataset
    */
   public void setName(String name) {
@@ -524,6 +536,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Set the parent dataset.
+   *
    * @param parent parent dataset
    */
   public void setParent(InvDatasetImpl parent) {
@@ -655,6 +668,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add InvAccess element to this dataset.
+   *
    * @param a add dthis
    */
   public void addAccess(InvAccess a) {
@@ -664,6 +678,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add a list of InvAccess elements to this dataset.
+   *
    * @param a add all of these
    */
   public void addAccess(List<InvAccess> a) {
@@ -691,6 +706,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add a nested dataset.
+   *
    * @param ds add this
    */
   public void addDataset(InvDatasetImpl ds) {
@@ -702,8 +718,9 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add a nested dataset at the location indicated by index.
+   *
    * @param index add at this position
-   * @param ds add this
+   * @param ds    add this
    */
   public void addDataset(int index, InvDatasetImpl ds) {
     if (ds == null) return;
@@ -754,6 +771,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add documentation element to this dataset.
+   *
    * @param doc add this
    */
   public void addDocumentation(InvDocumentation doc) {
@@ -763,6 +781,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add a property to this dataset
+   *
    * @param p add this
    */
   public void addProperty(InvProperty p) {
@@ -772,8 +791,8 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Add a service to this dataset.
-   * @param service add this
    *
+   * @param service add this
    * @deprecated put services in catalog
    */
   public void addService(InvService service) {
@@ -791,8 +810,8 @@ public class InvDatasetImpl extends InvDataset {
   /**
    * Remove a service from this dataset.
    *
-   * @deprecated put services in catalog
    * @param service remove this
+   * @deprecated put services in catalog
    */
   public void removeService(InvService service) {
     servicesLocal.remove(service);
@@ -831,6 +850,7 @@ public class InvDatasetImpl extends InvDataset {
   /**
    * Get the metadata stored in this dataset element.
    * Inherited metadata only in an InvMetadata object.
+   *
    * @return the metadata stored in this dataset element.
    */
   public ThreddsMetadata getLocalMetadata() {
@@ -848,6 +868,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * local metadata that should be inherited by this dataset's children.
+   *
    * @return local metadata that should be inherited by this dataset's children.
    */
   public ThreddsMetadata getLocalMetadataInheritable() {
@@ -903,6 +924,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Filtering
+   *
    * @return true if this is "marked"
    */
   protected boolean getMark() {
@@ -915,6 +937,7 @@ public class InvDatasetImpl extends InvDataset {
 
   /**
    * Look up the User property having the given key
+   *
    * @param key property key
    * @return User property having the given key, or null
    */
@@ -935,53 +958,51 @@ public class InvDatasetImpl extends InvDataset {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
-   * 
-   * @param buff a
-   * @param ds    a
-   * @param complete a
-   * @param isServer  a
+   * @param buff          a
+   * @param ds            a
+   * @param complete      a
+   * @param isServer      a
    * @param datasetEvents a
-   * @param catrefEvents   a
-   *
+   * @param catrefEvents  a
    * @deprecated Instead use {@link #writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds, boolean complete, boolean isServer, boolean datasetEvents, boolean catrefEvents, boolean resolveRelativeUrls)}
    */
-  static public void writeHtmlDescription( StringBuilder buff, InvDatasetImpl ds,
-                                           boolean complete, boolean isServer,
-                                           boolean datasetEvents,
-                                           boolean catrefEvents )
-  {
-    writeHtmlDescription( buff, ds, complete, isServer, datasetEvents, catrefEvents, true);
+  static public void writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds,
+                                          boolean complete, boolean isServer,
+                                          boolean datasetEvents,
+                                          boolean catrefEvents) {
+    writeHtmlDescription(buff, ds, complete, isServer, datasetEvents, catrefEvents, true);
   }
-    /**
-     * Write an Html representation of the given dataset.
-     * <p> With datasetEvents, catrefEvents = true, this is used to construct an HTML page on the client
-     * (eg using HtmlPage); the client then detects URL clicks and processes.
-     * <p> With datasetEvents, catrefEvents = false, this is used to construct an HTML page on the server.
-     * (eg using HtmlPage); the client then detects URL clicks and processes.
-     *
-     * @param buff          put HTML here.
-     * @param ds            the dataset.
-     * @param complete      if true, add HTML header and ender so its a complete, valid HTML page.
-     * @param isServer      if true, then we are in the thredds data server, so do the following: <ul>
-     *                      <li> append "html" to DODS Access URLs
-     *                      </ul>
-     * @param datasetEvents if true, prepend "dataset:" to any dataset access URLS
-     * @param catrefEvents  if true, prepend "catref:" to any catref URLS
-     */
+
+  /**
+   * Write an Html representation of the given dataset.
+   * <p> With datasetEvents, catrefEvents = true, this is used to construct an HTML page on the client
+   * (eg using HtmlPage); the client then detects URL clicks and processes.
+   * <p> With datasetEvents, catrefEvents = false, this is used to construct an HTML page on the server.
+   * (eg using HtmlPage); the client then detects URL clicks and processes.
+   *
+   * @param buff          put HTML here.
+   * @param ds            the dataset.
+   * @param complete      if true, add HTML header and ender so its a complete, valid HTML page.
+   * @param isServer      if true, then we are in the thredds data server, so do the following: <ul>
+   *                      <li> append "html" to DODS Access URLs
+   *                      </ul>
+   * @param datasetEvents if true, prepend "dataset:" to any dataset access URLS
+   * @param catrefEvents  if true, prepend "catref:" to any catref URLS
+   */
 
   static public void writeHtmlDescription(StringBuilder buff, InvDatasetImpl ds,
-                     boolean complete, boolean isServer,
-                     boolean datasetEvents, boolean catrefEvents,
-                     boolean resolveRelativeUrls)
-    {
+                                          boolean complete, boolean isServer,
+                                          boolean datasetEvents, boolean catrefEvents,
+                                          boolean resolveRelativeUrls) {
 
     if (ds == null) return;
 
     if (complete) {
       buff.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n")
-          .append("        \"http://www.w3.org/TR/html4/loose.dtd\">\n")
-          .append("<html>\n");
+              .append("        \"http://www.w3.org/TR/html4/loose.dtd\">\n")
+              .append("<html>\n");
       buff.append("<head>");
       buff.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
       buff.append("</head>");
@@ -1016,8 +1037,8 @@ public class InvDatasetImpl extends InvDataset {
     if (ds instanceof InvCatalogRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;
       String href = resolveRelativeUrls || catrefEvents
-                    ? resolve( ds, catref.getXlinkHref())
-                    : catref.getXlinkHref();
+              ? resolve(ds, catref.getXlinkHref())
+              : catref.getXlinkHref();
       if (catrefEvents) href = "catref:" + href;
       buff.append(" <li><em>CatalogRef: </em>").append(makeHref(href, null)).append("</li>\n");
     }
@@ -1046,8 +1067,8 @@ public class InvDatasetImpl extends InvDataset {
       for (InvAccess a : access) {
         InvService s = a.getService();
         String urlString = resolveRelativeUrls || datasetEvents
-                           ? a.getStandardUrlName()
-                           : a.getUnresolvedUrlName();
+                ? a.getStandardUrlName()
+                : a.getUnresolvedUrlName();
         String fullUrlString = urlString;
         if (datasetEvents) fullUrlString = "dataset:" + fullUrlString;
         if (isServer) {
@@ -1058,19 +1079,18 @@ public class InvDatasetImpl extends InvDataset {
             fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
           else if (stype == ServiceType.WMS)
             fullUrlString = fullUrlString + "?service=WMS&version=1.3.0&request=GetCapabilities";
-          //NGDC addition 5/10/2011
-          else if (stype == ServiceType.NCML||stype == ServiceType.UDDC||stype == ServiceType.ISO) {
-        	  String catalogUrl = ds.getCatalogUrl();
-              if (catalogUrl.indexOf('#')>0) catalogUrl = catalogUrl.substring(0,catalogUrl.lastIndexOf('#'));
-              fullUrlString = fullUrlString + "?catalog=" + catalogUrl +  "&dataset=" + ds.id;
-          }
-          else if (stype == ServiceType.NetcdfSubset)
+            //NGDC addition 5/10/2011
+          else if (stype == ServiceType.NCML || stype == ServiceType.UDDC || stype == ServiceType.ISO) {
+            String catalogUrl = ds.getCatalogUrl();
+            if (catalogUrl.indexOf('#') > 0) catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
+            fullUrlString = fullUrlString + "?catalog=" + catalogUrl + "&dataset=" + ds.id;
+          } else if (stype == ServiceType.NetcdfSubset)
             fullUrlString = fullUrlString + "/dataset.html";
           else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))
             fullUrlString = fullUrlString + "?req=form";
         }
         buff.append(" <li> <b>").append(StringUtil2.quoteHtmlContent(s.getServiceType().toString()));
-        buff.append(":</b> ").append(makeHref( fullUrlString, urlString)).append("</li>\n");
+        buff.append(":</b> ").append(makeHref(fullUrlString, urlString)).append("</li>\n");
       }
       buff.append("</ol>\n");
     }
@@ -1123,9 +1143,9 @@ public class InvDatasetImpl extends InvDataset {
         buff.append(" <li><em>email: </em>").append(StringUtil2.quoteHtmlContent(t.getEmail())).append("</li>\n");
         if (t.getUrl() != null) {
           String newUrl = resolveRelativeUrls
-                          ? makeHrefResolve( ds, t.getUrl(), null )
-                          : makeHref(t.getUrl(), null);
-          buff.append(" <li> <em>").append( newUrl ).append("</em></li>\n");
+                  ? makeHrefResolve(ds, t.getUrl(), null)
+                  : makeHref(t.getUrl(), null);
+          buff.append(" <li> <em>").append(newUrl).append("</em></li>\n");
         }
         buff.append(" </ul></li>\n");
       }
@@ -1140,9 +1160,9 @@ public class InvDatasetImpl extends InvDataset {
         buff.append(" <li><em>email: </em>").append(StringUtil2.quoteHtmlContent(t.getEmail())).append("\n");
         if (t.getUrl() != null) {
           String urlLink = resolveRelativeUrls
-                           ? makeHrefResolve( ds, t.getUrl(), null )
-                           : makeHref( t.getUrl(), null );
-          buff.append(" <li> <em>").append( urlLink ).append("</em>\n");
+                  ? makeHrefResolve(ds, t.getUrl(), null)
+                  : makeHref(t.getUrl(), null);
+          buff.append(" <li> <em>").append(urlLink).append("</em>\n");
         }
         buff.append(" </ul>\n");
       }
@@ -1154,13 +1174,13 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("<h3>Variables:</h3>\n<ul>\n");
       for (ThreddsMetadata.Variables t : vars) {
 
-        buff.append( "<li><em>Vocabulary</em> [");
+        buff.append("<li><em>Vocabulary</em> [");
         if (t.getVocabUri() != null) {
           URI uri = t.getVocabUri();
           String vocabLink = resolveRelativeUrls
-                             ? makeHrefResolve( ds, uri.toString(), t.getVocabulary() )
-                             : makeHref( uri.toString(), t.getVocabulary());
-          buff.append( vocabLink );
+                  ? makeHrefResolve(ds, uri.toString(), t.getVocabulary())
+                  : makeHref(uri.toString(), t.getVocabulary());
+          buff.append(vocabLink);
         } else {
           buff.append(StringUtil2.quoteHtmlContent(t.getVocabulary()));
         }
@@ -1177,9 +1197,13 @@ public class InvDatasetImpl extends InvDataset {
           }
           buff.append(" </ul>\n");
         }
-        buff.append( " </ul>\n" );
+        buff.append(" </ul>\n");
       }
       buff.append("</ul>\n");
+    }
+    if (ds.getVariableMapLink() != null) {
+      buff.append("<h3>Variables:</h3>\n");
+      buff.append("<ul><li>"+makeHref(ds.getVariableMapLink(), "VariableMap")+"</li></ul>\n");
     }
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
@@ -1219,7 +1243,7 @@ public class InvDatasetImpl extends InvDataset {
       if ((duration != null) && !duration.isBlank())
         buff.append(" <li><em>  Duration: </em> ").append(StringUtil2.quoteHtmlContent(duration.toString())).append("\n");
       CalendarDuration resolution = tc.getResolution();
-      if (resolution != null  && !resolution.isBlank()) {
+      if (resolution != null && !resolution.isBlank()) {
         buff.append(" <li><em>  Resolution: </em> ").append(StringUtil2.quoteHtmlContent(resolution.toString())).append("\n");
       }
       buff.append(" </ul>\n");
@@ -1238,9 +1262,9 @@ public class InvDatasetImpl extends InvDataset {
         if (m.hasXlink()) {
           String title = (m.getXlinkTitle() == null) ? "Type " + type : m.getXlinkTitle();
           String mdLink = resolveRelativeUrls
-                          ? makeHrefResolve( ds, m.getXlinkHref(), title )
-                          : makeHref( m.getXlinkHref(), title);
-          buff.append(" <li> ").append( mdLink ).append("\n");
+                  ? makeHrefResolve(ds, m.getXlinkHref(), title)
+                  : makeHref(m.getXlinkHref(), title);
+          buff.append(" <li> ").append(mdLink).append("\n");
         } //else {
         //buff.append(" <li> <pre>"+m.getMetadataType()+" "+m.getContentObject()+"</pre>\n");
         //}
@@ -1255,11 +1279,10 @@ public class InvDatasetImpl extends InvDataset {
         if (p.getName().equals("attachments")) // LOOK whats this ?
         {
           String attachLink = resolveRelativeUrls
-                              ? makeHrefResolve( ds, p.getValue(), p.getName() )
-                              : makeHref( p.getValue(), p.getName());
-          buff.append(" <li>").append( attachLink ).append("\n");
-        }
-        else {
+                  ? makeHrefResolve(ds, p.getValue(), p.getName())
+                  : makeHref(p.getValue(), p.getName());
+          buff.append(" <li>").append(attachLink).append("\n");
+        } else {
           buff.append(" <li>").append(StringUtil2.quoteHtmlContent(p.getName() + " = \"" + p.getValue())).append("\"\n");
         }
       }
@@ -1497,7 +1520,7 @@ public class InvDatasetImpl extends InvDataset {
   public static void main(String[] args) {
     InvDatasetImpl topDs = new InvDatasetImpl(null, "topDs", FeatureType.valueOf("GRID"), "myService", "myUrlPath/");
     InvService myS = new InvService("myService", ServiceType.DODS.toString(),
-        "http://motherlode.ucar.edu/cgi-bin/dods/nph-dods", "", null);
+            "http://motherlode.ucar.edu/cgi-bin/dods/nph-dods", "", null);
     topDs.addService(myS);
     topDs.getLocalMetadata().setServiceName("myService");
     InvDatasetImpl childDs = new InvDatasetImpl(null, "childDs", null, null, "myUrlPath/");

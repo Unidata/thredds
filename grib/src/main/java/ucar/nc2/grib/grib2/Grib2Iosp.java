@@ -60,11 +60,11 @@ import java.util.Formatter;
 public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
   static private final boolean debugTime = false, debugRead = false, debugName = false;
+  static private boolean useGenType = false; // LOOK dummy for now
 
   static public String makeVariableName(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
-    //f.format("P%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
     GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
 
     if (param == null) {
@@ -73,13 +73,9 @@ public class Grib2Iosp extends GribIosp {
       f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
     }
 
-    /* if this uses any local tables, then we have to add the center id
-    if ((vindex.category > 191) || (vindex.parameter > 191) || (vindex.levelType > 191) || (vindex.intvType > 191)
-            || (vindex.ensDerivedType > 191) || (vindex.probType > 191)) {
-      f.format("_C%d", gribCollection.getCenter());
-      if (gribCollection.getSubcenter() > 0)
-        f.format("-%d", gribCollection.getSubcenter());
-    } */
+    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) { // LOOK
+      f.format("_error");  // its an "error" type variable - add to name
+    }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_%s", tables.getLevelNameShort(vindex.levelType)); // vindex.levelType); // code table 4.5
@@ -88,7 +84,8 @@ public class Grib2Iosp extends GribIosp {
 
     if (vindex.intvType >= 0) {
       f.format("_%s", vindex.intvName);
-      f.format("_%s", tables.getIntervalNameShort(vindex.intvType));
+      String statName = tables.getIntervalNameShort(vindex.intvType);
+      if (statName != null) f.format("_%s", statName);
     }
 
     if (vindex.ensDerivedType >= 0) {
@@ -98,6 +95,12 @@ public class Grib2Iosp extends GribIosp {
     else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
       String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
       f.format("_Prob_%s", s);
+    }
+
+    if (vindex.genProcessType >= 0 && useGenType) {
+      String genType = tables.getGeneratingProcessTypeName(vindex.genProcessType);
+      String s = StringUtil2.substitute(genType, " ", "_");
+      f.format("_%s", s);
     }
 
     return f.toString();
@@ -141,14 +144,25 @@ public class Grib2Iosp extends GribIosp {
     else
       f.format("%s", gp.getName());
 
-    if (vindex.intvType >= 0)
-      f.format(" (%s %s)", vindex.intvName, tables.getTableValue("4.10", vindex.intvType));
+    if (vindex.intvType >= 0) {
+      //String statName = tables.getIntervalNameShort(vindex.intvType);
+      String intvName = tables.getTableValue("4.10", vindex.intvType);
+      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = tables.getIntervalNameShort(vindex.intvType);
+      if (intvName == null) f.format(" (%s)", vindex.intvName);
+      else f.format(" (%s %s)", vindex.intvName, intvName);
+    }
 
     if (vindex.ensDerivedType >= 0)
       f.format(" (%s)", tables.getTableValue("4.7", vindex.ensDerivedType));
 
     else if (isProb)
       f.format(" %s %s", vindex.probabilityName, getVindexUnits(tables, vindex)); // add data units here
+
+    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) {
+      f.format(" error");
+    } else if (useGenType && vindex.genProcessType >= 0) {
+      f.format(" %s", tables.getGeneratingProcessTypeName(vindex.genProcessType));
+    }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format(" @ %s", tables.getTableValue("4.5", vindex.levelType));
@@ -262,7 +276,7 @@ public class Grib2Iosp extends GribIosp {
         timePartition = Grib2TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf);
+        gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf, gribConfig);
       }
 
       tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
@@ -274,23 +288,24 @@ public class Grib2Iosp extends GribIosp {
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
     ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
-    val = CommonCodeTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
+    val = tables.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
     ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
     ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.getMaster() + "/" + gribCollection.getLocal()));
 
     val = tables.getTableValue("4.3", gribCollection.getGenProcessType());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Type of generating process", val));
-    val = tables.getTableValue("ProcessId", gribCollection.getGenProcessId());
+    val = tables.getGeneratingProcessName(gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Analysis or forecast generating process identifier (defined by originating centre)", val));
-    val = tables.getTableValue("ProcessId", gribCollection.getBackProcessId());
+    val = tables.getGeneratingProcessName(gribCollection.getBackProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Background generating process identifier (defined by originating centre)", val));
 
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib2Collection"));
     ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
+    ncfile.addAttribute(null, new Attribute("file format", "GRIB-2"));
 
     for (Parameter p : gribCollection.getParams())
       ncfile.addAttribute(null, new Attribute(p));
@@ -499,6 +514,14 @@ public class Grib2Iosp extends GribIosp {
       v.addAttribute(new Attribute(CDM.UNITS, makeVariableUnits(tables, vindex)));
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, Float.NaN));
 
+      GribTables.Parameter gp = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+      if (gp != null) {
+        if (gp.getDescription() != null)
+          v.addAttribute(new Attribute(CDM.DESCRIPTION, gp.getDescription()));
+        if (gp.getAbbrev() != null)
+          v.addAttribute(new Attribute(CDM.ABBREV, gp.getAbbrev()));
+      }
+
       if (is2D) {
         String s = searchCoord(gribCollection, Grib2Utils.getLatLon2DcoordType(desc), gHcs.varIndex);
         if (s == null) { // its a lat/lon coordinate
@@ -514,12 +537,12 @@ public class Grib2Iosp extends GribIosp {
       }
 
       int[] param = new int[] {vindex.discipline,vindex.category,vindex.parameter};
-      v.addAttribute(new Attribute("Grib_Parameter", Array.factory(param)));
-      v.addAttribute(new Attribute("Grib_Level_Type", vindex.levelType));
+      v.addAttribute(new Attribute("Grib2_Parameter", Array.factory(param)));
+      v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
       if ( vindex.intvName != null && vindex.intvName.length() != 0)
-        v.addAttribute(new Attribute("Time_Interval", vindex.intvName));
+        v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
       if (vindex.intvType >= 0) {
-        v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));
+        v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", vindex.intvType));
         GribStatType statType = GribStatType.getStatTypeFromGrib2(vindex.intvType);
         if (statType != null) {
           CF.CellMethods cm = GribStatType.getCFCellMethod( statType);
@@ -527,9 +550,11 @@ public class Grib2Iosp extends GribIosp {
         }
       }
       if (vindex.ensDerivedType >= 0)
-        v.addAttribute(new Attribute("Grib_Ensemble_Derived_Type", vindex.ensDerivedType));
+        v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.ensDerivedType));
       else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0)
-        v.addAttribute(new Attribute("Grib_Probability_Type", vindex.probabilityName));
+        v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.probabilityName));
+      if (vindex.genProcessType >= 0)
+        v.addAttribute(new Attribute("Grib2_Generating_Process_Type", tables.getGeneratingProcessTypeName(vindex.genProcessType)));
 
       v.setSPobject(vindex);
     }

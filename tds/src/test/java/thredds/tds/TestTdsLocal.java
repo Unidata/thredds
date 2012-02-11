@@ -41,11 +41,11 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 /**
  * TestSuite that runs all the sample tests for testing the TDS on localhost.
  *
- * The local server should run the catalog at thredds\tds\src\test\data\thredds\tds\catalog.xml. Please keep this
- * updated and checked into svn.
+ * The local server should run the catalog at thredds\tds\src\test\data\thredds\catalog.xml.
+ * Please keep this updated and checked into svn.
  *
  * Data should be kept in /upc/share/cdmUnitTest/tds
- * To run, use "-Dtds.content.root.path=/$root/tds/src/test/data"  on java startup
+ * To run, use "-Dtds.content.root.path=/$github_root/tds/src/test/data"  on java startup
  *
  * jcaron, resurrected Sep 2010
  */

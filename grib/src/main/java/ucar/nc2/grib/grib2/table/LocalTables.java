@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.grib2.Grib2Parameter;
 
 import java.util.*;
 
@@ -43,7 +44,7 @@ import java.util.*;
  * @since 6/22/11
  */
 public abstract class LocalTables extends Grib2Customizer {
-  protected final Map<Integer, TableEntry> local = new HashMap<Integer, TableEntry>(100);
+  protected final Map<Integer, Grib2Parameter> local = new HashMap<Integer, Grib2Parameter>(100);
 
   LocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
@@ -52,11 +53,10 @@ public abstract class LocalTables extends Grib2Customizer {
 
   protected abstract void initLocalTable();
 
-
   @Override
   public List getParameters() {
-    List<TableEntry> result = new ArrayList<TableEntry>();
-    for (TableEntry p : local.values()) result.add(p);
+    List<Grib2Parameter> result = new ArrayList<Grib2Parameter>();
+    for (Grib2Parameter p : local.values()) result.add(p);
     Collections.sort(result);
     return result;
   }
@@ -74,10 +74,19 @@ public abstract class LocalTables extends Grib2Customizer {
   }
 
   @Override
-  public Grib2Customizer.Parameter getParameter(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191))
-      return WmoCodeTable.getParameterEntry(discipline, category, number);
-    return local.get(makeHash(discipline, category, number));
+  public GribTables.Parameter getParameter(int discipline, int category, int number) {
+    Grib2Parameter plocal = local.get(makeHash(discipline, category, number));
+
+    if ((category <= 191) && (number <= 191))  {
+      GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
+      if (plocal == null) return pwmo;
+
+      // allow local table to override all but name, units
+      plocal.name = pwmo.getName();
+      plocal.unit = pwmo.getUnit();
+    }
+
+    return plocal;
   }
 
 }

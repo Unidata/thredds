@@ -61,7 +61,7 @@ public class Mercator extends ProjectionImpl {
     // k = 1 / cos (par); snyder p 44
     // par = arccos(1/k);
     double par = Math.acos(1.0/scale);
-    return Math.toRadians(par);
+    return Math.toDegrees(par);
   }
 
   /////////////////////////////////////////////////////////////////////

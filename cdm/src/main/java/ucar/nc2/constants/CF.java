@@ -287,7 +287,7 @@ maybe:
      */
 
   public static CellMethods convertGrib1code(int code) {
-      switch (code) {
+    switch (code) {
       case 3:
       case 6:
       case 7:

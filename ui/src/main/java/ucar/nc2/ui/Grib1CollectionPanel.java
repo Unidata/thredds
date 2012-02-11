@@ -46,6 +46,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -185,6 +186,19 @@ public class Grib1CollectionPanel extends JPanel {
           RecordBean bean2 = (RecordBean) list.get(1);
           Formatter f = new Formatter();
           compareData(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          showData(bean, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -376,13 +390,29 @@ public class Grib1CollectionPanel extends JPanel {
     compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
 
-  private void compare(Grib1SectionGridDefinition gds1, Grib1SectionGridDefinition gds2, Formatter f) {
-    f.format("1 GribGDS hash = %s%n", gds1.getGDS().hashCode());
-    f.format("2 GribGDS hash = %s%n", gds2.getGDS().hashCode());
+  private void compare(Grib1SectionGridDefinition gdss1, Grib1SectionGridDefinition gdss2, Formatter f) {
+    f.format("1 GribGDS hash = %s%n", gdss1.getGDS().hashCode());
+    f.format("2 GribGDS hash = %s%n", gdss2.getGDS().hashCode());
     f.format("%nCompare Gds%n");
-    byte[] raw1 = gds1.getRawBytes();
-    byte[] raw2 = gds2.getRawBytes();
+    byte[] raw1 = gdss1.getRawBytes();
+    byte[] raw2 = gdss2.getRawBytes();
     Misc.compare(raw1, raw2, f);
+
+    Grib1Gds gds1 = gdss1.getGDS();
+    Grib1Gds gds2 = gdss2.getGDS();
+    GdsHorizCoordSys gdsh1 = gds1.makeHorizCoordSys();
+    GdsHorizCoordSys gdsh2 = gds2.makeHorizCoordSys();
+
+    f.format("%ncompare gds1 - gds22%n");
+    f.format(" Start x diff : %f%n", gdsh1.getStartX() - gdsh2.getStartX());
+    f.format(" Start y diff : %f%n", gdsh1.getStartY() - gdsh2.getStartY());
+    f.format(" End x diff : %f%n", gdsh1.getEndX() - gdsh2.getEndX());
+    f.format(" End y diff : %f%n", gdsh1.getEndY() - gdsh2.getEndY());
+
+    LatLonPoint pt1 = gdsh1.getCenterLatLon();
+    LatLonPoint pt2 = gdsh2.getCenterLatLon();
+    f.format(" Center lon diff : %f%n", pt1.getLongitude() - pt2.getLongitude());
+    f.format(" Center lat diff : %f%n", pt1.getLatitude() - pt2.getLatitude());
   }
 
   private void compare(Grib1SectionProductDefinition pds1, Grib1SectionProductDefinition pds2, Formatter f) {
@@ -491,7 +521,7 @@ public class Grib1CollectionPanel extends JPanel {
 
       if (cust == null) { // first record
         cust = Grib1Customizer.factory(gr, null);
-        rect = new Grib1Rectilyser(cust, null, 0); // just needed for cdmVariableHash
+        rect = new Grib1Rectilyser(cust, null, 0, true); // just needed for cdmVariableHash
       }
 
       int id = rect.cdmVariableHash(gr, 0);
@@ -753,12 +783,12 @@ public class Grib1CollectionPanel extends JPanel {
       return Integer.toString(ptime.getForecastTime());
     }
 
-    public int getNIncluded() {
-      return pds.getNincluded();
+    public String getNIncludeMiss() {
+      return pds.getNincluded()+"/"+pds.getNmissing();
     }
 
-    public int getNMissing() {
-      return pds.getNmissing();
+    public int getPertNum() {
+      return pds.getPerturbationNumber();
     }
 
     public int getLevelType() {

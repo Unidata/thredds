@@ -22,8 +22,8 @@ message Variable {
   required int32 discipline = 1;  // should be uint
   required int32 category = 2;
   required int32 parameter = 3;
-  required int32 levelType = 4;    // table 4.5
-  optional int32 intervalType = 5 [default = -1];// table 4.10
+  required int32 levelType = 4;    // table 4.5 (grib2); table 3 (grib1)
+  optional int32 intervalType = 5 [default = -1];// table 4.10 (grib2); table 5 (grib1)
   required fixed32 cdmHash = 6;
   required uint64 recordsPos = 7;  // offset of VariableRecords message for this Variable
   required uint32 recordsLen = 8;  // size of VariableRecords message for this Variable (could be in stream instead)
@@ -44,6 +44,7 @@ message Variable {
   optional uint32 tableVersion = 18;      // grib1 table Version, grib2 local
 
   optional string intvName = 19;
+  optional int32 genProcessType = 20  [default = -1];    // if set, then the generating process type was used
 }
 
 message Coord {
@@ -72,6 +73,7 @@ message Group {
 
   repeated TimeCoordUnion timeCoordUnions = 9; // for time partitions only
   optional string name = 10;       // only when user overrides default name
+  optional sint32 gdsHash = 11 [default = 0];
 }
 
 message TimeCoordUnion { // extends Coord

@@ -359,6 +359,19 @@ public abstract class Grib1Gds {
     }
 
     @Override
+    public void setNptsInLine(int[] nptsInLine) {
+      super.setNptsInLine(nptsInLine);
+      // now that we know this, we may have to recalc some stuff
+      int n = QuasiRegular.getMax(nptsInLine);
+      if (nx < 0) {
+        deltaLon = (lo2 - lo1) / (n-1);
+      } if (ny < 0) {
+        deltaLat = (la2 - la1) / (n-1);
+      }
+    }
+
+
+    @Override
     public boolean isLatLon() {
       return true;
     }

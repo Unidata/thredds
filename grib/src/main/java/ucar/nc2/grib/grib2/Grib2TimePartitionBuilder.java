@@ -33,6 +33,7 @@
 package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
+import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import thredds.inventory.TimePartitionCollection;
@@ -56,7 +57,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2Partition0Index";
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartitionBuilder.class);
-  static private final int versionTP = 2;
+  static private final int versionTP = 4;  // this needs to update when grib2collection version does
   static private final boolean trace = false;
 
   // called by tdm
@@ -111,7 +112,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private final Grib2TimePartition tp;  // build this object
 
   private Grib2TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc) {
-    this.tp = new Grib2TimePartition(name, directory, tpc);
+    this.tp = new Grib2TimePartition(name, directory,
+            (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG));
     this.gc = tp;
     this.tpc = tpc;
   }
@@ -464,6 +466,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGds(ByteString.copyFrom(g.rawGds));
+    b.setGdsHash(g.gdsHash);
 
     for (GribCollection.VariableIndex vb : g.varIndex)
       b.addVariables(writeVariableProto( (TimePartition.VariableIndexPartitioned) vb));
@@ -618,7 +621,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     List<Integer> varnoList = pv.getVarnoList();
 
     return tp.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
-            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen,
+            ensDerivedType, probType, probabilityName, -1, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen,
             groupnoList, varnoList);
   }
 

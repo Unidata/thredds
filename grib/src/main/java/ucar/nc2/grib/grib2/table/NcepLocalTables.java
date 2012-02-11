@@ -32,8 +32,11 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.grib1.tables.NcepTables;
+import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 
@@ -46,70 +49,42 @@ import java.util.*;
  * @since 4/3/11
  */
 public class NcepLocalTables extends Grib2Customizer {
-  // final Map<Integer, Grib2Tables.TableEntry> local;
 
   NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
     initCodes();
   }
 
-  /* @Override
-  public List getParameters() {
-    List<TableEntry> result = new ArrayList<TableEntry>();
-    for (TableEntry p : local.values()) result.add(p);
-    Collections.sort(result);
-    return result;
-  } */
+  // temp for cfsr
+  public TimeCoord.TinvDate getForecastTimeIntervalCfsrMonthly(Grib2Record gr) {
+    if (!gr.getPDS().isInterval()) return null;
+    Grib2Pds pds = gr.getPDS();
+    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
+    int timeUnitOrg = pds.getTimeUnit();
 
-  @Override
-  public String getVariableName(int discipline, int category, int parameter) {
-    if ((category <= 191) && (parameter <= 191))
-      return super.getVariableName(discipline, category, parameter);
+    /*     Octet(s)	Description
+        47	From NCEP Code Table 4.10
+        48	Should be ignored
+        49	Should be ignored
+        50-53	Number of grids used in the average
+        54	Should be ignored
+        55-58	This is "P2" from the GRIB1 format
+        59	From NCEP Code Table 4.10
+        60	Should be ignored
+        61	Should be ignored
+        62-65	This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+        66	Should be ignored
+        67-70	Should be ignored */
 
-    GribTables.Parameter te = getParameter(discipline, category, parameter);
-    if (te == null)
-      return super.getVariableName(discipline, category, parameter);
-    else
-      return te.getName();
+    int statType = pds.getOctet(47);
+    int statType2 = pds.getOctet(59);
+    int ngrids = GribNumbers.int4(pds.getOctet(50), pds.getOctet(51), pds.getOctet(52), pds.getOctet(53));
+    int p2 = GribNumbers.int4(pds.getOctet(55), pds.getOctet(56), pds.getOctet(57), pds.getOctet(58));
+    int p2mp1 = GribNumbers.int4(pds.getOctet(62), pds.getOctet(63), pds.getOctet(64), pds.getOctet(65));
+
+    return super.getForecastTimeInterval(gr);
   }
 
-  @Override
-  public GribTables.Parameter getParameter(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191)) {
-      GribTables.Parameter p = WmoCodeTable.getParameterEntry(discipline, category, number);
-      if (p != null) return p; // allow ncep to use values not already in use by WMO (!)
-    }
-
-    /* email from boi.vuong@noaa.gov 1/19/2012
-     "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
-      The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."  */
-    if (makeHash(discipline, category, number) == makeHash(2,4,3))
-      return getParameter(2,4,2);
-
-    /* email from boi.vuong@noaa.gov 1/26/2012
-     The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
-     It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in June or July, 2012.
-     RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242  */
-    if (makeHash(discipline, category, number) == makeHash(0,19,242))
-      return getParameter(0,1,242);
-
-    return NcepLocalParams.getParameter(discipline, category, number);
-  }
-
-  @Override
-  public String getTableValue(String tableName, int code) {
-    if (tableName.equals("ProcessId")) {
-      if (processIdMap == null) initProcessIdMap();
-      return processIdMap.get(code);
-    }
-
-    if ((code < 192) || (code > 254) || tableName.equals("4.0"))
-      return WmoCodeTable.getTableValue(tableName, code);
-
-    // return NcepCodeTable.getTableValueFromCurrent(tableName, code);
-    return codeMap.get(tableName + "." + code);
-
-  }
 
   /* @Override
   public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
@@ -125,6 +100,78 @@ public class NcepLocalTables extends Grib2Customizer {
     result[1] = pdsIntv.getForecastTime() + tiUse.timeRangeLength * tiUse.timeIncrement; // kludge
     return new TimeCoord.Tinv(result[0], result[1]);
   }  */
+
+
+  @Override
+  public String getVariableName(int discipline, int category, int parameter) {
+    if ((category <= 191) && (parameter <= 191))
+      return super.getVariableName(discipline, category, parameter);
+
+    GribTables.Parameter te = getParameter(discipline, category, parameter);
+    if (te == null)
+      return super.getVariableName(discipline, category, parameter);
+    else
+      return te.getName();
+  }
+
+  public GribTables.Parameter getParameterOld(int discipline, int category, int number) {
+    if ((category <= 191) && (number <= 191)) {
+      GribTables.Parameter p = WmoCodeTable.getParameterEntry(discipline, category, number);
+      if (p != null) return p; // allow ncep to use values not already in use by WMO (!)
+    }
+
+    /* email from boi.vuong@noaa.gov 1/19/2012
+     "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
+      The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."  */
+    if (makeHash(discipline, category, number) == makeHash(2,4,3))
+      return getParameter(2,4,2);
+
+    /* email from boi.vuong@noaa.gov 1/26/2012
+     The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
+     It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in June or July, 2012.
+     RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242  */
+    if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
+      return getParameter(0, 1, 242);
+
+    return NcepLocalParams.getParameter(discipline, category, number);
+  }
+
+  @Override
+  public GribTables.Parameter getParameter(int discipline, int category, int number) {
+    /* email from boi.vuong@noaa.gov 1/19/2012
+     "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
+      The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."  */
+    if (makeHash(discipline, category, number) == makeHash(2,4,3))
+      return getParameter(2,4,2);
+
+    /* email from boi.vuong@noaa.gov 1/26/2012
+     The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
+     It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in June or July, 2012.
+     RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242  */
+    if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
+      return getParameter(0, 1, 242);
+
+    Grib2Parameter plocal = NcepLocalParams.getParameter(discipline, category, number);
+
+    if ((category <= 191) && (number <= 191))  {
+      GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
+      if (plocal == null) return pwmo;
+
+      // allow local table to override all but name, units
+      plocal.name = pwmo.getName();
+      plocal.unit = pwmo.getUnit();
+    }
+
+    return plocal;
+  }
+
+  @Override
+  public String getTableValue(String tableName, int code) {
+     if ((code < 192) || (code > 254) || tableName.equals("4.0"))
+      return WmoCodeTable.getTableValue(tableName, code);
+
+    return codeMap.get(tableName + "." + code);
+  }
 
   @Override
   public String getLevelNameShort(int id) {
@@ -253,6 +300,8 @@ public class NcepLocalTables extends Grib2Customizer {
         return "AverageForecastAccumulations-206";
       case 207:
         return "AverageForecastAverages-207";
+      case 255:
+        return "Interval";
       default:
         return super.getIntervalNameShort(id);
     }
@@ -260,117 +309,13 @@ public class NcepLocalTables extends Grib2Customizer {
 
   /////////////////////////////////////////////////////////////////
   // generating process ids for NCEP
+  // GRIB1 TableA - can share (?)
+  private static Map<Integer, String> genProcessMap;  // shared by all instances
 
-  private Map<Integer, String> processIdMap = null;
-
-  private void initProcessIdMap() {
-    Map<Integer, String> map = new HashMap<Integer, String>(300);
-
-    /* see: http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html */
-    map.put(2, "Ultra Violet Index Model");
-    map.put(3, "NCEP/ARL Transport and Dispersion Model");
-    map.put(4, "NCEP/ARL Smoke Model");
-    map.put(5, "Satellite Derived Precipitation and temperatures, from IR");
-    map.put(6, "NCEP/ARL Dust Model");
-    map.put(10, "Global Wind-Wave Forecast Model");
-    map.put(11, "Global Multi-Grid Wave Model (Static Grids)");
-    map.put(12, "Probabilistic Storm Surge");
-    map.put(19, "Limited-area Fine Mesh (LFM) analysis");
-    map.put(25, "Snow Cover Analysis");
-    map.put(30, "Forecaster generated field");
-    map.put(31, "Value added post processed field");
-    map.put(39, "Nested Grid forecast Model (NGM)");
-    map.put(42, "Global Optimum Interpolation Analysis (GOI) from GFS model");
-    map.put(43, "Global Optimum Interpolation Analysis (GOI) from 'Final' run");
-    map.put(44, "Sea Surface Temperature Analysis");
-    map.put(45, "Coastal Ocean Circulation Model");
-    map.put(46, "HYCOM - Global");
-    map.put(47, "HYCOM - North Pacific basin");
-    map.put(48, "HYCOM - North Atlantic basin");
-    map.put(49, "Ozone Analysis from TIROS Observations");
-    map.put(52, "Ozone Analysis from Nimbus 7 Observations");
-    map.put(53, "LFM-Fourth Order Forecast Model");
-    map.put(64, "Regional Optimum Interpolation Analysis (ROI)");
-    map.put(68, "80 wave triangular, 18-layer Spectral model from GFS model");
-    map.put(69, "80 wave triangular, 18 layer Spectral model from 'Medium Range Forecast' run");
-    map.put(70, "Quasi-Lagrangian Hurricane Model (QLM)");
-    map.put(73, "Fog Forecast model - Ocean Prod. Center");
-    map.put(74, "Gulf of Mexico Wind/Wave");
-    map.put(75, "Gulf of Alaska Wind/Wave");
-    map.put(76, "Bias corrected Medium Range Forecast");
-    map.put(77, "126 wave triangular, 28 layer Spectral model from GFS model");
-    map.put(78, "126 wave triangular, 28 layer Spectral model from 'Medium Range Forecast' run");
-    map.put(79, "Backup from the previous run");
-    map.put(80, "62 wave triangular, 28 layer Spectral model from 'Medium Range Forecast' run");
-    map.put(81, "Analysis from GFS (Global Forecast System)");
-    map.put(82, "Analysis from GDAS (Global Data Assimilation System)");
-    map.put(84, "MESO ETA Model (currently 12 km)");
-    map.put(86, "RUC Model from FSL (isentropic; scale: 60km at 40N)");
-    map.put(87, "CAC Ensemble Forecasts from Spectral (ENSMB)");
-    map.put(88, "NOAA Wave Watch III (NWW3) Ocean Wave Model");
-    map.put(89, "Non-hydrostatic Meso Model (NMM) Currently 8 km)");
-    map.put(90, "62 wave triangular, 28 layer spectral model extension of the 'Medium Range Forecast' run");
-    map.put(91, "62 wave triangular, 28 layer spectral model extension of the GFS model");
-    map.put(92, "62 wave triangular, 28 layer spectral model run from the 'Medium Range Forecast' final analysis");
-    map.put(93, "62 wave triangular, 28 layer spectral model run from the T62 GDAS analysis of the 'Medium Range Forecast' run");
-    map.put(94, "T170/L42 Global Spectral Model from MRF run");
-    map.put(95, "T126/L42 Global Spectral Model from MRF run");
-    map.put(96, "Global Forecast System Model");
-    map.put(98, "Climate Forecast System Model");
-    map.put(100, "RUC Surface Analysis (scale: 60km at 40N)");
-    map.put(101, "RUC Surface Analysis (scale: 40km at 40N)");
-    map.put(105, "RUC Model from FSL (isentropic; scale: 20km at 40N)");
-    map.put(107, "Global Ensemble Forecast System (GEFS)");
-    map.put(108, "LAMP");
-    map.put(109, "RTMA (Real Time Mesoscale Analysis)");
-    map.put(110, "NAM Model - 15km version");
-    map.put(111, "NAM model, generic resolution");
-    map.put(112, "WRF-NMM (Nonhydrostatic Mesoscale Model) model, generic resolution");
-    map.put(113, "Products from NCEP SREF processing");
-    map.put(114, "NAEFS Products from joined NCEP, CMC global ensembles");
-    map.put(115, "Downscaled GFS from NAM eXtension");
-    map.put(116, "WRF-EM (Eulerian Mass-core) model, generic resolution ");
-    map.put(120, "Ice Concentration Analysis");
-    map.put(121, "Western North Atlantic Regional Wave Model");
-    map.put(122, "Alaska Waters Regional Wave Model");
-    map.put(123, "North Atlantic Hurricane Wave Model");
-    map.put(124, "Eastern North Pacific Regional Wave Model");
-    map.put(125, "North Pacific Hurricane Wave Model");
-    map.put(126, "Sea Ice Forecast Model");
-    map.put(127, "Lake Ice Forecast Model");
-    map.put(128, "Global Ocean Forecast Model");
-    map.put(129, "Global Ocean Data Analysis System (GODAS)");
-    map.put(130, "Merge of fields from the RUC, NAM, and Spectral Model");
-    map.put(131, "Great Lakes Wave Model");
-    map.put(140, "North American Regional Reanalysis (NARR)");
-    map.put(141, "Land Data Assimilation and Forecast System");
-    map.put(150, "NWS River Forecast System (NWSRFS)");
-    map.put(151, "NWS Flash Flood Guidance System (NWSFFGS)");
-    map.put(152, "WSR-88D Stage II Precipitation Analysis");
-    map.put(153, "WSR-88D Stage III Precipitation Analysis");
-    map.put(180, "Quantitative Precipitation Forecast");
-    map.put(181, "River Forecast Center Quantitative Precipitation Forecast mosaic");
-    map.put(182, "River Forecast Center Quantitative Precipitation estimate mosaic");
-    map.put(183, "NDFD product generated by NCEP/HPC");
-    map.put(184, "Climatological Calibrated Precipitation Analysis - CCPA");
-    map.put(190, "National Convective Weather Diagnostic");
-    map.put(191, "Current Icing Potential automated product");
-    map.put(192, "Analysis product from NCEP/AWC");
-    map.put(193, "Forecast product from NCEP/AWC");
-    map.put(195, "Climate Data Assimilation System 2 (CDAS2)");
-    map.put(196, "Climate Data Assimilation System 2 (CDAS2)");
-    map.put(197, "Climate Data Assimilation System (CDAS)");
-    map.put(198, "Climate Data Assimilation System (CDAS)");
-    map.put(199, "Climate Forecast System Reanalysis (CFSR)");
-    map.put(200, "CPC Manual Forecast Product");
-    map.put(201, "CPC Automated Product");
-    map.put(210, "EPA Air Quality Forecast");
-    map.put(211, "EPA Air Quality Forecast");
-    map.put(215, "SPC Manual Forecast Product");
-    map.put(220, "NCEP/OPC automated product");
-
-    processIdMap = map;
-
+  public String getGeneratingProcessName(int genProcess) {
+    if (genProcessMap == null) genProcessMap = NcepTables.getNcepGenProcess();
+    if (genProcessMap == null) return null;
+    return genProcessMap.get(genProcess);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -495,9 +440,9 @@ Updated again on 3/26/2008
     }
 
     NcepLocalParamsVeryOld.init();
-    Map<String, TableEntry> org = NcepLocalParamsVeryOld.getParamMap();
+    Map<String, Grib2Parameter> org = NcepLocalParamsVeryOld.getParamMap();
     for (String skey : org.keySet()) {
-      TableEntry p = org.get(skey);
+      Grib2Parameter p = org.get(skey);
       int key = makeHash(p.discipline, p.category, p.number);
       CompTable ct = map.get(key);
       if (ct == null) {

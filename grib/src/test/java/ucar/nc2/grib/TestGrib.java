@@ -49,7 +49,6 @@ public class TestGrib {
     suite.addTest(new TestSuite(TestGribMisc.class));
     suite.addTest(new TestSuite(TestGribMiscCoordinates.class));
 
-
     return suite;
   }
 

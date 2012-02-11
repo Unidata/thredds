@@ -188,6 +188,8 @@ public class DefaultConvention extends CoordSysBuilder {
 
       Variable v = (Variable) ve;
       String vname = v.getShortName();
+      if (vname == null)
+        return null;
       String unit = v.getUnitsString();
       if (unit == null) unit = "";
       String desc = v.getDescription();
@@ -227,6 +229,7 @@ public class DefaultConvention extends CoordSysBuilder {
       String alias = ds.findAttValueIgnoreCase(v, "coord_axis", null);
       if (alias == null)
         alias = ds.findAttValueIgnoreCase(v, "coord_alias", "");
+      if (alias == null) alias = "";
       return alias;
     }
 

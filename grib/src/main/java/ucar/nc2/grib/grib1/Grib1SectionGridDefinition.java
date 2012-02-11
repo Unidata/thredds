@@ -154,9 +154,8 @@ public class Grib1SectionGridDefinition {
   }
 
   private final int getOctet(int index) {
-    if (rawData == null)
-      return 255;   // predefined
-    if (index >= rawData.length) return GribNumbers.UNDEFINED;
+    if (rawData == null) return 255;   // predefined
+    if (index > rawData.length) return GribNumbers.UNDEFINED;
     return rawData[index - 1] & 0xff;
   }
 
@@ -165,8 +164,9 @@ public class Grib1SectionGridDefinition {
   public Grib1Gds getGDS() {
     if (gds == null) {
       gds = Grib1Gds.factory(gridTemplate, rawData);
-      if (isThin())
+      if (isThin()) {
         gds.setNptsInLine(getNptsInLine());
+      }
     }
     return gds;
   }
@@ -194,7 +194,6 @@ public class Grib1SectionGridDefinition {
    * @return number of points in each line as int[]
    */
   private int[] getNptsInLine() {
-    getGDS();
     int numPts;
 
     if ((gds.getScanMode() & 32) == 0) { // bit3 = 0 : Adjacent points in i direction are consecutive

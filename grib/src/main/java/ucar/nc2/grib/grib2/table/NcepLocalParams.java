@@ -58,7 +58,7 @@ public class NcepLocalParams {
   private static boolean debug = false;
   private static Map<Integer, NcepLocalParams> tableMap = new HashMap<Integer, NcepLocalParams>(30);
 
-  public static GribTables.Parameter getParameter(int discipline, int category, int number) {
+  public static Grib2Parameter getParameter(int discipline, int category, int number) {
     int key = (discipline << 8) + category;
     NcepLocalParams params = tableMap.get( key);
     if (params == null) {
@@ -188,12 +188,20 @@ public class NcepLocalParams {
     for (Element elem : params) {
       int code = Integer.parseInt(elem.getAttributeValue("code"));
       String abbrev = elem.getChildText("shortName");
-      String name = elem.getChildText("description");
+      String desc = elem.getChildText("description");
       String units = elem.getChildText("units");
       if (units == null) units = "";
 
+      String name;
+      if (desc.length() > 80 && abbrev != null && !abbrev.equalsIgnoreCase("Validation")) {
+        name = abbrev;
+      } else {
+        name = desc;
+        desc = null;
+      }
+
       //   public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev) {
-      Grib2Parameter parameter = new Grib2Parameter(discipline, category, code, name, units, abbrev);
+      Grib2Parameter parameter = new Grib2Parameter(discipline, category, code, name, units, abbrev, desc);
       result.put(parameter.getNumber(), parameter);
       if (debug) System.out.printf(" %s%n", parameter);
     }
@@ -297,7 +305,7 @@ public class NcepLocalParams {
   }
 
 
-  public static void main(String[] args) {
+  public static void main2(String[] args) {
 
     //Grib2Customizer current = Grib2Customizer.factory(7, -1, -1, -1);
     Grib2Customizer wmo = Grib2Customizer.factory(0, 0, 0, 0);
@@ -312,7 +320,7 @@ public class NcepLocalParams {
     }
   }
 
-  public static void main2(String[] args) {
+  public static void main3(String[] args) {
     GribTables.Parameter p = getParameter(0, 16, 195);
     System.out.printf("%s%n", p);
 
@@ -320,5 +328,32 @@ public class NcepLocalParams {
     GribTables.Parameter p2 = tables.getParameter(0, 16, 195);
     System.out.printf("%s%n", p2);
   }
+
+  public static void main(String[] args) {
+    Map<String, Grib2Parameter> abbrevSet = new HashMap<String, Grib2Parameter>(5000);
+     File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
+     for (File f : dir.listFiles()) {
+       if (f.getName().startsWith(match)) {
+         NcepLocalParams nt = new NcepLocalParams(f.getPath());
+         System.out.printf("%s%n", nt);
+         for (Grib2Parameter p : nt.getParameters()) {
+           if (p.getCategory() < 192 && p.getNumber() < 192) continue;
+
+           if (p.getAbbrev() != null && !p.getAbbrev().equals("Validation")) {
+             Grib2Parameter dup = abbrevSet.get(p.getAbbrev());
+             if (dup != null) System.out.printf("DUPLICATE %s and %s%n", dup.getId(), p.getId());
+             abbrevSet.put(p.getAbbrev(), p);
+           }
+
+           if (p.getDescription().length() > 60) System.out.printf("  %d %s = '%s' %s%n", p.getDescription().length(), p.getId(), p.getDescription(), p.getAbbrev());
+           else if (p.getDescription().length() > 50) System.out.printf("  50 %s = '%s' %s%n", p.getId(), p.getDescription(), p.getAbbrev());
+           else if (p.getDescription().length() > 40) System.out.printf("  40 %s = '%s' %s%n", p.getId(), p.getDescription(), p.getAbbrev());
+           else if (p.getDescription().length() > 30) System.out.printf("  30 %s = '%s' %s%n", p.getId(), p.getDescription(), p.getAbbrev());
+         }
+       }
+     }
+   }
+
+
 
 }

@@ -67,6 +67,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
+  static private final String VARIABLES = "?metadata=variableMap";
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -139,8 +140,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     StateGrib localState = new StateGrib((StateGrib) state);
     try {
       updateCollection(localState, force);
-    } catch (IOException e) {
-      logger.error("Fail to update collection", e);
+    } catch (Throwable e) {
+      logger.error("Fail to create/update collection", e);
+      return;
     }
     makeTopDatasets(localState);
     localState.lastInvChange = System.currentTimeMillis();
@@ -305,7 +307,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         addFileDatasets(ds, groupId);
 
         // metadata is specific to each group
-        //ds.tmi.addVariables(extractThreddsVariables(localState.gribCollection, group));
+        ds.tmi.addVariableMapLink( makeMetadataLink( this.path, groupId, VARIABLES));
         ds.tmi.setGeospatialCoverage(extractGeospatial(group));
         CalendarDateRange cdr = extractCalendarDateRange(group);
         if (cdr != null) ds.tmi.setTimeCoverage(cdr);
@@ -329,6 +331,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         dname = StringUtil2.replace(dname, ' ', "_");
         ds.setUrlPath(this.path + "/" + dname);
         ds.setID(id + "/" + dname);
+        ds.tmi.addVariableMapLink(makeMetadataLink( this.path, dname, VARIABLES));
         //ThreddsMetadata tm = ds.getLocalMetadata();
         //tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
         //ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
@@ -342,14 +345,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     localState.datasets = datasets;
     this.datasets = datasets;
     finish();
-  }
-
-  private ThreddsMetadata.Variables extractThreddsVariables(GribCollection gribCollection, GribCollection.GroupHcs group) {
-    ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(format.toString());
-    for (GribCollection.VariableIndex vindex : group.varIndex)
-      vars.addVariable(extractThreddsVariables(gribCollection, vindex));
-    vars.sort();
-    return vars;
   }
 
   private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupHcs group) {
@@ -405,7 +400,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-    if (localState.vars != null) tmi.addVariables(localState.vars);
+    //if (localState.vars != null) tmi.addVariables(localState.vars);
     if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
     //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
@@ -426,7 +421,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       ds.setID(id + "/" + collectionName + "/" + groupId);
 
       // metadata is specific to each group
-      //ds.tmi.addVariables(extractThreddsVariables(gribCollection, group));
+      ds.tmi.addVariableMapLink( makeMetadataLink( this.path + "/" + collectionName, groupId, VARIABLES));
       ds.tmi.setGeospatialCoverage(extractGeospatial(group));
       CalendarDateRange cdr = extractCalendarDateRange(group);
       if (cdr != null) ds.tmi.setTimeCoverage(cdr);
@@ -472,7 +467,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     // add Variables, GeospatialCoverage, TimeCoverage
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-    if (localState.vars != null) tmi.addVariables(localState.vars);
     if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
     //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
@@ -493,6 +487,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       InvDatasetImpl ds = new InvDatasetImpl(this, fname);
       ds.setUrlPath(this.path + "/" + path);
       ds.setID(id + "/" + path);
+      ds.tmi.addVariableMapLink( makeMetadataLink( this.path, fname, VARIABLES));
       File file = new File(f);
       ds.tm.setDataSize(file.length());
       ds.finish();
@@ -504,6 +499,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   ///////////////////////////////////////////////////////////////////////////
+
+  private String makeMetadataLink(String path, String dataset, String metadata) {
+    return dataset + metadata;
+  }
 
   @Override
   public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
@@ -583,6 +582,16 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     return null;
+  }
+
+  ///////////////////////////
+
+  private ThreddsMetadata.Variables extractThreddsVariables(GribCollection gribCollection, GribCollection.GroupHcs group) {
+    ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(format.toString());
+    for (GribCollection.VariableIndex vindex : group.varIndex)
+      vars.addVariable(extractThreddsVariables(gribCollection, vindex));
+    vars.sort();
+    return vars;
   }
 
     // we need to cache this by variable to reduce duplication

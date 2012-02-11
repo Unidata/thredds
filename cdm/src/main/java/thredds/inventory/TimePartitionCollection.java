@@ -70,7 +70,6 @@ public class TimePartitionCollection extends MFileCollectionManager {
 
   //////////////////////////////
 
-  private CollectionSpecParser sp;
   private int npartitions;
   private boolean setfromExistingIndices;
   private Type type;
@@ -82,19 +81,20 @@ public class TimePartitionCollection extends MFileCollectionManager {
       throw new IllegalArgumentException("Time partition must specify a date extractor");
   }
 
+  // a scan has already been done, and something changed.
   public List<CollectionManager> makePartitions() throws IOException {
     List<CollectionManager> result;
-    if (setfromExistingIndices)
+    /* if (setfromExistingIndices)
       result = makePartitionsFromIndices();
-    else if (config.timePartition.equalsIgnoreCase("directory"))
+    else */ if (config.timePartition.equalsIgnoreCase("directory"))
       result = makePartitionsFromSubdirs();
     else
-      result =  makePartitionsByDays();
+      result = makePartitionsByDays();
     npartitions = result.size();
     return result;
   }
 
-  private List<CollectionManager> makePartitionsFromIndices() {
+  /* private List<CollectionManager> makePartitionsFromIndices() {
     this.type = Type.setfromExistingIndices;
     MController controller = MFileCollectionManager.getController();
     MCollection mc = new MCollection(sp.getRootDir(), sp.getRootDir(), false, (MFileFilter) null, null);
@@ -156,11 +156,14 @@ public class TimePartitionCollection extends MFileCollectionManager {
     });
 
     return result;
-  }
+  } */
 
-  private List<CollectionManager> makePartitionsFromSubdirs() {
+  private List<CollectionManager> makePartitionsFromSubdirs() throws IOException {
     this.type = Type.directory;
-    MController controller = MFileCollectionManager.getController();
+    MController controller = MFileCollectionManager.getController(); // make sure loaded
+
+    Formatter errlog = new Formatter();
+    CollectionSpecParser sp = new CollectionSpecParser(config.spec, errlog);
     MCollection mc = new MCollection(sp.getRootDir(), sp.getRootDir(), false, (MFileFilter) null, null);
 
     File root = new File(sp.getRootDir());
@@ -179,7 +182,6 @@ public class TimePartitionCollection extends MFileCollectionManager {
     if (null != sp.getFilter())
       filters.add(new WildcardMatchOnName(sp.getFilter()));
 
-
     List<CollectionManager> result = new ArrayList<CollectionManager>();
     while (iter.hasNext()) {
       MFile mfile = iter.next();
@@ -193,6 +195,9 @@ public class TimePartitionCollection extends MFileCollectionManager {
 
       MFileCollectionManager dcm = new MFileCollectionManager(mfile.getName(), mcs, cdate);
       dcm.setDateExtractor(dateExtractor);
+      if (config != null && config.gribConfig != null)
+        dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config.gribConfig);
+      dcm.scan(false);
       result.add(dcm);
       //System.out.printf("%s%n", dcm);
     }
@@ -207,11 +212,42 @@ public class TimePartitionCollection extends MFileCollectionManager {
     return result;
   }
 
+  /* private List<CollectionManager> makePartitionsFromSubdirs() throws IOException {
+    this.type = Type.directory;
+
+    List<CollectionManager> result = new ArrayList<CollectionManager>();
+    Map<String, TimePartitionCollectionManager> map = new HashMap<String, TimePartitionCollectionManager>(100);
+
+    TimePartitionCollectionManager curr = null;
+    for (MFile mfile : getFiles()) {
+      CalendarDate cdate = dateExtractor.getCalendarDate(mfile);
+      if (cdate == null)
+        logger.error("Date extraction failed on file= {} dateExtractor = {}", mfile.getPath(), dateExtractor);
+      DatedMFile dmf = new DatedMFile(mfile, cdate);
+
+      // directory name
+      String[] paths = mfile.getPath().split("/");
+      String directory =
+      MFile parent2 = map.get(parent);
+      if (parent2 == null) {
+        curr = new TimePartitionCollectionManager(parent.getName(), dmf, getRoot(), this.auxInfo);
+        result.add(curr);
+      }
+      curr.add(dmf);
+    }
+
+    // sort by partition starting time
+    Collections.sort( result, new Comparator<CollectionManager>() {
+      public int compare(CollectionManager o1, CollectionManager o2) {
+        return o1.getStartCollection().compareTo(o2.getStartCollection());
+      }
+    });
+
+    return result;
+  } */
+
   private List<CollectionManager> makePartitionsByDays() throws IOException {
     this.type = Type.days;
-    //Formatter errlog = new Formatter();
-    //CollectionManager dcm = new MFileCollectionManager(null, config.spec, errlog);
-    //dcm.scan(true);
 
     List<DatedMFile> files = new ArrayList<DatedMFile>();
     for (MFile mfile : getFiles()) {
@@ -248,7 +284,6 @@ public class TimePartitionCollection extends MFileCollectionManager {
   public String toString() {
     return "TimePartitionCollection{" +
             "name='" + collectionName + '\'' +
-            ", sp=" + sp +
             ", dateExtractor=" + dateExtractor +
             ", type=" + type +
             '}';

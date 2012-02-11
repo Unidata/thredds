@@ -291,10 +291,12 @@ class ConstructNC {
 
     parent.addMemberVariable(struct);    
   }
-
+  private int tempNo = 1;
   private Variable addVariable(Structure struct, DataDescriptor dataDesc, int count) {
     String name = findUnique(struct, dataDesc.name);
     dataDesc.name = name; // name may need to be changed for uniqueness
+//    if (name == null)
+//      name = "temp" + tempNo++;
 
     Variable v = new Variable(ncfile, null, struct, name);
     try {

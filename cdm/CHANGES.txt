@@ -3,7 +3,16 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 7: (2012-01-xx)
+ 8: (2012-02-09)
+  GRIB-1 ensembles for ECMWF type=30
+  GRIB-1 merge intervals
+  redo useGenType: use if type == error. so varHash changes, increment ncx version
+
+ 7: (2012-02-06)
+  GRIB2 useGenType option
+  GRIB-1 thin grids bugs.
+  GRIB-1 ensembles : special coding for NCEP, ECMWF
+  TimePartition by directory
   CalendarPeriod.getOffset() finds difference between two CalendarDates.
   GRIB2 intervals: use the end date as end of interval, shape the coordinates from there, allow calendar fields
   GRIB Collections: if tdsUsingTdm, no updating

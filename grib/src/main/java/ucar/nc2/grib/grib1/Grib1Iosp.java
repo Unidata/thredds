@@ -175,7 +175,7 @@ public class Grib1Iosp extends GribIosp {
         timePartition = Grib1TimePartitionBuilder.createFromIndex(name, f.getParentFile(), raf);
         gribCollection = timePartition;
       } else {
-        gribCollection = Grib1CollectionBuilder.createFromIndex(name, f.getParentFile(), raf);
+        gribCollection = Grib1CollectionBuilder.createFromIndex(name, f.getParentFile(), raf, gribConfig);
       }
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
 
@@ -191,13 +191,15 @@ public class Grib1Iosp extends GribIosp {
     //ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
     //ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
 
-    val = cust.getTypeGenProcessName(gribCollection.getGenProcessId());
+    val = cust.getGeneratingProcessName(gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Generating process or model", val));
 
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib1Collection"));
     ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
+    ncfile.addAttribute(null, new Attribute("file format", "GRIB-1"));
+
     for (Parameter p : gribCollection.getParams())
       ncfile.addAttribute(null, new Attribute(p));
   }
@@ -280,10 +282,14 @@ public class Grib1Iosp extends GribIosp {
       v.addAttribute(new Attribute(CDM.LONG_NAME, cust.getTimeTypeName(tc.getCode())));
       if (tc.isInterval()) {
         GribStatType statType = cust.getStatType(tc.getCode());
-        v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
-        CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
-        if (cm != null)
-          v.addAttribute(new Attribute("CF cell_methods", tcName + ": " + cm.toString()));
+        if (statType == null) {
+          v.addAttribute(new Attribute("Grib1 statistical type", tc.getCode()));
+        } else {
+          v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
+          CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
+          if (cm != null)
+            v.addAttribute(new Attribute("CF cell_methods", tcName + ": " + cm.toString()));
+        }
       }
 
       int[] data = new int[n];
@@ -360,22 +366,24 @@ public class Grib1Iosp extends GribIosp {
       v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
 
       // Grib attributes
-      v.addAttribute(new Attribute("Grib_Parameter", vindex.parameter));
+      v.addAttribute(new Attribute("Grib1_Parameter", vindex.parameter));
       Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
       if (param != null && param.getName() != null)
-        v.addAttribute(new Attribute("Grib_Parameter_Name", param.getName()));
+        v.addAttribute(new Attribute("Grib1_Parameter_Name", param.getName()));
 
-      v.addAttribute(new Attribute("Grib_Level_Type", vindex.levelType));
+      v.addAttribute(new Attribute("Grib1_Level_Type", vindex.levelType));
+      if ( vindex.intvName != null && vindex.intvName.length() != 0)
+        v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
       if (vindex.intvType >= 0) {
-        v.addAttribute(new Attribute("Grib_Statistical_Interval_Type", vindex.intvType));
+        v.addAttribute(new Attribute("Grib1_Statistical_Interval_Type", vindex.intvType));
         CF.CellMethods cm = CF.CellMethods.convertGrib1code(vindex.intvType);
         if (cm != null)
           v.addAttribute(new Attribute("cell_methods", tcName + ": " + cm.toString()));
       }
       if (vindex.ensDerivedType >= 0)
-        v.addAttribute(new Attribute("Grib_Ensemble_Derived_Type", vindex.ensDerivedType));
+        v.addAttribute(new Attribute("Grib1_Ensemble_Derived_Type", vindex.ensDerivedType));
       else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0)
-        v.addAttribute(new Attribute("Grib_Probability_Type", vindex.probabilityName));
+        v.addAttribute(new Attribute("Grib1_Probability_Type", vindex.probabilityName));
 
       v.setSPobject(vindex);
     }

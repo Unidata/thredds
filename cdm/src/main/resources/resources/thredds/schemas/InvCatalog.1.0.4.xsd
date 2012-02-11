@@ -430,13 +430,31 @@
           <xsd:attribute name="to" type="xsd:int" use="required"/>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="gdsName" minOccurs="0">
+
+      <xsd:element name="gdsName" minOccurs="0" maxOccurs="unbounded">
         <xsd:complexType>
           <xsd:attribute name="hash" type="xsd:int"/>
           <xsd:attribute name="groupName" type="xsd:string"/>
-         </xsd:complexType>
+        </xsd:complexType>
       </xsd:element>
-      <xsd:element name="groupNamer" minOccurs="0" />
+
+      <xsd:element name="groupNamer" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="useGenType" minOccurs="0" maxOccurs="1"/>
+
+      <xsd:element name="intvFilter" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="variable" minOccurs="0" maxOccurs="unbounded">
+              <xsd:complexType>
+                <xsd:attribute name="id" type="xsd:string" use="required"/>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+          <xsd:attribute name="excludeZero" type="xsd:boolean" use="optional"/>
+          <xsd:attribute name="intvLength" type="xsd:int" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+
       <xsd:element name="timeUnitConvert" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="from" type="xsd:int" use="required"/>
@@ -444,6 +462,7 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
+
     <xsd:attribute name="datasetTypes" type="xsd:string"/>
   </xsd:complexType>
 

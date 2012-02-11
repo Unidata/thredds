@@ -56,10 +56,10 @@ import java.util.*;
  */
 public class Grib1CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
+  protected static final int version = 8;
+  private static final boolean intvMergeDefault = true;
 
   public static final String MAGIC_START = "Grib1CollectionIndex";
-  protected static final int version = 7;
-  private static final boolean debug = false;
 
   // from a single file, read in the index, create if it doesnt exist or is out of date
   static public GribCollection readOrCreateIndexFromSingleFile(MFile file, CollectionManager.Force force,
@@ -87,8 +87,8 @@ public class Grib1CollectionBuilder {
   }
 
   // read in the index, index raf already open
-  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile indexRaf) throws IOException {
-    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(name, directory);
+  static public GribCollection createFromIndex(String name, File directory, RandomAccessFile indexRaf, FeatureCollectionConfig.GribConfig config) throws IOException {
+    Grib1CollectionBuilder builder = new Grib1CollectionBuilder(name, directory, config);
     if (builder.readIndex(indexRaf))
       return builder.gc;
     throw new IOException("Reading index failed");
@@ -97,7 +97,7 @@ public class Grib1CollectionBuilder {
   // this writes the index always
   static public boolean writeIndexFile(File indexFile, CollectionManager dcm, Formatter f) throws IOException {
     Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm);
-    return builder.createIndex(indexFile, CollectionManager.Force.always, f);
+    return builder.createIndex(indexFile, f);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -115,7 +115,7 @@ public class Grib1CollectionBuilder {
       CollectionManager dcm = new CollectionManagerSingleFile(file);
       this.collections.add(dcm);
       if (config != null) dcm.putAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG, config);
-      this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()), dcm);
+      this.gc = new Grib1Collection(file.getName(), new File(dcm.getRoot()), config);
 
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
@@ -127,11 +127,12 @@ public class Grib1CollectionBuilder {
 
   private Grib1CollectionBuilder(CollectionManager dcm) {
     this.collections.add(dcm);
-    this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), dcm);
+    FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.gc = new Grib1Collection(dcm.getCollectionName(), new File(dcm.getRoot()), config);
   }
 
-  private Grib1CollectionBuilder(String name, File directory) {
-    this.gc = new Grib1Collection(name, directory, null);
+  private Grib1CollectionBuilder(String name, File directory, FeatureCollectionConfig.GribConfig config) {
+    this.gc = new Grib1Collection(name, directory, config);
   }
 
   protected Grib1CollectionBuilder() {
@@ -153,7 +154,7 @@ public class Grib1CollectionBuilder {
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       idx = gc.makeNewIndexFile(); // make sure we have a writeable index
       logger.debug("{}: createIndex {}", gc.getName(), idx.getPath());
-      createIndex(idx, ff, f);        // write out index
+      createIndex(idx, f);        // write out index
       gc.setIndexRaf(new RandomAccessFile(idx.getPath(), "r"));
       readIndex(gc.getIndexRaf()); // read back in index
     }
@@ -285,7 +286,8 @@ public class Grib1CollectionBuilder {
       Grib1SectionGridDefinition gdss = new Grib1SectionGridDefinition(rawGds);
       gds = gdss.getGDS();
     }
-    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gds.hashCode());
+    int gdsHash = (p.getGdsHash() != 0) ? p.getGdsHash() : gds.hashCode();
+    group.setHorizCoordSystem(gds.makeHorizCoordSys(), rawGds, gdsHash);
 
     group.varIndex = new ArrayList<GribCollection.VariableIndex>();
     for (int i = 0; i < p.getVariablesCount(); i++)
@@ -388,7 +390,7 @@ public class Grib1CollectionBuilder {
     int ensIdx = pv.getEnsIdx();
 
     return gc.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
-            ensDerivedType, probType, probabilityName, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
+            ensDerivedType, probType, probabilityName, -1, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -411,11 +413,11 @@ public class Grib1CollectionBuilder {
   ///////////////////////////////////////////////////
   // create the index
 
-  private boolean createIndex(File indexFile, CollectionManager.Force ff, Formatter f) throws IOException {
+  private boolean createIndex(File indexFile, Formatter f) throws IOException {
     long start = System.currentTimeMillis();
 
     ArrayList<String> filenames = new ArrayList<String>();
-    List<Group> groups = makeAggregatedGroups(filenames, ff, f);
+    List<Group> groups = makeAggregatedGroups(filenames, f);
     createIndex(indexFile, groups, filenames, f);
 
     long took = System.currentTimeMillis() - start;
@@ -427,9 +429,11 @@ public class Grib1CollectionBuilder {
   // divide into groups based on GDS hash
   // each group has an arraylist of all records that belong to it.
   // for each group, run rectlizer to derive the coordinates and variables
-  public List<Group> makeAggregatedGroups(ArrayList<String> filenames, CollectionManager.Force force, Formatter f) throws IOException {
+  public List<Group> makeAggregatedGroups(ArrayList<String> filenames, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<Integer, Integer> gdsConvert = null;
+    Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
+    boolean intvMerge = intvMergeDefault;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
     int total = 0;
@@ -438,6 +442,7 @@ public class Grib1CollectionBuilder {
       f.format(" dcm= %s%n", dcm);
       FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
       if (config != null) gdsConvert = config.gdsHash;
+      intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
 
       for (MFile mfile : dcm.getFiles()) {
         // f.format("%3d: %s%n", fileno, mfile.getPath());
@@ -445,7 +450,7 @@ public class Grib1CollectionBuilder {
 
         Grib1Index index = null;
         try {
-          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, !isSingleFile, mfile, config, force, f);
+          index = (Grib1Index) GribIndex.readOrCreateIndexFromSingleFile(true, !isSingleFile, mfile, config, CollectionManager.Force.test, f);
 
         } catch (IOException ioe) {
           logger.warn("GribCollectionBuilder {}: reading/Creating gbx9 index failed err={}", gc.getName(), ioe.getMessage());
@@ -473,19 +478,16 @@ public class Grib1CollectionBuilder {
           total++;
         }
         fileno++;
+        c.recordsTotal += index.getRecords().size();
       }
     }
-    f.format(" total grib records= %d%n", total);
-
-    Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
-      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash);
-      f.format(" GDS hash %d == ", g.gdsHash);
-      g.rect.make(f, c);
+      g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash, intvMerge);
+      g.rect.make(c);
     }
-    f.format(" Rectilyser: nvars=%d records unique=%d total=%d dups=%d (%f) %n", c.vars, c.recordsUnique, c.records, c.dups, ((float) c.dups) / c.records);
 
+    c.show(f);
     return result;
   }
   public String getMagicStart() {
@@ -606,8 +608,10 @@ public class Grib1CollectionBuilder {
 
     if (g.gdss.getPredefinedGridDefinition() >= 0)
       b.setPredefinedGds(g.gdss.getPredefinedGridDefinition());
-    else
+    else {
       b.setGds(ByteString.copyFrom(g.gdss.getRawBytes()));
+      b.setGdsHash(g.gdsHash);
+  }
 
     for (Grib1Rectilyser.VariableBag vb : g.rect.getGribvars())
       b.addVariables(writeVariableProto(g.rect, vb));
@@ -643,7 +647,6 @@ public class Grib1CollectionBuilder {
     b.setTableVersion(pds.getTableVersion()); // can differ for variables in the same file
     b.setLevelType(pds.getLevelType());
     b.setIsLayer(cust.isLayer(pds.getLevelType())); // LOOK alternatively could store an entire PDS (one for each variable)
-    b.setIntervalType(pds.getTimeRangeIndicator());
     b.setCdmHash(vb.cdmHash);
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
@@ -655,6 +658,7 @@ public class Grib1CollectionBuilder {
 
     Grib1ParamTime ptime = pds.getParamTime(cust); // LOOK could use  cust.getParamTime(pds) to not retain object
     if (ptime.isInterval()) {
+      b.setIntervalType(pds.getTimeRangeIndicator());
       b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
     }
 

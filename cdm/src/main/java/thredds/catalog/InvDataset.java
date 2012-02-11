@@ -83,6 +83,7 @@ public abstract class InvDataset {
   protected List<ThreddsMetadata.Variables> variables;
   public ThreddsMetadata.GeospatialCoverage gc;
   public DateRange tc;
+  protected String variableMapLink;
 
   // for subclassing
   protected InvDataset(InvDataset parent, String name) {
@@ -508,6 +509,10 @@ public abstract class InvDataset {
    */
   public List<ThreddsMetadata.Variables> getVariables() {
     return variables;
+  }
+
+  public String getVariableMapLink() {
+    return variableMapLink;
   }
 
   /**
