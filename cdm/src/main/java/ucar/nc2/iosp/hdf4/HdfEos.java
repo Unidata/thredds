@@ -65,7 +65,7 @@ public class HdfEos {
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata.
-   * All Variables named StructMetadata.n, where n= 1, 2, 3 ... are read in and their contents concatenated
+   * All Variables named StructMetadata<n>, where n= 1, 2, 3 ... are read in and their contents concatenated
    * to make the structMetadata String.
    *
    * @param ncfile Amend this file
@@ -81,11 +81,11 @@ public class HdfEos {
     return true;
   }
 
-  static public void getEosInfo(NetcdfFile ncfile, Group eosGroup, Formatter f) throws IOException {
+  static public boolean getEosInfo(NetcdfFile ncfile, Group eosGroup, Formatter f) throws IOException {
     String smeta = getStructMetadata(eosGroup);
     if (smeta == null) {
       f.format("No StructMetadata variables in group %s %n", eosGroup.getName());
-      return;
+      return false;
     }
     f.format("raw = %n%s%n", smeta);
     ODLparser parser = new ODLparser();
@@ -93,6 +93,7 @@ public class HdfEos {
     ByteArrayOutputStream bos = new ByteArrayOutputStream(1000 * 1000);
     parser.showDoc(bos);
     f.format("parsed = %n%s%n", bos.toString());
+    return true;
   }
 
   static private String getStructMetadata(Group eosGroup) throws IOException {
@@ -101,7 +102,7 @@ public class HdfEos {
 
     int n = 0;
     while (true) {
-      Variable structMetadataVar = eosGroup.findVariable("StructMetadata." + n);
+      Variable structMetadataVar = eosGroup.findVariable("StructMetadata" + n);
       if (structMetadataVar == null) break;
       if ((structMetadata != null) && (sbuff == null)) { // more than 1 StructMetadata
         sbuff = new StringBuilder(64000);
@@ -111,7 +112,7 @@ public class HdfEos {
       // read and parse the ODL
       Array A = structMetadataVar.read();
       ArrayChar ca = (ArrayChar) A;
-      structMetadata = ca.getString(); // common case only StructMetadata.0, avoid extra copy
+      structMetadata = ca.getString(); // common case only StructMetadata0, avoid extra copy
 
       if (sbuff != null)
         sbuff.append(structMetadata);
@@ -203,7 +204,7 @@ public class HdfEos {
 
     if (featureType != null) {
       if (showWork) System.out.println("***EOS featureType= "+featureType.toString());
-      rootg.addAttribute(new Attribute("cdm_data_type", featureType.toString()));
+      rootg.addAttribute(new Attribute(CF.FEATURE_TYPE, featureType.toString()));
     }
 
   }
@@ -424,6 +425,7 @@ public class HdfEos {
       List<Element> vars = (List<Element>) f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText();
+        varname = H4header.createValidObjectName( varname);
         Variable v = dataG.findVariable(varname);
         //if (v == null)
         //  v = dataG.findVariable( H4header.createValidObjectName(varname));

@@ -36,6 +36,7 @@ import java.util.zip.DataFormatException;
 /**
  * FY satellite data stored in AWX format include both original observation and the derived dataset
  * no online document available for the details
+ * @author yuan
  */
 
 public class Fysatiosp extends AbstractIOServiceProvider {
@@ -61,7 +62,7 @@ public class Fysatiosp extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
-    return "CINRAD";
+    return "FYSAT";
   }
 
   public String getFileTypeDescription() {
@@ -417,9 +418,10 @@ public class Fysatiosp extends AbstractIOServiceProvider {
     //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed
     // String fileIn = "c:/data/image/gini/n0r_20041013_1852";
 
+    String fileIn =  "Q:\\cdmUnitTest\\formats\\fysat\\SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010115.AWX";
 
-    String fileIn = "E:/SATE_L3_F2C_VISSR_MWB_SNO_CNB/200801/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010815.AWX";
-    ucar.nc2.NetcdfFile.registerIOProvider(ucar.nc2.iosp.fysat.Fysatiosp.class);
+    //String fileIn = "E:/SATE_L3_F2C_VISSR_MWB_SNO_CNB/200801/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010815.AWX";
+    //ucar.nc2.NetcdfFile.registerIOProvider(ucar.nc2.iosp.fysat.Fysatiosp.class);
     ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
 
     List alist = ncf.getGlobalAttributes();

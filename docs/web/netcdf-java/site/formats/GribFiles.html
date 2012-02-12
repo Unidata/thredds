@@ -2,121 +2,63 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>GRIBCollection</title>
+<title>GRIB Collection</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;}
+</style>
 </head>
 
 <body>
 <h1> GRIB Collection Processing</h1>
-<h3>Use Cases</h3>
+<h2>Overview</h2>
+<p>As of CDM version 4.3, GRIB datasets are handled as collections of GRIB files. A GRIB file is a collection of GRIB records. A GRIB dataset is a therefore a collection of GRIB records in one or more files. You cannot access these files remotely, eg through an OPeNDAP server, they must be local. A THREDDS Data Server (TDS) can make  GRIB datasets remotely accessible, eg through  OPeNDAP. </p>
+<p>The CDM can only read GRIB files, it cannot write them. It can, however, rewrite GRIB into netCDF using CF Conventions. As of version 4.3, it can only write netCDF-3 format files, which are typically 4-40 times larger than GRIB. We hope in future versions to write to the netCDF-4 format, with file sizes comparable to GRIB.</p>
+<p>A GRIB collection must follow these <em>homogeneity constraints</em>:</p>
 <ol>
-  <li>client
+  <li>The GRIB records must be either GRIB-1 or GRIB-2, you cannot mix different editions in the same collection.</li>
+  <li>The GRIB collection should be <em>coherent</em>, eg from the same model (you can mix multiple runs from the same model, however). Exacty what that means is rather vague.</li>
+  <li>The GRIB records should all be from the same center and subcenter, since these are used for table lookups. (In principle, one could relax this if all records use only standard WMO entries. The global metadata may be misleading, however). Different table versions may be mixed in the same collection. </li>
+</ol>
+<p>In addition:</p>
+<ol>
+  <li>A best practice is that all GRIB records in the collection should use the same Grid Definition (GDS). If there is more than one GDS in the collection, each GDS will be placed in a seperate group. This can be a problem for older software that doesnt deal with groups.</li>
+  <li>Global attributes are taken from a single record, and so may be misleading if these vary within the collection. These are:
     <ol>
-        <li>single data file mode</li>
-      <li>collection index mode</li>
-    </ol>
-  </li>
-  <li>server with small, static collections
-    <ol>
-        <li>&lt;update startup=&quot;nocheck&quot; trigger=&quot;allow&quot;/&gt; from tds, must have write permision, no rescan needed.</li>
-      <li>if no update, will be created when first accessed</li>
-    </ol>
-  </li>
-  <li>server with small, dynamic collections; lazy updating
-    <ol>
-        <li>&lt;collection recheckEvery=&quot;time&quot;/&gt;</li>
-    </ol>
-  </li>
-  <li>server with small, dynamic collections; active updating
-    in background tds task
-    <ol>
-        <li>&lt;update startup=&quot;true&quot; rescan=&quot;0 0/5 * * * ? *&quot; trigger=&quot;allow&quot;/&gt; from tds, must have write permision</li>
-    </ol>
-  </li>
-  <li>server with small, dynamic collections; active updating
-    in background tdm task
-      <ol>
-        <li>&lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/5 * * * ? *&quot; trigger=&quot;allow&quot;/&gt; from seperate tdm process</li>
-        <li>if tdm hasnt run, tds will create grib collection index if possibl</li>
-      </ol>
-  </li>
-  <li>server with large, dynamic collections
-    <ol>
-        <li>use timePartition. This builds global ncx from time partitioned ncx, for performance.</li>
+      <li>The generating process</li>
     </ol>
   </li>
 </ol>
-<h3>Notes</h3>
-<ul>
-  <li>You must put in <strong>&lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;</strong>, otherwise GRIB-2 is assumed</li>
-  <li>olderThan=&quot;5 min&quot; now exlucde files only if they are not already in the collection. OTOH is this needed anymore? Rectilyze should prevent fragmented coordinates.</li>
-  <li>dont mix recheck  with update/tdm. recheck means when a dataset is accessed, scan if this much time has elapsed since the last scan. so its synchronous, wheras update is asynch.</li>
-  <li>trigger from user means go scan collection</li>
-  <li>trigger from tdm means index is created, but rebuild gc objecy from it. maybe thats fast enough that you can do it when next request comes in. but other fc (point, fmrc) may be differernt ??</li>
-</ul>
-<p>&nbsp;</p>
+<h2>Indexing</h2>
+<p>For each GRIB file, a <em>GRIB index </em>file is written with suffix <strong>.gbx9.</strong> This file contains everything in the GRIB file except the data. Generally it is 300-1000 times smaller that the original file. Once written, it never has to be rewritten. If the GRIB file changes, the CDM should detect that and rewrite the index file. If there is any doubt about that, delete the index file and let it get recreated. </p>
+<p>For each GRIB collection, a <em>GRIB collection index </em>file is written with suffix <strong>.ncx. </strong>This file contains all the metadata and the coordinates for the collection. It is usually fairly small (a few dozen Kbytes to a few Mbytes for a large collection), and once created, makes accessing the GRIB collection very fast. In general it will be updated if needed, but one can always delete it and let it be recreated if needed.</p>
+<p>If one opens a single GRIB file in the CDM, a gbx9 and ncx file will be created for that file. If one opens a collection of multiple GRIB files, a gbx9 file is created for each file, and one ncx file is created for the collection.</p>
+<p>Both kinds of index files are binary, private formats for the CDM, whose format may change as needed, transparent to any application.</p>
+<h2>GRIB Tables</h2>
+<p>The use of external tables in GRIB is  quite problematic (read <a href="http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf">here</a> for more details). Nonetheless, GRIB files are in wide use internationally and contain invaluable data. The CDM is a general-purpose GRIB reading library that makes GRIB data available through the CDM/NetCDF API, that is, as multidimensional data arrays and <a href="http://cf-pcmdi.llnl.gov/">CF</a>-compliant metadata and coordinates.</p>
+<p>Because of flaws  in  the design of GRIB and flaws in  actual practice by national centers in writing GRIB, any general purpose GRIB reader can only make a best effort in interpreting arbitrary GRIB records. It is therefore necessary, for anything other than casual use, to carefully examine the output of CDM GRIB datasets and compare this against the documentation. In particular, GRIB records may refer to local tables that are missing or incorrect in the CDM, and they may override standard WMO tables without the CDM being able to detect that they are doing so. It is often necessary for users to contact the data producer to obtain the correct tables for the particular dataset they want to read. This is also necessary for other  GRIB reading tools like <a href="http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html">wgrib</a> (NCEP) and <a href="http://www.ecmwf.int/products/data/software/grib.html">gribex</a>  (ECMWF). </p>
+<p>The CDM has a <a href="GribTables.html">number of ways</a> to allow you to use new tables or override incorrect ones globally or by dataset. The good news is that if users contribute these fixes back to the CDM, everyone can take advantage of them and the set of &quot;correct&quot; datasets will grow. The WMO has greatly improved the process of using the standard tables, and hopefully GRIB data producers will continue to <a href="GribTables.html">improve  methods for writing GRIB </a>and maintaining  local tables.</p>
+<h2>Opening a GRIB Collection in the CDM</h2>
 <h3>Single Data File Mode</h3>
-<p>Pass the data file location to the IOSP.  Assumes its a File (ie not remote, etc). Call <strong>GribIndex.makeCollection() </strong></p>
-<ol><li>Check for grib index (<strong>gbx9</strong>).
-    <ol>
-      <li>If exists, check last modified against data file. </li>
-      <li>Read grib index. <strong>GribIndex.readIndex().</strong></li>
-      <li>(Re)write if needed.  <strong>GribIndex.makeIndex().</strong></li>
-      <li>Not using DiskCache</li>
-    </ol>
-</li>
-  <li>Check for collection index (<strong>ncx</strong>). <strong>GribCollectionBuilder.createFromSingleFile().</strong>
-    <ol>
-      <li>If exists, check last modified against data file. </li>
-      <li>Read collection index. <strong>GribCollectionBuilder.readIndex().</strong></li>
-      <li>(Re)write if needed. <strong>GribCollectionBuilder.createIndex()</strong></li>
-      <li>Not using DiskCache</li>
-    </ol>
-  </li>
-</ol>
-<h3>Collection Index Mode</h3>
-<p>Pass the <strong>ncx</strong> file to the IOSP. In this case, the collection is created from reading the ncx file with no checking against the original data file(s).</p>
+<p>Pass the local data file location to any of the standard dataset opening classes:</p>
+<ul>
+  <li><strong>ucar.nc2.NetcdfFile.open(String location) </strong></li>
+  <li><strong>ucar.nc2.dataset.NetcdfDataset.openFile(String location) </strong></li>
+  <li><strong>ucar.nc2.dt.grid.GridDataset.open(String location) </strong></li>
+  <li><strong>ucar.nc2.ft.FeatureDatasetFactoryManager.open(FeatureType.GRID, String location, CancelTask task, Formatter errlog);</strong></li>
+</ul>
+<p>The GRIB Index (.gbx9) and GRIB Collection index (.ncx) files will be created if needed.</p>
+<h3>GRIB Collection </h3>
 <p>You can create an <strong>ncx</strong> file based on a collection spec in: Tools UI: IOSP/GRIB1(2)/GribCollection. Enter the collection spec and hit Enter. To write the index file, hit the  &quot;Write Index&quot; button on the right. Give it a memorable name and hit Save.</p>
-<h3>FeatureCollection Mode</h3>
-<ol>
-  <li>At TDS startup, only the configuration info is read and stored. No scanning or object building, etc.</li>
-  <li>if <strong>recheckEvery</strong> is defined on the collection
-    <ol>
-      <li>on every request, test to see if <strong>recheckEvery</strong> time has passed since last checked - InvDatasetFcGrib.checkState()</li>
-      <li>if so, rescan and recreate if needed</li>
-    </ol>
-  </li>
-  <li>If <strong>&lt;update&gt;</strong> is defined
-    <ol>
-      <li>then a task is added to the CollectionUpdater, to be run in the background.</li>
-      <li>task call CollectionManager.scan().</li>
-      <li>if scan() finds a change, InvDatasetFcGrib.update() is called, which recreates the collection.</li>
-    </ol>
-  </li>
-  <li>If <strong>&lt;tdm&gt;</strong> is defined
-    <ol>
-      <li>then a task is added to the CollectionUpdater, to be run in the background.</li>
-      <li>task call CollectionManager.scan().</li>
-      <li>if scan() finds a change, InvDatasetFcGrib.update() is called, which recreates the collection.</li>
-    </ol>
-  </li>
-</ol>
+<h3>Collection Index Mode</h3>
+<p>If the GRIB Collection index (.ncx) already exists, one can pass  that to any of the standard dataset opening classes. In this case, the collection is created from reading the ncx file with no checking against the original data file(s). The original data files are only accessed when data is requested from them.</p>
+<h3>NcML</h3>
 <p>&nbsp;</p>
-<h3>Indexing</h3>
-<p>Rule of thumb is ~ 500 bytes / GRIB record. (check with GRIB1). So a collection of 7M records cost 3.5 Gb. If TdmRunner has 4 threads, can get OOM error. Solution is probably to use time partitions.</p>
-<p>&nbsp;</p>
-<h2>Time partitions</h2>
-<p>It appears that all the partitions are open at once, rather than opening and closing as needed. each partition is a grib collection with  an open ncx RAF..</p>
-<p>leave top collections open, but manage time partitions in a cache.</p>
-<p>&nbsp;</p>
-<p>time partition indexes have to be deleted by hand when the underlying indexes need updating.</p>
-<p>ncx indices need to be deleted by hand if you want to modify them with gribConfig or code changes, unless I update the version.</p>
-<p>&nbsp;</p>
-<p>partition by day reads all file in, then divides them up by date.</p>
-<p>partition by directory looks at each directory seperately, not all files at once.</p>
-<h2>Memory use</h2>
-<p>top level gc are kept in memory. 68 total 42 M, avg = 600K.</p>
-<p>&nbsp;</p>
-<h2>NcML</h2>
+<h2>Mapping a GRIB Collection into Multidimensional Variables</h2>
+<p>GRIB records are 2D (x, y), and the CDM library has to collect them together into an 3,4,or 5 dimension Variable, by finding the ones with the same parameter, with different time / level / ensemble coordinates. This amounts to <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dataset_schemas_are_lost_in">guessing the dataset schema</a> and the intent of the data provider, and is unfortunately a bit arbitrary. Most of our testing is against the NCEP operational models from the IDD, and so are influenced by those. Deciding how to group the GRIB records into CDM Variables is one of the main source of problems.</p>
+<p>Time coordinates. As of TDS 4.2, we are trying to correctly deal with &quot;time interval coordinates&quot;. This has the affect that the time vales may not be unique, one needs to also look at the bounds.</p>
+<h3>Configuration</h3>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;E:/ncep/NDFD_CONUS_5km_conduit_20120119_1800.grib2&quot;&gt;
  &lt;iospParam&gt;
@@ -127,9 +69,14 @@
 NAM_CONUS_12km_conduit:
  &lt;iospParam&gt;<br /> 	&lt;intvFilter excludeZero=&quot;true&quot;/&gt;<br />   &lt;intvFilter intvLength=&quot;3&quot;&gt;<br />     &lt;variable id=&quot;0-1-8&quot;/&gt;<br />     &lt;variable id=&quot;0-1-10&quot;/&gt;<br />   &lt;/intvFilter&gt;<br /> &lt;/iospParam&gt;
 </pre>
+<h2>Using ToolsUI to examine GRIB records</h2>
+<p>&nbsp;</p>
+<h2>Using the lower level GRIB API</h2>
+<h3>&nbsp;</h3>
+
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 26, 2011
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated February 2012
 </address>
 </body>
 </html>

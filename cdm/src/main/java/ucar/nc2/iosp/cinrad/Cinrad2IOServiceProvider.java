@@ -34,13 +34,10 @@ package ucar.nc2.iosp.cinrad;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.CF;
+import ucar.nc2.constants.*;
 import ucar.nc2.iosp.nexrad2.NexradStationDB;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -206,6 +203,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", volScan.getDataFormat()));
+    ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.RADIAL.toString()));
     //Date d = Cinrad2Record.getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     //ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
 

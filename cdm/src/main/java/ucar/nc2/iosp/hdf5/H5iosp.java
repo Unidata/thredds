@@ -86,6 +86,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
+    if (isEos) return "HDF5-EOS";
     return "HDF5";
   }
 
@@ -97,6 +98,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   private RandomAccessFile myRaf;
   private H5header headerParser;
+  private boolean isEos;
 
   /////////////////////////////////////////////////////////////////////////////
   // reading
@@ -111,7 +113,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     // check if its an HDF5-EOS file
     Group eosInfo = ncfile.getRootGroup().findGroup("HDFEOS INFORMATION");
     if (eosInfo != null) {
-      HdfEos.amendFromODL(ncfile, eosInfo);
+      isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }
 
     ncfile.finish();

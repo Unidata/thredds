@@ -34,12 +34,9 @@
 
 package ucar.nc2.iosp.misc;
 
-import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.*;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
@@ -144,7 +141,7 @@ public class UspLightning2  extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY,"Read directly by Netcdf Java IOSP"));
 
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "Unidata Observation Dataset v1.0"));
-    ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.POINT.toString()));
+    ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.toString()));
     ncfile.addAttribute(null, new Attribute("observationDimension","record"));
 
     ncfile.addAttribute(null, new Attribute("time_coverage_start", time_min +" "+timeUnit));

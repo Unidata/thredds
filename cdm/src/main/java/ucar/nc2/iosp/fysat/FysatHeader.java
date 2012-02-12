@@ -27,11 +27,8 @@ import java.text.*;
 
 
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.CF;
+import ucar.nc2.constants.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.iosp.fysat.util.EndianByteBuffer;
 
 import ucar.unidata.geoloc.*;
@@ -553,8 +550,7 @@ public final class FysatHeader {
 
         att = new Attribute("data_scale", gridprocuctSecondHeader.dataScale);
         this.ncfile.addAttribute(null, att);
-
-        //		    this.ncfile.addAttribute(null, new Attribute("cdm_data_type", thredds.catalog.DataType.GRID.toString()));
+        this.ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
 
         DateFormat dformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         dformat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
@@ -1066,8 +1062,3 @@ public final class FysatHeader {
   }
 
 }
-/* Change History:
-   $Log: FysatHeader.java,v $
-  
-
- */

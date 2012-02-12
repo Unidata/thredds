@@ -36,9 +36,7 @@ package ucar.nc2.iosp.dorade;
 
 import ucar.nc2.*;
 
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants._Coordinate;
+import ucar.nc2.constants.*;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.MAMath;
@@ -367,6 +365,7 @@ public class Doradeheader {
         nc.addAttribute(null, new Attribute("time_coverage_end",  dd[dd.length-1].toString()));
         nc.addAttribute(null, new Attribute("Content", "This file contains one scan of remotely sensed data"));
         nc.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
+        nc.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.RADIAL.toString()));
         nc.addAttribute(null, new Attribute("format", "Unidata/netCDF/Dorade"));
         nc.addAttribute(null, new Attribute("Radar_Name", mySweep.getSensorName(0)));
         nc.addAttribute(null, new Attribute("Project_name", ""+mySweep.getProjectName()));

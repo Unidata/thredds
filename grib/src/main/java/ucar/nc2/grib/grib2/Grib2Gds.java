@@ -258,9 +258,10 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       la2 = getOctet4(56) * scale;
       lo2 = getOctet4(60) * scale;
 
-
       if (lo2 < lo1) lo2 += 360.0F;
-
+      if (Misc.closeEnough(lo1, lo2)) { // canadian met has global with lo1 = lo2 = 180
+        lo1 -= 360.0F;
+      }
 
       // GFS_Puerto_Rico_0p5deg seems to have deltaLat, deltaLon incorrectly encoded
       deltaLon = getOctet4(64) * scale;

@@ -9,7 +9,6 @@
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;}
-.style1 {font-style: italic}
 </style>
 </head>
 <body>
@@ -61,14 +60,14 @@ mvn install</pre>
   </blockquote>
   <p>  You can also get the 4.2.28 build at  <a href="http://maven.geotoolkit.org/edu/ucar/netcdf/">http://maven.geotoolkit.org/edu/ucar/netcdf/  </a></p>
 </blockquote>
-<h3><strong><a name="v43" id="v43"></a> Development version 4.3 (alpha) </strong><strong>(requires  Java 6) </strong></h3>
+<h3><strong><a name="v43" id="v43"></a> Development version 4.3 (BETA) </strong><strong>(requires  Java 6) </strong></h3>
 <p>See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want:</p>
 <ul>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdf-4.3.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdf-4.3.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.zip.MD5">MD5</a>) includes all the jar files you might need. </li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar.MD5">MD5</a>) allows you to run the netCDF ToolsUI application directly from it. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv.jar">ncIdv.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv.jar.MD5">MD5</a>) which you can use in the IDV</li>
+  <li>The ncIDV jar is not yet available.</li>
   <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncCore-4.3.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncCore-4.3.jar.MD5">MD5</a>) just reads netcdf-3  files.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfUI-4.3.jar">unbundled GUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfUI-4.3.jar.MD5">MD5</a>) for GUI applications that want to choose which other jars are needed</li>
   <li>See <a href="v4.3/CHANGES">CHANGES</a> for version changes.</li>
@@ -96,6 +95,17 @@ ant clean makeMainComplete</pre>
 </blockquote>
 <h3>File format<a name="formats"></a> types</h3>
 <p>The NetCDF-Java library   can read these <a href="formats/FileTypes.html">file types and remote access protocols</a>.</p>
+<p>Note to GRIB users:</p>
+<blockquote>
+  <p><strong>If you are depending on the CDM/TDS to read GRIB files, you must      upgrade to 4.3 AND closely examine the output of any files that you      really care about. Check parameter names and everything else against      the original documentation if possible, especially if there is any      local parameter use. Please send us any files you suspect might be      incorrectly read by the CDM library. Note that we will not backport      fixes to version 4.2. Note that the variable names in 4.3 will be      different from those in 4.2.<br>
+    </strong><br>
+  Evolving documentation for GRIB is at:</p>
+  <ul>
+    <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html"> http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html</a></li>
+    <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html"> http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html</a><br>
+    </li>
+  </ul>
+</blockquote>
 <h3><strong>Caveats and not-so-stable APIs</strong>:</h3>
 <ul>
   <li><strong>Writing</strong> to netCDF-3 format is supported, but new features in the CDM, e.g. groups, structures,  long data types are not  yet supported. </li>
@@ -233,7 +243,7 @@ ant clean makeMainComplete</pre>
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated December 2011
+and was last updated February 2012
 </address>
 
 </body>

@@ -64,6 +64,7 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
     public String getFileTypeId() {
+      if (header.isEos()) return "HDF4-EOS";
       return "HDF4";
     }
 

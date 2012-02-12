@@ -83,7 +83,7 @@ public class TestH4eos extends TestCase {
         Group g = root.findGroup("HDFEOS INFORMATION");
         if (g == null) g = ncfile.getRootGroup();
 
-        Variable dset = g.findVariable("StructMetadata.0");
+        Variable dset = g.findVariable("StructMetadata0");
         if (dset != null) {
           System.out.println("EOS file=" + filename);
           return 1;

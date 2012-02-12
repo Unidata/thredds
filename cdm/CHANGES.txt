@@ -3,6 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
+ 9: (2012-02-xx)
+  Add SwathDatasetFactory - fake for now.
+  HDF4: remove "." in identifier
+  GRIB-2: fix when lat/lon GDS has lo1 == lo2 == 180
+
  8: (2012-02-09)
   GRIB-1 ensembles for ECMWF type=30
   GRIB-1 merge intervals

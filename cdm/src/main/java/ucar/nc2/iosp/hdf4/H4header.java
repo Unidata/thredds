@@ -77,8 +77,11 @@ public class H4header {
     return false;
   }
 
+  // replace space with underscore, remove "."
+  private static final char[] replace = new char[] {' ', '.'};
+  private static final String[] replaceWith = new String[] {"_", ""};
   static String createValidObjectName(String name ) {
-    return StringUtil2.replace(name, ' ', "_"); // added 2/15/2010
+    return StringUtil2.replace( name, replace, replaceWith); // added 2/15/2010 , mod 2/11/2012
   }
 
   private static boolean debugDD = false; // DDH/DD
@@ -114,6 +117,7 @@ public class H4header {
 
   private ucar.nc2.NetcdfFile ncfile;
   private RandomAccessFile raf;
+  private boolean isEos;
 
   private List<Tag> alltags;
   private Map<Integer, Tag> tagMap = new HashMap<Integer, Tag>();
@@ -121,6 +125,10 @@ public class H4header {
 
   private MemTracker memTracker;
   private PrintStream debugOut = System.out;
+
+  public boolean isEos() {
+    return isEos;
+  }
 
   void read(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile) throws IOException {
     this.raf = myRaf;
@@ -158,8 +166,8 @@ public class H4header {
     construct(ncfile, alltags);
 
     if (!debugHdfEosOff) {
-      boolean used = HdfEos.amendFromODL(ncfile, ncfile.getRootGroup());
-      if (used) {
+      isEos = HdfEos.amendFromODL(ncfile, ncfile.getRootGroup());
+      if (isEos) {
         adjustDimensions();
         String history = ncfile.findAttValueIgnoreCase(null, "_History", "");
         ncfile.addAttribute(null, new Attribute("_History", history + "; HDF-EOS StructMetadata information was read"));
@@ -708,7 +716,7 @@ public class H4header {
     Variable v;
     if (vh.nfields == 1) {
       // String name = createValidObjectName(vh.name);
-      v = new Variable(ncfile, null, null, vh.name);
+      v = new Variable(ncfile, null, null, H4header.createValidObjectName(vh.name));
       vinfo.setVariable(v);
       H4type.setDataType(vh.fld_type[0], v);
 
@@ -753,7 +761,7 @@ public class H4header {
           s.setIsScalar();
 
         for (int fld = 0; fld < vh.nfields; fld++) {
-          Variable m = new Variable(ncfile, null, s, vh.fld_name[fld]);
+          Variable m = new Variable(ncfile, null, s, H4header.createValidObjectName(vh.fld_name[fld]));
           short type = vh.fld_type[fld];
           int nbytes = vh.fld_isize[fld];
           short nelems = vh.fld_order[fld];
@@ -845,7 +853,7 @@ public class H4header {
       log.warn("data tag missing vgroup= " + group.refno + " " + group.name);
       //return null;
     }
-    Variable v = new Variable(ncfile, null, null, group.name);
+    Variable v = new Variable(ncfile, null, null, H4header.createValidObjectName(group.name));
     v.setDimensions(dims);
     H4type.setDataType(ntag.type, v);
 
@@ -1903,7 +1911,6 @@ public class H4header {
 
       short len = raf.readShort();
       name = readString(len);
-      // name = createValidObjectName(name);
       len = raf.readShort();
       className = readString(len);
 
@@ -1985,6 +1992,7 @@ public class H4header {
 
       short len = raf.readShort();
       name = readString(len);
+
       len = raf.readShort();
       className = readString(len);
 
@@ -2025,6 +2033,10 @@ public class H4header {
       return sbuff.toString();
     }
   }
+
+  //private String clean(String name) {
+  //  return StringUtil2.remove(name.trim(), '.'); // just avoid the whole mess by removing "."
+  //}
 
   private String readString(int len) throws IOException {
     if (len < 0)
