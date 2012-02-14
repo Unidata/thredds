@@ -43,7 +43,8 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.util.List;
 
 /**
- * Experimental Grid fetaure type
+ * Experimental Grid feature type.
+ * Can we do this without indexed reads?
  * TODO
  *  has extra dimension(s)
  *
@@ -76,18 +77,6 @@ public interface Grid {
      * @return the data type
      */
     public DataType getDataType();
-
-    /**
-     * get the rank
-     * @return the rank
-     */
-    public int getRank();
-
-    /**
-     * get the shape (canonical ordering)
-     * @return the shape (canonical ordering)
-     */
-    public int[] getShape();
 
     /**
      * Get a List of Attribute specific to the Grid
