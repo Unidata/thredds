@@ -179,10 +179,6 @@ public class RadarDatasetCollection {
         sb.setLength( 0 );
         dir = new File( sb.append( tdir).append( "/").append( stn).toString());
         if (dir.exists() && dir.isDirectory()) {
-
-          //sb.setLength( 0 );
-          //sb.append("In directory ").append(dir.getParent()).append("/").append(dir.getName());
-          //log.info( sb.toString() );
           File pdir = null;
           if( product != null ) {
             pdir = new File( sb.append("/").append(product).toString());
