@@ -37,6 +37,7 @@ import opendap.dap.parsers.*;
 import opendap.dap.*;
 
 import java.io.*;
+import java.net.URL;
 
 // Test that the dap.y parsing is correct
 
@@ -50,7 +51,6 @@ public class TestDapParser extends TestFiles
 
 
     String extension = null;
-    int kind = ISUNKNOWN;
 
     String[] xfailtests = null;
 
@@ -78,15 +78,12 @@ public class TestDapParser extends TestFiles
         if (extension.equals(".das")) {
             testfilenames = dastestfiles;
             xfailtests = dasxfails;
-            kind = ISDAS;
         } else if (extension.equals(".dds")) {
             testfilenames = ddstestfiles;
             xfailtests = ddsxfails;
-            kind = ISDDS;
         } else if (extension.equals(".err")) {
             testfilenames = errtestfiles;
             xfailtests = errxfails;
-            kind = ISERR;
         } else
             throw new Exception("TestDapParser: Unknown extension: " + extension);
         // override the test cases
@@ -107,81 +104,111 @@ public class TestDapParser extends TestFiles
                     break;
                 }
             }
-            FileInputStream teststream;
-            FileOutputStream resultstream;
-            String testfilepath = testdir + "/" + test + extension;
-            String resultfilepath = resultsdir + "/" + test + extension;
-            File testfile = new File(testfilepath);
-            File resultfile = new File(resultfilepath);
-            if (!testfile.canRead()) {
-                System.err.println("TestDapParser: cannot read: " + testfile.toString());
-                continue;
-            }
-            teststream = new FileInputStream(testfile);
-            resultstream = new FileOutputStream(resultfile);
+if(false)
+	    Test1(test, testdir, resultsdir, baselinedir, extension);
+	}
 
-            DAS das = new DAS();
-            DDS dds = new DDS();
-            DAP2Exception err = new DAP2Exception();
-
-            /* try parsing .dds | .das | error */
-
-            switch (kind) {
-            case ISDAS:
-                das.parse(teststream);
-                break;
-            case ISDDS:
-                dds.parse(teststream);
-                break;
-            case ISERR:
-                err.parse(teststream);
-                break;
-            default:
-                throw new ParseException("Unparseable file: " + testfile);
-            }
-
-
-            try {
-                teststream.close();
-            } catch (IOException ioe) {
-            }
-            ;
-
-            if (extension.equals(".dds")) {
-                dds.print(resultstream);
-            } else if (extension.equals(".das")) {
-                das.print(resultstream);
-            } else if (extension.equals(".err")) {
-                err.print(resultstream);
-            }
-
-            try {
-                resultstream.close();
-		// Open the baseline file
-                String basefilepath = baselinedir + "/" + test + extension;
-                File basefile = new File(basefilepath);
-                FileInputStream basestream = new FileInputStream(basefile);
-                // Diff the two files
-                Diff diff = new Diff(test);
-                FileReader resultrdr = new FileReader(resultfile);
-                FileReader baserdr = new FileReader(basefile);
-                boolean pass = !diff.doDiff(baserdr, resultrdr);
-                if (isxfail) {
-                    pass = true;
-                    System.err.println("***XFAIL: " + test);
-                }
-                baserdr.close();
-                resultrdr.close();
-                if (!pass) {
-                    junit.framework.Assert.assertTrue(testname, pass);
-                }
-            } catch (IOException ioe) {
-                System.err.println("Close failure");
-            }
-            System.out.flush();
-            System.err.flush();
-        }
+        // Test special cases
+        for (int i = 0; i < specialtests.length; i++) {
+	    String thisext = specialtests[i][0];
+	    if(!extension.equals(thisext)) continue;
+	    String url = specialtests[i][1];
+	    String test = specialtests[i][2];
         System.out.flush();
+        this.test = test;
+        this.testname = test;
+        System.out.println("Testing file: " + url+"/"+test+extension);
+	    Test1(test, url, resultsdir, baselinedir, extension);
+	}
     }
+
+void
+Test1(String test, String testdir, String resultsdir, String baselinedir,
+      String extension)
+    throws Exception
+{
+    int kind = ISUNKNOWN;
+    if (extension.equals(".das")) kind = ISDAS;
+    else if (extension.equals(".dds")) kind = ISDDS;
+    else if (extension.equals(".err")) kind = ISERR;
+    else
+        throw new Exception("TestDapParser: Unknown extension: " + extension);
+    boolean isfile = testdir.startsWith("file:");
+
+    InputStream teststream = null;
+    FileOutputStream resultstream = null;
+
+    String testfilepath = testdir + "/" + test + extension;
+    String resultfilepath = resultsdir + "/" + test + extension;
+    if (isfile) {
+        File testfile = new File(testfilepath);
+        if(!testfile.canRead())
+        throw new Exception("TestDapParser: cannot read: " + testfile.toString());
+        teststream = new FileInputStream(testfile);
+    } else
+        teststream = new URL(testfilepath).openConnection().getInputStream();
+
+    File resultfile = new File(resultfilepath);
+    resultstream = new FileOutputStream(resultfile);
+
+    DAS das = new DAS();
+    DDS dds = new DDS();
+    DAP2Exception err = new DAP2Exception();
+
+    /* try parsing .dds | .das | error */
+
+    switch (kind) {
+    case ISDAS:
+        das.parse(teststream);
+        break;
+    case ISDDS:
+        dds.parse(teststream);
+        break;
+    case ISERR:
+        err.parse(teststream);
+        break;
+    default:
+        throw new ParseException("Unparseable file: " + testfilepath);
+    }
+
+    if(isfile) try {teststream.close();} catch (IOException ioe) {};
+
+    switch (kind) {
+    case ISDDS:
+        dds.print(resultstream);
+        break;
+    case ISDAS:
+        das.print(resultstream);
+	break;
+    case ISERR:
+        err.print(resultstream);
+	break;
+    }
+
+    try {
+        resultstream.close();
+        // Open the baseline file
+        String basefilepath = baselinedir + "/" + test + extension;
+        File basefile = new File(basefilepath);
+        FileInputStream basestream = new FileInputStream(basefile);
+        // Diff the two files
+        Diff diff = new Diff(test);
+        FileReader resultrdr = new FileReader(resultfile);
+        FileReader baserdr = new FileReader(basefile);
+        boolean pass = !diff.doDiff(baserdr, resultrdr);
+
+        baserdr.close();
+        resultrdr.close();
+        if (!pass) {
+            junit.framework.Assert.assertTrue(testname, pass);
+        }
+    } catch (IOException ioe) {
+        System.err.println("Close failure");
+    }
+    System.out.flush();
+    System.err.flush();
+}
+
+
 }
 

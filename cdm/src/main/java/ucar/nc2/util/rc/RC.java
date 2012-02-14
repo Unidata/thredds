@@ -283,8 +283,7 @@ loadDefaults()
 	    if(rc0.load(filepath)) found1 = true;
 	}
     }
-    if(!found1)
-        LogStream.getLog().info("No .rc file found");
+    // ignore missing .rc file if(!found1) LogStream.getLog().info("No .rc file found");
     dfaltRC = rc0;
 }
 
