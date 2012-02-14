@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.1">
+
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <service name="fileServices" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+  </service>
+
+
+  <dataset name="GEMPAK Test Data">
+
+    <metadata inherited="true">
+      <serviceName>fileServices</serviceName>
+      <dataType>Grid</dataType>
+      <dataFormat>GEMPAK</dataFormat>
+    </metadata>
+
+    <datasetScan name="GEMPAK Model Data" ID="GEMPAK/model"
+                 path="GEMPAK/model" location="/data/ldm/pub/decoded/gempak/model">
+
+      <filter>
+        <include wildcard="*.gem" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addDatasetSize />
+
+    </datasetScan>
+      
+
+  </dataset>
+
+</catalog>

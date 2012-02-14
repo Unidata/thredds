@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="latest" serviceType="Resolver" base="" />
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <!-- service name="ncServer" serviceType="NetcdfServer" base="/thredds/ncServer/" / -->
+  </service>
+  <dataset name="Unidata IDD netCDF Model data">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <authority>unidata.ucar.edu:</authority>
+    </metadata>
+    <datasetScan name="NCEP GFS 80km CONUS model data" ID="modelsNc/NCEP/GFS/CONUS_80km" collectionType="ForecastModelRuns"
+                 path="modelsNc/NCEP/GFS/CONUS_80km" location="/data/ldm/pub/decoded/netcdf/grid/NCEP/GFS/CONUS_80km/">
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP GFS 80km CONUS model data"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+    </datasetScan>
+    <datasetScan name="NCEP GFS Global 5.0 x 2.5 degree model data" ID="modelsNc/NCEP/GFS/Global_5x2p5deg" collectionType="ForecastModelRuns"
+                 path="modelsNc/NCEP/GFS/Global_5x2p5deg" location="/data/ldm/pub/decoded/netcdf/grid/NCEP/GFS/Global_5x2p5deg/">
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP GFS Global 5.0 x 2.5 degree model data"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+    </datasetScan>
+    <datasetScan name="NCEP GFS Extended Global 5.0 x 5.0 degree model data" ID="modelsNc/NCEP/GFS/Extended_Global_5p0deg" collectionType="ForecastModelRuns"
+                 path="modelsNc/NCEP/GFS/Extended_Global_5p0deg" location="/data/ldm/pub/decoded/netcdf/grid/NCEP/GFS/Extended_Global_5p0deg/">
+      <filter>
+      <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP GFS Extended Global 5.0 x 5.0 degree model data"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+    </datasetScan>
+    <datasetScan name="NCEP NAM 80km CONUS model data (real and near time)" ID="modelsNc/NCEP/NAM/CONUS_80km" collectionType="ForecastModelRuns"
+                 path="modelsNc/NCEP/NAM/CONUS_80km" location="/data/ldm/pub/decoded/netcdf/grid/NCEP/NAM/CONUS_80km/">
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP NAM 80km CONUS model data (real and near time)"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+    </datasetScan>
+    <datasetScan name="NCEP RUC 80km CONUS model data" ID="modelsNc/NCEP/RUC/CONUS_80km" collectionType="ForecastModelRuns"
+                 path="modelsNc/NCEP/RUC/CONUS_80km" location="/data/ldm/pub/decoded/netcdf/grid/NCEP/RUC/CONUS_80km/">
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RUC 80km CONUS model data"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+    </datasetScan>
+    <datasetScan name="NCEP RUC2 40km CONUS model data" ID="modelsNc/NCEP/RUC2/CONUS_40km" collectionType="ForecastModelRuns"
+                 path="modelsNc/NCEP/RUC2/CONUS_40km" location="/data/ldm/pub/decoded/netcdf/grid/NCEP/RUC2/CONUS_40km/">
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RUC2 40km CONUS model data"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+    </datasetScan>
+    <datasetScan name="NCEP SST Global 5.0 x 2.5 degree model data" ID="modelsNc/NCEP/SST/Global_5x2p5deg" collectionType="ForecastModelRuns"
+                 path="modelsNc/NCEP/SST/Global_5x2p5deg" location="/data/ldm/pub/decoded/netcdf/grid/NCEP/SST/Global_5x2p5deg/">
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP SST Global 5.0 x 2.5 degree model data"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+    </datasetScan>
+    <datasetScan name="NCEP SST Global 2.0 x 2.0 degree model data" ID="modelsNc/NCEP/SST/Global_2x2deg" collectionType="ForecastModelRuns"
+                 path="modelsNc/NCEP/SST/Global_2x2deg" location="/data/ldm/pub/decoded/netcdf/grid/NCEP/SST/Global_2x2deg/">
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP SST Global 2.0 x 2.0 degree model data"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+    </datasetScan>
+    <datasetScan name="NCEP Wind-Wave Global 5.0 x 2.5 degree model data" ID="modelsNc/NCEP/OCEAN/Global_5x2p5deg" collectionType="ForecastModelRuns"
+                 path="modelsNc/NCEP/OCEAN/Global_5x2p5deg" location="/data/ldm/pub/decoded/netcdf/grid/NCEP/OCEAN/Global_5x2p5deg/">
+      <filter>
+        <include wildcard="*.nc" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP Wind-Wave Global 5.0 x 2.5 degree model data"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+    </datasetScan>
+  </dataset>
+</catalog>

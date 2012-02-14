@@ -70,7 +70,7 @@ public class CdmInit {
     fmrcDefinitionDirectory = dir;
   } */
 
-  void init(TdsContext tdsContext) {
+  public void init(TdsContext tdsContext) {
     // prefer cdmRemote when available
     ThreddsDataFactory.setPreferCdm(true);
 

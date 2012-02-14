@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         version="1.0.1">
+  <service name="latest" serviceType="Resolver" base="/thredds/catalog/" />
+  <dataset name="Latest NCEP Model Data" ID="Latest_NCEP_Models">
+    <metadata inherited="true">
+      <dataType>Grid</dataType>
+      <dataFormat>GRIB-1</dataFormat>
+      <serviceName>latest</serviceName>
+    </metadata>
+    <dataset name="NCEP DGEX Model" ID="DGEX">
+      <dataset name="Latest NCEP DGEX CONUS 12km" ID="Latest_DGEX_CONUS_12km"
+               urlPath="model/NCEP/DGEX/CONUS_12km/latest.xml" />
+      <dataset name="Latest NCEP DGEX Alaska 12km" ID="Latest_DGEX_Alaska_12km"
+               urlPath="model/NCEP/DGEX/Alaska_12km/latest.xml" />
+    </dataset>
+    <dataset name="NCEP Global Forecast System Model" ID="GFS">
+      <dataset name="Latest NCEP GFS Alaska 191km" ID="Latest_GFS_Alaska_191km"
+               urlPath="model/NCEP/GFS/Alaska_191km/latest.xml" />
+      <dataset name="Latest NCEP GFS CONUS 80km" ID="Latest_GFS_CONUS_80km"
+               urlPath="model/NCEP/GFS/CONUS_80km/latest.xml" />
+      <dataset name="Latest NCEP GFS CONUS 95km" ID="Latest_GFS_CONUS_95km"
+               urlPath="model/NCEP/GFS/CONUS_95km/latest.xml" />
+      <dataset name="Latest NCEP GFS CONUS 191km" ID="Latest_GFS_CONUS_191km"
+               urlPath="model/NCEP/GFS/CONUS_191km/latest.xml" />
+      <dataset name="Latest NCEP GFS Global 0.5 degree" ID="Latest_GFS_Global_0p5deg"
+               urlPath="model/NCEP/GFS/Global_0p5deg/latest.xml">
+        <dataFormat>GRIB-2</dataFormat>
+      </dataset>
+      <dataset name="Latest NCEP GFS Global 1 degree" ID="Latest_GFS_Global_onedeg"
+               urlPath="model/NCEP/GFS/Global_onedeg/latest.xml" />
+      <dataset name="Latest NCEP GFS Global 2.5 degree" ID="Latest_GFS_Global_2p5deg"
+               urlPath="model/NCEP/GFS/Global_2p5deg/latest.xml" />
+      <dataset name="Latest NCEP GFS Hawaii 160km" ID="Latest_GFS_Hawaii_160km"
+               urlPath="model/NCEP/GFS/Hawaii_160km/latest.xml" />
+      <dataset name="Latest NCEP GFS Northern Hemispheric 381km" ID="Latest_GFS_N_Hemisphere_381km"
+               urlPath="model/NCEP/GFS/N_Hemisphere_381km/latest.xml" />
+      <dataset name="Latest NCEP GFS Puerto Rico 191km" ID="Latest_GFS_Puerto_Rico_191km"
+               urlPath="model/NCEP/GFS/Puerto_Rico_191km/latest.xml" />
+    </dataset>
+    <dataset name="NCEP North American Model" ID="NAM">
+      <dataset name="Latest NCEP NAM Alaska 11km" ID="Latest_NAM_Alaska_11km"
+               urlPath="model/NCEP/NAM/Alaska_11km/latest.xml" />
+    </dataset>
+    <!-- dataset name="NCEP Rapid Update Cycle Model" ID="RUC" -->
+    <dataset name="NWS National Digital Forecast Database" ID="NDFD">
+      <dataset name="Latest NWS NDFD CONUS 5km" ID="model/NCEP/NDFD/CONUS_5km"
+               urlPath="model/NCEP/NDFD/CONUS_5km/latest.xml" />
+    </dataset>
+  </dataset>
+</catalog>

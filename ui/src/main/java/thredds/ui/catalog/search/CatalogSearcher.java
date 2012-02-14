@@ -33,24 +33,34 @@
 
 package thredds.ui.catalog.search;
 
-import thredds.catalog.*;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Searcher;
 
-import ucar.nc2.ui.widget.HtmlBrowser;
-import ucar.util.prefs.*;
-import ucar.util.prefs.ui.*;
+import thredds.catalog.DataFormatType;
+import thredds.catalog.ServiceType;
 import ucar.nc2.constants.FeatureType;
-
-import java.io.*;
-import java.util.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import ucar.nc2.ui.widget.HtmlBrowser;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.Field;
+import ucar.util.prefs.ui.PrefPanel;
 
 /**
  * GUI interface to catalog search service.

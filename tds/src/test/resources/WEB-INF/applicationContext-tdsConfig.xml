@@ -1,0 +1,81 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xmlns:context="http://www.springframework.org/schema/context"		
+		xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+  
+  <!-- enabling component-scan in Spring for annotated wirings --> 
+  <context:component-scan base-package="thredds"/>
+
+  <bean id="tdsContext" class="thredds.server.config.TdsContext">
+    <property name="webappVersion" value="${tds.version}"/>
+    <property name="webappVersionBrief" value="${tds.version.brief}"/>
+    <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
+
+    <property name="contentRootPath" value="${tds.content.root.path}"/>
+    
+    <property name="contentPath" value="${tds.content.path}"/>
+    <property name="startupContentPath" value="${tds.content.startup.path}"/>
+    <property name="iddContentPath" value="${tds.content.idd.path}"/>
+    <property name="motherlodeContentPath" value="${tds.content.motherlode.path}"/>
+
+    <property name="tdsConfigFileName" value="${tds.config.file}"/>
+
+    <property name="serverInfo" ref="serverInfo"/>
+    <property name="htmlConfig" ref="htmlConfig"/>
+    <property name="wmsConfig" ref="wmsConfig"/>
+  </bean>
+
+  <bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
+    <constructor-arg ref="tdsContext" />
+  </bean>
+
+  <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
+
+  <bean id="htmlConfig" class="thredds.server.config.HtmlConfig">
+    <property name="webappUrl" value="${tds.url}" />
+    <property name="webappDocsUrl" value="${tds.documentation.url}" />
+    <property name="webappLogoUrl" value="${tds.logo.url}" />
+    <property name="webappLogoAlt" value="${tds.logo.alt}" />
+
+    <property name="installUrl" value="${tds.install.url}" />
+  </bean>
+
+  <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
+
+  <bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
+    <property name="tdsContext" ref="tdsContext" />
+    <property name="htmlConfig" ref="htmlConfig" />
+  </bean>
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    <property name="locations">
+      <list>
+        <value>classpath:thredds/server/tds.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- A Singleton class to initialize the CDM -->
+  <bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy" />
+
+    <!-- JMX -->
+  <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>
+  <bean id="netcdfFileCacheMonitor" class="thredds.monitor.NetcdfFileCacheMonitorImpl"/>
+  <bean id="fmrcCacheMonitor" class="thredds.monitor.FmrcCacheMonitorImpl"/>
+
+	<!-- Configuration for JMX exposure in the application
+	<bean id="mbeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+		<property name="beans">
+			<util:map>
+				<entry key="thredds:name=OpenRAF" value-ref="openRAFMonitor"/>
+				<entry key="thredds:name=netcdfFileCache" value-ref="netcdfFileCacheMonitor"/>
+			</util:map>
+		</property>
+	</bean> -->
+
+</beans>

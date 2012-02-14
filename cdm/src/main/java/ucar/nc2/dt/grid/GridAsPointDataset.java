@@ -52,11 +52,13 @@ import java.util.*;
 public class GridAsPointDataset {
   private List<GridDatatype> grids;
   private List<CalendarDate> dates;
+  
 
   public GridAsPointDataset( List<GridDatatype> grids) {
     this.grids = grids;
 
-    HashSet<Date> dateHash = new HashSet<Date>();
+    //HashSet<Date> dateHash = new HashSet<Date>(); ????
+    HashSet<CalendarDate> dateHash = new HashSet<CalendarDate>();
     List<CoordinateAxis1DTime> timeAxes = new ArrayList<CoordinateAxis1DTime>();
 
     for (GridDatatype grid : grids) {
@@ -67,10 +69,12 @@ public class GridAsPointDataset {
 
         Date[] timeDates = timeAxis.getTimeDates();
         for (Date timeDate : timeDates)
-          dateHash.add(timeDate);
+          dateHash.add( CalendarDate.of( timeDate) );
       }
     }
-    dates = Arrays.asList( dateHash.toArray(new CalendarDate[dateHash.size()]));
+    
+    // -->if dateHash is HashSet<Date> hashSet.toArray returns Date[], not CalendarDate[] ???
+    dates = Arrays.asList( dateHash.toArray(new CalendarDate[dateHash.size()]));   
     Collections.sort(dates);
   }
 

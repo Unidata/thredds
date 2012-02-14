@@ -55,7 +55,7 @@ public class TestAll
     // suite.addTest( new JUnit4TestAdapter( thredds.server.catalogservice.LocalCatalogServiceControllerTest.class ) );
     suite.addTestSuite( thredds.server.catalogservice.TestLocalCatalogRequest.class );
     suite.addTestSuite( thredds.server.catalogservice.TestRemoteCatalogRequest.class );
-    suite.addTest( new JUnit4TestAdapter( thredds.server.ncSubset.GridServletTest.class ));
+    suite.addTest( new JUnit4TestAdapter( thredds.server.ncSubset.GridServletRequestTest.class ));
     suite.addTestSuite( thredds.util.TestStartsWithPathAliasReplacement.class );
     suite.addTestSuite( thredds.util.TestStringValidateEncodeUtils.class );
     suite.addTest( thredds.util.filesource.TestAll.suite() );

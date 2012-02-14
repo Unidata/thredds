@@ -7,13 +7,13 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.5-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
-  <groupId>edu.ucar</groupId>
+  <!-- groupId>edu.ucar</groupId-->
   <artifactId>netcdf</artifactId>
   <packaging>jar</packaging>
   <name>NetCDF-Java Library</name>
@@ -204,14 +204,14 @@
   </repositories>
 
   <build>
-    <testSourceDirectory>void</testSourceDirectory>
+    <!-- testSourceDirectory>void</testSourceDirectory -->
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>thredds/logs/**</exclude>
+            <!-- exclude>thredds/logs/**</exclude -->
             <exclude>ucar/nc2/dataset/grid/**</exclude>
             <exclude>ucar/nc2/jni/**</exclude>
             <exclude>ucar/nc2/util/reflect/**</exclude>
@@ -225,6 +225,7 @@
         <includes>
           <include>resources/nj22/**</include>
           <include>resources/thredds/**</include>
+          <include>resources/wmo/**</include>
         </includes>
       </resource>
     </resources>

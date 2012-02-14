@@ -7,13 +7,13 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.5-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
-  <groupId>edu.ucar</groupId>
+  <!-- groupId>edu.ucar</groupId-->
   <artifactId>bufr</artifactId>
   <packaging>jar</packaging>
   <name>BUFR IOSP</name>
@@ -57,15 +57,17 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+    
   </dependencies>
 
   <build>
-    <testSourceDirectory>void</testSourceDirectory>
+    <!-- testSourceDirectory>void</testSourceDirectory-->
     <resources>
       <resource>
         <directory>src/main/resources</directory>
         <includes>
           <include>resources/**</include>
+          <include>META-INF/services/**</include>          
         </includes>
       </resource>
     </resources>

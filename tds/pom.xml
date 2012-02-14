@@ -7,14 +7,14 @@
     <parent>
         <groupId>edu.ucar</groupId>
         <artifactId>thredds-parent</artifactId>
-        <version>4.3.8-SNAPSHOT</version>
+        <version>4.3.5-SNAPSHOT</version>
     </parent>
 
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
-    <groupId>edu.ucar</groupId>
+    <!-- groupId>edu.ucar</groupId-->
     <artifactId>thredds</artifactId>
     <packaging>war</packaging>
     <name>THREDDS Data Server (TDS)</name>
@@ -151,10 +151,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <!-- 
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>netcdf</artifactId>
+             <scope>runtime</scope>
         </dependency>
+         -->        
         <dependency>
             <groupId>edu.ucar</groupId>
             <artifactId>bufr</artifactId>
@@ -206,6 +209,10 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>        
+        <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
         </dependency>
@@ -222,7 +229,7 @@
             <artifactId>oro</artifactId>
         </dependency>
       <dependency>
-        <groupId>uk.ac.rdg.rersc</groupId>
+        <groupId>uk.ac.rdg.resc</groupId>
         <artifactId>ncwms</artifactId>
       </dependency>
         <dependency>
@@ -243,11 +250,42 @@
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+        </dependency>
+        
+		<dependency>
+			<groupId>atg.taglib.json</groupId>
+			<artifactId>json-taglib</artifactId>				
+		</dependency>         			        
+		<!-- THREDDS ISO -->        
+		<dependency>
+			<groupId>EDS</groupId>
+			<artifactId>threddsIso</artifactId>
+		</dependency>        
+        
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>taglibs</groupId>
+			<artifactId>standard</artifactId>
+		</dependency>        
+       
+        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+        	<groupId>jfree</groupId>
+        	<artifactId>jfreechart</artifactId>
+        </dependency>
+        
+
     </dependencies>
 
 
@@ -262,11 +300,14 @@
             <name>Oracle Maven repository</name>
             <url>http://download.oracle.com/maven</url>
         </repository>
+<!--      
         <repository>
             <id>geotoolkit</id>
             <name>GeoToolKit Repository</name>
             <url>http://maven.geotoolkit.org</url>
         </repository>
+ 	-->        
+           
     </repositories>
 
 
@@ -278,7 +319,6 @@
        =========================================================== -->
     <build>
         <finalName>thredds</finalName>
-        <testSourceDirectory>void</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -292,7 +332,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <!-- version>2.1.1</version-->
                 <configuration>
                     <attachClasses>true</attachClasses>
                     <archive>
@@ -305,23 +345,40 @@
                     </archive>
                 </configuration>
             </plugin>
-          <plugin>
-            <groupId>org.codehaus.cargo</groupId>
-            <artifactId>cargo-maven2-plugin</artifactId>
-            <version>1.1.1</version>
-            <configuration>
-              <container>
-                <containerId>${cargo.containerId}</containerId>
-                <type>remote</type>
-              </container>
-              <configuration>
-                <type>runtime</type>
-                <properties>
-                  <cargo.server.settings>${cargo.server.settings}</cargo.server.settings>
-                </properties>
-              </configuration>
-            </configuration>
-          </plugin>
+             
+      		<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-surefire-plugin</artifactId>
+        		<configuration>
+        			<!-- Enabling tests for first unit testing -->
+        			<skip>false</skip>
+        			<testFailureIgnore>true</testFailureIgnore>
+        			<includes>
+        				<include>thredds/server/catalogservice/**</include>
+        				<include>thredds/server/ncSubset/**</include>
+        				<include>thredds/server/config/**</include>
+        				<include>thredds/servlet/**</include>
+        			</includes>
+        			<excludes>
+        				<exclude>thredds/server/config/ServerConfigTestSuit.java</exclude>
+        			</excludes>
+        		</configuration>
+          		<!-- executions>
+          			<execution>
+            			<id>surefire-it</id>
+            			<phase>integration-test</phase>
+            			<goals>
+              				<goal>test</goal>
+            			</goals>
+            			<configuration>
+            				<skip>false</skip>
+            				<test>TestCdmRemoteServer</test>
+            			</configuration>        
+        			</execution>
+          		</executions-->                
+      		</plugin>
+              
+          
         </plugins>
     </build>
 

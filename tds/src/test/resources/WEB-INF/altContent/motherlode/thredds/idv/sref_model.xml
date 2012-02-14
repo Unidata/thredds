@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="NCEP Model Data" version="1.0.1">
+  <service name="latest" serviceType="Resolver" base="" />
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+  </service>
+  <dataset name="Short Range Ensemble Forecasting" ID="idv/NCEP/SREF">
+      <metadata inherited="true">
+          <serviceName>all</serviceName>
+          <authority>edu.ucar.unidata</authority>
+          <dataType>Grid</dataType>
+          <dataFormat>GRIB-2</dataFormat>
+          <documentation type="summary">NCEP Short Range Ensemble Forecast (SREF)</documentation>
+          <documentation xlink:href="http://w1.spc.woc.noaa.gov/exper/sref/" xlink:title="NCEP/SREF Website" />
+          <documentation xlink:href="http://www.emc.ncep.noaa.gov/mmb/SREF/SREF.html" xlink:title="NWS/SREF Website" />
+          <documentation type="rights">Freely available</documentation>
+          <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html"
+                         xlink:title="NCEP Model documentation"/>
+          <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
+          <creator>
+              <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+              <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+          </creator>
+          <publisher>
+              <name vocabulary="DIF">UCAR/UNIDATA</name>
+              <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+          </publisher>
+          <timeCoverage>
+              <end>present</end>
+              <duration>60 days</duration>
+          </timeCoverage>
+      </metadata>
+
+      <dataset ID="idv/NCEP/SREF/CONUS_40km" name="NCEP SREF CONUS 40km">
+          <metadata inherited="true">
+              <documentation type="summary">
+                  NCEP Short Range Ensemble Forecast (SREF) over CONUS with
+                  185 by 129 points, resolution 40 km. Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours
+                  from 3 to 87 hours.
+              </documentation>
+              <geospatialCoverage zpositive="down">
+                  <northsouth>
+                      <start>11.968943490602328</start>
+                      <size>45.41271927442071</size>
+                      <units>degrees_north</units>
+                  </northsouth>
+                  <eastwest>
+                      <start>-153.21272373696925</start>
+                      <size>104.18298875928795</size>
+                      <units>degrees_east</units>
+                  </eastwest>
+                  <updown>
+                      <start>100000.0</start>
+                      <size>-75000.0</size>
+                      <resolution>-15000.0</resolution>
+                      <units>Pa</units>
+                  </updown>
+              </geospatialCoverage>
+          </metadata>
+          <datasetScan ID="idv/NCEP/SREF/CONUS_40km/ensprod_biasc" name="Bias-corrected mean, spread, and probability products"
+                       path="model/NCEP/SREF/CONUS_40km/ensprod_biasc"
+                       location="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod_biasc"
+                       collectionType="ForecastModelRuns" harvest="true">
+              <metadata inherited="true">
+                  <documentation type="summary">
+                      NCEP SREF CONUS 40km: Bias-corrected mean and spread products.
+                  </documentation>
+                  <variables vocabulary="GRIB-2">
+                      <variable name="Geopotential_height"
+                                vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm"
+                                vocabulary_id="2,0,3,5">Geopotential_height_stdDev @ pressure
+                      </variable>
+                      <variable name="Geopotential_height_stdDev_pressure_layer"
+                                vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm"
+                                vocabulary_id="2,0,3,5">Geopotential_height_stdDev @ pressure_layer
+                      </variable>
+                      <variable name="Geopotential_height_weightedMean_pressure"
+                                vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm"
+                                vocabulary_id="2,0,3,5">Geopotential_height_weightedMean @ pressure
+                      </variable>
+
+                      <variable name="Geopotential_height_weightedMean_pressure_layer"
+                                vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm"
+                                vocabulary_id="2,0,3,5">Geopotential_height_weightedMean @ pressure_layer
+                      </variable>
+                      <variable name="Pressure_reduced_to_MSL"
+                                vocabulary_name="Meteorological_products / Mass / Pressure_reduced_to_MSL" units="Pa"
+                                vocabulary_id="2,0,3,1">Pressure_reduced_to_MSL_stdDev @ msl
+                      </variable>
+                      <variable name="Pressure_reduced_to_MSL_weightedMean_msl"
+                                vocabulary_name="Meteorological_products / Mass / Pressure_reduced_to_MSL" units="Pa"
+                                vocabulary_id="2,0,3,1">Pressure_reduced_to_MSL_weightedMean @ msl
+                      </variable>
+                      <variable name="Relative_humidity"
+                                vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent"
+                                vocabulary_id="2,0,1,1">Relative_humidity_stdDev @ pressure
+                      </variable>
+                      <variable name="Relative_humidity_stdDev_height_above_ground"
+                                vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent"
+                                vocabulary_id="2,0,1,1">Relative_humidity_stdDev @ height_above_ground
+                      </variable>
+                      <variable name="Relative_humidity_weightedMean_height_above_ground"
+                                vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent"
+                                vocabulary_id="2,0,1,1">Relative_humidity_weightedMean @ height_above_ground
+                      </variable>
+
+                      <variable name="Relative_humidity_weightedMean_pressure"
+                                vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent"
+                                vocabulary_id="2,0,1,1">Relative_humidity_weightedMean @ pressure
+                      </variable>
+                      <variable name="Temperature" vocabulary_name="Meteorological_products / Temperature / Temperature"
+                                units="K" vocabulary_id="2,0,0,0">Temperature_stdDev @ pressure
+                      </variable>
+                      <variable name="Temperature_height_above_ground"
+                                vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
+                                vocabulary_id="2,0,0,0">Temperature @ height_above_ground
+                      </variable>
+                      <variable name="Temperature_pressure"
+                                vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
+                                vocabulary_id="2,0,0,0">Temperature @ pressure
+                      </variable>
+                      <variable name="Temperature_stdDev_height_above_ground"
+                                vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
+                                vocabulary_id="2,0,0,0">Temperature_stdDev @ height_above_ground
+                      </variable>
+                      <variable name="Temperature_weightedMean_height_above_ground"
+                                vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
+                                vocabulary_id="2,0,0,0">Temperature_weightedMean @ height_above_ground
+                      </variable>
+
+                      <variable name="Temperature_weightedMean_pressure"
+                                vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
+                                vocabulary_id="2,0,0,0">Temperature_weightedMean @ pressure
+                      </variable>
+                      <variable name="U-component_of_wind"
+                                vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,2">U-component_of_wind_stdDev @ pressure
+                      </variable>
+                      <variable name="U-component_of_wind_stdDev_height_above_ground"
+                                vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,2">U-component_of_wind_stdDev @ height_above_ground
+                      </variable>
+                      <variable name="U-component_of_wind_weightedMean_height_above_ground"
+                                vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,2">U-component_of_wind_weightedMean @ height_above_ground
+                      </variable>
+                      <variable name="U-component_of_wind_weightedMean_pressure"
+                                vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,2">U-component_of_wind_weightedMean @ pressure
+                      </variable>
+                      <variable name="V-component_of_wind"
+                                vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,3">V-component_of_wind_stdDev @ pressure
+                      </variable>
+
+                      <variable name="V-component_of_wind_stdDev_height_above_ground"
+                                vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,3">V-component_of_wind_stdDev @ height_above_ground
+                      </variable>
+                      <variable name="V-component_of_wind_weightedMean_height_above_ground"
+                                vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,3">V-component_of_wind_weightedMean @ height_above_ground
+                      </variable>
+                      <variable name="V-component_of_wind_weightedMean_pressure"
+                                vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,3">V-component_of_wind_weightedMean @ pressure
+                      </variable>
+                      <variable name="Wind_speed" vocabulary_name="Meteorological_products / Momentum / Wind_speed"
+                                units="m s-1" vocabulary_id="2,0,2,1">Wind_speed_stdDev @ pressure
+                      </variable>
+                      <variable name="Wind_speed_height_above_ground"
+                                vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1"
+                                vocabulary_id="2,0,2,1">Wind_speed @ height_above_ground
+                      </variable>
+                      <variable name="Wind_speed_stdDev_height_above_ground"
+                                vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1"
+                                vocabulary_id="2,0,2,1">Wind_speed_stdDev @ height_above_ground
+                      </variable>
+
+                      <variable name="Wind_speed_weightedMean_height_above_ground"
+                                vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1"
+                                vocabulary_id="2,0,2,1">Wind_speed_weightedMean @ height_above_ground
+                      </variable>
+                      <variable name="Wind_speed_weightedMean_pressure"
+                                vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1"
+                                vocabulary_id="2,0,2,1">Wind_speed_weightedMean @ pressure
+                      </variable>
+                  </variables>
+              </metadata>
+              <filter>
+                  <include wildcard="*.grib2" atomic="true" collection="false"/>
+              </filter>
+              <addID/>
+              <namer>
+                  <regExpOnName regExp="latest.xml"
+                                replaceString="Latest NCEP SREF CONUS 40km - Bias-corrected mean, spread, and probability products"/>
+              </namer>
+              <sort>
+                  <lexigraphicByName increasing="false"/>
+              </sort>
+              <addLatest/>
+              <addDatasetSize/>
+              <addTimeCoverage
+                      datasetNameMatchPattern="SREF_CONUS_40km_ensprod_biasc_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
+                      startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
+          </datasetScan>
+          <datasetScan ID="idv/NCEP/SREF/CONUS_40km/pgrb_biasc" name="Bias-corrected Products"
+                       path="model/NCEP/SREF/CONUS_40km/pgrb_biasc"
+                       location="/data/ldm/pub/native/conduit/data/nccf/com/sref/prod"
+                       collectionType="ForecastModelRuns" harvest="true">
+<!--                       location="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/pgrb_biasc" -->
+
+              <metadata inherited="true">
+                  <documentation type="summary">
+                      NCEP SREF CONUS 40km: Bias-corrected products from 21 ensemble members.
+                  </documentation>
+                  <variables vocabulary="GRIB-2">
+                      <variable name="Geopotential_height"
+                                vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm"
+                                vocabulary_id="2,0,3,5">Geopotential_height @ pressure
+                      </variable>
+                      <variable name="Pressure_reduced_to_MSL"
+                                vocabulary_name="Meteorological_products / Mass / Pressure_reduced_to_MSL" units="Pa"
+                                vocabulary_id="2,0,3,1">Pressure_reduced_to_MSL @ msl
+                      </variable>
+                      <variable name="Relative_humidity"
+                                vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent"
+                                vocabulary_id="2,0,1,1">Relative_humidity @ pressure
+                      </variable>
+                      <variable name="Temperature" vocabulary_name="Meteorological_products / Temperature / Temperature"
+                                units="K" vocabulary_id="2,0,0,0">Temperature @ pressure
+                      </variable>
+                      <variable name="Temperature_height_above_ground"
+                                vocabulary_name="Meteorological_products / Temperature / Temperature" units="K"
+                                vocabulary_id="2,0,0,0">Temperature @ height_above_ground
+                      </variable>
+                      <variable name="U-component_of_wind"
+                                vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,2">U-component_of_wind @ pressure
+                      </variable>
+                      <variable name="U-component_of_wind_height_above_ground"
+                                vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,2">U-component_of_wind @ height_above_ground
+                      </variable>
+                      <variable name="V-component_of_wind"
+                                vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,3">V-component_of_wind @ pressure
+                      </variable>
+                      <variable name="V-component_of_wind_height_above_ground"
+                                vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1"
+                                vocabulary_id="2,0,2,3">V-component_of_wind @ height_above_ground
+                      </variable>
+                  </variables>
+              </metadata>
+              <filter>
+                <include wildcard="*.grib2" atomic="true" collection="false"/>
+                <exclude wildcard="ensprod_biasc" atomic="false" collection="true"/>
+              </filter>
+              <addID/>
+              <namer>
+                  <!--regExpOnName regExp="latest.xml"
+                                replaceString="Latest NCEP SREF CONUS 40km - Bias-corrected Products"/-->
+                <regExpOnName regExp="sref.([0-9]{4})([0-9]{2})([0-9]{2})" replaceString="$1-$2-$3" />
+              </namer>
+              <sort>
+                  <lexigraphicByName increasing="false"/>
+              </sort>
+              <!--addLatest/-->
+              <addDatasetSize/>
+              <addTimeCoverage
+                      datasetPathMatchPattern="prod/sref.([0-9]{4})([0-9]{2})([0-9]{2})/([0-9]{2})/pgrb_biasc/sref_([^.]*)\\.t\\4z\\.pgrb([0-9]{3})\\.(.*)\\.grib2$"
+                      startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
+              <!--addTimeCoverage
+                      datasetNameMatchPattern="SREF_CONUS_40km_pgrb_biasc_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
+                      startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/-->
+          </datasetScan>
+        <datasetScan ID="idv/NCEP/SREF/CONUS_40km/ensprod"
+                     name=" NCEP SREF CONUS 40km: Mean, spread, and probability products"
+                     path="model/NCEP/SREF/CONUS_40km/ensprod"
+                     location="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod"
+                     collectionType="ForecastModelRuns" harvest="true">
+          <metadata inherited="true">
+            <documentation type="summary">
+              NCEP SREF CONUS 40km: Mean, spread, and probability products.
+            </documentation>
+          </metadata>
+          <filter>
+            <include wildcard="*.grib2" atomic="true" collection="false"/>
+          </filter>
+          <addID/>
+          <namer>
+            <regExpOnName regExp="latest.xml"
+                          replaceString="Latest NCEP SREF CONUS 40km - Mean, spread, and probability products"/>
+          </namer>
+          <sort>
+            <lexigraphicByName increasing="false"/>
+          </sort>
+          <addLatest/>
+          <addDatasetSize/>
+          <addTimeCoverage
+                  datasetNameMatchPattern="SREF_CONUS_40km_ensprod_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
+        </datasetScan>
+
+      </dataset>
+    <datasetScan ID="idv/NCEP/SREF/Alaska_45km/ensprod" name=" NCEP SREF Alaska 45km: Mean, spread, and probability products"
+                 path="model/NCEP/SREF/Alaska_45km/ensprod"
+                 location="/data/ldm/pub/native/grid/NCEP/SREF/Alaska_45km/ensprod"
+                 collectionType="ForecastModelRuns" harvest="true">
+      <metadata inherited="true">
+        <documentation type="summary">
+          NCEP SREF Alaska 45km: Mean, spread, and probability products.
+        </documentation>
+      </metadata>
+      <filter>
+        <include wildcard="*.grib2" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml"
+                      replaceString="Latest NCEP SREF Alaska 45km - Mean, spread, and probability products"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+      <addTimeCoverage
+              datasetNameMatchPattern="SREF_Alaska_45km_ensprod_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
+              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
+    </datasetScan>
+    <datasetScan ID="idv/NCEP/SREF/PacificNE_0p4/ensprod" name="NCEP SREF NE Pacific 0.4 degree: Mean, spread, and probability products"
+                 path="model/NCEP/SREF/PacificNE_0p4/ensprod"
+                 location="/data/ldm/pub/native/grid/NCEP/SREF/PacificNE_0p4/ensprod"
+                 collectionType="ForecastModelRuns" harvest="true">
+      <metadata inherited="true">
+        <documentation type="summary">
+          NCEP SREF PacificNE 0.4 degree: Mean, spread, and probability products.
+        </documentation>
+      </metadata>
+      <filter>
+        <include wildcard="*.grib2" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <namer>
+        <regExpOnName regExp="latest.xml"
+                      replaceString="Latest NCEP SREF PacificNE 0.4 degree - Mean, spread, and probability products"/>
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+      <addTimeCoverage
+              datasetNameMatchPattern="SREF_PacificNE_0p4_ensprod_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2"
+              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="87 hours"/>
+    </datasetScan>
+
+  </dataset>
+  
+</catalog>
+

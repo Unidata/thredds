@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="NCEP Model Data / DGEX Model" version="1.0.1">
+  <service name="latest" serviceType="Resolver" base="" />
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+  </service>
+  <dataset name="DGEX Model" ID="idv/NCEP/DGEX">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Grid</dataType>
+      <dataFormat>GRIB-2</dataFormat>
+      <documentation type="summary">NCEP Model output Extended</documentation>
+      <documentation type="rights">Freely available</documentation>
+      <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html" xlink:title="NCEP Model documentation" />
+      <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml" />
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>60 days</duration>
+      </timeCoverage>
+    </metadata>
+    <datasetScan name="NCEP DGEX CONUS 12km" harvest="true" ID="idv/NCEP/DGEX/CONUS_12km" path="model/NCEP/DGEX/CONUS_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/">
+      <dataFormat>GRIB-2</dataFormat>
+      <documentation xlink:href="/thredds/modelInventory/model/NCEP/DGEX/CONUS_12km/" xlink:title="Available Inventory" />
+      <geospatialCoverage zpositive="down">
+        <northsouth>
+          <start>19.87913</start>
+          <size>30.02506</size>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-140.14654</start>
+          <size>83.97122</size>
+          <units>degrees_east</units>
+        </eastwest>
+        <updown>
+          <start>3000.0</start>
+          <size>15000.0</size>
+          <resolution>3000.0</resolution>
+          <units>Pa</units>
+        </updown>
+      </geospatialCoverage>
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Model output Grid 185 (C) horizontal = 491 by 303 points, resolution 12 km, LambertConformal projection. Model runs are made at 6 and 18Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours</documentation>
+        <variables vocabulary="GRIB-2">
+          <variable name="Geopotential_height" vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm" vocabulary_id="2,0,3,5">Geopotential height @ pressure</variable>
+          <variable name="Geopotential_height_surface" vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm" vocabulary_id="2,0,3,5">Geopotential height @ surface</variable>
+          <variable name="MSLP_Eta_Reduction" vocabulary_name="Meteorological_products / Mass / MSLP" units="Pa" vocabulary_id="2,0,3,192">MSLP Eta Reduction @ msl</variable>
+          <variable name="Maximum_temperature" vocabulary_name="Meteorological_products / Temperature / Maximum_temperature" units="K" vocabulary_id="2,0,0,4">Maximum temperature @ height_above_ground1</variable>
+          <variable name="Minimum_temperature" vocabulary_name="Meteorological_products / Temperature / Minimum_temperature" units="K" vocabulary_id="2,0,0,5">Minimum temperature @ height_above_ground1</variable>
+          <variable name="Pressure" vocabulary_name="Meteorological_products / Mass / Pressure" units="Pa" vocabulary_id="2,0,3,0">Pressure @ surface</variable>
+          <variable name="Pressure_reduced_to_MSL" vocabulary_name="Meteorological_products / Mass / Pressure_reduced_to_MSL" units="Pa" vocabulary_id="2,0,3,1">Pressure reduced to MSL @ msl</variable>
+          <variable name="Relative_humidity" vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent" vocabulary_id="2,0,1,1">Relative humidity @ pressure_difference</variable>
+          <variable name="Relative_humidity_height_above_ground" vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent" vocabulary_id="2,0,1,1">Relative humidity @ height_above_ground1</variable>
+          <variable name="Relative_humidity_pressure" vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent" vocabulary_id="2,0,1,1">Relative humidity @ pressure4</variable>
+          <variable name="Surface_Lifted_Index" vocabulary_name="Meteorological_products / Thermodynamic_Stability_indices / Surface_Lifted_Index" units="K" vocabulary_id="2,0,7,192">Surface Lifted Index @ pressure2</variable>
+          <variable name="Temperature" vocabulary_name="Meteorological_products / Temperature / Temperature" units="K" vocabulary_id="2,0,0,0">Temperature @ pressure_difference</variable>
+          <variable name="Temperature_height_above_ground" vocabulary_name="Meteorological_products / Temperature / Temperature" units="K" vocabulary_id="2,0,0,0">Temperature @ height_above_ground1</variable>
+          <variable name="Temperature_pressure" vocabulary_name="Meteorological_products / Temperature / Temperature" units="K" vocabulary_id="2,0,0,0">Temperature @ pressure4</variable>
+          <variable name="Total_cloud_cover" vocabulary_name="Meteorological_products / Cloud / Total_cloud_cover" units="percent" vocabulary_id="2,0,6,1">Total cloud cover @ entire_atmosphere</variable>
+          <variable name="Total_precipitation" vocabulary_name="Meteorological_products / Moisture / Total_precipitation" units="kg m-2" vocabulary_id="2,0,1,8">Total precipitation @ surface</variable>
+          <variable name="U_component_of_wind" vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1" vocabulary_id="2,0,2,2">U-component of wind @ pressure_difference</variable>
+          <variable name="U_component_of_wind_height_above_ground" vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1" vocabulary_id="2,0,2,2">U-component of wind @ height_above_ground</variable>
+          <variable name="U_component_of_wind_pressure" vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1" vocabulary_id="2,0,2,2">U-component of wind @ pressure1</variable>
+          <variable name="V_component_of_wind" vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1" vocabulary_id="2,0,2,3">V-component of wind @ pressure_difference</variable>
+          <variable name="V_component_of_wind_height_above_ground" vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1" vocabulary_id="2,0,2,3">V-component of wind @ height_above_ground</variable>
+          <variable name="V_component_of_wind_pressure" vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1" vocabulary_id="2,0,2,3">V-component of wind @ pressure1</variable>
+          <variable name="Vertical_velocity_pressure" vocabulary_name="Meteorological_products / Momentum / Vertical_velocity" units="Pa s-1" vocabulary_id="2,0,2,8">Vertical velocity pressure @ pressure3</variable>
+        </variables>
+      </metadata>
+      <filter>
+        <include regExp=".*\.grib2$" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP DGEX CONUS 12km" />
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addLatest />
+      <addDatasetSize />
+      <addTimeCoverage
+              datasetNameMatchPattern="DGEX_CONUS_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="192 hours"/>
+    </datasetScan>
+    <datasetScan name="NCEP DGEX Alaska 12km" harvest="true" ID="idv/NCEP/DGEX/Alaska_12km" path="model/NCEP/DGEX/Alaska_12km" location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/">
+      <dataFormat>GRIB-2</dataFormat>
+      <documentation xlink:href="/thredds/modelInventory/model/NCEP/DGEX/Alaska_12km/" xlink:title="Available Inventory" />
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Model output AWIPS Grid 186 (C) horizontal = 377 by 237 points, resolution 12 km , Polar Stereographic projection. Model runs are made at 0 and 12Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours</documentation>
+        <geospatialCoverage zpositive="down">
+          <northsouth>
+            <start>44.12986</start>
+            <size>20.67978</size>
+            <units>degrees_north</units>
+          </northsouth>
+          <eastwest>
+            <start>146.87765</start>
+            <size>109.0959</size>
+            <units>degrees_east</units>
+          </eastwest>
+          <updown>
+            <start>3000.0</start>
+            <size>15000.0</size>
+            <resolution>3000.0</resolution>
+            <units>Pa</units>
+          </updown>
+        </geospatialCoverage>
+        <variables vocabulary="GRIB-2">
+          <variable name="Geopotential_height" vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm" vocabulary_id="2,0,3,5">Geopotential height @ pressure</variable>
+          <variable name="Geopotential_height_surface" vocabulary_name="Meteorological_products / Mass / Geopotential_height" units="gpm" vocabulary_id="2,0,3,5">Geopotential height @ surface</variable>
+          <variable name="MSLP__Eta_Reduction" vocabulary_name="Meteorological_products / Mass / MSLP" units="Pa" vocabulary_id="2,0,3,192">MSLP  Eta Reduction @ msl</variable>
+          <variable name="Maximum_temperature" vocabulary_name="Meteorological_products / Temperature / Maximum_temperature" units="K" vocabulary_id="2,0,0,4">Maximum temperature @ height_above_ground1</variable>
+          <variable name="Minimum_temperature" vocabulary_name="Meteorological_products / Temperature / Minimum_temperature" units="K" vocabulary_id="2,0,0,5">Minimum temperature @ height_above_ground1</variable>
+          <variable name="Pressure" vocabulary_name="Meteorological_products / Mass / Pressure" units="Pa" vocabulary_id="2,0,3,0">Pressure @ surface</variable>
+          <variable name="Pressure_reduced_to_MSL" vocabulary_name="Meteorological_products / Mass / Pressure_reduced_to_MSL" units="Pa" vocabulary_id="2,0,3,1">Pressure reduced to MSL @ msl</variable>
+          <variable name="Relative_humidity" vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent" vocabulary_id="2,0,1,1">Relative humidity @ pressure_difference</variable>
+          <variable name="Relative_humidity_height_above_ground" vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent" vocabulary_id="2,0,1,1">Relative humidity @ height_above_ground1</variable>
+          <variable name="Relative_humidity_pressure" vocabulary_name="Meteorological_products / Moisture / Relative_humidity" units="percent" vocabulary_id="2,0,1,1">Relative humidity @ pressure4</variable>
+          <variable name="Surface_Lifted_Index" vocabulary_name="Meteorological_products / Thermodynamic_Stability_indices / Surface_Lifted_Index" units="K" vocabulary_id="2,0,7,192">Surface Lifted Index @ pressure2</variable>
+          <variable name="Temperature" vocabulary_name="Meteorological_products / Temperature / Temperature" units="K" vocabulary_id="2,0,0,0">Temperature @ pressure_difference</variable>
+          <variable name="Temperature_height_above_ground" vocabulary_name="Meteorological_products / Temperature / Temperature" units="K" vocabulary_id="2,0,0,0">Temperature @ height_above_ground1</variable>
+          <variable name="Temperature_pressure" vocabulary_name="Meteorological_products / Temperature / Temperature" units="K" vocabulary_id="2,0,0,0">Temperature @ pressure4</variable>
+          <variable name="Total_cloud_cover" vocabulary_name="Meteorological_products / Cloud / Total_cloud_cover" units="percent" vocabulary_id="2,0,6,1">Total cloud cover @ entire_atmosphere</variable>
+          <variable name="Total_precipitation" vocabulary_name="Meteorological_products / Moisture / Total_precipitation" units="kg m-2" vocabulary_id="2,0,1,8">Total precipitation @ surface</variable>
+          <variable name="U_component_of_wind" vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1" vocabulary_id="2,0,2,2">U-component of wind @ pressure_difference</variable>
+          <variable name="U_component_of_wind_height_above_ground" vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1" vocabulary_id="2,0,2,2">U-component of wind @ height_above_ground</variable>
+          <variable name="U_component_of_wind_pressure" vocabulary_name="Meteorological_products / Momentum / U-component_of_wind" units="m s-1" vocabulary_id="2,0,2,2">U-component of wind @ pressure1</variable>
+          <variable name="V_component_of_wind" vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1" vocabulary_id="2,0,2,3">V-component of wind @ pressure_difference</variable>
+          <variable name="V_component_of_wind_height_above_ground" vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1" vocabulary_id="2,0,2,3">V-component of wind @ height_above_ground</variable>
+          <variable name="V_component_of_wind_pressure" vocabulary_name="Meteorological_products / Momentum / V-component_of_wind" units="m s-1" vocabulary_id="2,0,2,3">V-component of wind @ pressure1</variable>
+          <variable name="Vertical_velocity_pressure" vocabulary_name="Meteorological_products / Momentum / Vertical_velocity" units="Pa s-1" vocabulary_id="2,0,2,8">Vertical velocity pressure @ pressure3</variable>
+        </variables>
+      </metadata>
+      <filter>
+        <include regExp=".*\.grib2$" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP DGEX Alaska 12km" />
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addLatest />
+      <addDatasetSize />
+      <addTimeCoverage
+              datasetNameMatchPattern="DGEX_Alaska_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="192 hours"/>
+    </datasetScan>
+  </dataset>
+</catalog>
+

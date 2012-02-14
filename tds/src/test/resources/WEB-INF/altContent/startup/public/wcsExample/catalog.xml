@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD WCS Data Server" version="1.0.1">    
+
+   <service name="all" serviceType="Compound" base="">
+     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+   </service>
+
+   <dataset name="THREDDS-IDD WCS Data Server">
+     <metadata inherited="true">
+       <serviceName>all</serviceName>
+       <authority>unidata.ucar.edu:</authority>
+       <dataType>Grid</dataType>
+     </metadata>
+     <datasetScan name="GALEON Test Data" path="galeon" dirLocation="content/wcsExample/testdata/" filter=".*\.nc$" />
+   </dataset>
+</catalog>

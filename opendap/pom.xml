@@ -7,14 +7,14 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.5-SNAPSHOT</version>
   </parent>
 
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
-  <groupId>edu.ucar</groupId>
+  <!-- groupId>edu.ucar</groupId-->
   <artifactId>opendap</artifactId>
   <packaging>jar</packaging>
   <name>OPeNDAP</name>
@@ -101,6 +101,6 @@
             for skiping completly the tests, including compilation.
         =========================================================== -->
    <build>
-     <testSourceDirectory>void</testSourceDirectory>
+     <!-- testSourceDirectory>void</testSourceDirectory-->
    </build>  
 </project>

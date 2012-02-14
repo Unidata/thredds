@@ -54,6 +54,7 @@ public class TestInvCatalogXmlView extends AbstractModelAndViewTests
   private static org.slf4j.Logger log =
           org.slf4j.LoggerFactory.getLogger( TestInvCatalogXmlView.class );
 
+  @Test
   public void testUnknownEncoding()
   {
     StringBuilder catAsString = new StringBuilder()

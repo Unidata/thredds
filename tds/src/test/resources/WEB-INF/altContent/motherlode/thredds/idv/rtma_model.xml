@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" name="NCEP Model Data" version="1.0.1">
+  <service name="latest" serviceType="Resolver" base=""/>
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+  </service>
+
+  <dataset ID="FMRC/NCEP/RTMA" name="NCEP Real Time Mesoscale Analysis (RTMA)">
+    <metadata inherited="true">
+      <dataFormat>GRIB-2</dataFormat>
+      <serviceName>all</serviceName>
+      <documentation type="summary">
+        The NCEP RTMA Model is Real Time Mesoscale Analysis models.
+      </documentation>
+      <documentation xlink:href="http://www.weather.gov/infoservicechanges/tin08-56_rtma.txt"
+                     xlink:title="RTMA TIN"/>
+      <documentation xlink:href="http://www.coaps.fsu.edu/~dvandyke/wrfarw/rtma.html"
+                     xlink:title="COAPS FSU"/>
+    </metadata>
+
+    <featureCollection name="NCEP-RTMA-CONUS_2p5km" featureType="FMRC" harvest="true"
+                       path="fmrc/idv/NCEP/RTMA/CONUS_2p5km">
+      <metadata inherited="true">
+        <dataFormat>GRIB-2</dataFormat>
+        <documentation type="summary">
+          NCEP Model horizontal = 1377 by 2145 points, resolution 2.5 km, LambertConformal projection.
+          Model runs are made hourly, with 0 hour forecast
+        </documentation>
+      </metadata>
+
+      <collection
+          spec="/data/ldm/pub/native/grid/NCEP/RTMA/CONUS_2p5km/RTMA_CONUS_2p5km_#yyyyMMdd_HHmm#.grib2"
+          name="RTMA_CONUS_2p5km-idv"
+          recheckAfter="15 min"
+          olderThan="5 min"/>
+      <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+      <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+      <fmrcConfig regularize="true" datasetTypes="Best Files"/>
+    </featureCollection>
+
+  </dataset>
+
+</catalog>

@@ -58,8 +58,7 @@
     <property name="location" value="/WEB-INF/view.xml"/>
   </bean>
     
-  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
-    p:prefix="/WEB-INF/jsp/" p:suffix=".jsp"/>
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" prefix="/WEB-INF/jsp/" suffix=".jsp"/>
 
   <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
       <property name="exceptionMappings">
