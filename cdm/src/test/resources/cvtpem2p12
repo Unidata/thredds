@@ -1,8 +1,0 @@
-#!/bin/bash
-PWD=changeit
-rm -f clientkey.jks client.p12
-openssl pkcs12 -export -in clientcert.pem -inkey clientkey.pem -out client.p12 -password pass:$PWD
-cp emptykeystore.jks clientkey.jks
-keytool -importkeystore -deststorepass $PWD -destkeypass $PWD -destkeystore clientkey.jks -srckeystore client.p12 -srcstoretype PKCS12 -srcstorepass $PWD -alias 1
-keytool -list -keystore clientkey.jks -storepass $PWD
-
