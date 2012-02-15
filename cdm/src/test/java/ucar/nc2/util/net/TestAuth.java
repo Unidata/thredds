@@ -66,11 +66,11 @@ public class TestAuth extends ucar.nc2.util.TestCommon
     static final boolean MUSTPASS = false;
 
     static {
-    // Register the 8843 protocol to test client side keys
-    HTTPSession.registerProtocol("https", 8843,
-                     new Protocol("https",
-                                  new EasySSLProtocolSocketFactory(),
-                                  8843));
+        // Register the 8843 protocol to test client side keys
+        HTTPSession.registerProtocol("https", 8843,
+                new Protocol("https",
+                        new EasySSLProtocolSocketFactory(),
+                        8843));
     }
 
     //////////////////////////////////////////////////
@@ -78,35 +78,39 @@ public class TestAuth extends ucar.nc2.util.TestCommon
     // the user+pwd; used in several places
     static class BasicProvider implements CredentialsProvider, Serializable
     {
-        String username = null; String password = null;
+        String username = null;
+        String password = null;
 
         public BasicProvider(String username, String password)
         {
-	    this.username = username;
-	    this.password = password;
-        }     
+            this.username = username;
+            this.password = password;
+        }
 
-	// Credentials Provider Interface
+        // Credentials Provider Interface
         public Credentials
         getCredentials(AuthScheme authscheme, String host, int port, boolean isproxy)
-            throws CredentialsNotAvailableException
+                throws CredentialsNotAvailableException
         {
-            UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username,password);
+            UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
             System.out.printf("getCredentials called: creds=|%s| host=%s port=%d isproxy=%b authscheme=%s%n",
-                      creds.toString(),host,port,isproxy,authscheme);
-             return creds;
+                    creds.toString(), host, port, isproxy, authscheme);
+            return creds;
         }
 
         // Serializable Interface
         private void writeObject(java.io.ObjectOutputStream oos)
-            throws IOException
-        {oos.writeObject(this.username);oos.writeObject(this.password);}
+                throws IOException
+        {
+            oos.writeObject(this.username);
+            oos.writeObject(this.password);
+        }
 
         private void readObject(java.io.ObjectInputStream ois)
-            throws IOException, ClassNotFoundException
+                throws IOException, ClassNotFoundException
         {
-	    this.username = (String)ois.readObject();
-            this.password = (String)ois.readObject();
+            this.username = (String) ois.readObject();
+            this.password = (String) ois.readObject();
         }
     }
 
@@ -127,7 +131,7 @@ public class TestAuth extends ucar.nc2.util.TestCommon
     public TestAuth(String name, String testdir)
     {
         super(name);
-	setTitle("DAP Authorization tests");
+        setTitle("DAP Authorization tests");
     }
 
     public TestAuth(String name)
@@ -136,16 +140,16 @@ public class TestAuth extends ucar.nc2.util.TestCommon
     }
 
 
-    //@Test
+    @Test
     public void
-    xtestSSH() throws Exception
+    testSSH() throws Exception
     {
         String[] sshurls = {
-            "https://motherlode.ucar.edu:8443/dts/b31.dds"
+                "https://motherlode.ucar.edu:8443/dts/b31.dds"
         };
 
         System.out.println("*** Testing: Simple Https");
-        for(String url: sshurls) {
+        for (String url : sshurls) {
             System.out.println("*** URL: " + url);
             HTTPSession session = new HTTPSession(url);
             HTTPMethod method = HTTPMethod.Get(session);
@@ -164,6 +168,7 @@ public class TestAuth extends ucar.nc2.util.TestCommon
         String user = null;
         String password = null;
         boolean xfail = false; // failure expected
+
         public AuthDataBasic(String url, String usr, String pwd, boolean xfail)
         {
             this.url = url;
@@ -173,20 +178,20 @@ public class TestAuth extends ucar.nc2.util.TestCommon
         }
     }
 
-    //@Test
+    @Test
     public void
-    xtestBasic() throws Exception
+    testBasic() throws Exception
     {
         AuthDataBasic[] basictests = {
-            new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
-                              "tiggeUser","tigge", MUSTPASS),
-            new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
-                              "","", MUSTFAIL)
+                new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
+                        "tiggeUser", "tigge", MUSTPASS),
+                new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
+                        "", "", MUSTFAIL)
         };
 
         System.out.println("*** Testing: Http Basic Password Authorization");
 
-        for(AuthDataBasic data: basictests) {
+        for (AuthDataBasic data : basictests) {
             CredentialsProvider provider = new BasicProvider(data.user, data.password);
             System.out.println("*** URL: " + data.url);
             // Test local credentials provider
@@ -194,137 +199,147 @@ public class TestAuth extends ucar.nc2.util.TestCommon
             session.setCredentialsProvider(provider);
             HTTPMethod method = HTTPMethod.Get(session);
             int status = method.execute();
-            System.out.printf("\tlocal provider: status code = %d\n", status);  System.out.flush();
+            System.out.printf("\tlocal provider: status code = %d\n", status);
+            System.out.flush();
             session.setCredentialsProvider(null);
             pass = (status == 200 || status == 404); // non-existence is ok
             String msg;
-            if(data.xfail) {
+            if (data.xfail) {
                 msg = pass ? "Local test failed to fail (xfail)" : "Local test passed (xfail)";
                 pass = !pass;
             } else {
                 msg = pass ? "Local test passed" : "Local test failed";
             }
-            System.out.println("\t"+msg);
-            if(pass) {
+            System.out.println("\t" + msg);
+            if (pass) {
                 // Test global credentials provider
                 HTTPSession.setGlobalCredentialsProvider(provider);
                 session = new HTTPSession(data.url);
                 method = HTTPMethod.Get(session);
                 status = method.execute();
-                System.out.printf("\tglobal provider test: status code = %d\n", status);  System.out.flush();
+                System.out.printf("\tglobal provider test: status code = %d\n", status);
+                System.out.flush();
                 pass = (status == 200 || status == 404); // non-existence is ok
-                if(data.xfail) {
+                if (data.xfail) {
                     msg = pass ? "Local test failed to fail (xfail)" : "Local test passed (xfail)";
                     pass = !pass;
                 } else {
                     msg = pass ? "Local test passed" : "Local test failed";
                 }
-                System.out.println("\t"+msg);
+                System.out.println("\t" + msg);
             }
-            if(pass)
+            if (pass)
                 junit.framework.Assert.assertTrue("testBasic", true);
             else
                 junit.framework.Assert.assertTrue("testBasic", false);
         }
     }
 
+    // This test is turned off until such time as motherlode is properly set up
     @Test
     public void
     testKeystore() throws Exception
     {
-        System.out.println("*** Testing: Client-side Key based Authorization");
+        if (false) {
+            System.out.println("*** Testing: Client-side Key based Authorization");
 
-        String server;
-        String path;
-        if(motherlode) {
-            server = "motherlode.ucar.edu:8843";
-            path = "/dts/b31.dds";
-        } else {
-            server = "localhost:8843";
-            path = "/thredds/dodsC/testStandardTdsScan/1day.nc.dds";
-        }
+            String server;
+            String path;
+            if (motherlode) {
+                server = "motherlode.ucar.edu:8843";
+                path = "/dts/b31.dds";
+            } else {
+                server = "localhost:8843";
+                path = "/thredds/dodsC/testStandardTdsScan/1day.nc.dds";
+            }
 
-        String url = "https://"+server+path;
-        System.out.println("*** URL: " + url);
+            String url = "https://" + server + path;
+            System.out.println("*** URL: " + url);
 
-        // See if the client keystore exists
-        String keystore = threddsRoot + KEYDIR + "/" + CLIENTKEY;
-        File tmp = new File(keystore);
-        if(!tmp.exists() || !tmp.canRead())
-            throw new Exception("Cannot read client key store: "+keystore);
+            // See if the client keystore exists
+            String keystore = threddsRoot + KEYDIR + "/" + CLIENTKEY;
+            File tmp = new File(keystore);
+            if (!tmp.exists() || !tmp.canRead())
+                throw new Exception("Cannot read client key store: " + keystore);
 
-        CredentialsProvider provider = new HTTPSSLProvider(keystore,CLIENTPWD);
-        HTTPSession.setGlobalCredentialsProvider(HTTPAuthScheme.SSL,provider);
+            CredentialsProvider provider = new HTTPSSLProvider(keystore, CLIENTPWD);
+            HTTPSession.setGlobalCredentialsProvider(HTTPAuthScheme.SSL, provider);
 
-        HTTPSession session = new HTTPSession(url);
+            HTTPSession session = new HTTPSession(url);
 
-        //session.setCredentialsProvider(provider);
+            //session.setCredentialsProvider(provider);
 
-        HTTPMethod method = HTTPMethod.Get(session);
+            HTTPMethod method = HTTPMethod.Get(session);
 
-        int status = method.execute();
-        System.out.printf("Execute: status code = %d\n", status);
-        pass = (status == 200);
-        if(pass)
+            int status = method.execute();
+            System.out.printf("Execute: status code = %d\n", status);
+            pass = (status == 200);
+            if (pass)
                 junit.framework.Assert.assertTrue("testKeystore", true);
             else
                 junit.framework.Assert.assertTrue("testKeystore", false);
         }
+    }
 
-        //@Test
-        public void
-        xtestSerialize() throws Exception
-        {
-            System.out.println("*** Testing: HTTPAuthStore (de-)serialization");
+    @Test
+    public void
+    testSerialize() throws Exception
+    {
+        System.out.println("*** Testing: HTTPAuthStore (de-)serialization");
 
-            boolean ok = true;
-            CredentialsProvider creds1 = new BasicProvider("p1","pwd");
-            CredentialsProvider creds2 = new HTTPSSLProvider("keystore","keystorepwd");
-            CredentialsProvider creds3 = new BasicProvider("p3","pwd3");
+        boolean ok = true;
+        CredentialsProvider creds1 = new BasicProvider("p1", "pwd");
+        CredentialsProvider creds2 = new HTTPSSLProvider("keystore", "keystorepwd");
+        CredentialsProvider creds3 = new BasicProvider("p3", "pwd3");
 
-            // Add some entries to HTTPAuthStore
-            HTTPAuthStore.clear();
-            HTTPAuthStore.insert(new HTTPAuthStore.Entry(
-                    HTTPAuthScheme.BASIC,
-                    "http://ceda.ac.uk/dap/neodc/casix/seawifs_plankton/data/monthly/PSC_monthly_1998.nc.dds",
-                    creds1)
-            );
-            HTTPAuthStore.insert(new HTTPAuthStore.Entry(
-                    HTTPAuthScheme.SSL,
-                    "http://ceda.ac.uk",
-                    creds2)
-            );
-            HTTPAuthStore.insert(new HTTPAuthStore.Entry(
-                    HTTPAuthScheme.BASIC,
-                    "http://ceda.ac.uk",
-                    creds3)
-            );
+        // Add some entries to HTTPAuthStore
+        HTTPAuthStore.clear();
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(
+                HTTPAuthScheme.BASIC,
+                "http://ceda.ac.uk/dap/neodc/casix/seawifs_plankton/data/monthly/PSC_monthly_1998.nc.dds",
+                creds1)
+        );
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(
+                HTTPAuthScheme.SSL,
+                "http://ceda.ac.uk",
+                creds2)
+        );
+        HTTPAuthStore.insert(new HTTPAuthStore.Entry(
+                HTTPAuthScheme.BASIC,
+                "http://ceda.ac.uk",
+                creds3)
+        );
 
-            // Remove any old file
-            File target1 = new File("./serial1");
-            target1.delete();
+        // Remove any old file
+        File target1 = new File("./serial1");
+        target1.delete();
 
-            // serialize out
-            OutputStream ostream = new FileOutputStream(target1);
-            HTTPAuthStore.serialize(ostream, "password1");
-            // Read in
-            InputStream istream = new FileInputStream(target1);
-            List<HTTPAuthStore.Entry> entries = HTTPAuthStore.getDeserializedEntries(istream, "password1");
+        // serialize out
+        OutputStream ostream = new FileOutputStream(target1);
+        HTTPAuthStore.serialize(ostream, "password1");
+        // Read in
+        InputStream istream = new FileInputStream(target1);
+        List<HTTPAuthStore.Entry> entries = HTTPAuthStore.getDeserializedEntries(istream, "password1");
 
-            // compare
-            List<HTTPAuthStore.Entry> rows = HTTPAuthStore.getAllRows();
-            for (HTTPAuthStore.Entry row : rows) {
-                HTTPAuthStore.Entry match = null;
-                for (HTTPAuthStore.Entry e : entries) {
-            block:          {
-                    if (!HTTPAuthStore.Entry.identical(row,e)) break block;
-                    if(match == null)
+        // compare
+        List<HTTPAuthStore.Entry> rows = HTTPAuthStore.getAllRows();
+        for (HTTPAuthStore.Entry row : rows) {
+            HTTPAuthStore.Entry match = null;
+            for (HTTPAuthStore.Entry e : entries) {
+                block:
+                {
+                    if (!HTTPAuthStore.Entry.identical(row, e)) break block;
+                    if (match == null)
                         match = e;
-                    else {System.out.println("ambigous match");  ok=false;}
+                    else {
+                        System.out.println("ambigous match");
+                        ok = false;
                     }
                 }
-                if (match == null) {
-                    System.out.println("no match for: " + row.toString());  ok=false;
+            }
+            if (match == null) {
+                System.out.println("no match for: " + row.toString());
+                ok = false;
             }
         }
         junit.framework.Assert.assertTrue("test(De-)Serialize", ok);
