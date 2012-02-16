@@ -46,7 +46,7 @@ import java.util.*;
 
 public class RC
 {
-
+static boolean showlog = false; /* do not do any logging */
 //////////////////////////////////////////////////
 // Predefined flags
 // To add a new flag:
@@ -283,7 +283,8 @@ loadDefaults()
 	    if(rc0.load(filepath)) found1 = true;
 	}
     }
-    // ignore missing .rc file if(!found1) LogStream.getLog().info("No .rc file found");
+    if(!found1)
+      if(showlog) LogStream.getLog().info("No .rc file found");
     dfaltRC = rc0;
 }
 
@@ -319,12 +320,12 @@ load(String abspath)
     if(!rcFile.exists() || !rcFile.canRead()) {
 	return false;
     }
-    LogStream.getLog().info("Loading rc file: "+abspath);
+    if(showlog) LogStream.getLog().info("Loading rc file: "+abspath);
     FileReader frdr = null;
     try {
         frdr = new FileReader(rcFile);
     } catch (FileNotFoundException fe) {
-        LogStream.getLog().info("Loading rc file: "+abspath);
+        if(showlog) LogStream.getLog().info("Loading rc file: "+abspath);
         return false;
     }
     BufferedReader rdr = new BufferedReader(frdr);
@@ -341,12 +342,12 @@ load(String abspath)
             if(line.charAt(0) == LTAG) {
                 int rindex = line.indexOf(RTAG);
                 if(rindex < 0) return false;
-                LogStream.getLog().error("Malformed [url] at "+abspath+"."+lineno);
+                if(showlog) LogStream.getLog().error("Malformed [url] at "+abspath+"."+lineno);
                 String surl = line.substring(1,rindex);
                 try {
                     url = new URL(surl);
                 } catch (MalformedURLException mue) {
-                    LogStream.getLog().error("Malformed [url] at "+abspath+"."+lineno);
+                    if(showlog) LogStream.getLog().error("Malformed [url] at "+abspath+"."+lineno);
                 }
                 line = line.substring(rindex+1);
                 // trim again
@@ -367,7 +368,7 @@ load(String abspath)
         rdr.close();
         frdr.close();
     } catch (IOException ioe) {
-        LogStream.getLog().error("File "+abspath+": IO exception: "+ioe.getMessage());
+        if(showlog) LogStream.getLog().error("File "+abspath+": IO exception: "+ioe.getMessage());
         return false;
     }
     return true;
