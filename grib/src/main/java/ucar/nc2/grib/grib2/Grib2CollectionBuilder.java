@@ -152,7 +152,7 @@ public class Grib2CollectionBuilder {
     File idx = gc.getIndexFile();
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       idx = gc.makeNewIndexFile(); // make sure we have a writeable index
-      logger.info("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
+      logger.debug("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx, f);        // write out index
       gc.setIndexRaf(new RandomAccessFile(idx.getPath(), "r"));
       readIndex(gc.getIndexRaf()); // read back in index

@@ -48,6 +48,7 @@ public class TestGrib {
     suite.addTest(new TestSuite(TestJustReadGrib.class));
     suite.addTest(new TestSuite(TestGribMisc.class));
     suite.addTest(new TestSuite(TestGribMiscCoordinates.class));
+    suite.addTest(new TestSuite(TestGribDiskCache.class));
 
     return suite;
   }

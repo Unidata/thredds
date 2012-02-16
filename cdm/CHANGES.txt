@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  9: (2012-02-xx)
+  RuntimeLoading: fix docs, grib1 table loading, add feature dataset factory runtime loading.
+  GRIB: was not using DiskCache standardPolicy
   GRIB2 Collection: can filter on interval length by variable; also filter out (0,0) intervals
   GRIB2 variable names - use NCL-like syntax
   CoordinateAxis1D flipping bounds when all starting bounds were zero.

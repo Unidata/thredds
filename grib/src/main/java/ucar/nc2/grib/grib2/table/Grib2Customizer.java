@@ -116,7 +116,6 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return result;
   }
 
-
   static protected int makeHash(int discipline, int category, int number) {
     return (discipline << 16) + (category << 8) + number;
   }

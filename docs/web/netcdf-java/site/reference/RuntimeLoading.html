@@ -30,34 +30,38 @@ dl {margin: 10px 5px 5px 15px;)
 <h3>Register a CoordTransBuilder:</h3>
 <pre><strong>  ucar.nc2.dataset.CoordTransBuilder.registerTransform</strong>( String transformName, String className);</pre>
 <p> The registered class must implement <strong></strong><strong><strong>ucar.nc2.dataset.CoordTransBuilderIF</strong></strong>. The Coordinate Transform Variable must have the transform name as one of its parameters. </p>
-<h3>Register a TypedDatasetFactory:</h3>
+<h3>Register a TypedDatasetFactory: (4.1 and before)</h3>
 <pre><strong>  ucar.nc2.dt.TypedDatasetFactory.registerFactory</strong>( DataType datatype, String className);</pre>
 <p> The registered class must implement <strong><strong>ucar.nc2.dt.</strong>TypedDatasetFactoryIF:</strong></p>
 <pre>
   public boolean <strong>isMine</strong>( NetcdfDataset ncd);
   public TypedDataset <strong>open</strong>( NetcdfDataset ncd, ucar.nc2.util.CancelTask task, StringBuffer log);
-
 </pre>
 
-<h3>Register a GRIB1 or GRIB2 Lookup Table (version 4.2 or before):</h3>
+<h3>Register a FeatureDatasetFactory: (4.2 and after)</h3>
+<pre><strong>  ucar.nc2.ft.FeatureDatasetFactoryManager.registerFactory</strong>( FeatureType featureType, String className);</pre>
+<p> The registered class must implement <strong><strong>ucar.nc2.ft.</strong>FeatureDatasetFactory</strong>, see javadoc for that interface.</p>
+<h3>Register a GRIB1 or GRIB2 Lookup Table (4.2 and before):</h3>
 <pre> <strong> ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup</strong>( String filename);
   <strong>ucar.grib.grib2.ParameterTable.addParametersUser</strong>( String filename);
 </pre>
-<h3>Register a  GRIB1 or GRIB2 table (version 4.3):</h3>
-<pre> <strong> ucar.nc2.grib.grib1.Grib1ParamTable.addParameterTable(int center, int subcenter, int tableVersion, String tableFilename);
-</strong><strong></strong> <strong> ucar.nc2.grib.grib2.tables.Grib2Tables.addParameterTable(int center, int subcenter, int masterVersion, int localVersion, String tableFilename);
+<h3>Register a  GRIB1  table (4.3):</h3>
+<pre> <strong> ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTable(int center, int subcenter, int tableVersion, String tableFilename);
+</strong><strong></strong><strong>
 </strong><strong></strong></pre>
 <ul>
   <li>    This registers a single table for the given center/subcenter/version.</li>
   <li>See <a href="../formats/GribTables.html">GribTables</a> for more information about parameter tables.</li>
+  <li>GRIB2 table handling is still being developed.</li>
 </ul>
-<h3>Register a  GRIB1 or GRIB2 lookup table (version 4.3):</h3>
-<pre><strong> ucar.nc2.grib.grib1.Grib1ParamTable.addParameterTableLookup(String lookupFilename)</strong><strong>;
-</strong><strong> ucar.nc2.grib.grib2.tables.Grib2Tables.addParameterTableLookup(String lookupFilename)</strong><strong>;
+<h3>Register a  GRIB1 lookup table (4.3):</h3>
+<pre><strong> ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTableLookup(String lookupFilename)</strong><strong>;
+</strong><strong></strong><strong>
 </strong></pre>
 <ul>
   <li> This registers one or more tables for different  center/subcenter/versions.</li>
   <li>See <a href="../formats/GribTables.html">GribTables</a> for more information about lookup tables.</li>
+  <li>GRIB2 table handling is still being developed.</li>
 </ul>
 <h3>Register a BUFR Table lookup:</h3>
 <pre wrap=""> <strong> ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile</strong>( String filename) throws throws FileNotFoundException;</pre>
@@ -94,7 +98,7 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Load a <a href="BufrTables.html">BUFR table lookup</a> file</li>
   <li>Turn <a href="../formats/GribTables.html#strict">strict GRIB1 table handling</a> off. </li>
 </ol>
-<p>There are several ways pass the XML to the CDM library. From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
+<p>There are several ways pass the Runtime Configuration XML to the CDM library. From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
 <pre>  // Example 1: read from file
   StringBuffer errlog = new StringBuffer();
   FileInputStream fis = new FileInputStream( filename);   
@@ -119,7 +123,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on January, 2012
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on February 2012
 </address>
 </body>
 </html>
