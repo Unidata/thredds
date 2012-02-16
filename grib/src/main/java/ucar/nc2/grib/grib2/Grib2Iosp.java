@@ -62,7 +62,7 @@ public class Grib2Iosp extends GribIosp {
   static private final boolean debugTime = false, debugRead = false, debugName = false;
   static private boolean useGenType = false; // LOOK dummy for now
 
-  static public String makeVariableName(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+  static public String makeVariableNameFull(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
     GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
@@ -106,30 +106,83 @@ public class Grib2Iosp extends GribIosp {
     return f.toString();
   }
 
-  /* static public String makeVariableNameOld(GribTables tables, GribCollection.VariableIndex vindex, VertCoord vc) {
+  /* http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB
+    GRIB2 data variable name encoding
+
+    (Note: examples show intermediate steps in the formation of the name)
+
+    if production status is TIGGE test or operational and matches entry in TIGGE table:
+       <parameter_short_name> (ex: t)
+    else if entry matching product discipline, parameter category, and parameter number is found:
+       <parameter_short_name> (ex: TMP)
+    else:
+       VAR_<product_discipline_number>_<parameter_category_number>_<parameter_number> (ex: VAR_3_0_9)
+
+    _P<product_definition_template_number> (ex: TMP_P0)
+
+    if single level type:
+       _L<level_type_number> (ex: TMP_P0_L103)
+    else if two levels of the same type:
+       _2L<level_type_number> (ex: TMP_P0_2L106)
+    else if two levels of different types:
+       _2L<_first_level_type_number>_<second_level_type_number> (ex: LCLD_P0_2L212_213)
+
+    if grid type is supported (fully or partially):
+       _G<grid_abbreviation><grid_number> (ex: UGRD_P0_L108_GLC0)
+    else:
+       _G<grid_number> (ex: UGRD_P0_2L104_G0)
+
+    if not statistically processed variable and not duplicate name the name is complete at this point.
+
+    if statistically-processed variable and constant statistical processing duration:
+       if statistical processing type is defined:
+          _<statistical_processing_type_abbreviation><statistical_processing_duration><duration_units> (ex: APCP_P8_L1_GLL0_acc3h)
+       else
+          _<statistical_processing_duration><duration_units> (ex: TMAX_P8_L103_GCA0_6h)
+    else if statistically-processed variable and variable-duration processing always begins at initial time:
+       _<statistical_processing_type_abbreviation> (ex: ssr_P11_GCA0_acc)
+
+    if variable name is duplicate of existing variable name (this should not normally occur):
+       _n (where n begins with 1 for first duplicate) (ex: TMAX_P8_L103_GCA0_6h_1)
+
+     VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]
+      L = level type
+      S = stat type
+      D = derived type
+   */
+  static public String makeVariableName(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
-    GribTables.Parameter gp = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
-    if (gp == null)
-      f.format("U%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
-    else
-      f.format("%s", gp.getName());
 
-    f.format("_%s", tables.getLevelNameShort(vindex.levelType));
-    if (vc != null && vc.isLayer()) f.format("_layer");
+    f.format("VAR_%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
 
-    if (vindex.intvType >= 0)
-      f.format("_%s", tables.getIntervalNameShort(vindex.intvType));
+    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) { // LOOK
+      f.format("_error");  // its an "error" type variable - add to name
+    }
 
-    if (vindex.ensDerivedType >= 0)
-      f.format("_%s", tables.getProbabilityNameShort(vindex.ensDerivedType));
+    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+      f.format("_L%d", vindex.levelType); // code table 4.5
+      if (vindex.isLayer) f.format("_layer");
+    }
+
+    if (vindex.intvType >= 0) {
+      if (vindex.intvName.equals("Mixed_intervals"))
+        f.format("_Imixed");
+      else
+        f.format("_I%s", vindex.intvName);
+      f.format("_S%s", vindex.intvType);
+    }
+
+    if (vindex.ensDerivedType >= 0) {
+      f.format("_D%d", vindex.ensDerivedType);
+    }
 
     else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
       String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
-      f.format("_%s", s);
+      f.format("_Prob_%s", s);
     }
 
     return f.toString();
-  } */
+  }
 
   static public String makeVariableLongName(Grib2Customizer tables, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
@@ -290,7 +343,7 @@ public class Grib2Iosp extends GribIosp {
     ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
     val = tables.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
     ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
-    ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.getMaster() + "/" + gribCollection.getLocal()));
+    ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.getMaster() + "/" + gribCollection.getLocal())); // LOOK
 
     val = tables.getTableValue("4.3", gribCollection.getGenProcessType());
     if (val != null)
@@ -551,8 +604,10 @@ public class Grib2Iosp extends GribIosp {
       }
       if (vindex.ensDerivedType >= 0)
         v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.ensDerivedType));
-      else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0)
-        v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.probabilityName));
+      else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
+        v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.probType));
+        v.addAttribute(new Attribute("Grib2_Probability_Name", vindex.probabilityName));
+      }
       if (vindex.genProcessType >= 0)
         v.addAttribute(new Attribute("Grib2_Generating_Process_Type", tables.getGeneratingProcessTypeName(vindex.genProcessType)));
 

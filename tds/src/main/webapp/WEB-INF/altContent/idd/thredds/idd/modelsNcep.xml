@@ -943,14 +943,21 @@
                     dateFormatMark="#SREF_CONUS_40km_ensprod_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter intvLength="12">
+            <variable id="0-1-8" prob="50800"/>
+          </intvFilter>
+          <intvFilter intvLength="3">
+            <variable id="0-1-8"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="SREF-CONUS_40km-biasCorrected-derived" featureType="GRIB" harvest="true"
                          path="grib/NCEP/SREF/CONUS_40km/ensprod_biasc">
         <metadata inherited="true">
           <documentation type="summary">
-            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: bias-corrected mean, spread, and
-            probability.
+            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: bias-corrected mean, spread, and probability.
             over CONUS with 185 by 129 points, resolution 40 km.
             Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours from 3 to 87 hours.
           </documentation>
@@ -991,6 +998,11 @@
                     dateFormatMark="#SREF_Alaska_45km_ensprod_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter intvLength="3">
+            <variable id="0-1-8"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
       <featureCollection name="SREF-PacificNE_0p4-ensprod" featureType="GRIB" harvest="true"
@@ -1005,6 +1017,11 @@
                     dateFormatMark="#SREF_PacificNE_0p4_ensprod_#yyyyMMdd_HHmm"
                     olderThan="5 min"/>
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <gribConfig>
+          <intvFilter intvLength="3">
+            <variable id="0-1-8"/>
+          </intvFilter>
+        </gribConfig>
       </featureCollection>
 
     </dataset>

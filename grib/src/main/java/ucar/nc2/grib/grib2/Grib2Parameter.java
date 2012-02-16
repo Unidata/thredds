@@ -206,6 +206,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
   static public String mungeDescription(String desc) {
     if (desc == null) return null;
     int pos = desc.indexOf("(see");
+    if (pos < 0) pos = desc.indexOf("(See");
     if (pos > 0) desc = desc.substring(0,pos);
 
     StringBuilder sb = new StringBuilder(desc.trim());

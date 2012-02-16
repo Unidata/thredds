@@ -4,6 +4,10 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribCollection;
@@ -31,7 +35,7 @@ import java.util.List;
  */
 public class Grib2ReportPanel extends JPanel {
   public static enum Report {
-    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord
+    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord, names,
   }
 
   private PreferencesExt prefs;
@@ -133,6 +137,9 @@ public class Grib2ReportPanel extends JPanel {
           break;
         case timeCoord:
           doTimeCoord(f, dcm, useIndex);
+          break;
+        case names:
+          doNames(f, dcm, useIndex);
           break;
       }
     }
@@ -776,6 +783,331 @@ public class Grib2ReportPanel extends JPanel {
     Grib2SectionIndicator is = gr.getIs();
     Grib2Pds pds = gr.getPDS();
     return is.getDiscipline()+"-"+pds.getParameterCategory()+ "-" + pds.getParameterNumber();
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////
+
+  private void doNames(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+    f.format("CHECK Grib-2 Names: Old vs New for collection %s%n", dcm.getCollectionName());
+
+    Map<String,List<String>> gridsAll = new HashMap<String,List<String>>(1000); // old -> list<new>
+
+    for (MFile mfile : dcm.getFiles()) {
+      f.format("%n%s%n", mfile.getPath());
+      Map<Integer,GridMatch> gridsNew = getGridsNew(mfile, f);
+      Map<Integer,GridMatch> gridsOld = getGridsOld(mfile, f);
+
+      // look for exact match
+      for (GridMatch gm : gridsNew.values()) {
+        GridMatch match = gridsOld.get(gm.hashCode());
+        if (match != null) {
+          gm.match = match;
+          match.match = gm;
+        }
+      }
+
+      // look for alternative match
+      for (GridMatch gm : gridsNew.values()) {
+        if (gm.match == null) {
+          GridMatch match = altMatch(gm, gridsOld.values());
+          if (match != null) {
+            gm.match = match;
+            match.match = gm;
+          }
+        }
+      }
+
+      f.format("%n");
+      List<GridMatch> listNew = new ArrayList<GridMatch>(gridsNew.values());
+      Collections.sort(listNew);
+      for (GridMatch gm : listNew) {
+        f.format(" %s%n", gm.grid.getFullName());
+        if (gm.match != null)
+          f.format(" %s%n", gm.match.grid.getFullName());
+        f.format("%n");
+      }
+
+      f.format("%nMISSING MATCHES IN NEW%n");
+      List<GridMatch> list = new ArrayList<GridMatch>(gridsNew.values());
+      Collections.sort(list);
+      for (GridMatch gm : list) {
+        if (gm.match == null)
+          f.format(" %s (%s) == %s%n", gm.grid.getFullName(), gm.show(), gm.grid.getDescription());
+      }
+
+
+      f.format("%nMISSING MATCHES IN OLD%n");
+      List<GridMatch> listOld = new ArrayList<GridMatch>(gridsOld.values());
+      Collections.sort(listOld);
+      for (GridMatch gm : listOld) {
+        if (gm.match == null)
+          f.format(" %s (%s)%n", gm.grid.getFullName(), gm.show());
+      }
+
+      // add to gridsAll
+       for (GridMatch gmOld : listOld) {
+         String key = gmOld.grid.getFullName();
+         List<String> newGrids = gridsAll.get(key);
+         if (newGrids == null) {
+           newGrids = new ArrayList<String>();
+           gridsAll.put(key, newGrids);
+         }
+         if (gmOld.match != null) {
+           String keyNew = gmOld.match.grid.getFullName()+" == "+gmOld.match.grid.getDescription();
+           if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
+         }
+      }
+    }
+
+    f.format("%nOLD -> NEW MAPPINGS%n");
+    List<String> keys = new ArrayList<String>(gridsAll.keySet());
+    int total = keys.size();
+    int dups = 0;
+    Collections.sort(keys);
+    for (String key : keys) {
+      f.format(" OLD %s%n", key);
+      List<String> newGrids = gridsAll.get(key);
+      Collections.sort(newGrids);
+      if (newGrids.size() > 1) dups++;
+      for (String newKey : newGrids)
+        f.format(" NEW %s%n", newKey);
+      f.format("%n");
+    }
+    f.format("Number with more than one map=%d total=%d%n", dups, total);
+
+  }
+
+  private GridMatch altMatch(GridMatch want, Collection<GridMatch> test) {
+    // look for scale factor errors in prob
+    for (GridMatch gm : test) {
+      if (gm.match != null) continue; // already matched
+      if (gm.altMatch(want)) return gm;
+    }
+
+    // give up matching the prob
+    for (GridMatch gm : test) {
+      if (gm.match != null) continue; // already matched
+      if (gm.altMatchNoProb(want)) return gm;
+    }
+
+    return null;
+  }
+
+  private class GridMatch implements Comparable<GridMatch> {
+    GridDatatype grid;
+    GridMatch match;
+    boolean isNew;
+    int[] param = new int[3];
+    int level;
+    boolean isLayer, isError;
+    int interval = -1;
+    int prob = -1;
+    int ens = -1;
+    int probLimit;
+
+    private GridMatch(GridDatatype grid, boolean aNew) {
+      this.grid = grid;
+      isNew = aNew;
+
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      CoordinateAxis1D zaxis = gcs.getVerticalAxis();
+      if (zaxis != null) isLayer = zaxis.isInterval();
+
+      if (isNew) {
+        Attribute att = grid.findAttributeIgnoreCase("Grib2_Parameter");
+        for (int i=0; i<3; i++)
+          param[i] = att.getNumericValue(i).intValue();
+
+        att = grid.findAttributeIgnoreCase("Grib2_Level_Type");
+        level = att.getNumericValue().intValue();
+        isError = grid.getName().contains("error");
+
+        att = grid.findAttributeIgnoreCase("Grib2_Statistical_Interval_Type");
+        if (att != null) {
+          int intv = att.getNumericValue().intValue();
+          if (intv != 255) interval = intv;
+        }
+
+        att = grid.findAttributeIgnoreCase("Grib2_Probability_Type");
+        if (att != null) prob = att.getNumericValue().intValue();
+
+        att = grid.findAttributeIgnoreCase("Grib2_Probability_Name"); // :Grib2_Probability_Name = "above_17.5";
+        if (att != null) {
+          String pname = att.getStringValue();
+          int pos = pname.indexOf('_');
+          pname = pname.substring(pos+1);
+          probLimit = (int) (1000.0 * Double.parseDouble(pname));
+        }
+
+        att = grid.findAttributeIgnoreCase("Grib2_Ensemble_Derived_Type");
+        if (att != null) ens = att.getNumericValue().intValue();
+
+      } else {
+        Attribute att = grid.findAttributeIgnoreCase("GRIB_param_id");
+        for (int i=0; i<3; i++)
+          param[i] = att.getNumericValue(i+1).intValue();
+
+        att = grid.findAttributeIgnoreCase("GRIB_level_type");
+        level = att.getNumericValue().intValue();
+        isError = grid.getName().contains("error");
+
+        att = grid.findAttributeIgnoreCase("GRIB_interval_stat_type");
+        if (att != null) {
+          String intName = att.getStringValue();
+          interval = codeTable4_10(intName);
+        }
+
+        att = grid.findAttributeIgnoreCase("GRIB_probability_type");
+        if (att != null) prob = att.getNumericValue().intValue();
+        if (prob == 0) {
+          att = grid.findAttributeIgnoreCase("GRIB_probability_lower_limit");
+          if (att != null) probLimit = (int) (1000 * att.getNumericValue().doubleValue());
+          //if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
+        } else if (prob == 1) {
+          att = grid.findAttributeIgnoreCase("GRIB_probability_upper_limit"); // GRIB_probability_upper_limit = 12.89; // double
+          if (att != null) probLimit = (int) (1000 * att.getNumericValue().doubleValue());
+          //if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
+        }
+
+        att = grid.findAttributeIgnoreCase("GRIB_ensemble_derived_type");
+        if (att != null) ens = att.getNumericValue().intValue();
+      }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      GridMatch gridMatch = (GridMatch) o;
+
+      if (ens != gridMatch.ens) return false;
+      if (interval != gridMatch.interval) return false;
+      if (isError != gridMatch.isError) return false;
+      if (isLayer != gridMatch.isLayer) return false;
+      if (level != gridMatch.level) return false;
+      if (prob != gridMatch.prob) return false;
+      if (probLimit != gridMatch.probLimit) return false;
+      if (!Arrays.equals(param, gridMatch.param)) return false;
+
+      return true;
+    }
+
+    public boolean altMatch(GridMatch gridMatch) {
+      if (!altMatchNoProb(gridMatch)) return false;
+
+      if (probLimit/1000 == gridMatch.probLimit) return true;
+      if (probLimit == gridMatch.probLimit/1000) return true;
+
+      return false;
+    }
+
+    public boolean altMatchNoProb(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      GridMatch gridMatch = (GridMatch) o;
+
+      if (ens != gridMatch.ens) return false;
+      if (interval != gridMatch.interval) return false;
+      if (isError != gridMatch.isError) return false;
+      if (isLayer != gridMatch.isLayer) return false;
+      if (level != gridMatch.level) return false;
+      if (prob != gridMatch.prob) return false;
+
+      return true;
+    }
+
+
+    @Override
+    public int hashCode() {
+      int result = 1;
+      result = 31 * result + level;
+      result = 31 * result + param[0];
+      result = 31 * result + (isLayer ? 1 : 0);
+      result = 31 * result + param[1];
+      result = 31 * result + (isError ? 1 : 0);
+      result = 31 * result + interval;
+      result = 31 * result + prob;
+      result = 31 * result + param[2];
+      result = 31 * result + ens;
+      result = 31 * result + probLimit;
+      return result;
+    }
+
+    @Override
+    public int compareTo(GridMatch o) {
+      return grid.compareTo(o.grid);
+    }
+
+    String show() {
+      Formatter f = new Formatter();
+      for (int i=0; i<3; i++)
+        f.format("%d-", param[i]);
+      f.format("%d", level);
+      if (isLayer) f.format("_layer");
+      if (interval >= 0) f.format("_intv%d",interval);
+      if (prob >= 0) f.format("_prob%d_%d",prob,probLimit);
+      if (ens >= 0) f.format("_ens%d",ens);
+      if (isError) f.format("_error");
+      return f.toString();
+    }
+  }
+
+  private Map<Integer,GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
+    Map<Integer,GridMatch> grids = new HashMap<Integer,GridMatch>(100);
+    GridDataset ncfile = null;
+    try {
+      ncfile = GridDataset.open(ff.getPath());
+      for (GridDatatype dt : ncfile.getGrids()) {
+        GridMatch gm = new GridMatch(dt, true);
+        GridMatch dup = grids.get(gm.hashCode());
+        if (dup != null)
+          f.format(" DUP NEW (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(), gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
+        else
+          grids.put(gm.hashCode(), gm);
+      }
+    } finally {
+      if (ncfile != null) ncfile.close();
+    }
+    return grids;
+  }
+
+  private Map<Integer,GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
+    Map<Integer,GridMatch> grids = new HashMap<Integer,GridMatch>(100);
+    NetcdfFile ncfile = null;
+    try {
+      ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);
+      NetcdfDataset ncd = new NetcdfDataset(ncfile);
+      GridDataset grid = new GridDataset(ncd);
+      for (GridDatatype dt : grid.getGrids()) {
+        GridMatch gm = new GridMatch(dt, false);
+        GridMatch dup = grids.get(gm.hashCode());
+        if (dup != null)
+          f.format(" DUP OLD (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(), gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
+        else
+          grids.put(gm.hashCode(), gm);
+      }
+    } catch (Throwable t) {
+      t.printStackTrace();
+    } finally {
+      if (ncfile != null) ncfile.close();
+    }
+    return grids;
+  }
+
+  private int codeTable4_10(String  name) {
+    if (name.startsWith("Average")) return 0;
+    if (name.startsWith("Accumulation")) return 1;
+    if (name.startsWith("Maximum")) return 2;
+    if (name.startsWith("Minimum")) return 3;
+    if (name.startsWith("Difference (Value at the end")) return 4;
+    if (name.startsWith("Root")) return 5;
+    if (name.startsWith("Standard")) return 6;
+    if (name.startsWith("Covariance")) return 7;
+    if (name.startsWith("Difference (Value at the start")) return 8;
+    if (name.startsWith("Ratio")) return 9;
+    return -1;
   }
 
 }

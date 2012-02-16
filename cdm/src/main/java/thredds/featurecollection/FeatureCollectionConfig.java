@@ -352,7 +352,7 @@ public class FeatureCollectionConfig {
         int intvLength = Integer.parseInt(intvLengthS);
         List<Element> varElems = intvElem.getChildren("variable", ns);
         for (Element varElem : varElems) {
-          intvFilter.addVariable(intvLength, varElem.getAttributeValue("id"));
+          intvFilter.addVariable(intvLength, varElem.getAttributeValue("id"), varElem.getAttributeValue("prob"));
         }
       }
 
@@ -424,29 +424,60 @@ public class FeatureCollectionConfig {
     }
   }
 
+  static class GribIntvFilterParam {
+    int id;
+    int intvLength;
+    int prob = Integer.MIN_VALUE;
+
+    GribIntvFilterParam(int id, int intvLength, int prob) {
+      this.id = id;
+      this.intvLength = intvLength;
+      this.prob = prob;
+    }
+  }
   static public class GribIntvFilter {
-    Map<Integer, Integer> map;
+    List<GribIntvFilterParam> filter;
     boolean isZeroExcluded;
 
     public boolean isZeroExcluded() {
       return isZeroExcluded;
     }
 
-    public Integer getLengthById(int varId) {
-      return (map == null) ? null : map.get(varId);
+    public boolean hasFilter() {
+      return (filter != null);
+    }
+    /*
+          <intvFilter intvLength="12">
+            <variable id="0-1-8" prob="50800"/>
+          </intvFilter>
+          <intvFilter intvLength="3">
+            <variable id="0-1-8"/>
+          </intvFilter>
+
+     */
+
+    // true means remove
+    public boolean filterOut(int id, int hasLength, int prob) {
+      if (filter == null) return false;
+      for (GribIntvFilterParam param : filter) {
+        boolean needProb = (param.prob != Integer.MIN_VALUE); // filter uses prob
+        boolean hasProb = (prob != Integer.MIN_VALUE); // record has prob
+        boolean isMine = !needProb || hasProb && (param.prob == prob);
+        if (param.id == id && isMine) { // first match in the filter list is used
+          if (param.intvLength != hasLength) return true; // remove the ones whose intervals dont match
+          return false;
+        }
+      }
+      return false;
     }
 
-    public boolean hasMap() {
-      return (map != null);
-    }
-
-    void addVariable(int intvLength, String ids) {
-      if (ids == null) {
+    void addVariable(int intvLength, String idS, String probS) {
+      if (idS == null) {
         log.warn("Error on intvFilter: must have an id attribute");
         return;
       }
 
-      String[] s = ids.split("-");
+      String[] s = idS.split("-");
       if (s.length != 3) {
         log.warn("Error on intvFilter: id attribute must be of format 'discipline-category-number'");
         return;
@@ -457,15 +488,18 @@ public class FeatureCollectionConfig {
         int category = Integer.parseInt(s[1]);
         int number = Integer.parseInt(s[2]);
         int id = (discipline << 16) + (category << 8) + number;
-        if (map == null) map = new HashMap<Integer, Integer>(10);
-        map.put(id, intvLength);
+
+        int prob = (probS == null) ? Integer.MIN_VALUE : Integer.parseInt(probS);
+
+        if (filter == null) filter = new ArrayList<GribIntvFilterParam>(10);
+        filter.add(new GribIntvFilterParam(id, intvLength, prob));
+
       } catch (NumberFormatException e) {
-        log.info("Error on intvFilter element - include attribute must be an integer");
+        log.info("Error on intvFilter element - attribute must be an integer");
       }
     }
 
   }
-
 
   private static class TimeUnitConverterHash implements TimeUnitConverter {
     Map<Integer, Integer> map = new HashMap<Integer, Integer>(5);

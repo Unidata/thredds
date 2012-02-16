@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  9: (2012-02-xx)
+  GRIB2 Collection: can filter on interval length by variable; also filter out (0,0) intervals
+  GRIB2 variable names - use NCL-like syntax
+  CoordinateAxis1D flipping bounds when all starting bounds were zero.
   Add SwathDatasetFactory - fake for now.
   HDF4: remove "." in identifier
   GRIB-2: fix when lat/lon GDS has lo1 == lo2 == 180

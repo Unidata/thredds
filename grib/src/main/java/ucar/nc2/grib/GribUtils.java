@@ -104,6 +104,7 @@ public class GribUtils {
   static public String cleanupDescription(String desc) {
     if (desc == null) return null;
     int pos = desc.indexOf("(see");
+    if (pos < 0) pos = desc.indexOf("(See");
     if (pos > 0) desc = desc.substring(0, pos);
 
     StringBuilder sb = new StringBuilder(desc.trim());
@@ -114,6 +115,7 @@ public class GribUtils {
   static public String makeNameFromDescription(String desc) {
     if (desc == null) return null;
     int pos = desc.indexOf("(see");
+    if (pos < 0) pos = desc.indexOf("(See");
     if (pos > 0) desc = desc.substring(0, pos);
 
     StringBuilder sb = new StringBuilder(desc.trim());

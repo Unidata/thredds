@@ -36,6 +36,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
+import ucar.nc2.util.Misc;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 
@@ -779,13 +780,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
 
     // flip if needed
-    boolean goesUp = (n < 2) || value1[n-1] > value1[0];
-    boolean firstLower = true;
+    boolean firstLower = true; // in the first interval, is lower < upper ?
     for (int i=0; i<value1.length; i++) {
-      if (value1[i] == value2[i]) continue; // dont accept ==
+      if (Misc.closeEnough(value1[i], value2[i])) continue; // skip when lower == upper
       firstLower = value1[i] < value2[i];
       break;
     }
+    // check first against last : lower, unless all lower equal then upper
+    boolean goesUp = (n < 2) || value1[n-1] > value1[0] || (Misc.closeEnough(value1[n-1], value2[0]) && value2[n-1] > value2[0]);
     if (goesUp != firstLower) {
       double[] temp = value1;
       value1 = value2;

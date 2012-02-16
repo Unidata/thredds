@@ -456,7 +456,7 @@ public class Grib2CollectionBuilder {
             this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
             if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt really work with multiple collections
           }
-          if (intvMap != null && filterTinv(gr, intvMap, f)) {
+          if (intvMap != null && filterOut(gr, intvMap, f)) {
             stats.filter++;
             continue; // skip
           }
@@ -490,7 +490,8 @@ public class Grib2CollectionBuilder {
     return result;
   }
 
-  private boolean filterTinv(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter, Formatter f) {
+  // true means remove
+  private boolean filterOut(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter, Formatter f) {
     int[] intv = tables.getForecastTimeIntervalOffset(gr);
     if (intv == null) return false;
     int haveLength = intv[1] - intv[0];
@@ -503,17 +504,24 @@ public class Grib2CollectionBuilder {
       }
       return false;
 
-    } else if (intvFilter.hasMap()) {
+    } else if (intvFilter.hasFilter()) {
       int discipline = gr.getIs().getDiscipline();
-      int category = gr.getPDS().getParameterCategory();
-      int number = gr.getPDS().getParameterNumber();
+      Grib2Pds pds = gr.getPDS();
+      int category = pds.getParameterCategory();
+      int number = pds.getParameterNumber();
       int id = (discipline << 16) + (category << 8) + number;
-      Integer needLength = intvFilter.getLengthById(id);
 
-      if (needLength != null && needLength != haveLength) {
-        //f.format(" FILTER INTV [%d != %d] %s%n", haveLength, needLength, gr);
-        return true;
+      int prob = Integer.MIN_VALUE;
+      if (pds.isProbability()) {
+        prob = (int) (1000 * pds.getProbabilityUpperLimit());
       }
+      return intvFilter.filterOut(id, haveLength, prob);
+      //Integer needLength = intvFilter.getLengthById(id);
+
+      //if (needLength != null && needLength != haveLength) {
+        //f.format(" FILTER INTV [%d != %d] %s%n", haveLength, needLength, gr);
+        //return true;
+      //}
     }
     return false;
   }

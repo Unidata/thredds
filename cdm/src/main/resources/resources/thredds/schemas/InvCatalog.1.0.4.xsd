@@ -447,6 +447,7 @@
             <xsd:element name="variable" minOccurs="0" maxOccurs="unbounded">
               <xsd:complexType>
                 <xsd:attribute name="id" type="xsd:string" use="required"/>
+                <xsd:attribute name="prob" type="xsd:string" use="optional"/>
               </xsd:complexType>
             </xsd:element>
           </xsd:sequence>

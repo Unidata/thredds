@@ -1134,8 +1134,8 @@ public class Variable implements VariableIF, ProxyReader {
     else
         setParentStructure(parent);
     this.shortName = shortName;
-    if (shortName.indexOf(".") >= 0)
-      System.out.println("HEY");
+    //if (shortName.indexOf(".") >= 0)
+    //  System.out.println("HEY gotta .");
   }
 
   /**
