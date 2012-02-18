@@ -1,4 +1,4 @@
-    CFSR notes
+CFSR notes
 
 01/30/2012
   - http://cfs.ncep.noaa.gov/cfsr/
@@ -66,3 +66,58 @@
  - The grid names should be:
    Lat/Lon: 0.5°, 1.0°, 2.5°
    Gaussian: T382, T62
+
+02/17/2012
+ - Latest modev (from modelsOther catalog) has:
+
+  <gribConfig>
+    <gdsHash from="1450218978" to="1450192070"/>
+    <gdsName hash='1450192070' groupName='Gaussian T382'/>
+    <gdsName hash='2079260842' groupName='Gaussian T62'/>
+    <gdsName hash='-175190888' groupName='LatLon0p5'/>
+    <gdsName hash='-1857264615' groupName='LatLon0p5wind'/>
+    <gdsName hash='823344589' groupName='LatLon1p0'/>
+    <gdsName hash='-829780679' groupName='LatLon2p5'/>
+    <intvFilter excludeZero="true"/>
+  </gribConfig>
+
+  creating:
+
+  CFSR
+    Gaussian-T382_collection
+    Gaussian-T62_collection
+    LatLon0p5_collection
+    LatLon0p5wind_collection
+    LatLon1p0_collection
+    LatLon2p5_collection
+
+ - the <intvFilter excludeZero="true"/> removes the (0,0) intervals
+ - the interval time coordinates are mixed, eg from Gaussian-T382_collection:
+
+     0.000000,1.000000) = 1.000000
+     (0.000000,2.000000) = 2.000000
+     (0.000000,3.000000) = 3.000000
+     (0.000000,4.000000) = 4.000000
+     (0.000000,5.000000) = 5.000000
+     (0.000000,6.000000) = 6.000000
+     (6.000000,7.000000) = 1.000000
+     (6.000000,8.000000) = 2.000000
+     (6.000000,9.000000) = 3.000000
+     (6.000000,10.000000) = 4.000000
+     (6.000000,11.000000) = 5.000000
+     (6.000000,12.000000) = 6.000000
+     (12.000000,13.000000) = 1.000000
+     (12.000000,14.000000) = 2.000000
+     ...
+
+02/17/2012
+  -timeseries from
+     http://nomads.ncdc.noaa.gov/data/cfsr/
+  -monthly mean from
+    http://nomads.ncdc.noaa.gov/data/cfsrmon/
+  -06hour from
+    http://nomads.ncdc.noaa.gov/modeldata/
+  -hpr-mms from
+     http://nomads.ncdc.noaa.gov/data/cfsr-hpr-mms/
+  -hpr-ts45 from
+    http://nomads.ncdc.noaa.gov/data/cfsr-hpr-ts45/
