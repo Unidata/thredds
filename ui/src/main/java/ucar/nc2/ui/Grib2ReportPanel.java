@@ -11,6 +11,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -954,7 +955,7 @@ public class Grib2ReportPanel extends JPanel {
         att = grid.findAttributeIgnoreCase("GRIB_interval_stat_type");
         if (att != null) {
           String intName = att.getStringValue();
-          interval = codeTable4_10(intName);
+          interval = GribStatType.getStatTypeNumber(intName);
         }
 
         att = grid.findAttributeIgnoreCase("GRIB_probability_type");
@@ -1094,20 +1095,6 @@ public class Grib2ReportPanel extends JPanel {
       if (ncfile != null) ncfile.close();
     }
     return grids;
-  }
-
-  private int codeTable4_10(String  name) {
-    if (name.startsWith("Average")) return 0;
-    if (name.startsWith("Accumulation")) return 1;
-    if (name.startsWith("Maximum")) return 2;
-    if (name.startsWith("Minimum")) return 3;
-    if (name.startsWith("Difference (Value at the end")) return 4;
-    if (name.startsWith("Root")) return 5;
-    if (name.startsWith("Standard")) return 6;
-    if (name.startsWith("Covariance")) return 7;
-    if (name.startsWith("Difference (Value at the start")) return 8;
-    if (name.startsWith("Ratio")) return 9;
-    return -1;
   }
 
 }

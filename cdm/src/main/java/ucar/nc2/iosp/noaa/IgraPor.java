@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
  * Nomads IGRA files.
  * Can open all data by opening "igra-stations.txt", with data files in subdir "igra-por".
  * Can open single station data by opening <stationId>.dat with igra-stations.txt in same or parent directory.
- *
+ *  •	IGRA - Integrated Global Radiosonde Archive
  * @author caron
  * @see "http://www.ncdc.noaa.gov/oa/climate/igra/"
  * @see "ftp://ftp.ncdc.noaa.gov/pub/data/igra"

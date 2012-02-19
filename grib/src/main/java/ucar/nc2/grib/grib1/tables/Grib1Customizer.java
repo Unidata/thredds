@@ -41,6 +41,7 @@ import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.wmo.CommonCodeTable;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -163,9 +164,56 @@ public class Grib1Customizer implements GribTables {
    * Note that the duration period and units abbreviation were added in NCL version 4.2.0.a028 in order to handle GRIB files with
      more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
      names relative to earlier versions.
+
+    VAR_%d-%d-%d-%d[_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]
+      %d-%d-%d-%d = center-subcenter-tableVersion-paramNo
+      L = level type
+      S = stat type
+      D = derived type
   */
 
-  public String makeVariableName(int center, int subcenter, int version, int paramNo,
+  public String makeVariableName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+    return makeVariableName(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
+            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName, vindex.ensDerivedType, vindex.probabilityName);
+  }
+
+  public String makeVariableName(int center, int subcenter, int tableVersion, int paramNo,
+                                 int levelType, boolean isLayer, int intvType, String intvName,
+                                 int ensDerivedType, String probabilityName) {
+    Formatter f = new Formatter();
+
+    f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);
+
+    //if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) {
+    //  f.format("_error");  // its an "error" type variable - add to name
+    //}
+
+    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+      f.format("_L%d", levelType); // code table 4.5
+      if (isLayer) f.format("_layer");
+    }
+
+    if (intvType >= 0) {
+      if (intvName.equals("Mixed_intervals"))
+        f.format("_Imixed");
+      else
+        f.format("_I%s", intvName);
+      f.format("_S%s", intvType);
+    }
+
+    if (ensDerivedType >= 0) {
+      f.format("_D%d", ensDerivedType);
+    }
+
+    else if (probabilityName != null && probabilityName.length() > 0) {
+      String s = StringUtil2.substitute(probabilityName, ".", "p");
+      f.format("_Prob_%s", s);
+    }
+
+    return f.toString();
+  }
+
+  public String makeVariableNameFromTables(int center, int subcenter, int version, int paramNo,
                                  int levelType, int intvType, String intvName) {
     Formatter f = new Formatter();
 

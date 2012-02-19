@@ -62,11 +62,6 @@ public class Grib1Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Iosp.class);
   static private final boolean debugTime = false, debugRead = false;
 
-  static public String makeVariableName(Grib1Customizer cust, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return cust.makeVariableName(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-            vindex.levelType, vindex.intvType, vindex.intvName);
-  }
-
   static public String makeVariableLongName(Grib1Customizer cust, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     return cust.makeVariableLongName(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
             vindex.levelType, vindex.intvType, vindex.intvName, vindex.isLayer, vindex.probabilityName);
@@ -354,10 +349,9 @@ public class Grib1Iosp extends GribIosp {
 
       dims.append(" ").append(horizDims);
 
-      String vname = makeVariableName(cust, gribCollection, vindex);
+      String vname = cust.makeVariableName(gribCollection, vindex);
       Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dims.toString());
       ncfile.addVariable(g, v);
-      //System.out.printf("added %s%n",vname);
 
       String desc = makeVariableLongName(cust, gribCollection, vindex);
       v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
@@ -366,6 +360,9 @@ public class Grib1Iosp extends GribIosp {
       v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
 
       // Grib attributes
+      v.addAttribute(new Attribute("Grib1_Center", gribCollection.center));
+      v.addAttribute(new Attribute("Grib1_Subcenter", gribCollection.subcenter));
+      v.addAttribute(new Attribute("Grib1_TableVersion", vindex.tableVersion));
       v.addAttribute(new Attribute("Grib1_Parameter", vindex.parameter));
       Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter);
       if (param != null && param.getName() != null)
@@ -375,10 +372,14 @@ public class Grib1Iosp extends GribIosp {
       if ( vindex.intvName != null && vindex.intvName.length() != 0)
         v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
       if (vindex.intvType >= 0) {
-        v.addAttribute(new Attribute("Grib1_Statistical_Interval_Type", vindex.intvType));
-        CF.CellMethods cm = CF.CellMethods.convertGrib1code(vindex.intvType);
-        if (cm != null)
-          v.addAttribute(new Attribute("cell_methods", tcName + ": " + cm.toString()));
+        GribStatType statType = cust.getStatType(vindex.intvType);
+        if (statType != null) {
+          v.addAttribute(new Attribute("Grib1_Statistical_Interval_Type", vindex.intvType));
+          v.addAttribute(new Attribute("Grib1_Statistical_Interval_Name", statType.toString()));
+          CF.CellMethods cm = CF.CellMethods.convertGrib1code(vindex.intvType);
+          if (cm != null)
+            v.addAttribute(new Attribute("cell_methods", tcName + ": " + cm.toString()));
+        }
       }
       if (vindex.ensDerivedType >= 0)
         v.addAttribute(new Attribute("Grib1_Ensemble_Derived_Type", vindex.ensDerivedType));

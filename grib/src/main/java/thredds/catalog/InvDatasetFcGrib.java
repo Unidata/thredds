@@ -608,7 +608,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (gc.isGrib1()) {
       if (cust1 == null) cust1 = Grib1Customizer.factory(gc.getCenter(), gc.getSubcenter(), gc.getLocal(), null);
-      tv.setName(Grib1Iosp.makeVariableName(cust1, gc, vindex));
+      tv.setName(cust1.makeVariableName(gc, vindex));
       tv.setDescription(Grib1Iosp.makeVariableLongName(cust1, gc, vindex));
       tv.setUnits(Grib1Iosp.makeVariableUnits(cust1, gc, vindex));
       tv.setVocabularyId("1-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);

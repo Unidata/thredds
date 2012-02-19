@@ -57,8 +57,8 @@ public class TestNcMLoffsite {
     suite.addTest(new TestSuite(TestOffAggUpdating.class));  
 
     suite.addTest(new TestSuite(TestOffAggFmrcNetcdf.class));  //
-    suite.addTest(new TestSuite(TestOffAggFmrcGrib.class));  //
-    suite.addTest(new TestSuite(TestOffAggFmrcNonuniform.class));  //
+    // suite.addTest(new TestSuite(TestOffAggFmrcGrib.class));  //
+    //suite.addTest(new TestSuite(TestOffAggFmrcNonuniform.class));  //
 
     suite.addTest(new TestSuite(TestOffAggForecastModel.class));
     suite.addTest(new TestSuite(TestOffAggFmrcScan2.class));

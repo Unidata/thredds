@@ -690,7 +690,8 @@ public class Grib1CollectionPanel extends JPanel {
       //TimeCoord tc = timeCoords.get(timeIdx);
       //String intvName = tc.getTimeIntervalName();
       return cust.makeVariableName(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
-              pds.getLevelType(), pds.getTimeRangeIndicator(), null);
+              pds.getLevelType(), cust.isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(),
+              null, -1, null); // LOOK
     }
 
     public String getUnit() {

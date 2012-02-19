@@ -61,15 +61,15 @@ public class TestGribMisc extends TestCase {
     // this one has a analysis and forecast in same variable
     String filename = TestAll.cdmUnitTestDir + "formats/grib2/08Aug08.12z.cras45_NA.grib2";
     NetcdfFile ncfile = NetcdfFile.open(filename, null);
-    Variable v = ncfile.findVariable("Temperature_Surface");
-    assert v != null;
+    Variable v = ncfile.findVariable("VAR_0-0-0_L1"); // "Temperature_Surface");
+    assert v != null : ncfile.getLocation();
     ncfile.close();
 
     // this one has a forecast and error = must be seperate variables
     filename = TestAll.cdmUnitTestDir + "formats/grib2/RTMA_CONUS_2p5km_20111225_0000.grib2";
     ncfile = NetcdfFile.open(filename, null);
-    assert ncfile.findVariable("Pressure_Surface") != null;
-    assert ncfile.findVariable("Pressure_error_Surface") != null;
+    assert ncfile.findVariable("VAR_0-3-0_L1") != null; // "Pressure_Surface") != null : ncfile.getLocation();
+    assert ncfile.findVariable("VAR_0-3-0_error_L1") != null; // "Pressure_error_Surface") != null;
     ncfile.close();
   }
 

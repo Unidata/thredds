@@ -65,7 +65,7 @@ public class HdfEos {
 
   /**
    * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata.
-   * All Variables named StructMetadata<n>, where n= 1, 2, 3 ... are read in and their contents concatenated
+   * All Variables named StructMetadata.n, where n= 1, 2, 3 ... are read in and their contents concatenated
    * to make the structMetadata String.
    *
    * @param ncfile Amend this file
@@ -102,7 +102,7 @@ public class HdfEos {
 
     int n = 0;
     while (true) {
-      Variable structMetadataVar = eosGroup.findVariable("StructMetadata" + n);
+      Variable structMetadataVar = eosGroup.findVariable("StructMetadata." + n);
       if (structMetadataVar == null) break;
       if ((structMetadata != null) && (sbuff == null)) { // more than 1 StructMetadata
         sbuff = new StringBuilder(64000);
@@ -112,7 +112,7 @@ public class HdfEos {
       // read and parse the ODL
       Array A = structMetadataVar.read();
       ArrayChar ca = (ArrayChar) A;
-      structMetadata = ca.getString(); // common case only StructMetadata0, avoid extra copy
+      structMetadata = ca.getString(); // common case only StructMetadata.0, avoid extra copy
 
       if (sbuff != null)
         sbuff.append(structMetadata);

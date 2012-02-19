@@ -62,7 +62,7 @@ public class Grib2Iosp extends GribIosp {
   static private final boolean debugTime = false, debugRead = false, debugName = false;
   static private boolean useGenType = false; // LOOK dummy for now
 
-  static public String makeVariableNameFull(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+  static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
     GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
@@ -146,6 +146,7 @@ public class Grib2Iosp extends GribIosp {
        _n (where n begins with 1 for first duplicate) (ex: TMAX_P8_L103_GCA0_6h_1)
 
      VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]
+      %d-%d-%d = discipline-category-paramNo
       L = level type
       S = stat type
       D = derived type

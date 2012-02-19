@@ -218,6 +218,7 @@ public class TestOffAggFmrcGrib extends TestCase {
 
   private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes, String varName, double[][] timevals) throws Exception {
     Variable v = ncfile.findVariable(varName);
+    assert v != null : ncfile.getLocation();
     Dimension d = v.getDimension(1); // time dim
     Variable time = ncfile.findVariable(d.getName());
     assert null != time;

@@ -78,10 +78,10 @@ public class H4header {
   }
 
   // replace space with underscore, remove "."
-  private static final char[] replace = new char[] {' ', '.'};
-  private static final String[] replaceWith = new String[] {"_", ""};
+  private static final char[] replace = new char[] {' '}; // , '.'};
+  private static final String[] replaceWith = new String[] {"_"}; // , ""};
   static String createValidObjectName(String name ) {
-    return StringUtil2.replace( name, replace, replaceWith); // added 2/15/2010 , mod 2/11/2012
+    return StringUtil2.replace( name, replace, replaceWith); // added 2/15/2010 , mod 2/18/2012
   }
 
   private static boolean debugDD = false; // DDH/DD
