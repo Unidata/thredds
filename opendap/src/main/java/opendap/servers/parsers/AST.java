@@ -104,10 +104,10 @@ class ASTconstraint extends AST
             for(ASTprojection proj: projections) {
            proj.walk(ceEval);
         } else
-	    getCeEval().markAll(true);
-        if(selections != null)
-            for(ASTclause cl: selections) {
-           getCeEval().appendClause(cl.translate());
+	        getCeEval().markAll(true);
+            if(selections != null)
+                for(ASTclause cl: selections) {
+            getCeEval().appendClause(cl.translate());
         }
     }
 }
