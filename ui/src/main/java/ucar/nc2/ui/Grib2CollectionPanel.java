@@ -40,6 +40,7 @@ import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.FileManager;
@@ -1299,8 +1300,9 @@ public class Grib2CollectionPanel extends JPanel {
       return pds.getForecastTime();
     }
 
-    public final int getFile() {
-      return gr.getFile();
+    public final String getFile() {
+      int fno = gr.getFile();
+      return fileList.get(fno).getName();
     }
 
     /* public String getSurfaceType() {
@@ -1417,6 +1419,13 @@ public class Grib2CollectionPanel extends JPanel {
       if (intv != null) f.format("  TimeInterval=%s%n", intv);
       f.format("%n");
       pds.show(f);
+
+      //CFSR malarky
+      if (pds.getTemplateNumber() == 8 && cust instanceof NcepLocalTables) {
+        NcepLocalTables ncepCust =  (NcepLocalTables) cust;
+        ncepCust.showCfsr(pds, f);
+      }
+
       return f.toString();
     }
 

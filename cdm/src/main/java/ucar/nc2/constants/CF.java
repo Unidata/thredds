@@ -96,8 +96,8 @@ public interface CF {
   public static final String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE = "straight_vertical_longitude_from_pole";
 
   // standard_names
-  public static final String PROJECTION_X_COORDINATE  = "projection_x_coordinate";
-  public static final String PROJECTION_Y_COORDINATE  = "projection_y_coordinate";
+  public static final String PROJECTION_X_COORDINATE = "projection_x_coordinate";
+  public static final String PROJECTION_Y_COORDINATE = "projection_y_coordinate";
 
   // cf_role
   public static final String PROFILE_ID = "profile_id";
@@ -213,27 +213,11 @@ maybe:
 
   }
 
+  // http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#appendix-cell-methods
   public enum CellMethods {
     point, sum, maximum, median, mid_range, minimum, mean, mode, standard_deviation, variance;
 
-    /*
-      static public String codeTable4_10short(int code) {
-    switch (code) {
-      case 0: return	"Average";
-      case 1: return	"Accumulation";
-      case 2: return	"Maximum";
-      case 3: return	"Minimum";
-      case 4: return	"Difference"; // (Value at the end of time range minus value at the beginning)";
-      case 5: return	"RootMeanSquare";
-      case 6: return	"StandardDeviation";
-      case 7: return	"Covariance"; // (Temporal variance)";
-      case 8: return	"Difference"; // (Value at the start of time range minus value at the end)";
-      case 9: return	"Ratio";
-     default: return null;
-    }
-  }
-     */
-
+    // deprecated
     public static CellMethods convertGribCodeTable4_10(int code) {
       switch (code) {
         case 0:
@@ -255,62 +239,6 @@ maybe:
         default:
           return null;
       }
-    }
-
-    /*
-      static public StatType getStatType(int timeType) {
-    switch (timeType) {
-      case 3:
-      case 6:
-      case 7:
-      case 51:
-      case 113:
-      case 115:
-      case 117:
-      case 123:
-        return StatType.Average;
-      case 4:
-      case 114:
-      case 116:
-      case 124:
-        return StatType.Accumulation;
-      case 5:
-        return StatType.Difference;
-      case 118:
-        return StatType.Variance;
-      case 119:
-      case 125:
-        return StatType.StdDev;
-    }
-    return null;
-  }
-     */
-
-  public static CellMethods convertGrib1code(int code) {
-    switch (code) {
-      case 3:
-      case 6:
-      case 7:
-      case 51:
-      case 113:
-      case 115:
-      case 117:
-      case 123:
-        return CellMethods.mean; // "Average";
-      case 4:
-      case 114:
-      case 116:
-      case 124:
-        return CellMethods.sum; // "Accumulation";
-      //case 5:
-      //  return StatType.Difference;
-      case 118:
-        return CellMethods.variance;
-      case 119:
-      case 125:
-        return CellMethods.standard_deviation; // "StandardDeviation";
-    }
-    return null;
     }
   }
 

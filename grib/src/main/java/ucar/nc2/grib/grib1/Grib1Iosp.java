@@ -261,56 +261,12 @@ public class Grib1Iosp extends GribIosp {
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
-    // create names, disambiguate vertical coordinates - now in grib collection
-    // assignVertNames(gHcs.vertCoords);
-
     for (VertCoord vc : gHcs.vertCoords) {
       addVerticalCoordinate(ncfile, g, vc);
     }
 
     for (TimeCoord tc : gHcs.timeCoords) {
-      int n = tc.getSize();
-      String tcName = tc.getName();
-      ncfile.addDimension(g, new Dimension(tcName, n));
-      Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, tcName));
-      v.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
-      v.addAttribute(new Attribute(CDM.LONG_NAME, cust.getTimeTypeName(tc.getCode())));
-      if (tc.isInterval()) {
-        GribStatType statType = cust.getStatType(tc.getCode());
-        if (statType == null) {
-          v.addAttribute(new Attribute("Grib1 statistical type", tc.getCode()));
-        } else {
-          v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
-          CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
-          if (cm != null)
-            v.addAttribute(new Attribute("CF cell_methods", tcName + ": " + cm.toString()));
-        }
-      }
-
-      int[] data = new int[n];
-      int count = 0;
-
-      if (tc.isInterval()) {
-        for (TimeCoord.Tinv tinv : tc.getIntervals()) data[count++] = tinv.getBounds2();
-      } else {
-        for (int val : tc.getCoords()) data[count++] = val;
-      }
-      v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
-
-      if (tc.isInterval()) {
-        Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName + "_bounds", DataType.INT, tcName + " 2"));
-        v.addAttribute(new Attribute(CF.BOUNDS, tcName + "_bounds"));
-        bounds.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
-        bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
-
-        data = new int[2 * n];
-        count = 0;
-        for (TimeCoord.Tinv tinv : tc.getIntervals()) {
-          data[count++] = tinv.getBounds1();
-          data[count++] = tinv.getBounds2();
-        }
-        bounds.setCachedData(Array.factory(DataType.INT, new int[]{n, 2}, data));
-      }
+      addTimeCoordinate(ncfile, g, tc);
     }
 
     int ccount = 0;
@@ -376,7 +332,7 @@ public class Grib1Iosp extends GribIosp {
         if (statType != null) {
           v.addAttribute(new Attribute("Grib1_Statistical_Interval_Type", vindex.intvType));
           v.addAttribute(new Attribute("Grib1_Statistical_Interval_Name", statType.toString()));
-          CF.CellMethods cm = CF.CellMethods.convertGrib1code(vindex.intvType);
+          CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
           if (cm != null)
             v.addAttribute(new Attribute("cell_methods", tcName + ": " + cm.toString()));
         }
@@ -389,6 +345,50 @@ public class Grib1Iosp extends GribIosp {
       v.setSPobject(vindex);
     }
   }
+
+  private void addTimeCoordinate(NetcdfFile ncfile, Group g, TimeCoord tc) {
+    int n = tc.getSize();
+    String tcName = tc.getName();
+    ncfile.addDimension(g, new Dimension(tcName, n));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, tcName));
+    v.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, cust.getTimeTypeName(tc.getCode())));
+
+    // coordinate values
+    int[] data = new int[n];
+    int count = 0;
+    if (tc.isInterval()) {
+      for (TimeCoord.Tinv tinv : tc.getIntervals()) data[count++] = tinv.getBounds2();
+    } else {
+      for (int val : tc.getCoords()) data[count++] = val;
+    }
+    v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
+
+    if (tc.isInterval()) {
+      GribStatType statType = cust.getStatType(tc.getCode());
+      if (statType == null) {
+        v.addAttribute(new Attribute("Grib1 statistical type", tc.getCode()));
+      } else {
+        v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
+      }
+
+      // coordinate bounds
+      Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName + "_bounds", DataType.INT, tcName + " 2"));
+      v.addAttribute(new Attribute(CF.BOUNDS, tcName + "_bounds"));
+      bounds.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
+      bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
+
+      data = new int[2 * n];
+      count = 0;
+      for (TimeCoord.Tinv tinv : tc.getIntervals()) {
+        data[count++] = tinv.getBounds1();
+        data[count++] = tinv.getBounds2();
+      }
+      bounds.setCachedData(Array.factory(DataType.INT, new int[]{n, 2}, data));
+    }
+  }
+
 
   private void addVerticalCoordinate(NetcdfFile ncfile, Group g, VertCoord vc) {
     int n = vc.getSize();

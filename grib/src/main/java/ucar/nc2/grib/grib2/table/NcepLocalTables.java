@@ -32,14 +32,22 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib1.tables.NcepTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.time.CalendarPeriod;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -49,6 +57,7 @@ import java.util.*;
  * @since 4/3/11
  */
 public class NcepLocalTables extends Grib2Customizer {
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
 
   NcepLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
@@ -56,11 +65,9 @@ public class NcepLocalTables extends Grib2Customizer {
   }
 
   // temp for cfsr
-  public TimeCoord.TinvDate getForecastTimeIntervalCfsrMonthly(Grib2Record gr) {
-    if (!gr.getPDS().isInterval()) return null;
-    Grib2Pds pds = gr.getPDS();
-    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
-    int timeUnitOrg = pds.getTimeUnit();
+  public void showCfsr(Grib2Pds pds, Formatter f) {
+    if (!pds.isInterval()) return;
+    if (pds.getRawLength() < 65) return;
 
     /*     Octet(s)	Description
         47	From NCEP Code Table 4.10
@@ -82,24 +89,53 @@ public class NcepLocalTables extends Grib2Customizer {
     int p2 = GribNumbers.int4(pds.getOctet(55), pds.getOctet(56), pds.getOctet(57), pds.getOctet(58));
     int p2mp1 = GribNumbers.int4(pds.getOctet(62), pds.getOctet(63), pds.getOctet(64), pds.getOctet(65));
 
-    return super.getForecastTimeInterval(gr);
+    f.format("%nCFSR MM special encoding (NCAR)%n");
+    f.format("  (47) Code Table 4.10 = %d%n", statType);
+    f.format("  (50-53) N in avg     = %d%n", ngrids);
+    f.format("  (55-58) Grib1 P2     = %d%n", p2);
+    f.format("  (59) Code Table 4.10 = %d%n", statType2);
+    f.format("  (62-65) P2 minus P1  = %d%n", p2mp1);
+
+    /* Section 4 Octet 58 (possibly 32 bits: 55-58) is the length of the averaging period per unit.
+       For cycle fractions, this is 24, for complete monthly averages, it is 6.
+       The product of this and the num_in_avg {above} should always equal the total number of hours in a respective month.
+     - Section 4 Octet 65 is the hours skipped between each calculation component. */
+    f.format("%nCFSR MM special encoding (Swank)%n");
+    f.format("  (55-58) length of avg period per unit                     = %d%n", p2);
+    f.format("  (62-65) hours skipped between each calculation component  = %d%n", p2mp1);
+    f.format("  nhours in month %d should be  = %d%n", ngrids*p2, 24 * 31);
+
   }
 
 
-  /* @Override
+  @Override
   public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
-    if (!gr.getPDS().isInterval()) return null;
-    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
-    Grib2Pds.TimeInterval[] ti = pdsIntv.getTimeIntervals();
-    if (ti.length == 1) return super.getForecastTimeInterval(gr);
+    Grib2Pds pds = gr.getPDS();
+    if (!pds.isInterval()) return null;
+    if (!isCfsr(gr, pds)) return super.getForecastTimeInterval(gr);
 
     // LOOK this is hack for CFSR monthly combobulation
-    Grib2Pds.TimeInterval tiUse = ti[0];
-    int[] result = new int[2];
-    result[0] = pdsIntv.getForecastTime();
-    result[1] = pdsIntv.getForecastTime() + tiUse.timeRangeLength * tiUse.timeIncrement; // kludge
-    return new TimeCoord.Tinv(result[0], result[1]);
-  }  */
+    CalendarPeriod period = CalendarPeriod.of(6, CalendarPeriod.Field.Hour); // hahahahahaha
+    return new TimeCoord.TinvDate(gr.getReferenceDate(), period);
+  }
+
+  @Override
+  public double getForecastTimeIntervalSizeInHours(Grib2Record gr) {
+    Grib2Pds pds = gr.getPDS();
+    if (!isCfsr(gr, pds)) return super.getForecastTimeIntervalSizeInHours(gr);
+    return 6.0;
+  }
+
+  private boolean isCfsr(Grib2Record gr, Grib2Pds pds) {
+    int genType = pds.getGenProcessId();
+    if ((genType != 82) && (genType != 89)) return false                           ;
+
+    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
+    Grib2Pds.TimeInterval[] ti = pdsIntv.getTimeIntervals();
+    if (ti.length == 1) return false;
+
+    return true;
+  }
 
 
   @Override
@@ -260,6 +296,8 @@ public class NcepLocalTables extends Grib2Customizer {
     }
   }
 
+  //////////////////////////////////////////////////////////////
+
   @Override
   public String getIntervalNameShort(int id) {
     if (id < 192) return super.getIntervalNameShort(id);
@@ -295,7 +333,9 @@ public class NcepLocalTables extends Grib2Customizer {
       case 204:
         return "AverageForecastAccumulations-204";
       case 205:
-        return "AverageForecastAverages-205";
+        // Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period. Reference time is the start time of the
+        // first forecast, other forecasts at 6-hour intervals. Number in Ave = number of forecast used
+        return "AverageAvg-6hourIntv";
       case 206:
         return "AverageForecastAccumulations-206";
       case 207:
@@ -304,6 +344,83 @@ public class NcepLocalTables extends Grib2Customizer {
         return "Interval";
       default:
         return super.getIntervalNameShort(id);
+    }
+  }
+
+  @Override
+  public GribStatType getStatType(int id) {
+    if (id < 192) return super.getStatType(id);
+    switch (id) {  // LOOK not correct
+      case 192:
+      case 193:
+      case 194:
+      case 195:
+      case 196:
+      case 197:
+      case 198:
+      case 199:
+      case 200:
+      case 204:
+      case 205:
+      case 206:
+      case 207:
+        return GribStatType.Average;
+      case 201:
+        return GribStatType.RootMeanSquare;
+      case 202:
+      case 203:
+        return GribStatType.StandardDeviation;
+    }
+
+    return null;
+  }
+
+  private static Map<Integer, String> statName;  // shared by all instances
+
+  @Override
+  public String getIntervalName(int id) {
+    if (id < 192) return super.getIntervalName(id);
+    if (statName == null) statName = initTable410();
+    if (statName == null) return null;
+    return statName.get(id);
+  }
+
+    // public so can be called from Grib2
+  private Map<Integer, String> initTable410() {
+    String path = "resources/grib2/ncep/Table4.10.xml";
+    InputStream is = null;
+    try {
+      is = GribResourceReader.getInputStream(path);
+      if (is == null) {
+        logger.error("Cant find = " + path);
+        return null;
+      }
+
+      SAXBuilder builder = new SAXBuilder();
+      org.jdom.Document doc = builder.build(is);
+      Element root = doc.getRootElement();
+
+      HashMap<Integer, String> result = new HashMap<Integer, String>(200);
+      List<Element> params = root.getChildren("parameter");
+      for (Element elem1 : params) {
+        int code = Integer.parseInt(elem1.getAttributeValue("code"));
+        String desc = elem1.getChildText("description");
+        result.put(code, desc);
+      }
+
+      return result;  // all at once - thread safe
+
+    } catch (IOException ioe) {
+      logger.error("Cant read  " + path, ioe);
+      return null;
+    } catch (JDOMException e) {
+      logger.error("Cant parse = " + path, e);
+      return null;
+    } finally {
+      if (is != null) try {
+        is.close();
+      } catch (IOException e) {
+      }
     }
   }
 

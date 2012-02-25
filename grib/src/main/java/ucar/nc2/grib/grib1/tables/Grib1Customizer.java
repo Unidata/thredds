@@ -165,11 +165,15 @@ public class Grib1Customizer implements GribTables {
      more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
      names relative to earlier versions.
 
-    VAR_%d-%d-%d-%d[_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]
-      %d-%d-%d-%d = center-subcenter-tableVersion-paramNo
-      L = level type
-      S = stat type
-      D = derived type
+   Variable name is:
+
+    VAR_%d-%d-%d-%d[_L%d][_layer][_I%s_S%d]
+
+    where:
+     %d-%d-%d-%d = center-subcenter-tableVersion-paramNo
+     L%d = level type  (octet 10 of PDS)
+     _layer = added if its a vertical layer
+     S%d = stat type (octet 21 of PDS)
   */
 
   public String makeVariableName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
@@ -184,30 +188,19 @@ public class Grib1Customizer implements GribTables {
 
     f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);
 
-    //if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) {
-    //  f.format("_error");  // its an "error" type variable - add to name
-    //}
-
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_L%d", levelType); // code table 4.5
       if (isLayer) f.format("_layer");
     }
 
     if (intvType >= 0) {
-      if (intvName.equals("Mixed_intervals"))
-        f.format("_Imixed");
-      else
-        f.format("_I%s", intvName);
+      if (intvName != null) {
+        if (intvName.equals("Mixed_intervals"))
+          f.format("_Imixed");
+        else
+          f.format("_I%s", intvName);
+      }
       f.format("_S%s", intvType);
-    }
-
-    if (ensDerivedType >= 0) {
-      f.format("_D%d", ensDerivedType);
-    }
-
-    else if (probabilityName != null && probabilityName.length() > 0) {
-      String s = StringUtil2.substitute(probabilityName, ".", "p");
-      f.format("_Prob_%s", s);
     }
 
     return f.toString();
@@ -287,6 +280,7 @@ public class Grib1Customizer implements GribTables {
     return new Grib1ParamTime(this, pds);
   }
 
+  // code table 5
   public String getTimeTypeName(int timeRangeIndicator) {
     return Grib1WmoTimeType.getTimeTypeName(timeRangeIndicator);
   }

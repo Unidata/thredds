@@ -269,6 +269,10 @@ public abstract class Grib2Pds {
     return GribNumbers.convertSignedByte(input[index - 1]);
   }
 
+  public final int getRawLength() {
+    return input.length;
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   static public interface PdsInterval {
