@@ -45,8 +45,11 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.*;
 import java.util.Formatter;
 
@@ -694,6 +697,24 @@ public class Grib2Iosp extends GribIosp {
     return result;
   }
 
+  // LOOK this is by Variable - might want to do over variables, so only touch a file once, if multiple variables in a file
+  @Override
+  public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    long start = System.currentTimeMillis();
+
+    long result;
+    //if (isTimePartitioned)
+   //   result = streamDataFromPartition(v2, section, channel);
+    //else
+      result = streamDataFromCollection(v2, section, channel);
+
+    long took = System.currentTimeMillis() - start;
+    if (debugTime) System.out.println("  read data took=" + took + " msec ");
+    return result;
+  }
+
   private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
     TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject();
 
@@ -841,6 +862,41 @@ public class Grib2Iosp extends GribIosp {
     return dataReceiver.getArray();
   }
 
+  private long streamDataFromCollection(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
+    GribCollection.VariableIndex vindex = (GribCollection.VariableIndex) v.getSPobject();
+
+    // first time, read records and keep in memory
+    if (vindex.records == null)
+      vindex.readRecords();
+
+    // canonical order: time, ens, z, y, x
+    int rangeIdx = 0;
+    Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range ensRange = (vindex.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range levRange = (vindex.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range yRange = section.getRange(rangeIdx++);
+    Range xRange = section.getRange(rangeIdx);
+
+    ChannelReceiver dataReceiver = new ChannelReceiver(channel, yRange, xRange);
+    DataReader dataReader = new DataReader(vindex);
+
+    // collect all the records that need to be read
+    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
+      for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
+        for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
+          // where this particular record fits into the result array, modulo horiz
+          int resultIndex = GribCollection.calcIndex(timeRange.index(timeIdx), ensRange.index(ensIdx), levRange.index(levelIdx),
+                  ensRange.length(), levRange.length());
+          dataReader.addRecord(ensIdx, timeIdx, levelIdx, resultIndex);
+        }
+      }
+    }
+
+    // sort by file and position, then read
+    dataReader.read(dataReceiver);
+    return 0; // LOOK
+  }
+
   private class DataReader {
     GribCollection.VariableIndex vindex;
     List<DataRecord> records = new ArrayList<DataRecord>();
@@ -855,7 +911,7 @@ public class Grib2Iosp extends GribIosp {
       records.add(new DataRecord(timeIdx, ensIdx, levIdx, resultIndex, record.fileno, record.pos));
     }
 
-    void read(DataReceiver dataReceiver) throws IOException {
+    void read(DataReceiverIF dataReceiver) throws IOException {
       Collections.sort(records);
 
       int currFile = -1;
@@ -902,10 +958,14 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
-  private class DataReceiver {
-    Array dataArray;
-    Range yRange, xRange;
-    int horizSize;
+  private interface DataReceiverIF {
+    void addData(float[] data, int resultIndex, int nx) throws IOException;
+  }
+
+  private class DataReceiver implements DataReceiverIF {
+    private Array dataArray;
+    private Range yRange, xRange;
+    private int horizSize;
 
     DataReceiver(Section section, Range yRange, Range xRange) {
       dataArray = Array.factory(DataType.FLOAT, section.getShape());
@@ -919,7 +979,7 @@ public class Grib2Iosp extends GribIosp {
         iter.setFloatNext(Float.NaN);
     }
 
-    void addData(float[] data, int resultIndex, int nx) throws IOException {
+    public void addData(float[] data, int resultIndex, int nx) throws IOException {
       int start = resultIndex * horizSize;
       int count = 0;
       for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
@@ -933,6 +993,32 @@ public class Grib2Iosp extends GribIosp {
 
     Array getArray() {
       return dataArray;
+    }
+  }
+
+  private class ChannelReceiver implements DataReceiverIF {
+    private WritableByteChannel channel;
+    private DataOutputStream outStream;
+    private Range yRange, xRange;
+
+    ChannelReceiver(WritableByteChannel channel, Range yRange, Range xRange) {
+      this.channel = channel;
+      this.outStream = new DataOutputStream(Channels.newOutputStream(channel));
+      this.yRange = yRange;
+      this.xRange = xRange;
+    }
+
+    public void addData(float[] data, int resultIndex, int nx) throws IOException {
+       // LOOK: write some ncstream header
+      // outStream.write(header);
+
+      // now write the data
+      for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
+        for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
+          int dataIdx = y * nx + x;
+          outStream.writeFloat(data[dataIdx]);
+        }
+      }
     }
   }
 

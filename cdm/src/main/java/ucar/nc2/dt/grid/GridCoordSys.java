@@ -834,8 +834,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /**
    * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
-   * If outside the range, the closest point is returned
-   * Not implemented yet for 2D.
+   * If outside the range, the closest point is returned, eg, 0 or n-1 depending on if the coordinate is too small or too large.
    *
    * @param x_coord position in x coordinate space.
    * @param y_coord position in y coordinate space.

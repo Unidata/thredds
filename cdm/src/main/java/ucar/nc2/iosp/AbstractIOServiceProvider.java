@@ -94,6 +94,13 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
     return IospHelper.copyToByteChannel(data,  channel);
   }
 
+  public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    Array data = readData(v2, section);
+    return IospHelper.copyToByteChannel(data,  channel);
+  }
+
   @Override
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     return IospHelper.readSection(cer);  //  IOSPs can optimize by overriding
