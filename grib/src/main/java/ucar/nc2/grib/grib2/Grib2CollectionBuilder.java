@@ -57,7 +57,7 @@ import java.util.*;
 public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   public static final String MAGIC_START = "Grib2CollectionIndex";
-  protected static final int version = 10;
+  protected static final int version = 11;
   private static final boolean intvMergeDefault = true;
 
     // called by tdm
@@ -230,6 +230,7 @@ public class Grib2CollectionBuilder {
       gc.filenames = new ArrayList<String>(proto.getFilesCount());
       for (int i = 0; i < proto.getFilesCount(); i++)
         gc.filenames.add(proto.getFiles(i));
+      gc.filenames = Collections.unmodifiableList(gc.filenames);
 
       // error condition on a GribCollection Index
       if ((proto.getFilesCount() == 0) && !(this instanceof Grib2TimePartitionBuilder)) {
@@ -240,7 +241,9 @@ public class Grib2CollectionBuilder {
       gc.groups = new ArrayList<GribCollection.GroupHcs>(proto.getGroupsCount());
       for (int i = 0; i < proto.getGroupsCount(); i++)
         gc.groups.add(readGroup(proto.getGroups(i), gc.makeGroup()));
-      Collections.sort(gc.groups);
+      gc.groups = Collections.unmodifiableList(gc.groups);
+
+      // Collections.sort(gc.groups);
       //int count = 0;
       //for (GribCollection.GroupHcs gh : gc.groups)
       //  gh.setId("group"+(count++));

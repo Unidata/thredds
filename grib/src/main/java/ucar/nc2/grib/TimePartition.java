@@ -192,7 +192,7 @@ public abstract class TimePartition extends GribCollection {
       GribCollection gc = p.getGribCollection(); // ensure that its read in
 
       // the group and variable index may vary across partitions
-      GribCollection.GroupHcs g = gc.groups.get(groupno[partno]);
+      GribCollection.GroupHcs g = gc.groups.get(groupno[partno]);   // WRONG
       GribCollection.VariableIndex vindex = g.varIndex.get(varno[partno]);
       vindex.readRecords();
       return vindex;
@@ -202,20 +202,20 @@ public abstract class TimePartition extends GribCollection {
     public String toStringComplete() {
       final StringBuilder sb = new StringBuilder();
       sb.append("VariableIndexPartitioned");
-      sb.append("{groupno=").append(groupno == null ? "null" : "");
+      sb.append("{\ngroupno=").append(groupno == null ? "null" : "");
       for (int i = 0; groupno != null && i < groupno.length; ++i)
         sb.append(i == 0 ? "" : ", ").append(groupno[i]);
-      sb.append(", varno=").append(varno == null ? "null" : "");
+      sb.append("\n varno=").append(varno == null ? "null" : "");
       for (int i = 0; varno != null && i < varno.length; ++i)
         sb.append(i == 0 ? "" : ", ").append(varno[i]);
-      sb.append('}');
+      sb.append("}\n");
       sb.append(super.toStringComplete());
       return sb.toString();
     }
 
     // doesnt work because not threadsafe
     public void cleanup() throws IOException {
-      TimePartition.this.cleanup();
+      // TimePartition.this.cleanup(); LOOK!!
     }
   }
 
@@ -234,6 +234,7 @@ public abstract class TimePartition extends GribCollection {
       List<Partition> parts = getPartitions();
       filenames = new ArrayList<String>(parts.size());
       for (Partition p : parts) filenames.add(p.indexFilename);
+      filenames = Collections.unmodifiableList(filenames);
     }
     return filenames;
   }

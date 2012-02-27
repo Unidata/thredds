@@ -985,6 +985,8 @@ public class Grib2Iosp extends GribIosp {
       for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
         for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
           int dataIdx = y * nx + x;
+          if (dataIdx >= data.length)
+            System.out.println("HEY");
           dataArray.setFloat(start + count, data[dataIdx]);
           count++;
         }

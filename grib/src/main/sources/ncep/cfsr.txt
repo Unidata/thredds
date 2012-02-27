@@ -124,7 +124,7 @@ TIMESERIES
           (6.000000,10.000000) = 4.000000
            ...
 
-    These are called "mixed intyerval" coordinates.
+    These are called "mixed interval" coordinates.
 
 MONTHLY MEAN
   http://nomads.ncdc.noaa.gov/data/cfsrmon/yyymm/<param>.gdas.yyymm.grb2

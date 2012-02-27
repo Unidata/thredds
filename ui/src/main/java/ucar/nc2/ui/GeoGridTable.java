@@ -341,10 +341,9 @@ public class GeoGridTable extends JPanel {
 
     private String getAxisName(CoordinateAxis axis) {
       if (axis != null)
-        return (axis.isCoordinateVariable()) ? axis.getName() : axis.getNameAndDimensions(true);
+        return (axis.isCoordinateVariable()) ? axis.getName() : axis.getNameAndDimensions(false);
       return "";
     }
-
   }
 
   public class GeoCoordinateSystemBean {

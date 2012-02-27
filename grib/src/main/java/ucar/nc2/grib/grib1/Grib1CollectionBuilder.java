@@ -56,7 +56,7 @@ import java.util.*;
  */
 public class Grib1CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollection.class);
-  protected static final int version = 8;
+  protected static final int version = 9;
   private static final boolean intvMergeDefault = true;
 
   public static final String MAGIC_START = "Grib1CollectionIndex";
@@ -235,6 +235,7 @@ public class Grib1CollectionBuilder {
       gc.filenames = new ArrayList<String>(proto.getFilesCount());
       for (int i = 0; i < proto.getFilesCount(); i++)
         gc.filenames.add(proto.getFiles(i));
+      gc.filenames = Collections.unmodifiableList(gc.filenames);
 
       // error condition on a GribCollection Index
       if (proto.getFilesCount() == 0) {
@@ -245,7 +246,7 @@ public class Grib1CollectionBuilder {
       gc.groups = new ArrayList<GribCollection.GroupHcs>(proto.getGroupsCount());
       for (int i = 0; i < proto.getGroupsCount(); i++)
         gc.groups.add(readGroup(proto.getGroups(i), gc.makeGroup(), gc.center));
-      Collections.sort(gc.groups);
+      gc.groups = Collections.unmodifiableList(gc.groups);
       //int count = 0;
       //for (GribCollection.GroupHcs gh : gc.groups)
       //  gh.setId("group"+(count++));

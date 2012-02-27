@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ui.grid;
 
+import ucar.nc2.Dimension;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.table.JTableSorted;
@@ -39,6 +40,7 @@ import ucar.nc2.ui.table.TableRowAbstract;
 import ucar.nc2.dt.GridDatatype;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -121,7 +123,10 @@ public class GridTable {
 
     Row( GridDatatype gg) {
       this.gg = gg;
-      dims = "("+gg.getCoordinateSystem().getName()+")";
+      Formatter f = new Formatter();
+      for (Dimension dim : gg.getDimensions())
+        f.format("%s ", dim.getName());
+      dims = f.toString();
     }
 
     public Object getUserObject() { return gg; }
