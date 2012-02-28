@@ -195,7 +195,6 @@ MONTHLY MEAN
     this appears to refer to 6-hour, not hourly. or maybe hourly == 6-hour, not timeseries.
 
 CFSRR
-
     A complete Reforecast of CFS version 2, over the 29-year period (1982-2010) has been created in order to provide stable
     calibration and skill estimates of the new system, for operational seasonal and sub seasonal prediction at NCEP.
     Coupled full 9-month forecasts from initial conditions every 5 days apart (for all 4 c cycles on that day) have been
@@ -224,53 +223,95 @@ CFSRR Hi-Priority Monthly Means from Seasonal Runs
 
   2) ive downloaded pgbf2008122500.01.*.avrg.grb2:
 
-G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.00Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.06Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.12Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.18Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.00Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.06Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.12Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.18Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.00Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.06Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.12Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.18Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.grb2
+    G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.00Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.06Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.12Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.18Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.00Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.06Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.12Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.18Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.00Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.06Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.12Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.18Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.grb2
 
-I can look at the entire collection in the toolsui iosp-grib2-grib2collection by putting a collection spec for the name of the datasets:
+    I can look at the entire collection in the toolsui iosp-grib2-grib2collection by putting a collection spec for the name of the datasets:
 
-  G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/.*grb2
+      G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/.*grb2
 
-now im looking at the temperature at 500 mb. there are 15 records, one from each file.
+    now im looking at the temperature at 500 mb. there are 15 records, one from each file.
 
-All of them have:
-    ReferenceDate=2008-12-25T00:00:00.000Z
-    Ending Date    =2008-12-25T00:00:00.000Z
+    All of them have:
+        ReferenceDate=2008-12-25T00:00:00.000Z
+        Ending Date    =2008-12-25T00:00:00.000Z
 
-If i look at just the five *200901 files, they all have a forecast time of 1 month
-If i look at just the five *200902 files, they all have a forecast time of 2 month
-If i look at just the five *200903 files, they all have a forecast time of 3 month
+    If i look at just the five *200901 files, they all have a forecast time of 1 month
+    If i look at just the five *200902 files, they all have a forecast time of 2 month
+    If i look at just the five *200903 files, they all have a forecast time of 3 month
 
-however, the time intervals _all_ appear to be one month long, so all intervals look like:
+    however, the time intervals _all_ appear to be one month long, so all intervals look like:
 
-  TimeInterval=(2008-11-25T00:00:00.000Z,2008-12-25T00:00:00.000Z)
+      TimeInterval=(2008-11-25T00:00:00.000Z,2008-12-25T00:00:00.000Z)
 
-im not sure how to interpret this.
+    im not sure how to interpret this.
 
-Also, theres no differernce at all between, eg, the five *200901 records (except the data is different):
+    Also, theres no differernce at all between, eg, the five *200901 records (except the data is different):
 
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.00Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.06Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.12Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.18Z.grb2
- G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.00Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.06Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.12Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.18Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.grb2
 
-so what are the meanings of these 5 records? Apparently you will need to know the filename to decode (bad dog!)
+    so what are the meanings of these 5 records? Apparently you will need to know the filename to decode (bad dog!)
 
+ - from Dan:
+
+    What you list as the "Ending Date" {or the t(v) as I term it},
+    There is a known issue where all the t(v) info is set to t(i) values in the headers.
+    I do not know if this, or a offshoot of this, is messing with your decoders.
+
+    In the example wgrib2 commands I gave in the last message, it gives me:
+
+    187:8194041:d=2008122500:TMP:500 mb:1-2 month ave fcst:
+    187:8500869:d=2008122500:TMP:500 mb:2-3 month ave fcst:
+    187:8452157:d=2008122500:TMP:500 mb:3-4 month ave fcst:
+
+    The statistical period in all the records is 1 month, which is
+    somewhat Of a bug since the first record is not 1 month in this case,
+    (it is 5 days.)
+
+    I am not exactly sure where wgrib2 is getting the 1,2,3-4 for the total period,
+    I will look into this.  I am not using the rigged-up wgrib2 that Wesley
+    recently released that auto-corrects the problems in CFSR.
+
+    In the diurnal fraction files (~.hhZ.grb2)
+    What they *SHOULD* be is a sequence 3-4 monthly records-
+     consisting of 28-31x 6hr periods for a given month
+    with a statistical process run on them.  So they will appear to
+    have identical t(i) and t(f)'s,   They way the statistical data is
+    calculated, however, is different.
 
 CFSRR Hi-Priority Time Series from 45-day & Seasonal Runs
+  nomads: http://nomads.ncdc.noaa.gov/data/cfsr-hpr-ts45/
+      cfsr-hpr-ts45/<fld>/yyyy/yyyymm/<fld>._f.01.refdate.lastdate.refdate.grb2
+      yyyy = 1999-2010
+      mm 1-12
+      fld = about 30, single level, eg t850
+      apparently 00 runs are 120 days, others are 45 day.
+
+  F:/data2/nomads/t850_f/2010/201001/t850_f.01.2010010100.2010050100.2010010100.grb2
+   temperature at 850mb, every 6 hours = 4 * 120 = 480 time steps.
+
+  F:/data2/nomads/t850_f/2010/201001/t850_f.01.2010010106.2010021506.2010010106.grb2
+   temperature at 850mb, every 6 hours = 4 * 45 = 180 time steps.
+   ReferenceDate=2010-01-01T06:00:00.000Z
+   last ForecastDate=2010-02-15T06:00:00.000Z
+
+
 
 

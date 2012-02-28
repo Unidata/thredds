@@ -311,8 +311,11 @@ public class Grib2Iosp extends GribIosp {
         timePartition = (Grib2TimePartition) gribCollection;
       }
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
-      boolean useGroups = gribCollection.getGroups().size() > 1;
-      for (GribCollection.GroupHcs g : gribCollection.getGroups())
+
+      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
+      Collections.sort(groups);
+      boolean useGroups = groups.size() > 1;
+      for (GribCollection.GroupHcs g : groups)
         addGroup(ncfile, g, useGroups);
 
     } else { // otherwise, its an ncx file : read in entire collection
@@ -337,8 +340,10 @@ public class Grib2Iosp extends GribIosp {
 
       cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
-      boolean useGroups = gribCollection.getGroups().size() > 1;
-      for (GribCollection.GroupHcs g : gribCollection.getGroups())
+      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
+      Collections.sort(groups);
+      boolean useGroups = groups.size() > 1;
+      for (GribCollection.GroupHcs g : groups)
         addGroup(ncfile, g, useGroups);
     }
 

@@ -17,6 +17,30 @@ dl {margin: 10px 5px 5px 15px;)
 <h3>interval</h3>
 <h3>climatology</h3>
 <p>work through CF   <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp5784080">http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp5784080</a> </p>
+<p> The intervals over which various statistical methods are applied are determined by decomposing the date and time specifications of the climatological time bounds of a cell </p>
+<dl>
+  <dt><strong>time: method1 within years   time: method2 over years</strong></dt>
+</dl>
+<ul>
+  <li><em>method1</em> is applied to the time intervals (mdHMS0-mdHMS1) within individual years </li>
+  <li><em>method2</em> is applied over the range of years (y0-y1).</li>
+</ul>
+<dl>
+  <dt><strong>time: method1 within days   time: method2 over days</strong></dt>
+</dl>
+<ul>
+  <li><em>method1</em> is applied to the time intervals (HMS0-HMS1) within individual days </li>
+  <li><em>method2</em> is applied over the days in the interval (ymd0-ymd1).</li>
+</ul>
+<dl>
+  <dt><strong>time: method1 within days   time: method2 over days   time: method3 over years</strong></dt>
+</dl>
+<ul>
+  <li><em>method1</em> is applied to the time intervals (HMS0-HMS1) within individual days </li>
+  <li><em>method2</em> is applied over the days in the interval (md0-md1)</li>
+  <li><em>method3</em> is applied over the range of years (y0-y1).</li>
+</ul>
+<p>&nbsp;</p>
 <p><strong>E</strong><b>xample 7.8. Climatological seasons</b></p>
 <p>This example shows the metadata
 					for the average seasonal-minimum
@@ -37,14 +61,18 @@ variables:
     time:climatology="climatology_bounds";
     time:units="days since 1960-1-1";
   double climatology_bounds(time,nv);
-data:  // time coordinates translated to date/time format
+data:  
   time="1960-4-16", "1960-7-16", "1960-10-16", "1961-1-16" ;
   climatology_bounds="1960-3-1",  "1990-6-1",
                      "1960-6-1",  "1990-9-1",
                      "1960-9-1",  "1990-12-1",
                      "1960-12-1", "1991-3-1" ;
 					</pre>
-<p></p>
+<pre>cell_methods=&quot;time: minimum within years time: mean over years&quot;
+
+1) compute minimum temperature in 4 intervals (1960-3-1, 1960-6-1), (1960-6-1, 1960-9-1), (1960-9-1, 1960-12-1), (1960-12-1, 1961-3-1) for 30 years 
+
+2) average each interval over 30 years 1960-1990</pre>
 <pre>desc= &quot;Average minimum temperature for the four standard	climatological seasons MAM JJA SON DJF, made from data for March 1960 to February 1991&quot;
 
 desc= &quot;Average minimum temperature by season, March 1960 to February 1991&quot;
@@ -61,6 +89,9 @@ time coord = &quot;MAM 1960&quot;, &quot;JJA 1960&quot;, &quot;SON 1960&quot;, &
 time coord = &quot;Spring 1960&quot;, &quot;Summer 1960&quot;, &quot;Fall 1960&quot;, &quot;Winter 1960&quot;, &quot;Spring 1961&quot;, &quot;Summer 1961&quot;, ...
 time interval = (0,2), (3,5), (6,8), (9,11), (12,14), ...
               = (Mar 1960, May 1960), (Jun 1960, Aug 1960), (Sep 1960, Nov 1960), (Dec 1960, Feb 1961), ...
+
+
+
 
 </pre>
 <p>add aux coordinate with alternate time names. should be attached to time coord, not data variable,</p>
@@ -101,13 +132,10 @@ time interval = (0,9), (10,19), (20,29)
               = (Jan 1961, Jan 1970), (Jan 1971, Jan 1980), (Jan 1981, Jan 1990)
 
 time coord = &quot;Jan 1961-1970&quot;, &quot;Jan 1971-1980&quot;, &quot;Jan 1981-1990&quot;</pre>
-                    <p><b>Example 7.10. Temperature for each hour of the average day</b>
-                      </p>
-			</p>
-					<p>
-					Hourly average temperatures are given for April 1997. 
-</p><p>
-					</p><pre>
+                    <p><b>Example 7.10. Temperature for each hour of the average day</b></p>
+<p>
+					Hourly average temperatures are given for April 1997.					</p>
+<pre>
 dimensions:
   time=24;
   nv=2;
@@ -145,57 +173,19 @@ or
 
 time coord unit = &quot;calendar hours since 1997-4-1&quot;
 time coord bounds =  1,2,3...24
-time coord bounds = (0,1), (1,2), .. (23,24)</pre>
-					<p><br class="example-break">
-            </p>
-<p>
+time coord bounds = (0,1), (1,2), .. (23,24)<br class="example-break">
+            </pre>
+<p></p>
+			  <p><b>Example 7.12. Temperature for each hour of the typical climatological day</b>
+				  </p>
 </p>
-			  <p><b>Example 7.11. Extreme statistics and spell-lengths
-				</span></b></p>
-					Number of frost days during NH winter 2007-2008, and
-					maximum length of spells of consecutive frost days. A
-					"frost day" is defined as one during which the minimum
-					temperature falls below freezing point (0 degC). This
-					is described as a climatological statistic, in which
-					the minimum temperature is first calculated within each
-					day, and then the number of days or spell lengths
-					meeting the specified condition are evaluated. In this
-					operation, the standard name is also changed; the
-					original data are <code class="varname">air_temperature
-					</code>.
-				</p><p>
-					</p><pre>
-variables:
-  float n1(lat,lon);
-    n1:standard_name="number_of_days_with_air_temperature_below_threshold"; 
-    n1:coordinates="threshold time";
-    n1:cell_methods="time: minimum within days time: sum over days";
-  float n2(lat,lon);
-    n2:standard_name="spell_length_of_days_with_air_temperature_below_threshold";
-    n2:coordinates="threshold time";
-    n2:cell_methods="time: minimum within days time: maximum over days";
-  float threshold;
-    threshold:standard_name="air_temperature";
-    threshold:units="degC";
-  double time;
-    time:climatology="climatology_bounds";
-    time:units="days since 2000-6-1";
-  double climatology_bounds(time,nv);
-data: // time coordinates translated to date/time format
-  time="2008-1-16 6:00";
-  climatology_bounds="2007-12-1 6:00", "2000-8-2 6:00";
-  threshold=0.; 
-
-					</pre><p>
-				</p></div></div><p>
-			</p><a name="idp5975152"></a><b>Example 7.12. Temperature for each hour of the typical climatological day</b></p><p>
+<p>
 					This is a modified version
 					of the previous example<span class="newtext">, "Temperature
 					for each hour of the average day"</span>. It
 					now applies to April from a
-					1961-1990 climatology.
-				</p><p>
-					<pre>
+					1961-1990 climatology.					</p>
+<pre>
 variables:
   float temperature(time,lat,lon);
     temperature:long_name="surface air temperature";
@@ -212,8 +202,49 @@ data:  // time coordinates translated to date/time format
                      "1961-4-1 1:00", "1990-4-30 2:00",
                      ...
                      "1961-4-1 23:00", "1990-5-1 0:00" ;
-					</pre><b>Example 7.13. Monthly-maximum daily precipitation totals</b></p>
-           <p>
+					</pre>
+<p> </p>
+<p><b>Example 7.11. Extreme statistics and spell-lengths </span></b></p>
+Number of frost days during NH winter 2007-2008, and
+					maximum length of spells of consecutive frost days. A
+					&quot;frost day&quot; is defined as one during which the minimum
+					temperature falls below freezing point (0 degC). This
+					is described as a climatological statistic, in which
+					the minimum temperature is first calculated within each
+					day, and then the number of days or spell lengths
+					meeting the specified condition are evaluated. In this
+					operation, the standard name is also changed; the
+					original data are <code class="varname">air_temperature </code>.
+                    </p>
+                    <p> </p>
+                    <pre>
+variables:
+  float n1(lat,lon);
+    n1:standard_name=&quot;number_of_days_with_air_temperature_below_threshold&quot;; 
+    n1:coordinates=&quot;threshold time&quot;;
+    n1:cell_methods=&quot;time: minimum within days time: sum over days&quot;;
+  float n2(lat,lon);
+    n2:standard_name=&quot;spell_length_of_days_with_air_temperature_below_threshold&quot;;
+    n2:coordinates=&quot;threshold time&quot;;
+    n2:cell_methods=&quot;time: minimum within days time: maximum over days&quot;;
+  float threshold;
+    threshold:standard_name=&quot;air_temperature&quot;;
+    threshold:units=&quot;degC&quot;;
+  double time;
+    time:climatology=&quot;climatology_bounds&quot;;
+    time:units=&quot;days since 2000-6-1&quot;;
+  double climatology_bounds(time,nv);
+data: 
+  time=&quot;2008-1-16 6:00&quot;;
+  climatology_bounds=&quot;2007-12-1 6:00&quot;, &quot;2000-8-2 6:00&quot;;
+  threshold=0.; 
+
+					</pre>
+                    <p></p>
+                    <p><b>Example 7.13. Monthly-maximum daily precipitation totals</b>
+                      </p>
+                    </p>
+<p>
 					Maximum of daily precipitation
 					amounts for each of the three
 					months June, July and August 2000

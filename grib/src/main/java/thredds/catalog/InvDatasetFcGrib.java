@@ -298,7 +298,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (localState.timePartition == null) {
 
-      for (GribCollection.GroupHcs group : localState.gribCollection.getGroups()) {
+      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(localState.gribCollection.getGroups());
+      Collections.sort(groups);
+      for (GribCollection.GroupHcs group : groups) {
         String groupId = group.getId();
         InvDatasetImpl ds = new InvDatasetImpl(this, group.getDescription());
         //groupId = StringUtil2.replace(groupId, ' ', "_");
@@ -413,7 +415,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String id = getID();
     if (id == null) id = getPath();
 
-    for (GribCollection.GroupHcs group : gribCollection.getGroups()) {
+    List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
+    Collections.sort(groups);
+    for (GribCollection.GroupHcs group : groups) {
       String groupId = group.getId();
       InvDatasetImpl ds = new InvDatasetImpl(this, groupId + "_" + COLLECTION);
       //groupId = StringUtil2.replace(groupId, ' ', "_");

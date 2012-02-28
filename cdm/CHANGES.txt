@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  9: (2012-02-xx)
+  GRIB Collections: dont sort groups, since we have indexes into them; make them immutable; sort at presentation layer
+  CollectionManagerSingleFile: bug when using a reletive path
   RuntimeLoading: fix docs, grib1 table loading, add feature dataset factory runtime loading.
   GRIB: was not using DiskCache standardPolicy
   GRIB2 Collection: can filter on interval length by variable; also filter out (0,0) intervals
@@ -45,7 +47,7 @@ Changes in version 4.3:
   Fix when earth_radius comes in km instead of meters.
   DatasetCollectionMFiles: olderThan applies only to newly found files.
   DatasetCollectionMFiles: use dateFormatMark if present.
-  CollectionSpecParser: Remove seperate dateMatch string, forName.
+  CollectionSpecParser: Remove separate dateMatch string, forName.
   upgrade to quartz 2.1.1
   get GRIB collections working
   GRIB: update ncx when data file changes

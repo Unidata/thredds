@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -120,7 +120,7 @@ public class GridUI extends JPanel {
   private AbstractAction showGridTableAction;
   private AbstractAction showGridDatasetInfoAction;
   private AbstractAction showNetcdfDatasetAction;
-  private AbstractAction minmaxHorizAction, minmaxVertAction, minmaxVolAction, minmaxHoldAction;
+  private AbstractAction minmaxHorizAction, minmaxLogAction, minmaxHoldAction;
   private AbstractAction  fieldLoopAction, levelLoopAction, timeLoopAction;
 
   // state
@@ -233,8 +233,7 @@ public class GridUI extends JPanel {
     redrawAction.setEnabled( b);
 
     minmaxHorizAction.setEnabled( b);
-    minmaxVertAction.setEnabled( b);
-    minmaxVolAction.setEnabled( b);
+    minmaxLogAction.setEnabled( b);
     minmaxHoldAction.setEnabled( b);
 
     fieldLoopAction.setEnabled( b);
@@ -302,7 +301,7 @@ public class GridUI extends JPanel {
     int idx = fieldChooser.setSelectedByName(field.getDescription());
     if (idx < 0)
       fieldChooser.setSelectedByIndex(0);
-    fieldChooser.setToolTipText( field.getDescription());
+    fieldChooser.setToolTipText( field.getName());
 
     GridCoordSystem gcs = field.getCoordinateSystem();
 
@@ -311,7 +310,7 @@ public class GridUI extends JPanel {
     setChooserWanted("level", axis != null);
     if (axis != null) {
       List<NamedObject> levels = axis.getNames();
-      levelChooser.setCollection(levels.iterator());
+      levelChooser.setCollection(levels.iterator(), true);
       NamedObject no = levels.get( controller.getCurrentLevelIndex());
       levelChooser.setSelectedByName(no.getName());
     }
@@ -322,7 +321,7 @@ public class GridUI extends JPanel {
       setChooserWanted("time", axis != null);
       if (axis != null) {
         List<NamedObject> names = axis.getNames();
-        timeChooser.setCollection(names.iterator());
+        timeChooser.setCollection(names.iterator(), true);
         NamedObject no =  names.get(controller.getCurrentTimeIndex());
         timeChooser.setSelectedByName(no.getName());
       }
@@ -334,7 +333,7 @@ public class GridUI extends JPanel {
     setChooserWanted("ensemble", axis != null);
     if (axis != null) {
       List<NamedObject> names = axis.getNames();
-      ensembleChooser.setCollection(names.iterator());
+      ensembleChooser.setCollection(names.iterator(), true);
       NamedObject no =  names.get(controller.getCurrentEnsembleIndex());
       ensembleChooser.setSelectedByName(no.getName());
     }
@@ -343,7 +342,7 @@ public class GridUI extends JPanel {
     setChooserWanted("runtime", axis != null);
     if (axis != null) {
       List<NamedObject> names = axis.getNames();
-      runtimeChooser.setCollection(names.iterator());
+      runtimeChooser.setCollection(names.iterator(), true);
       NamedObject no = names.get(controller.getCurrentRunTimeIndex());
       runtimeChooser.setSelectedByName(no.getName());
     }
@@ -568,29 +567,32 @@ public class GridUI extends JPanel {
 
     minmaxHorizAction =  new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        csDataMinMax.setSelectedIndex(GridRenderer.HORIZ_MinMaxType);
-        controller.setDataMinMaxType(GridRenderer.HORIZ_MinMaxType);
+        csDataMinMax.setSelectedItem(GridRenderer.MinMaxType.horiz);
+        controller.setDataMinMaxType(GridRenderer.MinMaxType.horiz);
       }
     };
     BAMutil.setActionProperties( minmaxHorizAction, null, "Horizontal plane", false, 'H', 0);
-    minmaxVertAction =  new AbstractAction() {
+
+    minmaxLogAction =  new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        csDataMinMax.setSelectedIndex(GridRenderer.VERT_MinMaxType);
-        controller.setDataMinMaxType(GridRenderer.VERT_MinMaxType);
+        csDataMinMax.setSelectedItem(GridRenderer.MinMaxType.log);
+        controller.setDataMinMaxType(GridRenderer.MinMaxType.log);
       }
     };
-    BAMutil.setActionProperties( minmaxVertAction, null, "Vertical plane", false, 'V', 0);
-    minmaxVolAction =  new AbstractAction() {
+    BAMutil.setActionProperties( minmaxLogAction, null, "log horiz plane", false, 'V', 0);
+
+    /* minmaxVolAction =  new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         csDataMinMax.setSelectedIndex(GridRenderer.VOL_MinMaxType);
-        controller.setDataMinMaxType(GridRenderer.VOL_MinMaxType);
+        controller.setDataMinMaxType(GridRenderer.MinMaxType.vert;
       }
     };
-    BAMutil.setActionProperties( minmaxVolAction, null, "Grid volume", false, 'G', 0);
+    BAMutil.setActionProperties( minmaxVolAction, null, "Grid volume", false, 'G', 0); */
+
     minmaxHoldAction =  new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        csDataMinMax.setSelectedIndex(GridRenderer.HOLD_MinMaxType);
-        controller.setDataMinMaxType(GridRenderer.HOLD_MinMaxType);
+        csDataMinMax.setSelectedItem(GridRenderer.MinMaxType.hold);
+        controller.setDataMinMaxType(GridRenderer.MinMaxType.hold);
       }
     };
     BAMutil.setActionProperties( minmaxHoldAction, null, "Hold scale constant", false, 'C', 0);
@@ -754,13 +756,11 @@ public class GridUI extends JPanel {
 
     // colorscale panel
     colorScalePanel = new ColorScale.Panel(this, controller.getColorScale());
-    String [] csDataTypes = {"horiz", "vert", "Vol", "hold"};
-    csDataMinMax = new JComboBox( csDataTypes);
+    csDataMinMax = new JComboBox( GridRenderer.MinMaxType.values());
     csDataMinMax.setToolTipText("ColorScale Min/Max setting");
     csDataMinMax.addActionListener( new AbstractAction () {
       public void actionPerformed(ActionEvent e) {
-        //System.out.println("csDataType = "+csDataType.getSelectedItem());
-        controller.setDataMinMaxType(csDataMinMax.getSelectedIndex());
+        controller.setDataMinMaxType( ( GridRenderer.MinMaxType) csDataMinMax.getSelectedItem());
       }
     });
     JPanel westPanel = new JPanel(new BorderLayout());
@@ -864,8 +864,7 @@ public class GridUI extends JPanel {
     JMenu mmMenu = new JMenu("ColorScale min/max");
     mmMenu.setMnemonic('C');
     BAMutil.addActionToMenu( mmMenu, minmaxHorizAction);
-    BAMutil.addActionToMenu( mmMenu, minmaxVertAction);
-    BAMutil.addActionToMenu( mmMenu, minmaxVolAction);
+    BAMutil.addActionToMenu( mmMenu, minmaxLogAction);
     BAMutil.addActionToMenu( mmMenu, minmaxHoldAction);
     toolMenu.add(mmMenu);
 

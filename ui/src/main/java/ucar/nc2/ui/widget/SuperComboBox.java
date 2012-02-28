@@ -220,6 +220,10 @@ public class SuperComboBox extends JPanel {
    * otherwise will use object.toString()
    */
   public void setCollection( Iterator iter) {
+    setCollection(iter, false);
+  }
+
+  public void setCollection( Iterator iter, boolean keepIndex) {
     eventOK = false;
     list = new ArrayList();
 
@@ -254,8 +258,11 @@ public class SuperComboBox extends JPanel {
     table.setList(list);
     if (list.size() == 0)
       setLabel("none");
-    else
-      setSelectedByIndex(0);
+    else {
+      int currIndex = getSelectedIndex();
+      if (currIndex >= list.size() || currIndex < 0 || !keepIndex)
+        setSelectedByIndex(0);
+    }
     eventOK = true;
   }
 

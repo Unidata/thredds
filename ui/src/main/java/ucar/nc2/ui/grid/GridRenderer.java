@@ -54,11 +54,7 @@ import java.util.*;
  */
 
 public class GridRenderer {
-  public static final int HORIZ_MinMaxType = 0;
-  public static final int VERT_MinMaxType = 1;
-  public static final int VOL_MinMaxType = 2;
-  public static final int HOLD_MinMaxType = 3;
-  public static final int USER_MinMaxType = 4;
+  public static enum MinMaxType {horiz, log, hold};
 
   private PreferencesExt store;
 
@@ -67,9 +63,10 @@ public class GridRenderer {
   private boolean drawGridLines = true;
   private boolean drawContours = false;
   private boolean drawContourLabels = false;
+  private boolean isNewField = true;
 
   private ColorScale cs = null;
-  private int dataMinMaxType;
+  private MinMaxType dataMinMaxType = MinMaxType.horiz;
   private ProjectionImpl drawProjection = null;    // current drawing Projection
   private ProjectionImpl dataProjection = null;    // current GridDatatype Projection
   private GridDatatype orgGrid = null;
@@ -77,7 +74,6 @@ public class GridRenderer {
 
   // data stuff
   private Array dataH, dataV;
-  //private Index imaH, imaV;
   private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
   private int wantRunTime = -1, wantEnsemble = -1;
   private int lastLevel = -1, lastTime = -1, lastSlice = -1, lastStride = -1;   // last data read
@@ -91,18 +87,14 @@ public class GridRenderer {
   private LatLonProjection projectll;       // special handling for LatLonProjection
 
   // working objects to minimize excessive gc
-  //private StringBuffer sbuff = new StringBuffer(200);
   private LatLonPointImpl ptL1 = new LatLonPointImpl();
   private LatLonPointImpl ptL2 = new LatLonPointImpl();
   private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
   private ProjectionPointImpl ptP2 = new ProjectionPointImpl();
   private ProjectionRect[] rects = new ProjectionRect[2];
-  private Point pt = new Point();
 
   private final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
   private boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
-
-  private final double TOLERANCE = 1.0e-5;
 
   /**
    * constructor
@@ -130,16 +122,10 @@ public class GridRenderer {
   }
 
   /**
-   * get the ColorScale data min/max type
-   */
-  public int getDataMinMaxType() {
-    return dataMinMaxType;
-  }
-
-  /**
    * set the ColorScale data min/max type
+   * @param type MinMaxType
    */
-  public void setDataMinMaxType(int type) {
+  public void setDataMinMaxType(MinMaxType type) {
     if (type != dataMinMaxType) {
       dataMinMaxType = type;
       colorScaleChanged = true;
@@ -161,6 +147,7 @@ public class GridRenderer {
     this.lastGrid = null;
     dataProjection = grid.getProjection();
     makeStridedGrid();
+    isNewField = true;
   }
 
   public Array getCurrentHorizDataSlice() {
@@ -627,21 +614,21 @@ public class GridRenderer {
 
   // set colorscale limits, missing data
   private void setColorScaleParams() {
-    if (dataMinMaxType == HOLD_MinMaxType)
+       if (dataMinMaxType == MinMaxType.hold && !isNewField)
       return;
+    isNewField = false;
 
-    Array dataArr;
-    if (dataMinMaxType == HORIZ_MinMaxType)
-      dataArr = makeHSlice(stridedGrid, wantLevel, wantTime, wantEnsemble, wantRunTime);
-    else
-      dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
+    Array dataArr = makeHSlice(stridedGrid, wantLevel, wantTime, wantEnsemble, wantRunTime);
+
+    //else
+    //  dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
 
     if (dataArr != null) {
-      MAMath.MinMax minmax = stridedGrid.hasMissingData() ?
-              stridedGrid.getMinMaxSkipMissingData(dataArr) : MAMath.getMinMax(dataArr);
+      MAMath.MinMax minmax = stridedGrid.hasMissingData() ? stridedGrid.getMinMaxSkipMissingData(dataArr) : MAMath.getMinMax(dataArr);
       cs.setMinMax(minmax.min, minmax.max);
       cs.setGeoGrid(stridedGrid);
     }
+
     dataVolumeChanged = false;
     colorScaleChanged = false;
   }

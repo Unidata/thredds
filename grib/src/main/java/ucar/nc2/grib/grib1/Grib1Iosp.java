@@ -150,7 +150,10 @@ public class Grib1Iosp extends GribIosp {
       }
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
       boolean useGroups = gribCollection.getGroups().size() > 1;
-      for (GribCollection.GroupHcs g : gribCollection.getGroups())
+
+      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
+      Collections.sort(groups);
+      for (GribCollection.GroupHcs g : groups)
         addGroup(ncfile, g, useGroups);
 
     } else { // the raf is a collection index (ncx)
@@ -174,8 +177,10 @@ public class Grib1Iosp extends GribIosp {
       }
       cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getLocal(), tables);
 
-      boolean useGroups = gribCollection.getGroups().size() > 1;
-      for (GribCollection.GroupHcs g : gribCollection.getGroups())
+      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
+      Collections.sort(groups);
+      boolean useGroups = groups.size() > 1;
+      for (GribCollection.GroupHcs g : groups)
         addGroup(ncfile, g, useGroups);
     }
 

@@ -368,6 +368,21 @@ public class ColorScale implements Cloneable, java.io.Serializable {
     return index;
   }
 
+  public int getIndexFromValueLog(double value) {
+    int index;
+    if (hasMissingData && gg.isMissingData(value))
+      index = ncolors;  // missing data
+    else if (value <= min)
+      index = 0;
+    else if (value >= max)
+      index = ncolors - 1;
+    else
+      index = (int) ((value - min) / interval) + 1;
+
+    hist[index]++;
+    return index;
+  }
+
   /**
    * Set the data min/max interval. The color intervals are set based on this.
    * A PropertyChangeEvent is sent when this is called. Currently the intervals are
