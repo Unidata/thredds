@@ -32,8 +32,12 @@
 
         <hr/>
         <h1>NetCDF Subset Service for Grids</h1>
-        <h2>Dataset: <xsl:value-of select="gridForm/@location"/></h2>
-        <h3>Base Time: <xsl:value-of select="gridForm/TimeSpan/begin"/></h3>
+        <h2>Dataset:
+          <xsl:value-of select="gridForm/@location"/>
+        </h2>
+        <h3>Base Time:
+          <xsl:value-of select="gridForm/TimeSpan/begin"/>
+        </h3>
         <em>
           <a href="dataset.xml">Gridded Dataset Description</a>
         </em>
@@ -56,18 +60,22 @@
 
                   <xsl:if test="time">
                     <xsl:if test="time/values/@npts &lt; 100">
-                    <strong>Variables with available Times: </strong>
-                    <xsl:value-of select="time/values"/>
-                    <xsl:for-each select="time/attribute[@name='units']">
-                      <em> <xsl:value-of select="@value"/> </em>
-                    </xsl:for-each>
-                      </xsl:if>
+                      <strong>Variables with available Times:</strong>
+                      <xsl:value-of select="time/values"/>
+                      <xsl:for-each select="time/attribute[@name='units']">
+                        <em> <xsl:value-of select="@value"/> </em>
+                      </xsl:for-each>
+                    </xsl:if>
+                    <xsl:if test="time/values/@npts &gt; 99">
+                      <strong>Variables with Time coordinate <xsl:value-of select="time/@name"/> </strong>
+                    </xsl:if>
                   </xsl:if>
 
                   <blockquote>
                     <xsl:for-each select="vertSet">
                       <xsl:if test="vert">
-                        <strong>with Vertical Levels (<xsl:value-of select="vert/@name"/>) :</strong>
+                        <strong>with Vertical Levels (<xsl:value-of select="vert/@name"/>) :
+                        </strong>
                         <xsl:value-of select="vert/values"/>
                         <xsl:for-each select="vert/attribute[@name='units']">
                           <em> <xsl:value-of select="@value"/> </em>
@@ -76,11 +84,11 @@
                       <br/>
                       <xsl:for-each select="grid">
                         <input type="checkbox" name="var" value="{@name}"/>
-                        <xsl:value-of select="@name"/>
+                        <xsl:value-of select="@name"/> = <xsl:value-of select="@desc"/>
                         <br/>
                       </xsl:for-each>
                       <br/>
-                      
+
                     </xsl:for-each>
                   </blockquote>
                   <br/>
@@ -101,23 +109,23 @@
                   <blockquote>
                     <blockquote>
                       <p>North</p>
-                      <p>
-                        <input type="text" name="north" size="10" value="{gridForm/LatLonBox/north}"
-                        />
-                      </p>
+                      <p> <input type="text" name="north" size="10" value="{gridForm/LatLonBox/north}"/> </p>
                     </blockquote>
-                  </blockquote> West <input type="text" name="west" size="10"
-                    value="{gridForm/LatLonBox/west}"/>
-                  <input type="text" name="east" size="10" value="{gridForm/LatLonBox/east}"/> East <blockquote>
+                  </blockquote>
+                  West
+                  <input type="text" name="west" size="10"
+                         value="{gridForm/LatLonBox/west}"/>
+                  <input type="text" name="east" size="10" value="{gridForm/LatLonBox/east}"/>
+                  East
+                  <blockquote>
                     <blockquote>
-                      <p>
-                        <input type="text" name="south" size="10" value="{gridForm/LatLonBox/south}"/>
-                      </p>
+                      <p> <input type="text" name="south" size="10" value="{gridForm/LatLonBox/south}"/> </p>
                       <p>South</p>
                     </blockquote>
                   </blockquote>
                 </input>
                 <br/>
+
                 <h3>Choose Time Subset:</h3>
                 <input type="radio" name="temporal" value="all" checked="checked">
                   <b>All</b>
@@ -125,22 +133,32 @@
                 <br/>
                 <input type="radio" name="temporal" value="range">
                   <b>Time Range:</b>
-                  <blockquote> Starting: <input type="text" name="time_start" size="20"
-                      value="{gridForm/TimeSpan/begin}"/>
-                    <br/> Ending: <input type="text" name="time_end" size="20"
-                      value="{gridForm/TimeSpan/end}"/>
+                  <blockquote>Starting:
+                    <input type="text" name="time_start" size="20" value="{gridForm/TimeSpan/begin}"/>
+                    <br/>
+                    Ending: <input type="text" name="time_end" size="20" value="{gridForm/TimeSpan/end}"/>
                     <br/>
                   </blockquote>
                 </input>
                 <br/>
-                  <b>Horizontal Stride:</b>
-                  <blockquote>
-                    <input type="text" name="horizStride" size="5"/>
-                    <br/>
-                  </blockquote>
+
+                <h3>Choose Vertical Level:</h3>
+                <blockquote>
+                  Level:
+                  <input type="text" name="vertCoord" size="10"/>
+                  <br/>
+                </blockquote>
                 <br/>
-                <strong>Add Lat/Lon to file</strong><br/>
-                <input type="checkbox" name="addLatLon" value="true"/>Add Lat/Lon variables <br/>
+
+                <strong>Horizontal Stride:</strong>
+                <input type="text" name="horizStride" size="5"/>
+                <br/>
+                <br/>
+
+                <strong>Add Lat/Lon to file</strong>
+                <br/>
+                <input type="checkbox" name="addLatLon" value="true"/>Add Lat/Lon variables
+                <br/>
               </td>
             </tr>
           </table>
@@ -155,9 +173,7 @@
         </form>
         <hr/>
         <h3>
-          <a
-            href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/GridDataSubsetService.html"
-            >NetCDF Subset Service Documentation</a>
+          <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/GridDataSubsetService.html">NetCDF Subset Service Documentation</a>
         </h3>
       </body>
     </html>

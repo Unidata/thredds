@@ -312,6 +312,29 @@ CFSRR Hi-Priority Time Series from 45-day & Seasonal Runs
    ReferenceDate=2010-01-01T06:00:00.000Z
    last ForecastDate=2010-02-15T06:00:00.000Z
 
+ -from http://nomads.ncdc.noaa.gov/data/cfsr-hpr-ts45/readme.txt
+
+ 	File Name explanation	 (2011-12-08)
+
+ 		Example
+      ocnv5_h.01.2005051600.2005062918.2005051518.grb2
+ 		Pattern
+      <var>.<ensMem>.<yyyymmddhh t(i)>.<yyyymmddhh t(v)>.<yyyymmdd t(ic)>.grb2
+
+ 	var    : The output weather element
+ 	t(i)   : Initialization or cycle run time.
+ 	t(v)   : Final verification time of the series
+ 	t(ic)  : Date/time of initial condition data used for forecast sequence.
+ 	ensMem : Always/only 01 for this high-priority distribution.
+
+ 	Each 00:00 UTC cycle contains a sequence of forecast records extended
+ 	   to approximately 2920 hours (or 4 months)
+ 	Alternately for 06:00 / 12:00 / 18:00 UTC cycles:
+ 	   Each file contains a sequence of forecast records extending out
+ 	   to 1080 hours (45 days)
+ 	Some fields, such as ocean, the t(ic) will differ from the t(i) by six
+ 	   hours.  in most cases, they are the same.
+
 
 
 

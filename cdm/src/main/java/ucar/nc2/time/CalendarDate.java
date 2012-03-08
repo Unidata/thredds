@@ -75,7 +75,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
    */
   public static CalendarDate of(Date date) {
     DateTime dt = new DateTime(date, DateTimeZone.UTC) ;
-    return new CalendarDate(Calendar.gregorian, dt);
+    return new CalendarDate(null, dt);
   }
 
   /**
@@ -86,7 +86,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
   public static CalendarDate of(long msecs) {
     // Constructs an instance set to the milliseconds from 1970-01-01T00:00:00Z using ISOChronology in the specified time zone.
     DateTime dt = new DateTime(msecs, DateTimeZone.UTC) ;
-    return new CalendarDate(Calendar.gregorian, dt);
+    return new CalendarDate(null, dt);
   }
 
   /**
@@ -131,7 +131,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
   private final Calendar cal;
 
   private CalendarDate(Calendar cal, DateTime dateTime) {
-    this.cal = cal == null ? Calendar.gregorian : cal;
+    this.cal = cal == null ? Calendar.getDefault() : cal;
     this.dateTime = dateTime;
   }
 

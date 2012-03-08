@@ -420,8 +420,7 @@ public class GridPointWriter {
 
       netcdfResult = diskCache.createUniqueFile("ncss", ".nc");
 
-      sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(),
-              "Extract Points data from Grid file "+ gds.getLocationURI());
+      sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gds.getLocationURI());
 
       NetcdfDataset ncfile = (NetcdfDataset) gds.getNetcdfFile(); // fake-arino
       if (debug) System.out.println("write to  "+netcdfResult.getPath());
@@ -433,8 +432,8 @@ public class GridPointWriter {
         if (varNames.contains(grid.getFullName())) {
           VariableEnhanced ve = grid.getVariable();
           String dims = ""; // always scalar ????
-          VariableSimpleIF want = new VariableDS( ncfile, null, null, ve.getShortName(),
-                  ve.getDataType(), dims, ve.getUnitsString(), ve.getDescription());
+          VariableSimpleIF want = new VariableDS( ncfile, null, null, ve.getShortName(), ve.getDataType(), dims,
+                  ve.getUnitsString(), ve.getDescription());
           varList.add( want);
         }
       }

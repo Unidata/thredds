@@ -64,7 +64,7 @@ import java.text.ParseException;
  * @author caron
  */
 public class NetcdfCFWriter {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCFWriter.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCFWriter.class);
 
   static public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb, CalendarDateRange range)
           throws IOException, InvalidRangeException {
@@ -88,7 +88,8 @@ public class NetcdfCFWriter {
    * @throws InvalidRangeException if subset is illegal
    */
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          LatLonRect llbb, CalendarDateRange range,
+          LatLonRect llbb,
+          CalendarDateRange range,
           boolean addLatLon,
           int horizStride, int stride_z, int stride_time)
           throws IOException, InvalidRangeException {
@@ -119,6 +120,7 @@ public class NetcdfCFWriter {
       GridDatatype grid = gds.findGridDatatype(gridName);
       GridCoordSystem gcsOrg = grid.getCoordinateSystem();
       CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
+      CoordinateAxis1D vertAxis = gcsOrg.getVerticalAxis();
 
       // make subset if needed
       Range timeRange = null;
@@ -132,8 +134,9 @@ public class NetcdfCFWriter {
         timeRange = new Range(startIndex, endIndex);
       }
 
-      if ((null != timeRange) || (zRange != null) || (llbb != null) || (horizStride > 1)) {
-        grid = grid.makeSubset(timeRange, zRange, llbb, 1, horizStride, horizStride);
+      Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
+      if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
+        grid = grid.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
       }
 
       Variable gridV = (Variable) grid.getVariable();
@@ -333,6 +336,7 @@ public class NetcdfCFWriter {
     varList.add(lonVar);
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////
   public static void test1() throws IOException, InvalidRangeException, ParseException {
     String fileIn = "C:/data/ncmodels/NAM_CONUS_80km_20051206_0000.nc";
     String fileOut = "C:/temp/cf3.nc";

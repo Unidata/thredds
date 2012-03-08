@@ -32,6 +32,7 @@
  */
 package thredds.server.views;
 
+import org.junit.Test;
 import org.springframework.test.web.AbstractModelAndViewTests;
 import org.springframework.web.servlet.View;
 import org.springframework.mock.web.MockHttpServletRequest;

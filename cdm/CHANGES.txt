@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 9: (2012-02-xx)
+ 9: (2012-03-xx)
   GRIB Collections: dont sort groups, since we have indexes into them; make them immutable; sort at presentation layer
   CollectionManagerSingleFile: bug when using a reletive path
   RuntimeLoading: fix docs, grib1 table loading, add feature dataset factory runtime loading.

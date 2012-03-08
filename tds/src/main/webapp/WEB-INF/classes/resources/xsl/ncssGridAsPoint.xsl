@@ -57,12 +57,19 @@
 
                   <xsl:if test="time">
                     <xsl:if test="time/values/@npts &lt; 100">
-                      <strong>Variables with available Times: </strong>
+                      <strong>Variables with available Times:</strong>
                       <xsl:value-of select="time/values"/>
                       <xsl:for-each select="time/attribute[@name='units']">
-                        <em> <xsl:value-of select="@value"/> </em>
+                        <em>
+                          <xsl:value-of select="@value"/>
+                        </em>
                       </xsl:for-each>
-                      </xsl:if>
+                    </xsl:if>
+                    <xsl:if test="time/values/@npts &gt; 99">
+                      <strong>Variables with Time coordinate
+                        <xsl:value-of select="time/@name"/>
+                      </strong>
+                    </xsl:if>
                   </xsl:if>
 
                   <blockquote>
@@ -78,7 +85,7 @@
                       <br/>
                       <xsl:for-each select="grid">
                         <input type="checkbox" name="var" value="{@name}"/>
-                        <xsl:value-of select="@name"/>
+                        <xsl:value-of select="@name"/> = <xsl:value-of select="@desc"/>
                         <br/>
                       </xsl:for-each>
                       <br/>

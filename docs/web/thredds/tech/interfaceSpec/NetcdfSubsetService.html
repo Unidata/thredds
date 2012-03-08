@@ -9,7 +9,6 @@
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service Reference </h1>
 <hr>
-<div class="head">
   <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
   <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:caron@unidata.ucar.edu">John Caron</a></em></p>
   <h3><strong>Contents:</strong></h3>
@@ -161,19 +160,13 @@
   <p>The list of actual return formats  depends on the dataset, and can be found in the Dataset Description Document.</p>
   <p>&nbsp;</p>
   <h3><strong>E. Specify the vertical coordinate</strong></h3>
-  <p>For <em>Grid as Point</em> only , you may specify the vertical coordinate. The vertical slice closest to the requested coordinate will be returned. The possible vertical coordinates are shown in the Dataset Descriptor document. If you specify multiple variables with different vertical coordinates, ambiguous results are possible, and you are advised not to use the service in this way. If you do, the following rules are used:</p>
-  <ol>
-    <li>Variables are examined in order they appear in the query, and the vertical coordinate for the first variable that has one is used.</li>
-    <li>The service loops through the levels of that vertical coordinate, and for each variable looks for the closest value <em><strong>(ignoring units!!)</strong></em> </li>
-    <li>If the value is outside the range for that variable, a missing value (NaN) is used. </li>
-  </ol>
-  <p>Example:</p>
+  <p>You may specify a vertical coordinate. Example:</p>
   <ul>
     <li><strong> vertCoord=850</strong></li>
   </ul>
-  <h3><strong>F. Addding Lat/Lon arrays to the file </strong></h3>
+  <h3><strong>F. Adding Lat/Lon arrays to the file </strong></h3>
   <p>If the grid is a lat/lon grid, the lat and lon coordinates will be automatically included (as 1D coordinate variables). When the grid is on a projection, the lat/lon information will not be included unless the query parameter <strong>addLatLon</strong> is present. In that case, the lat, lon coordinates will be calculated and included into the file (as 2D variables). </p>
-  <p><strong>T</strong>he 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </p>
+  <p>The 4 corners of the lat/lon bounding box are converted into projection coordinates, then the smallest rectangle including those 4 points is used. </p>
   <p>&nbsp;</p>
   <h2>Dataset Descriptions<a name="DatasetDescription"></a> </h2>
   <p>Each dataset has an XML document called the <em><strong>Dataset Description Document</strong></em>. These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is, <em>provide clients with the necessary information to formulate a valid request and send it to the serve</em>r. <strong>The content of these documents is still evolving.</strong> </p>
@@ -329,11 +322,10 @@
     <li><a href="http://www.xml.com/pub/a/2004/08/11/rest.html">Implementing REST Web Services: Best Practices and Guidelines
     </a></li>
   </ul>
-</div>
 <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2007 
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on March, 2012
 </address>
 <p>&nbsp;
 </p>

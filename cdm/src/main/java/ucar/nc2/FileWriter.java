@@ -71,7 +71,7 @@ public class FileWriter {
     debugWrite = debugFlags.isSet("ncfileWriter/debugWrite");
   }
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter.class);
 
   static private boolean debug = false, debugWrite = false;
 
@@ -375,6 +375,7 @@ public class FileWriter {
    * @param ncfile       the NetCDF file to write to.
    * @param oldVar       a variable from the original file to copy data from.
    * @param maxChunkSize the size, <b>in bytes</b>, of the largest chunk to write.
+   * @param progressListeners list of listeners
    * @throws IOException if an I/O error occurs.
    */
   private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, long maxChunkSize, List<FileWriterProgressListener> progressListeners) throws IOException {
@@ -456,9 +457,9 @@ public class FileWriter {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
-  private NetcdfFileWriteable ncfile;
-  private HashMap<String, Dimension> dimHash = new HashMap<String, Dimension>();
-  private List<Variable> varList = new ArrayList<Variable>();
+  private final NetcdfFileWriteable ncfile;
+  private final HashMap<String, Dimension> dimHash = new HashMap<String, Dimension>();
+  private final List<Variable> varList = new ArrayList<Variable>();
 
   /**
    * For writing parts of a NetcdfFile to a new Netcdf-3 local file.
@@ -610,17 +611,18 @@ public class FileWriter {
     }
   }
 
-  private Structure recordVar = null;
+  private final Structure recordVar = null;
 
-  /**
+  /*
    * Read record data from here (when finish is called). Typically much more efficient.
-   * LOOK: Not sure if this allows subsetting, use with caution!!
+   * Not sure if this allows subsetting, use with caution!!
    *
    * @param recordVar the record Variable.
-   */
+   *
   public void setRecordVariable(Structure recordVar) {
     this.recordVar = recordVar;
   }
+  */
 
   /**
    * Call this when all attributes, dimensions, and variables have been added. The data from all
@@ -756,7 +758,7 @@ public class FileWriter {
       System.exit(0);
     }
 
-    // NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);  LOOK was
+    // NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
     NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, false, null);
     ncfileIn.close();

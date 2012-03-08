@@ -4,7 +4,8 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.3:
-  GribCollections: tdsTrigger role to allow tdm triggers
+ NCSS: allow grid subsetting by (single) vertical level
+ GribCollections: tdsTrigger role to allow tdm triggers
 
 Release Details 4.2:
  4.2.8 (2011-07-20)
