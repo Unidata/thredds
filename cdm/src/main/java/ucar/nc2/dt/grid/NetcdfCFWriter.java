@@ -131,7 +131,8 @@ public class NetcdfCFWriter {
           throw new InvalidRangeException("start time=" + dateRange.getStart() + " must be >= " + timeAxis.getCalendarDate(0));
         if (endIndex < 0)
           throw new InvalidRangeException("end time=" + dateRange.getEnd() + " must be >= " + timeAxis.getCalendarDate(0));
-        timeRange = new Range(startIndex, endIndex);
+        if (stride_time <= 1) stride_time = 1;
+        timeRange = new Range(startIndex, endIndex, stride_time);
       }
 
       Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
@@ -148,8 +149,11 @@ public class NetcdfCFWriter {
       for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
         if (!varNameList.contains(axis.getFullName())) {
           varNameList.add(axis.getFullName());
-          varList.add(axis); // LOOK dont we have to subset these ??
+          varList.add(axis);
           axisList.add(axis);
+          if (timeAxis != null && timeAxis.isInterval()) {
+            // LOOK gotta add the bounds  !!!
+          }
         }
       }
 
@@ -223,7 +227,7 @@ public class NetcdfCFWriter {
     }
 
     for (CoordinateAxis axis : axisList) {
-      Variable newV = root.findVariable(axis.getShortName()); // LOOK ???
+      Variable newV = root.findVariable(axis.getShortName()); // LOOK short name ???
       if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
         if (null != axis.getPositive())
           newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));

@@ -125,6 +125,9 @@
                   </blockquote>
                 </input>
                 <br/>
+                <strong>Horizontal Stride:</strong>
+                <input type="text" name="horizStride" size="5" value="1"/>
+                <br/>
 
                 <h3>Choose Time Subset:</h3>
                 <input type="radio" name="temporal" value="all" checked="checked">
@@ -142,6 +145,10 @@
                 </input>
                 <br/>
 
+                <strong>Time Stride:</strong>
+                <input type="text" name="timeStride" size="5" value="1"/>
+                <br/>
+
                 <h3>Choose Vertical Level:</h3>
                 <blockquote>
                   Level:
@@ -150,12 +157,7 @@
                 </blockquote>
                 <br/>
 
-                <strong>Horizontal Stride:</strong>
-                <input type="text" name="horizStride" size="5"/>
-                <br/>
-                <br/>
-
-                <strong>Add Lat/Lon to file</strong>
+                <strong>Add 2D Lat/Lon to file (if needed for CF compliance)</strong>
                 <br/>
                 <input type="checkbox" name="addLatLon" value="true"/>Add Lat/Lon variables
                 <br/>
