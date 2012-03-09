@@ -1,12 +1,10 @@
 package thredds.mock.web;
 
-import java.util.Properties;
-
 import javax.servlet.ServletContext;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.mock.web.MockServletConfig;

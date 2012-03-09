@@ -35,7 +35,7 @@ public class GridServletTimeRequestTest extends GridServletRequestTest{
 									setPoint("true").
 									setTimeStart("2012-02-29T18:00:00.000Z").
 									setTimeEnd("2012-02-30T12:00:00.000Z").
-									setVar("Pressure_reduced_to_MSL_msl").
+									setVar("VAR_7-0-2-2_L102").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("xml").build();
@@ -62,7 +62,7 @@ public class GridServletTimeRequestTest extends GridServletRequestTest{
 									setPoint("true").
 									setTimeStart("2012-02-29T18:00:00.000Z").
 									setTimeDuration("P1DT12H").									
-									setVar("Pressure_reduced_to_MSL_msl").
+									setVar("VAR_7-0-2-2_L102").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("xml").build();
@@ -90,7 +90,7 @@ public class GridServletTimeRequestTest extends GridServletRequestTest{
 									setPoint("true").
 									setTimeEnd("2012-03-02T18:00:00.000Z").
 									setTimeDuration("P1DT6H").									
-									setVar("Pressure_reduced_to_MSL_msl").
+									setVar("VAR_7-0-2-2_L102").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("xml").build();
@@ -126,7 +126,7 @@ public class GridServletTimeRequestTest extends GridServletRequestTest{
 									setPoint("true").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeDuration("P1DT6H").									
-									setVar("Vertical_velocity_pressure_isobaric,Temperature_isobaric").
+									setVar("VAR_7-0-2-39_L100,VAR_7-0-2-11_L100").
 									setVertCoord("850").
 									setLatitude("40.023").
 									setLongitude("-105.268").
@@ -138,7 +138,7 @@ public class GridServletTimeRequestTest extends GridServletRequestTest{
 		assertEquals( "application/xml", response.getContentType() );
 		
 		Document doc = XmlUtil.getStringResponseAsDoc(response);
-		assertEquals(6, XmlUtil.containsXPath("/grid/point/data[@name='date']", doc));		
+		assertEquals(6, XmlUtil.containsXPath("/grid/point/data[@name='date']", doc).size() );		
 		//Check values...
 	}
 	
@@ -157,7 +157,7 @@ public class GridServletTimeRequestTest extends GridServletRequestTest{
 									setTimeStart("20xxx12-03-02T06:00:00Z"). //2012/14/29, 2012-14-2912:00:00 are not illegal??
 									setTimeEnd("20xxx12-03-02T06:00:00Z").
 									//setTimeDuration("P1DT6H").									
-									setVar("Vertical_velocity_pressure_isobaric,Temperature_isobaric").
+									setVar("VAR_7-0-2-39_L100,VAR_7-0-2-11_L100").
 									setVertCoord("850").
 									setLatitude("40.023").
 									setLongitude("-105.268").
@@ -165,7 +165,7 @@ public class GridServletTimeRequestTest extends GridServletRequestTest{
 		
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		gridServlet.doGet(ncssRequest.getRequest(), response);
-		assertEquals(200, response.getStatus());
+		assertEquals(400, response.getStatus());
 		assertTrue(response.getContentAsString().contains("Illegal param") );
 		assertEquals( "application/xml", response.getContentType() );		
 	
@@ -184,7 +184,7 @@ public class GridServletTimeRequestTest extends GridServletRequestTest{
 									setPathInfo("/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1").
 									setPoint("true").									
 									setTime("2012-01-01T00:00:00Z").																	
-									setVar("Vertical_velocity_pressure_isobaric,Temperature_isobaric").
+									setVar("VAR_7-0-2-39_L100,VAR_7-0-2-11_L100").
 									setVertCoord("850").
 									setLatitude("40.023").
 									setLongitude("-105.268").

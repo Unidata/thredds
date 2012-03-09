@@ -3,6 +3,7 @@ package thredds.server.ncSubset;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,6 +27,19 @@ import thredds.mock.web.TdsContentRootPath;
 import thredds.mock.web.ncss.NcssMockHttpServletRequest;
 import thredds.test.util.xml.XmlUtil;
 
+/*
+ * Pressure_reduced_to_MSL_msl   -- VAR_7-0-2-2_L102
+ * Pressure_surface              -- VAR_7-0-2-1_L1
+ * Convective_inhibition_surface -- VAR_7-0-2-156_L1
+ * 
+ * Relative_humidity_height_above_ground -- VAR_7-0-2-52_L105
+ * Temperature_height_above_ground       -- VAR_7-0-2-11_L105
+ * 
+ * Temperature_isobaric         -- VAR_7-0-2-11_L100
+ * Relative_humidity_isobaric   -- VAR_7-0-2-52_L100
+ * 
+ */
+
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 @TdsContentRootPath(path = "/share/testcatalogs/content")
 public class GridServletPointMultipleVariableRequests extends GridServletRequestTest{
@@ -48,7 +62,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Pressure_reduced_to_MSL_msl,Pressure_surface,Convective_inhibition_surface").
+									setVar("VAR_7-0-2-2_L102,VAR_7-0-2-1_L1,VAR_7-0-2-156_L1").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("xml").build();
@@ -64,11 +78,11 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 		assertTrue( XmlUtil.containsXPath("/grid/point", doc).size() > 0 );
 		Element dateTag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='date']", doc).get(0);
 		assertEquals( "2012-02-29T12:00:00.000Z",  dateTag.getText());
-		Element var1Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='Pressure_reduced_to_MSL_msl' and @units='Pa']", doc).get(0);
+		Element var1Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='VAR_7-0-2-2_L102' and @units='Pa']", doc).get(0);
 		assertFalse( "NaN".equals(var1Tag.getText()));
-		Element var2Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='Pressure_surface' and @units='Pa']", doc).get(0);
+		Element var2Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='VAR_7-0-2-1_L1' and @units='Pa']", doc).get(0);
 		assertFalse( "NaN".equals(var2Tag.getText()));
-		Element var3Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='Convective_inhibition_surface' and @units='J/kg']", doc).get(0);
+		Element var3Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='VAR_7-0-2-156_L1' and @units='J/kg']", doc).get(0);
 		assertFalse( "NaN".equals(var3Tag.getText()));		
 		Element latTag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='lat' and @units='degrees_north']", doc).get(0);
 		assertFalse( "0.0".equals(latTag.getText()) );
@@ -90,7 +104,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Pressure_reduced_to_MSL_msl,Pressure_surface,Convective_inhibition_surface").
+									setVar("VAR_7-0-2-2_L102,VAR_7-0-2-1_L1,VAR_7-0-2-156_L1").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("csv").build();
@@ -115,7 +129,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Pressure_reduced_to_MSL_msl,Pressure_surface,Convective_inhibition_surface").
+									setVar("VAR_7-0-2-2_L102,VAR_7-0-2-1_L1,VAR_7-0-2-156_L1").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("netcdf").build();
@@ -124,7 +138,8 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 		gridServlet.doGet(ncssRequest.getRequest(), response);
 		assertEquals(200, response.getStatus());
 		assertEquals( "application/x-netcdf", response.getContentType() );			
-		//check binary content		
+		//check binary content
+		fail("Not yet implemented");
 	}
 	
 	/*----------------------------------------------------------------
@@ -146,8 +161,8 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTemporal("point").
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
-									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Relative_humidity_height_above_ground,Temperature_height_above_ground").
+									setTimeEnd("2012-02-29T12:00:00.000Z").									
+									setVar("VAR_7-0-2-52_L105,VAR_7-0-2-11_L105").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("xml").build();
@@ -156,16 +171,15 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 		gridServlet.doGet(ncssRequest.getRequest(), response);
 		assertEquals(200, response.getStatus());
 		assertEquals( "application/xml", response.getContentType() );
-		
-		//Expected response: lat and lon = 0, and values NaN????		
+			
 		Document doc = XmlUtil.getStringResponseAsDoc(response);
 		assertTrue( XmlUtil.containsXPath("/grid", doc).size() > 0 );
 		assertTrue( XmlUtil.containsXPath("/grid/point", doc).size() > 0 );
 		Element dateTag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='date']", doc).get(0);
 		assertEquals( "2012-02-29T12:00:00.000Z",  dateTag.getText());
-		Element var1Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='Relative_humidity_height_above_ground' and @units='%']", doc).get(0);
+		Element var1Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='VAR_7-0-2-52_L105' and @units='%']", doc).get(0);
 		assertFalse( "NaN".equals(var1Tag.getText()));
-		Element var2Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='Temperature_height_above_ground' and @units='K']", doc).get(0);
+		Element var2Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='VAR_7-0-2-11_L105' and @units='K']", doc).get(0);
 		assertFalse( "NaN".equals(var2Tag.getText()));
 		Element latTag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='lat' and @units='degrees_north']", doc).get(0);
 		assertFalse( "0.0".equals(latTag.getText()) );
@@ -187,7 +201,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Relative_humidity_height_above_ground,Temperature_height_above_ground").
+									setVar("VAR_7-0-2-52_L105,VAR_7-0-2-11_L105").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("csv").build();
@@ -212,7 +226,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Relative_humidity_height_above_ground,Temperature_height_above_ground").
+									setVar("VAR_7-0-2-52_L105,VAR_7-0-2-11_L105").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("netcdf").build();
@@ -222,6 +236,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 		assertEquals(200, response.getStatus());
 		assertEquals( "application/x-netcdf", response.getContentType() );		
 		//check binary content
+		fail("Not yet implemented");
 	}	
 	
 	/*----------------------------------------------------------------
@@ -240,7 +255,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Temperature_isobaric,Relative_humidity_isobaric").
+									setVar("VAR_7-0-2-11_L100,VAR_7-0-2-52_L100").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("xml").build();
@@ -249,8 +264,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 		gridServlet.doGet(ncssRequest.getRequest(), response);
 		assertEquals(200, response.getStatus());
 		assertEquals( "application/xml", response.getContentType() );
-		
-		//Expected response: lat and lon = 0, and values NaN????		
+			
 		Document doc = XmlUtil.getStringResponseAsDoc(response);
 		assertTrue( XmlUtil.containsXPath("/grid", doc).size() > 0 );
 		assertTrue( XmlUtil.containsXPath("/grid/point", doc).size() > 0 );
@@ -260,14 +274,14 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 		List vertCoordTags = XmlUtil.containsXPath("/grid/point/data[@name='vertCoord' and @units='hPa' ]", doc);
 		assertTrue( vertCoordTags.size()== 29 );
 		
-		//Element var1Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='Relative_humidity' and @units='%']", doc).get(0);
-		//assertFalse( "NaN".equals(var1Tag.getText()));
-		//Element var2Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='Temperature_isobaric' and @units='K']", doc).get(0);
-		//assertFalse( "NaN".equals(var2Tag.getText()));
-		//Element latTag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='lat' and @units='degrees_north']", doc).get(0);
-		//assertFalse( "0.0".equals(latTag.getText()) );
-		//Element lonTag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='lon' and @units='degrees_east' ]", doc).get(0);
-		//assertFalse( "0.0".equals(lonTag.getText()) );		
+		Element var1Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='VAR_7-0-2-52_L100' and @units='%']", doc).get(0);
+		assertFalse( "NaN".equals(var1Tag.getText()));
+		Element var2Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='VAR_7-0-2-11_L100' and @units='K']", doc).get(0);
+		assertFalse( "NaN".equals(var2Tag.getText()));
+		Element latTag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='lat' and @units='degrees_north']", doc).get(0);
+		assertFalse( "0.0".equals(latTag.getText()) );
+		Element lonTag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='lon' and @units='degrees_east' ]", doc).get(0);
+		assertFalse( "0.0".equals(lonTag.getText()) );		
 		
 	}
 	
@@ -284,7 +298,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Temperature_isobaric,Relative_humidity_isobaric").
+									setVar("VAR_7-0-2-52_L100,VAR_7-0-2-52_L100").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("csv").build();
@@ -310,7 +324,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Temperature_isobaric,Relative_humidity_isobaric").
+									setVar("VAR_7-0-2-52_L100,VAR_7-0-2-52_L100").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("netcdf").build();
@@ -320,7 +334,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 		assertEquals(200, response.getStatus());
 		assertEquals( "application/x-netcdf", response.getContentType() );
 		//Check binary content		
-		
+		fail("Not yet implemented");
 	}
 	
 	/*----------------------------------------------------------------
@@ -340,7 +354,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Temperature_isobaric,Temperature_layer_between_two_pressure_difference_from_ground").
+									setVar("VAR_7-0-2-11_L100,VAR_7-0-2-41_L100").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("xml").build();
@@ -359,9 +373,9 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 		
 		List vertCoordTags = XmlUtil.containsXPath("/grid/point/data[@name='vertCoord' and @units='hPa' ]", doc);
 		assertTrue( vertCoordTags.size()== 29 );		
-		//Element var1Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='Temperature_isobaric' and @units='K']", doc).get(0);
-		//assertFalse( "NaN".equals(var1Tag.getText()));
-		Element var2Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='Temperature_layer_between_two_pressure_difference_from_ground' and @units='K']", doc).get(0);
+		Element var1Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='VAR_7-0-2-11_L100' and @units='K']", doc).get(0);
+		assertFalse( "NaN".equals(var1Tag.getText()));
+		Element var2Tag = (Element)XmlUtil.containsXPath("/grid/point/data[@name='VAR_7-0-2-41_L100' and @units='1/s']", doc).get(0);
 		//NaN is expected for the non matching levels...
 		//Just now we are getting NaN for all the values, when we get correct values we should check matching and non matching levels and the values of the vertCoord
 		assertTrue( "NaN".equals(var2Tag.getText()));
@@ -385,7 +399,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Temperature_isobaric,Temperature_layer_between_two_pressure_difference_from_ground").
+									setVar("VAR_7-0-2-11_L100,VAR_7-0-2-41_L100").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("csv").build();
@@ -410,7 +424,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Temperature_isobaric,Temperature_layer_between_two_pressure_difference_from_ground").
+									setVar("VAR_7-0-2-11_L100,VAR_7-0-2-41_L100").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setAccept("netcdf").build();
@@ -419,7 +433,8 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 		gridServlet.doGet(ncssRequest.getRequest(), response);
 		assertEquals(200, response.getStatus());
 		assertEquals( "application/x-netcdf", response.getContentType() );
-		//check binary values				
+		//check binary values
+		fail("Not yet implemented");
 	}	
 	
 	/*----------------------------------------------------------------
@@ -438,7 +453,7 @@ public class GridServletPointMultipleVariableRequests extends GridServletRequest
 									setTime("2012-02-29T12:00:00.000Z").
 									setTimeStart("2012-02-29T12:00:00.000Z").
 									setTimeEnd("2012-02-29T12:00:00.000Z").
-									setVar("Temperature_isobaric,Temperature_layer_between_two_pressure_difference_from_ground").
+									setVar("VAR_7-0-2-11_L100,VAR_7-0-2-41_L100").
 									setLatitude("40.023").
 									setLongitude("-105.268").
 									setVertCoord("850,100").
