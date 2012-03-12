@@ -110,6 +110,12 @@ slice closest to the requested time will be returned. </p>
     <li><strong> time=2007-03-29T12:00:00Z</strong></li>
     <li><strong>time=present</strong></li>
   </ul>
+  <p><strong>3. Specify time stride (<em>Grid</em> Subsetting only)</strong></p>
+  <p>You can optionally take only every nth point in time. </p>
+  <p>Example:</p>
+  <ul>
+    <li><strong> timeStride=2 </strong>(take every other point in time) </li>
+  </ul>
   <h3><strong>E. Specify the vertical coordinate</strong></h3>
   <p>You may specify the vertical coordinate. The vertical
 slice closest to the requested coordinate will be returned. The
@@ -180,7 +186,7 @@ level to a common coordinate value is sensible though:</p>
     <li>For <em>Grid</em> Subsetting, only <strong>accept=netcdf</strong> is supported. </li>
     <li>For <em>Grid as Point</em> subsetting, <strong>accept=xml</strong> or <strong>accept=csv</strong> or <strong>accept=netcdf </strong>are  supported. </li>
   </ul>
-  <h3><strong>G. Adding Lat/Lon arrays to the file </strong></h3>
+  <h3><strong>G. Adding 2D Lat/Lon arrays to the file </strong></h3>
   <p>For <em>Grid</em>
 Subsetting: If the grid is a lat/lon grid, the lat and lon coordinates
 will be automatically included (as 1D coordinate variables). When the

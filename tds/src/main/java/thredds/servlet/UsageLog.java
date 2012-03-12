@@ -44,9 +44,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * Includes methods appropriate when the context thread is an individual
  * HTTP request and when the context thread is an initialization thread.
  * The context information is contained in a key/value map.
- *
+ * <p/>
  * <p>Uses the SLF4J MDC framework (see @link{org.slf4j.MDC} for more details).
- *
+ * <p/>
  * <p>If properly configured, each log entry within the context thread
  * will include the gathered context information. For instance, in log4j
  * and slf4j, the appender pattern would contain strings with the form
@@ -54,17 +54,17 @@ import java.util.concurrent.atomic.AtomicLong;
  * value. The context key strings are given in each setup method below.
  *
  * @author caron
- * @since Jan 9, 2009
  * @see org.slf4j.MDC
+ * @since Jan 9, 2009
  */
 public class UsageLog {
   //public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( UsageLog.class);
-  private static AtomicLong logServerAccessId = new AtomicLong(0);
+  private static final AtomicLong logServerAccessId = new AtomicLong(0);
 
   /**
    * Gather context information for the given HTTP request and return
    * a log message appropriate for logging at the start of the request.
-   *
+   * <p/>
    * <p>The following context information is gathered:
    * <ul>
    * <li>"ID" - an identifier for the current thread;</li>
@@ -73,7 +73,7 @@ public class UsageLog {
    * <li>"startTime" - the system time in millis when this request is started (i.e., when this method is called); and</li>
    * <li>"request" - The HTTP request, e.g., "GET /index.html HTTP/1.1".</li>
    * </ul>
-   *
+   * <p/>
    * <p>Call this method at the start of each HttpServlet doXXX() method
    * (e.g., doGet(), doPut()) or Spring MVC Controller handle() method.
    *
@@ -81,61 +81,63 @@ public class UsageLog {
    * @return a log message appropriate for the start of the request.
    */
   public static String setupRequestContext(HttpServletRequest req) {
-     HttpSession session = req.getSession(false);
+    HttpSession session = req.getSession(false);
 
-     // Setup context.
-     MDC.put("ID", Long.toString( logServerAccessId.incrementAndGet() ));
-     MDC.put("host", req.getRemoteHost());
-     MDC.put("ident", (session == null) ? "-" : session.getId());
-     MDC.put("userid", req.getRemoteUser() != null ? req.getRemoteUser() : "-");
-     MDC.put("startTime", Long.toString(System.currentTimeMillis()));
-     String query = req.getQueryString();
-     query = (query != null) ? "?" + query : "";
-     StringBuffer request = new StringBuffer();
-     request.append("\"").append(req.getMethod()).append(" ")
-         .append(req.getRequestURI()).append(query)
-         .append(" ").append(req.getProtocol()).append("\"");
+    // Setup context.
+    MDC.put("ID", Long.toString(logServerAccessId.incrementAndGet()));
+    MDC.put("host", req.getRemoteHost());
+    MDC.put("ident", (session == null) ? "-" : session.getId());
+    MDC.put("userid", req.getRemoteUser() != null ? req.getRemoteUser() : "-");
+    MDC.put("startTime", Long.toString(System.currentTimeMillis()));
+    String query = req.getQueryString();
+    query = (query != null) ? "?" + query : "";
+    StringBuilder request = new StringBuilder();
+    request.append("\"").append(req.getMethod()).append(" ")
+            .append(req.getRequestURI()).append(query)
+            .append(" ").append(req.getProtocol()).append("\"");
 
-     MDC.put("request", request.toString());
-     return "Remote host: " + req.getRemoteHost() + " - Request: " + request.toString();
-   }
+    MDC.put("request", request.toString());
+    return "Remote host: " + req.getRemoteHost() + " - Request: " + request.toString();
+  }
 
-   /**
-    * Return a log message appropriate for logging at the completion of
-    * the contexts HTTP request.
-    *
-    * <p>Call this method at every exit point in each HttpServlet doXXX() method
-    * (e.g., doGet(), doPut()) or Spring MVC Controller handle() method.
-    *
-    * @param resCode        - the result code for this request.
-    * @param resSizeInBytes - the number of bytes returned in this result, -1 if unknown.
-    */
-   public static String closingMessageForRequestContext(int resCode, long resSizeInBytes) {
-     long duration = calculateElapsedTime();
+  /**
+   * Return a log message appropriate for logging at the completion of
+   * the contexts HTTP request.
+   * <p/>
+   * <p>Call this method at every exit point in each HttpServlet doXXX() method
+   * (e.g., doGet(), doPut()) or Spring MVC Controller handle() method.
+   *
+   * @param resCode        - the result code for this request.
+   * @param resSizeInBytes - the number of bytes returned in this result, -1 if unknown.
+   * @return closing log message
+   */
+  public static String closingMessageForRequestContext(int resCode, long resSizeInBytes) {
+    long duration = calculateElapsedTime();
 
-     return "Request Completed - " + resCode + " - " + resSizeInBytes + " - " + duration;
-   }
+    return "Request Completed - " + resCode + " - " + resSizeInBytes + " - " + duration;
+  }
 
   /**
    * Gather context information for the current non-request thread and
    * return a log message appropriate for logging.
-   *
+   * <p/>
    * <p>The following context information is gathered:
    * <ul>
    * <li>"ID" - an identifier for the current thread; and</li>
    * <li>"startTime" - the system time in millis when this method is called.</li>
    * </ul>
-   *
+   * <p/>
    * <p>Call this method only for non-request servlet activities, e.g.,
    * during init() or destroy().
+   * @return starting log message
    */
-   public static String setupNonRequestContext() {
-     // Setup context.
-     MDC.put("ID", Long.toString( logServerAccessId.incrementAndGet() ));
-     MDC.put("startTime", Long.toString(System.currentTimeMillis()));
+  public static String setupNonRequestContext() {
+    // Setup context.
+    MDC.put("ID", Long.toString(logServerAccessId.incrementAndGet()));
+    MDC.put("startTime", Long.toString(System.currentTimeMillis()));
 
     return "Non-request thread opening.";
-   }
+  }
 
   /**
    * Return a log message appropriate for logging at the close of
@@ -143,18 +145,17 @@ public class UsageLog {
    *
    * @return a log message appropriate for logging at the close of the non-request context.
    */
-  public static String closingMessageNonRequestContext()
-  {
+  public static String closingMessageNonRequestContext() {
     long duration = calculateElapsedTime();
 
     return "Non-request thread closing - " + duration;
   }
 
-  private static long calculateElapsedTime()
-  {
+  private static long calculateElapsedTime() {
     long endTime = System.currentTimeMillis();
-    long startTime = Long.parseLong( MDC.get( "startTime" ) );
-    long duration = endTime - startTime;
-    return duration;
+    String startTimeS = MDC.get("startTime");
+    if (startTimeS == null) return -1;
+    long startTime = Long.parseLong(startTimeS);
+    return endTime - startTime;
   }
 }

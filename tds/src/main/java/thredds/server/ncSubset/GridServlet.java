@@ -487,7 +487,7 @@ public class GridServlet extends AbstractServlet {
       boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
 
       try {
-        sendFile(req, res, gds, qp, hasBB, addLatLon, zRange);
+        makeGridFile(req, res, gds, qp, hasBB, addLatLon, zRange);
       } catch (InvalidRangeException e) {
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range: "+e.getMessage());
@@ -513,7 +513,7 @@ public class GridServlet extends AbstractServlet {
     }
   }
 
-  private void sendFile(HttpServletRequest req, HttpServletResponse res, GridDataset gds, QueryParams qp,
+  private void makeGridFile(HttpServletRequest req, HttpServletResponse res, GridDataset gds, QueryParams qp,
           boolean useBB, boolean addLatLon, Range zRange) throws IOException, InvalidRangeException {
 
 
@@ -534,29 +534,14 @@ public class GridServlet extends AbstractServlet {
 
     try {
       NetcdfCFWriter writer = new NetcdfCFWriter();
-      
-      /*
-        public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
-          CalendarDateRange range,
-          boolean addLatLon,
-          int horizStride, int stride_z, int stride_time)
-          throws IOException, InvalidRangeException {
-    makeFile(location, gds, gridList, llbb, horizStride, null, range, stride_time, addLatLon);
-  }
 
-  public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb, 
-    int horizStride,
-    Range zRange,
-    CalendarDateRange dateRange, int stride_time,
-    boolean addLatLon)   
-       */
-      
-      writer.makeFile(cacheFilename, gds, qp.vars, useBB ? qp.getBB() : null,
+      writer.makeFile(cacheFilename, gds, qp.vars,
+              useBB ? qp.getBB() : null,
               qp.horizStride,
               zRange,
               qp.hasDateRange ? qp.getCalendarDateRange() : null,
               qp.timeStride,
-              addLatLon); // ,  qp.vertStride, qp.timeStride);
+              addLatLon);
 
     } catch (IllegalArgumentException e) { // file too big
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));

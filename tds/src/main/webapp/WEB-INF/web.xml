@@ -130,7 +130,7 @@
   </filter-mapping-->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>GridSubsetService</servlet-name>
+    <servlet-name>ncss</servlet-name>
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
@@ -154,7 +154,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>WCS</servlet-name>
+    <servlet-name>wcs</servlet-name>
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
@@ -356,7 +356,6 @@
     <load-on-startup>4</load-on-startup>
   </servlet>
 
-
   <!-- Setup for the DQC servlet. -->
   <servlet>
     <servlet-name>dqc</servlet-name>
@@ -381,10 +380,10 @@
     <load-on-startup>3</load-on-startup>
   </servlet>
 
-  <!-- ncss grids -->
+  <!-- ncss -->
   <servlet>
-    <servlet-name>GridSubsetService</servlet-name>
-    <servlet-class>thredds.server.ncSubset.GridServlet</servlet-class>
+    <servlet-name>ncss</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
   </servlet>
 
   <!-- Radar Server -->
@@ -395,7 +394,7 @@
 
   <!-- OGC Web Coverage server -->
   <servlet>
-    <servlet-name>WCS</servlet-name>
+    <servlet-name>wcs</servlet-name>
     <servlet-class>thredds.server.wcs.WCSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -591,7 +590,7 @@
   </servlet-mapping -->
 
   <servlet-mapping>
-    <servlet-name>GridSubsetService</servlet-name>
+    <servlet-name>ncss</servlet-name>
     <url-pattern>/ncss/grid/*</url-pattern>
   </servlet-mapping>
 
@@ -631,7 +630,7 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>WCS</servlet-name>
+    <servlet-name>wcs</servlet-name>
     <url-pattern>/wcs/*</url-pattern>
   </servlet-mapping>
 

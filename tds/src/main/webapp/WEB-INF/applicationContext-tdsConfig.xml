@@ -45,6 +45,7 @@
     <property name="htmlConfig" ref="htmlConfig" />
   </bean>
 
+  <!-- tell spring that tds.properties get read in first and override anyhting else -->
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
     <property name="locations">

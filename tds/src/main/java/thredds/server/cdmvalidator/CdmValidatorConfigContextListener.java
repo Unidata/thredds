@@ -38,22 +38,15 @@ import javax.servlet.ServletContextListener;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.util.Log4jWebConfigurer;
-import thredds.servlet.DataRootHandler;
-import thredds.servlet.RestrictedAccessConfigListener;
-import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
-import thredds.server.config.TdsContext;
-import thredds.server.config.CdmInit;
 
 /**
- * _more_
+ * CDM Validator initializer - called on startup
  *
  * @author edavis
  * @since 4.0
  */
-public class CdmValidatorConfigContextListener
-        implements ServletContextListener
+public class CdmValidatorConfigContextListener implements ServletContextListener
 {
   private org.slf4j.Logger logger =
           org.slf4j.LoggerFactory.getLogger( CdmValidatorConfigContextListener.class );

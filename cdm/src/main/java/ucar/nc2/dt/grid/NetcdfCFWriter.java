@@ -72,6 +72,16 @@ public class NetcdfCFWriter {
     writer.makeFile(location, gds, gridList, llbb, range, false, 1, 1, 1);
   }
 
+  public long makeGridFileSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList,
+            LatLonRect llbb, int horizStride,
+            Range zRange,
+            CalendarDateRange dateRange, int stride_time,
+            boolean addLatLon) throws IOException, InvalidRangeException {
+
+    return makeOrTestSize(null, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, true);
+  }
+
+
   /**
    * Write a CF compliant Netcdf-3 file from any gridded dataset.
    *
@@ -96,11 +106,21 @@ public class NetcdfCFWriter {
     makeFile(location, gds, gridList, llbb, horizStride, null, range, stride_time, addLatLon);
   }
 
-  public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+  public long makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
           LatLonRect llbb, int horizStride,
           Range zRange,
           CalendarDateRange dateRange, int stride_time,
           boolean addLatLon)
+          throws IOException, InvalidRangeException {
+    
+    return makeOrTestSize(location, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, false);
+  }
+  
+  private long makeOrTestSize(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+          LatLonRect llbb, int horizStride,
+          Range zRange,
+          CalendarDateRange dateRange, int stride_time,
+          boolean addLatLon, boolean testSizeOnly)
           throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
@@ -175,6 +195,9 @@ public class NetcdfCFWriter {
         }
       }
     }
+    
+    if (testSizeOnly)
+      return total_size;
 
     // check size is ok
     boolean isLargeFile = false;
@@ -265,6 +288,7 @@ public class NetcdfCFWriter {
     // LOOK not dealing with crossing the seam
 
     writer.finish(); // this writes the data to the new file.
+    return 0; // ok
   }
 
   private void convertProjectionCTV(NetcdfDataset ds, Variable ctv) {

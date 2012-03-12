@@ -1,12 +1,7 @@
 package thredds.server.config;
 
-import thredds.servlet.ThreddsConfig;
-
-import java.util.Hashtable;
-import java.util.Map;
-
 /**
- * _more_
+ * Server info model
  *
  * @author edavis
  * @since 4.1

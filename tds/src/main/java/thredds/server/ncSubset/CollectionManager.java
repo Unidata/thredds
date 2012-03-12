@@ -45,6 +45,7 @@ import java.util.ArrayList;
  * Manage collection of files.
  * temp kludge until we consolidate NcML agg and DatasetScan (CrawlableDataset)
  *
+ * @deprecated use cdmremote
  * @author caron
  */
 public class CollectionManager {

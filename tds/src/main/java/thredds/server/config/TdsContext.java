@@ -351,7 +351,7 @@ public class TdsContext
     InvDatasetScan.setContext( contextPath );
     InvDatasetScan.setCatalogServletName( "/catalog" );
     InvDatasetFeatureCollection.setContext( contextPath );
-    GridServlet.setContextPath( contextPath ); // Won't need when switch GridServlet to use Swing MVC and TdsContext
+    // GridServlet.setContextPath( contextPath ); // Won't need when switch GridServlet to use Swing MVC and TdsContext
 
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
