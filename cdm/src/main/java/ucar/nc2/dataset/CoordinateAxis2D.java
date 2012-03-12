@@ -211,7 +211,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
 
 
   /**
-   * Experimental: for WRF rotated (staggered) Grids
+   * Experimental: for WRF rotated (NMM "E") Grids
    * @param midx x coordinates of midpoints
    * @return x coordinates of edges with shape (ny+2, nx+1)
    */
@@ -245,7 +245,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   }
 
   /**
-   * Experimental: for WRF rotated (staggered) Grids
+   * Experimental: for WRF rotated (NMM "E") Grids
    * @param midy y coordinates of midpoints
    * @return y coordinates of edges with shape (ny+2, nx+1)
    */

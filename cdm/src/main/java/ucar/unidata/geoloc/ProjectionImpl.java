@@ -80,7 +80,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   /**
    * Earth radius in kilometers
    */
-  static public final double EARTH_RADIUS = Earth.getRadius() * .001;  // km
+  static public final double EARTH_RADIUS = Earth.getRadius() * 0.001;  // km
 
   // package private, i hope
 
@@ -267,6 +267,13 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     return atts;
   }
 
+  public Parameter findProjectionParameter(String want) {
+    for (Parameter p : atts) {
+      if (p.getName().equals(want)) return p;
+    }
+    return null;
+  }
+
   /**
    * Add an attribute to this projection
    *
@@ -295,7 +302,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   protected void addParameter(Parameter p) {
     atts.add(p);
   }
-
+  
   /**
    * Is this the lat/lon Projection ?
    *

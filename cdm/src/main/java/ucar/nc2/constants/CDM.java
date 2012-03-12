@@ -58,4 +58,6 @@ public interface CDM {
   public static final String TITLE = "title";
   public static final String UNITS = "units";
 
+  // staggering for _Coordinate.Stagger
+  public static final String ARAKAWA_E = "Arakawa-E";
 }

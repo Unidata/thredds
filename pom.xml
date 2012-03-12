@@ -637,7 +637,7 @@
 		<maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
 		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
 		<maven-javadoc-plugin.version>2.8.1</maven-javadoc-plugin.version>
-		<maven-surefire-plugin.version>2.7.1</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>2.12</maven-surefire-plugin.version>
 		<maven-war-plugin.version>2.2</maven-war-plugin.version>
 		
         <!-- end plugins -->

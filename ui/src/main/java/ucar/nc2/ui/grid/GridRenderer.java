@@ -33,6 +33,8 @@
 package ucar.nc2.ui.grid;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -40,6 +42,7 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 
 import ucar.unidata.util.Format;
+import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
@@ -742,55 +745,6 @@ public class GridRenderer {
       drawContours(g, dataH.transpose(0, 1), dFromN);
     if (drawGridLines)
       drawGridLines(g);
-
-    // LOOK removed this to allow 2D x, y coordinates 10/29/06
-    /* draw the vertical line indicating current slice
-  gpRun.reset();
-
-  Point2D.Double ptSrc = new Point2D.Double();
-  Point2D.Double ptDest = new Point2D.Double();
-  AffineTransform at = g.getTransform();
-
-  boolean showPts = Debug.isSet("GridRenderer/XORline");
-  if (showPts)
-    System.out.println("GridRenderer/XORline: drawXORline:"+at);
-
-  GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
-  CoordinateAxis xaxis =  geocs.getXHorizAxis();
-  CoordinateAxis1D zaxis = geocs.getVerticalAxis();
-  int nx = (int) xaxis.getSize();
-  if ((zaxis != null) && (xaxis != null) && (wantSlice >=0) && (wantSlice < nx)) {
-    double xval = xaxis.getCoordValue(wantSlice);
-
-    CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
-    int ny = (int) yaxis.getSize();
-    int count = 0;
-    for (int i=0; i<ny; i++) {
-      double yval = yaxis.getCoordValue(i);
-      LatLonPoint llp = dataProjection.projToLatLon( xval, yval);
-      ProjectionPoint pt = drawProjection.latLonToProj( llp);
-
-      // workaround for bug in jdk 1.3, coord overflow hangs... fixed in 1.4
-      ptSrc.setLocation( pt.getX(), pt.getY());
-      at.transform( ptSrc, ptDest);
-      if (showPts) System.out.println("  "+ptDest);
-      if ( Math.abs(ptDest.getX()) > Short.MAX_VALUE ||
-          Math.abs(ptDest.getY()) > Short.MAX_VALUE) {
-        if (showPts) System.out.println("  --> skipped ");
-        continue;
-      }
-
-      if (count == 0)
-        gpRun.moveTo( (float) pt.getX(), (float) pt.getY());
-      else
-        gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      count++;
-    }
-
-    g.setColor(Color.black);
-    if (!Debug.isSet("GridRenderer/XORlineDraw"))
-      g.draw(gpRun);
-  }  */
   }
 
   private void drawGridHoriz(java.awt.Graphics2D g, Array data) {
@@ -816,10 +770,11 @@ public class GridRenderer {
     CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
     CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
 
-    /* if (geocs.isStaggered()) {
-      drawGridHorizStaggered(g, data, xaxis2D, yaxis2D);
+    String stag = geocs.getHorizStaggerType();
+    if (stag != null && stag.equals(CDM.ARAKAWA_E)) {
+      drawGridHorizRotated(g, data, xaxis2D, yaxis2D);
       return;
-    } */
+    }
 
     ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdges(xaxis2D.getMidpoints());
     ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdges(yaxis2D.getMidpoints());
@@ -897,7 +852,7 @@ public class GridRenderer {
   }
 
 
-  private void drawGridHorizStaggered(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D, CoordinateAxis2D yaxis2D) {
+  private void drawGridHorizRotated(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D, CoordinateAxis2D yaxis2D) {
     ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdgesRotated(xaxis2D.getMidpoints());
     ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdgesRotated(yaxis2D.getMidpoints());
 
