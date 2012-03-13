@@ -493,11 +493,11 @@
     <load-on-startup>10</load-on-startup>
   </servlet>
 
-  <servlet>
+  <!-- servlet>
     <servlet-name>View</servlet-name>
     <servlet-class>thredds.servlet.ViewServlet</servlet-class>
     <load-on-startup>10</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
@@ -656,10 +656,10 @@
     <url-pattern>/DLwriter</url-pattern>
   </servlet-mapping>
 
-  <servlet-mapping>
+  <!-- servlet-mapping>
      <servlet-name>View</servlet-name>
      <url-pattern>/view/*</url-pattern>
-   </servlet-mapping>
+   </servlet-mapping-->
 
   <welcome-file-list>
     <welcome-file>/</welcome-file>

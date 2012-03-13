@@ -74,7 +74,7 @@ public class TdsConfigContextListener implements ServletContextListener {
     cdmInit.init( tdsContext);
     logServerStartup.info( "TdsConfigContextListener: CdmInit done" );
 
-    // Initialize the DataRootHandler.
+    // Initialize the DataRootHandler.    
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
     catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
 

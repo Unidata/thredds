@@ -20,7 +20,7 @@ import thredds.mock.web.ncss.NcssMockHttpServletRequest;
 public class GridServletDatasetDescriptionRequest extends GridServletRequestTest{
 	
 	@Test
-	public void testXmlDatasetDescriptionReuest() throws ServletException, IOException{
+	public void testXmlDatasetDescriptionRequest() throws ServletException, IOException{
 		
 		NcssMockHttpServletRequest.NcssMockHttpServletRequestBuilder builder = NcssMockHttpServletRequest.createBuilder();  		
 		NcssMockHttpServletRequest ncssRequest = builder.setRequestMethod("GET").

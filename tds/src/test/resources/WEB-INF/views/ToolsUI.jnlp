@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart">
+  <information>
+    <title>NetCDF Tools UI 4.2</title>
+    <vendor>Unidata</vendor>
+    <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/"/>
+    <description kind="short">GUI interface to netCDF-Java / Common Data Model</description>
+    <icon href="nc.gif"/>
+    <offline-allowed/>
+  </information>
+
+  <security>
+    <all-permissions/>
+  </security>
+
+  <resources>
+    <j2se version="1.6+" max-heap-size="1024m"/>
+    <jar href="netcdfUI.jar"/>
+    <jar href="bdb.jar"/>
+    <jar href="bounce.jar"/>
+    <jar href="bufr.jar"/>
+    <jar href="codec.jar"/>
+    <jar href="ehcache.jar"/>
+    <jar href="grib.jar"/>
+    <jar href="httpclient.jar"/>
+    <jar href="httplogging.jar"/>
+    <jar href="jdom.jar"/>
+    <jar href="jgoodies.jar"/>
+    <jar href="joda.jar"/>
+    <jar href="loggingAPI.jar"/>
+    <jar href="logging.jar"/>
+    <jar href="opendap.jar"/>
+    <jar href="protobuf.jar"/>
+    <jar href="quartz.jar"/>
+    <jar href="resourcesOptional.jar"/>
+    <jar href="spring-aop.jar"/>
+    <jar href="spring-asm.jar"/>
+    <jar href="spring-aop.jar"/>
+    <jar href="spring-beans.jar"/>
+    <jar href="spring-context.jar"/>
+    <jar href="spring-core.jar"/>
+    <jar href="spring-expression.jar"/>
+    <jar href="visadCdm.jar"/>
+  </resources>
+
+  <application-desc main-class="ucar.nc2.ui.ToolsUI">
+    <argument>{catalog}#{dataset}</argument>
+  </application-desc>
+
+</jnlp>

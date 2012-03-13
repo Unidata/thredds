@@ -133,7 +133,7 @@ public class DataRootHandler {
    *
    * @param tdsContext
    */
-  public DataRootHandler(TdsContext tdsContext) {
+  private DataRootHandler(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
   }
 
