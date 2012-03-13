@@ -34,4 +34,4 @@ _notes
 #More testing stuff
 /tds/src/test/data/thredds/cataloggen/config/
 /tds/src/test/data/thredds/logs/
-
+/opendap/src/test/data/test.*.*

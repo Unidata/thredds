@@ -3,154 +3,143 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <parent>
-    <groupId>edu.ucar</groupId>
-    <artifactId>thredds-parent</artifactId>
-    <version>4.3.9-SNAPSHOT</version>
-  </parent>
-
-  <!-- ===========================================================
-     Module Description
- =========================================================== -->
-  <!-- groupId>edu.ucar</groupId-->
-  <artifactId>ui</artifactId>
-  <packaging>jar</packaging>
-  <name>UI Module</name>
-  <description>Package that allows to run the netCDFToolsUI directly from it</description>
-  <url>http://www.unidata.ucar.edu/software/tds/</url>
-
-
-  <dependencies>
-    <!-- dependency>
+  
+    <parent>
         <groupId>edu.ucar</groupId>
-        <artifactId>netcdf</artifactId>
-      </dependency-->
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>bufr</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>grib</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>opendap</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>visad</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sleepycat</groupId>
-      <artifactId>je</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jfree</groupId>
-      <artifactId>jfreechart</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.jgoodies</groupId>
-      <artifactId>forms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jfree</groupId>
-      <artifactId>jcommon</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-    </dependency>
+        <artifactId>thredds-parent</artifactId>
+        <version>4.3.9-SNAPSHOT</version>
+    </parent>
+    
+  <!-- ===========================================================
+           Module Description
+       =========================================================== -->
+    <!-- groupId>edu.ucar</groupId-->
+    <artifactId>ui</artifactId>
+    <packaging>jar</packaging>
+    <name>UI Module</name>
+    <description>Package that allows to run the netCDFToolsUI directly from it</description>
+    <url>http://www.unidata.ucar.edu/software/tds/</url>
+	
+	
+	<dependencies>
+		<!-- dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>netcdf</artifactId>
+		</dependency-->
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>bufr</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>grib</artifactId>
+		</dependency>				
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>opendap</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>edu.ucar</groupId>
+			<artifactId>visad</artifactId>
+		</dependency>						
+		<dependency>
+			<groupId>com.sleepycat</groupId>
+			<artifactId>je</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>			
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>		
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>		
+		</dependency>
+		<dependency>
+			<groupId>jfree</groupId>
+			<artifactId>jfreechart</artifactId>		
+		</dependency>
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>forms</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jfree</groupId>
+			<artifactId>jcommon</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>			
+		</dependency>
+		
+		<dependency>
+			<groupId>lucene</groupId>
+			<artifactId>lucene</artifactId>
+			<version>1.4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bounce</groupId>
+			<artifactId>bounce</artifactId>
+			<version>0.14</version>			
+		</dependency>
+	</dependencies>
 
-    <dependency>
-      <groupId>lucene</groupId>
-      <artifactId>lucene</artifactId>
-      <version>1.4.3</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.bounce</groupId>
-      <artifactId>bounce</artifactId>
-      <version>0.14</version>
-    </dependency>
 
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>netcdf</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>1.5</version>
-        <configuration>
-          <finalName>toolsUI</finalName>
-          <transformers>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-              <mainClass>ucar.nc2.ui.ToolsUI</mainClass>
-            </transformer>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-              <resource>META-INF/spring.handlers</resource>
-            </transformer>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-              <resource>META-INF/spring.schemas</resource>
-            </transformer>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-          </transformers>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+	
+    <build>
+    	<plugins>
+            <plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-shade-plugin</artifactId>
+            	<version>1.5</version>
+            	<configuration>
+            		<finalName>toolsUI</finalName>
+            		<transformers>            			
+            			<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+            				<mainClass>ucar.nc2.ui.ToolsUI</mainClass>
+            			</transformer>
+            			<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+            				<resource>META-INF/spring.handlers</resource>
+            			</transformer>
+            			<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+            				<resource>META-INF/spring.schemas</resource>
+            			</transformer> 
+	                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>             			           		
+            		</transformers>
+            	</configuration>            	
+            	<executions>
+            		<execution>
+            			<phase>package</phase>
+            			<goals>
+            				<goal>shade</goal>
+            			</goals>
+            		</execution>
+            	</executions>
+            </plugin>
+		</plugins>                
+    </build>		 
 
 </project>

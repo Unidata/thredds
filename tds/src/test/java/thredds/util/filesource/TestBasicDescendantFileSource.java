@@ -32,11 +32,12 @@
  */
 package thredds.util.filesource;
 
-import junit.framework.*;
-import org.springframework.util.StringUtils;
-
 import java.io.File;
 import java.io.IOException;
+
+import junit.framework.TestCase;
+
+import org.springframework.util.StringUtils;
 
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;

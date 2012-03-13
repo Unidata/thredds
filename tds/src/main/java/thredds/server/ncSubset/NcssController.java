@@ -363,6 +363,7 @@ public class NcssController extends AbstractController implements LastModified {
   private long makeGridFileSizeEstimate(GridDataset gds, QueryParams qp, boolean useBB, boolean addLatLon, Range zRange) throws IOException, InvalidRangeException {
 
     NetcdfCFWriter writer = new NetcdfCFWriter();
+    
     return writer.makeGridFileSizeEstimate(gds, qp.vars,
                   useBB ? qp.getBB() : null,
                   qp.horizStride,

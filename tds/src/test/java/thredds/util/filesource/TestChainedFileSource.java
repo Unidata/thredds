@@ -32,15 +32,16 @@
  */
 package thredds.util.filesource;
 
-import junit.framework.*;
-
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
+import junit.framework.TestCase;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
+
+
 
 /**
  * _more_

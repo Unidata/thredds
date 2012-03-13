@@ -32,23 +32,27 @@
  */
 package thredds.tds;
 
-import junit.framework.*;
+import java.io.IOException;
 
-import thredds.catalog.*;
+import junit.framework.TestCase;
+import thredds.catalog.InvAccess;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvCatalogRef;
+import thredds.catalog.InvDataset;
+import thredds.catalog.ServiceType;
 import thredds.catalog.crawl.CatalogCrawler;
-import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
-
-import java.io.IOException;
 
 public class TestCdmRemoteServer extends TestCase {
   public TestCdmRemoteServer( String name) {
