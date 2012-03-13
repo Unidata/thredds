@@ -250,7 +250,6 @@ public class H5iosp extends AbstractIOServiceProvider {
       }
       //return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
       return new ArrayObject(data[0].getClass(), shape, data);
-
     }
 
     /* if (dataType == DataType.STRUCTURE) {  // LOOK what about subset ?
@@ -323,7 +322,8 @@ public class H5iosp extends AbstractIOServiceProvider {
     String[] result = new String[nelems];
     for (int i = 0; i < nelems; i++) {
       long reference = refArray.getLong(ima.set(i));
-      result[i] = headerParser.getDataObjectName(reference);
+      String name = headerParser.getDataObjectName(reference);
+      result[i] = name != null ? name : Long.toString(reference);
       if (debugVlen) System.out.printf(" convertReference 0x%x to %s %n", reference, result[i]);
     }
     return Array.factory(String.class, new int[]{nelems}, result);

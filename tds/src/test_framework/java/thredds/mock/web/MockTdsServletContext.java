@@ -73,4 +73,9 @@ public class MockTdsServletContext extends MockServletContext {
 		return new MockRequestDispatcher(path);
 	}
 
+  // LOOK - temp
+  public java.lang.String getRealPath(java.lang.String p0) {
+    return "C:\\dev\\github\\thredds\\tds\\src\\main\\webapp";
+  }
+
 }

@@ -17,22 +17,27 @@ import java.util.Map;
  */
 public class Grib2RecordScanner {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
-  static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'});
+  static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B', 2});
   static private final boolean debug = false;
   static private final boolean debugRepeat = false;
+  static private final int maxScan = 16000;
 
   static public boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
-      boolean found = raf.searchForward(matcher, 16 * 1000); // look in first 16K
-      if (!found) return false;
-      raf.skipBytes(7); // will be positioned on byte 0 of indicator section
-      int edition = raf.read(); // read at byte 8
-      return (edition == 2);
+      while (raf.getFilePointer() < maxScan) {
+        boolean found = raf.searchForward(matcher, maxScan); // look in first 16K
+        if (!found) return false;
+        raf.skipBytes(7); // will be positioned on byte 0 of indicator section
+        int edition = raf.read(); // read at byte 8
+        if (edition == 2) return true;
+      }
 
     } catch (IOException e) {
-     return false;
+      return false;
     }
+
+    return false;
   }
 
   private Map<Long, Grib2SectionGridDefinition> gdsMap = new HashMap<Long, Grib2SectionGridDefinition>();

@@ -28,7 +28,7 @@ import ucar.nc2.dt.grid.GridDataset;
 
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
 @TdsContentRootPath(path = "/share/testcatalogs/content")
-public class GridServletGridRequestTest extends GridServletRequestTest{
+public class GridServletGridRequestTest extends GridServletRequestTest {
 
 	
 	private String tempFileName ="test_response.nc"; 

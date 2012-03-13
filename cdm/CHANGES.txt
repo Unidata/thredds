@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  9: (2012-03-xx)
+  Grib1, Grib2 scanners look through entire 16K for valid record.
+  NCSS maxFileSize, time striding, allow grid subsetting by (single) vertical level, add grid description to dataset description, web form.
+  WRF accept gridtype E. GridCoordSys horiz stagger.
   GRIB Collections: dont sort groups, since we have indexes into them; make them immutable; sort at presentation layer
   CollectionManagerSingleFile: bug when using a reletive path
   RuntimeLoading: fix docs, grib1 table loading, add feature dataset factory runtime loading.

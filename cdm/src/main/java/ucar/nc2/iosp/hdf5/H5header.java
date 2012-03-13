@@ -152,9 +152,21 @@ public class H5header {
     long actualSize = raf.length();
     memTracker = new MemTracker(actualSize);
 
-    if (!isValidFile(raf))
-      throw new IOException("Not a netCDF4/HDF5 file ");
-    // if (debug1) debugOut.format("H5header 0pened file to read:'%s' size= %d %n", ncfile.getLocation(), + actualSize);
+    // find the superblock - no limits on how far in
+    boolean ok = false;
+    long filePos = 0;
+    byte[] b = new byte[8];
+    while ((filePos < actualSize)) {
+      raf.seek(filePos);
+      raf.read(b);
+      String magic = new String(b);
+      if (magic.equals(hdf5magic)) {
+        ok = true;
+        break;
+      }
+      filePos = (filePos == 0) ? 512 : 2 * filePos;
+    }
+    if (!ok) throw new IOException("Not a netCDF4/HDF5 file ");
     if (debug1) debugOut.println("H5header 0pened file to read:'" + raf.getLocation() +"' size= " + actualSize);
     // now we are positioned right after the header
 
@@ -373,6 +385,7 @@ public class H5header {
       if (facade.isVariable)
         findDimensionScales(ncGroup, h5group, facade);
     }
+    // look for dimension scales
     for (DataObjectFacade facade : h5group.nestedObjects) {
       if (facade.isVariable)
         findDimensionLists(ncGroup, h5group, facade);
@@ -440,9 +453,54 @@ public class H5header {
 
     // add system attributes
     processSystemAttributes(h5group.facade.dobj.messages, ncGroup.getAttributes());
-
-
   }
+
+  /////////////////////////
+  /* from http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF_002d4-Format
+  C.3.7 Attributes
+
+  Attributes in HDF5 and netCDF-4 correspond very closely. Each attribute in an HDF5 file is represented as an attribute
+  n the netCDF-4 file, with the exception of the attributes below, which are ignored by the netCDF-4 API.
+
+  _Netcdf4Coordinates An integer array containing the dimension IDs of a variable which is a multi-dimensional coordinate variable.
+  _nc3_strict         When this (scalar, H5T_NATIVE_INT) attribute exists in the root group of the HDF5 file, the netCDF API will enforce
+                      the netCDF classic model on the data file.
+  REFERENCE_LIST      This attribute is created and maintained by the HDF5 dimension scale API.
+  CLASS               This attribute is created and maintained by the HDF5 dimension scale API.
+  DIMENSION_LIST      This attribute is created and maintained by the HDF5 dimension scale API.
+  NAME                This attribute is created and maintained by the HDF5 dimension scale API.
+
+----------
+  from dim_scales_wk9 - Nunes.ppt
+
+  Attribute named “CLASS” with the value “DIMENSION_SCALE”
+  Optional attribute named “NAME”
+  Attribute references to any associated Dataset
+
+-------------
+  from http://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/2008/msg00093.html
+
+  Then comes the part you will have to do for your datasets. You open the data
+  dataset, get an ID, DID variable here, open the latitude dataset, get its ID,
+  DSID variable here, and "link" the 2 with this call
+
+  if(H5DSattach_scale(did,dsid,DIM0) < 0)
+
+  what this function does is to associated the dataset DSID (latitude) with the
+  *dimension* specified by the parameter DIM0 (0, in this case, the first
+  dimension of the 2D array) of the dataset DID
+
+  If you open HDF Explorer and expand the attributes of the "data" dataset you
+  will see an attribute called DIMENSION_LIST.
+  This is done by this function. It is an array that contains 2 HDF5 references,
+  one for the latitude dataset, other for the longitude)
+
+  If you expand the "lat" dataset , you will see that it contains an attribute
+  called REFERENCE_LIST. It is a compound type that contains
+  1)      a reference to my "data" dataset
+  2)      the index of the data dataset this scale is to be associated with (0
+  for the lat, 1 for the lon)
+  */
 
   private void findDimensionScales(ucar.nc2.Group g, H5Group h5group, DataObjectFacade facade) throws IOException {
     // first must look for coordinate variables (dimension scales)
@@ -470,16 +528,24 @@ public class H5header {
       // find the dimensions - set length to maximum
       if (matt.name.equals("DIMENSION_LIST")) { // references : may extend the dimension length
         Attribute att = makeAttribute(matt);
-        StringBuilder sbuff = new StringBuilder();
-        for (int i = 0; i < att.getLength(); i++) {
-          String name = att.getStringValue(i);
-          String dimName = extendDimension(g, h5group, name, facade.dobj.mds.dimLength[i]);
-          sbuff.append(dimName).append(" ");
+        if (att == null) {
+          log.error("DIMENSION_LIST malformed att");
+
+        } else if (att.getLength() !=  facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly fail here
+          log.error("DIMENSION_LIST malformed att="+att);
+
+        } else {
+          StringBuilder sbuff = new StringBuilder();
+          for (int i = 0; i < att.getLength(); i++) {
+            String name = att.getStringValue(i);
+            String dimName = extendDimension(g, h5group, name, facade.dobj.mds.dimLength[i]);
+            sbuff.append(dimName).append(" ");
+          }
+          facade.dimList = sbuff.toString();
+          if (debugDimensionScales) System.out.printf("Found dimList '%s' for group '%s' matt=%s %n",
+                  facade.dimList, g.getName(), matt);
+          iter.remove();
         }
-        facade.dimList = sbuff.toString();
-        if (debugDimensionScales) System.out.printf("Found dimList '%s' for group '%s' matt=%s %n",
-                facade.dimList, g.getName(), matt);
-        iter.remove();
 
       } else if (matt.name.equals("NAME")) {
         Attribute att = makeAttribute(matt);
@@ -4405,10 +4471,14 @@ public class H5header {
    * @return String the String read from the heap
    * @throws IOException on read error
    */
-  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException {
+  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException, InvalidRangeException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
     if (debugHeap) debugOut.println(" heapId= " + heapId);
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
+    if (ho == null) {
+      log.error("Illegal Heap address = {}", globalHeapIdAddress);
+      throw new InvalidRangeException("Illegal Heap address = " + globalHeapIdAddress);
+    }
     if (debugHeap) debugOut.println(" HeapObject= " + ho);
     if (endian >= 0) raf.order(endian);
 
@@ -4493,7 +4563,7 @@ public class H5header {
   }
 
   /**
-   * Get a data object's name, using the objectId your get from a reference (aka hard link).
+   * Get a data object's name, using the objectId you get from a reference (aka hard link).
    *
    * @param objId address of the data object
    * @return String the data object's name, or null if not found

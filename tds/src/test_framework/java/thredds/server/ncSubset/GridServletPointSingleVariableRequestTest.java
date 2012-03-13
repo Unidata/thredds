@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -34,9 +35,9 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 
 
-@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-@TdsContentRootPath(path = "/share/testcatalogs/content")
-public class GridServletPointSingleVariableRequestTest extends GridServletRequestTest{
+@ContextConfiguration(locations = { "classpath:/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+//@TdsContentRootPath(path = "/share/testcatalogs/content")
+public class GridServletPointSingleVariableRequestTest extends GridServletRequestTest {
 	
 
 	
@@ -219,6 +220,8 @@ public class GridServletPointSingleVariableRequestTest extends GridServletReques
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
+    //MockHttpServletRequest req = ncssRequest.getRequest();
+    //System.out.printf("Request == %s%n", req.getRequestURL()+"?"+req.getQueryString());
 		gridServlet.doGet(ncssRequest.getRequest() , response);
 		assertEquals(200, response.getStatus());
 		assertEquals( "application/x-netcdf", response.getContentType() );
@@ -235,7 +238,7 @@ public class GridServletPointSingleVariableRequestTest extends GridServletReques
 			FeatureDataset fd = FeatureDatasetFactoryManager.wrap(FeatureType.ANY_POINT, nfd , null, errlog);
 			assertNotNull(fd);
 			
-		}finally{
+		} finally {
 			nf.close();
 			nfd.close();
 		}		
