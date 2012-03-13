@@ -1,16 +1,14 @@
 package thredds.mock.web;
 
-import java.util.Properties;
-
 import javax.servlet.ServletContext;
 
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
@@ -36,7 +34,15 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 	private TdsContentRootPath tdsContentRootPath;
 	
 	@Override
+	public ApplicationContext loadContext(MergedContextConfiguration mcc) throws Exception {
+
+		return loadContext( mcc.getLocations() );
+
+	}
+	
+	@Override
 	public ApplicationContext loadContext(String... locations) throws Exception {
+	
 
 		final MockServletContext servletContext = new MockTdsServletContext();
 			

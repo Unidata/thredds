@@ -12,7 +12,7 @@
 	<groupId>edu.ucar</groupId>
 	<artifactId>thredds-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>4.3.5-SNAPSHOT</version>
+	<version>4.3.9-SNAPSHOT</version>
 	<name>Unidata THREDDS parent</name>
 	<description>
 	    The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
@@ -608,7 +608,7 @@
 		<org.jsoup.version>1.6.1</org.jsoup.version>
 		<org.jdom.version>1.1</org.jdom.version>
 		<commons-httpclient.version>3.1</commons-httpclient.version>
-		<org.springframework.version>3.0.5.RELEASE</org.springframework.version>
+		<org.springframework.version>3.1.1.RELEASE</org.springframework.version>
 		<com.google.protobuf.version>2.4.1</com.google.protobuf.version>
 		<net.sf.ehcache.version>1.6.0</net.sf.ehcache.version>
 		<com.sleepycat.version>4.0.92</com.sleepycat.version>
@@ -637,7 +637,7 @@
 		<maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
 		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
 		<maven-javadoc-plugin.version>2.8.1</maven-javadoc-plugin.version>
-		<maven-surefire-plugin.version>2.12</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>2.7.1</maven-surefire-plugin.version>
 		<maven-war-plugin.version>2.2</maven-war-plugin.version>
 		
         <!-- end plugins -->
