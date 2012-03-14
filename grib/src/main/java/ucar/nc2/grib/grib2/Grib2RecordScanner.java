@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class Grib2RecordScanner {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
-  static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B', 2});
+  static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
   static private final boolean debug = false;
   static private final boolean debugRepeat = false;
   static private final int maxScan = 16000;

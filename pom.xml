@@ -593,6 +593,7 @@
 		<module>opendap</module>
 		<module>tds</module>
 		<module>visad</module>
+		<module>ui</module>
     	<!-- module>it</module-->
   </modules>
 

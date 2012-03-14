@@ -125,6 +125,8 @@ public class DataRootHandler {
 
   private List<ConfigListener> configListeners = new ArrayList<ConfigListener>();
 
+  private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
+
   /**
    * Constructor.
    * Managed bean - dont do nuttin else !!
@@ -135,12 +137,11 @@ public class DataRootHandler {
     this.tdsContext = tdsContext;
   }
 
-  private PathAliasReplacement contentPathAliasReplacement = null;
-  private PathAliasReplacement iddDataRootPathAliasReplacement = null;
-  private List<PathAliasReplacement> fullDataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
-  private List<PathAliasReplacement> dataRootLocAliasExpanders = Collections.emptyList();
+  //private PathAliasReplacement contentPathAliasReplacement2 = null;
+  //private PathAliasReplacement iddDataRootPathAliasReplacement2 = null;
+  //private List<PathAliasReplacement> dataRootLocAliasExpanders2 = Collections.emptyList();
 
-  public void setDataRootLocationAliasExpanders(List<PathAliasReplacement> dataRootLocAliasExpanders) {
+  /* public void setDataRootLocationAliasExpanders(List<PathAliasReplacement> dataRootLocAliasExpanders) {
     if (dataRootLocAliasExpanders != null)
       this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>(dataRootLocAliasExpanders);
     this.updateFullDataRootLocationAliasExpanders(this.dataRootLocAliasExpanders);
@@ -148,36 +149,45 @@ public class DataRootHandler {
 
   public List<PathAliasReplacement> getDataRootLocationAliasExpanders() {
     return Collections.unmodifiableList(this.dataRootLocAliasExpanders);
+  } */
+
+  /* private void updateFullDataRootLocationAliasExpanders(List<PathAliasReplacement> list) {
+    this.dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
+    this.dataRootLocationAliasExpanders.add(this.contentPathAliasReplacement);
+    if (iddDataRootPathAliasReplacement != null)
+      this.dataRootLocationAliasExpanders.add(this.iddDataRootPathAliasReplacement);
+    if (list != null && !list.isEmpty())
+      this.dataRootLocationAliasExpanders.addAll(list);
+  } */
+  
+  public void setDataRootLocationAliasExpanders(Map<String, String> aliases) {
+    for (String key : aliases.keySet()) {
+      String value = aliases.get(key);
+      if (value == null || value.isEmpty()) continue;
+      dataRootLocationAliasExpanders.add( new StartsWithPathAliasReplacement("${"+key+"}", value));
+    }
   }
+  
 
   //////////////////////////////////////////////
 
   public void init() {
     // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
     String contentReplacementPath = StringUtils.cleanPath(tdsContext.getPublicDocFileSource().getFile("").getPath());
-    this.contentPathAliasReplacement = new StartsWithPathAliasReplacement("content", contentReplacementPath);
+    dataRootLocationAliasExpanders.add( new StartsWithPathAliasReplacement("content", contentReplacementPath));
 
-    String iddDataRootReplacementPath = ThreddsConfig.get("DataRoots.idd", null);
+    /* String iddDataRootReplacementPath = ThreddsConfig.get("DataRoots.idd", null);
     if (iddDataRootReplacementPath != null) {
       iddDataRootReplacementPath = StringUtils.cleanPath(iddDataRootReplacementPath);
       this.iddDataRootPathAliasReplacement = new StartsWithPathAliasReplacement("${iddDataRoot}", iddDataRootReplacementPath);
     }
-    this.updateFullDataRootLocationAliasExpanders(null);
+    this.updateFullDataRootLocationAliasExpanders(null);  */
 
     //this.contentPath = this.tdsContext.
     this.initCatalogs();
 
     this.makeDebugActions();
     DatasetHandler.makeDebugActions();
-  }
-
-  private void updateFullDataRootLocationAliasExpanders(List<PathAliasReplacement> list) {
-    this.fullDataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
-    this.fullDataRootLocationAliasExpanders.add(this.contentPathAliasReplacement);
-    if (iddDataRootPathAliasReplacement != null)
-      this.fullDataRootLocationAliasExpanders.add(this.iddDataRootPathAliasReplacement);
-    if (list != null && !list.isEmpty())
-      this.fullDataRootLocationAliasExpanders.addAll(list);
   }
 
   private void getExtraCatalogs(List<String> extraList) {
@@ -361,8 +371,8 @@ public class DataRootHandler {
 
   private InvCatalogFactory getCatalogFactory(boolean validate) {
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(validate);
-    if (!this.fullDataRootLocationAliasExpanders.isEmpty())
-      factory.setDataRootLocationAliasExpanders(this.fullDataRootLocationAliasExpanders);
+    if (!this.dataRootLocationAliasExpanders.isEmpty())
+      factory.setDataRootLocationAliasExpanders(this.dataRootLocationAliasExpanders);
     return factory;
   }
 
@@ -465,7 +475,7 @@ public class DataRootHandler {
         addRoot(fc);
         needsCache = true;
 
-        // not a DatasetScan or InvDatasetFmrc
+        // not a DatasetScan or InvDatasetFmrc or InvDatasetFeatureCollection
       } else if (invDataset.getNcmlElement() != null) {
         DatasetHandler.putNcmlDataset(invDataset.getUrlPath(), invDataset);
       }

@@ -80,45 +80,27 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   }
 
   private InvCatalogFactory factory = null;
-  // private DOMBuilder domBuilder = new DOMBuilder();
 
   private String version = "1.0.1";
   private boolean debugMetadataRead = false;
 
-  /* public InvCatalogImpl parseXML( InvCatalogFactory fac, org.w3c.dom.Document domDoc, URI url) {
-    this.factory = fac;
-
-    // convert to JDOM document
-    Document doc = domBuilder.build(domDoc);
-
-    if (InvCatalogFactory.showParsedXML) {
-      XMLOutputter xmlOut = new XMLOutputter();
-      System.out.println ("*** catalog/showParsedXML = \n"+xmlOut.outputString(doc)+"\n*******");
-    }
-
-    InvCatalogImpl catalog = readCatalog( doc.getRootElement(), url);
-
-    return catalog;
-  } */
-
   private List<PathAliasReplacement> dataRootLocAliasExpanders = Collections.emptyList();
-  public void setDataRootLocationAliasExpanders( List<PathAliasReplacement> dataRootLocAliasExpanders)
-  {
-    if ( dataRootLocAliasExpanders == null )
+
+  public void setDataRootLocationAliasExpanders(List<PathAliasReplacement> dataRootLocAliasExpanders) {
+    if (dataRootLocAliasExpanders == null)
       this.dataRootLocAliasExpanders = Collections.emptyList();
     else
-      this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>( dataRootLocAliasExpanders);
+      this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>(dataRootLocAliasExpanders);
   }
-  public List<PathAliasReplacement> getDataRootLocationAliasExpanders()
-  {
-    return Collections.unmodifiableList( this.dataRootLocAliasExpanders );
+
+  public List<PathAliasReplacement> getDataRootLocationAliasExpanders() {
+    return Collections.unmodifiableList(this.dataRootLocAliasExpanders);
   }
-  private String expandDataRootLocationAlias( String location )
-  {
-    for ( PathAliasReplacement par : this.dataRootLocAliasExpanders )
-    {
-      if ( par.containsPathAlias( location ))
-        return par.replacePathAlias( location );
+
+  private String expandDataRootLocationAlias(String location) {
+    for (PathAliasReplacement par : this.dataRootLocAliasExpanders) {
+      if (par.containsPathAlias(location))
+        return par.replacePathAlias(location);
     }
     return location;
   }
@@ -352,7 +334,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
     String specName = collElem.getAttributeValue("name");
     if (specName == null) specName = name; // If missing, the Feature Collection name is used.
-    String spec = collElem.getAttributeValue("spec");
+    // String spec = collElem.getAttributeValue("spec");
+    String spec = expandDataRootLocationAlias( collElem.getAttributeValue("spec")); // LOOK
     String timePartition = collElem.getAttributeValue("timePartition");
     String dateFormatMark = collElem.getAttributeValue("dateFormatMark");
     String olderThan = collElem.getAttributeValue("olderThan");
