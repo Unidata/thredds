@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  9: (2012-03-xx)
+  UI: use both name and description (if present) in the GridViewer field selector
+  TransverseMercator projection: allow alternate parameter names; bugs in km/m in ellipsoid
   Grib1, Grib2 scanners look through entire 16K for valid record.
   NCSS maxFileSize, time striding, allow grid subsetting by (single) vertical level, add grid description to dataset description, web form.
   WRF accept gridtype E. GridCoordSys horiz stagger.

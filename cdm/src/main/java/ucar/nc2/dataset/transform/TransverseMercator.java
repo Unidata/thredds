@@ -59,7 +59,11 @@ public class TransverseMercator extends AbstractCoordTransBuilder {
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
 
     double scale = readAttributeDouble( ctv, CF.SCALE_FACTOR_AT_CENTRAL_MERIDIAN, Double.NaN);
+    if (Double.isNaN(scale))
+      scale = readAttributeDouble( ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
     double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);
+    if (Double.isNaN(lon0))
+      lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
@@ -71,12 +75,11 @@ public class TransverseMercator extends AbstractCoordTransBuilder {
     }
 
     double earth_radius = getEarthRadius(ctv);
-    double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN) * .001;
-    double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN) * .001;
+    double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
+    double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
     double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);
 
     ucar.unidata.geoloc.ProjectionImpl proj;
-
 
     // check for ellipsoidal earth
     if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
