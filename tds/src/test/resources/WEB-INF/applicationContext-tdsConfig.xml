@@ -31,7 +31,13 @@
   </bean>
 
   <bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
-    <constructor-arg ref="tdsContext" />
+    <constructor-arg ref="tdsContext"/>
+    <property name="dataRootLocationAliasExpanders">
+      <map>
+        <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
+        <entry key="share" value="${tds.dir.share}"/>
+      </map>
+    </property>
   </bean>
 
   <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />

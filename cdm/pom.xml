@@ -204,7 +204,7 @@
   </repositories>
 
   <build>
-    <!-- testSourceDirectory>void</testSourceDirectory -->
+    <testSourceDirectory>src/test/java</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -216,9 +216,31 @@
             <exclude>ucar/nc2/jni/**</exclude>
             <exclude>ucar/nc2/util/reflect/**</exclude>
           </excludes>
+          <testIncludes>
+          		<testInclude>ucar/unidata/util/TestRegexp.java</testInclude>
+          </testIncludes>
+          
         </configuration>
       </plugin>
+     
+  	  <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        	<configuration>
+        		<!-- Enabling tests for first unit testing -->
+        		<skip>false</skip>
+        		<testFailureIgnore>true</testFailureIgnore>
+        		<includes>
+        			<include>ucar/unidata/util/TestRegexp.java</include>
+        		</includes>
+        	</configuration>
+      	</plugin>      
+      
+      
+      
     </plugins>
+    
+        
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -230,5 +252,6 @@
       </resource>
     </resources>
   </build>
+
 
 </project>

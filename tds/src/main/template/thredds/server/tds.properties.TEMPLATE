@@ -19,4 +19,4 @@ tds.config.file=threddsConfig.xml
 tds.install.url=catalog.html
 
 tds.dir.share=/share
-tds.dir.cdmUnitTest=/share/cdmUnitTest
+tds.dir.cdmUnitTest=/share/testdata/cdmUnitTest

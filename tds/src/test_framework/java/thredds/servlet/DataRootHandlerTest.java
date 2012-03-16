@@ -1,6 +1,6 @@
 package thredds.servlet;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,22 +26,35 @@ public class DataRootHandlerTest {
 	private DataRootHandler tdsDRH;
 	
 	@Autowired
-	private MockServletContext servletContext; 
+	private MockServletContext servletContext;
 	
+	private String reqPath;
+		
 	@Before
 	public void setUp() throws Exception {		
+				
 		
 		tdsContext.init(servletContext);
+		tdsDRH.registerConfigListener( new RestrictedAccessConfigListener() );
+		tdsDRH.init();		
 	}	
 	
 	@Test
-	public void testSomething(){
+	public void testAliasExpandersDatasetScan(){
 		
-		tdsDRH.registerConfigListener( new RestrictedAccessConfigListener() );
-		tdsDRH.init();
-		
-		
-		fail("Not yet implemented");
+		//datasetScan request path 
+		reqPath ="/opendapTest/GFS_Puerto_Rico_191km_20100515_0000.grib1";
+		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+		assertNotNull(match);
+								
+	}
+	
+	@Test
+	public void testAliasExpandersDatasetFeaturecollection(){
+		//featureCollection request path
+		reqPath ="/hioos/model/wav/swan/oahu/runs/SWAN_Oahu_Regional_Wave_Model_(500m)_RUN_2011-07-12T00:00:00.000Z";
+		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+		assertNotNull(match);		
 	}
 
 }
