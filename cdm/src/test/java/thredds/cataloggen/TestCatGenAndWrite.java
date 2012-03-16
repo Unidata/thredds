@@ -44,7 +44,7 @@ import thredds.catalog.InvService;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import ucar.nc2.TestAll;
-import ucar.unidata.util.TestFileDirUtils;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
  * _more_

@@ -43,7 +43,6 @@ import thredds.crawlabledataset.filter.MultiSelectorFilter;
 import thredds.catalog.*;
 
 import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.List;

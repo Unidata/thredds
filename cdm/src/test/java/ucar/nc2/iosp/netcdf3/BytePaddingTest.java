@@ -10,7 +10,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.iosp.hdf5.TestN4;
-import ucar.unidata.util.TestFileDirUtils;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 import java.io.File;
 import java.io.IOException;

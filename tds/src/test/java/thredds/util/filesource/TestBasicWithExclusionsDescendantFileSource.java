@@ -35,8 +35,6 @@ package thredds.util.filesource;
 import junit.framework.*;
 import org.springframework.util.StringUtils;
 import thredds.TestAll;
-import thredds.util.filesource.BasicWithExclusionsDescendantFileSource;
-import thredds.util.filesource.DescendantFileSource;
 
 import java.io.File;
 import java.io.IOException;

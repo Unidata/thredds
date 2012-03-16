@@ -463,6 +463,14 @@
 				<!-- scope>provided</scope-->				
 			</dependency>			
 			<!--  -->
+      <dependency>
+        <groupId>edu.ucar</groupId>
+        <artifactId>test-utilities</artifactId>
+        <classifier>tests</classifier>
+        <scope>test</scope>
+        <type>jar</type>
+        <version>${project.version}</version>
+      </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -497,7 +505,7 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven-compiler-plugin.version}</version>
 					<configuration>
-						<source>1.5</source>
+						<source>1.6</source>
 						<target>1.6</target>						
 					</configuration>
 					<!-- Tests compilation -->
@@ -587,6 +595,7 @@
 			Modules for the build in approximate dependency order 
 		=========================================================== -->
 	<modules>
+    <module>test-utilities</module>
 		<module>cdm</module>
 		<module>bufr</module>
 		<module>grib</module>

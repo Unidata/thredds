@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
 
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
 import ucar.nc2.TestAll;
-import ucar.unidata.util.TestFileDirUtils;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 import java.io.File;
 import java.io.IOException;

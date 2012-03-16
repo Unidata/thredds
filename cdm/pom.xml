@@ -181,6 +181,14 @@
       <groupId>com.sleepycat</groupId>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>test-utilities</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 
