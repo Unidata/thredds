@@ -17,7 +17,6 @@ import thredds.mock.web.TdsContentRootPath;
 
 
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml","/WEB-INF/catalogService-servlet.xml" }, loader=MockTdsContextLoader.class)
-@TdsContentRootPath(path = "/share/testcatalogs/content")
 public class AnyXmlControllerTest extends AbstractCatalogServiceTest{
 	
 	@Autowired

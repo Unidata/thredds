@@ -12,17 +12,38 @@
   <!-- Enables the Spring MVC @Controller programming model  -->
   <mvc:annotation-driven />
   
+  <!-- Handler Mapping -->
+  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+   
+  <!-- view interceptor -->
+  <mvc:interceptors>
+    <mvc:interceptor>
+      <mvc:mapping path="/view/*.jnlp"/>
+      <bean class="thredds.server.viewer.ViewerInterceptor"/>
+    </mvc:interceptor>
+  </mvc:interceptors>  
+  
   
   <!-- enabling component-scan in Spring for annotated wirings --> 
   <context:component-scan base-package="thredds"/>
 
+  <!-- tell spring that tds.properties gets read in first and overrides anything else -->
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    <property name="locations">
+      <list>
+        <value>classpath:thredds/server/tds.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- 
   <bean id="tdsContext" class="thredds.server.config.TdsContext">
     <property name="webappVersion" value="${tds.version}"/>
     <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
 
     <property name="contentRootPath" value="${tds.content.root.path}"/>
-    <!-- property name="contentRootPath" value="S:/testcatalogs/content"/-->
-
+    
     <property name="contentPath" value="${tds.content.path}"/>
     <property name="startupContentPath" value="${tds.content.startup.path}"/>
     <property name="iddContentPath" value="${tds.content.idd.path}"/>
@@ -34,8 +55,9 @@
     <property name="htmlConfig" ref="htmlConfig"/>
     <property name="wmsConfig" ref="wmsConfig"/>
   </bean>
+   -->
 
-  <bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
+  <!-- bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
     <constructor-arg ref="tdsContext"/>
     <property name="dataRootLocationAliasExpanders">
       <map>
@@ -43,7 +65,13 @@
         <entry key="share" value="${tds.dir.share}"/>
       </map>
     </property>
-  </bean>
+  </bean-->
+
+ <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
+        <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
+        <entry key="share" value="${tds.dir.share}"/> 	
+ </util:map>  
+
 
   <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
 
@@ -58,10 +86,10 @@
 
   <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
 
-  <bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
+  <!-- bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
     <property name="tdsContext" ref="tdsContext" />
     <property name="htmlConfig" ref="htmlConfig" />
-  </bean>
+  </bean-->
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
@@ -73,7 +101,7 @@
   </bean>
 
   <!-- A Singleton class to initialize the CDM -->
-  <bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy" />
+  <!-- bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy" /-->
 
     <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>

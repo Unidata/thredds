@@ -32,22 +32,31 @@
  */
 package thredds.server.config;
 
-import org.springframework.util.StringUtils;
-
-import javax.servlet.ServletContext;
-import javax.servlet.RequestDispatcher;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.ServletContextAware;
 
 import thredds.catalog.InvDatasetFeatureCollection;
-import thredds.server.ncSubset.GridServlet;
-import thredds.util.filesource.*;
-import thredds.servlet.ThreddsConfig;
-import thredds.servlet.ServletUtil;
 import thredds.catalog.InvDatasetScan;
+import thredds.servlet.ServletUtil;
+import thredds.servlet.ThreddsConfig;
+import thredds.util.filesource.BasicDescendantFileSource;
+import thredds.util.filesource.BasicWithExclusionsDescendantFileSource;
+import thredds.util.filesource.ChainedFileSource;
+import thredds.util.filesource.DescendantFileSource;
+import thredds.util.filesource.FileSource;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
 
@@ -57,24 +66,46 @@ import ucar.unidata.util.StringUtil2;
  * @author edavis
  * @since 4.0
  */
-public class TdsContext
-{
+@Component
+public class TdsContext implements ServletContextAware, InitializingBean{
+
 //  ToDo Once Log4j config is called by Spring listener instead of ours, use this logger instead of System.out.println.
 //  private org.slf4j.Logger logServerStartup =
 //          org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   private String webappName;
-  private String webappVersion;
-  private String webappVersionBuildDate;
 
   private String contextPath;
-
+ 
+  //Properties from tds.properties
+  @Value("${tds.version}")
+  private String webappVersion; 
+  
+  //@Value("${tds.version.brief}")
+  //private String webappVersionBrief;
+  
+  @Value("${tds.version.builddate}")
+  private String webappVersionBuildDate;
+  
+  @Value("${tds.content.root.path}")
   private String contentRootPath;
-
+  
+  @Value("${tds.content.path}") 
   private String contentPath;
-  private String startupContentPath;
+  
+  @Value("${tds.content.idd.path}")
   private String iddContentPath;
+  
+  @Value("${tds.content.motherlode.path}")
   private String motherlodeContentPath;
+  
+  @Value("${tds.config.file}")
+  private String tdsConfigFileName;
+  
+  @Value("${tds.content.startup.path}")
+  private String startupContentPath;
+  ////////////////////////////////////
+  
   private String webinfPath;
 
   private File rootDirectory;
@@ -99,12 +130,18 @@ public class TdsContext
   private RequestDispatcher defaultRequestDispatcher;
   private RequestDispatcher jspRequestDispatcher;
 
-  private String tdsConfigFileName;
+  @Autowired
   private HtmlConfig htmlConfig;
+  
+  @Autowired
   private TdsServerInfo serverInfo;
+  
+  @Autowired
   private WmsConfig wmsConfig;
+  
+  private ServletContext servletContext;
 
-  public TdsContext() {}
+  private TdsContext() {}
 
   public void setWebappVersion( String verFull ) { this.webappVersion = verFull; }
   public void setWebappVersionBuildDate( String buildDateString) { this.webappVersionBuildDate = buildDateString; }
@@ -150,8 +187,9 @@ public class TdsContext
 
   public void destroy() {}
 
-  public void init( ServletContext servletContext )
-  {
+  
+  public void afterPropertiesSet(){
+
     // ToDo Instead of stdout, use servletContext.log( "...") [NOTE: it writes to localhost.*.log rather than catalina.out].
     if ( servletContext == null )
       throw new IllegalArgumentException( "ServletContext must not be null.");
@@ -466,4 +504,11 @@ public class TdsContext
   {
     return this.jspRequestDispatcher;
   }
+
+@Override
+public void setServletContext(ServletContext servletContext) {
+	
+	this.servletContext = servletContext;
+	
+}
 }

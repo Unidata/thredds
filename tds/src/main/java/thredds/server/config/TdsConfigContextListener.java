@@ -52,6 +52,7 @@ import thredds.servlet.*;
 public class TdsConfigContextListener implements ServletContextListener {
   private org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
+
   public void contextInitialized( ServletContextEvent event ) {
     // ToDo Instead of stdout, use servletContext.log( "...")  [NOTE: it writes to localhost.*.log rather than catalina.out].
     System.out.println( "TdsConfigContextListener.contextInitialized(): start." );
@@ -62,7 +63,10 @@ public class TdsConfigContextListener implements ServletContextListener {
 
     // Initialize the TDS context.
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
-    tdsContext.init( servletContext );
+    
+    //---------------------------------------
+    //tdsContext.init( servletContext );
+    //---------------------------------------
 
     // tdsContext.init() call above initializes tds.log.dir system property
     // which is used in log4j.xml file loaded here.
@@ -71,14 +75,21 @@ public class TdsConfigContextListener implements ServletContextListener {
 
     // Initialize the CDM, now that tdsContext is ready
     CdmInit cdmInit = (CdmInit) wac.getBean( "cdmInit", CdmInit.class );
-    cdmInit.init( tdsContext);
+    
+    //---------------------------------------
+    //cdmInit.init( tdsContext);
+    //---------------------------------------
+    
     logServerStartup.info( "TdsConfigContextListener: CdmInit done" );
 
     // Initialize the DataRootHandler.    
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
     catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
 
-    catHandler.init();
+    //---------------------------------------
+    //catHandler.init();
+    //---------------------------------------    
+    
     DataRootHandler.setInstance( catHandler );
     logServerStartup.info( "TdsConfigContextListener: DataRootHandler done" );
 
@@ -89,6 +100,8 @@ public class TdsConfigContextListener implements ServletContextListener {
 
     logServerStartup.info( "TdsConfigContextListener.contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
   }
+  
+
 
   public void contextDestroyed( ServletContextEvent event ) {
     logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): start." + UsageLog.setupNonRequestContext() );

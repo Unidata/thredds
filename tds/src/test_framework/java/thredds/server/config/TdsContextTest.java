@@ -21,8 +21,6 @@ public class TdsContextTest {
 	@Autowired
 	private TdsContext tdsContext;
 	
-	@Autowired
-	private MockServletContext servletContext; 
 	
 	@Before
 	public void setUp() throws Exception {
@@ -34,7 +32,7 @@ public class TdsContextTest {
 	public void testInit() {
 		
  
-		tdsContext.init(servletContext);	
+		String kk =tdsContext.getContextPath();
 		
 		fail("Not yet implemented");
 		

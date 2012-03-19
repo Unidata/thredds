@@ -32,29 +32,57 @@
  */
 package thredds.servlet;
 
-import thredds.catalog.*;
-import thredds.crawlabledataset.CrawlableDataset;
-import thredds.crawlabledataset.CrawlableDatasetFile;
-import thredds.crawlabledataset.CrawlableDatasetDods;
-import thredds.cataloggen.ProxyDatasetHandler;
-import thredds.server.config.TdsContext;
-import thredds.util.PathAliasReplacement;
-import thredds.util.StartsWithPathAliasReplacement;
-import thredds.util.TdsPathUtils;
-import thredds.util.RequestForwardUtils;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateType;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import javax.annotation.Resource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import thredds.catalog.DataRootConfig;
+import thredds.catalog.InvCatalog;
+import thredds.catalog.InvCatalogFactory;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvCatalogRef;
+import thredds.catalog.InvDataset;
+import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.catalog.InvDatasetFmrc;
+import thredds.catalog.InvDatasetImpl;
+import thredds.catalog.InvDatasetScan;
+import thredds.catalog.InvProperty;
+import thredds.catalog.InvService;
+import thredds.cataloggen.ProxyDatasetHandler;
+import thredds.crawlabledataset.CrawlableDataset;
+import thredds.crawlabledataset.CrawlableDatasetDods;
+import thredds.crawlabledataset.CrawlableDatasetFile;
+import thredds.server.config.TdsContext;
+import thredds.util.PathAliasReplacement;
+import thredds.util.RequestForwardUtils;
+import thredds.util.StartsWithPathAliasReplacement;
+import thredds.util.TdsPathUtils;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -70,12 +98,14 @@ import ucar.unidata.util.StringUtil2;
  *
  * @author caron
  */
-public class DataRootHandler {
+@Component
+public class DataRootHandler implements InitializingBean{
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
+  //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
   static private DataRootHandler singleton = null;
 
   /**
@@ -110,7 +140,9 @@ public class DataRootHandler {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private final TdsContext tdsContext;
+  @Autowired
+  private TdsContext tdsContext;
+  //private final TdsContext tdsContext;
   private boolean staticCache;
 
   // @GuardedBy("this") LOOK should be able to access without synchronization
@@ -125,6 +157,7 @@ public class DataRootHandler {
 
   private List<ConfigListener> configListeners = new ArrayList<ConfigListener>();
 
+  //private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
   private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
 
   /**
@@ -135,6 +168,10 @@ public class DataRootHandler {
    */
   private DataRootHandler(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
+  }
+  
+  private DataRootHandler(){
+	  
   }
 
   //private PathAliasReplacement contentPathAliasReplacement2 = null;
@@ -160,6 +197,8 @@ public class DataRootHandler {
       this.dataRootLocationAliasExpanders.addAll(list);
   } */
   
+  //Set method must be called so annotation at method level rather than property level
+  @Resource(name="dataRootLocationAliasExpanders")
   public void setDataRootLocationAliasExpanders(Map<String, String> aliases) {
     for (String key : aliases.keySet()) {
       String value = aliases.get(key);
@@ -171,7 +210,10 @@ public class DataRootHandler {
 
   //////////////////////////////////////////////
 
-  public void init() {
+  //public void init() {
+  public void afterPropertiesSet() {
+	  
+	 registerConfigListener( new RestrictedAccessConfigListener() );
     // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
     String contentReplacementPath = StringUtils.cleanPath(tdsContext.getPublicDocFileSource().getFile("").getPath());
     dataRootLocationAliasExpanders.add( new StartsWithPathAliasReplacement("content", contentReplacementPath));
@@ -188,6 +230,11 @@ public class DataRootHandler {
 
     this.makeDebugActions();
     DatasetHandler.makeDebugActions();
+    
+	//set the instance
+	DataRootHandler.setInstance(this);
+    
+    
   }
 
   private void getExtraCatalogs(List<String> extraList) {

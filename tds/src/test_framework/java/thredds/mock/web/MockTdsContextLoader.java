@@ -1,7 +1,5 @@
 package thredds.mock.web;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -13,11 +11,7 @@ import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
-import thredds.server.config.CdmInit;
 import thredds.server.config.TdsContext;
-import thredds.servlet.DataRootHandler;
-import thredds.servlet.HtmlWriter;
-import thredds.servlet.RestrictedAccessConfigListener;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import ucar.nc2.util.cache.FileCache;
@@ -74,9 +68,13 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 		webApplicationContext.refresh();
 
 		// Initialize the TdsContext in the loader to avoid initialization
-		// before running every test		
-		initTdsContext(webApplicationContext, servletContext);
+		// We no longer need this since tdsContext, cdmInit, dataRootHandler are beans that implement InitializingBean 		
+		//initTdsContext(webApplicationContext, servletContext);
 
+		TdsContext tdsContext = webApplicationContext.getBean(TdsContext.class);
+		checkContentRootPath(webApplicationContext, tdsContext);
+		
+		
 		webApplicationContext.registerShutdownHook();
 
 		return webApplicationContext;
@@ -97,22 +95,20 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 	 * @param webApplicationContext
 	 * @param servletContext
 	 */
-	private void initTdsContext(XmlWebApplicationContext webApplicationContext,
+	/*private void initTdsContext(XmlWebApplicationContext webApplicationContext,
 			ServletContext servletContext) {
 						
 		TdsContext tdsContext = webApplicationContext.getBean(TdsContext.class);
 		
 		checkContentRootPath(webApplicationContext, tdsContext);
 		
-		tdsContext.init(servletContext);
-		webApplicationContext.getBean(CdmInit.class).init(tdsContext);
+			
+		//webApplicationContext.getBean(CdmInit.class).init(tdsContext);
 
-		DataRootHandler tdsDRH = webApplicationContext
-				.getBean(DataRootHandler.class);
-
-		tdsDRH.registerConfigListener(new RestrictedAccessConfigListener());
-		tdsDRH.init();
-		DataRootHandler.setInstance(tdsDRH);
+		//DataRootHandler tdsDRH = webApplicationContext.getBean(DataRootHandler.class);
+		//tdsDRH.registerConfigListener(new RestrictedAccessConfigListener());
+		//tdsDRH.init();		
+		//DataRootHandler.setInstance(tdsDRH);
 		// YUCK! This is done so that not-yet-Spring-ified servlets can access
 		// the singleton HtmlWriter.
 		// LOOK! ToDo This should be removed once the catalog service
@@ -120,7 +116,7 @@ public class MockTdsContextLoader extends AbstractContextLoader {
 		HtmlWriter htmlWriter = webApplicationContext.getBean(HtmlWriter.class);
 		htmlWriter.setSingleton(htmlWriter);
 
-	}
+	}*/
 
 	private void initFileCache() {
 		// Mock file cache...needed for running init method in thredds.server.views.FileView

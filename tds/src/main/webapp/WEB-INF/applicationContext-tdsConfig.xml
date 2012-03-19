@@ -37,6 +37,7 @@
     </property>
   </bean>
 
+  <!-- 
   <bean id="tdsContext" class="thredds.server.config.TdsContext">
     <property name="webappVersion" value="${tds.version}"/>
     <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
@@ -54,8 +55,9 @@
     <property name="htmlConfig" ref="htmlConfig"/>
     <property name="wmsConfig" ref="wmsConfig"/>
   </bean>
+   -->
 
-  <bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
+  <!-- bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
     <constructor-arg ref="tdsContext"/>
     <property name="dataRootLocationAliasExpanders">
       <map>
@@ -63,7 +65,13 @@
         <entry key="share" value="${tds.dir.share}"/>
       </map>
     </property>
-  </bean>
+  </bean-->
+
+ <util:map id="dataRootLocationAliasExpanders" map-class="java.util.HashMap">
+        <entry key="cdmUnitTest" value="${tds.dir.cdmUnitTest}"/>
+        <entry key="share" value="${tds.dir.share}"/> 	
+ </util:map>  
+
 
   <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
 
@@ -84,7 +92,7 @@
   </bean-->
 
   <!-- A Singleton class to initialize the CDM -->
-  <bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy" />
+  <!-- bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy" /-->
 
     <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>

@@ -33,7 +33,6 @@ import ucar.unidata.io.InMemoryRandomAccessFile;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml","/WEB-INF/cdmRemote-servlet.xml" }, loader=MockTdsContextLoader.class)
-@TdsContentRootPath(path="/share/testcatalogs/content")
 public class CdmRemoteControllerTest {
 	
 	@Autowired

@@ -333,14 +333,18 @@
     <build>
         <finalName>thredds</finalName>
       <!--resources></resources-->
-      <testResources>
+      <testResources>      	
         <testResource>
+        	<filtering>true</filtering>
+        	<directory>${basedir}/src/test/resources</directory>
+        </testResource>        	
+        <!-- testResource>
           <filtering>true</filtering>
           <directory>${basedir}/src/main/template</directory>
           <includes>
             <include>**/tds.properties</include>
           </includes>
-        </testResource>
+        </testResource-->
       </testResources>
         <plugins>
             <plugin>
@@ -421,5 +425,7 @@
       		</plugin>
         </plugins>
     </build>
-
+	<properties>
+		<testContent.root.path>/share/testcatalogs/content</testContent.root.path>
+	</properties>
 </project>

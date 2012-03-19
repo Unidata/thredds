@@ -9,7 +9,7 @@ import thredds.servlet.DataRootHandlerTest;
 import thredds.servlet.HtmlWriterTest; ;
 
 @RunWith(Suite.class)
-@SuiteClasses(value={TdsContextTest.class ,CdmInitTest.class, DataRootHandlerTest.class, HtmlWriterTest.class})
+@SuiteClasses(value={TdsContextTest.class, DataRootHandlerTest.class, HtmlWriterTest.class})
 public class ServerConfigTestSuit {
 
 }
