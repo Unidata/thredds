@@ -151,35 +151,35 @@
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
-      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>net.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
     </dependency>
 
     <!-- Required for reading THREDDS files. -->
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Required for ncstream, cdmRemote. -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Required for object caching. -->
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Required for using aggregations. -->
     <dependency>
       <artifactId>je</artifactId>
       <groupId>com.sleepycat</groupId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

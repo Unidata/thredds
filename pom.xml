@@ -231,7 +231,8 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
 				<version>${org.slf4j.version}</version>
-			</dependency>			
+        <scope>runtime</scope>
+			</dependency>
 			<dependency>  <!-- Should never be needed at compile time. -->
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
@@ -295,7 +296,6 @@
 				<groupId>net.sf.ehcache</groupId>
 				<artifactId>ehcache</artifactId>
 				<version>${net.sf.ehcache.version}</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.sleepycat</groupId>
@@ -464,7 +464,7 @@
 			</dependency>			
 			<!--  -->
       <dependency>
-        <groupId>edu.ucar</groupId>
+        <groupId>${project.groupId}</groupId>
         <artifactId>test-utilities</artifactId>
         <classifier>tests</classifier>
         <scope>test</scope>
