@@ -473,8 +473,8 @@ public class H5header {
 ----------
   from dim_scales_wk9 - Nunes.ppt
 
-  Attribute named “CLASS” with the value “DIMENSION_SCALE”
-  Optional attribute named “NAME”
+  Attribute named "CLASS" with the value "DIMENSION_SCALE"
+  Optional attribute named "NAME"
   Attribute references to any associated Dataset
 
 -------------
