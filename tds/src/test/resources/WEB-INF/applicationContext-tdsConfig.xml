@@ -12,7 +12,6 @@
 
   <bean id="tdsContext" class="thredds.server.config.TdsContext">
     <property name="webappVersion" value="${tds.version}"/>
-    <property name="webappVersionBrief" value="${tds.version.brief}"/>
     <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
 
     <!--property name="contentRootPath" value="${tds.content.root.path}"/-->

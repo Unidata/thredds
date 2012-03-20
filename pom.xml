@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ======================================================================= 
 		Parent Maven Configuration File for UCAR NetCDF library 
-	======================================================================= --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	======================================================================= -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- prerequisites> <maven>2.0.9</maven> </prerequisites -->
@@ -607,9 +608,22 @@
   </modules>
 
 	<properties>
-		<visad.version>2011-08-22</visad.version>  <!-- was 2010-08-09, other options 2011-05-12 or 2011-08-22 -->
+    <!-- Source character encoding (different plug-ins use different sourceEncoding properties) -->
+    <sourceEncoding>UTF-8</sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<javax.servlet.version>2.5</javax.servlet.version>
+    <!-- Build timestamp -->
+    <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
+    <build.timestamp>${maven.build.timestamp}</build.timestamp>
+
+    <!-- Dependency versions -->
+		<visad.version>2011-08-22</visad.version>  <!-- was 2010-08-09, other options 2011-05-12 or 2011-08-22 -->
+    <edu.wisc.version>2011-08-22</edu.wisc.version>
+    <uk.ac.rdg.resc.version>1.0.tds.4.2.20110419.2059</uk.ac.rdg.resc.version>
+    <org.geotoolkit.version>3.04</org.geotoolkit.version>
+    <eds.threddsIso.version>2.02</eds.threddsIso.version>
+
+    <javax.servlet.version>2.5</javax.servlet.version>
 		<javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
 		<taglibs.version>1.1.2</taglibs.version>
 		<net.jcip.version>1.0</net.jcip.version>
@@ -624,24 +638,19 @@
 		<com.sleepycat.version>4.0.92</com.sleepycat.version>
 		<joda-time.version>2.0</joda-time.version>
 		<junit.version>4.8.2</junit.version>
-		<edu.wisc.version>2011-08-22</edu.wisc.version>
 		<log4j.version>1.2.16</log4j.version>
 		<commons-fileupload.version>1.2.1</commons-fileupload.version>
 		<commons-io.version>1.4</commons-io.version>
 		<commons-logging.version>1.1.1</commons-logging.version>
 		<cas.version>2.1.1</cas.version>
 		<oro.version>2.0.8</oro.version>
-		<uk.ac.rdg.resc.version>1.0.tds.4.2.20110419.2059</uk.ac.rdg.resc.version>
-		<!-- uk.ac.rdg.rersc.version>1.0.tds.4.3.20120223.2315</uk.ac.rdg.rersc.version-->
-		<org.geotoolkit.version>3.04</org.geotoolkit.version>
 		<jaxen.version>1.1.3</jaxen.version>
 		<atg.taglib.json.version>0.4.1</atg.taglib.json.version>
 		<org.apache.tomcat.version>6.0.33</org.apache.tomcat.version>
 		<jfree.version>1.0.13</jfree.version>
 		<com.jgoodies.version>1.0.7</com.jgoodies.version>
 		<jfree.jcommon.version>1.0.15</jfree.jcommon.version>
-		<eds.threddsIso.version>2.02</eds.threddsIso.version>		
-		
+
 		<!-- Plugins versions -->
 		<maven-release-plugin.version>2.2.2</maven-release-plugin.version>
 		<maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
@@ -649,11 +658,6 @@
 		<maven-javadoc-plugin.version>2.8.1</maven-javadoc-plugin.version>
 		<maven-surefire-plugin.version>2.7.1</maven-surefire-plugin.version>
 		<maven-war-plugin.version>2.2</maven-war-plugin.version>
-		
-        <!-- end plugins -->
-		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- TODO: Use <sourceEncoding>UTF-8</sourceEncoding> with Maven 3 -->
 	</properties>
 
 </project>

@@ -1,7 +1,6 @@
 CHANGES for THREDDS Data Server (TDS)
-Version @VERSION.MINOR@
-Build Date = @BUILDTIME@
-Build Name = @BUILD.NAME@
+Version ${project.version}
+Build Date = ${build.timestamp}
 
 Release Details 4.3:
  NCSS: allow grid subsetting by (single) vertical level

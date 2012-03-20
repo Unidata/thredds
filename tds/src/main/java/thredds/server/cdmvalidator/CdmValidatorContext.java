@@ -67,7 +67,6 @@ public class CdmValidatorContext
 
   private String webappName;
   private String webappVersion;
-  private String webappVersionBrief;
   private String webappVersionBuildDate;
 
   private String contextPath;
@@ -127,11 +126,6 @@ public class CdmValidatorContext
     
     // ToDo LOOK - Get rid of need for setting contextPath in ServletUtil.
     ServletUtil.setContextPath( contextPath );
-
-    // Check the version.
-    if ( this.webappVersion != null
-         && ! webappVersion.startsWith( this.webappVersionBrief + "." ))
-      throw new IllegalStateException( "Full version [" + this.webappVersion + "] must start with version [" + this.webappVersionBrief + "].");
 
     // Set the root directory and source.
     String rootPath = servletContext.getRealPath( "/" );
@@ -221,7 +215,6 @@ public class CdmValidatorContext
     if ( this.htmlConfig != null )
       this.htmlConfig.init( this.getWebappName(),
                                this.getWebappVersion(),
-                               this.getWebappVersionBrief(),
                                this.getWebappVersionBuildDate(),
                                this.getWebappContextPath() );
     this.initCaching();
@@ -317,21 +310,6 @@ public class CdmValidatorContext
   public void setWebappVersion( String verFull )
   {
     this.webappVersion = verFull;
-  }
-
-  /**
-   * Return the version string (<major>.<minor>) for this web application.
-   *
-   * @return the version string.
-   */
-  public String getWebappVersionBrief()
-  {
-    return this.webappVersionBrief;
-  }
-
-  public void setWebappVersionBrief( String ver)
-  {
-    this.webappVersionBrief = ver;
   }
 
   public String getWebappVersionBuildDate()

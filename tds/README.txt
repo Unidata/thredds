@@ -1,5 +1,5 @@
-THREDDS Data Server Version @VERSION.MINOR@   Build Date = @BUILDTIME@
-          Build Name = @BUILD.NAME@
+THREDDS Data Server Version: ${project.version}
+Build Date: ${build.timestamp}
 
 See http://www.unidata.ucar.edu/projects/THREDDS/tech/
 

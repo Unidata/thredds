@@ -6,7 +6,6 @@
 
   <bean id="cdmValidatorContext" class="thredds.server.cdmvalidator.CdmValidatorContext">
     <property name="webappVersion" value="${cdmvalidator.version}"/>
-    <property name="webappVersionBrief" value="${cdmvalidator.version.brief}"/>
     <property name="webappVersionBuildDate" value="${cdmvalidator.version.builddate}"/>
 
     <property name="contentRootPath" value="${cdmvalidator.content.root.path}"/>

@@ -51,7 +51,6 @@ public class HtmlConfig
 
   private String webappName;
   private String webappVersion;
-  private String webappVersionBrief;
   private String webappVersionBuildDate;
   private String webappContextPath;
 
@@ -82,13 +81,12 @@ public class HtmlConfig
   {}
 
   public void init( String webappName,
-                    String webappVersion, String webappVersionBrief,
+                    String webappVersion,
                     String webappVersionBuildDate,
                     String webappContextPath )
   {
     this.webappName = webappName;
     this.webappVersion = webappVersion;
-    this.webappVersionBrief = webappVersionBrief;
     this.webappVersionBuildDate = webappVersionBuildDate;
     this.webappContextPath = webappContextPath;
   }
@@ -99,10 +97,6 @@ public class HtmlConfig
 
   public String getWebappVersion() {
     return webappVersion;
-  }
-
-  public String getWebappVersionBrief() {
-    return webappVersionBrief;
   }
 
   public String getWebappVersionBuildDate() {

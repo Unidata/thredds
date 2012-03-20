@@ -65,7 +65,6 @@ public class TdsContext
 
   private String webappName;
   private String webappVersion;
-  private String webappVersionBrief;
   private String webappVersionBuildDate;
 
   private String contextPath;
@@ -108,7 +107,6 @@ public class TdsContext
   public TdsContext() {}
 
   public void setWebappVersion( String verFull ) { this.webappVersion = verFull; }
-  public void setWebappVersionBrief( String ver) { this.webappVersionBrief = ver; }
   public void setWebappVersionBuildDate( String buildDateString) { this.webappVersionBuildDate = buildDateString; }
 
   public void setContentRootPath( String contentRootPath) {this.contentRootPath = contentRootPath; }
@@ -172,16 +170,6 @@ public class TdsContext
     contextPath = "/" + tmpContextPath;
     // ToDo LOOK - Get rid of need for setting contextPath in ServletUtil.
     ServletUtil.setContextPath( contextPath );
-
-    // Check the version.
-    if ( this.webappVersion != null
-         && ! webappVersion.startsWith( this.webappVersionBrief + "." ))
-    {
-      String msg = "Full version [" + this.webappVersion + "] must start with version [" + this.webappVersionBrief + "].";
-      System.out.println( "ERROR - TdsContext.init(): " + msg );
-      //logServerStartup.error( "TdsContext.init(): " + msg );
-      throw new IllegalStateException( msg );
-    }
 
     // Set the root directory and source.
     String rootPath = servletContext.getRealPath( "/" );
@@ -401,16 +389,6 @@ public class TdsContext
   public String getWebappVersion()
   {
     return this.webappVersion;
-  }
-
-  /**
-   * Return the version string (<major>.<minor>) for this web application.
-   *
-   * @return the version string.
-   */
-  public String getWebappVersionBrief()
-  {
-    return this.webappVersionBrief;
   }
 
   public String getWebappVersionBuildDate()
