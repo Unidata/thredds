@@ -298,9 +298,9 @@ public class GridUI extends JPanel {
   }
 
   void setField(GridDatatype field) {
-    int idx = fieldChooser.setSelectedByName(field.getDescription());
+    /*int idx = fieldChooser.setSelectedByName(field.toString());
     if (idx < 0)
-      fieldChooser.setSelectedByIndex(0);
+      fieldChooser.setSelectedByIndex(0); */
     fieldChooser.setToolTipText( field.getName());
 
     GridCoordSystem gcs = field.getCoordinateSystem();

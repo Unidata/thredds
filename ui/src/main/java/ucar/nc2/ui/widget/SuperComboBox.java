@@ -340,16 +340,16 @@ public class SuperComboBox extends JPanel {
       }
       repaint();
 
-      if (selected instanceof GeoGridRow) {
-        selectedName = ((GeoGridRow) selected).getDescription();
+      if (selectedObject instanceof GeoGridRow) {
+        selectedObject = ((GeoGridRow) selectedObject).getUserObject();
       }
 
       if (sendExternalEvent) {
         if (debugEvent) System.out.println("--->SuperCombo send event "+selectedName);
         if (immediateMode)
-          actionSource.fireActionValueEvent( "redrawImmediate", selectedName);
+          actionSource.fireActionValueEvent( "redrawImmediate", selectedObject);
         else
-          actionSource.fireActionValueEvent( ActionSourceListener.SELECTED, selectedName);
+          actionSource.fireActionValueEvent( ActionSourceListener.SELECTED, selectedObject);
       }
     }
   }

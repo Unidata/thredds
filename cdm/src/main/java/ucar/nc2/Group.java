@@ -481,6 +481,17 @@ public class Group {
     d.setGroup(this);
   }
 
+  public boolean addDimensionIfNotExists(Dimension d) {
+    if (immutable) throw new IllegalStateException("Cant modify");
+
+    if (findDimensionLocal(d.getName()) != null)
+      return false;
+
+    dimensions.add(d);
+    d.setGroup(this);
+    return true;
+  }
+
   /**
    * Add a nested Group
    *

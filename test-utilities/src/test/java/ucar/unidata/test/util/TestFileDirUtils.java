@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.util.Random;
 
 /**
- * Static utililities for testing
+ * Static utilities for testing
  *
  * @author edavis
  * @since Apr 19, 2007 10:11:24 PM

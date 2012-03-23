@@ -34,9 +34,6 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.StructurePseudo;
-import ucar.nc2.iosp.bufr.BufrIosp;
 
 import java.io.*;
 
@@ -86,42 +83,6 @@ public class TestStructureArray2 extends TestCase {
     test.testArrayStructure( (ArrayStructure) data);
 
     ncfile.close();
-  }
-
-  public void utestBufr() throws IOException, InvalidRangeException {
-    //String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
-    String fileIn = TestAll.cdmUnitTestDir +"bufr/edition3/ecmwf/synop.bufr";
-    NetcdfFile ncf = NetcdfFile.open(fileIn);
-    System.out.println(ncf.toString());
-
-    Structure s = (Structure) ncf.findVariable(BufrIosp.obsRecord);
-    Array data = s.read();
-    test.testArrayStructure( (ArrayStructure) data);
-
-    Array data2 = s.read(new Section().appendRange(1,3));
-    assert data2.getSize() == 3;
-    test.testArrayStructure( (ArrayStructure) data2);
-    System.out.println( NCdumpW.printArray(data2, "testArrayStructure", null));
-
-    // test nested
-  }
-
-  public void utestBufrEnhanced() throws IOException, InvalidRangeException {
-    //String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
-    String fileIn = TestAll.cdmUnitTestDir +"bufr/edition3/ecmwf/synop.bufr";
-    NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
-    System.out.println(ncf.toString());
-
-    Structure s = (Structure) ncf.findVariable(BufrIosp.obsRecord);
-    Array data = s.read();
-    test.testArrayStructure( (ArrayStructure) data);
-
-    Array data2 = s.read(new Section().appendRange(1,3));
-    assert data2.getSize() == 3;
-    test.testArrayStructure( (ArrayStructure) data2);
-    System.out.println( NCdumpW.printArray(data2, "testArrayStructure", null));
-
-    // test nested 
   }
 
 }

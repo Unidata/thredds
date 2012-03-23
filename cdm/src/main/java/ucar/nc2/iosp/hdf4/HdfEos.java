@@ -233,8 +233,8 @@ public class HdfEos {
           }
         } else {
           dim = new Dimension(name, length);
-          parent.addDimension(dim);
-          if (showWork) System.out.printf(" Add dimension %s %n",dim);
+          if (parent.addDimensionIfNotExists(dim) && showWork)
+            System.out.printf(" Add dimension %s %n",dim);
         }
       } else {
         log.warn("Dimension "+name+" has size "+sizeS);
@@ -366,8 +366,8 @@ public class HdfEos {
     String ydimSizeS = gridElem.getChild("YDim").getText();
     int xdimSize = Integer.parseInt(xdimSizeS);
     int ydimSize = Integer.parseInt(ydimSizeS);
-    parent.addDimension(new Dimension("XDim", xdimSize));
-    parent.addDimension(new Dimension("YDim", ydimSize));
+    parent.addDimensionIfNotExists(new Dimension("XDim", xdimSize));
+    parent.addDimensionIfNotExists(new Dimension("YDim", ydimSize));
 
     // global Dimensions
     Element d = gridElem.getChild("Dimension");
@@ -384,8 +384,8 @@ public class HdfEos {
       if ((old == null) || (old.getLength() != length)) {
         if (length > 0) {
           Dimension dim = new Dimension(name, length);
-          parent.addDimension(dim);
-          if (showWork) System.out.printf(" Add dimension %s %n", dim);
+          if (parent.addDimensionIfNotExists(dim) && showWork)
+            System.out.printf(" Add dimension %s %n", dim);
         } else {
           log.warn("Dimension "+name+" has size "+sizeS);
           Dimension udim = new Dimension(name, 1);
@@ -517,7 +517,7 @@ public class HdfEos {
           dim.setUnlimited( true); // allow zero length dimension !!
         dim.setLength(len); // use existing (anon) dimension
         Group parent = dim.getGroup();
-        parent.addDimension(dim);  // add to the parent
+        parent.addDimensionIfNotExists(dim);  // add to the parent
         unknownDims.remove(dim); // remove from list LOOK is this ok?
         log.warn("unknownDim " + wantDim+" length set to "+oldDim.getLength());
         return dim;

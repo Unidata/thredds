@@ -48,7 +48,7 @@ import org.junit.Test;
  * @author caron
  * @since Jun 18, 2008
  */
-public class TestRegexp{
+public class TestRegexp {
 	
   public TestRegexp( ) {
     
@@ -301,16 +301,10 @@ public class TestRegexp{
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
 
-    /* boolean found = false;
-    while (matcher.find()) {
-        System.out.printf(" found the text \"%s\" starting at index %d and ending at index %d.%n",
-            matcher.group(), matcher.start(), matcher.end());
-        found = true;
-    }
-    if(!found)
-        System.out.printf("No match found.%n"); // */
+    if (matcher.matches() != expect)
+        System.out.printf("No match found.%n");
     
-    assertTrue(matcher.matches());
+    assertTrue( matcher.matches() == expect);
     
     System.out.printf("matches = %s %n", matcher.matches());
     if (matcher.matches()) {
