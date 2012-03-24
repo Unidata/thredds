@@ -10,6 +10,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.iosp.hdf5.TestN4;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
 
 import java.io.File;
@@ -30,7 +31,7 @@ public class BytePaddingTest
   public void checkReadOfFileWrittenWithIncorrectPaddingOfOneDimByteArrayOnlyRecordVar()
           throws IOException, InvalidRangeException
   {
-    File testDataDir = new File( TestAll.cdmLocalTestDataDir, "ucar/nc2/iosp/netcdf3" );
+    File testDataDir = new File( TestDir.cdmLocalTestDataDir, "ucar/nc2/iosp/netcdf3" );
     File testFile = new File( testDataDir, "byteArrayRecordVarPaddingTest-bad.nc" );
     assertTrue( testFile.exists());
     assertTrue( testFile.canRead());
@@ -83,7 +84,7 @@ public class BytePaddingTest
   public void checkPaddingOnWriteReadOneDimByteArrayOnlyRecordVar()
           throws IOException, InvalidRangeException
   {
-    File tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     File tmpDataDir = TestFileDirUtils.createTempDirectory( "BytePaddingTest_checkPaddingOnWriteReadOneDimByteArrayOnlyRecordVar", tmpDataRootDir );
     File testFile = new File( tmpDataDir, "file.nc" );
     if ( testFile.exists() ) {
@@ -125,7 +126,7 @@ public class BytePaddingTest
   public void checkPaddingOnWriteReadOneDimByteArrayOneOfTwoRecordVars()
           throws IOException, InvalidRangeException
   {
-    File tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     File tmpDataDir = TestFileDirUtils.createTempDirectory( "BytePaddingTest_checkPaddingOnWriteReadOneDimByteArrayOneOfTwoRecordVars", tmpDataRootDir );
     File testFile = new File( tmpDataDir, "file.nc" );
     if ( testFile.exists() ) {
@@ -180,7 +181,7 @@ public class BytePaddingTest
   public void checkPaddingOnWriteReadTwoDimByteArrayOnlyRecordVar()
           throws IOException, InvalidRangeException
   {
-    File tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     File tmpDataDir = TestFileDirUtils.createTempDirectory( "BytePaddingTest_checkPaddingOnWriteReadTwoDimByteArrayOnlyRecordVar", tmpDataRootDir );
     File testFile = new File( tmpDataDir, "file.nc" );
     if ( testFile.exists() ) {
@@ -223,7 +224,7 @@ public class BytePaddingTest
   public void checkPaddingOnWriteReadTwoDimByteArrayOneOfTwoRecordVars()
           throws IOException, InvalidRangeException
   {
-    File tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     File tmpDataDir = TestFileDirUtils.createTempDirectory( "BytePaddingTest_checkPaddingOnWriteReadTwoDimByteArrayOneOfTwoRecordVar", tmpDataRootDir );
     File testFile = new File( tmpDataDir, "file.nc" );
     if ( testFile.exists() ) {
@@ -278,7 +279,7 @@ public class BytePaddingTest
   public void checkPaddingOnWriteReadOneDimCharArrayOnlyRecordVar()
           throws IOException, InvalidRangeException
   {
-    File tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     File tmpDataDir = TestFileDirUtils.createTempDirectory( "BytePaddingTest_checkPaddingOnWriteReadOneDimCharArrayOnlyRecordVar", tmpDataRootDir );
     File testFile = new File( tmpDataDir, "file.nc" );
     if ( testFile.exists() )
@@ -321,7 +322,7 @@ public class BytePaddingTest
   public void checkPaddingOnWriteReadOneDimCharArrayOneOfTwoRecordVars()
           throws IOException, InvalidRangeException
   {
-    File tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     File tmpDataDir = TestFileDirUtils.createTempDirectory( "BytePaddingTest_checkPaddingOnWriteReadOneDimCharArrayOneOfTwoRecordVar", tmpDataRootDir );
     File testFile = new File( tmpDataDir, "file.nc" );
     if ( testFile.exists() )
@@ -379,7 +380,7 @@ public class BytePaddingTest
   public void checkPaddingOnWriteReadOneDimShortArrayOnlyRecordVar()
           throws IOException, InvalidRangeException
   {
-    File tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     File tmpDataDir = TestFileDirUtils.createTempDirectory( "BytePaddingTest_checkPaddingOnWriteReadOneDimShortArrayOnlyRecordVar", tmpDataRootDir );
     File testFile = new File( tmpDataDir, "file.nc" );
     if ( testFile.exists() )
@@ -422,7 +423,7 @@ public class BytePaddingTest
   public void checkPaddingOnWriteReadOneDimShortArrayOneOfTwoRecordVars()
           throws IOException, InvalidRangeException
   {
-    File tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     File tmpDataDir = TestFileDirUtils.createTempDirectory( "BytePaddingTest_checkPaddingOnWriteReadOneDimShortArrayOneOfTwoRecordVar", tmpDataRootDir );
     File testFile = new File( tmpDataDir, "file.nc" );
     if ( testFile.exists() )
@@ -480,7 +481,7 @@ public class BytePaddingTest
   public void checkPaddingOnWriteReadOriginalByteArrayPaddingTest()
           throws IOException, InvalidRangeException
   {
-    File tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     File tmpDataDir = TestFileDirUtils.createTempDirectory( "BytePaddingTest_writeReadOriginalByteArrayPaddingTest", tmpDataRootDir );
     File testFile = new File( tmpDataDir, "file.nc" );
     if ( testFile.exists() ) {

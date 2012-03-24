@@ -38,6 +38,7 @@ import static org.junit.Assert.*;
 
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
 import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
 
 import java.io.File;
@@ -62,7 +63,7 @@ public class DatasetScanExpandSubdirsTest
   @Before
   public void setupScanLocation()
   {
-    File tmpDataDir = new File( TestAll.temporaryLocalDataDir);
+    File tmpDataDir = new File( TestDir.temporaryLocalDataDir);
     File testDir = TestFileDirUtils.createTempDirectory( "dsScanExpandSubdirs", tmpDataDir );
     TestFileDirUtils.addFile( testDir, "file1.nc" );
     TestFileDirUtils.addFile( testDir, "file2.nc" );

@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.File;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 
 public class TestNexrad2 extends TestCase {
 
@@ -50,7 +51,7 @@ public class TestNexrad2 extends TestCase {
 
   public void testRead() throws IOException {
     long start = System.currentTimeMillis();
-    doDirectory(TestAll.cdmUnitTestDir + "formats/nexrad/level2/VCP11", false);
+    doDirectory(TestDir.cdmUnitTestDir + "formats/nexrad/level2/VCP11", false);
     long took = System.currentTimeMillis() - start;
     System.out.println("that took = "+took+" msec");
   }
@@ -155,14 +156,14 @@ public class TestNexrad2 extends TestCase {
   public void utestCoordSys() throws IOException {
     //NetcdfDataset ncd = NetcdfDataset.openDataset(
     //        "dods://localhost:8080/thredds/dodsC/testAll/Level2_KSOX_20051010_2322.ar2v", false, null);
-    String filename = TestAll.cdmUnitTestDir + "formats/nexrad/level2/Level2_KYUX_20060527_2335.ar2v";
+    String filename = TestDir.cdmUnitTestDir + "formats/nexrad/level2/Level2_KYUX_20060527_2335.ar2v";
     NetcdfFile ncfile = NetcdfDataset.openFile( filename, null);
     testCoordSystem( ncfile);
   }
 
   public void testBzipProblem() throws IOException, InvalidRangeException {
     // file where there was an error unzipping the file
-    String filename = TestAll.cdmUnitTestDir + "formats/nexrad/level2/Level2_KFTG_20060818_1814.ar2v.uncompress.missingradials";
+    String filename = TestDir.cdmUnitTestDir + "formats/nexrad/level2/Level2_KFTG_20060818_1814.ar2v.uncompress.missingradials";
     NetcdfDataset ncd = NetcdfDataset.openDataset( filename);
 
     VariableDS azi = (VariableDS) ncd.findVariable("azimuthR");

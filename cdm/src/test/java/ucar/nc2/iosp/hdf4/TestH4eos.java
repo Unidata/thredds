@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.File;
 
 import junit.framework.*;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Class Description.
@@ -63,16 +64,16 @@ public class TestH4eos extends TestCase {
     }
   }
 
-  String testDir = TestAll.cdmUnitTestDir + "formats/hdf4/";
+  String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
   public void testReadAll() throws IOException {
     int count = 0;
-    count = TestAll.actOnAll(testDir, new MyFileFilter(), new MyAct());
+    count = TestDir.actOnAll(testDir, new MyFileFilter(), new MyAct());
     System.out.println("***READ " + count + " files");
     //count = TestAll.actOnAll("D:/formats/hdf4/", new MyFileFilter(), new MyAct());
     //System.out.println("***READ " + count + " files");
   }
 
-  private class MyAct implements TestAll.Act {
+  private class MyAct implements TestDir.Act {
 
     public int doAct(String filename) throws IOException {
       NetcdfFile ncfile = null;

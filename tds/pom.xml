@@ -60,16 +60,6 @@
             </roles>
         </developer>
         <developer>
-            <id>ed</id>
-            <name>Ed Hartnett</name>
-            <email>ed@unidata.ucar.edu</email>
-            <organization>UCAR/UNIDATA</organization>
-            <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-            <roles>
-                <role>C Developer</role>
-            </roles>
-        </developer>
-        <developer>
             <id>dmh</id>
             <name>Dennis Heimbigner</name>
             <email>dmh@unidata.ucar.edu</email>
@@ -107,16 +97,6 @@
             <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
             <roles>
                 <role>Java Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>russ</id>
-            <name>Russel Rew</name>
-            <email>russ@unidata.ucar.edu</email>
-            <organization>UCAR/UNIDATA</organization>
-            <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-            <roles>
-                <role>C Developer</role>
             </roles>
         </developer>
     </developers>

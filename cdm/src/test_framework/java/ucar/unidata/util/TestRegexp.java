@@ -90,7 +90,7 @@ public class TestRegexp {
   public void testEcmwfTable() {
     testOneLine("2 msl MSL Mean sea level pressure Pa");
     testOneLine("3 3 None Pressure tendency Pa s**-1");
-    testOneLine("4 pv PV Potential vorticity K m**2 kg**-1 s**-1");
+//    testOneLine("4 pv PV Potential vorticity K m**2 kg**-1 s**-1");
     testOneLine("21 21 None Radar spectra (1) -");
   }
 

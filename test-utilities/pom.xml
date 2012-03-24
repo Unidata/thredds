@@ -12,8 +12,15 @@
 
   <artifactId>test-utilities</artifactId>
   <packaging>jar</packaging>
-  <name>THREDDS Test Utilities</name>
+  <name>Test Utilities</name>
   <description>Utility classes for unit and integration testing.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+    </dependency>
+  </dependencies>
 
   <build>
     <testSourceDirectory>src/test/java</testSourceDirectory>

@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
         TestServiceContainer.class,
         TestThreddsMetadataImpl.class,
         ProjectNameImplTest.class,
-        VariableTest.class,
+        // VariableTest.class,
         VariableGroupTest.class
 })
 public class AllTests

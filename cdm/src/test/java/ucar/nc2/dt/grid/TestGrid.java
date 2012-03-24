@@ -33,15 +33,14 @@
 package ucar.nc2.dt.grid;
 
 import junit.framework.*;
-import ucar.nc2.dt.grid.TestGeoGrid;
-import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * TestSuite that runs all the sample tests
  *
  */
 public class TestGrid {
-  public static String topDir = TestAll.cdmLocalTestDataDir;
+  public static String topDir = TestDir.cdmLocalTestDataDir;
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
@@ -53,11 +52,6 @@ public class TestGrid {
     suite.addTest(new TestSuite(TestWritePermute.class));
     suite.addTest(new TestSuite(TestReadPermute.class));
 
-    suite.addTest(new TestSuite(TestReadandCount.class));
-    suite.addTest(new TestSuite(TestReadandCountGrib.class)); // */
-    suite.addTest(new TestSuite(TestReadAndCountDods.class)); // */
-
-    suite.addTest(new TestSuite(TestSubset.class));
     suite.addTest(new TestSuite(TestVerticalTransforms.class));
     
     suite.addTest(new TestSuite(TestCFWriter.class));

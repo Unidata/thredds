@@ -37,6 +37,7 @@ import java.io.*;
 import java.util.*;
 
 import ucar.nc2.util.CompareNetcdf;
+import ucar.unidata.test.util.TestDir;
 
 /** test FileWriting, then reading back and comparing to original. */
 
@@ -48,11 +49,11 @@ public class TestCompareFileWriter extends TestCase {
 
   public ArrayList files;
   public void testCompare() throws IOException {
-    doOne(TestAll.cdmUnitTestDir +"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2100.gini", TestAll.temporaryLocalDataDir +"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    doOne(TestDir.cdmUnitTestDir +"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2100.gini", TestDir.temporaryLocalDataDir +"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
   }
 
   public void utestCompareAll() throws IOException {
-    readAllDir(TestAll.cdmUnitTestDir +"formats/gini/");
+    readAllDir(TestDir.cdmUnitTestDir +"formats/gini/");
   }
 
   void readAllDir(String dirName) throws IOException {
@@ -65,7 +66,7 @@ public class TestCompareFileWriter extends TestCase {
       if (f.isDirectory()) continue;
 
       String path = f.getAbsolutePath();
-      doOne(path, TestAll.temporaryLocalDataDir +"/"+f.getName());
+      doOne(path, TestDir.temporaryLocalDataDir +"/"+f.getName());
     }
 
     for (int i = 0; i < allFiles.length; i++) {

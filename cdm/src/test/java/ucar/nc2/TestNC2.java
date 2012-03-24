@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import ucar.unidata.test.util.TestDir;
 //import ucar.nc2.TestHTTP;
 
 /**
@@ -58,7 +59,7 @@ public class TestNC2 {
   }
 
   public static NetcdfFile openFile( String filename) {
-    return open( TestAll.cdmLocalTestDataDir +filename);
+    return open( TestDir.cdmLocalTestDataDir +filename);
   }
 
   public static junit.framework.Test suite ( ) {

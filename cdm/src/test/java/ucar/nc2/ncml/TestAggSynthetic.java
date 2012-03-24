@@ -36,6 +36,7 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -294,9 +295,9 @@ public class TestAggSynthetic extends TestCase {
     assert (data instanceof ArrayDouble);
     IndexIterator dataI = data.getIndexIterator();
     double val = dataI.getDoubleNext();
-    assert TestAll.closeEnough(val, 0.0) : val;
-    assert TestAll.closeEnough(dataI.getDoubleNext(), 10.0) : dataI.getDoubleCurrent();
-    assert TestAll.closeEnough(dataI.getDoubleNext(), 99.0) : dataI.getDoubleCurrent();
+    assert Misc.closeEnough(val, 0.0) : val;
+    assert Misc.closeEnough(dataI.getDoubleNext(), 10.0) : dataI.getDoubleCurrent();
+    assert Misc.closeEnough(dataI.getDoubleNext(), 99.0) : dataI.getDoubleCurrent();
   }
 
   public void testAggCoordVarScan(NetcdfFile ncfile) throws IOException {

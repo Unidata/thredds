@@ -41,6 +41,7 @@ import ucar.nc2.TestAll;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Test basic projection methods
@@ -53,7 +54,7 @@ public class TestVertical extends TestCase {
   }
 
   public void testOceanS() throws java.io.IOException, InvalidRangeException {
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(TestAll.cdmUnitTestDir + "transforms/roms_ocean_s_coordinate.nc");
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(TestDir.cdmUnitTestDir + "transforms/roms_ocean_s_coordinate.nc");
 
     GridDatatype grid = gds.findGridDatatype("temp");
     assert grid != null;
@@ -80,7 +81,7 @@ public class TestVertical extends TestCase {
   }
 
   public void testOceanSigma() throws java.io.IOException, InvalidRangeException {
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "conventions/cf/gomoos_cf.nc");
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestDir.cdmUnitTestDir + "conventions/cf/gomoos_cf.nc");
 
     GridDatatype grid = gds.findGridDatatype("temp");
     assert grid != null;
@@ -110,7 +111,7 @@ public class TestVertical extends TestCase {
   }
 
   public void testAtmSigma() throws java.io.IOException, InvalidRangeException {
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "transforms/temperature.nc");
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestDir.cdmUnitTestDir + "transforms/temperature.nc");
 
     GridDatatype grid = gds.findGridDatatype("Temperature");
     assert grid != null;
@@ -137,7 +138,7 @@ public class TestVertical extends TestCase {
   }
 
   public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "conventions/cf/ccsm2.nc");
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestDir.cdmUnitTestDir + "conventions/cf/ccsm2.nc");
 
     GridDatatype grid = gds.findGridDatatype("T");
     assert grid != null;
@@ -164,7 +165,7 @@ public class TestVertical extends TestCase {
   }
 
   public void testWrfEta() throws java.io.IOException, InvalidRangeException {
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
 
     GridDatatype grid = gds.findGridDatatype("T");
     assert grid != null;

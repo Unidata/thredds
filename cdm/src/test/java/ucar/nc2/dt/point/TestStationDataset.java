@@ -42,6 +42,7 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.io.File;
@@ -54,7 +55,7 @@ import java.util.Iterator;
 */
 
 public class TestStationDataset extends TestCase {
-  String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/station/";
+  String topDir = TestDir.cdmUnitTestDir + "ft/station/";
 
   public TestStationDataset( String name) {
     super(name);

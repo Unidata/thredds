@@ -34,6 +34,7 @@ package ucar.nc2.ncml;
 import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -46,7 +47,7 @@ public class TestNcMLStrides extends TestCase {
   }
 
   NetcdfFile ncfile = null;
-  String location = "file:"+TestAll.cdmUnitTestDir + "agg/strides/strides.ncml";
+  String location = "file:"+ TestDir.cdmUnitTestDir + "agg/strides/strides.ncml";
 
   public void setUp() {
     try {

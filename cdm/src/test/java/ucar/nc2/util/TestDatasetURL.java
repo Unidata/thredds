@@ -46,6 +46,7 @@ import java.io.StringReader;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestAll;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Class Description.
@@ -64,7 +65,7 @@ public class TestDatasetURL extends TestCase {
   }
 
   public void testNcML() throws IOException {
-    String dir = TestAll.cdmUnitTestDir;
+    String dir = TestDir.cdmUnitTestDir;
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +

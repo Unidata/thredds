@@ -42,6 +42,7 @@ import ucar.nc2.TestAll;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,8 +61,8 @@ public class TestGridClose extends TestCase {
   }
 
   public void testClose() throws IOException {
-    File org = new File(TestAll.cdmLocalTestDataDir + "rankTest.nc");
-    File copy = new File(TestAll.temporaryLocalDataDir + "rankTest.nc");
+    File org = new File(TestDir.cdmLocalTestDataDir + "rankTest.nc");
+    File copy = new File(TestDir.temporaryLocalDataDir + "rankTest.nc");
     IO.copyFile(org, copy);
 
     String url = copy.getPath();

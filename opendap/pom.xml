@@ -96,15 +96,41 @@
       <groupId>net.jcip</groupId>
       <artifactId>jcip-annotations</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>test-utilities</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
-  <!-- ===========================================================
-            Build configuration
+  <build>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
 
-            We declare a non-existant test directory as a dirty trick
-            for skiping completly the tests, including compilation.
-        =========================================================== -->
-   <build>
-     <!-- testSourceDirectory>void</testSourceDirectory-->
-   </build>  
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>false</skip>
+        	<testFailureIgnore>true</testFailureIgnore>
+          <includes>
+            <include>opendap/test/Test*.java</include>
+            <include>ucar/nc2/dods/Test*.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
 </project>

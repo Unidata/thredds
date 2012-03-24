@@ -43,6 +43,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
+import ucar.unidata.test.util.TestDir;
 
 public class TestOffAggDirDateFormat extends TestCase {
   private int ntimes = 8;
@@ -51,7 +52,7 @@ public class TestOffAggDirDateFormat extends TestCase {
   }
 
   public void testNcmlGrid() throws IOException {
-    String filename = "file:"+TestAll.cdmUnitTestDir + "formats/gini/aggDateFormat.ncml";
+    String filename = "file:"+ TestDir.cdmUnitTestDir + "formats/gini/aggDateFormat.ncml";
 
     GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( filename);
     System.out.println(" TestNcmlAggDirDateFormat.openGrid "+ filename);

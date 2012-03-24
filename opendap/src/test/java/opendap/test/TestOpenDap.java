@@ -32,10 +32,7 @@
  */
 package opendap.test;
 
-import junit.extensions.TestSetup;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import ucar.nc2.util.rc.RC;
 
 
 /**

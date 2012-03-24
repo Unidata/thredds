@@ -104,7 +104,7 @@ public class TestFileCacheConcurrent extends TestCase {
         100, TimeUnit.SECONDS, q);
 
     int count = 0;
-    while (true) {
+    while (count < 100) {
       if (q.remainingCapacity() > NSAME) {
         // pick a file at random
         String location = fileList.get(r.nextInt(nfiles));

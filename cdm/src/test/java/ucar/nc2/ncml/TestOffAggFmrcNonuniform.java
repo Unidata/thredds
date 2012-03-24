@@ -42,6 +42,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
+import ucar.unidata.test.util.TestDir;
 
 public class TestOffAggFmrcNonuniform extends TestCase {
 
@@ -53,7 +54,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
       "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true'>\n" +
-      "    <scan location='" + TestAll.cdmUnitTestDir + "ncml/nc/ruc_conus40/' suffix='.grib1' enhance='true' dateFormatMark='RUC_CONUS_40km_#yyyyMMdd_HHmm'/>\n" +
+      "    <scan location='" + TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/' suffix='.grib1' enhance='true' dateFormatMark='RUC_CONUS_40km_#yyyyMMdd_HHmm'/>\n" +
       "  </aggregation>\n" +
       "</netcdf>";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcNonuniform", null);

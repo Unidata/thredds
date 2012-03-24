@@ -49,6 +49,7 @@ import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.DataIterator;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.Date;
@@ -63,8 +64,8 @@ import java.util.List;
 public class TestTrajectoryObsDataset extends TestCase
 {
   // @todo Use properties or env vars to override default values.
-  private static String testDataDir = TestAll.cdmLocalTestDataDir;
-  private static String remoteTestDataDir = TestAll.cdmUnitTestDir + "ft/trajectory";
+  private static String testDataDir = TestDir.cdmLocalTestDataDir;
+  private static String remoteTestDataDir = TestDir.cdmUnitTestDir + "ft/trajectory";
 
   public TestTrajectoryObsDataset( String name )
   {

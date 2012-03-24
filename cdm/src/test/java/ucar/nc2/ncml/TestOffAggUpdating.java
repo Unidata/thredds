@@ -42,6 +42,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Updating dataset
@@ -57,7 +58,7 @@ public class TestOffAggUpdating extends TestCase {
   }
 
   public void testUpdate() throws IOException, InvalidRangeException, InterruptedException {
-    String dir = TestAll.cdmUnitTestDir + "agg/updating";
+    String dir = TestDir.cdmUnitTestDir + "agg/updating";
     File dirFile = new File(dir);
     assert dirFile != null;
     assert dirFile.exists();

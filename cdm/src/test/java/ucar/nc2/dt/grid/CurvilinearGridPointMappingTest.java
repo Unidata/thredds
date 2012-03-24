@@ -13,6 +13,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -28,7 +29,7 @@ import java.util.Date;
  */
 public class CurvilinearGridPointMappingTest
 {
-  private String datasetLocation = TestAll.cdmUnitTestDir + "/JIRA_TDS-173/curviliniearGrid_artabro_20110419.nc";
+  private String datasetLocation = TestDir.cdmUnitTestDir + "/JIRA_TDS-173/curviliniearGrid_artabro_20110419.nc";
   private int i = 170;
   private int j = 62;
   private double lat = 43.58750915527344;

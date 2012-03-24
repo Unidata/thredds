@@ -41,6 +41,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * A description
@@ -57,7 +58,7 @@ public class TestInvDatasetScan extends TestCase
   private String dsScanName = "Test Data";
   private String dsScanPath = "testData";
 
-  private String dsScanDir = TestAll.cdmLocalTestDataDir;
+  private String dsScanDir = TestDir.cdmLocalTestDataDir;
   private String dsScanFilter = ".*\\.nc$";
 
   private String serviceName = "ncdods";

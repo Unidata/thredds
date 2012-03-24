@@ -36,6 +36,7 @@ import junit.framework.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestAll;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * TestSuite that runs all the sample testsNew
@@ -43,7 +44,7 @@ import ucar.nc2.dataset.NetcdfDataset;
  */
 public class TestH5 {
   public static boolean dumpFile = false;
-  public static String testDir = TestAll.cdmUnitTestDir + "formats/hdf5/";
+  public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
 
  public static NetcdfFile open( String filename) {
     try {

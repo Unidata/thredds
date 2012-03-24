@@ -41,6 +41,7 @@ import ucar.nc2.TestAll;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -51,8 +52,8 @@ public class TestVerticalTransforms extends TestCase {
   }
 
   public void testWRF() throws Exception {
-    testDataset( TestAll.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
-    testDataset( TestAll.cdmUnitTestDir + "conventions/wrf/wrfout_d01_2006-03-08_21-00-00");
+    testDataset( TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
+    testDataset( TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_d01_2006-03-08_21-00-00");
   }
 
   private void testDataset( String location) throws IOException, InvalidRangeException {

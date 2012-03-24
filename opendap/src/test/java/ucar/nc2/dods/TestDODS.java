@@ -36,7 +36,6 @@ import junit.framework.*;
 import opendap.test.TestDuplicates;
 import opendap.test.TestEncode;
 import opendap.test.TestGroups;
-import opendap.test.TestOpenDap;
 import ucar.nc2.util.net.TestAuth;
 
 /**

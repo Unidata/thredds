@@ -40,6 +40,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.io.File;
@@ -50,7 +51,7 @@ import java.util.Date;
 
 public class TestRadialDataset extends TestCase {
   // private RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
-  private String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "formats/";
+  private String topDir = TestDir.cdmUnitTestDir + "formats/";
   private boolean show = false, showTime = false, doQuick = true;
 
   public TestRadialDataset( String name) {

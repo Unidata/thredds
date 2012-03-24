@@ -46,6 +46,7 @@ import java.io.FileFilter;
 import java.io.PrintWriter;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Read or Compare JNI netcdf with Java.
@@ -67,7 +68,7 @@ public class TestJni extends TestCase {
     super(name);
   }
 
-  String testDir = TestAll.cdmUnitTestDir + "netcdf4/";
+  String testDir = TestDir.cdmUnitTestDir + "netcdf4/";
 
   public void testReadAll() throws IOException {
     int count = 0;

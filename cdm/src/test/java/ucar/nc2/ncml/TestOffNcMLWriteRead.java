@@ -38,6 +38,7 @@ import ucar.nc2.*;
 import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.TestDataset;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -55,7 +56,7 @@ public class TestOffNcMLWriteRead extends TestCase {
   }
 
   private ArrayList<String> files;
-  private String datadir = TestAll.cdmUnitTestDir + "conventions/";
+  private String datadir = TestDir.cdmUnitTestDir + "conventions/";
 
   public void setUp() {
     files = new ArrayList<String>();

@@ -37,6 +37,7 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 
@@ -150,9 +151,9 @@ public class TestNcMLModifyAtts extends TestCase {
       assert data.getElementType() == float.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert TestAll.closeEnough(dataI.getDoubleNext(), 41.0);
-      assert TestAll.closeEnough(dataI.getDoubleNext(), 40.0);
-      assert TestAll.closeEnough(dataI.getDoubleNext(), 39.0);
+      assert Misc.closeEnough(dataI.getDoubleNext(), 41.0);
+      assert Misc.closeEnough(dataI.getDoubleNext(), 40.0);
+      assert Misc.closeEnough(dataI.getDoubleNext(), 39.0);
     } catch (IOException io) {}
 
   }
@@ -292,11 +293,11 @@ public class TestNcMLModifyAtts extends TestCase {
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert TestAll.closeEnough( dataI.getDoubleNext(),1.0);
-      assert TestAll.closeEnough( dataI.getDoubleNext(),2.0);
-      assert TestAll.closeEnough( dataI.getDoubleNext(),3.0);
-      assert TestAll.closeEnough( dataI.getDoubleNext(),4.0);
-      assert TestAll.closeEnough( dataI.getDoubleNext(),2.0);
+      assert Misc.closeEnough( dataI.getDoubleNext(),1.0);
+      assert Misc.closeEnough( dataI.getDoubleNext(),2.0);
+      assert Misc.closeEnough( dataI.getDoubleNext(),3.0);
+      assert Misc.closeEnough( dataI.getDoubleNext(),4.0);
+      assert Misc.closeEnough( dataI.getDoubleNext(),2.0);
     } catch (IOException io) {}
   }
 

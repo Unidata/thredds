@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.List;
 
 import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * _more_
@@ -55,7 +56,7 @@ public class TestCrawlableDatasetFile extends TestCase
 
   public void testUnreadableDir_Level2()
   {
-    File topDir = new File( new File( TestAll.cdmUnitTestDir ), "TestCrawlableDatasetFile");
+    File topDir = new File( new File( TestDir.cdmUnitTestDir ), "TestCrawlableDatasetFile");
     File testDir = new File( topDir, "testUnreadableDir"); 
     CrawlableDatasetFile crDs = new CrawlableDatasetFile( testDir);
     assertTrue( crDs.exists());

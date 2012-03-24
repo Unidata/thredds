@@ -42,6 +42,7 @@ import java.text.ParseException;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
+import ucar.unidata.test.util.TestDir;
 
 public class TestOffAggForecastModel extends TestCase {
   private int nruns = 14;
@@ -50,7 +51,7 @@ public class TestOffAggForecastModel extends TestCase {
     super(name);
   }
 
-  static String dataDir = TestAll.cdmUnitTestDir + "ncml/nc/ncmodels/";
+  static String dataDir = TestDir.cdmUnitTestDir + "ncml/nc/ncmodels/";
   static String ncml =
     "<?xml version='1.0' encoding='UTF-8'?>\n" +
     "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +

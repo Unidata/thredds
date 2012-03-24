@@ -44,6 +44,7 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.Misc;
 
 /** Test TestNcml - AggExisting  in the JUnit framework. */
 
@@ -125,7 +126,7 @@ public class TestAggExistingCached extends TestCase {
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        assert TestAll.closeEnough(dataI.getDoubleNext(), result[count]);
+        assert Misc.closeEnough(dataI.getDoubleNext(), result[count]);
         count++;
       }
 
@@ -157,7 +158,7 @@ public class TestAggExistingCached extends TestCase {
     int count = 0;
     IndexIterator dataI = data.getIndexIterator();
     while (dataI.hasNext()) {
-      assert TestAll.closeEnough(dataI.getDoubleNext(), result[count+1]);
+      assert Misc.closeEnough(dataI.getDoubleNext(), result[count+1]);
       count++;
     }
 
@@ -170,7 +171,7 @@ public class TestAggExistingCached extends TestCase {
     count = 0;
     dataI = data.getIndexIterator();
     while (dataI.hasNext()) {
-      assert TestAll.closeEnough(dataI.getDoubleNext(), result[count*2]);
+      assert Misc.closeEnough(dataI.getDoubleNext(), result[count*2]);
       count++;
     }
   }
@@ -196,7 +197,7 @@ public class TestAggExistingCached extends TestCase {
     int count = 0;
     IndexIterator dataI = data.getIndexIterator();
     while (dataI.hasNext()) {
-      assert TestAll.closeEnough(dataI.getDoubleNext(), result[count+1]);
+      assert Misc.closeEnough(dataI.getDoubleNext(), result[count+1]);
       count++;
     }
 
@@ -210,7 +211,7 @@ public class TestAggExistingCached extends TestCase {
     count = 0;
     dataI = data.getIndexIterator();
     while (dataI.hasNext()) {
-      assert TestAll.closeEnough(dataI.getDoubleNext(), result[count*2]);
+      assert Misc.closeEnough(dataI.getDoubleNext(), result[count*2]);
       count++;
     }
   }

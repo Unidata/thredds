@@ -47,7 +47,7 @@ import java.io.File;
 public class TestGribDiskCache extends TestCase {
 
   public void testDiskCache() throws Exception {
-    String cacheDir = "C:/tmp2/testGribDiskCache/";
+    String cacheDir = "C:/tmp/testGribDiskCache/";
     File cache = new File(cacheDir);
     if (cache.exists()) {
       for (File data : cache.listFiles()) data.delete();

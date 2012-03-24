@@ -43,6 +43,7 @@ import ucar.nc2.NCdump;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
+import ucar.unidata.test.util.TestDir;
 
 /** Test nc2 read JUnit framework. */
 
@@ -51,7 +52,7 @@ public class TestH5read extends TestCase {
     super(name);
   }
 
-  String testDir = TestAll.cdmUnitTestDir + "formats/hdf5/pytables/test";
+  String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/pytables/test";
 
 
  public void testH5data() {

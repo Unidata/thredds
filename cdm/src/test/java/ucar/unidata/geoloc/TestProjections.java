@@ -34,6 +34,7 @@ package ucar.unidata.geoloc;
 
 import junit.framework.*;
 
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
@@ -80,10 +81,10 @@ public class TestProjections extends TestCase {
       LatLonPoint endL = proj.projToLatLon(p);
       if (Double.isNaN(endL.getLatitude()) || Double.isNaN(endL.getLongitude())) continue;
 
-      assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-3)) :
-          proj.getClass().getName() + " failed start= " + startL + " end = " + endL + " diff = "+ TestAll.howClose(startL.getLatitude(), endL.getLatitude());
-      assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.0e-3)) :
-          proj.getClass().getName() + " failed start= " + startL + " end = " + endL + " diff = "+ TestAll.howClose(startL.getLongitude(), endL.getLongitude());
+      assert (Misc.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.0e-3)) :
+          proj.getClass().getName() + " failed start= " + startL + " end = " + endL + " diff = "+ Misc.howClose(startL.getLatitude(), endL.getLatitude());
+      assert (Misc.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.0e-3)) :
+          proj.getClass().getName() + " failed start= " + startL + " end = " + endL + " diff = "+ Misc.howClose(startL.getLongitude(), endL.getLongitude());
       countT1++;
     }
 
@@ -98,8 +99,8 @@ public class TestProjections extends TestCase {
       ProjectionPoint endP = proj.latLonToProj(ll);
       if (Double.isNaN(endP.getX()) || Double.isNaN(endP.getY())) continue;
 
-      assert (TestAll.closeEnough(startP.getX(), endP.getX()));
-      assert (TestAll.closeEnough(startP.getY(), endP.getY()));
+      assert (Misc.closeEnough(startP.getX(), endP.getX()));
+      assert (Misc.closeEnough(startP.getY(), endP.getY()));
       countT2++;
     }
 
@@ -129,8 +130,8 @@ public class TestProjections extends TestCase {
       }
 
       double tolerence = 5.0e-4;
-      assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), tolerence)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
-      assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), tolerence)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+      assert (Misc.closeEnough(startL.getLatitude(), endL.getLatitude(), tolerence)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+      assert (Misc.closeEnough(startL.getLongitude(), endL.getLongitude(), tolerence)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
 
       minx = Math.min(minx, p.getX());
       maxx = Math.max(maxx, p.getX());
@@ -166,8 +167,8 @@ public class TestProjections extends TestCase {
           System.out.println("end  = " + endP);
         }
 
-        assert TestAll.closeEnough(startP.getX(), endP.getX(), 5.0e-4) : " failed start= " + startP.getX() + " end = " + endP.getX() + "; x,y=" + startP;
-        assert TestAll.closeEnough(startP.getY(), endP.getY(), 5.0e-4) : " failed start= " + startP.getY() + " end = " + endP.getY() + "; x,y=" + startP;
+        assert Misc.closeEnough(startP.getX(), endP.getX(), 5.0e-4) : " failed start= " + startP.getX() + " end = " + endP.getX() + "; x,y=" + startP;
+        assert Misc.closeEnough(startP.getY(), endP.getY(), 5.0e-4) : " failed start= " + startP.getY() + " end = " + endP.getY() + "; x,y=" + startP;
       } catch (IllegalArgumentException e) {
         System.out.printf("IllegalArgumentException=%s%n", e.getMessage());
         continue;
@@ -315,8 +316,8 @@ public class TestProjections extends TestCase {
       System.out.println("endL  = " + endL);
     }
 
-    assert (TestAll.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.3e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
-    assert (TestAll.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.3e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+    assert (Misc.closeEnough(startL.getLatitude(), endL.getLatitude(), 1.3e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
+    assert (Misc.closeEnough(startL.getLongitude(), endL.getLongitude(), 1.3e-4)) : proj.getClass().getName() + " failed start= " + startL + " end = " + endL;
   }
 
 
@@ -344,8 +345,8 @@ public class TestProjections extends TestCase {
 
       double late = endL.getLatitude();
       double lone = endL.getLongitude();
-      assert (TestAll.closeEnough(lat, late, 1.0e-4)) : proj.getClass().getName() + " lat failed start= " + startL + " end = " + endL + " diff = " + TestAll.howClose(lat, late);
-      assert (TestAll.closeEnough(lon, lone, .004)) : proj.getClass().getName() + " lon failed start= " + startL + " end = " + endL + " diff = " + TestAll.howClose(lon, lone);
+      assert (Misc.closeEnough(lat, late, 1.0e-4)) : proj.getClass().getName() + " lat failed start= " + startL + " end = " + endL + " diff = " + Misc.howClose(lat, late);
+      assert (Misc.closeEnough(lon, lone, .004)) : proj.getClass().getName() + " lon failed start= " + startL + " end = " + endL + " diff = " + Misc.howClose(lon, lone);
     }
 
     /* ProjectionPointImpl startP = new ProjectionPointImpl();

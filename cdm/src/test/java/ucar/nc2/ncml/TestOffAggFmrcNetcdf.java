@@ -39,6 +39,8 @@ import java.io.IOException;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.TestDir;
 
 public class TestOffAggFmrcNetcdf extends TestCase {
 
@@ -47,7 +49,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   }
 
   public void testNUWGdatasets() throws IOException, InvalidRangeException {
-    String filename = "file:"+TestAll.cdmUnitTestDir + "ncml/nc/ncmodels/aggFmrcNetcdf.xml";
+    String filename = "file:"+ TestDir.cdmUnitTestDir + "ncml/nc/ncmodels/aggFmrcNetcdf.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
@@ -192,7 +194,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     for (int i=0; i < nagg; i++)
       for (int j=0; j < noff; j++) {
         double val = data.getDouble(ima.set(i,j));
-        assert TestAll.closeEnough(val, result[i][j]);
+        assert Misc.closeEnough(val, result[i][j]);
       }
 
 

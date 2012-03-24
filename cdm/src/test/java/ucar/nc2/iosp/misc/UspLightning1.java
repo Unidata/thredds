@@ -43,6 +43,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -308,7 +309,7 @@ these are long-range detections.
 
   public static void main(String args[]) throws IOException, IllegalAccessException, InstantiationException {
     NetcdfFile.registerIOProvider(UspLightning1.class);
-    NetcdfFile ncfile = NetcdfFile.open( TestAll.cdmUnitTestDir + "ft/point/uspln_20061023.18");
+    NetcdfFile ncfile = NetcdfFile.open( TestDir.cdmUnitTestDir + "ft/point/uspln_20061023.18");
     System.out.println("ncfile = \n"+ncfile);
   }
 

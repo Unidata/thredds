@@ -44,6 +44,7 @@ import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.IO;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Class Description.
@@ -92,7 +93,7 @@ public class TestWriteMiscProblems extends TestCase {
     System.out.println("File size  (B)  = " + (long) timeSize * latSize * lonSize * 4);
     System.out.println("File size~ (MB) = " + Math.round((long) timeSize * latSize * lonSize * 4 / Math.pow(2, 20)));
 
-    NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew(TestAll.temporaryLocalDataDir + "bigFile2.nc");
+    NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew(TestDir.temporaryLocalDataDir + "bigFile2.nc");
     ncFile.setFill(false);
     ncFile.setLargeFile(true);
 

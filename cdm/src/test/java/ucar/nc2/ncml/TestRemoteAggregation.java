@@ -38,6 +38,7 @@ import java.io.IOException;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.TestDir;
 
 public class TestRemoteAggregation extends TestCase {
 
@@ -46,7 +47,7 @@ public class TestRemoteAggregation extends TestCase {
   }
 
   public void testAggExisting() throws IOException {
-    String filename = "file:"+TestAll.cdmUnitTestDir + "ncml/remote.ncml";
+    String filename = "file:"+ TestDir.cdmUnitTestDir + "ncml/remote.ncml";
 
     System.out.println(" testAggExisting.try "+ filename);
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);

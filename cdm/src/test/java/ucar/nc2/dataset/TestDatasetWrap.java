@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.CompareNetcdf;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 
@@ -46,7 +47,7 @@ public class TestDatasetWrap extends TestCase {
   }
 
   public void testDatasetWrap() throws Exception {
-    doOne(TestAll.cdmUnitTestDir + "conventions/nuwg/eta.nc");
+    doOne(TestDir.cdmUnitTestDir + "conventions/nuwg/eta.nc");
     //readAllDir( TestAll.testdataDir+ "grid/netcdf");
   }
 

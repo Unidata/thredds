@@ -41,6 +41,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.List;
@@ -57,7 +58,7 @@ public class TestPointDataset extends TestCase {
   }
 
   public void testMadis() throws IOException {
-    String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/station/madis/";
+    String topDir = TestDir.cdmUnitTestDir + "ft/station/madis/";
     String filename = topDir +"madis.nc";
     StringBuilder sbuff = new StringBuilder();
     long start = System.currentTimeMillis();
@@ -84,14 +85,14 @@ public class TestPointDataset extends TestCase {
   }
 
   public void testNetcdfDataset() throws IOException {
-    String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/point/netcdf/";
+    String topDir = TestDir.cdmUnitTestDir + "ft/point/netcdf/";
     testPointMethods( topDir+"Compilation_eq.nc");
     testPointMethods( topDir+"Earthquake_Mag4_Up_eq.nc");
     testPointMethods( topDir+"mags_compilation_eq.nc");
   }
 
   public void testOldUnidataStationObsDataset() throws IOException {
-    String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/point/ldm/";
+    String topDir = TestDir.cdmUnitTestDir + "ft/point/ldm/";
     testPointMethods( topDir+"04061912_buoy.nc");
     testPointMethods( topDir+"04061900_syn.nc");
     testPointMethods( topDir+"2005120800_sao.nc");

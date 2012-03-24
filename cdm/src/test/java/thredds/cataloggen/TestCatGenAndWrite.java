@@ -44,6 +44,7 @@ import thredds.catalog.InvService;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
@@ -64,7 +65,7 @@ public class TestCatGenAndWrite extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.addDirectory( new File( TestAll.temporaryLocalDataDir), "TestCatGenAndWrite" );
+    tmpDir = TestFileDirUtils.addDirectory( new File( TestDir.temporaryLocalDataDir), "TestCatGenAndWrite" );
   }
 
   protected void tearDown()

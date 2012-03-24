@@ -43,11 +43,7 @@ public class TestNcMLoffsite {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
     
-    suite.addTest(new TestSuite(TestOffAggExistingTimeUnitsChange.class));
-
     suite.addTest(new TestSuite(TestOffNcMLWriteRead.class)); // write and read back NcML //
-    suite.addTest(new TestSuite(TestOffNcMLWriteReadwithCoords.class)); // write and read back NcML //
-
     suite.addTest(new TestSuite(TestOffAggExistingSSTA.class));
     suite.addTest(new TestSuite(TestOffAggDirectory.class));  //
     suite.addTest(new TestSuite(TestOffAggDirDateFormat.class));  // */

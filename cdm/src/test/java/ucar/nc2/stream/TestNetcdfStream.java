@@ -11,6 +11,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Formatter;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 
@@ -60,12 +61,12 @@ public class TestNetcdfStream extends TestCase {
   }
 
   void scanDir(String dirName, FileFilter ff) throws IOException {
-     TestAll.actOnAll( dirName, ff, new TestAll.Act() {
-      public int doAct(String filename) throws IOException {
-        doOne(filename);
-        return 1;
-      }
-    }, true);
+    TestDir.actOnAll(dirName, ff, new TestDir.Act() {
+       public int doAct(String filename) throws IOException {
+         doOne(filename);
+         return 1;
+       }
+     }, true);
   }
 
   void doOne(String filename) throws IOException {

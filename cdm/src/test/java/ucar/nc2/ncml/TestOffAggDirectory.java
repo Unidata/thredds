@@ -41,6 +41,7 @@ import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.ma2.*;
+import ucar.unidata.test.util.TestDir;
 
 public class TestOffAggDirectory extends TestCase {
 
@@ -49,7 +50,7 @@ public class TestOffAggDirectory extends TestCase {
   }
 
   public void testNcmlDirect() throws IOException {
-    String filename = "file:" + TestAll.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
+    String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestNcmlAggDirectory.open "+ filename);
@@ -63,7 +64,8 @@ public class TestOffAggDirectory extends TestCase {
   }
 
   public void testNcmlDataset() throws IOException {
-    String filename = "file:" + TestAll.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
+    String filename = "file:" + TestDir
+            .cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
     System.out.println(" TestNcmlAggExisting.openDataset "+ filename);
@@ -77,7 +79,7 @@ public class TestOffAggDirectory extends TestCase {
   }
 
   public void testNcmlGrid() throws IOException {
-    String filename = "file:" + TestAll.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
+    String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
     GridDataset gds = GridDataset.open( filename);
     System.out.println(" TestNcmlAggExisting.openGrid "+ filename);

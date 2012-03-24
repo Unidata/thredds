@@ -32,7 +32,8 @@
 
 package ucar.nc2.grib;
 
-import junit.framework.TestSuite;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
  * Grib tests
@@ -40,9 +41,15 @@ import junit.framework.TestSuite;
  * @author caron
  * @since 11/1/11
  */
-public class TestGrib {
+@RunWith(Suite.class)
+@Suite.SuiteClasses(value={TestJustReadGrib.class, TestGribMisc.class, TestGribMiscCoordinates.class,
+        TestGribDiskCache.class, TestGribMiscCoordinates.class, TestOfsData.class,
+        TestIntervalsTimeCoords.class})
 
-  public static junit.framework.Test suite ( ) {
+
+public class TestGrib  {
+
+  /*public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
 
     suite.addTest(new TestSuite(TestJustReadGrib.class));
@@ -50,7 +57,14 @@ public class TestGrib {
     suite.addTest(new TestSuite(TestGribMiscCoordinates.class));
     suite.addTest(new TestSuite(TestGribDiskCache.class));
 
+    // suite.addTest(new TestSuite(TestGribOld.class));
+
+    // integration tests ??
+    suite.addTest( new TestSuite( TestGribMiscCoordinates.class));
+    suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestOfsData.class));
+    suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIntervalsTimeCoords.class));
+
     return suite;
-  }
+  } */
 
 }

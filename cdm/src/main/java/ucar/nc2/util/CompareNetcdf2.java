@@ -57,9 +57,9 @@ public class CompareNetcdf2 {
     compareFiles(org, copy, f, false, false, false);
   }
 
-  static public void compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f, boolean _compareData, boolean _showCompare, boolean _showEach) {
+  static public boolean compareFiles(NetcdfFile org, NetcdfFile copy, Formatter f, boolean _compareData, boolean _showCompare, boolean _showEach) {
     CompareNetcdf2 tc = new CompareNetcdf2(f, _showCompare, _showEach, _compareData);
-    tc.compare(org, copy);
+    return tc.compare(org, copy);
   }
 
   /////////

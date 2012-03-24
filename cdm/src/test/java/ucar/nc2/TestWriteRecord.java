@@ -36,6 +36,7 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -334,7 +335,7 @@ public class TestWriteRecord extends TestCase  {
 
   // make an example writing records
   public void testNC3WriteWithRecord() throws IOException {
-    NetcdfFileWriteable ncfile = new NetcdfFileWriteable(TestAll.temporaryLocalDataDir + "writeRecordExample.nc", false);
+    NetcdfFileWriteable ncfile = new NetcdfFileWriteable(TestDir.temporaryLocalDataDir + "writeRecordExample.nc", false);
 
     // define dimensions, including unlimited
     Dimension latDim = ncfile.addDimension("lat", 64);

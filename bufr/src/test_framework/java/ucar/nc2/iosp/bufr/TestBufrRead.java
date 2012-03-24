@@ -33,15 +33,12 @@
 
 package ucar.nc2.iosp.bufr;
 
-import ucar.nc2.TestAll;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
-import java.util.Formatter;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Saanity check on bufr messages
@@ -57,27 +54,27 @@ public class TestBufrRead extends TestCase {
     }
   }
 
-  public void utestReadAllInDir() throws IOException {
+  public void testReadAllInDir() throws IOException {
     int count = 0;
-    count += TestAll.actOnAll(TestAll.cdmUnitTestDir + "formats/bufr", new MyFileFilter(), new TestAll.Act() {
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/bufr", new MyFileFilter(), new TestDir.Act() {
       public int doAct(String filename) throws IOException {
         return readBufr(filename);
       }
-    });
+    }, false);
     System.out.println("***READ " + count + " files");
   }
 
   public void testReadMessages() throws IOException {
     int count = 0;
-    assert 13852 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/exclude/uniqueIDD.bufr")) : count; // was 12337
-    assert 11249 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/exclude/uniqueBrasil.bufr")) : count;  // was 11533
-    assert 22710 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/exclude/uniqueExamples.bufr")) : count; // was 12727
-    assert 9929 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/exclude/uniqueFnmoc.bufr")) : count;
+    assert 13852 == (count = readBufr(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueIDD.bufr")) : count; // was 12337
+    assert 11249 == (count = readBufr(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueBrasil.bufr")) : count;  // was 11533
+    assert 22710 == (count = readBufr(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueExamples.bufr")) : count; // was 12727
+    assert 9929 == (count = readBufr(TestDir.cdmUnitTestDir + "formats/bufr/exclude/uniqueFnmoc.bufr")) : count;
   }
 
   public void utestCountMessages() throws IOException {
     int count = 0;
-    count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueIDD.bufr");
+    count += readBufr(TestDir.cdmUnitTestDir + "formats/bufr/uniqueIDD.bufr");
     //count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueBrasil.bufr");
     //count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueExamples.bufr");
     //count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueFnmoc.bufr");

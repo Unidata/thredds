@@ -21,33 +21,6 @@
   </description>
   <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
-  <developers>
-    <developer>
-      <name>Don Murray</name>
-      <organization>NOAA/ESRL/PSD</organization>
-      <organizationUrl>http://www.esrl.noaa.gov/psd/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Robb Kambic</name>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>John Caron</name>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-  </developers>
-
   <!-- Dependencies -->
   <dependencies>
     <dependency>

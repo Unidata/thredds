@@ -39,6 +39,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 import ucar.nc2.util.CompareNetcdf;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * @author caron
@@ -78,7 +79,7 @@ public class TestH5subset extends TestCase {
     TestIosp.testVariableSubset(dirName + "aura/TES-Aura_L3-CH4-M2007m08_F01_04.he5", "HDFEOS/GRIDS/NadirGrid/Data Fields/CH4", ntrials); // */
 
     // netcdf4
-    TestIosp.testVariableSubset(TestAll.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4", "water_temp", ntrials); // */
+    TestIosp.testVariableSubset(TestDir.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4", "water_temp", ntrials); // */
  }
 
   public void testProblem() throws IOException, InvalidRangeException {

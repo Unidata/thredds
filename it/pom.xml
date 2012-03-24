@@ -24,102 +24,6 @@
   <url>http://www.unidata.ucar.edu/software/tds/</url>
 
   <!-- ===========================================================
-     Developers and Contributors
- =========================================================== -->
-  <developers>
-    <developer>
-      <id>caron</id>
-      <name>John Caron</name>
-      <email>caron@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>chastang</id>
-      <name>Julien Chastang</name>
-      <email>chastang@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>edavis</id>
-      <name>Ethan Davis</name>
-      <email>edavis@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>ed</id>
-      <name>Ed Hartnett</name>
-      <email>ed@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>C Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>dmh</id>
-      <name>Dennis Heimbigner</name>
-      <email>dmh@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>yuanho</id>
-      <name>Ho Yuan</name>
-      <email>yuanho@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>rkambic</id>
-      <name>Robb Kambic</name>
-      <email>rkambic@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>oxelson</id>
-      <name>Jennifer Ganter Oxelson</name>
-      <email>oxelson@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>russ</id>
-      <name>Russel Rew</name>
-      <email>russ@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>C Developer</role>
-      </roles>
-    </developer>
-  </developers>
-
-  <!-- ===========================================================
      Dependencies
 
      Mandatory dependencies are listed first. Then everything
@@ -155,12 +59,35 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
+      <artifactId>grib</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
       <artifactId>opendap</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>visad</artifactId>
     </dependency>
 
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>test-utilities</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -169,10 +96,7 @@
     <!-- this is a new project so setting the testSourceDirectory to its default -->
     <testSourceDirectory>src/test/java</testSourceDirectory>
     <plugins>
-      <!--
-             In a pom packaging project the compiler and the test plugins are not triggered so we
-             set up the specific configuration to trigger them.
-           -->
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -184,12 +108,25 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>false</skip>
+          <testFailureIgnore>true</testFailureIgnore>
+          <includes>
+            <include>ucar/nc2/TestReadFormats.java</include>
+          </includes>
+        </configuration>
+      </plugin -->
+
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>false</skip>
-          <!-- Enabling test -->
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>
         <executions>

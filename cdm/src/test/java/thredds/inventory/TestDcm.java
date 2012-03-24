@@ -34,8 +34,8 @@ package thredds.inventory;
 
 import junit.framework.TestCase;
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.nc2.TestAll;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class TestDcm extends TestCase {
   public void testScan() throws IOException {
     // count scanned files
     Formatter f = new Formatter(System.out);
-    MFileCollectionManager dcm = MFileCollectionManager.open(TestAll.cdmUnitTestDir + "agg/narr/narr-a_221_#yyyyMMdd_HHmm#.*grb$", null, f);
+    MFileCollectionManager dcm = MFileCollectionManager.open(TestDir.cdmUnitTestDir + "agg/narr/narr-a_221_#yyyyMMdd_HHmm#.*grb$", null, f);
     dcm.scan(true);
     List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFiles());
     assert fileList.size() ==  3 : dcm;
@@ -72,14 +72,14 @@ public class TestDcm extends TestCase {
 
   public void testScanOlderThan() throws IOException, InterruptedException {
     Formatter f = new Formatter(System.out);
-    MFileCollectionManager dcm = MFileCollectionManager.open(TestAll.cdmUnitTestDir + "agg/updating/.*nc$", null, f);
+    MFileCollectionManager dcm = MFileCollectionManager.open(TestDir.cdmUnitTestDir + "agg/updating/.*nc$", null, f);
     dcm.scan(true);
     List<MFile> fileList = (List<MFile>) Misc.getList(dcm.getFiles());
     assert fileList.size() ==  3 : dcm;
 
-    assert touch(TestAll.cdmUnitTestDir + "agg/updating/extra.nc");
+    assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");
 
-    dcm = MFileCollectionManager.open(TestAll.cdmUnitTestDir + "agg/updating/.*nc$", "10 sec", f);
+    dcm = MFileCollectionManager.open(TestDir.cdmUnitTestDir + "agg/updating/.*nc$", "10 sec", f);
     dcm.scan(true);
     fileList = (List<MFile>) Misc.getList(dcm.getFiles());
     assert fileList.size() ==  2 : dcm;
@@ -90,10 +90,10 @@ public class TestDcm extends TestCase {
   }
 
   public void testScanFromConfig() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", TestAll.cdmUnitTestDir + "agg/updating/.*nc$",
+    FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", TestDir.cdmUnitTestDir + "agg/updating/.*nc$",
             null, "10 sec", null, null, null, null);
 
-    assert touch(TestAll.cdmUnitTestDir + "agg/updating/extra.nc");
+    assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");
 
     // count scanned files
     Formatter f = new Formatter(System.out);

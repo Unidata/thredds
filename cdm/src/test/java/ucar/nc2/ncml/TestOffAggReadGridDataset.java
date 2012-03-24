@@ -36,6 +36,7 @@ import junit.framework.*;
 
 import ucar.nc2.*;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -48,7 +49,7 @@ public class TestOffAggReadGridDataset extends TestCase {
   }
 
   GridDataset gds = null;
-  String location = "file:"+TestAll.cdmUnitTestDir + "conventions/cf/bora_test_agg.ncml";
+  String location = "file:"+ TestDir.cdmUnitTestDir + "conventions/cf/bora_test_agg.ncml";
 
   public void setUp() {
     try {

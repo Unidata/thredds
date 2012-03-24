@@ -36,6 +36,7 @@ import ucar.nc2.TestAll;
 import junit.framework.TestSuite;
 import junit.extensions.TestSetup;
 import thredds.inventory.MController;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -46,7 +47,7 @@ import java.io.IOException;
  * @since Jun 30, 2009
  */
 public class TestNcMLcaching {
-  public static String topDir = TestAll.cdmLocalTestDataDir + "ncml/";
+  public static String topDir = TestDir.cdmLocalTestDataDir + "ncml/";
   public static MController mc;
 
   public static junit.framework.Test suite ( ) throws IOException {

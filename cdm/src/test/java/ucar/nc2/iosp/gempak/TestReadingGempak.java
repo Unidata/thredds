@@ -46,6 +46,7 @@ import java.io.File;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestAll;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.TestDir;
 
 public class TestReadingGempak extends TestCase {
 
@@ -54,7 +55,7 @@ public class TestReadingGempak extends TestCase {
   }
 
   public void testCompare() throws IOException {
-    doAll(TestAll.cdmUnitTestDir + "formats/gempak");
+    doAll(TestDir.cdmUnitTestDir + "formats/gempak");
   }
 
   void doAll(String dirName) throws IOException {

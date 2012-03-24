@@ -33,14 +33,14 @@
 package ucar.nc2.dataset;
 
 import junit.framework.*;
-import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * TestSuite that runs all the sample tests
  *
  */
 public class TestDataset {
-  public static String writeDir = TestAll.temporaryLocalDataDir;
+  public static String writeDir = TestDir.temporaryLocalDataDir;
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
@@ -52,8 +52,6 @@ public class TestDataset {
 
     suite.addTest(new TestSuite(TestFindCoord.class));
     suite.addTest(new TestSuite(TestCoordinates.class));
-    suite.addTest(new TestSuite(TestProjections.class));
-    suite.addTest(new TestSuite(TestTransforms.class));
     suite.addTest(new TestSuite(TestConventions.class));
     // suite.addTest(new TestSuite(TestNestedConvert.class));
 

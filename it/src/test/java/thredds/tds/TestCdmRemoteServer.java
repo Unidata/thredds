@@ -41,7 +41,6 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;

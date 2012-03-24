@@ -38,6 +38,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -136,7 +137,7 @@ public class TestAggExistingCoordVars extends TestCase {
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
         double val = dataI.getDoubleNext();
-        assert TestAll.closeEnough( val, result[count]) : val +" != "+ result[count];
+        assert Misc.closeEnough(val, result[count]) : val +" != "+ result[count];
         count++;
       }
 
@@ -216,7 +217,7 @@ public class TestAggExistingCoordVars extends TestCase {
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        assert TestAll.closeEnough(dataI.getDoubleNext(), result[count]);
+        assert Misc.closeEnough(dataI.getDoubleNext(), result[count]);
         count++;
       }
 

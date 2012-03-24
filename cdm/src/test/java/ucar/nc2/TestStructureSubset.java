@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * @author caron
@@ -48,7 +49,7 @@ public class TestStructureSubset extends TestCase {
 
   NetcdfFile ncfile;
   protected void setUp() throws Exception {
-    ncfile = NetcdfFile.open(TestAll.cdmUnitTestDir+"ft/station/ldm/Surface_METAR_20060328_0000.nc");
+    ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir+"ft/station/ldm/Surface_METAR_20060328_0000.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
   protected void tearDown() throws Exception {

@@ -39,6 +39,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.net.URL;
@@ -49,7 +50,7 @@ public class TestGribEnsembles extends TestCase {
   // from jitka
   public void testWMOgrib2() throws Exception {
 
-    String filename = "E:/work/jitka/ftp/MOEASURGEENS20100709060002.grib";
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/MOEASURGEENS20100709060002.grib";
     NetcdfFile datafile = NetcdfFile.open(filename);
     NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
     GridDataset gridDataset = new GridDataset(netcdfDataset);
@@ -103,7 +104,7 @@ public class TestGribEnsembles extends TestCase {
   // from jitka
   public void testEcmwfEns() throws Exception {
 
-    String filename = "E:/work/jitka/ftp/ECMWF_ensembles/ECME_RIZ_201201101200_00600_GB";
+    String filename = TestDir.cdmUnitTestDir + "ft/grib/ensemble/jitka/ECME_RIZ_201201101200_00600_GB";
     NetcdfFile datafile = NetcdfFile.open(filename);
     NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
     GridDataset gridDataset = new GridDataset(netcdfDataset);

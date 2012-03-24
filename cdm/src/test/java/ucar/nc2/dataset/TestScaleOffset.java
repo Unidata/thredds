@@ -38,11 +38,12 @@ import ucar.nc2.util.CompareNetcdf;
 import ucar.ma2.*;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
 public class TestScaleOffset extends TestCase {
-  private String filename = TestAll.temporaryLocalDataDir +"scaleOffset.nc";
+  private String filename = TestDir.temporaryLocalDataDir +"scaleOffset.nc";
 
   public TestScaleOffset( String name) {
     super(name);

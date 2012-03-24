@@ -44,6 +44,7 @@ import java.io.StringReader;
 
 import junit.framework.TestCase;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Describe
@@ -92,7 +93,7 @@ public class TestAggMisc extends TestCase {
   }
 
   public void testNestedAgg() throws IOException, InvalidRangeException, InterruptedException {
-    String filename = "file:./" + TestAll.cdmLocalTestDataDir+ "testNested.ncml";
+    String filename = "file:./" + TestDir.cdmLocalTestDataDir+ "testNested.ncml";
 
    NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
 
@@ -108,7 +109,7 @@ public class TestAggMisc extends TestCase {
 
 
   public void testNestedScan() throws IOException, InvalidRangeException, InterruptedException {
-    String filename = "file:./" + TestAll.cdmLocalTestDataDir+ "ncml/nested/TestNestedDirs.ncml";
+    String filename = "file:./" + TestDir.cdmLocalTestDataDir+ "ncml/nested/TestNestedDirs.ncml";
 
    NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
 

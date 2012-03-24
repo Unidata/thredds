@@ -248,7 +248,7 @@ public class TestReadStrides extends TestCase {
          Array sectionRead = v.read(ranges);
          Array sectionMake = allData.sectionNoReduce( ranges);
 
-         TestMA2.testEquals(sectionRead, sectionMake);
+         TestMa2Utils.testEquals(sectionRead, sectionMake);
        }
      }
 

@@ -38,7 +38,6 @@ package ucar.nc2.grib;
  * LOOK: vert coord transform not getting made!
  */
 
-import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
@@ -46,6 +45,7 @@ import ucar.nc2.Dimension;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 
 
 public class TestGribMiscCoordinates extends TestCase {
@@ -55,7 +55,7 @@ public class TestGribMiscCoordinates extends TestCase {
 
   public void utestHybrid1() throws IOException {
 
-    String filename = TestAll.cdmUnitTestDir + "formats/grib1/ECMWF.hybrid.grib1";
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/ECMWF.hybrid.grib1";
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFile.open(filename);
 
@@ -74,7 +74,7 @@ public class TestGribMiscCoordinates extends TestCase {
   }
 
   public void utestHybrid2() throws IOException {
-    String filename = TestAll.cdmUnitTestDir + "formats/grib1/07010418_arw_d01.GrbF01500";
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/07010418_arw_d01.GrbF01500";
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFile.open(filename);
     Variable hybrid = ncfile.findVariable("hybrid");
@@ -84,7 +84,7 @@ public class TestGribMiscCoordinates extends TestCase {
 
   public void testGaussianLats() throws IOException {
 
-    String filename = TestAll.cdmUnitTestDir + "formats/grib1/CCCma_SRES_A2_HGT500_1-10.grb";
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/CCCma_SRES_A2_HGT500_1-10.grb";
     System.out.println("\n\nReading File " + filename);
 
     NetcdfFile ncfile = NetcdfFile.open(filename);

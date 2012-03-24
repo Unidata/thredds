@@ -177,7 +177,7 @@ public class TestConvertD2N {
 
       if (useNC) {
         Array data2 = v.read();
-        TestMA2.testEquals( data, data2);
+        TestMa2Utils.testEquals( data, data2);
       }
 
       if (showData)

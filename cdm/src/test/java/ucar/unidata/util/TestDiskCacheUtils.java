@@ -2,6 +2,7 @@ package ucar.unidata.util;
 
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 
 import java.util.Date;
 import java.io.File;
@@ -28,7 +29,7 @@ public class TestDiskCacheUtils
    */
   public static void setupDiskCacheInTmpDir( boolean alwaysInCache)
   {
-    String cacheDir = TestAll.temporaryLocalDataDir + "cache/DiskCache/";
+    String cacheDir = TestDir.temporaryLocalDataDir + "cache/DiskCache/";
     if ( ! DiskCache.getRootDirectory().equals( cacheDir))
     {
       DiskCache.setRootDirectory( cacheDir );
@@ -53,7 +54,7 @@ public class TestDiskCacheUtils
    */
   public static void setupDiskCache2WithTmpRootDir()
   {
-    String cacheDir = TestAll.temporaryLocalDataDir + "cache/DiskCache2/";
+    String cacheDir = TestDir.temporaryLocalDataDir + "cache/DiskCache2/";
     File f = new File( cacheDir);
     if ( ! f.exists())
       if ( ! f.mkdirs())

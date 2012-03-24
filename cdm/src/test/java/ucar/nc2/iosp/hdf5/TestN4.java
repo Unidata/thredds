@@ -40,6 +40,7 @@ import ucar.ma2.Array;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.util.Collections;
@@ -50,7 +51,7 @@ import java.util.List;
  */
 
 public class TestN4 extends TestCase {
-  public static String testDir = TestAll.cdmUnitTestDir + "formats/netcdf4/";
+  public static String testDir = TestDir.cdmUnitTestDir + "formats/netcdf4/";
   public TestN4(String name) {
     super(name);
   }

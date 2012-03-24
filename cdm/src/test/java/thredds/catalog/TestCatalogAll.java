@@ -36,14 +36,15 @@ import java.util.*;
 import junit.framework.*;
 import thredds.catalog.util.DeepCopyUtilsTest;
 import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * TestSuite that runs all the sample tests
  *
  */
 public class TestCatalogAll extends TestCase {
-  public static String tmpDir = TestAll.temporaryLocalDataDir;
-  public static String dataDir = TestAll.cdmLocalTestDataDir + "thredds/catalog/";
+  public static String tmpDir = TestDir.temporaryLocalDataDir;
+  public static String dataDir = TestDir.cdmLocalTestDataDir + "thredds/catalog/";
   static private boolean showValidation = false;
   static boolean debug = true, showValidationMessages = true;
 

@@ -37,6 +37,7 @@ import junit.framework.*;
 import java.io.*;
 
 import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 
 /** Test writing and reading back. */
 
@@ -48,7 +49,7 @@ public class TestJustRead extends TestCase {
   }
 
   public void testReadConventionFiles() throws Exception {
-    readAllDir( TestAll.cdmUnitTestDir + "conventions");
+    readAllDir( TestDir.cdmUnitTestDir + "conventions");
   }
 
   void readAllDir(String dirName) throws Exception {

@@ -34,13 +34,14 @@ package ucar.nc2.ncml;
 
 import junit.framework.*;
 import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * TestSuite that runs all the sample tests   - data in TestAll.cdmLocalTestDataDir
  *
  */
 public class TestNcML {
-  public static String topDir = TestAll.cdmLocalTestDataDir + "ncml/";
+  public static String topDir = TestDir.cdmLocalTestDataDir + "ncml/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();

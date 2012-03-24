@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 import ucar.nc2.TestAll;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.test.util.TestDir;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -53,8 +54,8 @@ public class TestCFWriter extends TestCase {
   }
 
   public void testSubset() throws Exception {
-    String fileIn = TestAll.cdmUnitTestDir + "ft/grid/testCFwriter.nc";
-    String fileOut = TestAll.temporaryLocalDataDir + "testCFwriter.nc";
+    String fileIn = TestDir.cdmUnitTestDir + "ft/grid/testCFwriter.nc";
+    String fileOut = TestDir.temporaryLocalDataDir + "testCFwriter.nc";
     String varName = "Temperature";
 
     ucar.nc2.dt.grid.GridDataset gds = GridDataset.open(fileIn);

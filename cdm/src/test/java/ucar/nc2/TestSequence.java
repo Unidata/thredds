@@ -41,6 +41,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArraySequence;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureData;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Describe
@@ -57,7 +58,7 @@ public class TestSequence extends TestCase {
   NetcdfFile ncfile;
 
   protected void setUp() throws Exception {
-    ncfile = NetcdfFile.open(TestAll.cdmUnitTestDir + "ft/point/200929100.ingest");
+    ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "ft/point/200929100.ingest");
   }
 
   protected void tearDown() throws Exception {

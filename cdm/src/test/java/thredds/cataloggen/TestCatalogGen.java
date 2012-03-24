@@ -43,6 +43,7 @@ import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvCatalog;
 import ucar.nc2.TestAll;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
@@ -94,7 +95,7 @@ public class TestCatalogGen extends TestCase
   protected void setUp()
   {
     this.factory = new InvCatalogFactory( "default", true );
-    tmpDataRootDir = new File( TestAll.temporaryLocalDataDir );
+    tmpDataRootDir = new File( TestDir.temporaryLocalDataDir );
     tmpDataDir = TestFileDirUtils.createTempDirectory( "TestCatalogGen", tmpDataRootDir );
   }
 

@@ -43,6 +43,7 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.StringReader;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
 
 
   public void utestOpen() throws Exception {
-    String dataDir = TestAll.cdmUnitTestDir + "ft/fmrc/rtmodels/";
+    String dataDir = TestDir.cdmUnitTestDir + "ft/fmrc/rtmodels/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
@@ -77,7 +78,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
   }
 
   public void utestOpenNomads() throws Exception {
-    String dataDir = TestAll.cdmUnitTestDir + "ft/fmrc/nomads/";
+    String dataDir = TestDir.cdmUnitTestDir + "ft/fmrc/nomads/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
@@ -99,7 +100,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
   }
 
   public void utestMargolis() throws IOException, InvalidRangeException {
-    String dataDir = TestAll.cdmUnitTestDir + "nomads/gfs-hi/";
+    String dataDir = TestDir.cdmUnitTestDir + "nomads/gfs-hi/";
     GridDataset gridDataset = GridDataset.open( "D:/AStest/margolis/grib2ncdf.ncml" );
     GeoGrid grid = gridDataset.findGridByName( "Turbulence_SIGMET_AIRMET" );
     System.out.println("Grid= "+grid+" section="+ new Section(grid.getShape()));
@@ -113,7 +114,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
   }
 
   public static void main(String[] args) throws IOException {
-    String fname = TestAll.cdmUnitTestDir + "ft/fmrc/rtofs/rtofs.ncml";
+    String fname = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/rtofs.ncml";
     NetcdfFile ncfile = NetcdfDataset.openDataset(fname);
     TestAll.readAllData(ncfile);
     ncfile.close();

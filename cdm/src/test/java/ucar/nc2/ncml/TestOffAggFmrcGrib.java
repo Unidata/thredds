@@ -44,6 +44,7 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.TestDir;
 
 public class TestOffAggFmrcGrib extends TestCase {
   private boolean showValues = false;
@@ -57,12 +58,12 @@ public class TestOffAggFmrcGrib extends TestCase {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
       "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true'>\n" +
-      "    <scan location='" + TestAll.cdmUnitTestDir + "ncml/nc/nam_c20s/' suffix='.grib1' " +
+      "    <scan location='" + TestDir.cdmUnitTestDir + "ncml/nc/nam_c20s/' suffix='.grib1' " +
             "dateFormatMark='NAM_CONUS_20km_surface_#yyyyMMdd_HHmm'/>\n" +
       "  </aggregation>\n" +
       "</netcdf>";
 
-    String location = TestAll.cdmUnitTestDir + "ncml/nc/nam_c20s/fmrcAgg.ncml";
+    String location = TestDir.cdmUnitTestDir + "ncml/nc/nam_c20s/fmrcAgg.ncml";
     System.out.printf("%s%n%s%n", location, xml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), location, null);
     TestAll.showMem("TestAggFmrcGrib start ");
@@ -99,8 +100,8 @@ public class TestOffAggFmrcGrib extends TestCase {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
       "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true' " +
-            "fmrcDefinition='" + TestAll.cdmUnitTestDir + "ncml/nc/c20ss/fmrcDefinition.xml'>\n" +
-      "    <scan location='" + TestAll.cdmUnitTestDir + "ncml/nc/c20ss/' suffix='.grib1' enhance='true' " +
+            "fmrcDefinition='" + TestDir.cdmUnitTestDir + "ncml/nc/c20ss/fmrcDefinition.xml'>\n" +
+      "    <scan location='" + TestDir.cdmUnitTestDir + "ncml/nc/c20ss/' suffix='.grib1' enhance='true' " +
             "dateFormatMark='NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm'/>\n" +
       "  </aggregation>\n" +
       "</netcdf>";

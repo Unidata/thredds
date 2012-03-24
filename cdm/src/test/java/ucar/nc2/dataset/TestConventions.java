@@ -38,6 +38,7 @@ import ucar.nc2.TestAll;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -53,7 +54,7 @@ public class TestConventions extends TestCase {
   }
 
   public void testWRF() throws IOException {
-    testWRF(TestAll.cdmUnitTestDir + "conventions/wrf/wrf-ver1.3.nc");
+    testWRF(TestDir.cdmUnitTestDir + "conventions/wrf/wrf-ver1.3.nc");
   }
 
   private void testWRF(String location) throws IOException {
@@ -62,7 +63,7 @@ public class TestConventions extends TestCase {
   }
 
   public void testCF() throws IOException {
-    GridDataset ds = GridDataset.open(TestAll.cdmUnitTestDir + "conventions/cf/twoGridMaps.nc");
+    GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/twoGridMaps.nc");
     GeoGrid grid = ds.findGridByName("altitude");
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert 1 == gcs.getCoordinateTransforms().size();

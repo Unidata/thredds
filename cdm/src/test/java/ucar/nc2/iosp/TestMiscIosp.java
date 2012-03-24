@@ -39,6 +39,7 @@ import java.io.IOException;
 
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Class Description.
@@ -54,7 +55,7 @@ public class TestMiscIosp extends TestCase {
 
   public void testUamiv() throws IOException {
     long start = System.currentTimeMillis();
-    NetcdfFile ncfile = NetcdfFile.open(TestAll.cdmUnitTestDir + "formats/uamiv/uamiv.grid", null);
+    NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/uamiv/uamiv.grid", null);
     System.out.printf("ncfile=%s %n", ncfile);
     long took = System.currentTimeMillis() - start;
     System.out.println("that took = "+took+" msec");

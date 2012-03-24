@@ -32,7 +32,6 @@
  */
 package ucar.nc2.iosp.nexrad2;
 
-import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
@@ -44,6 +43,7 @@ import java.io.IOException;
 import java.io.File;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,7 +60,7 @@ public class TestNexrad2HiResolution extends TestCase {
 
     public void testRead() throws IOException {
         long start = System.currentTimeMillis();
-        doDirectory(TestAll.cdmUnitTestDir + "formats/nexrad/newLevel2/testfiles", false);
+        doDirectory(TestDir.cdmUnitTestDir + "formats/nexrad/newLevel2/testfiles", false);
         //doDirectory("/upc/share/testdata2/radar/nexrad/newLevel2/testfiles", false);
         long took = System.currentTimeMillis() - start;
         System.out.println("that took = "+took+" msec");

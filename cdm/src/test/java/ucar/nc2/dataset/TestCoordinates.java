@@ -48,6 +48,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -64,7 +65,7 @@ public class TestCoordinates extends TestCase {
   }
 
   public void testAlias() throws IOException {
-    String filename = TestAll.cdmUnitTestDir + "ft/grid/ensemble/demeter/MM_cnrm_129_red.ncml";
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/demeter/MM_cnrm_129_red.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     Variable v = ncd.findCoordinateAxis("number");
     assert v != null;
@@ -79,7 +80,7 @@ public class TestCoordinates extends TestCase {
   // test offset only gets applied once
 
   public void testWrapOnce() throws IOException {
-    String filename = TestAll.cdmUnitTestDir + "ncml/coords/testCoordScaling.ncml";
+    String filename = TestDir.cdmUnitTestDir + "ncml/coords/testCoordScaling.ncml";
     System.out.printf("%s%n", filename);
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     Variable v = ncd.findCoordinateAxis("Longitude");

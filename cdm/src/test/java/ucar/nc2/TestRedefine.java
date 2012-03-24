@@ -41,6 +41,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf;
+import ucar.unidata.test.util.TestDir;
 
 public class TestRedefine extends TestCase {
 
@@ -195,7 +196,7 @@ public class TestRedefine extends TestCase {
   }
 
   public void testRedefine3() throws IOException, InvalidRangeException {
-    String filename = TestAll.temporaryLocalDataDir + "testRedefine3.nc";
+    String filename = TestDir.temporaryLocalDataDir + "testRedefine3.nc";
     NetcdfFileWriteable ncFile = NetcdfFileWriteable.createNew (filename, false);
     ncFile.setExtraHeaderBytes (64*1000);
     Dimension dim = ncFile.addDimension ("time", 100);
