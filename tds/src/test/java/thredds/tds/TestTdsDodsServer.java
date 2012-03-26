@@ -41,7 +41,6 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.util.IO;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
@@ -226,7 +225,7 @@ public class TestTdsDodsServer extends TestCase {
 
         NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
         NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);
-        assert CompareNetcdf.compareFiles(org_ncfile, dods_file);
+        assert ucar.unidata.test.util.CompareNetcdf.compareFiles(org_ncfile, dods_file);
         return 1;
       }
     }, false);

@@ -32,20 +32,18 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
 import java.io.*;
 
+import static junit.framework.Assert.assertEquals;
+
 /** Test nc2 dods in the JUnit framework. */
 
-public class TestDODSGrids extends TestCase {
+public class TestDODSGrids {
 
-  public TestDODSGrids( String name) {
-    super(name);
-  }
-
+  @org.junit.Test
   public void testGrid() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.06");
 

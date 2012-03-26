@@ -32,9 +32,10 @@
 
 package ucar.nc2.grib;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.DiskCache;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 
@@ -44,10 +45,11 @@ import java.io.File;
  * @author caron
  * @since 2/16/12
  */
-public class TestGribDiskCache extends TestCase {
+public class TestGribDiskCache {
 
+  @Test
   public void testDiskCache() throws Exception {
-    String cacheDir = "C:/tmp/testGribDiskCache/";
+    String cacheDir = TestDir.temporaryLocalDataDir +"TestGribDiskCache/";
     File cache = new File(cacheDir);
     if (cache.exists()) {
       for (File data : cache.listFiles()) data.delete();
@@ -57,10 +59,10 @@ public class TestGribDiskCache extends TestCase {
 
     DiskCache.setCachePolicy(true);
     DiskCache.setRootDirectory(cacheDir);
-    assert DiskCache.getRootDirectory().equals(cacheDir);
+    assert DiskCache.getRootDirectory().equals(cacheDir) : DiskCache.getRootDirectory()+" != " + cacheDir;
     assert cache.exists();
 
-    String dataDir = "Q:\\cdmUnitTest\\testCache";
+    String dataDir = TestDir.cdmUnitTestDir + "testCache";
     File dd = new File(dataDir);
 
     for (File data : dd.listFiles()) {

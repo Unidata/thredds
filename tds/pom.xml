@@ -2,104 +2,104 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>edu.ucar</groupId>
-        <artifactId>thredds-parent</artifactId>
-        <version>4.3.9-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>edu.ucar</groupId>
+    <artifactId>thredds-parent</artifactId>
+    <version>4.3.9-SNAPSHOT</version>
+  </parent>
 
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
-    <!-- groupId>edu.ucar</groupId-->
-    <artifactId>thredds</artifactId>
-    <packaging>war</packaging>
-    <name>THREDDS Data Server (TDS)</name>
-    <description>
-      The THREDDS Data Server (TDS) is a web server that provides catalog and
-      data access services for scientific data using OPeNDAP, OGC WCS and WMS,
-      HTTP, and other remote data access protocols scientific data.
-    </description>
-    <url>http://www.unidata.ucar.edu/software/tds/</url>
+  <!-- groupId>edu.ucar</groupId-->
+  <artifactId>thredds</artifactId>
+  <packaging>war</packaging>
+  <name>THREDDS Data Server (TDS)</name>
+  <description>
+    The THREDDS Data Server (TDS) is a web server that provides catalog and
+    data access services for scientific data using OPeNDAP, OGC WCS and WMS,
+    HTTP, and other remote data access protocols scientific data.
+  </description>
+  <url>http://www.unidata.ucar.edu/software/tds/</url>
 
   <!-- ===========================================================
            Developers and Contributors
        =========================================================== -->
-    <developers>
-        <developer>
-            <id>caron</id>
-            <name>John Caron</name>
-            <email>caron@unidata.ucar.edu</email>
-            <organization>UCAR/UNIDATA</organization>
-            <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-            <roles>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>chastang</id>
-            <name>Julien Chastang</name>
-            <email>chastang@unidata.ucar.edu</email>
-            <organization>UCAR/UNIDATA</organization>
-            <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-            <roles>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>edavis</id>
-            <name>Ethan Davis</name>
-            <email>edavis@unidata.ucar.edu</email>
-            <organization>UCAR/UNIDATA</organization>
-            <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-            <roles>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>dmh</id>
-            <name>Dennis Heimbigner</name>
-            <email>dmh@unidata.ucar.edu</email>
-            <organization>UCAR/UNIDATA</organization>
-            <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-            <roles>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>yuanho</id>
-            <name>Ho Yuan</name>
-            <email>yuanho@unidata.ucar.edu</email>
-            <organization>UCAR/UNIDATA</organization>
-            <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-            <roles>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>rkambic</id>
-            <name>Robb Kambic</name>
-            <email>rkambic@unidata.ucar.edu</email>
-            <organization>UCAR/UNIDATA</organization>
-            <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-            <roles>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>oxelson</id>
-            <name>Jennifer Ganter Oxelson</name>
-            <email>oxelson@unidata.ucar.edu</email>
-            <organization>UCAR/UNIDATA</organization>
-            <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-            <roles>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <id>caron</id>
+      <name>John Caron</name>
+      <email>caron@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>chastang</id>
+      <name>Julien Chastang</name>
+      <email>chastang@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>edavis</id>
+      <name>Ethan Davis</name>
+      <email>edavis@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>dmh</id>
+      <name>Dennis Heimbigner</name>
+      <email>dmh@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>yuanho</id>
+      <name>Ho Yuan</name>
+      <email>yuanho@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>rkambic</id>
+      <name>Robb Kambic</name>
+      <email>rkambic@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>oxelson</id>
+      <name>Jennifer Ganter Oxelson</name>
+      <email>oxelson@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+  </developers>
 
 
   <!-- ===========================================================
@@ -110,198 +110,210 @@
            the user have to declare those dependencies himself in
            his own pom.xml file if we want to read some formats.
        =========================================================== -->
-<!--    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>edu.ucar</groupId>
-                <artifactId>netcdf-parent</artifactId>
-                <version>4.2.27-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>-->
-    <dependencies>
+  <!--    <dependencyManagement>
+      <dependencies>
+          <dependency>
+              <groupId>edu.ucar</groupId>
+              <artifactId>netcdf-parent</artifactId>
+              <version>4.2.27-SNAPSHOT</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>-->
+  <dependencies>
 
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <!-- 
-        <dependency>
-            <groupId>edu.ucar</groupId>
-            <artifactId>netcdf</artifactId>
-             <scope>runtime</scope>
-        </dependency>
-         -->        
-        <dependency>
-            <groupId>edu.ucar</groupId>
-            <artifactId>bufr</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>edu.ucar</groupId>
-            <artifactId>grib</artifactId>
-<!--            <scope>runtime</scope>-->
-        </dependency>
-        <dependency>
-            <groupId>edu.ucar</groupId>
-            <artifactId>opendap</artifactId>
-<!--            <scope>runtime</scope>-->
-        </dependency>
-        <dependency>
-            <artifactId>visad</artifactId>
-            <groupId>edu.wisc</groupId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jdom</groupId>
-            <artifactId>jdom</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <artifactId>je</artifactId>
-            <groupId>com.sleepycat</groupId>
-        </dependency>
-    
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-        </dependency>        
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cas</groupId>
-            <artifactId>casclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>oro</groupId>
-            <artifactId>oro</artifactId>
-        </dependency>
-      <dependency>
-        <groupId>uk.ac.rdg.resc</groupId>
-        <artifactId>ncwms</artifactId>
-      </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.geotoolkit</groupId>
-            <artifactId>geotk-referencing</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>catalina</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-		<dependency>
-			<groupId>jaxen</groupId>
-			<artifactId>jaxen</artifactId>
-        </dependency>
-        
-		<dependency>
-			<groupId>atg.taglib.json</groupId>
-			<artifactId>json-taglib</artifactId>				
-		</dependency>         			        
-		<!-- THREDDS ISO -->        
-		<dependency>
-			<groupId>EDS</groupId>
-			<artifactId>threddsIso</artifactId>
-		</dependency>        
-        
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>taglibs</groupId>
-			<artifactId>standard</artifactId>
-		</dependency>        
-       
-        
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-        	<groupId>jfree</groupId>
-        	<artifactId>jfreechart</artifactId>
-        </dependency>
-        
-		<!-- JSR 303 with Hibernate Validator -->
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-			<version>1.0.0.GA</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>4.1.0.Final</version>
-		</dependency>        
-        
-        
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <!--
+   <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>netcdf</artifactId>
+        <scope>runtime</scope>
+   </dependency>
+    -->
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>bufr</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>grib</artifactId>
+      <!--            <scope>runtime</scope>-->
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>opendap</artifactId>
+      <!--            <scope>runtime</scope>-->
+    </dependency>
+    <dependency>
+      <artifactId>visad</artifactId>
+      <groupId>edu.wisc</groupId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <artifactId>je</artifactId>
+      <groupId>com.sleepycat</groupId>
+    </dependency>
 
-    </dependencies>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>cas</groupId>
+      <artifactId>casclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>uk.ac.rdg.resc</groupId>
+      <artifactId>ncwms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotoolkit</groupId>
+      <artifactId>geotk-referencing</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>catalina</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>atg.taglib.json</groupId>
+      <artifactId>json-taglib</artifactId>
+    </dependency>
+
+    <!-- THREDDS ISO -->
+    <dependency>
+      <groupId>EDS</groupId>
+      <artifactId>threddsIso</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+    </dependency>
+
+    <!-- JSR 303 with Hibernate Validator -->
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.0.0.GA</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>4.1.0.Final</version>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>cdm-test</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
 
 
   <!-- ================================================================== -->
   <!--     Repositories. This is where Maven looks for dependencies. The  -->
   <!--     Maven repository is implicit and doesn't need to be specified. -->
   <!-- ================================================================== -->
-    <repositories>
+  <repositories>
     <!-- Needed for com.sleepycat.je -->
-        <repository>
-            <id>Oracle</id>
-            <name>Oracle Maven repository</name>
-            <url>http://download.oracle.com/maven</url>
-        </repository>
-<!--      
-        <repository>
-            <id>geotoolkit</id>
-            <name>GeoToolKit Repository</name>
-            <url>http://maven.geotoolkit.org</url>
-        </repository>
- 	-->        
-           
-    </repositories>
+    <repository>
+      <id>Oracle</id>
+      <name>Oracle Maven repository</name>
+      <url>http://download.oracle.com/maven</url>
+    </repository>
+    <!--
+          <repository>
+              <id>geotoolkit</id>
+              <name>GeoToolKit Repository</name>
+              <url>http://maven.geotoolkit.org</url>
+          </repository>
+     -->
+
+  </repositories>
 
 
   <!-- ===========================================================
@@ -310,102 +322,105 @@
            We declare a non-existant test directory as a dirty trick
            for skiping completly the tests, including compilation.
        =========================================================== -->
-    <build>
-        <finalName>thredds</finalName>
-      <!--resources></resources-->
-      <testResources>      	
-        <testResource>
-        	<filtering>true</filtering>
-        	<directory>${basedir}/src/test/resources</directory>
-        </testResource>        	
-        <!-- testResource>
-          <filtering>true</filtering>
-          <directory>${basedir}/src/main/template</directory>
+  <build>
+    <finalName>thredds</finalName>
+    <!--resources></resources-->
+    <testResources>
+      <testResource>
+        <filtering>true</filtering>
+        <directory>${basedir}/src/test/resources</directory>
+      </testResource>
+      <!-- testResource>
+        <filtering>true</filtering>
+        <directory>${basedir}/src/main/template</directory>
+        <includes>
+          <include>**/tds.properties</include>
+        </includes>
+      </testResource-->
+    </testResources>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>thredds/cataloggen/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <!-- version>2.1.1</version-->
+        <configuration>
+          <attachClasses>true</attachClasses>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Built-On>${maven.build.timestamp}</Built-On>
+            </manifestEntries>
+          </archive>
+          <webResources>
+            <resource>
+              <targetPath>WEB-INF/classes</targetPath>
+              <filtering>true</filtering>
+              <directory>${basedir}/src/main/template</directory>
+              <includes>
+                <include>**/tds.properties</include>
+              </includes>
+            </resource>
+            <resource>
+              <targetPath>docs</targetPath>
+              <filtering>true</filtering>
+              <directory>${basedir}</directory>
+              <includes>
+                <include>README.txt</include>
+                <include>CHANGES.txt</include>
+              </includes>
+            </resource>
+          </webResources>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Enabling tests for first unit testing -->
+          <skip>false</skip>
+          <testFailureIgnore>true</testFailureIgnore>
           <includes>
-            <include>**/tds.properties</include>
+            <include>thredds/server/catalogservice/**</include>
+            <include>thredds/server/ncSubset/**</include>
+            <include>thredds/server/config/**</include>
+            <include>thredds/servlet/**</include>
           </includes>
-        </testResource-->
-      </testResources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>thredds/cataloggen/**</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-          <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <!-- version>2.1.1</version-->
-                <configuration>
-                    <attachClasses>true</attachClasses>
-                    <archive>
-                      <manifest>
-                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                      </manifest>
-                      <manifestEntries>
-                        <Built-On>${maven.build.timestamp}</Built-On>
-                      </manifestEntries>
-                    </archive>
-                  <webResources>
-                    <resource>
-                      <targetPath>WEB-INF/classes</targetPath>
-                      <filtering>true</filtering>
-                      <directory>${basedir}/src/main/template</directory>
-                      <includes>
-                        <include>**/tds.properties</include>
-                      </includes>
-                    </resource>
-                    <resource>
-                      <targetPath>docs</targetPath>
-                      <filtering>true</filtering>
-                      <directory>${basedir}</directory>
-                      <includes>
-                        <include>README.txt</include>
-                        <include>CHANGES.txt</include>
-                      </includes>
-                    </resource>
-                  </webResources>
-                </configuration>
-            </plugin>
-             
-      		<plugin>
-        		<groupId>org.apache.maven.plugins</groupId>
-        		<artifactId>maven-surefire-plugin</artifactId>
-        		<configuration>
-        			<!-- Enabling tests for first unit testing -->
-        			<skip>false</skip>
-        			<testFailureIgnore>true</testFailureIgnore>
-        			<includes>
-        				<include>thredds/server/catalogservice/**</include>
-        				<include>thredds/server/ncSubset/**</include>
-        				<include>thredds/server/config/**</include>
-        				<include>thredds/servlet/**</include>
-        			</includes>
-        			<excludes>
-        				<exclude>thredds/server/config/ServerConfigTestSuit.java</exclude>
-        			</excludes>
-        		</configuration>
-          		<!-- executions>
-          			<execution>
-            			<id>surefire-it</id>
-            			<phase>integration-test</phase>
-            			<goals>
-              				<goal>test</goal>
-            			</goals>
-            			<configuration>
-            				<skip>false</skip>
-            				<test>TestCdmRemoteServer</test>
-            			</configuration>        
-        			</execution>
-          		</executions-->                
-      		</plugin>
-        </plugins>
-    </build>
-	<properties>
-		<testContent.root.path>/share/testcatalogs/content</testContent.root.path>
-	</properties>
+          <excludes>
+            <exclude>thredds/server/config/ServerConfigTestSuit.java</exclude>
+          </excludes>
+        </configuration>
+        <!-- executions>
+                    <execution>
+                      <id>surefire-it</id>
+                      <phase>integration-test</phase>
+                      <goals>
+                          <goal>test</goal>
+                      </goals>
+                      <configuration>
+                        <skip>false</skip>
+                        <test>TestCdmRemoteServer</test>
+                      </configuration>
+                  </execution>
+                  </executions-->
+      </plugin>
+    </plugins>
+  </build>
+
+  <properties>
+    <testContent.root.path>/share/testcatalogs/content</testContent.root.path>
+  </properties>
 </project>

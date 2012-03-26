@@ -172,19 +172,6 @@
       <groupId>com.sleepycat</groupId>
     </dependency>
 
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>test-utilities</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
 
@@ -208,8 +195,6 @@
   </repositories>
 
   <build>
-    <testSourceDirectory>src/test/java</testSourceDirectory>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -226,20 +211,6 @@
             <exclude>thredds/catalog2/**</exclude>
           </testExcludes>
 
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- Enabling tests for first unit testing -->
-          <skip>false</skip>
-          <testFailureIgnore>true</testFailureIgnore>
-          <includes>
-            <include>**/Test*.java</include>
-            <include>**/TestRegexp.java</include>
-          </includes>
         </configuration>
       </plugin>
 

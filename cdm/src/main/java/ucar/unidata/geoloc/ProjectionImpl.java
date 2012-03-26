@@ -714,7 +714,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
 
   /**
    * Alternate way to calculate latLonToProjBB, originally in GridCoordSys.
-   * Difficult to do this in a generral way.
+   * Difficult to do this in a general way.
    *
    * @param latlonRect desired lat/lon rectangle
    * @return a ProjectionRect

@@ -32,24 +32,21 @@
 
 package ucar.nc2.grib;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.nc2.*;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 
 /**
- * Describe
+ * Test misc GRIB features
  *
  * @author caron
  * @since 11/1/11
  */
-public class TestGribMisc extends TestCase {
+public class TestGribMisc {
 
-  public TestGribMisc( String name) {
-    super(name);
-  }
-
-  public void testPdsScaleOverflow() throws Exception {
+  @Test
+  public void pdsScaleOverflow() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/pdsScale.grib2";
     NetcdfFile ncfile = NetcdfFile.open(filename, null);
     Variable v = ncfile.findVariable("pressure");
@@ -58,7 +55,8 @@ public class TestGribMisc extends TestCase {
     ncfile.close();
   }
 
-  public void testPdsGenType() throws Exception {
+  @Test
+  public void pdsGenType() throws Exception {
     // this one has a analysis and forecast in same variable
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/08Aug08.12z.cras45_NA.grib2";
     NetcdfFile ncfile = NetcdfFile.open(filename, null);

@@ -32,21 +32,31 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
-import opendap.test.TestDuplicates;
 import opendap.test.TestEncode;
 import opendap.test.TestGroups;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 import ucar.nc2.util.net.TestAuth;
 
 /**
  * TestSuite that runs all the sample tests
  *
  */
+@RunWith(Suite.class)
+@Suite.SuiteClasses(value={
+        TestDODSRead.class, TestDODSScalars.class, TestDODSArrayPrimitiveTypes.class,
+        TestDODSMultiArrayPrimitiveTypes.class, TestDODSStructureScalars.class, TestDODSStructureScalarsNested.class,
+        TestDODSStructureArray.class, TestDODSGrid.class, TestDODSGrids.class,
+        TestBennoGrid.class, TestDODSSequence.class, TestDODSnestedSequence.class,
+        ucar.nc2.util.net.TestAuth.class,
+        opendap.test.TestEncode.class, opendap.test.TestOpenDap.class,
+        opendap.test.TestDuplicates.class, opendap.test.TestGroups.class})
 public class TestDODS {
+
   //public static String server = "http://dods.coas.oregonstate.edu:8080/dods/dts/";
   public static String server = "http://motherlode.ucar.edu:8080/dts/";
 
-  public static junit.framework.Test suite ( ) {
+  /* public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
 
       suite.addTest( new TestSuite(TestEncode.class));
@@ -78,7 +88,7 @@ public class TestDODS {
 
     // sequences
     suite.addTest(new TestSuite(TestDODSSequence.class)); // test.07, test.23
-    suite.addTest(new TestSuite(TestDODSnestedSequence.class)); // nestedSeq   */
+    suite.addTest(new TestSuite(TestDODSnestedSequence.class)); // nestedSeq
     // suite.addTest(new TestSuite(TestDODSStructureForSequence.class)); // read sequence using DODSStructure
     //
 
@@ -89,5 +99,5 @@ public class TestDODS {
     suite.addTest(new TestSuite(TestGroups.class));
 
     return suite;
-  }
+  }  */
 }

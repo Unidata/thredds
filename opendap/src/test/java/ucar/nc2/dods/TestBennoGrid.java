@@ -33,6 +33,7 @@
 package ucar.nc2.dods;
 
 import junit.framework.*;
+import org.junit.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -48,12 +49,9 @@ import java.io.*;
     } OneD;
 } Simple;*/
 
-public class TestBennoGrid extends TestCase {
+public class TestBennoGrid {
 
-  public TestBennoGrid( String name) {
-    super(name);
-  }
-
+  @org.junit.Test
   public void testGrid() throws IOException, InvalidRangeException {
     DODSNetcdfFile dodsfile = TestDODSRead.openAbs("http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods");
 

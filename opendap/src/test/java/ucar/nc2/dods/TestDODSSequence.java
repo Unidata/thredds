@@ -32,10 +32,8 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.dataset.*;
 
 import java.io.*;
 
@@ -86,13 +84,9 @@ person1.age, person1.foo
 384
  */
 
-public class TestDODSSequence extends TestCase {
-  private boolean debug = false;
+public class TestDODSSequence {
 
-  public TestDODSSequence( String name) {
-    super(name);
-  }
-
+  @org.junit.Test
   public void testReadSequence() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.07");
 
@@ -130,16 +124,5 @@ public class TestDODSSequence extends TestCase {
     }
 
   }
-
-  boolean show = false;
-  /* public void testReadNestedSequence() throws IOException {
-
-    DODSNetcdfFile dodsfile = TestDODSRead.open("test.23");
-
-    Variable seq = dodsfile.findVariable("exp/ComplexSequence");
-    assert null != seq;
-
-    Array datas = seq.read();
-  } */
 
 }

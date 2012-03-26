@@ -79,7 +79,7 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>test-utilities</artifactId>
+      <artifactId>cdm-test</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -92,9 +92,33 @@
 
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>CDM integration tests</id>
+      <properties>
+        <srcdir>src/test_cdm/java</srcdir>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+             <skip>false</skip>
+             <includes>
+               <include>ucar/nc2/TestReadFormats.java</include>
+             </includes>
+           </configuration>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+  </profiles>
+
   <build>
     <!-- this is a new project so setting the testSourceDirectory to its default -->
-    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <testSourceDirectory>${srcdir}</testSourceDirectory>
     <plugins>
 
       <plugin>
@@ -130,6 +154,13 @@
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>
         <executions>
+          <execution>
+            <id>default-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
           <execution>
             <phase>integration-test</phase>
             <goals>
@@ -206,5 +237,8 @@
     </plugins>
   </build>
 
+  <properties>
+    <srcdir>src/test/java</srcdir>
+  </properties>
 
 </project>

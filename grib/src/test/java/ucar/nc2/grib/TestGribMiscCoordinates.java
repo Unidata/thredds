@@ -34,26 +34,24 @@ package ucar.nc2.grib;
  */
 
 /**
- * test grib files with hybrid vert coords
- * LOOK: vert coord transform not getting made!
+ * test grib coordinates
  */
 
+import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
 import ucar.unidata.test.util.TestDir;
 
 
-public class TestGribMiscCoordinates extends TestCase {
-  public TestGribMiscCoordinates(String name) {
-    super(name);
-  }
+public class TestGribMiscCoordinates {
 
-  public void utestHybrid1() throws IOException {
+  // 4.2 used to add the vert coord transform, for GRIB 1 when the getVerticalPressureLevels() was set.
+  // But how do we associate it with a surface pressure variable ???
+  public void testHybrid1() throws IOException {
 
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/ECMWF.hybrid.grib1";
     System.out.println("\n\nReading File " + filename);
@@ -73,15 +71,21 @@ public class TestGribMiscCoordinates extends TestCase {
     ncfile.close();
   }
 
-  public void utestHybrid2() throws IOException {
+  @Test
+  public void testHybridCoordinates() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/07010418_arw_d01.GrbF01500";
     System.out.println("\n\nReading File " + filename);
     NetcdfFile ncfile = NetcdfFile.open(filename);
     Variable hybrid = ncfile.findVariable("hybrid");
-    assert (hybrid.getNameAndDimensions().equals("hybrid(hybrid=2)"));
+    assert hybrid != null;
+    assert (hybrid.getDimensions().size() == 1);
+    Dimension d = hybrid.getDimension(0);
+    assert (d.getLength() == 2);
+
     ncfile.close();
   }
 
+  @Test
   public void testGaussianLats() throws IOException {
 
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/CCCma_SRES_A2_HGT500_1-10.grb";

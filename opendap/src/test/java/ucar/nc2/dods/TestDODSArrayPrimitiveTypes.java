@@ -32,20 +32,19 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
 import java.io.*;
 
+import static junit.framework.Assert.assertEquals;
+
 /** Test nc2 dods in the JUnit framework. */
 
-public class TestDODSArrayPrimitiveTypes extends TestCase {
+public class TestDODSArrayPrimitiveTypes {
 
-  public TestDODSArrayPrimitiveTypes( String name) {
-    super(name);
-  }
-
+  @Test
   public void testArrays() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.02");
 
@@ -222,6 +221,7 @@ public class TestDODSArrayPrimitiveTypes extends TestCase {
     }
   }
 
+  @Test
   public void testStrides() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.02");
 

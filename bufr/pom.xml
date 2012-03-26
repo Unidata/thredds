@@ -65,7 +65,7 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>test-utilities</artifactId>
+      <artifactId>cdm-test</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -79,8 +79,8 @@
   </dependencies>
 
   <build>
-    <testSourceDirectory>src/test_framework/java</testSourceDirectory>
-    <resources>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <!-- resources>
       <resource>
         <directory>src/main/resources</directory>
         <includes>
@@ -88,7 +88,7 @@
           <include>META-INF/services/**</include>
         </includes>
       </resource>
-    </resources>
+    </resources -->
 
     <plugins>
       <plugin>

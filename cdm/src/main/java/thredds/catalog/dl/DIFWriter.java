@@ -489,7 +489,6 @@ public class DIFWriter {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
 
     doCatalog(catFactory, "http://motherlode.ucar.edu:9080/thredds/idd/models.xml");
-    //doOne(catFactory, "file:///C:/dev/thredds/catalog/test/data/Example1.0rc7.xml");
   }
 
 }

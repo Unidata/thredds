@@ -37,7 +37,6 @@ import junit.framework.*;
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
 import ucar.nc2.TestAll;
-import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
@@ -45,7 +44,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 

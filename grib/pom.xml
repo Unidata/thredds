@@ -90,7 +90,7 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>test-utilities</artifactId>
+      <artifactId>cdm-test</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -113,9 +113,6 @@
         <configuration>
           <skip>false</skip>
         	<testFailureIgnore>true</testFailureIgnore>
-          <includes>
-            <include>ucar/nc2/grib/TestGrib.java</include>
-          </includes>
         </configuration>
       </plugin>
 

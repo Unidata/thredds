@@ -32,6 +32,7 @@
  */
 package ucar.unidata.geoloc;
 
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.Format;
 
 import java.awt.geom.Point2D;
@@ -89,6 +90,16 @@ public class ProjectionPointImpl extends Point2D.Double implements ProjectionPoi
    */
   public boolean equals(ProjectionPoint pt) {
     return (pt.getX() == getX()) && (pt.getY() == getY());
+  }
+
+  /**
+   * Returns true if this represents the same point as pt, using Misc.closeEnough.
+   *
+   * @param pt2 point to check against
+   * @return true if this represents the same point as pt2.
+   */
+  public boolean closeEnough(ProjectionPoint pt2) {
+    return Misc.closeEnough(getX(), pt2.getX()) &&  Misc.closeEnough(getY(), pt2.getY());
   }
 
   /**

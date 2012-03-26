@@ -38,7 +38,7 @@
 
 package ucar.nc2.grib;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Dimension;
@@ -69,11 +69,7 @@ import java.util.HashMap;
  *   each forecast time that starts with 0. Intervals used are 0-1, 0-2, 0-3, ...
  *
  */
-public class TestIntervalsTimeCoords extends TestCase {
-
-  public TestIntervalsTimeCoords(String name) {
-    super(name);
-  }
+public class TestIntervalsTimeCoords {
 
   static String[] testdata = {
       TestDir.cdmUnitTestDir +"tds/ncep/GFS_Puerto_Rico_191km_20100515_0000.grib1", "VAR_7-0-2-61_L1_I12_Hour_S4", "bounds0",
@@ -449,7 +445,8 @@ public class TestIntervalsTimeCoords extends TestCase {
   /*
    * Compare the timeCoordinates to known values
    */
-  public void testCompare() throws IOException {
+  @Test
+  public void checkTimeIntervalCoordinates() throws IOException {
     for( int i = 0; i < testdata.length; i += 3) {
       String grib = testdata[ i ];
       String parameter = testdata[ i +1];
@@ -485,9 +482,5 @@ public class TestIntervalsTimeCoords extends TestCase {
     }
 
   }
-  
-  static public void main(String args[]) throws IOException {
-    TestIntervalsTimeCoords itc = new TestIntervalsTimeCoords("");
-    itc.testCompare();
-  }
+
 }

@@ -148,7 +148,6 @@
     </profile>
   </profiles>
 
-
   <distributionManagement>
     <repository>
       <id>thredds-releases</id>
@@ -337,7 +336,6 @@
         <version>${com.jgoodies.version}</version>
       </dependency>
 
-
       <!-- THREDDS - START -->
       <dependency>
         <groupId>log4j</groupId>
@@ -404,6 +402,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+
       <!-- THREDDS ISO -->
       <dependency>
         <groupId>EDS</groupId>
@@ -464,10 +463,11 @@
         <type>jar</type>
         <!-- scope>provided</scope-->
       </dependency>
+
       <!--  -->
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>test-utilities</artifactId>
+        <artifactId>cdm-test</artifactId>
         <classifier>tests</classifier>
         <scope>test</scope>
         <type>jar</type>
@@ -600,7 +600,6 @@
        Modules for the build in approximate dependency order
      =========================================================== -->
   <modules>
-    <module>test-utilities</module>
     <module>cdm</module>
     <module>bufr</module>
     <module>grib</module>
@@ -608,6 +607,7 @@
     <module>tds</module>
     <module>visad</module>
     <module>ui</module>
+    <module>cdm-test</module>
     <module>it</module>
   </modules>
 

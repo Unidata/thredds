@@ -32,32 +32,31 @@
  */
 package ucar.nc2.grib;
 
-import junit.framework.*;
-
 import java.io.*;
 
+import org.junit.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
 
 /** Test reading grib files */
 
-public class TestJustReadGrib extends TestCase {
+public class TestJustReadGrib  {
   private boolean show = false;
 
-  public TestJustReadGrib(String name) {
-    super(name);
-  }
 
-  public void testReadGrib1Files() throws Exception {
+  @Test
+  public void readGrib1Files() throws Exception {
     readAllDir( TestDir.cdmUnitTestDir + "formats/grib1", null, false);
   }
 
-  public void testReadGrib2Files() throws Exception {
+  @Test
+  public void readGrib2Files() throws Exception {
     readAllDir( TestDir.cdmUnitTestDir + "formats/grib1", null, false);
   }
 
-  public void testReadMotherloadFiles() throws Exception {
+  @Test
+  public void readMotherloadFiles() throws Exception {
     readAllDir( TestDir.cdmUnitTestDir + "tds", null, true);
   }
 

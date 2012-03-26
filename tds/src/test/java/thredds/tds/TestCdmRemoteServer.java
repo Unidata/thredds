@@ -41,7 +41,6 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -145,7 +144,7 @@ public class TestCdmRemoteServer extends TestCase {
 
         NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
         NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);
-        CompareNetcdf.compareFiles(org_ncfile, dods_file);
+        ucar.unidata.test.util.CompareNetcdf.compareFiles(org_ncfile, dods_file);
         return 1;
       }
     });

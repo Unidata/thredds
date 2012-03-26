@@ -39,7 +39,7 @@ import thredds.TestAll;
 import java.io.File;
 import java.io.IOException;
 
-import ucar.unidata.util.TestFileDirUtils;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
  * _more_

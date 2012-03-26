@@ -99,7 +99,7 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>test-utilities</artifactId>
+      <artifactId>cdm-test</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

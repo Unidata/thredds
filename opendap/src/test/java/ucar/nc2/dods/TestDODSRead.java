@@ -32,21 +32,18 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
-
 import java.io.*;
 
 /** Test nc2 dods in the JUnit framework.
- *  Open and read various test datasets.
+ *  Open and read various test datasets from the dts server.
  */
 
-public class TestDODSRead extends TestCase {
+public class TestDODSRead {
 
-  public static String testServer = TestDODS.server;
   public static boolean showFile = false, showFileDebug= false;
 
   static DODSNetcdfFile open(String name) throws IOException {
-    String filename = testServer+name;
+    String filename = TestDODS.server+name;
     return openAbs( filename);
   }
 
@@ -58,10 +55,7 @@ public class TestDODSRead extends TestCase {
       return dodsfile;
   }
 
-  public TestDODSRead( String name) {
-    super(name);
-  }
-
+  @org.junit.Test
   public void testRead() throws IOException {
     // simple
     open( "test.01");
@@ -85,14 +79,6 @@ public class TestDODSRead extends TestCase {
     open( "test.53"); // nested structure in structure array
     open( "test.vs5"); // structure array */
 
-  }
-
-  public static void main( String arg[]) throws IOException {
-    showFile = true;
-    open("test.07");
-
-    //openAbs("http://motherlode.ucar.edu:8088/thredds/dodsC/cf1.nc");
-    //openAbs("http://motherlode.ucar.edu/cgi-bin/dods/DODS-3.2.1/nph-dods/dods/model/2004110500_eta_211.nc");
   }
 
 }

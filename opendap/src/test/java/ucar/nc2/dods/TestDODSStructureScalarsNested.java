@@ -33,6 +33,8 @@
 package ucar.nc2.dods;
 
 import junit.framework.*;
+import org.junit.*;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -61,13 +63,11 @@ import java.io.*;
 } NestedStructure;
  */
 
-public class TestDODSStructureScalarsNested extends TestCase {
-
-  public TestDODSStructureScalarsNested( String name) {
-    super(name);
-  }
+public class TestDODSStructureScalarsNested {
 
   private DODSNetcdfFile dodsfile;
+
+  @org.junit.Test
   public void testScalarRead() throws IOException {
     dodsfile = TestDODSRead.open("test.05");
 
@@ -128,6 +128,7 @@ public class TestDODSStructureScalarsNested extends TestCase {
 
   }
 
+  @Test
   public void testStructureRead() throws IOException {
     dodsfile = TestDODSRead.open("test.05");
 
@@ -193,6 +194,7 @@ public class TestDODSStructureScalarsNested extends TestCase {
   }
 
 
+  @Test
   public void testStructureRead2() throws IOException {
     dodsfile = TestDODSRead.open("test.05");
 

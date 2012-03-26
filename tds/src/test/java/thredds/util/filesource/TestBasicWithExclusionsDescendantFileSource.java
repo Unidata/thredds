@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import ucar.unidata.util.TestFileDirUtils;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
  * _more_

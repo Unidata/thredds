@@ -33,6 +33,7 @@
 package ucar.nc2.dods;
 
 import junit.framework.*;
+import org.junit.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
@@ -87,13 +88,9 @@ person1.age, person1.foo
 384
  */
 
-public class TestDODSnestedSequence extends TestCase {
-  private boolean debug = false;
+public class TestDODSnestedSequence {
 
-  public TestDODSnestedSequence( String name) {
-    super(name);
-  }
-
+  @org.junit.Test
    public void testNestedSequenceParent() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("NestedSeq");
 

@@ -40,7 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
-import ucar.unidata.util.TestFileDirUtils;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
  * _more_

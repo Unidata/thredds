@@ -142,7 +142,7 @@ public class CoordTransBuilder {
     try {
       c = Class.forName( className);
     } catch (ClassNotFoundException e) {
-      log.warn("Coordinate Transform Class "+className+" not found.");
+      if (loadWarnings) log.warn("Coordinate Transform Class "+className+" not found.");
       return;
     }
     registerTransform( transformName, c);
