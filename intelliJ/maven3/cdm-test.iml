@@ -4,15 +4,13 @@
     <output url="file://$MODULE_DIR$/../../cdm-test/target/classes" />
     <output-test url="file://$MODULE_DIR$/../../cdm-test/target/test-classes" />
     <content url="file://$MODULE_DIR$/../../cdm-test">
+      <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/src/test_extended/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/src/test_utils/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/src/test_extended/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/src/test/resources" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/target/generated-sources/test-annotations" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/classes" />
       <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/maven-archiver" />
-      <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/surefire" />
-      <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/surefire-reports" />
+      <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/test-classes" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

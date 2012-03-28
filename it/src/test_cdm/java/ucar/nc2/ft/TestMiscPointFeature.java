@@ -1,4 +1,3 @@
-package ucar.nc2.ft;
 /*
  * Copyright (c) 1998 - 2010. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
@@ -31,6 +30,7 @@ package ucar.nc2.ft;
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package ucar.nc2.ft;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;

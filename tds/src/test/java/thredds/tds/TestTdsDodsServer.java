@@ -36,7 +36,6 @@ import junit.framework.*;
 
 import thredds.catalog.*;
 import thredds.servlet.URLEncoder;
-import ucar.nc2.TestAll;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
@@ -47,6 +46,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.ma2.Array;
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -213,9 +213,9 @@ public class TestTdsDodsServer extends TestCase {
 
   public void testCompareWithFile() throws IOException {
     final String urlPrefix = "dods://localhost:8080/thredds/dodsC/opendapTest/";
-    final String dirName = TestAll.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
+    final String dirName = TestDir.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
 
-    TestAll.actOnAll(dirName, new TestAll.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestAll.Act() {
+    TestDir.actOnAll(dirName, new TestDir.FileFilterNoWant(".gbx8 .gbx9 .ncx"), new TestDir.Act() {
       public int doAct(String filename) throws IOException {
         filename = StringUtil2.replace(filename, '\\', "/");
         filename = StringUtil2.remove(filename, dirName);

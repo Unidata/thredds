@@ -43,6 +43,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -142,7 +143,7 @@ public class TestTdsNcml extends TestCase {
     Array data = v.read();
     NCdumpW.printArray(data, "time", new PrintWriter(System.out), null);
     while (data.hasNext()) {
-      assert TestAll.closeEnough(data.nextInt(), (count + 1) * 3);
+      assert Misc.closeEnough(data.nextInt(), (count + 1) * 3);
       count++;
     }
 

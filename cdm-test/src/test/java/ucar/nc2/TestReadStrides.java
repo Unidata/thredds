@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.unidata.test.ma2.TestMa2Utils;
 
 import java.io.*;
 import java.util.List;

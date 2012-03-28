@@ -35,6 +35,7 @@ package opendap.test;
 
 import opendap.dap.parsers.*;
 import opendap.dap.*;
+import ucar.unidata.test.Diff;
 
 import java.io.*;
 

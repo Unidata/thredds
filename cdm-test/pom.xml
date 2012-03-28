@@ -42,34 +42,6 @@
         <srcdir>src/test_extended/java</srcdir>
       </properties>
     </profile>
-
-    <profile>
-      <id>Test Utilities</id>
-      <properties>
-        <srcdir>src/test_utils/java</srcdir>
-      </properties>
-
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-              <skipIfEmpty>true</skipIfEmpty>
-            </configuration>
-            <executions>
-              <execution>
-                <id>jar-test-classes</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>test-jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
   </profiles>
 
   <build>
@@ -91,9 +63,31 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>false</skip>
+          <skip>true</skip>
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <skipIfEmpty>true</skipIfEmpty>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jar-test-classes</id>
+            <phase>package</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+            <configuration>
+              <includes>
+                <include>ucar/unidata/test/**</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>

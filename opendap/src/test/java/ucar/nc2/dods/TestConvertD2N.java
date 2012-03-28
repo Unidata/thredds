@@ -46,6 +46,7 @@ import ucar.ma2.*;
 import ucar.nc2.Variable;
 import ucar.nc2.NCdump;
 import ucar.nc2.util.IO;
+import ucar.unidata.test.ma2.TestMa2Utils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -177,7 +178,7 @@ public class TestConvertD2N {
 
       if (useNC) {
         Array data2 = v.read();
-        TestMa2Utils.testEquals( data, data2);
+        TestMa2Utils.testEquals(data, data2);
       }
 
       if (showData)

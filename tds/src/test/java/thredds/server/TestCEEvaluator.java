@@ -31,14 +31,15 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server.opendap;
+package thredds.server;
 
 import junit.framework.TestCase;
 import opendap.dap.BaseType;
 import opendap.servers.*;
 import opendap.servlet.AsciiWriter;
 import opendap.servlet.GuardedDataset;
-import opendap.test.Diff;
+import thredds.server.opendap.GuardedDatasetCacheAndClone;
+import ucar.unidata.test.Diff;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 

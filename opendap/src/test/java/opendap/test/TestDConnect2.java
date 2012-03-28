@@ -3,6 +3,7 @@ package opendap.test;
 import opendap.dap.*;
 import opendap.util.Getopts;
 import opendap.util.InvalidSwitch;
+import ucar.unidata.test.Diff;
 
 import java.io.*;
 

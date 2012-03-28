@@ -33,7 +33,6 @@
 package thredds.servlet;
 
 import junit.framework.*;
-import thredds.TestAll;
 import thredds.util.TdsConfiguredPathAliasReplacement;
 import thredds.util.PathAliasReplacement;
 import thredds.server.config.TdsContext;
@@ -51,7 +50,8 @@ import java.util.Collections;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import ucar.unidata.util.TestFileDirUtils;
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -83,7 +83,7 @@ public class TestDataRootHandler extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.createTempDirectory( "TestDataRootHandler", new File( TestAll.temporaryDataDir ) );
+    tmpDir = TestFileDirUtils.createTempDirectory( "TestDataRootHandler", new File( TestDir.temporaryLocalDataDir ) );
     contentDir = TestFileDirUtils.addDirectory( TestFileDirUtils.addDirectory( tmpDir, "content" ), "thredds");
     publicContentDir = TestFileDirUtils.addDirectory( contentDir, "public");
     

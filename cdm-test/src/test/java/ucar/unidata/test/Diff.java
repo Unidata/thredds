@@ -1,4 +1,4 @@
-package opendap.test;
+package ucar.unidata.test;
 
 
 // Diff -- text file difference utility.

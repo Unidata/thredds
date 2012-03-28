@@ -52,10 +52,6 @@ import java.io.IOException;
 public class TestGridClose extends TestCase {
   private String newVarName = "some_data";
 
-  public TestGridClose(String name) {
-    super(name);
-  }
-
   public void testClose() throws IOException {
     File org = new File(TestLocal.cdmTestDataDir + "rankTest.nc");
     File copy = new File(TestLocal.temporaryDataDir + "rankTest.nc");

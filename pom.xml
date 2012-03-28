@@ -217,6 +217,8 @@
         <artifactId>quartz</artifactId>
         <version>${org.quartz-scheduler.version}</version>
       </dependency>
+
+      <!-- logging -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
@@ -228,7 +230,7 @@
         <version>${org.slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
-      <dependency>
+      <dependency>  <!-- Adapts apace commons to slf4j, and so replaced commons-logging.jar -->
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${org.slf4j.version}</version>
@@ -240,6 +242,12 @@
         <version>${org.slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
+      <dependency>  <!-- not needed? -->
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>${commons-logging.version}</version>
+      </dependency>
+
       <dependency>
         <!-- jsoup HTML parser library @ http://jsoup.org/ -->
         <groupId>org.jsoup</groupId>
@@ -252,17 +260,14 @@
         <version>${org.jdom.version}</version>
         <!-- Actually 1.1.1, but it doesn't seem to be on Maven repo. -->
       </dependency>
+
       <dependency>
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
         <version>${commons-httpclient.version}</version>
         <!-- Transitive dependencies: commons-codec 1.2 and commons-logging 1.0.4 -->
       </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>${commons-logging.version}</version>
-      </dependency>
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
@@ -288,6 +293,7 @@
         <artifactId>spring-test</artifactId>
         <version>${org.springframework.version}</version>
       </dependency>
+
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
@@ -315,11 +321,14 @@
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
+
       <dependency>
         <groupId>edu.wisc</groupId>
         <artifactId>visad</artifactId>
         <version>${edu.wisc.version}</version>
       </dependency>
+
+      <!-- UI -->
       <dependency>
         <groupId>jfree</groupId>
         <artifactId>jfreechart</artifactId>
@@ -445,7 +454,7 @@
             * war ->  edu.ucar.thredds-{project.version}.war
             * jar ->  edu.ucar.thredds-{project.version}-classes.jar
           -->
-      <!-- war dependencie -->
+      <!-- war dependencies -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>thredds</artifactId>
@@ -454,7 +463,7 @@
         <!-- scope>provided</scope-->
       </dependency>
 
-      <!-- jar dependencie -->
+      <!-- jar dependencies -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>thredds</artifactId>
@@ -468,11 +477,12 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>cdm-test</artifactId>
-        <classifier>tests</classifier>
+        <classifier>test-jar</classifier>
         <scope>test</scope>
         <type>jar</type>
         <version>${project.version}</version>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -484,7 +494,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
 
   <!-- ===========================================================
        Build configuration
@@ -516,11 +525,6 @@
             <execution>
               <id>default-testCompile</id>
               <phase>test-compile</phase>
-              <!-- configuration>
-                       <testExcludes>
-                         <exclude>**/*.java</exclude>
-                       </testExcludes>
-                     </configuration-->
               <goals>
                 <goal>testCompile</goal>
               </goals>

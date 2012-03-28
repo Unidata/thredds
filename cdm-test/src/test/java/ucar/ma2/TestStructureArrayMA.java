@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.ma2.TestStructureArray;
 
 import java.io.IOException;
 

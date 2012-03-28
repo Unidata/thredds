@@ -32,12 +32,10 @@
 
 package opendap.test;
 
-import junit.framework.TestCase;
 import org.junit.Test;
-import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.util.rc.RC;
+import ucar.unidata.test.Diff;
 
 import java.io.*;
 import java.util.ArrayList;

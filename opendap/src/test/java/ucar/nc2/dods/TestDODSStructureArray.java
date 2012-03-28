@@ -200,7 +200,7 @@ public class TestDODSStructureArray {
     assert( data instanceof ArrayStructure);
     assert(data.getElementType() == StructureData.class);
 
-    new ucar.ma2.TestStructureArray().testArrayStructure( (ArrayStructure) data);
+    new ucar.unidata.test.ma2.TestStructureArray().testArrayStructure( (ArrayStructure) data);
     ncfile.close();
   }
 

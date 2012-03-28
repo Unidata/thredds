@@ -33,13 +33,13 @@
 package thredds.util.filesource;
 
 import junit.framework.*;
-import thredds.TestAll;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
+import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
@@ -64,7 +64,7 @@ public class TestChainedFileSource extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestChainedFileSource" );
+    tmpDir = TestFileDirUtils.addDirectory( new File( TestDir.temporaryLocalDataDir ), "TestChainedFileSource" );
 
     contentDir = TestFileDirUtils.addDirectory( tmpDir, "content" );
     TestFileDirUtils.addFile( contentDir, "myCat.xml" );

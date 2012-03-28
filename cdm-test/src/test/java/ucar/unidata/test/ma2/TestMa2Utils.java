@@ -1,4 +1,6 @@
-package ucar.ma2;
+package ucar.unidata.test.ma2;
+
+import ucar.ma2.Array;
 
 /**
  * ma2 testing utilities

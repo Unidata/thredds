@@ -103,7 +103,7 @@ public class TestAll {
         showFilesUsed();
       }
     };
-  }
+  } */
 
   static public void checkLeaks() {
     if (RandomAccessFile.getOpenFiles().size() > 0) {
@@ -116,7 +116,7 @@ public class TestAll {
     }
   }
 
-  static private void showFilesUsed() {
+  /* static private void showFilesUsed() {
     System.out.println("All Files Used:");
     for (String s : RandomAccessFile.getAllFiles()) {
       System.out.printf(" %s%n", s);
