@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.wms;
+package thredds.server.wms;
 
 import junit.framework.TestCase;
 

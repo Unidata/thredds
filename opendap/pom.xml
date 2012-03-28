@@ -99,8 +99,8 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>cdm-test</artifactId>
-      <classifier>tests</classifier>
+      <artifactId>netcdf</artifactId>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
 

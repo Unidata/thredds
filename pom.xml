@@ -476,10 +476,9 @@
       <!--  -->
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>cdm-test</artifactId>
-        <classifier>test-jar</classifier>
+        <artifactId>netcdf</artifactId>
         <scope>test</scope>
-        <type>jar</type>
+        <type>test-jar</type>
         <version>${project.version}</version>
       </dependency>
 

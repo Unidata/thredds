@@ -59,7 +59,7 @@ public class TestSpecialChars extends TestCase {
   String trouble = "here is a &, <, >, \', \", \n, \r, \t, to handle";
 
   public void testWrite() throws IOException, InvalidRangeException {
-    String filename = TestLocal.cdmTestDataDir +"testSpecialChars.nc";
+    String filename = TestLocal.temporaryDataDir +"testSpecialChars.nc";
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, true);
     ncfile.addGlobalAttribute("omy", trouble);
 
@@ -78,7 +78,7 @@ public class TestSpecialChars extends TestCase {
   }
 
   public void testRead() throws IOException {
-    String filename = TestLocal.cdmTestDataDir +"testSpecialChars.nc";
+    String filename = TestLocal.temporaryDataDir +"testSpecialChars.nc";
     NetcdfFile ncfile = NetcdfFile.open(filename, null);
     String val = ncfile.findAttValueIgnoreCase(null, "omy", null);
     assert val != null;
@@ -97,7 +97,7 @@ public class TestSpecialChars extends TestCase {
     NcMLWriter w = new NcMLWriter();
     w.writeXML(ncfile, System.out, null);
 
-    OutputStream out = new FileOutputStream(TestLocal.cdmTestDataDir +"testSpecialChars.ncml");
+    OutputStream out = new FileOutputStream(TestLocal.temporaryDataDir +"testSpecialChars.ncml");
     w.writeXML(ncfile, out, null);
     out.close();
 
@@ -105,7 +105,7 @@ public class TestSpecialChars extends TestCase {
   }
 
   public void testReadNcML() throws IOException {
-    String filename = TestLocal.cdmTestDataDir +"testSpecialChars.ncml";
+    String filename = TestLocal.temporaryDataDir +"testSpecialChars.ncml";
     NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
     System.out.println("ncml= "+ncfile.getLocation());
 

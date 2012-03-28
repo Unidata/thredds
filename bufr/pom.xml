@@ -65,8 +65,8 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>cdm-test</artifactId>
-      <classifier>test-jar</classifier>
+      <artifactId>netcdf</artifactId>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
 

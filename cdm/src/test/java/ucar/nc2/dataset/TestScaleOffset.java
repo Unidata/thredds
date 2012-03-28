@@ -41,12 +41,7 @@ import junit.framework.TestCase;
 import java.io.IOException;
 
 public class TestScaleOffset extends TestCase {
-  private String filename = TestLocal.cdmTestDataDir +"scaleOffset.nc";
-
-  public TestScaleOffset( String name) {
-    super(name);
-  }
-
+  private String filename = TestLocal.temporaryDataDir +"scaleOffset.nc";
 
   public void testWrite() throws Exception {
     System.out.printf("Open %s%n", filename);
@@ -112,7 +107,7 @@ public class TestScaleOffset extends TestCase {
     //TestCompare.compareData(readUnpacked, unpacked);
     testClose(packed, cnvertPacked, readEnhanced, 1.0/so.scale);
 
-
+    testSubset();
   }
 
   void testClose(Array packed, Array data1, Array data2, double close) {
@@ -131,7 +126,7 @@ public class TestScaleOffset extends TestCase {
   }
 
   // check section of scale/offset only applies it once
-  public void testSubset() throws IOException, InvalidRangeException {
+  private void testSubset() throws IOException, InvalidRangeException {
     // read the packed form, enhance using scale/offset, compare to original
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
     Variable vs = ncd.findVariable("packed");
@@ -148,6 +143,5 @@ public class TestScaleOffset extends TestCase {
     ucar.unidata.test.util.CompareNetcdf.compareData(readEnhanced, readSection);
 
     ncd.close();
-
   }
 }
