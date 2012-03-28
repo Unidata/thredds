@@ -45,6 +45,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -79,9 +80,8 @@ import ucar.unidata.util.StringUtil2;
  */
 
 @Component
-public class HtmlWriter {
-  static private org.slf4j.Logger log =
-      org.slf4j.LoggerFactory.getLogger(HtmlWriter.class);
+public class HtmlWriter implements InitializingBean {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HtmlWriter.class);
 
   private static HtmlWriter singleton;
 
@@ -102,6 +102,10 @@ public class HtmlWriter {
 
   public void setHtmlConfig( HtmlConfig htmlConfig ) {
     this.htmlConfig = htmlConfig;
+  }
+
+  public void afterPropertiesSet() {
+    singleton = this;
   }
 
   public void setSingleton( HtmlWriter self) {

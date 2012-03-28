@@ -95,19 +95,9 @@
       </roles>
     </developer>
     <developer>
-      <id>yuanho</id>
-      <name>Ho Yuan</name>
-      <email>yuanho@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>rkambic</id>
-      <name>Robb Kambic</name>
-      <email>rkambic@unidata.ucar.edu</email>
+      <id>emmerson</id>
+      <name>Steve Emmerson</name>
+      <email>steve@unidata.ucar.edu</email>
       <organization>UCAR/UNIDATA</organization>
       <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
       <roles>
@@ -125,6 +115,16 @@
       </roles>
     </developer>
     <developer>
+      <id>rkambic</id>
+      <name>Robb Kambic</name>
+      <email>rkambic@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
       <id>russ</id>
       <name>Russel Rew</name>
       <email>russ@unidata.ucar.edu</email>
@@ -132,6 +132,16 @@
       <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
       <roles>
         <role>C Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>yuanho</id>
+      <name>Ho Yuan</name>
+      <email>yuanho@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
       </roles>
     </developer>
   </developers>

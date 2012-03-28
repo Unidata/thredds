@@ -7,10 +7,9 @@
       <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/src/test_utils/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../cdm/src/test/resources" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/target/generated-sources/test-annotations" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/surefire" />
-      <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/surefire-reports" />
+      <sourceFolder url="file://$MODULE_DIR$/../../cdm-test/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/classes" />
       <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/test" />
       <excludeFolder url="file://$MODULE_DIR$/../../cdm-test/target/test-classes" />
     </content>

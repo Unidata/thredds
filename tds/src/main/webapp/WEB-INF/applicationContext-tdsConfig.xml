@@ -86,10 +86,10 @@
 
   <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
 
-  <!-- bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
+  <bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
     <property name="tdsContext" ref="tdsContext" />
     <property name="htmlConfig" ref="htmlConfig" />
-  </bean-->
+  </bean>
 
   <!-- A Singleton class to initialize the CDM -->
   <!-- bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy" /-->

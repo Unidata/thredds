@@ -101,7 +101,7 @@ public class TestDataRootHandler extends TestCase
 
   private void buildTdsContextAndDataRootHandler()
   {
-    // Create, configure, and initialize a DataRootHandler.
+    /* Create, configure, and initialize a DataRootHandler.
     TdsContext tdsContext = new TdsContext();
     tdsContext.setWebappVersion( "0.0.0.0" );
     tdsContext.setWebappVersionBuildDate( "20080904.2244" );
@@ -120,7 +120,7 @@ public class TestDataRootHandler extends TestCase
     PathAliasReplacement par = new TdsConfiguredPathAliasReplacement( "content" );
     drh.setDataRootLocationAliasExpanders( Collections.singletonList( par ) );
     drh.init();
-    DataRootHandler.setInstance( drh );
+    DataRootHandler.setInstance( drh ); */
   }
 
   /**

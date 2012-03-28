@@ -6,9 +6,6 @@ import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
 import thredds.catalog.InvDataset;
 import thredds.catalog.InvDatasetImpl;
-import thredds.catalog2.xml.parser.CatalogXmlUtils;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.net.URI;
 import java.net.URISyntaxException;

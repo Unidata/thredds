@@ -260,6 +260,7 @@
       <artifactId>slf4j-log4j12</artifactId>
       <scope>runtime</scope>
     </dependency>
+
     <dependency>
       <groupId>jfree</groupId>
       <artifactId>jfreechart</artifactId>
@@ -279,16 +280,17 @@
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
 
-    <dependency>
+    <!-- dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
       <scope>test</scope>
-    </dependency>
+    </dependency -->
 
     <dependency>
     	<groupId>httpunit</groupId>
@@ -397,7 +399,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <!-- Enabling tests for first unit testing -->
-          <skip>false</skip>
+          <skip>true</skip>
           <testFailureIgnore>true</testFailureIgnore>
           <includes>
             <include>thredds/server/catalogservice/**</include>
