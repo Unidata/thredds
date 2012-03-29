@@ -119,6 +119,10 @@
            his own pom.xml file if we want to read some formats.
        =========================================================== -->
   <dependencies>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>udunits</artifactId>
+    </dependency>
 
     <!-- HTTP client -->
     <dependency>
@@ -217,7 +221,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>true</skip>
+          <skip>false</skip>
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>
       </plugin>

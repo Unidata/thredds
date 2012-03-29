@@ -10,29 +10,73 @@
     <version>4.3.9-SNAPSHOT</version>
   </parent>
 
-  <!-- ===========================================================
-           Module Description
-       =========================================================== -->
-  <!-- groupId>edu.ucar</groupId-->
   <artifactId>udunits</artifactId>
   <packaging>jar</packaging>
   <name>udunits</name>
-  <description>
-    Udunits java standalone
-  </description>
+  <version>0.2</version>
   <url>http://www.unidata.ucar.edu/software/udunits//</url>
+
+  <description>The ucar.units Java package is for decoding and encoding
+    formatted unit specifications (e.g. "m/s"), converting numeric values
+    between compatible units (e.g. between "m/s" and "knot"), and for
+    performing arithmetic operations on units (e.g. dividing one unit by
+    another, raising a unit to a power).</description>
+
+  <properties>
+    <!-- NB: Avoid platform encoding warning when copying resources. -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
 
   <developers>
     <developer>
       <id>emmerson</id>
       <name>Steve Emmerson</name>
-      <email>steve@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
+      <url>http://www.unidata.ucar.edu/staff/steve/</url>
     </developer>
   </developers>
+
+  <!-- build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <packageName>ucar.units</packageName>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build -->
+
+  <reporting>
+    <plugins>
+      <!-- NB: Generate javadocs as part of site generation. -->
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <maxmemory>1024m</maxmemory>
+          <!-- NB: Workaround for javadoc bug when classes in the default
+            package access classes from non-default packages. See:
+            http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5101868 -->
+          <use>false</use>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 
 </project>

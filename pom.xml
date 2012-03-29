@@ -455,6 +455,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>udunits</artifactId>
+        <version>0.2</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>visad</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -613,6 +618,7 @@
        Modules for the build in approximate dependency order
      =========================================================== -->
   <modules>
+    <module>udunits</module>
     <module>cdm</module>
     <module>bufr</module>
     <module>grib</module>
