@@ -34,57 +34,49 @@ package ucar.nc2.util.net;
 
 import org.junit.Test;
 
-public class TestHTTPSession extends ucar.nc2.util.TestCommon
-{
-    //////////////////////////////////////////////////
+import static junit.framework.Assert.assertTrue;
 
-    // Define the test sets
+public class TestHTTPSession extends ucar.nc2.util.TestCommon {
+  //////////////////////////////////////////////////
 
-    int passcount = 0;
-    int xfailcount = 0;
-    int failcount = 0;
-    boolean verbose = true;
-    boolean pass = false;
+  // Define the test sets
 
-    String datadir = null;
-    String threddsroot = null;
+  int passcount = 0;
+  int xfailcount = 0;
+  int failcount = 0;
+  boolean verbose = true;
+  boolean pass = false;
 
-    public TestHTTPSession(String name, String testdir)
-    {
-        super(name);
-        setTitle("HTTP Session tests");
-    }
+  String datadir = null;
+  String threddsroot = null;
 
-    public TestHTTPSession(String name)
-    {
-        this(name, null);
-    }
+  public TestHTTPSession() {
+    setTitle("HTTP Session tests");
+  }
 
+  @Test
+  public void
+  testAgent() throws Exception {
+    String globalagent = "TestUserAgent123global";
+    String sessionagent = "TestUserAgent123session";
+    String url =
+            "http://localhost:8080/thredds/dodsC/testStandardTdsScan/1day.nc.dds";
 
-    @Test
-    public void
-    testAgent() throws Exception
-    {
-        String globalagent = "TestUserAgent123global";
-        String sessionagent = "TestUserAgent123session";
-        String url =
-                "http://localhost:8080/thredds/dodsC/testStandardTdsScan/1day.nc.dds";
+    System.out.println("*** Testing: User Agent");
+    System.out.println("*** URL: " + url);
+    System.out.println("Test: HTTPSession.setGlobalUserAgent(" + globalagent + ")");
+    HTTPSession.setGlobalUserAgent(globalagent);
+    HTTPSession session = new HTTPSession(url);
+    HTTPMethod method = HTTPMethod.Get(session);
+    method.execute();
+    System.out.println("Validate by examining localserver log output");
 
-        System.out.println("*** Testing: User Agent");
-        System.out.println("*** URL: " + url);
-        System.out.println("Test: HTTPSession.setGlobalUserAgent("+globalagent+")");
-        HTTPSession.setGlobalUserAgent(globalagent);
-        HTTPSession session = new HTTPSession(url);
-        HTTPMethod method = HTTPMethod.Get(session);
-        method.execute();
-        System.out.println("Validate by examining localserver log output");
+    System.out.println("Test: HTTPSession.setUserAgent(" + sessionagent + ")");
+    session.setUserAgent(sessionagent);
+    method = HTTPMethod.Get(session);
+    method.execute();
+    System.out.println("Validate by examining localserver log output");
 
-        System.out.println("Test: HTTPSession.setUserAgent("+sessionagent+")");
-        session.setUserAgent(sessionagent);
-        method = HTTPMethod.Get(session);
-        method.execute();
-        System.out.println("Validate by examining localserver log output");
-
-        assertTrue("TestHTTPSession.testAgent", true);
-    }
+    assertTrue("TestHTTPSession.testAgent", true);
+  }
 }

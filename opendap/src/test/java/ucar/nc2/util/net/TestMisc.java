@@ -34,54 +34,47 @@ package ucar.nc2.util.net;
 
 import org.junit.Test;
 
-public class TestMisc extends ucar.nc2.util.TestCommon
-{
-    //////////////////////////////////////////////////
+import static junit.framework.Assert.assertTrue;
 
-    // Define the test sets
+public class TestMisc extends ucar.nc2.util.TestCommon {
+  //////////////////////////////////////////////////
 
-    int passcount = 0;
-    int xfailcount = 0;
-    int failcount = 0;
-    boolean verbose = true;
-    boolean pass = false;
+  // Define the test sets
 
-    String datadir = null;
-    String threddsroot = null;
+  int passcount = 0;
+  int xfailcount = 0;
+  int failcount = 0;
+  boolean verbose = true;
+  boolean pass = false;
 
-    public TestMisc(String name, String testdir)
-    {
-        super(name);
-        setTitle("HTTP Session tests");
+  String datadir = null;
+  String threddsroot = null;
+
+  public TestMisc() {
+    setTitle("HTTP Session tests");
+  }
+
+  static final String[] esinputs = {
+          "http://localhost:8080/dts/test.01",
+          "http://localhost:8080///xx/",
+          "http://localhost:8080/<>^/`/",
+  };
+  static final String[] esoutputs = {
+          "http://localhost:8080/dts/test.01",
+          "http://localhost:8080///xx/",
+          "http://localhost:8080/%3c%3e%5e/%60/",
+  };
+
+  @Test
+  public void
+  testEscapeStrings() throws Exception {
+    pass = true;
+    assert (esinputs.length == esoutputs.length);
+    for (int i = 0; i < esinputs.length && pass; i++) {
+      String result = EscapeStrings.escapeURL(esinputs[i]);
+      if (!result.equals(esoutputs[i])) pass = false;
+      System.out.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
     }
-
-    public TestMisc(String name)
-    {
-        this(name, null);
-    }
-
-
-    static final String[] esinputs = {
-    "http://localhost:8080/dts/test.01",
-    "http://localhost:8080///xx/",
-    "http://localhost:8080/<>^/`/",
-    };
-    static final String[] esoutputs = {
-    "http://localhost:8080/dts/test.01",
-    "http://localhost:8080///xx/",
-    "http://localhost:8080/%3c%3e%5e/%60/",
-    };
-    @Test
-    public void
-    testEscapeStrings() throws Exception
-    {
-        pass = true;
-        assert(esinputs.length == esoutputs.length);
-	for(int i=0;i<esinputs.length && pass;i++) {
-	    String result = EscapeStrings.escapeURL(esinputs[i]);
-	    if(!result.equals(esoutputs[i])) pass = false;
-            System.out.printf("input=%s output=%s pass=%s\n",esinputs[i],result,pass);
-	}
-        assertTrue("TestMisc.testEscapeStrings", pass);
-    }
+    assertTrue("TestMisc.testEscapeStrings", pass);
+  }
 }

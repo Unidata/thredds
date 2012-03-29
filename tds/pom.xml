@@ -124,20 +124,9 @@
   <dependencies>
 
     <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <!--
-   <dependency>
-       <groupId>edu.ucar</groupId>
-       <artifactId>netcdf</artifactId>
-        <scope>runtime</scope>
-   </dependency>
-    -->
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>bufr</artifactId>
@@ -146,21 +135,33 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>grib</artifactId>
-      <!--            <scope>runtime</scope>-->
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>opendap</artifactId>
-      <!--            <scope>runtime</scope>-->
     </dependency>
     <dependency>
       <artifactId>visad</artifactId>
       <groupId>edu.wisc</groupId>
       <scope>runtime</scope>
     </dependency>
+
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
     </dependency>
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
@@ -181,45 +182,63 @@
     </dependency>
 
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>cas</groupId>
       <artifactId>casclient</artifactId>
+    </dependency>
+
+    <!-- THREDDS ISO -->
+        <dependency>
+          <groupId>EDS</groupId>
+          <artifactId>threddsIso</artifactId>
+        </dependency>
+
+    <!-- wms -->
+    <dependency>
+      <groupId>uk.ac.rdg.resc</groupId>
+      <artifactId>ncwms</artifactId>
     </dependency>
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
     </dependency>
     <dependency>
-      <groupId>uk.ac.rdg.resc</groupId>
-      <artifactId>ncwms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.geotoolkit</groupId>
       <artifactId>geotk-referencing</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>atg.taglib.json</groupId>
+      <artifactId>json-taglib</artifactId>
+    </dependency>
+
+    <!-- tomcat -->
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>catalina</artifactId>
@@ -231,22 +250,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>atg.taglib.json</groupId>
-      <artifactId>json-taglib</artifactId>
-    </dependency>
-
-    <!-- THREDDS ISO -->
-    <dependency>
-      <groupId>EDS</groupId>
-      <artifactId>threddsIso</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
     </dependency>
@@ -255,30 +258,19 @@
       <artifactId>standard</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>jfree</groupId>
-      <artifactId>jfreechart</artifactId>
-    </dependency>
-
     <!-- JSR 303 with Hibernate Validator -->
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
       <version>1.0.0.GA</version>
     </dependency>
-
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>4.1.0.Final</version>
     </dependency>
 
+    <!-- test -->
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>netcdf</artifactId>
@@ -286,16 +278,16 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
       <scope>test</scope>
-    </dependency -->
+    </dependency>
 
     <dependency>
-    	<groupId>httpunit</groupId>
-    	<artifactId>httpunit</artifactId>
-    	<version>1.7</version>
+      <groupId>httpunit</groupId>
+      <artifactId>httpunit</artifactId>
+      <version>1.7</version>
       <scope>test</scope>
     </dependency>
 

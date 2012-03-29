@@ -57,7 +57,7 @@ public class TestJustReadGrib  {
 
   @Test
   public void readMotherloadFiles() throws Exception {
-    readAllDir( TestDir.cdmUnitTestDir + "tds", null, true);
+    readAllDir( TestDir.cdmUnitTestDir + "tds/ncep", null, true);
   }
 
   void readAllDir(String dirName, String suffix, boolean recurse) throws Exception {

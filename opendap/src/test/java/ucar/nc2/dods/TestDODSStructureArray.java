@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dods;
 
+import opendap.test.TestSources;
 import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -186,7 +187,7 @@ public class TestDODSStructureArray {
 
   @Test
   public void testDODS() throws IOException, InvalidRangeException {
-    testW(TestDODS.server+"test.53", "types", false);
+    testW(TestSources.XURL1+"/test.53", "types", false);
   }
 
   public void testW(String url, String sname, boolean isScalar) throws IOException, InvalidRangeException {

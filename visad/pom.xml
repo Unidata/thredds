@@ -39,8 +39,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
 
@@ -51,10 +52,6 @@
     </dependency>
   </dependencies>
 
-  <!-- Build configuration
-       We declare a non-existant test directory as a dirty trick
-       for skiping completly the tests, including compilation.
-    -->
   <build>
     <finalName>visadCdm</finalName>
     <!--testSourceDirectory>void</testSourceDirectory-->

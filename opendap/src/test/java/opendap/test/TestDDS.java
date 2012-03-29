@@ -35,30 +35,23 @@ package opendap.test;
 
 // Test that the DDS parsing is correct
 
-public class TestDDS extends TestDapParser
-{
-    final String TITLE = "DAP DDS Parser Tests";
+import org.junit.Test;
 
-    public TestDDS(String name, String testdir)
-    {
-        super(name, testdir, ".dds");
-    }
+public class TestDDS extends TestDapParser {
+  final static String TITLE = "DAP DDS Parser Tests";
 
-    public TestDDS(String name)
-    {
-        super(name, null, ".dds");
-    }
+  public TestDDS() {
+    setExtension(".dds");
+  }
 
-    public void testDDS() throws Exception
-    {
-	parse();
-    }
+  @Test
+  public void testDDS() throws Exception {
+    parse();
+  }
 
-
-    public static void main(String args[]) throws Exception
-    {
-        new TestDDS("TestDDS", null).testDDS();
-    }
+  public static void main(String args[]) throws Exception {
+    new TestDDS().testDDS();
+  }
 
 }
 

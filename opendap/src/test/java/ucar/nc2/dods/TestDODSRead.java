@@ -32,6 +32,8 @@
  */
 package ucar.nc2.dods;
 
+import opendap.test.TestSources;
+
 import java.io.*;
 
 /** Test nc2 dods in the JUnit framework.
@@ -43,7 +45,7 @@ public class TestDODSRead {
   public static boolean showFile = false, showFileDebug= false;
 
   static DODSNetcdfFile open(String name) throws IOException {
-    String filename = TestDODS.server+name;
+    String filename = TestSources.XURL1 + "/" + name;
     return openAbs( filename);
   }
 
