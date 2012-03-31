@@ -32,100 +32,88 @@
  */
 package ucar.nc2.stream;
 
-import junit.framework.*;
-
 import java.io.*;
 
 import ucar.nc2.*;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.ma2.InvalidRangeException;
+import ucar.unidata.test.util.TestDir;
 
 /**
  * test FileWriting, then reading back and comparing to original.
  */
 
-public class TestStreamWriter extends TestCase {
-  static boolean showCompare = true, showEach = false;
+public class TestStreamWriter {
 
+  @org.junit.Test
   public void test() throws IOException, InvalidRangeException {
-
-    testChannelWriter("C:/data/metars/Surface_METAR_20070326_0000.nc");
-    testChannelWriter("C:/data/RUC2_CONUS_40km_20070709_1800.nc");
-
-    testOutputStreamWriter("C:/data/metars/Surface_METAR_20070326_0000.nc");
-    testOutputStreamWriter("C:/data/RUC2_CONUS_40km_20070709_1800.nc");
+    test(TestDir.cdmUnitTestDir + "ft/station/Surface_METAR_20080205_0000.nc");
+    test(TestDir.cdmUnitTestDir + "ft/grid/RUC2_CONUS_40km_20070709_1800.nc");
+  }
+    
+  private void test(String filename) throws IOException, InvalidRangeException {
+    long tookWriter = testFileWriter(filename);
+    long tookChannel = testN3channelWriter(filename);
+    long tookStream = testN3outputStreamWriter(filename);
+    System.out.println("testFileWriter took " + tookWriter + " msecs");
+    System.out.println("N3channelWriter took " + tookChannel + " msecs");
+    System.out.println("N3streamWriter took " + tookStream + " msecs");
   }
 
-  private void testOutputStreamWriter(String fileInName) throws IOException {
+  private long testN3outputStreamWriter(String fileInName) throws IOException {
     System.out.println("\nFile= " + fileInName + " size=" + new File(fileInName).length());
     NetcdfFile fileIn = NetcdfFile.open(fileInName);
 
     long start = System.currentTimeMillis();
-    N3outputStreamWriter.writeFromFile(fileIn, "C:/data/testStream.nc");
+    String fileOut = TestDir.temporaryLocalDataDir + "/testStream.nc";
+    N3outputStreamWriter.writeFromFile(fileIn, fileOut);
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
 
-    NetcdfFile file2 = NetcdfFile.open("C:/data/testStream.nc");
-    ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, true, false);
+    NetcdfFile file2 = NetcdfFile.open(fileOut);
+    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
     file2.close();
+    return took;
   }
 
-  private void testChannelWriter(String fileInName) throws IOException, InvalidRangeException {
+  private long testN3channelWriter(String fileInName) throws IOException, InvalidRangeException {
     System.out.println("\nFile= " + fileInName + " size=" + new File(fileInName).length());
     NetcdfFile fileIn = NetcdfFile.open(fileInName);
 
     long start = System.currentTimeMillis();
-    N3channelWriter.writeFromFile(fileIn, "C:/data/testStream.nc");
+    String fileOut = TestDir.temporaryLocalDataDir + "/testChannel.nc";
+    N3channelWriter.writeFromFile(fileIn, fileOut);
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
 
-    NetcdfFile file2 = NetcdfFile.open("C:/data/testStream.nc");
-    ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, true, false);
+    NetcdfFile file2 = NetcdfFile.open(fileOut);
+    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
     file2.close();
+    return took;
   }
 
-  public void utestTime() throws IOException, InvalidRangeException {
-    testTime(new String[] {"C:/data/RUC2_CONUS_40km_20070709_1800.nc",
-        "C:/data/CopyRUC2_CONUS_40km_20070709_1800.nc",
-        "C:/data/Copy2RUC2_CONUS_40km_20070709_1800.nc"});
+  private long testFileWriter(String fileInName) throws IOException, InvalidRangeException {
+    System.out.println("\nFile= " + fileInName + " size=" + new File(fileInName).length());
+    NetcdfFile fileIn = NetcdfFile.open(fileInName);
 
-    testTime(new String[] {"C:/data/metars/Surface_METAR_20070329_0000.nc",
-        "C:/data/metars/Surface_METAR_20070330_0000.nc",
-        "C:/data/metars/Surface_METAR_20070326_0000.nc"});
-  }
-
-  public void testTime(String[] filename) throws IOException, InvalidRangeException {
-    System.out.println("\nFile= " + filename[0] + " size=" + new File(filename[0]).length());
- 
-    NetcdfFile fileIn = NetcdfFile.open(filename[0]);
-    File fileOut = File.createTempFile("Test", ".tmp", new File("C:/data/"));
     long start = System.currentTimeMillis();
-    N3outputStreamWriter.writeFromFile(fileIn, fileOut.getPath());
-    long took = System.currentTimeMillis() - start;
-    System.out.println("N3streamWriter took " + took + " msecs");  // */
-    fileIn.close();
-
-    NetcdfFile fileIn2 = NetcdfFile.open(filename[1]);
-    File fileOut2 = File.createTempFile("Test", ".tmp", new File("C:/data/"));
-    long start2 = System.currentTimeMillis();
-    NetcdfFile ncout2 = ucar.nc2.FileWriter.writeToFile(fileIn2, fileOut2.getPath());
+    String fileOut = TestDir.temporaryLocalDataDir + "/testStream.nc";
+    NetcdfFile ncout2 = ucar.nc2.FileWriter.writeToFile(fileIn, fileOut);
     ncout2.close();
-    long took2 = System.currentTimeMillis() - start2;
-    System.out.println("FileWriter took " + took2 + " msecs");
-    fileIn2.close();
+    long took = System.currentTimeMillis() - start;
+    System.out.println("N3streamWriter took " + took + " msecs");
 
-    NetcdfFile fileIn3 = NetcdfFile.open(filename[2]);
-    File fileOut3 = File.createTempFile("Test", ".tmp", new File("C:/data/"));
-    long start3 = System.currentTimeMillis();
-    N3channelWriter.writeFromFile(fileIn3, fileOut3.getPath());
-    long took3 = System.currentTimeMillis() - start3;
-    System.out.println("N3channelWriter took " + took3 + " msecs");
-    fileIn3.close();
+    NetcdfFile file2 = NetcdfFile.open(fileOut);
+    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+
+    fileIn.close();
+    file2.close();
+    return took;
   }
 
 }

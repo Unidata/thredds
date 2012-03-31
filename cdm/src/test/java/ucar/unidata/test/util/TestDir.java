@@ -23,12 +23,6 @@ import java.util.Properties;
 public class TestDir {
 
   /**
-   * Old test data directory. may have cruft in it
-   * Unidata "//fileserver/data/testdata2" directory.
-   */
-  private static String testdataDir = null;
-
-  /**
    * New test data directory. do not put temprory files in here. migrate all test data here eventually
    * Unidata "//fileserver/data/testdata2/cdmUnitTest" directory.
    */
@@ -37,7 +31,7 @@ public class TestDir {
   /**
    * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
    */
-  public static String cdmLocalTestDataDir = "src/test/data/";
+  public static String cdmLocalTestDataDir = "../cdm/src/test/data/";
 
   /**
    * Temporary data directory (for writing temporary data).
@@ -56,8 +50,6 @@ public class TestDir {
    * if the "unidata.testdata2.path" and "unidata.upc.share.path" are not
    * available as system properties. */
   private static String threddsPropFileName = "thredds.properties";
-
-  // TODO all the static stuff below is also in thredds.unidata.testUtil.TestAll, can we unify?
 
   // Determine how Unidata "/upc/share" directory is mounted
   // on local machine by reading system or THREDDS property.
@@ -99,7 +91,6 @@ public class TestDir {
     if ((!testdataDirPath.endsWith( "/")) && !testdataDirPath.endsWith( "\\"))
       testdataDirPath += "/";
 
-    testdataDir = testdataDirPath;
     cdmUnitTestDir = testdataDirPath + "cdmUnitTest/";
 
     File file = new File( cdmUnitTestDir );
@@ -137,9 +128,9 @@ public class TestDir {
     int doAct( String filename) throws IOException;
   }
 
-  public static class FileFilterWant implements FileFilter {
+  public static class FileFilterFromSuffixes implements FileFilter {
     String[] suffixes;
-    public FileFilterWant(String suffixes) {
+    public FileFilterFromSuffixes(String suffixes) {
       this.suffixes = suffixes.split(" ");
     }
 
@@ -173,6 +164,7 @@ public class TestDir {
    * @param dirName recurse into this directory
    * @param ff for files that pass this filter, may be null
    * @param act perform this acction
+   * @param recurse recurse into subdirectories
    * @return count
    * @throws IOException on IO error
    */

@@ -36,7 +36,6 @@ import junit.framework.*;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
-import ucar.nc2.TestAll;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
@@ -44,6 +43,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 
@@ -84,7 +84,7 @@ public class TestCdmRemoteServer extends TestCase {
     CoordinateAxis1D time = gcs.getTimeAxis1D();
     assert time != null;
     assert time.getSize() == 1;
-    assert TestAll.closeEnough(time.readScalarDouble(), 102840.0) : time.readScalarDouble();
+    assert Misc.closeEnough(time.readScalarDouble(), 102840.0) : time.readScalarDouble();
 
     dataResult.featureDataset.close();
   }

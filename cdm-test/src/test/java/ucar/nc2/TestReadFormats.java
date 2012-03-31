@@ -1,12 +1,13 @@
 package ucar.nc2;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,15 +18,13 @@ import java.util.List;
  * @author caron
  * @since 2/28/11
  */
-public class TestReadFormats extends TestCase {
+public class TestReadFormats {
   static int countGood = 0;
   static int countFail = 0;
   static int countTotal = 0;
   static boolean verbose = true;
-
-  public TestReadFormats(String name) {
-    super(name);
-  }
+  
+  List<String> failFiles = new ArrayList<String>();
 
   class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
@@ -46,10 +45,12 @@ public class TestReadFormats extends TestCase {
     }
   }
 
+  @Test
   public void testAllFormat() throws IOException {
     openAllInDir(TestDir.cdmUnitTestDir + "/formats", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
+    for (String f : failFiles) System.out.printf("  %s%n", f);
     assert countFail == 0 : "Failed = "+countFail;
   }
 
@@ -60,7 +61,7 @@ public class TestReadFormats extends TestCase {
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
   }
 
-  public static void openAllInDir(String dirName, FileFilter ff) throws IOException {
+  public void openAllInDir(String dirName, FileFilter ff) throws IOException {
     if (verbose) System.out.println("---------------Reading directory "+dirName);
     File allDir = new File( dirName);
     File[] allFiles = allDir.listFiles();
@@ -83,6 +84,7 @@ public class TestReadFormats extends TestCase {
           countGood++;
         } catch (Throwable t) {
           System.out.printf("  FAIL on %s == %s%n", name, t.getMessage());
+          failFiles.add(name) ;
           countFail++;
         } finally {
           if (ncfile != null) ncfile.close();

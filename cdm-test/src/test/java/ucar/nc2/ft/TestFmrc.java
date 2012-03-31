@@ -33,6 +33,7 @@
 package ucar.nc2.ft;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -54,16 +55,12 @@ import java.util.List;
  * @author caron
  * @since Feb 25, 2010
  */
-public class TestFmrc extends TestCase {
-
-  public TestFmrc(String name) {
-    super(name);
-  }
-
+public class TestFmrc {
   private static String datadir = TestDir.cdmUnitTestDir + "ft/fmrc/";
   private static boolean showCount = true;
 
-  public void utestCollections() throws Exception {
+  @Test
+  public void testCollections() throws Exception {
     try {
       FeatureCollectionConfig.setRegularizeDefault( true);
 
@@ -106,9 +103,9 @@ public class TestFmrc extends TestCase {
     }
   }
 
-  public void utestProblem() throws Exception {
-    doOne(datadir + "gomoos/grid.ncml", 16, -1, 7, 1, "salt", 2, 21, 29);     //*/
-    doOne(datadir + "rtofs/rtofs.ncml", 9, 6, 10, 1, "N3-D_Temperature", 2, 3, 4);
+  @Test
+  public void testProblem() throws Exception {
+    doOne(TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure_tropopause", 3, 9, 9);
   }
 
 

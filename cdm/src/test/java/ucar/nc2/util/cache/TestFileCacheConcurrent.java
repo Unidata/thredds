@@ -32,7 +32,8 @@
  */
 package ucar.nc2.util.cache;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import ucar.nc2.TestLocal;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
@@ -48,18 +49,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author caron
  * @since May 31, 2008
  */
-public class TestFileCacheConcurrent extends TestCase {
+public class TestFileCacheConcurrent {
 
-  public TestFileCacheConcurrent(String name) {
-    super(name);
-  }
-
-  FileCache cache;
+  FileCache cache = new FileCache(50, 100, 30);
   FileFactory factory = new MyFileFactory();
-
-  protected void setUp() throws java.lang.Exception {
-    cache = new FileCache(50, 100, 30);
-  }
 
   class MyFileFactory implements FileFactory {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
@@ -89,12 +82,13 @@ public class TestFileCacheConcurrent extends TestCase {
   int MAX_TASKS = 1000; // bounded queue
   int NSAME = 3; // submit same file n consecutive
 
+  @Test
   public void testConcurrentAccess() throws InterruptedException {
     cache.debugCleanup = false;
 
     // load some files into the cache
     List<String> fileList = new ArrayList<String>(100);
-    loadFiles(new File("C:/data/"), "nc", fileList);
+    loadFiles(new File(TestLocal.cdmTestDataDir), "nc", fileList);
     int nfiles = fileList.size();
     System.out.println(" loaded " + nfiles + " files");
 

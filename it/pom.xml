@@ -92,33 +92,9 @@
 
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>CDM integration tests</id>
-      <properties>
-        <srcdir>src/test_cdm/java</srcdir>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-             <skip>false</skip>
-             <includes>
-               <include>ucar/nc2/TestReadFormats.java</include>
-             </includes>
-           </configuration>
-          </plugin>
-        </plugins>
-      </build>
-
-    </profile>
-  </profiles>
-
   <build>
     <!-- this is a new project so setting the testSourceDirectory to its default -->
-    <testSourceDirectory>${srcdir}</testSourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
     <plugins>
 
       <plugin>
@@ -233,12 +209,8 @@
         </configuration>
       </plugin>
 
-
     </plugins>
   </build>
 
-  <properties>
-    <srcdir>src/test/java</srcdir>
-  </properties>
 
 </project>

@@ -32,11 +32,12 @@
 
 package ucar.nc2.dt.grid;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 
@@ -46,13 +47,14 @@ import java.io.IOException;
  * @author caron
  * @since Apr 12, 2010
  */
-public class TestLongitudeWrap extends TestCase {
+public class TestLongitudeWrap {
 
+  @Test
   public void testTimeAxisEval() throws IOException {
     /**
      * The following tests BugFixes.evalTimeAxes, called by ucar.nc2.dt.grid.GridCoordSys.isGridCoordSys
      */
-    String testFileFullPath = "E:/work/margolis/bugfix/echoTops_runtime.nc";
+    String testFileFullPath = TestDir.cdmUnitTestDir + "ft/grid/echoTops_runtime.nc";
     GridDataset runtimeDataset = new GridDataset(new NetcdfDataset(NetcdfFile.open(testFileFullPath)));
     if (runtimeDataset.getGrids().isEmpty()) {
       throw new RuntimeException("Runtime data file did not generate a dataset with grids");
@@ -64,6 +66,7 @@ public class TestLongitudeWrap extends TestCase {
     System.out.println("BugFixesTest - completed.");
   }
 
+  @Test
   public void testLongitudeWrap() throws Exception {
     /*
      * The following tests BugFixes.findIndexOfLon, called by ucar.nc2.dataset.CoordinateAxis1D.findCoordElementIrregular
@@ -90,7 +93,7 @@ public class TestLongitudeWrap extends TestCase {
   237.0, 238.0, 239.0, 240.0, 241.0, 242.0, 243.0, 244.0, 245.0, 246.0, 247.0, 248.0, 249.0, 250.0, 251.0, 252.0, 253.0, 254.0, 255.0, 256.0}
   */
 
-    String testFileFullPath = "E:/work/margolis/bugfix/gfs_crossPM_contiguous.nc";
+    String testFileFullPath = TestDir.cdmUnitTestDir + "ft/grid/gfs_crossPM_contiguous.nc";
     String targetGridName = "Temperature_altitude_above_msl";
 
     ////// Test non-Runtime dataset

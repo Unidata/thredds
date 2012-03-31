@@ -1,5 +1,6 @@
 package ucar.nc2.stream;
 
+import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.hdf5.TestN4;
@@ -14,17 +15,15 @@ import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 
-public class TestNetcdfStream extends TestCase {
-  String serverRoot = "E:/formats";
-  
-  public TestNetcdfStream(String name) {
-    super(name);
-  }
+public class TestNetcdfStream {
+  String serverRoot = TestDir.cdmUnitTestDir + "formats";
 
+  @Test
   public void testProblem() throws IOException {
-    doOne(TestN4.testDir+"tst_enums.nc");
+    doOne(serverRoot+"/netcdf4/tst/tst_enums.nc");
   }
 
+  @Test
   public void testScan() throws IOException {
     /*    */
     scanDir(serverRoot+"/netcdf3/", ".nc");
