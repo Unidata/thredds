@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 9: (2012-03-xx)
+ 9: (2012-03-xxx)
   JoinNew has bug when groups are present because non-agg vars are not getting proxied.
   HdfEos: use Group.addDimensionIfNotExists()
   UI: use both name and description (if present) in the GridViewer field selector
