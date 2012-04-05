@@ -58,6 +58,7 @@ import java.util.List;
  * @since 9/5/11
  */
 public class Grib1Iosp extends GribIosp {
+
   static private final float MISSING_VALUE = Float.NaN;
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Iosp.class);
   static private final boolean debugTime = false, debugRead = false;
@@ -321,6 +322,7 @@ public class Grib1Iosp extends GribIosp {
       v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
 
       // Grib attributes
+      v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, cust.makeVariableNameFromRecord(gribCollection, vindex)));
       v.addAttribute(new Attribute("Grib1_Center", gribCollection.center));
       v.addAttribute(new Attribute("Grib1_Subcenter", gribCollection.subcenter));
       v.addAttribute(new Attribute("Grib1_TableVersion", vindex.tableVersion));

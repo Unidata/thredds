@@ -1062,7 +1062,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public String toProcessedString() {
       Formatter f = new Formatter();
-      showProcessedPds(pds, discipline, f);
+      showProcessedPds(gr, pds, discipline, f);
       return f.toString();
     }
 
@@ -1228,12 +1228,11 @@ public class Grib2CollectionPanel extends JPanel {
   }
 
   ////////////////////////////////////////////////////////
-  private void showProcessedPds(Grib2Pds pds, int discipline, Formatter f) {
+  private void showProcessedPds(Grib2Record gr, Grib2Pds pds, int discipline, Formatter f) {
     int template = pds.getTemplateNumber();
     f.format(" Product Template %3d = %s%n", template, cust.getTableValue("4.0", template));
     f.format(" Discipline %3d     = %s%n", discipline, cust.getTableValue("0.0", discipline));
-    f.format(" Category %3d       = %s%n", pds.getParameterCategory(), cust.getTableValue("4.1" + discipline,
-            pds.getParameterCategory()));
+    f.format(" Category %3d       = %s%n", pds.getParameterCategory(), cust.getTableValue("4.1" + discipline, pds.getParameterCategory()));
     Grib2Customizer.Parameter entry = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
     if (entry != null) {
       f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(), entry.getName());
@@ -1242,6 +1241,7 @@ public class Grib2CollectionPanel extends JPanel {
       f.format(" Unknown Parameter  = %d-%d-%d %n", discipline, pds.getParameterCategory(), pds.getParameterNumber());
       cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber()); // debug
     }
+    f.format(" Parameter Table  = %s%n", cust.getTablePath(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
 
     int tgp = pds.getGenProcessType();
     f.format(" Generating Process Type = %3d %s %n", tgp, cust.getTableValue("4.3", tgp));

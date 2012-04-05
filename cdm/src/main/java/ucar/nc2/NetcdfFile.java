@@ -1110,6 +1110,20 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
     return v;
   }
+  
+  public Variable findVariableByAttribute(Group g, String attName, String attValue) {
+    if (g == null) g = getRootGroup();
+    for (Variable v : variables) {
+      for (Attribute att : v.getAttributes())
+        if (attName.equals(att.getName()) && attValue.equals(att.getStringValue()))
+          return v;
+    }
+    for (Group nested : g.getGroups()) {
+      Variable v = findVariableByAttribute(nested, attName, attValue);
+      if (v != null) return v;
+    }
+    return null;
+  }
 
   /**
    * Get the shared Dimensions used in this file.

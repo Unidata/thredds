@@ -154,6 +154,11 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   // debugging
+  public String getTablePath(int discipline, int category, int number) {
+    return WmoCodeTable.standard.getResourceName();
+  }
+
+  // debugging
   public List getParameters() {
     try {
       WmoCodeTable.WmoTables wmo = WmoCodeTable.getWmoStandard();
@@ -303,65 +308,65 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
     switch (id) {
       case 1:
-        return "Surface";
+        return "surface";
       case 2:
-        return "Cloud_base";
+        return "cloud_base";
       case 3:
-        return "Cloud_tops";
+        return "cloud_tops";
       case 4:
-        return "ZeroDegC_isotherm";
+        return "zeroDegC_isotherm";
       case 5:
-        return "Adiabatic_condensation_lifted";
+        return "adiabatic_condensation_lifted";
       case 6:
-        return "Maximum_wind";
+        return "maximum_wind";
       case 7:
-        return "Tropopause";
+        return "tropopause";
       case 8:
-        return "Atmosphere_top";
+        return "atmosphere_top";
       case 9:
-        return "Sea_bottom";
+        return "sea_bottom";
       case 10:
-        return "Entire_atmosphere";
+        return "entire_atmosphere";
       case 11:
-        return "Cumulonimbus_base";
+        return "cumulonimbus_base";
       case 12:
-        return "Cumulonimbus_top";
+        return "cumulonimbus_top";
       case 20:
-        return "Isotherm";
+        return "isotherm";
       case 100:
-        return "Pressure";
+        return "pressure";
       case 101:
-        return "Msl";
+        return "msl";
       case 102:
-        return "Altitude_above_msl";
+        return "altitude_above_msl";
       case 103:
-        return "Height_above_ground";
+        return "height_above_ground";
       case 104:
-        return "Sigma";
+        return "sigma";
       case 105:
-        return "Hybrid";
+        return "hybrid";
       case 106:
-        return "Depth_below_surface";
+        return "depth_below_surface";
       case 107:
-        return "Isentrope";
+        return "isentrope";
       case 108:
-        return "Pressure_difference";
+        return "pressure_difference";
       case 109:
-        return "Potential_vorticity_surface";
+        return "potential_vorticity_surface";
       case 111:
-        return "Eta";
+        return "eta";
       case 113:
-        return "Log_hybrid";
+        return "log_hybrid";
       case 117:
-        return "Mixed_layer_depth";
+        return "mixed_layer_depth";
       case 118:
-        return "Hybrid_height";
+        return "hybrid_height";
       case 119:
-        return "Hybrid_pressure";
+        return "hybrid_pressure";
       case 120:
-        return "Pressure_thickness";
+        return "pressure_thickness";
       case 160:
-        return "Depth_below_sea";
+        return "depth_below_sea";
       case GribNumbers.UNDEFINED:
         return "none";
       default:

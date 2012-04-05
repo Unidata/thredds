@@ -56,6 +56,12 @@ public class FslLocalTables extends LocalTables {
     super(center, subCenter, masterVersion, localVersion);
   }
 
+  @Override
+  public String getTablePath(int discipline, int category, int number) {
+    if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
+    return tableName;
+  }
+
   // LOOK  maybe combine grib1, grib2 and bufr ??
   @Override
   public String getSubCenterName(int center, int subcenter) {

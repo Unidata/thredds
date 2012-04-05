@@ -792,13 +792,25 @@ public class Grib2ReportPanel extends JPanel {
     f.format("CHECK Grib-2 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
     Map<String,List<String>> gridsAll = new HashMap<String,List<String>>(1000); // old -> list<new>
+    int countExactMatch = 0;
+    int countExactMatchIg = 0;
+    int countOldVars = 0;
 
     for (MFile mfile : dcm.getFiles()) {
       f.format("%n%s%n", mfile.getPath());
       Map<Integer,GridMatch> gridsNew = getGridsNew(mfile, f);
       Map<Integer,GridMatch> gridsOld = getGridsOld(mfile, f);
 
-      // look for exact match
+     // look for exact match on name
+      Set<String> namesNew = new HashSet<String>(  gridsNew.size());
+      for (GridMatch gm : gridsNew.values()) 
+        namesNew.add(gm.grid.getFullName());
+      for (GridMatch gm : gridsOld.values()) {
+        if (namesNew.contains(gm.grid.getFullName())) countExactMatch++;
+        countOldVars++;
+      }
+
+      // look for exact match on hashcode
       for (GridMatch gm : gridsNew.values()) {
         GridMatch match = gridsOld.get(gm.hashCode());
         if (match != null) {
@@ -822,9 +834,15 @@ public class Grib2ReportPanel extends JPanel {
       List<GridMatch> listNew = new ArrayList<GridMatch>(gridsNew.values());
       Collections.sort(listNew);
       for (GridMatch gm : listNew) {
+        f.format(" %s%n", gm.grid.findAttributeIgnoreCase(Grib2Iosp.VARIABLE_ID_ATTNAME));
         f.format(" %s%n", gm.grid.getFullName());
-        if (gm.match != null)
-          f.format(" %s%n", gm.match.grid.getFullName());
+        if (gm.match != null) {
+          boolean exact =  gm.match.grid.getFullName().equals(gm.grid.getFullName());
+          boolean exactIg =  !exact && gm.match.grid.getFullName().equalsIgnoreCase(gm.grid.getFullName());
+          if (exactIg) countExactMatchIg++;
+          String status = exact ? " " : exactIg ? "**" : " *";
+          f.format("%s%s%n", status, gm.match.grid.getFullName());
+        }
         f.format("%n");
       }
 
@@ -874,8 +892,9 @@ public class Grib2ReportPanel extends JPanel {
         f.format(" NEW %s%n", newKey);
       f.format("%n");
     }
-    f.format("Number with more than one map=%d total=%d%n", dups, total);
 
+    f.format("Exact matches=%d  Exact ignore case=%d  totalOldVars=%d%n", countExactMatch,  countExactMatchIg, countOldVars);
+    f.format("Number with more than one map=%d total=%d%n", dups, total);
   }
 
   private GridMatch altMatch(GridMatch want, Collection<GridMatch> test) {

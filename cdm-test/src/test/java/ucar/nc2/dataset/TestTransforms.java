@@ -89,7 +89,7 @@ public class TestTransforms extends TestCase {
     //String filename =   "/local/robb/data/grib/hybrid/HIRLAMhybrid.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VerticalTransform vt = test(ncd, "hybrid",
-            "VAR_99-0-1-52_L109", // "Relative_humidity_hybrid",
+            "Relative_humidity_hybrid",
             "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
         SimpleUnit.pressureUnit);
 

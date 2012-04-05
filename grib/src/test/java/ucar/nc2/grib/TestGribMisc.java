@@ -34,6 +34,7 @@ package ucar.nc2.grib;
 
 import org.junit.Test;
 import ucar.nc2.*;
+import ucar.nc2.grib.grib2.Grib2Iosp;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 
@@ -60,15 +61,15 @@ public class TestGribMisc {
     // this one has a analysis and forecast in same variable
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/08Aug08.12z.cras45_NA.grib2";
     NetcdfFile ncfile = NetcdfFile.open(filename, null);
-    Variable v = ncfile.findVariable("VAR_0-0-0_L1"); // "Temperature_Surface");
+    Variable v = ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
     assert v != null : ncfile.getLocation();
     ncfile.close();
 
     // this one has a forecast and error = must be seperate variables
     filename = TestDir.cdmUnitTestDir + "formats/grib2/RTMA_CONUS_2p5km_20111225_0000.grib2";
     ncfile = NetcdfFile.open(filename, null);
-    assert ncfile.findVariable("VAR_0-3-0_L1") != null; // "Pressure_Surface") != null : ncfile.getLocation();
-    assert ncfile.findVariable("VAR_0-3-0_error_L1") != null; // "Pressure_error_Surface") != null;
+    assert ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1") != null; // "Pressure_Surface") != null : ncfile.getLocation();
+    assert ncfile.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, "VAR_0-3-0_error_L1") != null; // "Pressure_error_Surface") != null;
     ncfile.close();
   }
 

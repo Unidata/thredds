@@ -64,6 +64,12 @@ public class NcepLocalTables extends Grib2Customizer {
     initCodes();
   }
 
+  @Override
+  public String getTablePath(int discipline, int category, int number) {
+    if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
+    return NcepLocalParams.getTablePath(discipline, category);
+  }
+
   // temp for cfsr
   public void showCfsr(Grib2Pds pds, Formatter f) {
     if (!pds.isInterval()) return;
@@ -214,83 +220,83 @@ public class NcepLocalTables extends Grib2Customizer {
     if (id < 192) return super.getLevelNameShort(id);
     switch (id) {
       case 200:
-        return "Entire_atmosphere";
+        return "entire_atmosphere";
       case 201:
-        return "Entire_ocean";
+        return "entire_ocean";
       case 204:
-        return "Highest_tropospheric_freezing";
+        return "highest_tropospheric_freezing";
       case 206:
-        return "Grid_scale_cloud_bottom";
+        return "grid_scale_cloud_bottom";
       case 207:
-        return "Grid_scale_cloud_top";
+        return "grid_scale_cloud_top";
       case 209:
-        return "Boundary_layer_cloud_bottom";
+        return "boundary_layer_cloud_bottom";
       case 210:
-        return "Boundary_layer_cloud_top";
+        return "boundary_layer_cloud_top";
       case 211:
-        return "Boundary_layer_cloud";
+        return "boundary_layer_cloud";
       case 212:
-        return "Low_cloud_bottom";
+        return "low_cloud_bottom";
       case 213:
-        return "Low_cloud_top";
+        return "low_cloud_top";
       case 214:
-        return "Low_cloud";
+        return "low_cloud";
       case 215:
-        return "Cloud_ceiling";
+        return "cloud_ceiling";
       case 220:
-        return "Planetary_boundary";
+        return "planetary_boundary";
       case 221:
-        return "Between_two_hybrids";
+        return "between_two_hybrids";
       case 222:
-        return "Middle_cloud_bottom";
+        return "middle_cloud_bottom";
       case 223:
-        return "Middle_cloud_top";
+        return "middle_cloud_top";
       case 224:
-        return "Middle_cloud";
+        return "middle_cloud";
       case 232:
-        return "High_cloud_bottom";
+        return "high_cloud_bottom";
       case 233:
-        return "High_cloud_top";
+        return "high_cloud_top";
       case 234:
-        return "High_cloud";
+        return "high_cloud";
       case 235:
-        return "Ocean_isotherm";
+        return "ocean_isotherm";
       case 236:
-        return "Layer_between_two_depths_below_ocean";
+        return "layer_between_two_depths_below_ocean";
       case 237:
-        return "Bottom_of_ocean_mixed";
+        return "bottom_of_ocean_mixed";
       case 238:
-        return "Bottom_of_ocean_isothermal";
+        return "bottom_of_ocean_isothermal";
       case 239:
-        return "Ocean_surface_and_26C_isothermal";
+        return "ocean_surface_and_26C_isothermal";
       case 240:
-        return "Ocean_mixed";
+        return "ocean_mixed";
       case 241:
-        return "Ordered_sequence_of_data";
+        return "prdered_sequence_of_data";
       case 242:
-        return "Convective_cloud_bottom";
+        return "convective_cloud_bottom";
       case 243:
-        return "Convective_cloud_top";
+        return "convective_cloud_top";
       case 244:
-        return "Convective_cloud";
+        return "convective_cloud";
       case 245:
-        return "Lowest_level_of_the_wet_bulb_zero";
+        return "lowest_level_of_the_wet_bulb_zero";
       case 246:
-        return "Maximum_equivalent_potential_temperature";
+        return "maximum_equivalent_potential_temperature";
       case 247:
-        return "Equilibrium";
+        return "equilibrium";
       case 248:
-        return "Shallow_convective_cloud_bottom";
+        return "shallow_convective_cloud_bottom";
       case 249:
-        return "Shallow_convective_cloud_top";
+        return "shallow_convective_cloud_top";
       case 251:
-        return "Deep_convective_cloud_bottom";
+        return "deep_convective_cloud_bottom";
       case 252:
-        return "Deep_convective_cloud_top";
+        return "deep_convective_cloud_top";
       case 253:
-        return "Lowest_level_water_layer";
+        return "lowest_level_water_layer";
       case 254:
-        return "Highest_level_water_layer";
+        return "highest_level_water_layer";
       default:
         return super.getLevelNameShort(id);
     }

@@ -3,14 +3,12 @@ package ucar.nc2.stream;
 import org.junit.Test;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.iosp.hdf5.TestN4;
 import ucar.nc2.util.CompareNetcdf2;
 
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.util.Formatter;
 
-import junit.framework.TestCase;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 

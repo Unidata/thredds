@@ -81,8 +81,11 @@ public class NcepLocalParams {
   }
 
   NcepLocalParams(int discipline, int category) {
-    String path = "/resources/grib2/ncep/Table4.2."+discipline+"."+category+".xml";
-    readParameterTableFromResource(path);
+    readParameterTableFromResource(getTablePath(discipline, category));
+  }
+
+  public static String getTablePath(int discipline, int category) {
+    return "/resources/grib2/ncep/Table4.2."+discipline+"."+category+".xml";
   }
 
   public List<Grib2Parameter> getParameters() {

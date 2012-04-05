@@ -455,7 +455,8 @@ public class TestIntervalsTimeCoords {
       System.out.printf("Open %s (%s)%n", grib, parameter);
       try {
         NetcdfFile ncf = NetcdfFile.open( grib );
-        Variable var = ncf.findVariable( parameter );
+        Variable var = ncf.findVariableByAttribute(null, GribIosp.VARIABLE_ID_ATTNAME, parameter );
+        assert var != null;
         Dimension dim = var.getDimension( 0 );
         String bounds = dim.getName() +"_bounds";
         Variable interval = ncf.findVariable( bounds );

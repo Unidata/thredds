@@ -70,17 +70,27 @@ dl {margin: 10px 5px 5px 15px;}
   <li>if a time interval, the Statistical Process Type (octet 21 of PDS)</li>
   <li>the GDS hashcode</li>
 </ul>
-<p>The GRIB-1 variable name is then:</p>
+<p>The GRIB-1 variable name is:<a name="GRIB1varname" id="GRIB1varname"></a></p>
 <blockquote>
-  <pre>VAR_%d-%d-%d-%d[_L%d][_layer][_I%s_S%d]
+  <pre>%paramName[_%level][_layer][_%interval][_%statName]
 
+where:
+ %paramName = parameter name from GRIB-1 table 2 (cleaned up). if unknown, use VAR_%d-%d-%d-%d (see below)
+ %level = short form of level name from GRIB-1 table 3, if defined.
+ _layer = added if its a vertical layer (literal)
+ %timeInterval = time interval name (eg &quot;12_hour&quot; or &quot;mixed&quot;)
+ %statName = name of statistical type if applicable, from GRIB-1 table 5</pre>
+</blockquote>
+The GRIB-1 variable id is:
+<blockquote>
+  <pre>VAR_%d-%d-%d-%d[_L%d][_layer][_I%s][_S%d]
 
 where:
  %d-%d-%d-%d = center-subcenter-tableVersion-paramNo
- L%d = level type  (octet 10 of PDS)
- _layer = added if its a vertical layer
- _I%s = interval name (eg &quot;12_hour&quot; or &quot;mixed&quot;)
-_S%d = stat type (octet 21 of PDS)</pre>
+ L%d = level type  (octet 10 of PDS), if defined.
+ _layer = added if its a vertical layer (literal)
+ I%s = interval name (eg &quot;12_hour&quot; or &quot;mixed&quot;) if a time interval
+ S%d = stat type (octet 21 of PDS) if applicable</pre>
 </blockquote>
 <h3>GRIB-2 Variables</h3>
 <ul>
@@ -95,9 +105,39 @@ _S%d = stat type (octet 21 of PDS)</pre>
   <li>if the generating process type is 6 or 7 (error)</li>
   <li>the GDS hashcode</li>
 </ul>
-<p>The GRIB-2 variable names is then:</p>
+<p>The GRIB-2 variable names is:</p>
 <blockquote>
-  <pre>VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]<br /> %d-%d-%d = discipline-category-paramNo<br /> L = level type<br /> S = stat type<br /> D = derived type</pre>
+  <pre>%paramName[_error][_%level][_layer][_%interval][_%statName][_%ensDerivedType][_probability_%probName]
+
+where:
+ %paramName = parameter name from GRIB-2 table 4.2 (cleaned up); if unknown, use
+              VAR_%d-%d-%d_FROM%d-%d = VAR_discipline-category-paramNo_FROM_center-subcenter
+ %level = short form of level name from GRIB-2 table 4.5, if defined.
+ _layer = added if its a vertical layer (literal)
+ %timeInterval = time interval name (eg &quot;12_hour&quot; or &quot;mixed&quot;)
+ %statName = name of statistical type if applicable, from GRIB-2 table 4.10
+ %ensDerivedType = name of enseble derived type if applicable, from GRIB-2 table 4.7
+ %probName = name of probability type if applicable
+
+
+
+
+
+</pre>
+</blockquote>
+<p>The GRIB-2 variable id is:</p>
+<blockquote>
+  <pre>VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]
+
+
+
+where:<br /> VAR_%d-%d-%d = discipline-category-paramNo
+<br /> L%d = level type code
+ I%s = time interval name (eg &quot;12_hour&quot; or &quot;mixed&quot;)
+ S%d = statistical type code if applicable
+ D%d = derived type code if applicable
+ Prob_%s = probability name if applicable
+</pre>
 </blockquote>
 <p>See<strong> ucar.nc2.grib.grib1.Grib1Record.cdmVariableHash()</strong> and <strong>ucar.nc2.grib.grib2.Grib2Record.cdmVariableHash()</strong> for complete details.</p>
 <h2>GDS Hashcode</h2>
@@ -130,7 +170,7 @@ _S%d = stat type (octet 21 of PDS)</pre>
 </ol>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated February 2012
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated April 2012
 </address>
 </body>
 </html>

@@ -424,7 +424,7 @@ public class Grib1Rectilyser {
     f.format("%nVariables%n");
     f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
     for (VariableBag vb : gribvars) {
-      String vname = Grib1Utils.makeVariableName(vb.first);
+      String vname = Grib1Utils.extractParameterCode(vb.first);
       f.format("  %3d %3d %3d %s records = %d density = %d/%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
                 vname, vb.atomList.size(), vb.countDensity(), vb.recordMap.length);
       if (vb.countDensity() != vb.recordMap.length) f.format(" HEY!!");
@@ -453,7 +453,7 @@ public class Grib1Rectilyser {
 
     @Override
     public int compareTo(VariableBag o) {
-      return Grib1Utils.makeVariableName(first).compareTo(Grib1Utils.makeVariableName(o.first)); // LOOK
+      return Grib1Utils.extractParameterCode(first).compareTo(Grib1Utils.extractParameterCode(o.first)); // LOOK
     }
 
     int countDensity() {

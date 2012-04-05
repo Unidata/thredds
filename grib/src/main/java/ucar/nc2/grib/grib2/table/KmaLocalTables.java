@@ -53,6 +53,12 @@ public class KmaLocalTables extends LocalTables {
     super(center, subCenter, masterVersion, localVersion);
   }
 
+  @Override
+  public String getTablePath(int discipline, int category, int number) {
+    if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
+    return tableName;
+  }
+
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   protected void initLocalTable() {
     ClassLoader cl = KmaLocalTables.class.getClassLoader();

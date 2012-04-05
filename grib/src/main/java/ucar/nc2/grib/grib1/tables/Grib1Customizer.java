@@ -177,13 +177,22 @@ public class Grib1Customizer implements GribTables {
   */
 
   public String makeVariableName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
-    return makeVariableName(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
-            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName, vindex.ensDerivedType, vindex.probabilityName);
+    return makeVariableNameFromTables(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
+            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName);
   }
 
-  public String makeVariableName(int center, int subcenter, int tableVersion, int paramNo,
-                                 int levelType, boolean isLayer, int intvType, String intvName,
-                                 int ensDerivedType, String probabilityName) {
+  public String makeVariableName(Grib1SectionProductDefinition pds) {
+    return makeVariableNameFromTables(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
+             pds.getLevelType(), isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(), null);
+  }
+
+  public String makeVariableNameFromRecord(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+    return makeVariableNameFromRecord(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
+            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName);
+  }
+
+  private String makeVariableNameFromRecord(int center, int subcenter, int tableVersion, int paramNo,
+                                 int levelType, boolean isLayer, int intvType, String intvName) {
     Formatter f = new Formatter();
 
     f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);
@@ -206,11 +215,11 @@ public class Grib1Customizer implements GribTables {
     return f.toString();
   }
 
-  public String makeVariableNameFromTables(int center, int subcenter, int version, int paramNo,
-                                 int levelType, int intvType, String intvName) {
+  private String makeVariableNameFromTables(int center, int subcenter, int version, int paramNo,
+                                 int levelType, boolean isLayer, int intvType, String intvName) {
     Formatter f = new Formatter();
 
-    Grib1Parameter param = getParameter(center, subcenter, version, paramNo);
+    Grib1Parameter param = getParameter(center, subcenter, version, paramNo); // code table 2
     if (param == null) {
       f.format("VAR%d-%d-%d-%d", center, subcenter, version, paramNo);
     } else {
@@ -222,14 +231,14 @@ public class Grib1Customizer implements GribTables {
 
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_%s", getLevelNameShort(levelType)); // code table 3
-      // if (vindex.isLayer) f.format("_layer"); LOOK ? assumes that cant have two variables on same vertical type, differing only by isLayer
+      if (isLayer) f.format("_layer");
     }
 
     if (intvType >= 0) {
-      GribStatType stype = Grib1WmoTimeType.getStatType(intvType);
-      if (stype != null) {
+      GribStatType stat = Grib1WmoTimeType.getStatType(intvType);
+      if (stat != null) {
         if (intvName != null) f.format("_%s", intvName);
-        f.format("_%s", stype.name());
+        f.format("_%s", stat.name());
       } else {
         if (intvName != null) f.format("_%s", intvName);
         f.format("_%d", intvType);

@@ -64,6 +64,10 @@ public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
   static private final boolean debugTime = false, debugRead = false, debugName = false;
   static private boolean useGenType = false; // LOOK dummy for now
+  
+  static public String makeVariableName(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+    return makeVariableNameFromTable(tables, gribCollection,  vindex);
+  }
 
   static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
@@ -71,7 +75,7 @@ public class Grib2Iosp extends GribIosp {
     GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
 
     if (param == null) {
-      f.format("VAR%d-%d-%d_FROM%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion);
+      f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion);
     } else {
       f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
     }
@@ -97,7 +101,7 @@ public class Grib2Iosp extends GribIosp {
 
     else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
       String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
-      f.format("_Prob_%s", s);
+      f.format("_probability_%s", s);
     }
 
     if (vindex.genProcessType >= 0 && useGenType) {
@@ -154,7 +158,7 @@ public class Grib2Iosp extends GribIosp {
       S = stat type
       D = derived type
    */
-  static public String makeVariableName(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+  static public String makeVariableNameFromRecord(GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
     f.format("VAR_%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
@@ -519,6 +523,8 @@ public class Grib2Iosp extends GribIosp {
       } else {
         v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
       }
+
+      v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));
 
       int[] param = new int[] {vindex.discipline,vindex.category,vindex.parameter};
       v.addAttribute(new Attribute("Grib2_Parameter", Array.factory(param)));

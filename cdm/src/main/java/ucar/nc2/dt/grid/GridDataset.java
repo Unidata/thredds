@@ -345,7 +345,16 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     }
     return null;
   }
-
+  
+  public GeoGrid findGridDatatypeByAttribute(String attName, String attValue) {
+    for (GeoGrid ggi : grids) {
+      for (Attribute att : ggi.getAttributes())
+        if (attName.equals(att.getName()) && attValue.equals(att.getStringValue()))
+          return ggi;
+    }
+    return null;
+  }
+  
   /**
    * Get Details about the dataset.
    */
