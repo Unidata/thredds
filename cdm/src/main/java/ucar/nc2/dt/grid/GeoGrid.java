@@ -312,6 +312,10 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return vs.getFullName();
   }
 
+  public String getShortName() {
+    return vs.getShortName();
+  }
+
   /**
    * get the GridCoordSys for this GeoGrid.
    */

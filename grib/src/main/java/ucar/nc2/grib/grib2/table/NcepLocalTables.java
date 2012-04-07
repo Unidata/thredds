@@ -46,6 +46,7 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarPeriod;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -68,6 +69,24 @@ public class NcepLocalTables extends Grib2Customizer {
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
     return NcepLocalParams.getTablePath(discipline, category);
+  }
+  
+  @Override
+  public List getParameters() {
+    List allParams = new ArrayList(3000);
+    File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep"); // LOOK
+    for (File f : dir.listFiles()) {
+      if (f.isDirectory()) continue;
+      if (!f.getName().contains("Table4.2.")) continue;
+      if (!f.getName().endsWith(".xml")) continue;
+      try {
+        NcepLocalParams params = NcepLocalParams.factory(f.getPath());
+        allParams.addAll(params.getParameters());
+      } catch (Exception e) {
+        System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
+      }
+    }
+    return allParams;
   }
 
   // temp for cfsr
@@ -110,7 +129,6 @@ public class NcepLocalTables extends Grib2Customizer {
     f.format("  (55-58) length of avg period per unit                     = %d%n", p2);
     f.format("  (62-65) hours skipped between each calculation component  = %d%n", p2mp1);
     f.format("  nhours in month %d should be  = %d%n", ngrids*p2, 24 * 31);
-
   }
 
 
@@ -272,7 +290,7 @@ public class NcepLocalTables extends Grib2Customizer {
       case 240:
         return "ocean_mixed";
       case 241:
-        return "prdered_sequence_of_data";
+        return "ordered_sequence_of_data";
       case 242:
         return "convective_cloud_bottom";
       case 243:

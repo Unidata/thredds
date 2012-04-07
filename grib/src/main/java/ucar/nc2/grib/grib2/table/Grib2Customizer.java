@@ -43,6 +43,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.wmo.CommonCodeTable;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,12 +107,13 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   // debugging
-  static public List<GribTableId> getLocalTableIds() {
+  static public List<GribTableId> getTableIds() {
     List<GribTableId> result = new ArrayList<GribTableId>();
+    result.add(new GribTableId("WMO",0,-1,-1,-1));
     result.add(new GribTableId("NCEP",7,-1,-1,-1));
     result.add(new GribTableId("NDFD",8,0,-1,-1));
     result.add(new GribTableId("KMA",40,-1,-1,-1));
-    result.add(new GribTableId("DSS",7,-1,2,1)); // ??
+    // result.add(new GribTableId("DSS",7,-1,2,1)); // ??
     result.add(new GribTableId("FSL",59,-1,-1,-1));
     return result;
   }
@@ -160,17 +162,19 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   // debugging
   public List getParameters() {
+    List allParams = new ArrayList(3000);
     try {
       WmoCodeTable.WmoTables wmo = WmoCodeTable.getWmoStandard();
-      WmoCodeTable params = wmo.map.get("4.2");
-      return params.entries;
-      //List<GribTables.Parameter> result = new ArrayList<GribTables.Parameter>();
-      //for (WmoCodeTable.TableEntry entry : params.entries) result.add(entry); // covariant balony
-      //return result;
+      for (String key : wmo.map.keySet()) {
+        if (key.startsWith("4.2.")) {
+          WmoCodeTable params = wmo.map.get(key);
+          allParams.addAll(params.entries);
+        }
+      }
     } catch (IOException e) {
       System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
     }
-    return null;
+    return allParams;
   }
 
   public CalendarDate getForecastDate(Grib2Record gr) {
@@ -394,25 +398,25 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   public String getProbabilityNameShort(int id) {
     switch (id) {
       case 0:
-        return "Unweighted_mean";
+        return "unweightedMean";
       case 1:
-        return "Weighted_mean";
+        return "weightedMean";
       case 2:
-        return "Standard_deviation";
+        return "stdDev";
       case 3:
-        return "Standard_deviation_normalized";
+        return "stdDevNormalized";
       case 4:
-        return "Spread";
+        return "spread";
       case 5:
-        return "Large_anomaly_index";
+        return "largeAnomalyIndex";
       case 6:
-        return "Unweighted_mean_cluster";
+        return "unweightedMeanCluster";
       case 7:
-        return "Interquartile_range";
+        return "interquartileRange";
       case 8:
-        return "Minimum_ensemble";
+        return "minimumEnsemble";
       case 9:
-        return "Maximum_ensemble";
+        return "maximumEnsemble";
       default:
         return "UnknownProbType" + id;
      }

@@ -1,5 +1,10 @@
 package ucar.nc2.ui;
 
+import org.jdom.output.XMLOutputter;
+import org.jdom.output.Format;
+import org.jdom.Document;
+import org.jdom.Element;
+
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
@@ -11,6 +16,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.GribIosp;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
@@ -791,6 +797,7 @@ public class Grib2ReportPanel extends JPanel {
   private void doNames(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
     f.format("CHECK Grib-2 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
+    List<VarName> varNames = new ArrayList<VarName>(3000);
     Map<String,List<String>> gridsAll = new HashMap<String,List<String>>(1000); // old -> list<new>
     int countExactMatch = 0;
     int countExactMatchIg = 0;
@@ -830,22 +837,24 @@ public class Grib2ReportPanel extends JPanel {
         }
       }
 
+      // print out match
       f.format("%n");
       List<GridMatch> listNew = new ArrayList<GridMatch>(gridsNew.values());
       Collections.sort(listNew);
       for (GridMatch gm : listNew) {
-        f.format(" %s%n", gm.grid.findAttributeIgnoreCase(Grib2Iosp.VARIABLE_ID_ATTNAME));
-        f.format(" %s%n", gm.grid.getFullName());
+        f.format(" %s%n", gm.grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME));
+        f.format(" %s (%d)%n", gm.grid.getFullName(), gm.hashCode());
         if (gm.match != null) {
           boolean exact =  gm.match.grid.getFullName().equals(gm.grid.getFullName());
           boolean exactIg =  !exact && gm.match.grid.getFullName().equalsIgnoreCase(gm.grid.getFullName());
           if (exactIg) countExactMatchIg++;
           String status = exact ? " " : exactIg ? "**" : " *";
-          f.format("%s%s%n", status, gm.match.grid.getFullName());
+          f.format("%s%s (%d)%n", status, gm.match.grid.getFullName(), gm.match.hashCode());
         }
         f.format("%n");
       }
 
+      // print out missing
       f.format("%nMISSING MATCHES IN NEW%n");
       List<GridMatch> list = new ArrayList<GridMatch>(gridsNew.values());
       Collections.sort(list);
@@ -853,8 +862,6 @@ public class Grib2ReportPanel extends JPanel {
         if (gm.match == null)
           f.format(" %s (%s) == %s%n", gm.grid.getFullName(), gm.show(), gm.grid.getDescription());
       }
-
-
       f.format("%nMISSING MATCHES IN OLD%n");
       List<GridMatch> listOld = new ArrayList<GridMatch>(gridsOld.values());
       Collections.sort(listOld);
@@ -863,21 +870,34 @@ public class Grib2ReportPanel extends JPanel {
           f.format(" %s (%s)%n", gm.grid.getFullName(), gm.show());
       }
 
-      // add to gridsAll
+       // add to gridsAll to track old -> new mapping
        for (GridMatch gmOld : listOld) {
-         String key = gmOld.grid.getFullName();
+         String key = gmOld.grid.getShortName();
          List<String> newGrids = gridsAll.get(key);
          if (newGrids == null) {
            newGrids = new ArrayList<String>();
            gridsAll.put(key, newGrids);
          }
          if (gmOld.match != null) {
-           String keyNew = gmOld.match.grid.getFullName()+" == "+gmOld.match.grid.getDescription();
+           String keyNew = gmOld.match.grid.getShortName();
            if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
          }
       }
+      
+      // add matches to VarNames
+      for (GridMatch gmOld : listOld) {
+        if (gmOld.match == null)  {
+          f.format("MISSING %s (%s)%n", gmOld.grid.getFullName(), gmOld.show());
+          continue;
+        }
+        Attribute att = gmOld.match.grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME);
+        String varId =  att == null ? "" : att.getStringValue();
+        varNames.add(new VarName(mfile.getName(),  gmOld.grid.getShortName(), gmOld.match.grid.getShortName(), varId ));
+      }
+      
     }
 
+    // show old -> new mapping
     f.format("%nOLD -> NEW MAPPINGS%n");
     List<String> keys = new ArrayList<String>(gridsAll.keySet());
     int total = keys.size();
@@ -895,24 +915,94 @@ public class Grib2ReportPanel extends JPanel {
 
     f.format("Exact matches=%d  Exact ignore case=%d  totalOldVars=%d%n", countExactMatch,  countExactMatchIg, countOldVars);
     f.format("Number with more than one map=%d total=%d%n", dups, total);
+
+     // old -> new mapping xml table
+    if (!useIndex) {
+      Element rootElem = new Element("gribVarMap");
+      Document doc = new Document(rootElem);
+      rootElem.setAttribute("collection", dcm.getCollectionName());
+
+      String currentDs = null;
+      Element dsElem = null;
+      for (VarName vn : varNames) {
+        if (!vn.dataset.equals(currentDs)) {
+          dsElem = new Element("dataset");
+          rootElem.addContent(dsElem);
+          dsElem.setAttribute("name", vn.dataset);
+          currentDs = vn.dataset;
+        }
+        Element param = new Element("param");
+        dsElem.addContent(param);
+        param.setAttribute("oldName", vn.oldVar);
+        param.setAttribute("newName", vn.newVar);
+        param.setAttribute("varId", vn.varId);
+      }
+
+      FileOutputStream fout = new FileOutputStream("C:/tmp/gribVarMap.xml");
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      fmt.output(doc, fout);
+      fout.close();
+    } 
+    
+    /*  old -> new mapping xml table
+    if (!useIndex) {
+      Element rootElem = new Element("gribVarMap");
+      Document doc = new Document(rootElem);
+      rootElem.setAttribute("collection", dcm.getCollectionName());
+
+      for (String key : keys) {
+        Element param = new Element("param");
+        rootElem.addContent(param);
+        param.setAttribute("oldName", key);
+        List<String> newGrids = gridsAll.get(key);
+        Collections.sort(newGrids);
+        for (String newKey : newGrids)
+          param.addContent(new Element("newName").addContent(newKey));
+      }
+
+      FileOutputStream fout = new FileOutputStream("C:/tmp/gribVarMap.xml");
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      fmt.output(doc, fout);
+      fout.close();
+    } */
   }
 
   private GridMatch altMatch(GridMatch want, Collection<GridMatch> test) {
     // look for scale factor errors in prob
     for (GridMatch gm : test) {
       if (gm.match != null) continue; // already matched
-      if (gm.altMatch(want)) return gm;
+      if (gm.altMatch(want)) {
+        //gm.altMatch(want); //debug
+        return gm;
+      }
     }
 
     // give up matching the prob
     for (GridMatch gm : test) {
       if (gm.match != null) continue; // already matched
-      if (gm.altMatchNoProb(want)) return gm;
+      if (gm.altMatchNoProb(want)) {
+        //gm.altMatchNoProb(want); // debug
+        return gm;
+      }
     }
 
     return null;
   }
+  
+  private class VarName {
+    String dataset;
+    String oldVar;
+    String newVar;
+    String varId;
 
+    private VarName(String dataset, String oldVar, String newVar, String varId) {
+      this.dataset = dataset;
+      this.oldVar = oldVar;
+      this.newVar = newVar;
+      this.varId = varId;
+    }
+  }
+  
   private class GridMatch implements Comparable<GridMatch> {
     GridDatatype grid;
     GridMatch match;
@@ -923,7 +1013,7 @@ public class Grib2ReportPanel extends JPanel {
     int interval = -1;
     int prob = -1;
     int ens = -1;
-    int probLimit;
+    int probLimit = Integer.MAX_VALUE;
 
     private GridMatch(GridDatatype grid, boolean aNew) {
       this.grid = grid;
@@ -994,7 +1084,38 @@ public class Grib2ReportPanel extends JPanel {
       }
     }
 
+    /* @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      GridMatch gridMatch = (GridMatch) o;
+
+      if (ens != gridMatch.ens) return false;
+      if (interval != gridMatch.interval) return false;
+      if (isError != gridMatch.isError) return false;
+      if (isLayer != gridMatch.isLayer) return false;
+      if (level != gridMatch.level) return false;
+      if (prob != gridMatch.prob) return false;
+      if (probLimit != gridMatch.probLimit) return false;
+      if (!Arrays.equals(param, gridMatch.param)) return false;
+
+      return true;
+    }
+
     @Override
+    public int hashCode() {
+      int result = param != null ? Arrays.hashCode(param) : 0;
+      result = 31 * result + level;
+      result = 31 * result + (isLayer ? 1 : 0);
+      result = 31 * result + (isError ? 1 : 0);
+      result = 31 * result + interval;
+      result = 31 * result + prob;
+      result = 31 * result + ens;
+      result = 31 * result + probLimit;
+      return result;
+    } */
+
     public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
@@ -1028,6 +1149,7 @@ public class Grib2ReportPanel extends JPanel {
 
       GridMatch gridMatch = (GridMatch) o;
 
+      if (!Arrays.equals(param, gridMatch.param)) return false;
       if (ens != gridMatch.ens) return false;
       if (interval != gridMatch.interval) return false;
       if (isError != gridMatch.isError) return false;
@@ -1039,7 +1161,6 @@ public class Grib2ReportPanel extends JPanel {
     }
 
 
-    @Override
     public int hashCode() {
       int result = 1;
       result = 31 * result + level;
@@ -1047,11 +1168,11 @@ public class Grib2ReportPanel extends JPanel {
       result = 31 * result + (isLayer ? 1 : 0);
       result = 31 * result + param[1];
       result = 31 * result + (isError ? 1 : 0);
-      result = 31 * result + interval;
-      result = 31 * result + prob;
+      if (interval >= 0) result = 31 * result + interval;
+      if (prob >= 0) result = 31 * result + prob;
       result = 31 * result + param[2];
-      result = 31 * result + ens;
-      result = 31 * result + probLimit;
+      if (ens >= 0) result = 31 * result + ens;
+      if (probLimit != Integer.MAX_VALUE) result = 31 * result + probLimit;
       return result;
     }
 

@@ -147,6 +147,7 @@ public class ToolsUI extends JPanel {
   private GribTemplatePanel gribTemplatePanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2TablePanel grib2TablePanel;
+  private GribVariableRenamePanel gribVariableRenamePanel;
   private Hdf5Panel hdf5Panel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
@@ -297,6 +298,7 @@ public class ToolsUI extends JPanel {
     grib2TabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
     grib2TabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
     grib2TabPane.addTab("GRIB2-TABLES", new JLabel("GRIB2-TABLES"));
+    grib2TabPane.addTab("GRIB-RENAME", new JLabel("GRIB-RENAME"));
     grib2TabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = grib2TabPane.getSelectedComponent();
@@ -523,6 +525,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("GRIB2-TABLES")) {
       grib2TablePanel = new Grib2TablePanel((PreferencesExt) mainPrefs.node("grib2-tables"));
       c = grib2TablePanel;
+
+    } else if (title.equals("GRIB-RENAME")) {
+      gribVariableRenamePanel = new GribVariableRenamePanel((PreferencesExt) mainPrefs.node("grib-rename"));
+      c = gribVariableRenamePanel;
 
     } else if (title.equals("CoordSys")) {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
@@ -1003,6 +1009,7 @@ public class ToolsUI extends JPanel {
     if (gribTemplatePanel != null) gribTemplatePanel.save();
     if (grib1TablePanel != null) grib1TablePanel.save();
     if (grib2TablePanel != null) grib2TablePanel.save();
+    if (gribVariableRenamePanel != null) gribVariableRenamePanel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5Panel != null) hdf5Panel.save();
     if (hdf4Panel != null) hdf4Panel.save();
@@ -3160,6 +3167,30 @@ public class ToolsUI extends JPanel {
 
     void save() {
       codeTable.save();
+      super.save();
+    }
+
+    void closeOpenFiles() {
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////
+
+  private class GribVariableRenamePanel extends OpPanel {
+    GribVariableRename panel;
+
+    GribVariableRenamePanel(PreferencesExt p) {
+      super(p, "table:", false, false);
+      panel = new GribVariableRename(prefs, buttPanel);
+      add(panel, BorderLayout.CENTER);
+    }
+
+    boolean process(Object command) {
+      return true;
+    }
+
+    void save() {
+      panel.save();
       super.save();
     }
 
