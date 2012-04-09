@@ -199,7 +199,7 @@ public class Grib1Iosp extends GribIosp {
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib1Collection"));
     ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
-    ncfile.addAttribute(null, new Attribute("file format", "GRIB-1"));
+    ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
 
     for (Parameter p : gribCollection.getParams())
       ncfile.addAttribute(null, new Attribute(p));

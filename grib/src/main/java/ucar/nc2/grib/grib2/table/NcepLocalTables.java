@@ -91,7 +91,7 @@ public class NcepLocalTables extends Grib2Customizer {
 
   // temp for cfsr
   public void showCfsr(Grib2Pds pds, Formatter f) {
-    if (!pds.isInterval()) return;
+    if (!pds.isTimeInterval()) return;
     if (pds.getRawLength() < 65) return;
 
     /*     Octet(s)	Description
@@ -135,7 +135,7 @@ public class NcepLocalTables extends Grib2Customizer {
   @Override
   public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
-    if (!pds.isInterval()) return null;
+    if (!pds.isTimeInterval()) return null;
     if (!isCfsr(gr, pds)) return super.getForecastTimeInterval(gr);
 
     // LOOK this is hack for CFSR monthly combobulation

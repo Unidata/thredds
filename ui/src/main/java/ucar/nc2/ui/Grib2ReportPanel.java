@@ -18,6 +18,7 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.GribIosp;
 import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -42,7 +43,7 @@ import java.util.List;
  */
 public class Grib2ReportPanel extends JPanel {
   public static enum Report {
-    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord, names,
+    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord, rename, renameCheck
   }
 
   private PreferencesExt prefs;
@@ -145,8 +146,11 @@ public class Grib2ReportPanel extends JPanel {
         case timeCoord:
           doTimeCoord(f, dcm, useIndex);
           break;
-        case names:
-          doNames(f, dcm, useIndex);
+        case rename:
+          doRename(f, dcm, useIndex);
+          break;
+        case renameCheck:
+          doRenameCheck(f, dcm, useIndex);
           break;
       }
     }
@@ -789,28 +793,90 @@ public class Grib2ReportPanel extends JPanel {
   String getId(Grib2Record gr) {
     Grib2SectionIndicator is = gr.getIs();
     Grib2Pds pds = gr.getPDS();
-    return is.getDiscipline()+"-"+pds.getParameterCategory()+ "-" + pds.getParameterNumber();
+    return is.getDiscipline() + "-" + pds.getParameterCategory() + "-" + pds.getParameterNumber();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
 
-  private void doNames(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doRenameCheck(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+    f.format("CHECK Renaming uniqueness %s%n", dcm.getCollectionName());
+
+    GribVariableRenamer renamer = new GribVariableRenamer();
+    int fail = 0;
+    int multiple = 0;
+    int ok = 0;
+
+    for (MFile mfile : dcm.getFiles()) {
+      f.format("%n%s%n", mfile.getPath());
+
+      NetcdfFile ncfileOld = null;
+      GridDataset gdsNew = null;
+      try {
+        ncfileOld = NetcdfFile.open(mfile.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);
+        NetcdfDataset ncdOld = new NetcdfDataset(ncfileOld);
+        GridDataset gridOld = new GridDataset(ncdOld);
+        gdsNew = GridDataset.open(mfile.getPath());
+
+        for (GridDatatype grid : gridOld.getGrids()) {
+          // if (useIndex) {
+            List<String> newNames = renamer.getNewNames(gdsNew, grid.getShortName());
+            if (newNames.size() == 0) {
+              f.format(" ***FAIL %s%n", grid.getShortName());
+              fail++;
+            } else if (newNames.size() != 1) {
+              f.format(" *** %s multiple matches on %n", grid.getShortName());
+              for (String newName : newNames)
+                f.format("    %s%n", newName);
+              f.format("%n");
+              multiple++;
+            } else if (useIndex) {
+              f.format(" %s%n %s%n%n", grid.getShortName(), newNames.get(0));
+              ok++;
+            }
+            
+          /* } else {
+            String newName = renamer.getNewName(mfile.getName(), grid.getShortName());
+            if (newName == null) {
+              f.format(" ***Grid %s renamer failed%n", grid.getShortName());
+              continue;
+            }
+            
+            // test it really exists
+            GridDatatype ggrid = gdsNew.findGridByName(newName);
+            if (ggrid == null) f.format(" ***Grid %s new name = %s not found%n", grid.getShortName(), newName);
+          } */
+        }
+
+      } catch (Throwable t) {
+        t.printStackTrace();
+      } finally {
+        if (ncfileOld != null) ncfileOld.close();
+        if (gdsNew != null) gdsNew.close();
+      }
+    }
+
+    f.format("Fail=%d multiple=%d ok=%d%n", fail, multiple, ok);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////
+
+  private void doRename(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
     f.format("CHECK Grib-2 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
     List<VarName> varNames = new ArrayList<VarName>(3000);
-    Map<String,List<String>> gridsAll = new HashMap<String,List<String>>(1000); // old -> list<new>
+    Map<String, List<String>> gridsAll = new HashMap<String, List<String>>(1000); // old -> list<new>
     int countExactMatch = 0;
     int countExactMatchIg = 0;
     int countOldVars = 0;
 
     for (MFile mfile : dcm.getFiles()) {
       f.format("%n%s%n", mfile.getPath());
-      Map<Integer,GridMatch> gridsNew = getGridsNew(mfile, f);
-      Map<Integer,GridMatch> gridsOld = getGridsOld(mfile, f);
+      Map<Integer, GridMatch> gridsNew = getGridsNew(mfile, f);
+      Map<Integer, GridMatch> gridsOld = getGridsOld(mfile, f);
 
-     // look for exact match on name
-      Set<String> namesNew = new HashSet<String>(  gridsNew.size());
-      for (GridMatch gm : gridsNew.values()) 
+      // look for exact match on name
+      Set<String> namesNew = new HashSet<String>(gridsNew.size());
+      for (GridMatch gm : gridsNew.values())
         namesNew.add(gm.grid.getFullName());
       for (GridMatch gm : gridsOld.values()) {
         if (namesNew.contains(gm.grid.getFullName())) countExactMatch++;
@@ -845,8 +911,8 @@ public class Grib2ReportPanel extends JPanel {
         f.format(" %s%n", gm.grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME));
         f.format(" %s (%d)%n", gm.grid.getFullName(), gm.hashCode());
         if (gm.match != null) {
-          boolean exact =  gm.match.grid.getFullName().equals(gm.grid.getFullName());
-          boolean exactIg =  !exact && gm.match.grid.getFullName().equalsIgnoreCase(gm.grid.getFullName());
+          boolean exact = gm.match.grid.getFullName().equals(gm.grid.getFullName());
+          boolean exactIg = !exact && gm.match.grid.getFullName().equalsIgnoreCase(gm.grid.getFullName());
           if (exactIg) countExactMatchIg++;
           String status = exact ? " " : exactIg ? "**" : " *";
           f.format("%s%s (%d)%n", status, gm.match.grid.getFullName(), gm.match.hashCode());
@@ -870,31 +936,31 @@ public class Grib2ReportPanel extends JPanel {
           f.format(" %s (%s)%n", gm.grid.getFullName(), gm.show());
       }
 
-       // add to gridsAll to track old -> new mapping
-       for (GridMatch gmOld : listOld) {
-         String key = gmOld.grid.getShortName();
-         List<String> newGrids = gridsAll.get(key);
-         if (newGrids == null) {
-           newGrids = new ArrayList<String>();
-           gridsAll.put(key, newGrids);
-         }
-         if (gmOld.match != null) {
-           String keyNew = gmOld.match.grid.getShortName();
-           if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
-         }
+      // add to gridsAll to track old -> new mapping
+      for (GridMatch gmOld : listOld) {
+        String key = gmOld.grid.getShortName();
+        List<String> newGrids = gridsAll.get(key);
+        if (newGrids == null) {
+          newGrids = new ArrayList<String>();
+          gridsAll.put(key, newGrids);
+        }
+        if (gmOld.match != null) {
+          String keyNew = gmOld.match.grid.getShortName();
+          if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
+        }
       }
-      
+
       // add matches to VarNames
       for (GridMatch gmOld : listOld) {
-        if (gmOld.match == null)  {
+        if (gmOld.match == null) {
           f.format("MISSING %s (%s)%n", gmOld.grid.getFullName(), gmOld.show());
           continue;
         }
         Attribute att = gmOld.match.grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME);
-        String varId =  att == null ? "" : att.getStringValue();
-        varNames.add(new VarName(mfile.getName(),  gmOld.grid.getShortName(), gmOld.match.grid.getShortName(), varId ));
+        String varId = att == null ? "" : att.getStringValue();
+        varNames.add(new VarName(mfile.getName(), gmOld.grid.getShortName(), gmOld.match.grid.getShortName(), varId));
       }
-      
+
     }
 
     // show old -> new mapping
@@ -913,10 +979,10 @@ public class Grib2ReportPanel extends JPanel {
       f.format("%n");
     }
 
-    f.format("Exact matches=%d  Exact ignore case=%d  totalOldVars=%d%n", countExactMatch,  countExactMatchIg, countOldVars);
+    f.format("Exact matches=%d  Exact ignore case=%d  totalOldVars=%d%n", countExactMatch, countExactMatchIg, countOldVars);
     f.format("Number with more than one map=%d total=%d%n", dups, total);
 
-     // old -> new mapping xml table
+    // old -> new mapping xml table
     if (!useIndex) {
       Element rootElem = new Element("gribVarMap");
       Document doc = new Document(rootElem);
@@ -938,33 +1004,33 @@ public class Grib2ReportPanel extends JPanel {
         param.setAttribute("varId", vn.varId);
       }
 
-      FileOutputStream fout = new FileOutputStream("C:/tmp/gribVarMap.xml");
+      FileOutputStream fout = new FileOutputStream("C:/tmp/grib2VarMap.xml");
       XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
       fmt.output(doc, fout);
       fout.close();
-    } 
-    
+    }
+
     /*  old -> new mapping xml table
-    if (!useIndex) {
-      Element rootElem = new Element("gribVarMap");
-      Document doc = new Document(rootElem);
-      rootElem.setAttribute("collection", dcm.getCollectionName());
+   if (!useIndex) {
+     Element rootElem = new Element("gribVarMap");
+     Document doc = new Document(rootElem);
+     rootElem.setAttribute("collection", dcm.getCollectionName());
 
-      for (String key : keys) {
-        Element param = new Element("param");
-        rootElem.addContent(param);
-        param.setAttribute("oldName", key);
-        List<String> newGrids = gridsAll.get(key);
-        Collections.sort(newGrids);
-        for (String newKey : newGrids)
-          param.addContent(new Element("newName").addContent(newKey));
-      }
+     for (String key : keys) {
+       Element param = new Element("param");
+       rootElem.addContent(param);
+       param.setAttribute("oldName", key);
+       List<String> newGrids = gridsAll.get(key);
+       Collections.sort(newGrids);
+       for (String newKey : newGrids)
+         param.addContent(new Element("newName").addContent(newKey));
+     }
 
-      FileOutputStream fout = new FileOutputStream("C:/tmp/gribVarMap.xml");
-      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-      fmt.output(doc, fout);
-      fout.close();
-    } */
+     FileOutputStream fout = new FileOutputStream("C:/tmp/gribVarMap.xml");
+     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+     fmt.output(doc, fout);
+     fout.close();
+   } */
   }
 
   private GridMatch altMatch(GridMatch want, Collection<GridMatch> test) {
@@ -988,7 +1054,7 @@ public class Grib2ReportPanel extends JPanel {
 
     return null;
   }
-  
+
   private class VarName {
     String dataset;
     String oldVar;
@@ -1002,7 +1068,7 @@ public class Grib2ReportPanel extends JPanel {
       this.varId = varId;
     }
   }
-  
+
   private class GridMatch implements Comparable<GridMatch> {
     GridDatatype grid;
     GridMatch match;
@@ -1025,7 +1091,7 @@ public class Grib2ReportPanel extends JPanel {
 
       if (isNew) {
         Attribute att = grid.findAttributeIgnoreCase("Grib2_Parameter");
-        for (int i=0; i<3; i++)
+        for (int i = 0; i < 3; i++)
           param[i] = att.getNumericValue(i).intValue();
 
         att = grid.findAttributeIgnoreCase("Grib2_Level_Type");
@@ -1045,7 +1111,7 @@ public class Grib2ReportPanel extends JPanel {
         if (att != null) {
           String pname = att.getStringValue();
           int pos = pname.indexOf('_');
-          pname = pname.substring(pos+1);
+          pname = pname.substring(pos + 1);
           probLimit = (int) (1000.0 * Double.parseDouble(pname));
         }
 
@@ -1054,8 +1120,8 @@ public class Grib2ReportPanel extends JPanel {
 
       } else {
         Attribute att = grid.findAttributeIgnoreCase("GRIB_param_id");
-        for (int i=0; i<3; i++)
-          param[i] = att.getNumericValue(i+1).intValue();
+        for (int i = 0; i < 3; i++)
+          param[i] = att.getNumericValue(i + 1).intValue();
 
         att = grid.findAttributeIgnoreCase("GRIB_level_type");
         level = att.getNumericValue().intValue();
@@ -1137,8 +1203,8 @@ public class Grib2ReportPanel extends JPanel {
     public boolean altMatch(GridMatch gridMatch) {
       if (!altMatchNoProb(gridMatch)) return false;
 
-      if (probLimit/1000 == gridMatch.probLimit) return true;
-      if (probLimit == gridMatch.probLimit/1000) return true;
+      if (probLimit / 1000 == gridMatch.probLimit) return true;
+      if (probLimit == gridMatch.probLimit / 1000) return true;
 
       return false;
     }
@@ -1183,20 +1249,20 @@ public class Grib2ReportPanel extends JPanel {
 
     String show() {
       Formatter f = new Formatter();
-      for (int i=0; i<3; i++)
+      for (int i = 0; i < 3; i++)
         f.format("%d-", param[i]);
       f.format("%d", level);
       if (isLayer) f.format("_layer");
-      if (interval >= 0) f.format("_intv%d",interval);
-      if (prob >= 0) f.format("_prob%d_%d",prob,probLimit);
-      if (ens >= 0) f.format("_ens%d",ens);
+      if (interval >= 0) f.format("_intv%d", interval);
+      if (prob >= 0) f.format("_prob%d_%d", prob, probLimit);
+      if (ens >= 0) f.format("_ens%d", ens);
       if (isError) f.format("_error");
       return f.toString();
     }
   }
 
-  private Map<Integer,GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
-    Map<Integer,GridMatch> grids = new HashMap<Integer,GridMatch>(100);
+  private Map<Integer, GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
+    Map<Integer, GridMatch> grids = new HashMap<Integer, GridMatch>(100);
     GridDataset ncfile = null;
     try {
       ncfile = GridDataset.open(ff.getPath());
@@ -1214,8 +1280,8 @@ public class Grib2ReportPanel extends JPanel {
     return grids;
   }
 
-  private Map<Integer,GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
-    Map<Integer,GridMatch> grids = new HashMap<Integer,GridMatch>(100);
+  private Map<Integer, GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
+    Map<Integer, GridMatch> grids = new HashMap<Integer, GridMatch>(100);
     NetcdfFile ncfile = null;
     try {
       ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);

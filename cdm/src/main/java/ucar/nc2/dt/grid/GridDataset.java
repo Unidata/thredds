@@ -346,6 +346,20 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     return null;
   }
   
+  /**
+   * find the named GeoGrid.
+   *
+   * @param shortName find this GeoGrid by short name
+   * @return the named GeoGrid, or null if not found
+   */
+  public GeoGrid findGridByShortName(String shortName) {
+    for (GeoGrid ggi : grids) {
+      if (shortName.equals(ggi.getShortName()))
+        return ggi;
+    }
+    return null;
+  }
+
   public GeoGrid findGridDatatypeByAttribute(String attName, String attValue) {
     for (GeoGrid ggi : grids) {
       for (Attribute att : ggi.getAttributes())

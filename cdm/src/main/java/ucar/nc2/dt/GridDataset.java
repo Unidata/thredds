@@ -54,6 +54,8 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
    */
   public GridDatatype findGridDatatype( String name);
 
+  public GridDatatype findGridByShortName(String shortName);
+
   /**
    * Return GridDatatype objects grouped by GridCoordSystem. All GridDatatype in a Gridset
    *   have the same GridCoordSystem.

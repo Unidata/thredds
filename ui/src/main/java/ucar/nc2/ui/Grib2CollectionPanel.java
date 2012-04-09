@@ -1022,7 +1022,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public final String getStatType() {
-      if (pds.isInterval()) {
+      if (pds.isTimeInterval()) {
         Formatter f = new Formatter();
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         int count = 0;
@@ -1043,7 +1043,7 @@ public class Grib2CollectionPanel extends JPanel {
     }  */
 
     public long getIntvHash() {
-      if (pds.isInterval()) {
+      if (pds.isTimeInterval()) {
         long sum = 0;
         for (Grib2RecordBean bean : records) {
           Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) bean.pds;
@@ -1175,7 +1175,7 @@ public class Grib2CollectionPanel extends JPanel {
     Grib2SectionProductDefinition pdss = gr.getPDSsection();
     f.format("%nGrib2ProductDefinitionSection%n");
     Grib2Pds pds = pdss.getPDS();
-    if (pds.isInterval()) {
+    if (pds.isTimeInterval()) {
       TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
       if (intv != null) f.format(" Interval     = %s%n", intv);
     }
@@ -1323,7 +1323,7 @@ public class Grib2CollectionPanel extends JPanel {
     TimeInterval: statProcessType= 197, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 23, timeIncrementUnit= 1, timeIncrement=0
      */
     public String getTInv() {
-      if (pds.isInterval()) {
+      if (pds.isTimeInterval()) {
         Formatter f = new Formatter();
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         int count = 0;
@@ -1337,7 +1337,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public String getIntv() {
-      if (pds.isInterval() && cust != null) {
+      if (pds.isTimeInterval() && cust != null) {
         TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
         return intv.toString();
       }
@@ -1345,7 +1345,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public String getIntv2() {
-      if (pds.isInterval() && cust != null) {
+      if (pds.isTimeInterval() && cust != null) {
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
         return intv[0]+"-"+intv[1];
       }
@@ -1353,7 +1353,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public long getIntvHash() {
-      if (pds.isInterval()) {
+      if (pds.isTimeInterval()) {
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         return pdsi.getIntervalHash();
       }

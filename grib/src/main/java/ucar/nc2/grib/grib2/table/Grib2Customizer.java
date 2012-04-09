@@ -43,7 +43,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.wmo.CommonCodeTable;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,7 +178,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   public CalendarDate getForecastDate(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
-    if (pds.isInterval()) {
+    if (pds.isTimeInterval()) {
       TimeCoord.TinvDate intv = getForecastTimeInterval(gr);
       return intv.getEnd();
 
@@ -228,7 +227,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     and if there was no interval then I used:
     C2) End of Interval = Begin of Interval = Ref + ForeT.
     */
-    if (!gr.getPDS().isInterval()) return null;
+    if (!gr.getPDS().isTimeInterval()) return null;
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
     int timeUnitOrg = gr.getPDS().getTimeUnit();
 

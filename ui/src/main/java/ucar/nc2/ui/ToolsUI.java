@@ -147,7 +147,7 @@ public class ToolsUI extends JPanel {
   private GribTemplatePanel gribTemplatePanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2TablePanel grib2TablePanel;
-  private GribVariableRenamePanel gribVariableRenamePanel;
+  private GribRenamePanel gribVariableRenamePanel;
   private Hdf5Panel hdf5Panel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
@@ -527,7 +527,7 @@ public class ToolsUI extends JPanel {
       c = grib2TablePanel;
 
     } else if (title.equals("GRIB-RENAME")) {
-      gribVariableRenamePanel = new GribVariableRenamePanel((PreferencesExt) mainPrefs.node("grib-rename"));
+      gribVariableRenamePanel = new GribRenamePanel((PreferencesExt) mainPrefs.node("grib-rename"));
       c = gribVariableRenamePanel;
 
     } else if (title.equals("CoordSys")) {
@@ -3176,12 +3176,12 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
 
-  private class GribVariableRenamePanel extends OpPanel {
-    GribVariableRename panel;
+  private class GribRenamePanel extends OpPanel {
+    ucar.nc2.ui.GribRenamePanel panel;
 
-    GribVariableRenamePanel(PreferencesExt p) {
-      super(p, "table:", false, false);
-      panel = new GribVariableRename(prefs, buttPanel);
+    GribRenamePanel(PreferencesExt p) {
+      super(p, "", false, false, false);
+      panel = new ucar.nc2.ui.GribRenamePanel(prefs, buttPanel);
       add(panel, BorderLayout.CENTER);
     }
 

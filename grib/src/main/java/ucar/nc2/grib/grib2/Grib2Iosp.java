@@ -89,8 +89,11 @@ public class Grib2Iosp extends GribIosp {
       if (vindex.isLayer) f.format("_layer");
     }
 
-    if (vindex.intvType >= 0) {
+    if (vindex.intvName != null && !vindex.intvName.isEmpty()) {
       f.format("_%s", vindex.intvName);
+    }
+
+    if (vindex.intvType >= 0) {
       String statName = tables.getIntervalNameShort(vindex.intvType);
       if (statName != null) f.format("_%s", statName);
     }
@@ -172,11 +175,14 @@ public class Grib2Iosp extends GribIosp {
       if (vindex.isLayer) f.format("_layer");
     }
 
-    if (vindex.intvType >= 0) {
+    if (vindex.intvName != null  && !vindex.intvName.isEmpty()) {
       if (vindex.intvName.equals("Mixed_intervals"))
         f.format("_Imixed");
       else
         f.format("_I%s", vindex.intvName);
+    }
+
+    if (vindex.intvType >= 0) {
       f.format("_S%s", vindex.intvType);
     }
 
@@ -205,11 +211,15 @@ public class Grib2Iosp extends GribIosp {
     else
       f.format("%s", gp.getName());
 
-    if (vindex.intvType >= 0) {
+    if (vindex.intvType >= 0 && vindex.intvName != null && !vindex.intvName.isEmpty()) {
       String intvName = cust.getIntervalNameShort(vindex.intvType);
       if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getIntervalNameShort(vindex.intvType);
       if (intvName == null) f.format(" (%s)", vindex.intvName);
       else f.format(" (%s %s)", vindex.intvName, intvName);
+
+    } else if (vindex.intvType >= 0) {
+      String intvName = cust.getIntervalNameShort(vindex.intvType);
+      f.format(" (%s)", intvName);
     }
 
     if (vindex.ensDerivedType >= 0)
@@ -370,7 +380,7 @@ public class Grib2Iosp extends GribIosp {
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib2Collection"));
     ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
-    ncfile.addAttribute(null, new Attribute("file format", "GRIB-2"));
+    ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
 
     for (Parameter p : gribCollection.getParams())
       ncfile.addAttribute(null, new Attribute(p));

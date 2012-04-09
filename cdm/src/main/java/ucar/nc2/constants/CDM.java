@@ -60,4 +60,8 @@ public interface CDM {
 
   // staggering for _Coordinate.Stagger
   public static final String ARAKAWA_E = "Arakawa-E";
+
+  // misc
+  public static final String FILE_FORMAT = "file_format";
+
 }

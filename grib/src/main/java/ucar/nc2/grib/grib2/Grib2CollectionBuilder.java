@@ -773,7 +773,7 @@ public class Grib2CollectionBuilder {
       b.setProbabilityType(pdsProb.getProbabilityType());
     }
 
-    if (pds.isInterval())
+    if (pds.isTimeInterval())
       b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
 
     int genType = pds.getGenProcessType();

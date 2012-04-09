@@ -177,12 +177,22 @@ public abstract class Grib2Pds {
      return GribNumbers.UNDEFINED;
   }
 
-  public boolean isInterval() {
+  public boolean isTimeInterval() {
     return (template >= 8) && (template <= 14);
   }
 
+  public boolean isSpatialInterval() {
+    return (template == 15);
+  }
+
   public int getStatisticalProcessType() {
-    if (!isInterval()) return -1;
+
+    if (isSpatialInterval()) {
+      Grib2Pds15 pds15 = (Grib2Pds15) this;
+      return pds15.getStatisticalProcessType();
+    }
+
+    if (!isTimeInterval()) return -1;
 
     // assume they are all the same
     PdsInterval pdsIntv = (PdsInterval) this;

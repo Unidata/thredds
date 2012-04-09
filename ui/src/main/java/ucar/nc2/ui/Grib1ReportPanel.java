@@ -32,6 +32,10 @@
 
 package ucar.nc2.ui;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
@@ -39,7 +43,9 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.grib.GribIosp;
 import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
@@ -52,10 +58,7 @@ import ucar.util.prefs.PreferencesExt;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 
@@ -67,7 +70,7 @@ import java.util.List;
  */
 public class Grib1ReportPanel extends JPanel {
   public static enum Report {
-    checkTables, showLocalParams, scanIssues, names// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
+    checkTables, showLocalParams, scanIssues, rename, checkRename// , localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems
   }
 
   private PreferencesExt prefs;
@@ -152,8 +155,11 @@ public class Grib1ReportPanel extends JPanel {
         case scanIssues:
           doScanIssues(f, dcm, useIndex);
           break;
-        case names:
-          doNames(f, dcm, useIndex);
+        case rename:
+          doRename(f, dcm, useIndex);
+          break;
+        case checkRename:
+          doCheckRename(f, dcm, useIndex);
           break;
       }
     }
@@ -405,11 +411,74 @@ public class Grib1ReportPanel extends JPanel {
     }
   }
 
+      ///////////////////////////////////////////////////////////////////////////////////
+
+  private void doCheckRename(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+    f.format("CHECK Renaming uniqueness %s%n", dcm.getCollectionName());
+
+    GribVariableRenamer renamer = new GribVariableRenamer();
+    int fail = 0;
+    int multiple = 0;
+    int ok = 0;
+
+    for (MFile mfile : dcm.getFiles()) {
+      f.format("%n%s%n", mfile.getPath());
+
+      NetcdfFile ncfileOld = null;
+      GridDataset gdsNew = null;
+      try {
+        ncfileOld = NetcdfFile.open(mfile.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);
+        NetcdfDataset ncdOld = new NetcdfDataset(ncfileOld);
+        GridDataset gridOld = new GridDataset(ncdOld);
+        gdsNew = GridDataset.open(mfile.getPath());
+
+        for (GridDatatype grid : gridOld.getGrids()) {
+          // if (useIndex) {
+            List<String> newNames = renamer.getNewNames(gdsNew, grid.getShortName());
+            if (newNames.size() == 0) {
+              f.format(" ***FAIL %s%n", grid.getShortName());
+              fail++;
+            } else if (newNames.size() != 1) {
+              f.format(" *** %s multiple matches on %n", grid.getShortName());
+              for (String newName : newNames)
+                f.format("    %s%n", newName);
+              f.format("%n");
+              multiple++;
+            } else if (useIndex) {
+              f.format(" %s%n %s%n%n", grid.getShortName(), newNames.get(0));
+              ok++;
+            }
+
+          /* } else {
+            String newName = renamer.getNewName(mfile.getName(), grid.getShortName());
+            if (newName == null) {
+              f.format(" ***Grid %s renamer failed%n", grid.getShortName());
+              continue;
+            }
+
+            // test it really exists
+            GridDatatype ggrid = gdsNew.findGridByName(newName);
+            if (ggrid == null) f.format(" ***Grid %s new name = %s not found%n", grid.getShortName(), newName);
+          } */
+        }
+
+      } catch (Throwable t) {
+        t.printStackTrace();
+      } finally {
+        if (ncfileOld != null) ncfileOld.close();
+        if (gdsNew != null) gdsNew.close();
+      }
+    }
+
+    f.format("Fail=%d multiple=%d ok=%d%n", fail, multiple, ok);
+  }
+
     ///////////////////////////////////////////////////////////////////////////////////
 
-  private void doNames(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doRename(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
     f.format("CHECK Grib-1 Names: Old vs New for collection %s%n", dcm.getCollectionName());
 
+    List<VarName> varNames = new ArrayList<VarName>(3000);
     Map<String,List<String>> gridsAll = new HashMap<String,List<String>>(1000); // old -> list<new>
 
     for (MFile mfile : dcm.getFiles()) {
@@ -477,6 +546,18 @@ public class Grib1ReportPanel extends JPanel {
            if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
          }
       }
+
+      // add matches to VarNames
+      for (GridMatch gmOld : listOld) {
+        if (gmOld.match == null) {
+          f.format("MISSING %s (%s)%n", gmOld.grid.getFullName(), gmOld.show());
+          continue;
+        }
+        Attribute att = gmOld.match.grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME);
+        String varId = att == null ? "" : att.getStringValue();
+        varNames.add(new VarName(mfile.getName(), gmOld.grid.getShortName(), gmOld.match.grid.getShortName(), varId));
+      }
+
     }
 
     f.format("%nOLD -> NEW MAPPINGS%n");
@@ -495,6 +576,48 @@ public class Grib1ReportPanel extends JPanel {
     }
     f.format("Number with more than one map=%d total=%d%n", dups, total);
 
+        // old -> new mapping xml table
+    if (!useIndex) {
+      Element rootElem = new Element("gribVarMap");
+      Document doc = new Document(rootElem);
+      rootElem.setAttribute("collection", dcm.getCollectionName());
+
+      String currentDs = null;
+      Element dsElem = null;
+      for (VarName vn : varNames) {
+        if (!vn.dataset.equals(currentDs)) {
+          dsElem = new Element("dataset");
+          rootElem.addContent(dsElem);
+          dsElem.setAttribute("name", vn.dataset);
+          currentDs = vn.dataset;
+        }
+        Element param = new Element("param");
+        dsElem.addContent(param);
+        param.setAttribute("oldName", vn.oldVar);
+        param.setAttribute("newName", vn.newVar);
+        param.setAttribute("varId", vn.varId);
+      }
+
+      FileOutputStream fout = new FileOutputStream("C:/tmp/grib1VarMap.xml");
+      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+      fmt.output(doc, fout);
+      fout.close();
+    }
+
+  }
+
+  private class VarName {
+    String dataset;
+    String oldVar;
+    String newVar;
+    String varId;
+
+    private VarName(String dataset, String oldVar, String newVar, String varId) {
+      this.dataset = dataset;
+      this.oldVar = oldVar;
+      this.newVar = newVar;
+      this.varId = varId;
+    }
   }
 
   private GridMatch altMatch(GridMatch want, Collection<GridMatch> test) {
