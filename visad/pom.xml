@@ -29,7 +29,7 @@
     </dependency>
 
     <dependency>
-      <groupId>edu.wisc</groupId>
+      <groupId>edu.wisc.ssec</groupId>
       <artifactId>visad</artifactId>
     </dependency>
 
@@ -71,19 +71,22 @@
                   <minimizeJar>true</minimizeJar>
                   <artifactSet>
                     <includes>
-                      <include>edu.wisc:visad</include>
+                      <include>edu.wisc.ssec:visad</include>
                     </includes>
                   </artifactSet>
 
-                  <!-- filters>
+                  <filters>
                     <filter>
-                      <artifact>edu.wisc:visad</artifact>
-                      <! excludes>
-                        <exclude>org/junit/experimental/**</exclude>
-                        <exclude>org/junit/runners/**</exclude>
+                      <artifact>edu.wisc.ssec:visad</artifact>
+                      <excludes>
+                        <exclude>dods/**</exclude>
+                        <exclude>gnu/**</exclude>
+                        <exclude>HTTPClient/**</exclude>
+                        <exclude>ucar/**</exclude>
                       </excludes>
                     </filter>
-                  </filters -->
+                  </filters>
+
                 </configuration>
               </execution>
             </executions>
