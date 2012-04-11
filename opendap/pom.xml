@@ -120,7 +120,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>false</skip>
+          <skip>true</skip>
         	<testFailureIgnore>true</testFailureIgnore>
           <includes>
             <include>opendap/test/Test*.java</include>

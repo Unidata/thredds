@@ -11,7 +11,7 @@
   </parent>
 
   <!-- groupId>edu.ucar</groupId -->
-  <artifactId>visad</artifactId>
+  <artifactId>visadCdm</artifactId>
   <packaging>jar</packaging>
   <name>VisAD-based IOSPs</name>
   <description>
@@ -53,8 +53,42 @@
   </dependencies>
 
   <build>
-    <finalName>visadCdm</finalName>
+    <!-- finalName>visadCdm</finalName -->
     <!--testSourceDirectory>void</testSourceDirectory-->
+
+    <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+                <configuration>
+                  <minimizeJar>true</minimizeJar>
+                  <artifactSet>
+                    <includes>
+                      <include>edu.wisc:visad</include>
+                    </includes>
+                  </artifactSet>
+
+                  <!-- filters>
+                    <filter>
+                      <artifact>edu.wisc:visad</artifact>
+                      <! excludes>
+                        <exclude>org/junit/experimental/**</exclude>
+                        <exclude>org/junit/runners/**</exclude>
+                      </excludes>
+                    </filter>
+                  </filters -->
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
   </build>
 
 </project>

@@ -46,7 +46,7 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Write a CF "Discrete Sample" point file.
+ * Write a CF 1.6 "Discrete Sample" point file.
  *
  * @author caron
  * @since Nov 23, 2010

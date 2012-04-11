@@ -58,7 +58,7 @@ import javax.xml.stream.XMLStreamException;
 
 /**
  * CdmrFeature subsetting for station data.
- * thread safety: new object for each rquest
+ * thread safety: new object for each request
  *
  * @author caron
  * @since Aug 19, 2009

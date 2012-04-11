@@ -47,7 +47,7 @@ import java.util.*;
 import java.io.*;
 
 /**
- * Write StationObsDataset in Unidata Station Obs COnvention.
+ * Write StationObsDataset in Unidata Station Obs Convention.
  *
  * @author caron
  * @version $Revision$ $Date$

@@ -69,7 +69,7 @@
 
     <dependency>
       <groupId>edu.ucar</groupId>
-      <artifactId>visad</artifactId>
+      <artifactId>visadCdm</artifactId>
     </dependency>
 
     <dependency>

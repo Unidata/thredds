@@ -141,8 +141,12 @@
       <artifactId>opendap</artifactId>
     </dependency>
     <dependency>
-      <artifactId>visad</artifactId>
-      <groupId>edu.wisc</groupId>
+      <groupId>edu.ucar</groupId>
+      <artifactId>udunits</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>visadCdm</artifactId>
       <scope>runtime</scope>
     </dependency>
 
@@ -193,6 +197,11 @@
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
@@ -356,6 +365,11 @@
         <!-- version>2.1.1</version-->
         <configuration>
           <attachClasses>true</attachClasses>
+          <packagingExcludes>
+            WEB-INF/lib/commons-logging*.jar,
+            WEB-INF/lib/jdom-1.0.jar,
+            WEB-INF/lib/visad-*.jar
+          </packagingExcludes>
           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>

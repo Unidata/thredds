@@ -252,11 +252,11 @@
         <version>${org.slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
-      <dependency>  <!-- not needed? -->
+      <!-- dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
         <version>${commons-logging.version}</version>
-      </dependency>
+      </dependency -->
 
       <dependency>
         <!-- jsoup HTML parser library @ http://jsoup.org/ -->
@@ -335,7 +335,7 @@
       <dependency>
         <groupId>edu.wisc</groupId>
         <artifactId>visad</artifactId>
-        <version>${edu.wisc.version}</version>
+        <version>${visad.version}</version>
       </dependency>
 
       <!-- UI -->
@@ -460,7 +460,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>visad</artifactId>
+        <artifactId>visadCdm</artifactId>
         <version>${project.version}</version>
       </dependency>
 

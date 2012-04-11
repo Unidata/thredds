@@ -33,7 +33,6 @@
 
 package thredds.ui.monitor;
 
-import org.apache.commons.httpclient.auth.CredentialsProvider;
 import ucar.nc2.util.net.HTTPException;
 import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.util.CancelTask;
@@ -62,6 +61,7 @@ public class TdsDownloader {
   private File localDir;
   private JTextArea ta;
   private CancelTask cancel;
+  private HTTPSession session;
 
   TdsDownloader(JTextArea ta, ManageForm.Data config, Type type) throws IOException {
     this.ta = ta;
@@ -69,6 +69,7 @@ public class TdsDownloader {
     this.type = type;
 
     HTTPSession.setGlobalUserAgent("TdsMonitor");
+    session = new HTTPSession(config.getServerPrefix());
 
     localDir = LogLocalManager.getDirectory(config.server, type.toString());
     if (!localDir.exists() && !localDir.mkdirs()) {
@@ -86,7 +87,7 @@ public class TdsDownloader {
 
     final String contents;
     try {
-      contents = HttpClientManager.getContentAsString(null, urls);
+      contents = HttpClientManager.getContentAsString(session, urls);
       if ((contents == null) || (contents.length() == 0)) {
         ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
         return;
@@ -159,14 +160,14 @@ public class TdsDownloader {
     void read() throws HTTPException {
       String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
       ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
-      HttpClientManager.copyUrlContentsToFile(null, urls, localFile);
+      HttpClientManager.copyUrlContentsToFile(session, urls, localFile);
     }
 
     void append() throws HTTPException {
       String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
       long start = localFile.length();
       long want = size - start;
-      long got = HttpClientManager.appendUrlContentsToFile(null, urls, localFile, start, size);
+      long got = HttpClientManager.appendUrlContentsToFile(session, urls, localFile, start, size);
       if (want == got)
         ta.append(String.format(" append %d bytes to %s %n", got, localFile.getPath()));
       else

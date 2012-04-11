@@ -196,12 +196,12 @@
       <name>Oracle Maven repository</name>
       <url>http://download.oracle.com/maven</url>
     </repository>
-    <!-- Temporary repository for edu.wisc.visad -->
+    <!-- Temporary repository for edu.wisc.visad
     <repository>
       <id>geotoolkit</id>
       <name>Geotoolkit binaries</name>
       <url>http://maven.geotoolkit.org/</url>
-    </repository>
+    </repository -->
   </repositories>
 
   <build>
@@ -227,7 +227,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>false</skip>
+          <skip>true</skip>
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>
       </plugin>
