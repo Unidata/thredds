@@ -99,7 +99,7 @@ import ucar.unidata.util.StringUtil2;
  * @author caron
  */
 @Component
-public class DataRootHandler implements InitializingBean {
+public final class DataRootHandler implements InitializingBean{
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
@@ -213,7 +213,9 @@ public class DataRootHandler implements InitializingBean {
   //public void init() {
   public void afterPropertiesSet() {
 	  
-	 registerConfigListener( new RestrictedAccessConfigListener() );
+	//Registering first the AccessConfigListener
+	registerConfigListener( new RestrictedAccessConfigListener() );
+	
     // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
     String contentReplacementPath = StringUtils.cleanPath(tdsContext.getPublicDocFileSource().getFile("").getPath());
     dataRootLocationAliasExpanders.add( new StartsWithPathAliasReplacement("content", contentReplacementPath));
@@ -231,7 +233,7 @@ public class DataRootHandler implements InitializingBean {
     this.makeDebugActions();
     DatasetHandler.makeDebugActions();
     
-	//set the instance
+	//Set the instance
 	DataRootHandler.setInstance(this);
     
     

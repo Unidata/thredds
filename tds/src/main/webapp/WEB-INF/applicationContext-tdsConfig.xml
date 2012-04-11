@@ -15,14 +15,13 @@
   <!-- Handler Mapping -->
   <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
    
-  <!-- view interceptor -->
+  <!-- ncss interceptor -->
   <mvc:interceptors>
     <mvc:interceptor>
-      <mvc:mapping path="/view/*.jnlp"/>
-      <bean class="thredds.server.viewer.ViewerInterceptor"/>
+      <mvc:mapping path="/ncss/grid/**"/>
+      <bean class="thredds.server.ncSubset.controller.NcssInterceptor"/>
     </mvc:interceptor>
   </mvc:interceptors>  
-  
   
   <!-- enabling component-scan in Spring for annotated wirings --> 
   <context:component-scan base-package="thredds"/>
@@ -40,6 +39,7 @@
   <!-- 
   <bean id="tdsContext" class="thredds.server.config.TdsContext">
     <property name="webappVersion" value="${tds.version}"/>
+    <property name="webappVersionBrief" value="${tds.version.brief}"/>
     <property name="webappVersionBuildDate" value="${tds.version.builddate}"/>
 
     <property name="contentRootPath" value="${tds.content.root.path}"/>
@@ -86,9 +86,18 @@
 
   <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
 
-  <bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
+  <!-- bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
     <property name="tdsContext" ref="tdsContext" />
     <property name="htmlConfig" ref="htmlConfig" />
+  </bean-->
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    <property name="locations">
+      <list>
+        <value>classpath:thredds/server/tds.properties</value>
+      </list>
+    </property>
   </bean>
 
   <!-- A Singleton class to initialize the CDM -->

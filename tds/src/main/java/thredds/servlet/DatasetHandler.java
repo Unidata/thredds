@@ -347,7 +347,7 @@ public class DatasetHandler {
    * @param res the response
    * @param reqPath  the request path; if null, use req.getPathInfo()
    *
-   * @return true if ok to proceed. If false, the apppropriate error or redirect message has been sent, the caller only needs to return.
+   * @return true if ok to proceed. If false, the appropriate error or redirect message has been sent, the caller only needs to return.
    * @throws IOException on read error
    */
   static public boolean resourceControlOk(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {

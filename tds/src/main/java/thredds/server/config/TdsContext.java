@@ -41,17 +41,21 @@ import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.util.Log4jWebConfigurer;
 
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetScan;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
+import thredds.servlet.UsageLog;
 import thredds.util.filesource.BasicDescendantFileSource;
 import thredds.util.filesource.BasicWithExclusionsDescendantFileSource;
 import thredds.util.filesource.ChainedFileSource;
@@ -61,20 +65,27 @@ import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * TDS context initialization - called from TdsConfigContextListener.
+ * TDS context initialization - called from TdsConfigContextListener (not anymore).
+ * TDS context implements ServletContextAware so it gets a ServletContext and performs most intial THREDDS set up:
+ *  - checks version
+ *  - sets the content directory
+ *  - read persistent user defined params and runs ThreddsConfig.init
+ *  - makes log and public dirs in content directory
+ *  - Sets InvDatasetScan and InvDatasetFeatureCollection properties
+ *  - Get default and jsp dispatchers from servletContext
+ *  - Creates and initializes the TdsConfigMapper
  *
  * @author edavis
  * @since 4.0
  */
 @Component
-public class TdsContext implements ServletContextAware, InitializingBean{
+public final class TdsContext implements ServletContextAware, InitializingBean{
 
 //  ToDo Once Log4j config is called by Spring listener instead of ours, use this logger instead of System.out.println.
 //  private org.slf4j.Logger logServerStartup =
 //          org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   private String webappName;
-
   private String contextPath;
  
   //Properties from tds.properties
@@ -83,6 +94,7 @@ public class TdsContext implements ServletContextAware, InitializingBean{
   
   //@Value("${tds.version.brief}")
   //private String webappVersionBrief;
+
   
   @Value("${tds.version.builddate}")
   private String webappVersionBuildDate;
@@ -143,6 +155,8 @@ public class TdsContext implements ServletContextAware, InitializingBean{
 
   private TdsContext() {}
 
+  private Logger logServerStartup = LoggerFactory.getLogger( "serverStartup" );
+  
   public void setWebappVersion( String verFull ) { this.webappVersion = verFull; }
   public void setWebappVersionBuildDate( String buildDateString) { this.webappVersionBuildDate = buildDateString; }
 
@@ -306,25 +320,33 @@ public class TdsContext implements ServletContextAware, InitializingBean{
       throw new IllegalStateException( tmpMsg );
     }
     ServletUtil.setContentPath( this.contentDirSource.getRootDirectoryPath());
-
-    // read in persistent user-defined params from threddsConfig.xml
-    File tdsConfigFile = this.contentDirSource.getFile( this.getTdsConfigFileName() );
-    String tdsConfigFilename = tdsConfigFile != null ? tdsConfigFile.getPath() : "";
-    ThreddsConfig.init( tdsConfigFilename );
-
+    
     File logDir = new File( this.contentDirectory, "logs");
     if ( ! logDir.exists())
     {
       if ( ! logDir.mkdirs())
       {
         String msg = "Couldn't create TDS log directory [" + logDir.getPath() + "].";
-        System.out.println( "ERROR - TdsContext.init(): " + msg);
-        //logServerStartup.error( "TdsContext.init(): " + msg  );
+        //System.out.println( "ERROR - TdsContext.init(): " + msg);
+        logServerStartup.error( "TdsContext.init(): " + msg  );        
         throw new IllegalStateException(msg);
       }
     }
     String loggingDirectory = StringUtil2.substitute(logDir.getPath(), "\\", "/");
     System.setProperty( "tds.log.dir", loggingDirectory); // variable substitution
+    
+    // which is used in log4j.xml file loaded here.
+    Log4jWebConfigurer.initLogging( servletContext );
+    //logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: " + UsageLog.setupNonRequestContext() );    
+    logServerStartup.info( "TdsContext.init()  intializating logging..." + UsageLog.setupNonRequestContext() );    
+    
+
+    // read in persistent user-defined params from threddsConfig.xml
+    File tdsConfigFile = this.contentDirSource.getFile( this.getTdsConfigFileName() );
+    String tdsConfigFilename = tdsConfigFile != null ? tdsConfigFile.getPath() : "";
+    ThreddsConfig.init( tdsConfigFilename );
+
+
 
     this.publicContentDirectory = new File( this.contentDirectory, "public");
     if ( ! publicContentDirectory.exists())
@@ -332,8 +354,8 @@ public class TdsContext implements ServletContextAware, InitializingBean{
       if ( ! publicContentDirectory.mkdirs())
       {
         String msg = "Couldn't create TDS public directory [" + publicContentDirectory.getPath() + "].";
-        System.out.println( "ERROR - TdsContext.init(): " + msg);
-        //logServerStartup.error( "TdsContext.init(): " + msg  );
+        //System.out.println( "ERROR - TdsContext.init(): " + msg);
+        logServerStartup.error( "TdsContext.init(): " + msg  );
         throw new IllegalStateException(msg);
       }
     }
@@ -365,8 +387,8 @@ public class TdsContext implements ServletContextAware, InitializingBean{
         catch ( IllegalArgumentException e )
         {
           String msg = "Couldn't add content root [" + curContentRoot + "]: " + e.getMessage();
-          System.out.println( "WARN - TdsContext.init(): " + msg );
-          //logServerStartup.warn( "TdsContext.init(): " + msg, e );
+          //System.out.println( "WARN - TdsContext.init(): " + msg );
+          logServerStartup.warn( "TdsContext.init(): " + msg, e );
         }
       }
     }
@@ -511,4 +533,10 @@ public void setServletContext(ServletContext servletContext) {
 	this.servletContext = servletContext;
 	
 }
+
+public ServletContext getServletContext(){
+	return this.servletContext; 
+}
+
+
 }

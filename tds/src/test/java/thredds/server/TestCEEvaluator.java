@@ -106,7 +106,8 @@ public class TestCEEvaluator extends TestCase
         super(name);
         // Check to see if we are in the correct working directory
         String userdir = System.getProperty( "user.dir" );
-        if(userdir.endsWith("cdm")) {
+        //if(userdir.endsWith("cdm")) {
+        if(userdir.endsWith("tds")) {
             // we are being run under TestAll
             this.testdir = "../opendap/" +  this.testdir;
         }

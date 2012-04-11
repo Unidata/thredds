@@ -16,7 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import thredds.service.viewer.ViewerService;
+import thredds.server.viewer.dataservice.ViewerService;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 import ucar.nc2.util.IO;

@@ -58,7 +58,7 @@ import ucar.nc2.util.xml.RuntimeConfigParser;
  *  </name1>
  * </pre>
  */
-public class ThreddsConfig {
+public final class ThreddsConfig {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ThreddsConfig.class );
   private static String _filename;
   private static Element rootElem;
@@ -72,7 +72,7 @@ public class ThreddsConfig {
     readConfig();
   }
 
-  static void readConfig() {
+  private static void readConfig() {
     catalogRoots = new ArrayList<String>();
     contentRootList = new ArrayList<String>();
 

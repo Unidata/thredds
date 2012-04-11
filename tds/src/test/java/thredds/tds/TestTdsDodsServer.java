@@ -32,25 +32,26 @@
  */
 package thredds.tds;
 
-import junit.framework.*;
-
-import thredds.catalog.*;
-import thredds.servlet.URLEncoder;
-import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.dataset.*;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.util.IO;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDataset;
-import ucar.ma2.Array;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.util.StringUtil2;
-
 import java.io.IOException;
 import java.util.List;
+
+import junit.framework.TestCase;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvDataset;
+import thredds.servlet.URLEncoder;
+import ucar.ma2.Array;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.util.IO;
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.StringUtil2;
 
 public class TestTdsDodsServer extends TestCase {
   private URLEncoder encoder = new URLEncoder();
