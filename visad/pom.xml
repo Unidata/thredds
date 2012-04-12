@@ -29,7 +29,7 @@
     </dependency>
 
     <dependency>
-      <groupId>edu.wisc</groupId>
+      <groupId>edu.wisc.ssec</groupId>
       <artifactId>visad</artifactId>
     </dependency>
 
