@@ -316,8 +316,7 @@
       </dependency>
       <dependency>
         <groupId>com.sleepycat</groupId>
-        <artifactId>je</artifactId>
-        <!-- Requires Oracle repository (see cdm/pom.xml) -->
+        <artifactId>je</artifactId>        
         <version>${com.sleepycat.version}</version>
       </dependency>
       <dependency>
