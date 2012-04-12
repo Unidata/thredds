@@ -34,12 +34,11 @@ package ucar.nc2.ft.point.writer;
 
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
 import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.*;
 
 import java.util.*;
@@ -48,56 +47,32 @@ import java.io.IOException;
 /**
  * Write a CF 1.6 "Discrete Sample" point file.
  *
+ * <pre>
+ *   writeHeader()
+ *   iterate { writeRecord() }
+ *   finish()
+ * </pre>
+ *
  * @author caron
  * @since Nov 23, 2010
  */
-public class WriterCFPointCollection {
-  private static final String recordDimName = "record";
-  private static final String latName = "latitude";
-  private static final String lonName = "longitude";
-  private static final String altName = "altitude";
-  private static final String timeName = "time";
-  private static final boolean debug = false;
-
-  private NetcdfFileWriteable ncfile;
-  private String title;
-  private String altUnits;
-
-  private Set<Dimension> dimSet = new HashSet<Dimension>(20);
-  private Date minDate = null;
-  private Date maxDate = null;
+public class WriterCFPointCollection extends CFWriter {
 
   public WriterCFPointCollection(String fileOut, String title) throws IOException {
-    ncfile = NetcdfFileWriteable.createNew(fileOut, false);
-    ncfile.setFill( false);
-    this.title = title;
-  }
+    super(fileOut, title);
 
-  public void setLength(long size) {
-    ncfile.setLength( size);
+    ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.point.name());
   }
 
   public void writeHeader(List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits) throws IOException {
     this.altUnits = altUnits;
-    ncfile.addGlobalAttribute(CDM.CONVENTIONS, "CF-1.6");
-    ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.point.name());
-    ncfile.addGlobalAttribute(CDM.TITLE, title);
-    ncfile.addGlobalAttribute(CDM.HISTORY, "Written by TDS/CDM Remote Feature subset service");
-
-    // dummys, update in finish()
-    ncfile.addGlobalAttribute("time_coverage_start", CalendarDateFormatter.toDateStringPresent());
-    ncfile.addGlobalAttribute("time_coverage_end",  CalendarDateFormatter.toDateStringPresent());
-    ncfile.addGlobalAttribute("geospatial_lat_min", 0.0);
-    ncfile.addGlobalAttribute("geospatial_lat_max", 0.0);
-    ncfile.addGlobalAttribute("geospatial_lon_min", 0.0);
-    ncfile.addGlobalAttribute("geospatial_lon_max", 0.0);
 
     createCoordinates(timeUnit);
     createDataVariables(vars);
 
     ncfile.create(); // done with define mode
 
-    // now write the observations
+    // netcdf-3
     if (! (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
       throw new IllegalStateException("can't add record variable");
   }
@@ -164,6 +139,9 @@ public class WriterCFPointCollection {
 
   }
 
+  /////////////////////////////////////////////////////////
+  // writing data
+
   private int recno = 0;
   private ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
   private ArrayDouble.D1 latArray = new ArrayDouble.D1(1);
@@ -172,18 +150,18 @@ public class WriterCFPointCollection {
   private int[] origin = new int[1];
 
   public void writeRecord(PointFeature sobs, StructureData sdata) throws IOException {
-    writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsDate(), sobs.getLocation(), sdata);
+    writeRecord(sobs.getObservationTime(), sobs.getObservationTimeAsCalendarDate(), sobs.getLocation(), sdata);
   }
 
-  public void writeRecord(double timeCoordValue, Date obsDate, EarthLocation loc, StructureData sdata) throws IOException {
+  public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException {
 
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
     ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
     sArray.setStructureData(sdata, 0);
 
     // date is handled specially
-    if ((minDate == null) || minDate.after(obsDate)) minDate = obsDate;
-    if ((maxDate == null) || maxDate.before(obsDate)) maxDate = obsDate;
+    if ((minDate == null) || minDate.isAfter(obsDate)) minDate = obsDate;
+    if ((maxDate == null) || maxDate.isBefore(obsDate)) maxDate = obsDate;
 
     timeArray.set(0, timeCoordValue);
     latArray.set(0, loc.getLatitude());
@@ -208,31 +186,6 @@ public class WriterCFPointCollection {
     }
 
     recno++;
-  }
-
-  public void finish() throws IOException {
-    ncfile.updateAttribute(null, new Attribute("geospatial_lat_min", llbb.getLowerLeftPoint().getLatitude()));
-    ncfile.updateAttribute(null, new Attribute("geospatial_lat_max", llbb.getUpperRightPoint().getLatitude()));
-    ncfile.updateAttribute(null, new Attribute("geospatial_lon_min", llbb.getLowerLeftPoint().getLongitude()));
-    ncfile.updateAttribute(null, new Attribute("geospatial_lon_max", llbb.getUpperRightPoint().getLongitude()));
-
-    // if there is no data
-    if (minDate == null) minDate = new Date();
-    if (maxDate == null) maxDate = new Date();
-
-    ncfile.updateAttribute(null, new Attribute("time_coverage_start",  CalendarDateFormatter.toDateTimeString(minDate)));
-    ncfile.updateAttribute(null, new Attribute("time_coverage_end",  CalendarDateFormatter.toDateTimeString(maxDate)));
-
-    ncfile.close();
-  }
-
-  private LatLonRect llbb = null;
-  private void trackBB(EarthLocation loc) {
-    if (llbb == null) {
-      llbb = new LatLonRect(loc.getLatLon(), .001, .001);
-      return;
-    }
-    llbb.extend(loc.getLatLon());
   }
 
 }

@@ -44,7 +44,6 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.grib.GribIosp;
-import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
@@ -434,7 +433,7 @@ public class Grib1ReportPanel extends JPanel {
 
         for (GridDatatype grid : gridOld.getGrids()) {
           // if (useIndex) {
-            List<String> newNames = renamer.getNewNames(gdsNew, grid.getShortName());
+            List<String> newNames = renamer.matchNcepNames(gdsNew, grid.getShortName());
             if (newNames.size() == 0) {
               f.format(" ***FAIL %s%n", grid.getShortName());
               fail++;

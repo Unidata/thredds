@@ -4,6 +4,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.util.StringUtil2;
@@ -13,8 +14,9 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Try to figure out what GRIB name in 4.2 maps to in 4.3.
- * Not guarenteed to be correct.
+ * Try to figure out what GRIB name in 4.2 maps to in 4.3 NCEP IDD datasets.
+ * Not guaranteed to be correct.
+ * See ToolsUI IOSP/GRIB2/GRIB-RENAME
  *
  * @author caron
  * @since 4/7/12
@@ -49,11 +51,11 @@ public class GribVariableRenamer {
   /**
    * Look for possible matches of old (4.2) grib names in new (4.3) dataset.
    * 
-   * @param gds check existence in this dataset
-   * @param oldName old name
+   * @param gds check existence in this dataset. Must be from a GRIB1 or GRIB2 dataset.
+   * @param oldName old name from 4.2 dataset
    * @return list of possible matches (as grid short name), each exists in the dataset
    */
-  public List<String> getNewNames(GridDataset gds, String oldName) {
+  public List<String> matchNcepNames(GridDataset gds, String oldName) {
     List<String> result = new ArrayList<String>();
     
     // look for exact match
@@ -62,15 +64,20 @@ public class GribVariableRenamer {
       return result;
     }
     
-    Attribute att = gds.findGlobalAttributeIgnoreCase("file_format");
+    Attribute att = gds.findGlobalAttributeIgnoreCase(CDM.FILE_FORMAT);
     boolean isGrib1 = (att != null) && att.getStringValue().startsWith("GRIB1");
+    boolean isGrib2 = (att != null) && att.getStringValue().startsWith("GRIB2");
     HashMap<String, Renamer> map;
     if (isGrib1) {
       if (map1 == null) initMap1();
       map = map1;
-    } else {
+
+    } else if (isGrib2) {
       if (map2 == null) initMap2();
       map = map2;
+
+    } else {
+      return result; // empty list
     }
     
     // look in our renamer map
@@ -122,7 +129,7 @@ public class GribVariableRenamer {
     return gds.findGridByShortName(name) != null;
   }
   
-  public String getNewName(HashMap<String, Renamer> map, String datasetLocation, String oldName) {
+  private String getNewName(HashMap<String, Renamer> map, String datasetLocation, String oldName) {
     Renamer mbean = map.get(oldName);
     if (mbean == null) return null; // ??
     if (mbean.newName != null) return mbean.newName; // if its unique, then we are done
@@ -151,7 +158,8 @@ public class GribVariableRenamer {
     <param oldName="Minimum_temperature" newName="Minimum_temperature_height_above_ground" varId="VAR_0-0-5_L103" />
   </dataset>
   */
-  
+
+  // debugging only
   public List<VariableRenamerBean> readVariableRenamerBeans(String which) {
     if (which.equals("GRIB1"))
       return readVariableRenameFile("resources/grib1/grib1VarMap.xml");
@@ -293,7 +301,6 @@ public class GribVariableRenamer {
         // newVars = null; // GC
       }
     }
-
 
     public int getCount() {
       return newVars.size();

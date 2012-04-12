@@ -819,7 +819,7 @@ public class Grib2ReportPanel extends JPanel {
 
         for (GridDatatype grid : gridOld.getGrids()) {
           // if (useIndex) {
-            List<String> newNames = renamer.getNewNames(gdsNew, grid.getShortName());
+            List<String> newNames = renamer.matchNcepNames(gdsNew, grid.getShortName());
             if (newNames.size() == 0) {
               f.format(" ***FAIL %s%n", grid.getShortName());
               fail++;

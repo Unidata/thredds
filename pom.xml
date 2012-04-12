@@ -240,7 +240,7 @@
         <version>${org.slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
-      <dependency>  <!-- Adapts apace commons to slf4j, and so replaced commons-logging.jar -->
+      <dependency>  <!-- Adapts apache commons to slf4j, and so replaced commons-logging.jar -->
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${org.slf4j.version}</version>

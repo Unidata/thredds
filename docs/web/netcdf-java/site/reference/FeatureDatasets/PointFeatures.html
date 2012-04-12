@@ -27,11 +27,11 @@ dl {margin: 10px 5px 5px 15px;)
 </ol>
 <h3>Related documents:</h3>
 <ul>
-  <li> CDM Feature Types <em> draft </em><a href="../../archive/CDMfeatures.doc">doc</a></li>
-  <li>CDM Point Feature Types <em> draft </em><a href="../../archive/CDMpoints.doc">doc</a></li>
+  <li> CF 1.6 <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#discrete-sampling-geometries">Discrete Sampling Geometries Conventions</a></li>
+  <li>CDM Feature Types <em> draft </em><a href="../../CDM/CDMfeatures.doc">doc</a></li>
+  <li>CDM Point Feature Types <em> draft </em><a href="../../CDM/CDMpoints.doc">doc</a></li>
   <li>Complete <a href="PointUML.html">Point Feature UML</a></li>
 </ul>
-<p>&nbsp;</p>
 <h2>Point Features</h2>
 <p><img src="PF1.png" width="412" height="210" /></p>
 <p>A <strong>PointFeature </strong>is a collection of data (usually observational) taken at a single time and a single place:</p>
@@ -146,15 +146,16 @@ Since an iterator always runs through the data exactly once, its a good idea to 
 <p>To read all the data, iterate through each <strong>ProfileFeature</strong> in the collection, then through each <strong>PointFeature</strong> of the ProfileFeature:</p>
 <pre>
   profileFeatureCollection<strong>.resetIteration</strong>();
-  while(profileFeatureCollection.<strong>hasNext</strong>() { 
-    ucar.nc2.ft.<strong>ProfileFeature</strong> profile = profileFeatureCollection.<strong>next</strong>()
+  while(profileFeatureCollection.<strong>hasNext</strong>()) { 
+    ucar.nc2.ft.<strong>ProfileFeature</strong> profile = profileFeatureCollection.<strong>next</strong>();
 
     <strong>profile.resetIteration</strong>();
     while(<strong>profile</strong>.<strong>hasNext</strong>()) {
-      ucar.nc2.ft.PointFeature pointFeature = profile.<strong>next</strong>()
+      ucar.nc2.ft.PointFeature pointFeature = profile.<strong>next</strong>();
       ...
     }
-  }</pre>
+  }
+</pre>
 <p>You may  <strong>subset</strong> a ProfileFeatureCollection with a lat/lon bounding box, getting back another <strong>ProfileFeatureCollection</strong>:</p>
 <pre>  ucar.nc2.units.DateFormatter dformat = new ucar.nc2.units.DateFormatter()
   <strong>ProfileFeatureCollection</strong> subset<strong> = </strong>profileFeatureCollection<strong>.subset</strong>(new LatLonRect(&quot;-60,120,12,20&quot;));

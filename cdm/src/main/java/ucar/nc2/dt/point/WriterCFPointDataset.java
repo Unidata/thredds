@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ft.point.writer;
+package ucar.nc2.dt.point;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;

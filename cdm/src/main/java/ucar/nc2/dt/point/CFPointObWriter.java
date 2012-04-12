@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ft.point.writer;
+package ucar.nc2.dt.point;
 
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Dimension;
@@ -49,6 +49,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
+import ucar.nc2.dt.point.PointObVar;
 import ucar.unidata.geoloc.EarthLocation;
 
 import java.io.*;

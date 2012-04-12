@@ -13,25 +13,100 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>CDM implementation of CF discrete sampling  features </h1>
-<p><em>12/20/2011</em></p>
+<p><em>April 2012</em></p>
 <p>These notes refer to the current  release of CDM 4.3. Section headers referrence the CF 1.6 doc at:</p>
-<p> <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#discrete-sampling-geometries">http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#discrete-sampling-geometries</a> </p>
-<h2>Differences from CF</h2>
+<p> <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#discrete-sampling-geometries">http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#discrete-sampling-geometries</a></p>
+<p>&nbsp;</p>
+<h2>Short Guide to writing files using CF 1.6 discrete sampling  features Conventions </h2>
+<h3>Step 1: Requirements</h3>
+<ul>
+  <li>At minimum, you must have a (lat, lon) location and a date / time coordinate for all your data. Some types also require a vertical coordinate (eg altitude, depth). </li>
+</ul>
+<h3>Step 2: Which feature type?</h3>
+<p>What kind of data do you have:</p>
+<ol>
+  <li><strong>Point (unconnected) data</strong>: data is located at different, unconnected places.<strong> <em>Examples: </em></strong><em><strong>earthquake data, lightning       data.</strong></em></li>
+  <li><strong>Time series (station) data</strong>: data is located at named locations, called <em>stations</em>. There can be many stations, and usually for each station you have multiple data  with different time coordinates. Stations have a unique identifier. <em><strong>Examples: weather station data, fixed       buoys.</strong></em></li>
+  <li><strong>Profile data</strong>:  A series of connected observations along a vertical line. Each profile can be given one lat, lon coordinate (possibly nominal), so that the points along the profile differ only in z coordinate and possibly time coordinate. There can be multiple profiles in the same file. Profiles have a unique identifier If you have many profiles with the same lat, lon location, use the Time series Profile type. <em><strong>Examples: atmospheric profiles  from satellites, movable profilers.</strong></em></li>
+  <li><strong>Time series (station) Profile data</strong>: Profile data at fixed locations. This is a combination of Time series type and Profile type, so one has time series of Profiles. A file can contain many stations and many time series at each station. <em><strong>Examples: profilers, balloon       soundings.</strong></em></li>
+  <li><strong>Trajectory data</strong>: A series of connected observations   along a 1D curve in time and space. There can be multiple trajectories in the same file, each with a unique identifier. <em><strong>Examples:  aircraft data, drifting       buoys.</strong></em></li>
+  <li><strong>Trajectory of Profiles</strong>:  a collection of profile<strong> </strong>features which originate along a trajectory. This is a trajectory which has profile data (varying with z) at each (lat, lon) location. <em><strong>Examples:  ship soundings.</strong></em></li>
+</ol>
+<h3><strong>&nbsp;</strong>Step 3: Which representation should I use?</h3>
+<ol>
+  <li><strong>Point (unconnected) data</strong>: use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8294224">H.1</a></li>
+  <li><strong>Time series (station) data</strong>: 
+    <ol>
+      <li>  You will put only one station in the file: you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8320208">H.2.3</a></li>
+      <li>All stations have  the exact same time coordinates:  you may use CF
+        <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8307552">H.2.1</a></li>
+      <li> Each station has almost the same number of time coordinates and the values may be different:  you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8314368">H.2.2</a></li>
+      <li>Each station has different number of coordinates and you want to keep file size as small as possible:
+        <ol>
+          <li>you have all the data already, and you want to optimize reading all the data for one station: you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8327296">H.2.4</a></li>
+          <li>you want to write the data as it arrives, in any order: you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8340320">H.2.5</a></li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li><strong>Profile data</strong>:
+    <ol>
+        <li> You will put only one profile in the file: you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8363696">H.3.3</a></li>
+      <li>All profiles have  the exact same vertical coordinates:  you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8355216">H.3.1</a></li>
+      <li> Each profile has almost the same number of vertical coordinates and the values may be different:  you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8360656">H.3.2</a></li>
+      <li>Each profile has different number of vertical coordinates and you want to keep file size as small as possible:
+        <ol>
+              <li>you have all the data already, and you want to optimize reading all the data for one station: you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8367584">H.3.4</a></li>
+          <li>you want to write the data as it arrives, in any order: you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8372832">H.3.5</a></li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li><strong>Time series (station) Profile data</strong>:
+    <ol>
+        <li> You will put only one station in the file: you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8427872">H.5.2</a></li>
+      <li> Each station has the same number of time points, and the same number of vertical levels for every profile :  you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8414816">H.5.1</a></li>
+      <li>Each station has a different  number of profiles and/or the level coordinates for each station may vary :  you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8432528">H.5.3</a></li>
+    </ol>
+  </li>
+  <li><strong>Trajectory data</strong>:
+    <ol>
+      <li> You will put only one trajectory in the file: you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8388800">H.4.2</a></li>
+      <li>All trajectories have almost the  same number of points:  you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8382496">H.4.1</a></li>
+      <li>Each trajectory has different number of vertical coordinates and you want to keep file size as small as possible:
+        <ol>
+            <li>you have all the data already, and you want to optimize reading all the data for one trajectory: you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8393872">H.4.3</a></li>
+          <li>you want to write the data as it arrives, in any order: you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8399648">H.4.4</a></li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li><strong>Trajectory of Profiles</strong>:  <ol>
+    <li>You will put only one trajectory in the file: you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8451344">H.6.2</a></li>
+      <li>All trajectories have almost the  same number of points:  you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8443504">H.6.1</a></li>
+      <li>Each trajectory has different number of profiles and/or vertical coordinates:
+      you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8456080">H.6.3</a><br />
+</li>
+    </ol>
+  </li>
+</ol>
+<p>&nbsp;</p>
+<h2>Differences from CF<a name="Diff" id="Diff"></a></h2>
 <h3>9.1 <span lang="en" xml:lang="en">Limits on coordinate types</span></h3>
 <p>Horizontal coordinates:</p>
 <ul>
-    <li>CF: &quot;In Table 9.1 the spatial coordinates x and y typically refer to longitude and latitude but other horizontal coordinates could also be used (see sections 4 and 5.6)  &quot;</li>
-    <li>CDM: only latitude and longitude are supported.</li>
-  </ul>
+  <li>CF: &quot;In Table 9.1 the spatial coordinates x and y typically refer to longitude and latitude but other horizontal coordinates could also be used (see sections 4 and 5.6)  &quot;</li>
+  <li>CDM: only latitude and longitude are supported.</li>
+</ul>
 <p>Vertical coordinates:</p>
-  <ul>
-    <li>CDM: vertical coordinate may be height or pressure. Dimensionless Vertical Coordinates are not supported.</li>
-  </ul>
-  <h3>9.3 Limits on dimension ordering</h3>
 <ul>
-    <li>CF: &quot;In the multidimensional array representations, data variables have both an instance dimension and an element dimension.  The dimensions may be given in any order.  &quot;.</li>
-    <li>CDM: the instance dimension must be the outer (slowest varying) dimension</li>
-  </ul>
+  <li>CDM: vertical coordinate may be height or pressure. Dimensionless Vertical Coordinates are not supported.</li>
+</ul>
+<h3>9.3 Limits on dimension ordering</h3>
+<ul>
+  <li>CF: &quot;In the multidimensional array representations, data variables have both an instance dimension and an element dimension.  The dimensions may be given in any order&quot;</li>
+  <li>CDM: the instance dimension must be the outer (slowest varying) dimension</li>
+</ul>
 <h3>9.4 Attribute featureType  is required</h3>
 <ul>
   <li>CF:   &quot;A global attribute, <strong>featureType</strong>, is required for all Discrete Geometry representations except the orthogonal multidimensional array representation, for which it is highly recommended&quot;. </li>
@@ -40,44 +115,41 @@ dl {margin: 10px 5px 5px 15px;)
 <h3>9.5  <strong>Feature instance id variable</strong> is required</h3>
 <ul>
   <li> CF: &quot;Where feasible a variable with the attribute <strong>cf_role</strong> should be included.  The only acceptable values of cf_role for Discrete Geometry CF data sets are timeseries_id, profile_id, and trajectory_id.   The variable carrying the cf_role attribute may have any data type.  When a variable is assigned this attribute, it must provide a unique identifier for each feature instance.&quot;</li>
-  <li>CDM: A variable representing the instance id is required, indicated by an attribute named  <strong>cf_role</strong>, which follows all the CF rules for   identifiers.</li>
+  <li>CDM: A variable representing the instance id is required, indicated by an attribute named  <strong>cf_role</strong>, which follows all the CF rules above.</li>
 </ul>
 <h2>Notes on representations</h2>
-<p>Referencing CF-1.6:</p>
-<p> <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#appendix-examples-discrete-geometries">http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#appendix-examples-discrete-geometries</a> </p>
 <p>In all cases,  latitude, longitude, altitude and time coordinates must be recognized in the usual CF way. The altitude coordinate is optional in some of the forms.</p>
 <h3>H.1 Point Data</h3>
-<p>In the CDM, point data is recognized by the <strong>featureType = &quot;point&quot;</strong> global attribute. The altitude coordinate is optional. All coordinates must have the same dimension, called the <em>obs</em> or <em>sample</em>  dimension. All variables with  the obs dimension as outer dimension are data variables.</p>
+<p>In the CDM, point data is recognized by the <strong>featureType = &quot;point&quot;</strong> global attribute. The altitude coordinate is optional. All coordinates must have the same dimension, called the <em>obs</em> or <em>sample</em> dimension. All variables with  the obs dimension as outer dimension are data variables.</p>
 <h3>H.2 Time Series Data</h3>
 <p>In the CDM, this form is recognized by the <strong>featureType = &quot;timeSeries&quot;</strong> global attribute. The altitude coordinate is optional. </p>
 <p>Special station variables are recognized by standard names as given below. For backwards compatibility, the given aliases are allowed.</p>
 <blockquote>
-<table width="200" border="1">
-  <tr>
-    <th scope="col">standard_name</th>
-    <th scope="col">alias</th>
-  </tr>
-  <tr>
-    <td><div align="center">&quot;timeseries_id&quot;</div></td>
-    <td><div align="center">&quot;station_id&quot;</div></td>
-  </tr>
-  <tr>
-    <td><div align="center">&quot;platform_name&quot;</div></td>
-    <td><div align="center">&quot;station_description&quot;</div></td>
-  </tr>
-  <tr>
-    <td><div align="center">&quot;surface_altitude&quot;</div></td>
-    <td><div align="center">&quot;station_altitude&quot;</div></td>
-  </tr>
-  <tr>
-    <td><div align="center">&quot;platform_id&quot;</div></td>
-    <td><div align="center">&quot;station_WMO_id&quot;</div></td>
-  </tr>
-</table>
+  <table width="200" border="1">
+    <tr>
+      <th scope="col">standard_name</th>
+      <th scope="col">alias</th>
+    </tr>
+    <tr>
+      <td><div align="center">&quot;timeseries_id&quot;</div></td>
+      <td><div align="center">&quot;station_id&quot;</div></td>
+    </tr>
+    <tr>
+      <td><div align="center">&quot;platform_name&quot;</div></td>
+      <td><div align="center">&quot;station_description&quot;</div></td>
+    </tr>
+    <tr>
+      <td><div align="center">&quot;surface_altitude&quot;</div></td>
+      <td><div align="center">&quot;station_altitude&quot;</div></td>
+    </tr>
+    <tr>
+      <td><div align="center">&quot;platform_id&quot;</div></td>
+      <td><div align="center">&quot;station_WMO_id&quot;</div></td>
+    </tr>
+  </table>
 </blockquote>
-
 <h3 wrap="">H.2.1 / H.2.2 Multidimensional Time Series Representation</h3>
-<p wrap="">The lat, lon and altitude coordinates must have the same dimension, called the <em>station</em> or <em>instance</em> dimension. All variables with  the station dimension as outer dimension are <em>station variables</em>. The time dimension must be of the form<strong> time(time) </strong>or<strong> time(station, time)</strong>, where the time dimension is the  <em>obs</em> or <em>sample</em> dimension. All data variables must have the form <strong>data(station, time)</strong>.</p>
+<p wrap="">The lat, lon and altitude coordinates must have the same dimension, called the <em>station</em> or <em>instance</em> dimension. All variables with  the station dimension as outer dimension are <em>station variables</em>. The time dimension must be of the form<strong> time(time) </strong>or<strong> time(station, time)</strong>, where the time dimension is the <em>obs</em> or <em>sample</em> dimension. All data variables must have the form <strong>data(station, time)</strong>.</p>
 <p wrap="">For compatibility with earlier versions </p>
 <ul>
   <li><strong>ragged_row_count</strong> is an alias for <strong>sample_dimension</strong> standard name</li>
@@ -112,7 +184,7 @@ The CDM uses the axis attribute to choose the correct coordinate. However, it pr
 <p>&nbsp;</p>
 <hr />
 <address>
-<img src="../../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 2011
+<img src="../../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated April 2011
 </address>
   <p>&nbsp;</p>
 </body>
