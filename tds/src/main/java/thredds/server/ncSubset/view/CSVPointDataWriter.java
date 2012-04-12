@@ -14,6 +14,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 
 class CSVPointDataWriter implements PointDataWriter {
@@ -30,8 +31,7 @@ class CSVPointDataWriter implements PointDataWriter {
 	}
 	
 	@Override
-	public boolean header(List<String> vars, GridDataset gridDataset,
-			List<CalendarDate> wDates, LatLonPoint point, CoordinateAxis1D zAxis) {
+	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, CoordinateAxis1D zAxis) {
 		
 		boolean headerWritten=false;		
 		//StringBuilder sb = new StringBuilder();
@@ -56,7 +56,7 @@ class CSVPointDataWriter implements PointDataWriter {
 	}
 
 	@Override
-	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, LatLonPoint point) {
+	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point) {
 		
 		boolean headerWritten=false;		
 		StringBuilder sb = new StringBuilder();
