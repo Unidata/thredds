@@ -171,6 +171,7 @@
     </snapshotRepository>
   </distributionManagement>
 
+	
   <repositories>
     <repository>
       <id>thredds</id>
@@ -180,20 +181,10 @@
     <repository>
       <id>thredds-3rdparty</id>
       <url>http://artifacts.unidata.ucar.edu:8081/content/repository/thredds-3rdparty/</url>
-    </repository>
-    <repository>
-      <id>geotoolkit</id>
-      <name>Geotk repository</name>
-      <url>http://maven.geotoolkit.org</url>
-    </repository>
-    <!-- json-taglib  ( for ncWMS ) -->
-    <repository>
-      <id>escidoc</id>
-      <name>escidoc</name>
-      <url>https://www.escidoc.org/artifactory/maven.jahia.org-cache/</url>
-    </repository>
+    </repository>        
   </repositories>
 
+   
   <!-- ===========================================================
        Dependency Management If a POM declares one of those dependencies, then it will use
        the version specified here. Otherwise, those dependencies are ignored. Reference:
@@ -316,8 +307,7 @@
       </dependency>
       <dependency>
         <groupId>com.sleepycat</groupId>
-        <artifactId>je</artifactId>
-        <!-- Requires Oracle repository (see cdm/pom.xml) -->
+        <artifactId>je</artifactId>        
         <version>${com.sleepycat.version}</version>
       </dependency>
       <dependency>
@@ -332,11 +322,18 @@
         <scope>test</scope>
       </dependency>
 
-      <dependency>
+	  <!-- Old visad dependency -->
+      <!-- dependency>
         <groupId>edu.wisc</groupId>
         <artifactId>visad</artifactId>
         <version>${visad.version}</version>
-      </dependency>
+      </dependency-->
+      
+      <dependency>
+        <groupId>edu.wisc.ssec</groupId>
+        <artifactId>visad</artifactId>
+        <version>${visad.version}</version>
+      </dependency>      
 
       <!-- UI -->
       <dependency>
@@ -640,7 +637,8 @@
     <build.timestamp>${maven.build.timestamp}</build.timestamp>
 
     <!-- Dependency versions -->
-    <visad.version>2011-08-22</visad.version>
+    <!-- visad.version>2011-08-22</visad.version -->
+    <visad.version>2.0-20120411</visad.version>
     <!-- was 2010-08-09, other options 2011-05-12 or 2011-08-22 -->
     <edu.wisc.version>2011-08-22</edu.wisc.version>
     <uk.ac.rdg.resc.version>1.0.tds.4.2.20110419.2059</uk.ac.rdg.resc.version>

@@ -308,20 +308,19 @@
   <!--     Maven repository is implicit and doesn't need to be specified. -->
   <!-- ================================================================== -->
   <repositories>
-    <!-- Needed for com.sleepycat.je -->
-    <repository>
-      <id>Oracle</id>
-      <name>Oracle Maven repository</name>
-      <url>http://download.oracle.com/maven</url>
-    </repository>
-    <!--
-          <repository>
-              <id>geotoolkit</id>
-              <name>GeoToolKit Repository</name>
-              <url>http://maven.geotoolkit.org</url>
-          </repository>
-     -->
 
+    <repository>
+      <id>geotoolkit</id>
+      <name>Geotk repository</name>
+      <url>http://maven.geotoolkit.org</url>
+    </repository>
+       
+    <!-- json-taglib  ( for ncWMS ) -->
+    <repository>
+      <id>escidoc</id>
+      <name>escidoc</name>
+      <url>https://www.escidoc.org/artifactory/maven.jahia.org-cache/</url>
+    </repository>
   </repositories>
 
 
