@@ -57,7 +57,7 @@ public class CatchingExceptionsTest {
 	@Test(expected=UnsupportedOperationException.class)
 	public void testUnsupportedOperationException() throws Exception{
 
-		//All parameters got the controller validated so set good values 
+		//All parameters get the controller validated so set good values 
 		PointDataRequestParamsBean params = new PointDataRequestParamsBean();
 		params.setLatitude(42.04);
 		params.setLongitude(-105.0);		

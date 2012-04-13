@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncSubset.PointDataParameters;
 import thredds.server.ncSubset.controller.SupportedFormat;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
@@ -46,7 +47,9 @@ public class StationCollectionStreamTest {
 	public static List<Object[]> getTestParameters(){
 		
 		return Arrays.asList(new Object[][]{  
-				{SupportedFormat.NETCDF, PointDataWritersParameters.getVars().get(0) , PointDataWritersParameters.getPathInfo().get(0), PointDataWritersParameters.getPoints().get(2) }				
+				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
+				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
+				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) }
 		});				
 	}
 	
