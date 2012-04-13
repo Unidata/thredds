@@ -59,7 +59,7 @@ import java.io.IOException;
  * @author caron
  * @since Aug 19, 2009
  */
-public class WriterCFProfileCollection extends CFWriter {
+public class WriterCFProfileCollection extends CFPointWriter {
   private static final String profileDimName = "profile";
   private static final String idName = "profile_id";
   private static final String profileIndexName = "profileIndex";
@@ -69,8 +69,8 @@ public class WriterCFProfileCollection extends CFWriter {
 
   private List<Dimension> profileDims = new ArrayList<Dimension>(1);
 
-  public WriterCFProfileCollection(String fileOut, String title) throws IOException {
-    super(fileOut, title);
+  public WriterCFProfileCollection(String fileOut, List<Attribute> atts) throws IOException {
+    super(fileOut, atts);
 
     ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name());
   }
@@ -128,15 +128,11 @@ public class WriterCFProfileCollection extends CFWriter {
 
     v = ncfile.addVariable(latName, DataType.DOUBLE, profileDimName);
     ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "degrees_north"));
-    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station latitude"));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile latitude"));
 
     v = ncfile.addVariable(lonName, DataType.DOUBLE, profileDimName);
     ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "degrees_east"));
-    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station longitude"));
-
-    v = ncfile.addVariable(altName, DataType.DOUBLE, profileDimName);
-    ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, altUnits));
-    ncfile.addVariableAttribute(v, new Attribute(CF.POSITIVE, CF.POSITIVE_UP));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile longitude"));
   }
 
   private void createObsVariables(DateUnit timeUnit) throws IOException {
@@ -145,8 +141,13 @@ public class WriterCFProfileCollection extends CFWriter {
     ncfile.addVariableAttribute(timeVar, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
     ncfile.addVariableAttribute(timeVar, new Attribute(CDM.LONG_NAME, "time of measurement"));
 
+    /*
+    v = ncfile.addVariable(altName, DataType.DOUBLE, profileDimName);
+    ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, altUnits));
+    ncfile.addVariableAttribute(v, new Attribute(CF.POSITIVE, CF.POSITIVE_UP)); */
+
     Variable v = ncfile.addVariable(profileIndexName, DataType.INT, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station index for this observation record"));
+    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile index for this observation record"));
     ncfile.addVariableAttribute(v, new Attribute(CF.INSTANCE_DIMENSION, profileDimName));
   }
 
@@ -196,7 +197,7 @@ public class WriterCFProfileCollection extends CFWriter {
     stationMap = new HashMap<String, Integer>(2 * nprofiles);
     if (debug) System.out.println("stationMap created");
 
-    // now write the station data
+    // now write the profile data
     ArrayObject.D1 idArray = new ArrayObject.D1(String.class, nprofiles);
 
     for (int i = 0; i < profiles.size(); i++) {
@@ -227,17 +228,15 @@ public class WriterCFProfileCollection extends CFWriter {
   }
 
   public void writeRecord(String profileName, double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException {
+    trackBB(loc, obsDate);
+
     Integer parentIndex = stationMap.get(profileName);
     if (parentIndex == null)
-      throw new RuntimeException("Cant find station " + profileName);
+      throw new RuntimeException("Cant find profile " + profileName);
 
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
     ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
     sArray.setStructureData(sdata, 0);
-
-    // date is handled specially
-    if ((minDate == null) || minDate.isAfter(obsDate)) minDate = obsDate;
-    if ((maxDate == null) || maxDate.isBefore(obsDate)) maxDate = obsDate;
 
     timeArray.set(0, timeCoordValue);
     latArray.set(0, loc.getLatitude());

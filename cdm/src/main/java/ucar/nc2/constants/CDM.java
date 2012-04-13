@@ -58,6 +58,16 @@ public interface CDM {
   public static final String TITLE = "title";
   public static final String UNITS = "units";
 
+  // UACDD
+  // http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html
+  public static final String LAT_MIN = "geospatial_lat_min";
+  public static final String LON_MIN = "geospatial_lon_min";
+  public static final String LAT_MAX = "geospatial_lat_max";
+  public static final String LON_MAX = "geospatial_lon_max";
+  public static final String TIME_START = "time_coverage_start";
+  public static final String TIME_END = "time_coverage_end";
+
+
   // staggering for _Coordinate.Stagger
   public static final String ARAKAWA_E = "Arakawa-E";
 

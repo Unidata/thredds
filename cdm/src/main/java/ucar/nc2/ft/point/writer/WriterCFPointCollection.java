@@ -56,10 +56,10 @@ import java.io.IOException;
  * @author caron
  * @since Nov 23, 2010
  */
-public class WriterCFPointCollection extends CFWriter {
+public class WriterCFPointCollection extends CFPointWriter {
 
-  public WriterCFPointCollection(String fileOut, String title) throws IOException {
-    super(fileOut, title);
+  public WriterCFPointCollection(String fileOut, List<Attribute> atts) throws IOException {
+    super(fileOut, atts);
 
     ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.point.name());
   }
@@ -154,21 +154,17 @@ public class WriterCFPointCollection extends CFWriter {
   }
 
   public void writeRecord(double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException {
+    trackBB(loc, obsDate);
 
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
     ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
     sArray.setStructureData(sdata, 0);
-
-    // date is handled specially
-    if ((minDate == null) || minDate.isAfter(obsDate)) minDate = obsDate;
-    if ((maxDate == null) || maxDate.isBefore(obsDate)) maxDate = obsDate;
 
     timeArray.set(0, timeCoordValue);
     latArray.set(0, loc.getLatitude());
     lonArray.set(0, loc.getLongitude());
     if (altUnits != null)
       altArray.set(0, loc.getAltitude());
-    trackBB(loc);
 
     // write the recno record
     origin[0] = recno;

@@ -50,6 +50,8 @@ import javax.swing.*;
  * @author John Caron
  */
 public class TextHistoryPane extends JPanel {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TextHistoryPane.class);
+
   protected JTextArea ta;
   private FontUtil.StandardFont fontu;
   private int nlines, removeIncr, count = 0;
@@ -111,7 +113,7 @@ public class TextHistoryPane extends JPanel {
         int offset = ta.getLineEndOffset( remove);
         ta.replaceRange( "", 0, offset);
       } catch (Exception e) {
-        System.out.println("BUG in TextHistoryPane");  // shouldnt happen
+        log.error("Problem in TextHistoryPane", e);
       }
       count = nlines - removeIncr;
     }

@@ -57,7 +57,7 @@ import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.point.writer.CFWriter;
+import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ncml.NcMLWriter;
@@ -5248,7 +5248,7 @@ public class ToolsUI extends JPanel {
 
     void doWriteCF(String filename) {
       try {
-        int count = CFWriter.writeFeatureCollection(pfDataset, filename);
+        int count = CFPointWriter.writeFeatureCollection(pfDataset, filename);
         JOptionPane.showMessageDialog(this, count + " records written");
       } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());

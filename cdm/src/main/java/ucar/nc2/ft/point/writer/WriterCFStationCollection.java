@@ -61,7 +61,7 @@ import java.io.IOException;
  * @author caron
  * @since Aug 19, 2009
  */
-public class WriterCFStationCollection  extends CFWriter {
+public class WriterCFStationCollection  extends CFPointWriter {
   private static final String stationDimName = "station";
   private static final String idName = "station_id";
   private static final String descName = "station_description";
@@ -76,8 +76,8 @@ public class WriterCFStationCollection  extends CFWriter {
   private boolean useAlt = false;
   private boolean useWmoId = false;
 
-  public WriterCFStationCollection(String fileOut, String title) throws IOException {
-    super(fileOut, title);
+  public WriterCFStationCollection(String fileOut, List<Attribute> atts) throws IOException {
+    super(fileOut, atts);
     ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name());
   }
 
@@ -260,6 +260,8 @@ public class WriterCFStationCollection  extends CFWriter {
   }
 
   public void writeRecord(String stnName, double timeCoordValue, CalendarDate obsDate, StructureData sdata) throws IOException {
+    trackBB(null, obsDate);
+
     Integer parentIndex = stationMap.get(stnName);
     if (parentIndex == null)
       throw new RuntimeException("Cant find station " + stnName);
@@ -267,10 +269,6 @@ public class WriterCFStationCollection  extends CFWriter {
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
     ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
     sArray.setStructureData(sdata, 0);
-
-    // date is handled specially
-    if ((minDate == null) || minDate.isAfter(obsDate)) minDate = obsDate;
-    if ((maxDate == null) || maxDate.isBefore(obsDate)) maxDate = obsDate;
 
     timeArray.set(0, timeCoordValue);
     parentArray.set(0, parentIndex);
