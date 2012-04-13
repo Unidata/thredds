@@ -10,14 +10,12 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 final class PointDataWritersParameters {
 
 	private static  List<List<String>> vars;
-	//private List<GridDataset> datasets;
-	//private List<GridAsPointDataset> gridsAsPointDataset;
-	//private List<List<CalendarDate>> dateRanges;
-	//private List<CalendarDate> dates;
 	private static List<String> pathInfo;
 	private static List<LatLonPoint> point;
-	//private List<CoordinateAxis1D> verticalAxis;
 	
+	//Index for the vertical level. verticalLevel < 0 means all levels.
+	//We must now beforehand the size of the vertical level use index within the Axis range
+	private static List<Double> verticalLevels;
 
 	private PointDataWritersParameters(){}
 		
@@ -43,8 +41,10 @@ final class PointDataWritersParameters {
 			point = new ArrayList<LatLonPoint>();
 			point.add(new LatLonPointImpl( 42.0, -105.2 ));
 			point.add(new LatLonPointImpl( 50.0,-100.2 ));
-			point.add(new LatLonPointImpl( 12.0,-49.2 ));
+			point.add(new LatLonPointImpl( 50.0,-100.2 ));
+			//point.add(new LatLonPointImpl( 16.935228,-102.223890 ));
 		
+			verticalLevels=Arrays.asList( new Double[]{-1.0, 10.0, -1.0}  );
 	};
 	
 	
@@ -59,6 +59,10 @@ final class PointDataWritersParameters {
 	
 	public static List<LatLonPoint> getPoints(){
 		return point;
+	}
+	
+	public static List<Double> getVerticalLevels(){
+		return verticalLevels;
 	}
 		
 }

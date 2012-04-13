@@ -64,7 +64,7 @@ class PointDataController extends AbstractNcssController{
 			List<Double> verticalLevels = getRequestedVertLevel(gridDataset, params);
 	
 			response.setContentType(sf.getResponseContentType() );
-			PointDataStream pds = new PointDataStream( sf, response.getOutputStream() );
+			PointDataStream pds = PointDataStream.createPointDataStream(  sf, response.getOutputStream() );
 			boolean allWritten = pds.stream( getGridDataset(), point, params.getCalendarDateRange(), params.getVar(), verticalLevels);
 			if(allWritten){				
 				setResponseHeaders(response, pds.getHttpHeaders() );
@@ -174,6 +174,7 @@ class PointDataController extends AbstractNcssController{
 	public @ResponseBody String handle(ParseException pe){
 		return "Parse exception handled: "+pe.getMessage();
 	}
+	
 	
 	@ExceptionHandler
 	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR)

@@ -22,10 +22,12 @@ import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
@@ -45,6 +47,8 @@ public class PointDataWriterTest {
 	private CalendarDate date; 
 	private List<CalendarDate> wDates;
 	private CoordinateAxis1D zAxis;
+	private CoordinateAxis1DTime tAxis;
+	private DateUnit dateUnit;
 	
 	@Parameters
 	public static List<Object[]> getTestParameters(){
@@ -64,8 +68,16 @@ public class PointDataWriterTest {
 		});				
 	}
 	
+	public PointDataWriterTest(SupportedFormat supportedFormat,  List<String> vars ,  String pathInfo, LatLonPoint point  ){
+		
+		this.supportedFormat = supportedFormat;
+		this.vars = vars;		
+		this.pathInfo = pathInfo;		
+		this.point = point;
+	}	
+	
 	@Before
-	public void setUp() throws IOException, OutOfBoundariesException{
+	public void setUp() throws IOException, OutOfBoundariesException, Exception{
 		
 		gridDataset = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars);		
@@ -82,20 +94,16 @@ public class PointDataWriterTest {
 		
 		date = dates.get(randInt);
 		zAxis = gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
+		tAxis = gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getTimeAxis1D();
+		dateUnit = new DateUnit(tAxis.getUnitsString());
 	}
 	
 	
-	public PointDataWriterTest(SupportedFormat supportedFormat,  List<String> vars ,  String pathInfo, LatLonPoint point  ){
-		
-		this.supportedFormat = supportedFormat;
-		this.vars = vars;		
-		this.pathInfo = pathInfo;		
-		this.point = point;
-	} 
+ 
 	
 	@Test
 	public void shouldWriteResponse(){
-		assertTrue( pointDataWriter.header(vars, gridDataset, wDates, point));
+		assertTrue( pointDataWriter.header(vars, gridDataset, wDates, dateUnit, point));
 		assertTrue( pointDataWriter.write(vars, gridDataset, gridAsPointDataset, date, point ));
 	}
 	

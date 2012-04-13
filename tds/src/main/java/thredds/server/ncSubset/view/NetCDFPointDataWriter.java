@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,22 +14,26 @@ import org.springframework.http.HttpHeaders;
 import thredds.server.ncSubset.controller.AbstractNcssController;
 import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.dataservice.StructureDataFactory;
-import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.StructureData;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
-import ucar.nc2.dt.point.WriterProfileObsDataset;
-import ucar.nc2.dt.point.WriterStationObsDataset;
+import ucar.nc2.ft.point.writer.WriterCFPointCollection;
+import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
+import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonRect;
 
 public class NetCDFPointDataWriter implements PointDataWriter {
 
@@ -61,14 +64,16 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	}
 	
 	@Override
-	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, LatLonPoint point, CoordinateAxis1D zAxis) {
+	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnits, LatLonPoint point, CoordinateAxis1D zAxis) {
 	
 		isProfile = true;
 		
 		boolean headerDone = false;
 	    try{		
-	    	WriterProfileObsDataset pobsWriter = new WriterProfileObsDataset(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI());
-	    	writerHolder = new WriterHolder(pobsWriter); 
+	    	//WriterProfileObsDataset pobsWriter = new WriterProfileObsDataset(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI());
+	        WriterCFPointCollection wpc = new WriterCFPointCollection(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI());	    		    		    	
+	    	//writerHolder = new WriterHolder(pobsWriter);
+	        writerHolder = new WriterHolder(wpc);
 	    	NetcdfDataset ncfile = (NetcdfDataset) gridDataset.getNetcdfFile(); // fake-arino
 	    	wantedVars = wantedVars2VariableSimple(vars,gridDataset ,ncfile );
 	    	// for now, we only have one point = one station
@@ -78,7 +83,8 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	    	List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
 	    	stnList.add(s);
 	    	//stnData.set(stnName);	
-	    	pobsWriter.writeHeader(stnList, wantedVars, wDates.size(), zAxis.getFullName() );
+	    	//pobsWriter.writeHeader(stnList, wantedVars, wDates.size(), zAxis.getFullName() );
+	    	wpc.writeHeader(wantedVars, dateUnits, zAxis.getUnitsString());
 	    	setHeaders(gridDataset);	    	
 	    	headerDone = true;
 	    }catch(IOException ioe){
@@ -89,11 +95,13 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	}
 
 	@Override
-	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, LatLonPoint point) {
+	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnits, LatLonPoint point) {
 		boolean headerDone = false;
 	    try{		
-	    	WriterStationObsDataset sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI());
-	    	writerHolder = new WriterHolder(sobsWriter); 
+	    	//WriterStationObsDataset sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI());	    	
+	    	WriterCFStationCollection wsc = new WriterCFStationCollection(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI()); 
+	    	
+	    	writerHolder = new WriterHolder(wsc); 
 	    	NetcdfDataset ncfile = (NetcdfDataset) gridDataset.getNetcdfFile(); // fake-arino
 	    	wantedVars = wantedVars2VariableSimple(vars,gridDataset ,ncfile );
 	    	// for now, we only have one point = one station
@@ -103,7 +111,11 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	    	List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
 	    	stnList.add(s);
 	    	//stnData.set(stnName);	
-	    	sobsWriter.writeHeader(stnList, wantedVars);
+	    	//sobsWriter.writeHeader(stnList, wantedVars);
+	    	
+	    	//Passes altUnits as an empty string... 
+	    	wsc.writeHeader(stnList, wantedVars, dateUnits, "");
+	    	
 	    	setHeaders(gridDataset);
 	    	headerDone = true;
 	    }catch(IOException ioe){
@@ -117,36 +129,45 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	public boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, 	Double targetLevel, String zUnits) {
 
 		boolean allDone = false;
-		WriterProfileObsDataset pobsWriter = (WriterProfileObsDataset)writerHolder.getWriter();
+		//WriterProfileObsDataset pobsWriter = (WriterProfileObsDataset)writerHolder.getWriter();
+		WriterCFPointCollection wpc = (WriterCFPointCollection)writerHolder.getWriter();
+		
 		StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars, zUnits);
 		
 		sdata.findMember("date").getDataArray().setObject(0, date.toString());
 		// Iterating vars 
 		Iterator<String> itVars = vars.iterator();
+		EarthLocation earthLocation=null;
 		int cont =0;
 		try{
 			while (itVars.hasNext()) {
 				String varName = itVars.next();
 				GridDatatype grid = gridDataset.findGridDatatype(varName);
-								
+				
 				if (gap.hasTime(grid, date) && gap.hasVert(grid, targetLevel)) {
 					GridAsPointDataset.Point p = gap.readData(grid, date,	targetLevel, point.getLatitude(), point.getLongitude() );
 					sdata.findMember("lat").getDataArray().setDouble(0, p.lat );
 					sdata.findMember("lon").getDataArray().setDouble(0, p.lon );
 					sdata.findMember("vertCoord").getDataArray().setDouble(0, p.z );
-					sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );						
+					sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );
+					
+					if(cont ==0){
+						earthLocation = new EarthLocationImpl(p.lat, p.lon, p.z);
+					}
 			
 				}else{ //Set missing value
 					sdata.findMember("lat").getDataArray().setDouble(0, point.getLatitude() );
 					sdata.findMember("lon").getDataArray().setDouble(0, point.getLongitude() );
 					sdata.findMember("vertCoord").getDataArray().setDouble(0,  targetLevel);
 					sdata.findMember(varName).getDataArray().setDouble(0, gap.getMissingValue(grid) );						
-				
+					earthLocation = new EarthLocationImpl(point.getLatitude(), point.getLongitude() , targetLevel);
 				}
 				cont++;
 			}
 			
-			pobsWriter.writeRecord( (String)sdata.findMember("station").getDataArray().getObject(0), date.toDate() , sdata);
+			//pobsWriter.writeRecord( (String)sdata.findMember("station").getDataArray().getObject(0), date.toDate() , sdata);
+			Double timeCoordValue = getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
+			wpc.writeRecord(timeCoordValue, date, earthLocation , sdata);
 			allDone = true;
 			
 		}catch(IOException ioe){
@@ -159,7 +180,9 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	@Override
 	public boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point) {
 		boolean allDone = false;
-		WriterStationObsDataset sobsWriter = (WriterStationObsDataset)writerHolder.getWriter();
+		//WriterStationObsDataset sobsWriter = (WriterStationObsDataset)writerHolder.getWriter();
+		WriterCFStationCollection wsc = (WriterCFStationCollection)writerHolder.getWriter();
+		
 		StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars);
 		
 		sdata.findMember("date").getDataArray().setObject(0, date.toString());
@@ -186,7 +209,9 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 				cont++;
 			}
 			
-			sobsWriter.writeRecord( (String)sdata.findMember("station").getDataArray().getObject(0), date.toDate() , sdata);
+			//sobsWriter.writeRecord( (String)sdata.findMember("station").getDataArray().getObject(0), date.toDate() , sdata);
+			Double timeCoordValue = getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
+			wsc.writeRecord((String)sdata.findMember("station").getDataArray().getObject(0), timeCoordValue, date, sdata);
 			allDone = true;
 			
 		}catch(IOException ioe){
@@ -201,21 +226,23 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 		
 		boolean allDone = false;
 		if(isProfile){
-			WriterProfileObsDataset pobsWriter = (WriterProfileObsDataset)writerHolder.getWriter();
+			//WriterProfileObsDataset pobsWriter = (WriterProfileObsDataset)writerHolder.getWriter();
+			WriterCFPointCollection wpc = (WriterCFPointCollection)writerHolder.getWriter();
 			try{
-				pobsWriter.finish();
+				wpc.finish();
 				
 			}catch(IOException ioe){
-				log.error("Error writing WriterProfileObsDataset trailer", ioe);
+				log.error("Error writing WriterCFPointCollection trailer", ioe);
 			}
 			
 		}else{
-			WriterStationObsDataset sobsWriter = (WriterStationObsDataset)writerHolder.getWriter();
+			//WriterStationObsDataset sobsWriter = (WriterStationObsDataset)writerHolder.getWriter();
+			WriterCFStationCollection wcs = (WriterCFStationCollection)writerHolder.getWriter();
 			try{
-				sobsWriter.finish();
+				wcs.finish();
 				
 			}catch(IOException ioe){
-				log.error("Error writing WriterStationObsDataset trailer", ioe);
+				log.error("Error writing WriterCFStationCollection trailer", ioe);
 			}		
 		}
 		
@@ -291,6 +318,14 @@ public class NetCDFPointDataWriter implements PointDataWriter {
     	httpHeaders.set("Content-Location", url );
     	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 		
+	}
+	
+	private Double getTimeCoordValue(GridDatatype grid, CalendarDate date){
+	
+		CoordinateAxis1DTime tAxis = grid.getCoordinateSystem().getTimeAxis1D();
+    	Integer wIndex = tAxis.findTimeIndexFromCalendarDate( date );
+    	Double coordVal = tAxis.getCoordValue(wIndex);		
+		return coordVal;
 	}
 }
 
