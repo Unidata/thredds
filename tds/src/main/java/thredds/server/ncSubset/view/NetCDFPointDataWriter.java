@@ -15,7 +15,9 @@ import thredds.server.ncSubset.controller.AbstractNcssController;
 import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.dataservice.StructureDataFactory;
 import ucar.ma2.StructureData;
+import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -33,7 +35,6 @@ import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonRect;
 
 public class NetCDFPointDataWriter implements PointDataWriter {
 
@@ -71,7 +72,9 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 		boolean headerDone = false;
 	    try{		
 	    	//WriterProfileObsDataset pobsWriter = new WriterProfileObsDataset(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI());
-	        WriterCFPointCollection wpc = new WriterCFPointCollection(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI());	    		    		    	
+	    	List<Attribute> atts = new ArrayList<Attribute>();
+	    	atts.add(new Attribute( CDM.TITLE,  "Extract Points data from Grid file "+ gridDataset.getLocationURI()) );
+	        WriterCFPointCollection wpc = new WriterCFPointCollection(netcdfResult.getAbsolutePath(), atts);	    		    		    	
 	    	//writerHolder = new WriterHolder(pobsWriter);
 	        writerHolder = new WriterHolder(wpc);
 	    	NetcdfDataset ncfile = (NetcdfDataset) gridDataset.getNetcdfFile(); // fake-arino
@@ -98,8 +101,9 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnits, LatLonPoint point) {
 		boolean headerDone = false;
 	    try{		
-	    	//WriterStationObsDataset sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI());	    	
-	    	WriterCFStationCollection wsc = new WriterCFStationCollection(netcdfResult.getAbsolutePath(), "Extract Points data from Grid file "+ gridDataset.getLocationURI()); 
+	    	List<Attribute> atts = new ArrayList<Attribute>();
+	    	atts.add(new Attribute(CDM.TITLE,  "Extract Points data from Grid file "+ gridDataset.getLocationURI() ));
+	    	WriterCFStationCollection wsc = new WriterCFStationCollection(netcdfResult.getAbsolutePath(), atts ); 
 	    	
 	    	writerHolder = new WriterHolder(wsc); 
 	    	NetcdfDataset ncfile = (NetcdfDataset) gridDataset.getNetcdfFile(); // fake-arino
