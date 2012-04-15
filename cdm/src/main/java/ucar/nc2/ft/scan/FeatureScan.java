@@ -252,10 +252,9 @@ public class FeatureScan {
       return ftImpl;
     }
 
-    public String toString() {
-      Formatter f = new Formatter();
+    public void toString(Formatter f, boolean showInfo) {
       f.format("%s%n %s%n map = '%s'%n %s%n %s%n", getName(), getFileType(), getCoordMap(), getFeatureType(), getFeatureImpl());
-      if (info != null) {
+      if (showInfo && info != null) {
         f.format("\n%s", info);
       }
       if (problem != null) {
@@ -263,6 +262,11 @@ public class FeatureScan {
         problem.printStackTrace(new PrintStream(bout));
         f.format("\n%s", bout.toString());
       }
+    }
+
+    public String toString() {
+      Formatter f = new Formatter();
+      toString(f, true);
       return f.toString();
     }
 

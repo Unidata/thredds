@@ -130,6 +130,7 @@
       <artifactId>commons-httpclient</artifactId>
     </dependency>
 
+    <!-- calendar / datetime -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
@@ -147,10 +148,17 @@
       <artifactId>jdom</artifactId>
     </dependency>
 
+    <!-- concurrency annotations -->
     <dependency>
       <groupId>net.jcip</groupId>
       <artifactId>jcip-annotations</artifactId>
     </dependency>
+
+    <!-- jni -->
+    <dependency>
+     	<groupId>com.sun.jna</groupId>
+     	<artifactId>jna</artifactId>
+     </dependency>
 
     <!-- Required for reading THREDDS files. -->
     <dependency>

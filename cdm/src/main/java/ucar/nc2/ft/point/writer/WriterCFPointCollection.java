@@ -58,6 +58,10 @@ import java.io.IOException;
  */
 public class WriterCFPointCollection extends CFPointWriter {
 
+  public WriterCFPointCollection(String fileOut, String title) throws IOException {
+    this(fileOut, Arrays.asList(new Attribute[]{new Attribute(CDM.TITLE, title)}));
+  }
+
   public WriterCFPointCollection(String fileOut, List<Attribute> atts) throws IOException {
     super(fileOut, atts);
 

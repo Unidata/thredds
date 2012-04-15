@@ -355,6 +355,7 @@ public class CFpointObs extends TableConfigurerImpl {
         if (profileTable == null) return null;
         if (time.getRank() == 1) // join time(time)
           profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));
+
         stationTable.addChild(profileTable);
 
         // make the inner (z) table
@@ -367,7 +368,7 @@ public class CFpointObs extends TableConfigurerImpl {
       }
 
       case multidim: {
-        assert ((time.getRank() >= 2) && (time.getRank() <= 3)) : "time must be rank 2 or 3";
+        assert ((time.getRank() >= 1) && (time.getRank() <= 3)) : "time must be rank 2 or 3";
         assert ((z.getRank() == 1) || (z.getRank() == 3)) : "z must be rank 1 or 3";
 
         if (time.getRank() == 3) {
@@ -378,7 +379,7 @@ public class CFpointObs extends TableConfigurerImpl {
           //profileDim = time.getDimension(1);
           //zDim = time.getDimension(2);
 
-        } else { // 2d time
+        } else if (time.getRank() == 2) { // 2d time
           if (z.getRank() == 3) { // 2d time, 3d z
             assert z.getDimension(1).equals(time.getDimension(1)) : "rank-2 time must have time inner dimension";
             //profileDim = z.getDimension(1);
@@ -389,19 +390,26 @@ public class CFpointObs extends TableConfigurerImpl {
             //profileDim = time.getDimension(1);
             //zDim = z.getDimension(0);
           }
+        } else { // 1d time
+          if (z.getRank() == 1) {
+            assert !time.getDimension(0).equals(z.getDimension(0)) : "time and z dimensions must be different";
+          }
         }
-
-        // make profile table
-        //   private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
 
         TableConfig profileTable = makeMultidimInner(ds, stationTable, info.childDim, errlog);
         if (profileTable == null) return null;
+        if (time.getRank() == 1) {// join time(time)
+          profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));  // ??
+          profileTable.time = time.getShortName();
+        }
         stationTable.addChild(profileTable);
 
         // make the inner (z) table
         TableConfig zTable = makeMultidimInner3D(ds, stationTable, profileTable, info.grandChildDim, errlog);
-        if (z.getRank() == 1) // join z(z)
+        if (z.getRank() == 1)  { // join z(z)
           zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
+          zTable.elev = z.getShortName();
+        }
         profileTable.addChild(zTable);
         break;
       }
@@ -1045,11 +1053,11 @@ public class CFpointObs extends TableConfigurerImpl {
       return false;
     }
 
-    Dimension obsDim = z.getDimension(z.getRank() - 1); // may be z(z) or alt(profile, z)
+    Dimension obsDim = z.getDimension(z.getRank() - 1); // may be z(z) or alt(profile, z) or alt(sta,prof,z)
     info.alt = z;
     info.grandChildDim = obsDim;
 
-    // multi dimension
+    // alt(sta,prof,z)
     if (z.getRank() > 2) {
       Dimension stnDim = z.getDimension(0);
       Dimension profileDim = z.getDimension(1);
@@ -1062,20 +1070,29 @@ public class CFpointObs extends TableConfigurerImpl {
       return true;
 
     Dimension profileDim = null;
+    Dimension stnDim = null;
+
+    // single
     if (info.lat.getRank() == 0) {
       profileDim = info.time.getDimension(0); // may be time(profile) or time(profile, z)
       info.set(Encoding.single, null, profileDim, obsDim);
       return true;
+
+    } else { // lat must use the station dim
+      stnDim = info.lat.getDimension(0);
     }
 
+    // multidim from here on
+
+    // time(profile) or time(profile, z)
     if ((info.time.getRank() == 1) || (info.time.getRank() == 2 && info.time.getDimension(1) == obsDim)) {
-      profileDim = info.time.getDimension(0); // may be time(profile) or time(profile, z)
-      info.set(Encoding.flat, null, profileDim, obsDim);
+      profileDim = info.time.getDimension(0);
+      info.set(Encoding.multidim, stnDim, profileDim, obsDim);
       return true;
     }
 
-    if (info.time.getRank() > 1) {
-      Dimension stnDim = info.time.getDimension(0); // may be time(station, profile) or time(station, profile, z)
+    // time(station, profile, z)
+    if (info.time.getRank() > 2) {
       profileDim = info.time.getDimension(1);
       info.set(Encoding.multidim, stnDim, profileDim, obsDim);
       return true;

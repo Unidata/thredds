@@ -201,235 +201,6 @@
      =========================================================== -->
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>${javax.servlet.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>jstl</artifactId>
-        <version>${javax.servlet.jstl.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>taglibs</groupId>
-        <artifactId>standard</artifactId>
-        <version>${taglibs.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>net.jcip</groupId>
-        <artifactId>jcip-annotations</artifactId>
-        <version>${net.jcip.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.quartz-scheduler</groupId>
-        <artifactId>quartz</artifactId>
-        <version>${org.quartz-scheduler.version}</version>
-      </dependency>
-
-      <!-- logging -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${org.slf4j.version}</version>
-      </dependency>
-      <dependency>  <!-- Should never be needed at compile time. -->
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-jdk14</artifactId>
-        <version>${org.slf4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>  <!-- Adapts apache commons to slf4j, and so replaced commons-logging.jar -->
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${org.slf4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>  <!-- Should never be needed at compile time. -->
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>${org.slf4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <!-- dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>${commons-logging.version}</version>
-      </dependency -->
-
-      <dependency>
-        <!-- jsoup HTML parser library @ http://jsoup.org/ -->
-        <groupId>org.jsoup</groupId>
-        <artifactId>jsoup</artifactId>
-        <version>${org.jsoup.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jdom</groupId>
-        <artifactId>jdom</artifactId>
-        <version>${org.jdom.version}</version>
-        <!-- Actually 1.1.1, but it doesn't seem to be on Maven repo. -->
-      </dependency>
-
-      <dependency>
-        <groupId>commons-httpclient</groupId>
-        <artifactId>commons-httpclient</artifactId>
-        <version>${commons-httpclient.version}</version>
-        <!-- Transitive dependencies: commons-codec 1.2 and commons-logging 1.0.4 -->
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
-        <version>${org.springframework.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>${org.springframework.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-beans</artifactId>
-        <version>${org.springframework.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>${org.springframework.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-test</artifactId>
-        <version>${org.springframework.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.protobuf</groupId>
-        <artifactId>protobuf-java</artifactId>
-        <version>${com.google.protobuf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache</artifactId>
-        <version>${net.sf.ehcache.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sleepycat</groupId>
-        <artifactId>je</artifactId>        
-        <version>${com.sleepycat.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>${joda-time.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>edu.wisc.ssec</groupId>
-        <artifactId>visad</artifactId>
-        <version>${visad.version}</version>
-      </dependency>
-
-      <!-- UI -->
-      <dependency>
-        <groupId>jfree</groupId>
-        <artifactId>jfreechart</artifactId>
-        <version>${jfree.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>jfree</groupId>
-        <artifactId>jcommon</artifactId>
-        <version>${jfree.jcommon.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.jgoodies</groupId>
-        <artifactId>forms</artifactId>
-        <version>${com.jgoodies.version}</version>
-      </dependency>
-
-      <!-- THREDDS - START -->
-      <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>${log4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-fileupload</groupId>
-        <artifactId>commons-fileupload</artifactId>
-        <version>${commons-fileupload.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>${commons-io.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>cas</groupId>
-        <artifactId>casclient</artifactId>
-        <version>${cas.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>oro</groupId>
-        <artifactId>oro</artifactId>
-        <version>${oro.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>uk.ac.rdg.resc</groupId>
-        <artifactId>ncwms</artifactId>
-        <version>${uk.ac.rdg.resc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.geotoolkit</groupId>
-        <artifactId>geotk-referencing</artifactId>
-        <version>${org.geotoolkit.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>catalina</artifactId>
-        <version>${org.apache.tomcat.version}</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>atg.taglib.json</groupId>
-        <artifactId>json-taglib</artifactId>
-        <version>${atg.taglib.json.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>jaxen</groupId>
-        <artifactId>jaxen</artifactId>
-        <version>${jaxen.version}</version>
-        <scope>runtime</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>maven-cobertura-plugin</artifactId>
-            <groupId>maven-plugins</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>maven-findbugs-plugin</artifactId>
-            <groupId>maven-plugins</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <!-- THREDDS ISO -->
-      <dependency>
-        <groupId>EDS</groupId>
-        <artifactId>threddsIso</artifactId>
-        <version>${eds.threddsIso.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <!-- THREDDS - END -->
-
       <!-- To make dependency usage of child modules in other child modules
            or projects using this POM as a BOM -->
       <dependency>
@@ -463,6 +234,232 @@
         <version>${project.version}</version>
       </dependency>
 
+      <!-- logging -->
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>  <!-- Adapts apache commons to slf4j, and so replaced commons-logging.jar -->
+         <groupId>org.slf4j</groupId>
+         <artifactId>jcl-over-slf4j</artifactId>
+         <version>${org.slf4j.version}</version>
+         <scope>runtime</scope>
+       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${org.slf4j.version}</version>
+      </dependency>
+      <dependency>  <!-- Should never be needed at compile time. -->
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${org.slf4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>  <!-- Should never be needed at compile time. -->
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${org.slf4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!-- spring -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${org.springframework.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${org.springframework.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${org.springframework.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${org.springframework.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${org.springframework.version}</version>
+      </dependency>
+
+      <!-- client -->
+      <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>${commons-httpclient.version}</version>
+        <!-- Transitive dependencies: commons-codec 1.2 and commons-logging 1.0.4 -->
+      </dependency>
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>${net.sf.ehcache.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.jcip</groupId>
+        <artifactId>jcip-annotations</artifactId>
+        <version>${net.jcip.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jdom</groupId>
+         <artifactId>jdom</artifactId>
+         <version>${org.jdom.version}</version> <!-- Actually 1.1.1, but it doesn't seem to be on Maven repo. -->
+       </dependency>
+      <dependency>
+        <groupId>com.sleepycat</groupId>
+        <artifactId>je</artifactId>        
+        <version>${com.sleepycat.version}</version>
+      </dependency>
+      <dependency>
+      	<groupId>com.sun.jna</groupId>
+      	<artifactId>jna</artifactId>
+      	<version>3.0.9</version>
+      </dependency>
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>${joda-time.version}</version>
+      </dependency>
+      <dependency>
+        <!-- jsoup HTML parser library @ http://jsoup.org/ -->
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>${org.jsoup.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${com.google.protobuf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz</artifactId>
+        <version>${org.quartz-scheduler.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>edu.wisc.ssec</groupId>
+        <artifactId>visad</artifactId>
+        <version>${visad.version}</version>
+      </dependency>
+
+      <!-- UI -->
+      <dependency>
+        <groupId>jfree</groupId>
+        <artifactId>jfreechart</artifactId>
+        <version>${jfree.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jfree</groupId>
+        <artifactId>jcommon</artifactId>
+        <version>${jfree.jcommon.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.jgoodies</groupId>
+        <artifactId>forms</artifactId>
+        <version>${com.jgoodies.version}</version>
+      </dependency>
+
+      <!-- THREDDS - START -->
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>${commons-fileupload.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>cas</groupId>
+        <artifactId>casclient</artifactId>
+        <version>${cas.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>oro</groupId>
+        <artifactId>oro</artifactId>
+        <version>${oro.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>uk.ac.rdg.resc</groupId>
+        <artifactId>ncwms</artifactId>
+        <version>${uk.ac.rdg.resc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geotoolkit</groupId>
+        <artifactId>geotk-referencing</artifactId>
+        <version>${org.geotoolkit.version}</version>
+      </dependency>
+
+      <!-- server -->
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>catalina</artifactId>
+        <version>${org.apache.tomcat.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>${javax.servlet.jstl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>${javax.servlet.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>taglibs</groupId>
+        <artifactId>standard</artifactId>
+        <version>${taglibs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>atg.taglib.json</groupId>
+        <artifactId>json-taglib</artifactId>
+        <version>${atg.taglib.json.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>jaxen</groupId>
+        <artifactId>jaxen</artifactId>
+        <version>${jaxen.version}</version>
+        <scope>runtime</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>maven-cobertura-plugin</artifactId>
+            <groupId>maven-plugins</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>maven-findbugs-plugin</artifactId>
+            <groupId>maven-plugins</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- THREDDS ISO -->
+      <dependency>
+        <groupId>EDS</groupId>
+        <artifactId>threddsIso</artifactId>
+        <version>${eds.threddsIso.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <!-- THREDDS - END -->
+
       <!--
            We build the THREDDS war with the option attachClasses enabled so we have two possible dependencies here:
             * war ->  edu.ucar.thredds-{project.version}.war
@@ -487,7 +484,7 @@
         <!-- scope>provided</scope-->
       </dependency>
 
-      <!--  -->
+      <!-- test -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>netcdf</artifactId>

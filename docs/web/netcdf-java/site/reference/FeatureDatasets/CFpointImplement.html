@@ -233,6 +233,10 @@ The CDM uses the axis attribute to choose the correct coordinate. However, it pr
     <td><div align="center"></div></td>
   </tr>
 </table>
+<h3>H.5.1. Multidimensional array representations of time series profiles</h3>
+<p>Specificaton says &quot;The pressure(i,p,o), temperature(i,p,o), and humidity(i,p,o) data for element o of profile p at station i are associated with the coordinate values time(i,p), z(i,p,o), lat(i), and lon(i). Any of the three dimensions could be the netCDF unlimited dimension, if it might be useful to be able enlarge it.&quot;</p>
+<p>Since CDM currently only allows dimensions to be in the order (station, profile, z), then only the station dimension could be unlimited in the multidimensional representation. <br />
+</p>
 <p>&nbsp;</p>
 <hr />
 <address>

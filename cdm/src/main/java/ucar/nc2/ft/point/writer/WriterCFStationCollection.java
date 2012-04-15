@@ -76,6 +76,10 @@ public class WriterCFStationCollection  extends CFPointWriter {
   private boolean useAlt = false;
   private boolean useWmoId = false;
 
+  public WriterCFStationCollection(String fileOut, String title) throws IOException {
+    this(fileOut, Arrays.asList(new Attribute[]{new Attribute(CDM.TITLE, title)}));
+  }
+  
   public WriterCFStationCollection(String fileOut, List<Attribute> atts) throws IOException {
     super(fileOut, atts);
     ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name());
