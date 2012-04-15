@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncSubset.PointDataParameters;
 import thredds.server.ncSubset.controller.SupportedFormat;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.util.NcssRequestUtils;
@@ -54,17 +55,17 @@ public class PointDataWriterTest {
 	public static List<Object[]> getTestParameters(){
 		
 		return Arrays.asList(new Object[][]{  
-				{SupportedFormat.CSV, PointDataWritersParameters.getVars().get(0) , PointDataWritersParameters.getPathInfo().get(0), PointDataWritersParameters.getPoints().get(0) },
-				{SupportedFormat.CSV, PointDataWritersParameters.getVars().get(1) , PointDataWritersParameters.getPathInfo().get(1), PointDataWritersParameters.getPoints().get(1) },
-				{SupportedFormat.CSV, PointDataWritersParameters.getVars().get(2) , PointDataWritersParameters.getPathInfo().get(2), PointDataWritersParameters.getPoints().get(2) },
+				{SupportedFormat.CSV, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
+				{SupportedFormat.CSV, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
+				{SupportedFormat.CSV, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) },
 				
-				{SupportedFormat.XML, PointDataWritersParameters.getVars().get(0) , PointDataWritersParameters.getPathInfo().get(0), PointDataWritersParameters.getPoints().get(0) },
-				{SupportedFormat.XML, PointDataWritersParameters.getVars().get(1) , PointDataWritersParameters.getPathInfo().get(1), PointDataWritersParameters.getPoints().get(1) },
-				{SupportedFormat.XML, PointDataWritersParameters.getVars().get(2) , PointDataWritersParameters.getPathInfo().get(2), PointDataWritersParameters.getPoints().get(2) },
+				{SupportedFormat.XML, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
+				{SupportedFormat.XML, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
+				{SupportedFormat.XML, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) },
 				
-				{SupportedFormat.NETCDF, PointDataWritersParameters.getVars().get(0) , PointDataWritersParameters.getPathInfo().get(0), PointDataWritersParameters.getPoints().get(0) },
-				{SupportedFormat.NETCDF, PointDataWritersParameters.getVars().get(1) , PointDataWritersParameters.getPathInfo().get(1), PointDataWritersParameters.getPoints().get(1) },
-				{SupportedFormat.NETCDF, PointDataWritersParameters.getVars().get(2) , PointDataWritersParameters.getPathInfo().get(2), PointDataWritersParameters.getPoints().get(2) }				
+				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
+				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
+				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) }				
 		});				
 	}
 	

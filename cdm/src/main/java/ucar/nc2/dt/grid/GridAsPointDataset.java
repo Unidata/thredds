@@ -33,16 +33,22 @@
 
 package ucar.nc2.dt.grid;
 
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.ma2.Array;
-import ucar.nc2.time.CalendarDate;
-import ucar.unidata.geoloc.LatLonPoint;
-
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
+import ucar.ma2.Array;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.time.CalendarDate;
+import ucar.unidata.geoloc.EarthLocation;
+import ucar.unidata.geoloc.LatLonPoint;
 
 /**
  * Add Point operations to a GridDataset.
@@ -95,10 +101,12 @@ public class GridAsPointDataset {
   public Point readData(GridDatatype grid, CalendarDate date, double lat, double lon)  throws java.io.IOException {
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
-    CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-    int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
+    //CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
+    //int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
 
-    int[] xy = gcs.findXYindexFromLatLonBounded(lat, lon, null);
+    int tidx = findTimeIndexForCalendarDate(gcs, date);
+    //int[] xy = gcs.findXYindexFromLatLonBounded(lat, lon, null);
+    int[] xy = gcs.findXYindexFromLatLon(lat, lon, null);
 
     Array data  = grid.readDataSlice(tidx, -1, xy[1], xy[0]);
 
@@ -122,9 +130,10 @@ public class GridAsPointDataset {
   public Point readData(GridDatatype grid, CalendarDate date, double zCoord, double lat, double lon)  throws java.io.IOException {
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
-    CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-    int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
-
+    //CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
+    //int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
+    int tidx = findTimeIndexForCalendarDate(gcs, date);
+    
     CoordinateAxis1D zAxis = gcs.getVerticalAxis();
     int zidx = zAxis.findCoordElement( zCoord);
 
@@ -142,10 +151,59 @@ public class GridAsPointDataset {
     p.dataValue = data.getDouble( data.getIndex());
     return p;
   }
+  
+  /**
+   * Reads data for the given point (earthlocation) and if bounded is true returs data for the closest point within the grid, for points outside of the grid
+   * 
+   * @param grid
+   * @param date
+   * @param location EarthLocation, if altitude is NaN assume that is 2D point
+   * @param bounded
+   * @return
+   * @throws java.io.IOException
+   */
+  public Point readData(GridDatatype grid, CalendarDate date, EarthLocation location, boolean bounded)  throws java.io.IOException {
 
+  
+	  if(!bounded){
+		  if( location.getAltitude() == Double.NaN ){			  
+			  return readData(grid, date, location.getLatitude(), location.getLongitude());
+		  }else{
+			  return readData(grid, date, location.getAltitude(), location.getLatitude(), location.getLongitude());
+		  }
+	  }
+	  
+	  //Bounded --> Read closest data 
+	  GridCoordSystem gcs = grid.getCoordinateSystem();
+	  int tidx = findTimeIndexForCalendarDate(gcs, date);	  
+	  int[] xy = gcs.findXYindexFromLatLonBounded(location.getLatitude(), location.getLongitude(), null);
+	    	  
+	  LatLonPoint latlon = gcs.getLatLon(xy[0], xy[1]);
+	  Point p = new Point();
+	  p.lat = latlon.getLatitude();
+	  p.lon = latlon.getLongitude();
+	    	  
+	  int zidx=-1;
+	  if(location.getAltitude() != Double.NaN){
+		    CoordinateAxis1D zAxis = gcs.getVerticalAxis();
+		    zidx = zAxis.findCoordElement( location.getAltitude());
+		    p.z = zAxis.getCoordValue( zidx);
+	  }
+	  
+	  Array data = grid.readDataSlice(tidx, zidx, xy[1], xy[0]);	  	  
+	  p.dataValue = data.getDouble( data.getIndex());
+	  
+	  return p;
+  }
 
   public class Point {
     public double lat,lon,z,dataValue;
+  }
+  
+  private int findTimeIndexForCalendarDate(GridCoordSystem gcs, CalendarDate date){	  
+	  
+	  CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();	  
+	  return timeAxis.findTimeIndexFromCalendarDate(date);
   }
 
   public static void main(String[] args) throws IOException {

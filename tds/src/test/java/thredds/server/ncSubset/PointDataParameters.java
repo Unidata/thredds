@@ -1,4 +1,4 @@
-package thredds.server.ncSubset.view;
+package thredds.server.ncSubset;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,7 +7,7 @@ import java.util.List;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
-final class PointDataWritersParameters {
+public final class PointDataParameters {
 
 	private static  List<List<String>> vars;
 	private static List<String> pathInfo;
@@ -17,7 +17,7 @@ final class PointDataWritersParameters {
 	//We must now beforehand the size of the vertical level use index within the Axis range
 	private static List<Double> verticalLevels;
 
-	private PointDataWritersParameters(){}
+	private PointDataParameters(){}
 		
 	static{
 		
@@ -40,9 +40,8 @@ final class PointDataWritersParameters {
 			//Points must be within the dataset boundaries
 			point = new ArrayList<LatLonPoint>();
 			point.add(new LatLonPointImpl( 42.0, -105.2 ));
-			point.add(new LatLonPointImpl( 50.0,-100.2 ));
-			point.add(new LatLonPointImpl( 50.0,-100.2 ));
-			//point.add(new LatLonPointImpl( 16.935228,-102.223890 ));
+			point.add(new LatLonPointImpl( 50.0,-100.2 ));			
+			point.add(new LatLonPointImpl( 18.5,-102.25 ));
 		
 			verticalLevels=Arrays.asList( new Double[]{-1.0, 10.0, -1.0}  );
 	};
