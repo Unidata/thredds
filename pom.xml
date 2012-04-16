@@ -160,27 +160,28 @@
 
   <distributionManagement>
     <repository>
-      <id>thredds-releases</id>
-      <name>THREDDS Releases</name>
-      <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds-releases</url>
+      <id>unidata-releases</id>
+      <name>UNIDATA Releases</name>
+      <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/</url>
     </repository>
     <snapshotRepository>
-      <id>thredds-snapshots</id>
-      <name>THREDDS Snapshots</name>
-      <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds-snapshots</url>
+      <id>unidata-snapshots</id>
+      <name>UNIDATA Snapshots</name>
+      <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
   <repositories>
     <repository>
-      <id>thredds</id>
+      <id>unidata</id>
       <name>THREDDS</name>
-      <url>http://artifacts.unidata.ucar.edu:8081/content/repositories/thredds/</url>
+      <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata/</url>
     </repository>
     <repository>
-      <id>thredds-3rdparty</id>
-      <url>http://artifacts.unidata.ucar.edu:8081/content/repository/thredds-3rdparty/</url>
+      <id>unidata-3rdparty</id>
+      <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/</url>
     </repository>
+ 
     <repository>
       <id>geotoolkit</id>
       <name>Geotk repository</name>
