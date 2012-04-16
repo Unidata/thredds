@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
+import thredds.inventory.CollectionUpdater;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -224,6 +225,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     if (gcCache != null) gcCache.exit();
     if (cacheManager != null) cacheManager.close();
     thredds.inventory.bdb.MetadataManager.closeAll();
+    CollectionUpdater.INSTANCE.shutdown();
     startupLog.info("CdmInit shutdown");
   }
 

@@ -359,6 +359,21 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * @throws IOException on error
    */
   public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
+    int pos = matchPath.indexOf('/');
+    String type = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
+    String name = (pos > -1) ? matchPath.substring(pos + 1) : "";
+
+    // this assumes that these are files. also might be remote datasets from a catalog
+    if (type.equals(FILES)) {
+      if (topDirectory == null) return null;
+
+      String filename = new StringBuilder(topDirectory)
+              .append(topDirectory.endsWith("/") ? "" : "/")
+              .append(name).toString();
+      NetcdfDataset ncd = NetcdfDataset.acquireDataset(null, filename, null, -1, null, null); // no enhancement
+      return new ucar.nc2.dt.grid.GridDataset(ncd);
+    }
+
     return null;
   }
 
@@ -391,7 +406,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       return NetcdfDataset.acquireDataset(null, filename, null, -1, null, null); // no enhancement
     }
 
-    GridDataset gds = getGridDataset(matchPath);
+    GridDataset gds = getGridDataset(matchPath); // LOOK cant be right
     return (gds == null) ? null : (NetcdfDataset) gds.getNetcdfFile();
   }
 

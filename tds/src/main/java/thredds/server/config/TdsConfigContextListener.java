@@ -54,6 +54,7 @@ public class TdsConfigContextListener implements ServletContextListener {
 
 
   public void contextInitialized( ServletContextEvent event ) {
+    /*
     // ToDo Instead of stdout, use servletContext.log( "...")  [NOTE: it writes to localhost.*.log rather than catalina.out].
     System.out.println( "TdsConfigContextListener.contextInitialized(): start." );
 
@@ -98,7 +99,7 @@ public class TdsConfigContextListener implements ServletContextListener {
     HtmlWriter htmlWriter = (HtmlWriter) wac.getBean( "htmlWriter", HtmlWriter.class );
     htmlWriter.setSingleton( htmlWriter );
 
-    logServerStartup.info( "TdsConfigContextListener.contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "TdsConfigContextListener.contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );  */
   }
   
 

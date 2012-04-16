@@ -41,6 +41,7 @@ import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Iosp;
@@ -510,6 +511,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
+    // handle FILES
+    GridDataset result = super.getGridDataset(matchPath);
+    if (result != null) return result;
+
     StateGrib localState = null;
     try {
       localState = checkState();
@@ -535,7 +540,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
       if (tpp != null) {
         GribCollection gc =  tpp.getGribCollection();
-        ucar.nc2.dt.GridDataset result = gc.getGridDataset(paths[1], filename, gribConfig);
+        result = gc.getGridDataset(paths[1], filename, gribConfig);
         // LOOK WRONG gc.close();
         return result;
       }
