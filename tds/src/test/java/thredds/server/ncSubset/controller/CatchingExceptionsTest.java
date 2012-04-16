@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
+import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
@@ -88,6 +89,28 @@ public class CatchingExceptionsTest {
 		//params.setVar( Arrays.asList("VAR_7-0-2-2_L102","VAR_7-0-2-1_L1","VAR_7-0-2-156_L1") );
 		//Same vert levels
 		params.setVar( Arrays.asList("VAR_7-0-2-11_L100","wrong_var"));
+		params.setPoint(true);
+		params.setVertCoord(null);
+		params.setAccept("text/csv");
+		params.setTime_start("2012-02-29T12:00:00.000Z");
+		params.setTime_duration("PT18H");
+		
+		BindingResult result = new BeanPropertyBindingResult(params, "params");
+		
+		pointDataController.getPointData(params, result, new MockHttpServletResponse());
+
+	}
+	
+	@Test(expected=OutOfBoundariesException.class)
+	public void testOutOfBoundariesException() throws Exception{
+
+		//All parameters got the controller validated so set good values 
+		PointDataRequestParamsBean params = new PointDataRequestParamsBean();
+		params.setLatitude(16.74);
+		params.setLongitude(-105.0);		
+		//params.setVar( Arrays.asList("VAR_7-0-2-2_L102","VAR_7-0-2-1_L1","VAR_7-0-2-156_L1") );
+		//Same vert levels
+		params.setVar( Arrays.asList("Temperature_isobaric"));
 		params.setPoint(true);
 		params.setVertCoord(null);
 		params.setAccept("text/csv");

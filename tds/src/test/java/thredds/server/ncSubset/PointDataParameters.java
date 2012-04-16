@@ -41,7 +41,7 @@ public final class PointDataParameters {
 			point = new ArrayList<LatLonPoint>();
 			point.add(new LatLonPointImpl( 42.0, -105.2 ));
 			point.add(new LatLonPointImpl( 50.0,-100.2 ));			
-			point.add(new LatLonPointImpl( 18.5,-102.25 ));
+			point.add(new LatLonPointImpl( 18.0,-102.25 ));
 		
 			verticalLevels=Arrays.asList( new Double[]{-1.0, 10.0, -1.0}  );
 	};

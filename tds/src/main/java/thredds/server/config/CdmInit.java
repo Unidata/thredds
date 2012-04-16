@@ -217,7 +217,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     startupLog.info("CdmInit complete");
   }
 
-  // should be called when tomcat exits
+  //should be called when tomcat exits
   public void destroy() throws Exception {
     if (timer != null) timer.cancel();
     FileCache.shutdown();
@@ -227,6 +227,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     thredds.inventory.bdb.MetadataManager.closeAll();
     CollectionUpdater.INSTANCE.shutdown();
     startupLog.info("CdmInit shutdown");
+   
   }
 
   private class CacheScourTask extends TimerTask {
