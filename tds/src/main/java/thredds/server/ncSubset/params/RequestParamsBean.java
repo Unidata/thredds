@@ -16,11 +16,11 @@ import ucar.nc2.units.TimeDuration;
 @TimeParamsConstraint
 public class RequestParamsBean {
 	
-	@NotNull(message="var param may not be null")
+	//@NotNull(message="var param may not be null")
 	@VarParamConstraint
 	private List<String> var;
 	
-	@NotNull(message="accept param may not be null")
+	//@NotNull(message="accept param may not be null")
 	private String accept;
 	
 	@Valid
@@ -84,7 +84,7 @@ public class RequestParamsBean {
 		this.vertCoord = vertCoord;
 	}	
 
-	public CalendarDateRange getCalendarDateRange() throws ParseException{
+	/*public CalendarDateRange getCalendarDateRange() throws ParseException{
 		
 		DateRange dr; 
 		if(time == null)
@@ -96,5 +96,5 @@ public class RequestParamsBean {
 		
 		return CalendarDateRange.of(dr );
 		
-	} 
+	}*/
 }

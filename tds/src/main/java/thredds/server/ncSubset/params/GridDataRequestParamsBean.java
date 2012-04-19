@@ -7,26 +7,26 @@ import ucar.unidata.geoloc.LatLonRect;
 
 public class GridDataRequestParamsBean extends RequestParamsBean {
 	
-	@NotNull(message="north param may not be null")	
+	//@NotNull(message="north param may not be null")	
 	private Double north;
 	
-	@NotNull(message="south param may not be null")	
+	//@NotNull(message="south param may not be null")	
 	private Double south;
 	
-	@NotNull(message="east param may not be null")	
+	//@NotNull(message="east param may not be null")	
 	private Double east;
 	
-	@NotNull(message="west param may not be null")	
+	//@NotNull(message="west param may not be null")	
 	private Double west;
 	
 	private boolean addLatLon;
 	
 	//default 
-	@NotNull(message="horizStride param may not be null")
+	//@NotNull(message="horizStride param may not be null")
 	private Integer horizStride = 1;
 	
 	//default
-	@NotNull(message="timeStride param may not be null")
+	//@NotNull(message="timeStride param may not be null")
 	private Integer timeStride = 1;
 
 	public Double getNorth() {
@@ -85,9 +85,9 @@ public class GridDataRequestParamsBean extends RequestParamsBean {
 		this.timeStride = timeStride;
 	}
 	
-	public LatLonRect getBB(){
+	/*public LatLonRect getBB(){
 		return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), new LatLonPointImpl(getNorth(), getEast()));
-	}
+	}*/
 	
 
 }

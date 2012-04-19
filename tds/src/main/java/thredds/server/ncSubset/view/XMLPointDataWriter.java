@@ -188,8 +188,9 @@ class XMLPointDataWriter implements PointDataWriter {
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
 		XMLStreamWriter writer = null;
+	
 		try {
-			writer = outputFactory.createXMLStreamWriter(os);
+			writer = outputFactory.createXMLStreamWriter(os, "UTF-8");
 		} catch (XMLStreamException xse) {
 			log.error(xse.getMessage());
 		}

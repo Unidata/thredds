@@ -39,6 +39,10 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 		String time_end = params.getTime_end();
 		String time_duration = params.getTime_duration();
 		
+		//if all of them are null --> returns the whole time series
+		//so all null are valid parameters
+		if(time_start==null & time_end==null && time_duration==null   ) return true;
+		
 		if(!hasValidDateRange(time_start, time_end, time_duration)){		
 			constraintValidatorContext
 				.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.twoofthree}")

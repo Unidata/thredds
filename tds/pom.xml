@@ -404,7 +404,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <!-- Enabling tests for first unit testing -->
-          <skip>true</skip>
+          <skip>false</skip>
           <testFailureIgnore>true</testFailureIgnore>
           <includes>
             <include>thredds/server/catalogservice/**</include>

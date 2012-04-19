@@ -13,7 +13,7 @@ public class PointDataRequestParamsBean extends RequestParamsBean {
 	@NotNull(message="longitude param may not be null")
 	private Double longitude;
 			
-	@NotNull(message="point param may not be null")
+	//@NotNull(message="point param may not be null")
 	private Boolean point;
 		
 	
