@@ -71,13 +71,6 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   //  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionImpl.class);
 
   /**
-   * Projection Name
-   *
-   * @deprecated use CF.GRID_MAPPING_NAME
-   */
-  public static final String ATTR_NAME = "grid_mapping_name";
-
-  /**
    * Earth radius in kilometers
    */
   static public final double EARTH_RADIUS = Earth.getRadius() * 0.001;  // km

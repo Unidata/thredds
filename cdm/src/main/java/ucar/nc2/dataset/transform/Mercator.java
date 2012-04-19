@@ -39,7 +39,6 @@ import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
-import ucar.unidata.geoloc.Earth;
 
 /**
  * Create a Mercator Projection from the information in the Coordinate Transform Variable.
@@ -69,7 +68,7 @@ public class Mercator extends AbstractCoordTransBuilder {
     double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN); // LOOK not used
     double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
-    double earth_radius = getEarthRadius(ctv);
+    double earth_radius = getEarthRadiusInKm(ctv);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
       double scalef = getFalseEastingScaleFactor(ds, ctv);

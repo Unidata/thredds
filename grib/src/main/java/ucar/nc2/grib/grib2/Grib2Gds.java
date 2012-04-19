@@ -1161,28 +1161,30 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
   }
 
   /*
- Curvilinear Orthogonal Grids (NCEP grid 206)
-Octet	Contents
-15 Shape of the Earth (See Table 3.2)
-16 Scale Factor of radius of spherical Earth
-17-20 Scale value of radius of spherical Earth
-21 Scale factor of major axis of oblate spheroid Earth
-22-25 Scaled value of major axis of oblate spheroid Earth
-26 Scale factor of minor axis of oblate spheroid Earth
-27-30 Scaled value of minor axis of oblate spheroid Earth
-31-34 Ni number of points along a parallel
-35-38 Nj number of points along a meridian
-39-54 Reserved (set to zero)
-55 Resolution and component flags (see Table 3.3)
-56-71 Reserved (set to zero)
-72 Scanning mode (flags  see Table 3.4)
+  Curvilinear Orthogonal Grids (NCEP grid 204)
+  see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table3-1.shtml
+
+  Octet	Contents
+    15 Shape of the Earth (See Table 3.2)
+    16 Scale Factor of radius of spherical Earth
+    17-20 Scale value of radius of spherical Earth
+    21 Scale factor of major axis of oblate spheroid Earth
+    22-25 Scaled value of major axis of oblate spheroid Earth
+    26 Scale factor of minor axis of oblate spheroid Earth
+    27-30 Scaled value of minor axis of oblate spheroid Earth
+    31-34 Ni number of points along a parallel
+    35-38 Nj number of points along a meridian
+    39-54 Reserved (set to zero)
+    55 Resolution and component flags (see Table 3.3)
+    56-71 Reserved (set to zero)
+    72 Scanning mode (flags  see Table 3.4)
    */
 
   public static class CurvilinearOrthogonal extends Grib2Gds {
     public int flags;
 
     CurvilinearOrthogonal(byte[] data) {
-      super(data, 206);
+      super(data, 204);
 
       flags =  getOctet(55);
       scanMode =  getOctet(72);

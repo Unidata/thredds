@@ -77,6 +77,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   private double radarRadius;
   private Variable v0, v1;
   private DateFormatter formatter = new DateFormatter();
+  private boolean overMidNight = false;
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     NexradStationDB.init();
@@ -167,7 +168,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
     ncfile.addAttribute(null, new Attribute("format", volScan.getDataFormat()));
     ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
-    Date d = getDate(volScan.getTitleJulianDays(), 0);
+    Date d = getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     ncfile.addAttribute(null, new Attribute("base_date", formatter.toDateOnlyString(d)));
 
     ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(d)));
@@ -314,14 +315,13 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     timeVar.setDimensions(dim2);
     ncfile.addVariable(null, timeVar);
 
-
     // int julianDays = volScan.getTitleJulianDays();
     // Date d = Level2Record.getDate( julianDays, 0);
     // Date d = getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
     Date d = getDate(volScan.getTitleJulianDays(), 0);  // times are msecs from midnight
     String units = "msecs since "+formatter.toDateTimeStringISO(d);
 
-    timeVar.addAttribute( new Attribute(CDM.LONG_NAME, "time since base date"));
+    timeVar.addAttribute( new Attribute(CDM.LONG_NAME, "time of each ray"));
     timeVar.addAttribute( new Attribute(CDM.UNITS, units));
     timeVar.addAttribute( new Attribute(CDM.MISSING_VALUE, MISSING_INT));
     timeVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
@@ -530,7 +530,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         // now set the  coordinate variables from the Level2Record radial
     int last_msecs = Integer.MIN_VALUE;
     int nscans = groups.size();
-    boolean overMidNight = false;
+
     for (int scan = 0; scan < nscans; scan++) {
       List scanGroup = (List) groups.get(scan);
       int nradials = scanGroup.size();

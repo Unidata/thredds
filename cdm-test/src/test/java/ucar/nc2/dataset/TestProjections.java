@@ -33,7 +33,9 @@
 
 package ucar.nc2.dataset;
 
+import org.apache.commons.httpclient.util.ParameterParser;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.Misc;
@@ -51,6 +53,7 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.Parameter;
 
 /**
  * test projections
@@ -93,6 +96,11 @@ public class TestProjections extends TestCase {
         "Temperature_isobaric",
         Mercator.class);
 
+    p = test(testDir+ "rotatedPole/snow.DMI.ecctrl.nc",
+        "rotated_pole",
+        "snow",
+        RotatedPole.class);
+
     p = test(testDir+ "Eumetsat.VerticalPerspective.grb",
         "SpaceViewPerspective_Projection",
         "Pixel_scene_type",
@@ -122,6 +130,11 @@ public class TestProjections extends TestCase {
         "projection_tmerc",
         "air_temperature_2m",
         ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection.class);
+    
+    p = test(testDir+ "rotatedPole/snow.DMI.ecctrl.ncml",
+            "rotated_pole",
+            "snow",
+            RotatedPole.class);
   }
 
   private Projection test(String filename, String ctvName, String varName, Class projClass) throws IOException, InvalidRangeException {
@@ -161,6 +174,24 @@ public class TestProjections extends TestCase {
     assert proj != null;
     assert projClass.isInstance(proj) : proj.getClass().getName();
 
+    if (projClass != RotatedPole.class) {
+      boolean found = false;
+      double radius = 0.0;
+      for (Parameter p : proj.getProjectionParameters()) {
+        if (p.getName().equals(CF.EARTH_RADIUS)) {
+          found = true;
+          radius = p.getNumericValue();
+        }
+        if (p.getName().equals(CF.SEMI_MAJOR_AXIS)) {
+          found = true;
+          radius = p.getNumericValue();
+        }
+      }
+
+      assert found;
+      assert (radius > 10000) : radius; // meters
+    }
+
     VariableDS ctvSyn = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
     System.out.println(" dump of equivilent ctv = \n" + ctvSyn);
 
@@ -173,7 +204,53 @@ public class TestProjections extends TestCase {
     return proj;
   }
 
-  public void testPSscaleFactor() throws IOException {
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  public void testCoordinates() throws IOException, InvalidRangeException {
+    testCoordinates(testDir+ "stereographic/foster.grib2", 26.023346, 251.023136 - 360.0, 41.527360, 270.784605 - 360.0);  // testPSscaleFactor
+    testCoordinates(testDir+ "melb-small_M-1SP.nc", -36.940012, 145.845218, -36.918406, 145.909746);  // testMercatorScaleFactor
+    testCoordinates(testDir+ "rotatedPole/snow.DMI.ecctrl.ncml", 28.690059, -3.831161, 68.988028, 57.076276);              // rotated Pole
+    testCoordinates(testDir+ "rotatedPole/DMI-HIRHAM5_ERAIN_DM_AMMA-50km_1989-1990_as.nc", -19.8, -35.64, 35.2, 35.2);   // this one fails for now. hese are the rotated
+    // coordinates, but it looks like it shouldnt be rotated. but both x, y ending at 35.2 ??
+  }
+
+  private void testCoordinates(String filename, double startLat, double startLon, double endLat, double endLon) throws IOException, InvalidRangeException {
+    System.out.printf("%n***Open %s%n", filename);
+    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
+    GridDataset gds = new GridDataset(ncd);
+    GridCoordSystem gsys = null;
+    ProjectionImpl p = null;
+
+    for (ucar.nc2.dt.GridDataset.Gridset g : gds.getGridsets()) {
+      gsys = g.getGeoCoordSystem();
+      for (CoordinateTransform t : gsys.getCoordinateTransforms()) {
+        if (t instanceof ProjectionCT) {
+          p = ((ProjectionCT)t).getProjection();
+          break;
+        }
+      }
+    }
+    assert p != null;
+
+    CoordinateAxis1D xaxis = (CoordinateAxis1D) gsys.getXHorizAxis();
+    CoordinateAxis1D yaxis =  (CoordinateAxis1D) gsys.getYHorizAxis();
+    p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
+    LatLonPointImpl start1 =  p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
+    LatLonPointImpl start2 =  p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
+    System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
+    System.out.printf( "end = %f %f%n", start2.getLatitude(), start2.getLongitude());
+
+    assert Misc.closeEnough(start1.getLatitude(), startLat) : Misc.howClose(start1.getLatitude(), startLat);
+    assert Misc.closeEnough(start1.getLongitude(), startLon) : Misc.howClose(start1.getLongitude(), startLon);
+
+    assert Misc.closeEnough(start2.getLatitude(), endLat,  2.0E-4) :  Misc.howClose(start2.getLatitude(), endLat);
+    assert Misc.closeEnough(start2.getLongitude(),endLon, 2.0E-4) : Misc.howClose(start2.getLongitude(), endLon);
+
+    ncd.close();
+  }
+
+  public void utestPSscaleFactor() throws IOException {
     String filename = testDir+ "stereographic/foster.grib2";
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
     GridDataset gds = new GridDataset(ncd);

@@ -154,7 +154,7 @@ public class AlbersEqualArea extends ProjectionImpl {
       addParameter(CDM.UNITS, "km");
     }
 
-    addParameter(CF.EARTH_RADIUS, earth_radius * 1000);
+    addParameter(CF.EARTH_RADIUS, earth_radius * 1000); // must be in meters
   }
 
   /**
@@ -293,6 +293,10 @@ public class AlbersEqualArea extends ProjectionImpl {
     return falseNorthing;
   }
 
+  /**
+   * Earth radius in km
+   * @return Earth radius in km
+   */
   public double getEarthRadius() {
     return this.earth_radius;
   }

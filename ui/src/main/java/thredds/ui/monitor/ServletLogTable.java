@@ -99,7 +99,7 @@ public class ServletLogTable extends JPanel {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
         if (log == null) return;
         infoTA.setText(log.toString());
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -113,7 +113,7 @@ public class ServletLogTable extends JPanel {
         } catch (Exception ee) {
           infoTA.setTextFromStackTrace(ee);
         }
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -132,7 +132,7 @@ public class ServletLogTable extends JPanel {
         Merge m = (Merge) mergeTable.getSelectedBean();
         if (m == null) return;
         infoTA.setText(m.toString());
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -146,7 +146,7 @@ public class ServletLogTable extends JPanel {
         } catch (Exception ee) {
           infoTA.setTextFromStackTrace(ee);
         }
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -165,7 +165,7 @@ public class ServletLogTable extends JPanel {
         Merge m = (Merge) undoneTable.getSelectedBean();
         if (m == null) return;
         infoTA.setText(m.toString());
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -175,7 +175,7 @@ public class ServletLogTable extends JPanel {
         LogReader.Log log = (LogReader.Log) miscTable.getSelectedBean();
         if (log == null) return;
         infoTA.setText(log.toString());
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -320,6 +320,14 @@ public class ServletLogTable extends JPanel {
       completeLogs = new ArrayList<ServletLogParser.ServletLog>(30000);
       for (LogLocalManager.FileDateRange fdr : logFiles)
         reader.scanLogFile(fdr.f, new MyClosure(completeLogs), new LogReader.FilterNoop(), stats);
+      
+      // estimate number of threads used
+      int nthreads = 0;
+      for (ServletLogParser.ServletLog log : completeLogs) {
+        if (log.isStart()) nthreads++;
+        if (log.isDone() && nthreads > 0) nthreads--;
+        log.setNthreads(nthreads);
+      }
       logTable.setBeans(completeLogs);
 
     } catch (IOException ioe) {

@@ -94,7 +94,7 @@ public class GeoGridTable extends JPanel {
           infoTA.appendLine( v.toString());
         }
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -118,7 +118,7 @@ public class GeoGridTable extends JPanel {
             infoTA.clear();
             infoTA.appendLine(dc);
             infoTA.gotoTop();
-            infoWindow.showIfNotIconified();
+            infoWindow.show();
           }
           catch (WcsException e1)
           {

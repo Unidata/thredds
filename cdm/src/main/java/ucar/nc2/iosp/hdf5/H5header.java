@@ -1147,8 +1147,15 @@ public class H5header {
         v.addAttribute(new Attribute("_opaqueDesc", desc));
     }
 
-    if (vinfo.isChunked) // make the data btree, but entries are not read in
+    if (vinfo.isChunked) {// make the data btree, but entries are not read in
       vinfo.btree = new DataBTree(dataAddress, v.getShape(), vinfo.storageSize);
+
+      // add an attribute describing the chunk size
+      List<Integer> chunksize = new ArrayList<Integer>();
+      for (int i=0; i<vinfo.storageSize.length-1; i++)  // skip last one - its the element size
+        chunksize.add(vinfo.storageSize[i]);
+      v.addAttribute(new Attribute("HDF5_chunksize", chunksize));
+    }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
       // System.out.println("transform object Reference: facade=" + facade.name +" variable name=" + v.getName());
@@ -1373,9 +1380,9 @@ public class H5header {
     // for member variables, is the offset from start of structure
 
     TypeInfo typeInfo;
-    int[] storageSize;  // for type 1 (continuous) : (varDims, elemSize)
-    // for type 2 (chunked)    : (chunkDim, elemSize)
-    // null for attributes
+    int[] storageSize;  // for type 1 (continuous) : mds.dimLength;
+                        // for type 2 (chunked)    : msl.chunkSize (last number is element size)
+                        // null for attributes
 
     // chunked stuff
     boolean isChunked = false;

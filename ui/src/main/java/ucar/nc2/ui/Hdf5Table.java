@@ -115,7 +115,7 @@ public class Hdf5Table extends JPanel {
 
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 

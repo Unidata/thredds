@@ -2080,7 +2080,7 @@ public class ToolsUI extends JPanel {
       } catch (Exception e) {
         e.printStackTrace(new PrintStream(bos));
         detailTA.setText(bos.toString());
-        detailWindow.showIfNotIconified();
+        detailWindow.show();
         err = true;
       }
 

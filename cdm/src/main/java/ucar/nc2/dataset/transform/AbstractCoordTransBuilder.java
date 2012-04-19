@@ -209,11 +209,11 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     /**
    * Get the earth radius in km from the attribute "earth_radius".
    * Normally this is in meters, convert to km if its > 10,000.
-   * Use  Earth.getRadius() as default.
+   * Use Earth.getRadius() as default.
    * @param ctv coord transform variable
    * @return earth radius in km
    */
-  protected double getEarthRadius(Variable ctv) {
+  protected double getEarthRadiusInKm(Variable ctv) {
     double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius());
     if (earth_radius > 10000.0) earth_radius *= .001;
     return earth_radius;

@@ -36,7 +36,6 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
-import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 import ucar.unidata.geoloc.Earth;
 
 /**
@@ -69,7 +68,7 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-    double earth_radius = getEarthRadius(ctv);
+    double earth_radius = getEarthRadiusInKm(ctv);
     double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
     double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
     double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);

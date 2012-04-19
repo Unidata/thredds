@@ -41,8 +41,6 @@ import ucar.nc2.Variable;
 
 /**
  * Create a Rotated LatLon Projection from the information in the Coordinate Transform Variable.
- *
- * @author kambic
  */
 public class RotatedLatLon extends AbstractCoordTransBuilder {
 

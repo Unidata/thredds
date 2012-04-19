@@ -97,7 +97,7 @@ public class GribFilesPanel extends JPanel {
         showFilesInCollection(pb, f);
         infoPopup.setText(f.toString());
         infoPopup.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -137,7 +137,7 @@ public class GribFilesPanel extends JPanel {
           bean.showComplete(f);
           infoPopup.setText(f.toString());
           infoPopup.gotoTop();
-          infoWindow.showIfNotIconified();
+          infoWindow.show();
         }
       }
     });

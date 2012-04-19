@@ -57,7 +57,7 @@ font-style: italic
   GridDatatype grid = gds.findGridDatatype( args[1]);
   GridCoordSystem gcs = grid.getCoordinateSystem();
   CoordinateAxis xAxis = gcs.getXHorizAxis();
-  CoordinateAxis yAxis = gcs.getXHorizAxis();
+  CoordinateAxis yAxis = gcs.getYHorizAxis();
   CoordinateAxis1D zAxis = gcs.getVerticalAxis(); // may be null
 
   if (gcs.hasTimeAxis1D()) {

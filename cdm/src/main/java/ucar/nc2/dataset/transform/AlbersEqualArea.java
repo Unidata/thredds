@@ -72,7 +72,7 @@ public class AlbersEqualArea extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-    double earth_radius = getEarthRadius(ctv);
+    double earth_radius = getEarthRadiusInKm(ctv);
     double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
     double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
     double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);
