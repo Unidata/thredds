@@ -40,12 +40,13 @@ public final class PointDataStream {
 				.createPointDataWriter(outputStream);
 	}
 
-	private final boolean stream(GridDataset gds, LatLonPoint point, CalendarDateRange dates, List<String> vars) throws OutOfBoundariesException, DateUnitException{
+	//private final boolean stream(GridDataset gds, LatLonPoint point, CalendarDateRange dates, List<String> vars) throws OutOfBoundariesException, DateUnitException{
+	private final boolean stream(GridDataset gds, LatLonPoint point, List<CalendarDate> wDates, List<String> vars) throws OutOfBoundariesException, DateUnitException{
 		
 		
 		boolean allDone = false;
 		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds,	vars);
-		List<CalendarDate> wDates = NcssRequestUtils.wantedDates(gap, dates);
+		//List<CalendarDate> wDates = NcssRequestUtils.wantedDates(gap, dates);
 		
 		//Variables have same 1D timeAxis??? 
 		GridDatatype grid = gds.findGridDatatype(vars.get(0));
@@ -75,14 +76,15 @@ public final class PointDataStream {
 		return allDone;
 	}
 
-	public final boolean stream(GridDataset gds, LatLonPoint point,	CalendarDateRange dates, List<String> vars, List<Double> vertCoords) throws OutOfBoundariesException, DateUnitException {
+	//public final boolean stream(GridDataset gds, LatLonPoint point,	CalendarDateRange dates, List<String> vars, List<Double> vertCoords) throws OutOfBoundariesException, DateUnitException {
+	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, List<String> vars, List<Double> vertCoords) throws OutOfBoundariesException, DateUnitException {
 
 
-		if (vertCoords.isEmpty()) return stream(gds, point, dates, vars);
+		if (vertCoords.isEmpty()) return stream(gds, point, wDates, vars);
 		boolean allDone = false;
 
 		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds,	vars);
-		List<CalendarDate> wDates = NcssRequestUtils.wantedDates(gap, dates);
+		//List<CalendarDate> wDates = NcssRequestUtils.wantedDates(gap, dates);
 
 		// Asuming all vars have the same vertical level...(and same 1D timeAxis!!! )
 		GridDatatype gridForVertLevels = gds.findGridDatatype(vars.get(0));

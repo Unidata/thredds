@@ -34,8 +34,10 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.IO;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 @Controller
@@ -47,7 +49,7 @@ class GridDataController extends AbstractNcssController{
 	private HttpHeaders httpHeaders = new HttpHeaders(); 
 	private File netcdfResult;
 
-	@RequestMapping(value = "**", params = { "!point", "var", "north", "south", "east", "west" })
+	@RequestMapping(value = "**", params = { "!latitude","!longitude", "var"})
 	void getGridData(@Valid GridDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response )throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException, UnsupportedResponseFormatException{
 		
 		if( validationResult.hasErrors() ){
@@ -58,26 +60,34 @@ class GridDataController extends AbstractNcssController{
 			
 			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.GRID_REQUEST  );
 			//Check the requested bb
+			
+			
 			LatLonRect maxBB = getGridDataset().getBoundingBox();
+			LatLonRect requestedBB = setBBForRequest(params,  gridDataset);
+			
         
-			boolean hasBB = !ucar.nc2.util.Misc.closeEnough(params.getNorth(), maxBB.getUpperRightPoint().getLatitude()) ||
-                !ucar.nc2.util.Misc.closeEnough(params.getSouth(), maxBB.getLowerLeftPoint().getLatitude()) ||
-                !ucar.nc2.util.Misc.closeEnough(params.getEast(), maxBB.getUpperRightPoint().getLongitude()) ||
-                !ucar.nc2.util.Misc.closeEnough(params.getWest(), maxBB.getLowerLeftPoint().getLongitude()); 
+			boolean hasBB = !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLatitude(), maxBB.getUpperRightPoint().getLatitude()) ||
+                !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLatitude(), maxBB.getLowerLeftPoint().getLatitude()) ||
+                !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLongitude(), maxBB.getUpperRightPoint().getLongitude()) ||
+                !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLongitude(), maxBB.getLowerLeftPoint().getLongitude()); 
 
-			if(checkBB(maxBB, params.getBB())){
+			//if(checkBB(maxBB, params.getBB())){
+			if(checkBB(maxBB, requestedBB)){
         
 				Range zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVar());
+				List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
+				CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get( wantedDates.size()-1 ));
+				
 				NetcdfCFWriter writer = new NetcdfCFWriter();
     		        	
 				long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
 				if(maxFileDownloadSize > 0){    		
-					long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), hasBB ? params.getBB() : null, params.getHorizStride(), zRange, params.getCalendarDateRange(), params.getTimeStride(), params.isAddLatLon() );
+					long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon() );
 					if(estimatedSize > maxFileDownloadSize ){
 						throw new RequestTooLargeException( "NCSS request too large = "+estimatedSize+" max = " + maxFileDownloadSize );
 					}
 				}
-				makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? params.getBB() : null, params.getHorizStride(), zRange, params.getCalendarDateRange(), params.getTimeStride(), params.isAddLatLon() );
+				makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon() );
         	
 				//Headers...
 				setResponseHeaders(response, httpHeaders );
@@ -103,6 +113,16 @@ class GridDataController extends AbstractNcssController{
 			throw new OutOfBoundariesException("Request Bounding Box does not intersect the Data. Data Bounding Box = " + maxBB.toString2() );
 		
 		return isInBB;
+		
+	}
+	
+	private LatLonRect setBBForRequest(GridDataRequestParamsBean params, GridDataset gds ){
+		
+		if( params.getNorth()!= null && params.getSouth()!= null && params.getEast()!=null && params.getWest()!=null ){
+			return new LatLonRect( new LatLonPointImpl(params.getSouth(), params.getWest()),  new LatLonPointImpl(params.getNorth(), params.getEast())); 
+		}
+		
+		return getGridDataset().getBoundingBox(); 
 		
 	}
 	

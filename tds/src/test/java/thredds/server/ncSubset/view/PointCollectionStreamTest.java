@@ -41,7 +41,8 @@ public class PointCollectionStreamTest {
 	private Double verticalLevel;
 	
 	private GridDataset gridDataset;
-	private CalendarDateRange range;
+	//private CalendarDateRange range;
+	private List<CalendarDate> wantedDates;
 	private List<String> vars;
 	private List<Double> vertCoords;	
 	
@@ -75,7 +76,8 @@ public class PointCollectionStreamTest {
 		int randIntNext = rand.nextInt(dates.size());
 		int start = Math.min(randInt, randIntNext);
 		int end = Math.max(randInt, randIntNext);
-		range = CalendarDateRange.of( dates.get(start), dates.get(end));
+		CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));
+		wantedDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range);
 		
 		if(verticalLevel >= 0){
 			vertCoords = new ArrayList<Double>();
@@ -93,7 +95,7 @@ public class PointCollectionStreamTest {
 	@Test
 	public void shouldStreamStationCollection() throws OutOfBoundariesException, DateUnitException{
 		
-		assertTrue( pointDataStream.stream(gridDataset, point, range, vars, vertCoords) );
+		assertTrue( pointDataStream.stream(gridDataset, point, wantedDates, vars, vertCoords) );
 		
 	}	
 	

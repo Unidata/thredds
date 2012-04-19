@@ -32,16 +32,18 @@ import thredds.servlet.UsageLog;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 
 @Controller
+@RequestMapping(value="/ncss/grid/**")
 class PointDataController extends AbstractNcssController{ 
 
 	static private final Logger log = LoggerFactory.getLogger(PointDataController.class);
 
 	
-	@RequestMapping(value = "**", params = { "point", "latitude", "longitude", "var" })
+	@RequestMapping(value = "**", params = { "latitude", "longitude", "var" })
 	void getPointData(@Valid PointDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response ) throws ParseException, NcssException, IOException{
 
 		if( validationResult.hasErrors() ){
@@ -62,10 +64,11 @@ class PointDataController extends AbstractNcssController{
 				
 
 			List<Double> verticalLevels = getRequestedVertLevel(gridDataset, params);
+			List<CalendarDate> wantedDates = getRequestedDates( gridDataset, params);
 	
 			response.setContentType(sf.getResponseContentType() );
 			PointDataStream pds = PointDataStream.createPointDataStream(  sf, response.getOutputStream() );
-			boolean allWritten = pds.stream( getGridDataset(), point, params.getCalendarDateRange(), params.getVar(), verticalLevels);
+			boolean allWritten = pds.stream( getGridDataset(), point, wantedDates, params.getVar(), verticalLevels);
 			if(allWritten){				
 				setResponseHeaders(response, pds.getHttpHeaders() );
 				response.flushBuffer();

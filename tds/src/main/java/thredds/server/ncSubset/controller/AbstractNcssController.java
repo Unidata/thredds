@@ -3,6 +3,8 @@ package thredds.server.ncSubset.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -17,11 +19,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.mvc.LastModified;
 
+import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DataRootHandler;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.GridAsPointDataset;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
 
 public class AbstractNcssController implements LastModified{
 	
@@ -53,6 +62,27 @@ public class AbstractNcssController implements LastModified{
 		return this.gridDataset;
 	}
 	
+	
+	protected List<CalendarDate> getRequestedDates(GridDataset gds, RequestParamsBean params) throws OutOfBoundariesException, ParseException{
+		
+		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds, params.getVar());
+		CalendarDateRange dates = null;
+				
+		if(params.getTime()!=null){
+			CalendarDate date =CalendarDate.parseISOformat(null, params.getTime());
+			dates = CalendarDateRange.of(date,date);
+			return NcssRequestUtils.wantedDates(gap, dates);
+		}else{
+			if (params.getTime_start()==null && params.getTime_end()==null && params.getTime_duration()==null) {//All times...
+				return gap.getDates();
+			}
+		}
+		
+		//We should have valid params here...
+		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null), new DateType(params.getTime_end(), null, null), new TimeDuration(params.getTime_duration()), null );		
+		return NcssRequestUtils.wantedDates(gap, CalendarDateRange.of(dr) );
+		
+	}
 	
 	protected void handleValidationErrorsResponse(HttpServletResponse response, int status, BindingResult  validationResult){
 		
@@ -96,10 +126,10 @@ public class AbstractNcssController implements LastModified{
 		SupportedFormat sf;		
 		if(params.getAccept() == null){
 			//setting the default format
-			sf = SupportedFormat.values()[0];
-			params.setAccept(sf.getAliases().get(0));
+			sf = operation.getDefaultFormat();
+			params.setAccept(sf.getFormatName());
 		}else{		
-			sf = SupportedFormat.isSupportedFormat(params.getAccept(), operation);		
+			sf = SupportedOperation.isSupportedFormat(params.getAccept(), operation);
 			if( sf == null ){			
 				throw new UnsupportedResponseFormatException("Requested format: "+params.getAccept()+" is not supported for "+operation.getOperation().toLowerCase() );
 			}
