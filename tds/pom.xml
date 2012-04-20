@@ -25,84 +25,7 @@
   </description>
   <url>http://www.unidata.ucar.edu/software/tds/</url>
 
-  <!-- ===========================================================
-           Developers and Contributors
-       =========================================================== -->
-  <developers>
-    <developer>
-      <id>caron</id>
-      <name>John Caron</name>
-      <email>caron@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>chastang</id>
-      <name>Julien Chastang</name>
-      <email>chastang@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>edavis</id>
-      <name>Ethan Davis</name>
-      <email>edavis@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>dmh</id>
-      <name>Dennis Heimbigner</name>
-      <email>dmh@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>yuanho</id>
-      <name>Ho Yuan</name>
-      <email>yuanho@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>rkambic</id>
-      <name>Robb Kambic</name>
-      <email>rkambic@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>oxelson</id>
-      <name>Jennifer Ganter Oxelson</name>
-      <email>oxelson@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-  </developers>
-
-
-  <!-- ===========================================================
+ <!-- ===========================================================
            Dependencies
 
            Mandatory dependencies are listed first. Then everything
@@ -404,7 +327,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <!-- Enabling tests for first unit testing -->
-          <skip>false</skip>
+          <skip>true</skip>
           <testFailureIgnore>true</testFailureIgnore>
           <includes>
             <include>thredds/server/catalogservice/**</include>

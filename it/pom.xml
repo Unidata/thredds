@@ -173,6 +173,7 @@
           </execution>
         </executions>
         <configuration>
+          <skip>true</skip>
           <wait>false</wait>
           <timeout>20000</timeout>
           <container>

@@ -57,41 +57,43 @@
     <!--testSourceDirectory>void</testSourceDirectory-->
 
     <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <version>1.6</version>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>shade</goal>
-                </goals>
-                <configuration>
-                  <minimizeJar>true</minimizeJar>
-                  <artifactSet>
-                    <includes>
-                      <include>edu.wisc.ssec:visad</include>
-                    </includes>
-                  </artifactSet>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+              <artifactSet>
+                <includes>
+                  <include>edu.wisc.ssec:visad</include>
+                </includes>
+              </artifactSet>
 
-                  <filters>
-                    <filter>
-                      <artifact>edu.wisc.ssec:visad</artifact>
-                      <excludes>
-                        <exclude>dods/**</exclude>
-                        <exclude>gnu/**</exclude>
-                        <exclude>HTTPClient/**</exclude>
-                        <exclude>ucar/**</exclude>
-                      </excludes>
-                    </filter>
-                  </filters>
+              <filters>
+                <filter>
+                  <artifact>edu.wisc.ssec:visad</artifact>
+                  <excludes>
+                    <exclude>dods/**</exclude>
+                    <exclude>gnu/**</exclude>
+                    <exclude>HTTPClient/**</exclude>
+                    <exclude>loci/**</exclude>
+                    <exclude>ncsa/**</exclude>
+                    <exclude>ucar/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
 
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

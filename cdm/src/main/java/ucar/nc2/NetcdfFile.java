@@ -114,7 +114,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    try {
+    /* try {
       registerIOProvider("ucar.nc2.grib.grib2.Grib2Iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
@@ -123,7 +123,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       registerIOProvider("ucar.nc2.grib.grib1.Grib1Iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
-    }
+    } */
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
@@ -134,7 +134,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    try {
+    /* try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider");
       registerIOProvider("ucar.nc2.iosp.grib.GribServiceProvider");
     } catch (Throwable e) {
@@ -145,7 +145,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       registerIOProvider(iosp);
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load resource: " + e);
-    }
+    } */
     try {
       registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
     } catch (Throwable e) {
@@ -212,14 +212,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
 
-    ////////////////////////////////
-    // may have false positives
-    try {
-      registerIOProvider("ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-
     ////////////////////////////////////////////////////////////////////////////////
     // iosps below here are a bit slow in isValidFile() eg needing an exception thrown
     // so they are relegated to the end
@@ -266,6 +258,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
 
+    ////////////////////////////////
+    // may have false positives
+    try {
+      registerIOProvider("ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
 
     userLoads = true;
   }
@@ -842,6 +841,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       // spi = new ucar.nc2.iosp.hdf5.H5iosp();
 
     } else {
+
+      // look for dynamically loaded IOSPs
       Iterator<IOServiceProvider> iterator = ServiceRegistry.lookupProviders(IOServiceProvider.class);
       while(iterator.hasNext()) {
           IOServiceProvider currentSpi = iterator.next();
@@ -882,7 +883,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       throw new IOException("Cant read " + location + ": not a valid CDM file.");
     }
 
-    // send before iosp is opened
+    // send iospMessage before the iosp is opened
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 
@@ -891,7 +892,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
 
-    // send after iosp is opened
+    // send iospMessage after iosp is opened
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 

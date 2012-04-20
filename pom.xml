@@ -115,6 +115,16 @@
       </roles>
     </developer>
     <developer>
+      <id>mhermida</id>
+      <name>Marcos Hermida</name>
+      <email>mhermida@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
       <id>rkambic</id>
       <name>Robb Kambic</name>
       <email>rkambic@unidata.ucar.edu</email>
@@ -218,6 +228,12 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>opendap</artifactId>
         <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -233,6 +249,12 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>visadCdm</artifactId>
         <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>edu.wisc.ssec</groupId> <!-- replaces visad -->
+            <artifactId>visad</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- logging -->
@@ -297,7 +319,12 @@
         <groupId>commons-httpclient</groupId>
         <artifactId>commons-httpclient</artifactId>
         <version>${commons-httpclient.version}</version>
-        <!-- Transitive dependencies: commons-codec 1.2 and commons-logging 1.0.4 -->
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>  <!-- replace with jcl-over-slf4j -->
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>

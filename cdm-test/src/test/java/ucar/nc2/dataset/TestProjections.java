@@ -211,8 +211,7 @@ public class TestProjections extends TestCase {
     testCoordinates(testDir+ "stereographic/foster.grib2", 26.023346, 251.023136 - 360.0, 41.527360, 270.784605 - 360.0);  // testPSscaleFactor
     testCoordinates(testDir+ "melb-small_M-1SP.nc", -36.940012, 145.845218, -36.918406, 145.909746);  // testMercatorScaleFactor
     testCoordinates(testDir+ "rotatedPole/snow.DMI.ecctrl.ncml", 28.690059, -3.831161, 68.988028, 57.076276);              // rotated Pole
-    testCoordinates(testDir+ "rotatedPole/DMI-HIRHAM5_ERAIN_DM_AMMA-50km_1989-1990_as.nc", -19.8, -35.64, 35.2, 35.2);   // this one fails for now. hese are the rotated
-    // coordinates, but it looks like it shouldnt be rotated. but both x, y ending at 35.2 ??
+    testCoordinates(testDir+ "rotatedPole/DMI-HIRHAM5_ERAIN_DM_AMMA-50km_1989-1990_as.nc", -19.8, -35.64, 35.2, 35.2);   //
   }
 
   private void testCoordinates(String filename, double startLat, double startLon, double endLat, double endLon) throws IOException, InvalidRangeException {

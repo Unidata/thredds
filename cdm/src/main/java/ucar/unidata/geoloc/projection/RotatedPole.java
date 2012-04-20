@@ -112,9 +112,20 @@ public class RotatedPole extends ProjectionImpl {
   }
 
   private void buildRotationMatrices() {
-    //	Rotation angles and matrices.
-    double betaRad = -(90. - northPole.y) * RAD_PER_DEG;
-    double gammaRad = (northPole.x + 180.) * RAD_PER_DEG;
+
+    double betaRad = 0.;
+    double gammaRad = 0.;
+
+    if (northPole.y == 90.)
+    {
+        betaRad  = 0.;
+        gammaRad = northPole.x * RAD_PER_DEG;
+    }
+    else
+    {
+        betaRad  = -(90. - northPole.y) * RAD_PER_DEG;
+        gammaRad = (northPole.x + 180.) * RAD_PER_DEG;
+    }
 
     double cosBeta = Math.cos(betaRad);
     double sinBeta = Math.sin(betaRad);

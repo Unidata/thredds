@@ -115,8 +115,8 @@ import org.bounce.text.xml.XMLEditorKit;
 public class ToolsUI extends JPanel {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ToolsUI.class);
 
-  static private final String WorldDetailMap = "/resources/nj22/maps/Countries.zip";
-  static private final String USMap = "/resources/nj22/maps/US.zip";
+  static private final String WorldDetailMap = "/resources/nj22/ui/maps/Countries.zip";
+  static private final String USMap = "/resources/nj22/ui/maps/US.zip";
 
   static private final String FRAME_SIZE = "FrameSize";
   static private final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";

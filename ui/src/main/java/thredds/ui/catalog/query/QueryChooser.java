@@ -177,7 +177,7 @@ public class QueryChooser extends JPanel {
   /**
    * Set the DQC from a dataset with access type ServiceType.QC.
    *
-   * @param ds: InvDataset with an access of ServiceType.QC
+   * @param ds InvDataset with an access of ServiceType.QC
    * @return true if successful
    */
   public boolean setDataset(InvDataset ds) {
@@ -203,7 +203,7 @@ public class QueryChooser extends JPanel {
   /**
    * Set the DQC from a URL string pointing to a DQC.
    *
-   * @param urlString: url of the qc document
+   * @param urlString url of the qc document
    * @throws java.net.MalformedURLException : if urlString is malformed.
    * @throws java.io.IOException            : error reading qc
    */

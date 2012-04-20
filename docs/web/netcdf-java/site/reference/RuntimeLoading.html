@@ -67,6 +67,7 @@ dl {margin: 10px 5px 5px 15px;)
 <pre wrap=""> <strong> ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile</strong>( String filename) throws throws FileNotFoundException;</pre>
 <p wrap=""> The 
   file must be a <a href="BufrTables.html">BUFR table lookup file</a>.</p>
+<hr>
 <p wrap=""><br>
 </p>
 <h2>Runtime Configuration<a name="XML"></a> </h2>
@@ -120,7 +121,22 @@ dl {margin: 10px 5px 5px 15px;)
 <br>      for (int i = 0; i &lt; args.length; i++) {<br>        if (args[i].equalsIgnoreCase(&quot;-<strong>nj22Config</strong>&quot;) &amp;&amp; (i &lt; args.length-1)) {<br>          String runtimeConfig = args[i+1];<br>          i++;<br>          try {<br>            StringBuffer errlog = new StringBuffer();<br><strong>            FileInputStream fis = new FileInputStream( runtimeConfig);<br>            ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);</strong><br>            System.out.println( errlog);<br>          } catch (IOException ioe) {<br>            System.out.println( &quot;Error reading &quot;+runtimeConfig+&quot;=&quot;+ioe.getMessage());<br>          }<br>        }<br>      }<br>    ...
 </pre>
 <p>If none is specified on the command line, it will look for the XML document in <strong>$USER_HOME/.unidata/nj22Config.xml.</strong></p>
+<hr>
 <p>&nbsp;</p>
+<h2>Runtime Loading of IOSP using javax.imageio.spi.ServiceRegistry<a name="ServiceRegistry"></a></h2>
+<p>You can create an IOSP and have it discovered at runtime automatically.</p>
+<ol>
+  <li>Your class must implement <strong>ucar.nc2.iosp.IOServiceProvider</strong></li>
+  <li>Create a JAR file with  a&nbsp;<strong>services</strong>&nbsp;subdirectory in the&nbsp;META-INF&nbsp;directory. This directory contains a file called<strong> ucar.nc2.iosp.IOServiceProvider</strong>, which contains the name(s) of the implementing class(es). For example, if the JAR file contained a class named&nbsp;com.mycompany.MyIOSP, the JAR file would contain a file named:
+    <pre> META-INF/services/<strong>ucar.nc2.iosp.IOServiceProvider</strong> </pre>
+    containing the line:
+    <pre>com.mycompany.MyIOSP</pre>
+See:</li>
+</ol>
+<blockquote>
+  <p><a href="http://docs.oracle.com/javase/1.4.2/docs/api/javax/imageio/spi/ServiceRegistry.html">http://docs.oracle.com/javase/1.4.2/docs/api/javax/imageio/spi/ServiceRegistry.html</a></p>
+  <p> (thanks to Tom Kunicki at USGS for this contribution)</p>
+</blockquote>
 <hr WIDTH="100%">
 <address>
 <img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on February 2012
