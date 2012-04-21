@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<preferences EXTERNAL_XML_VERSION='1.0'>
+  <root type='user'>
+    <map>
+      <beanCollection key='config' class='thredds.dqc.server.DqcServletConfigItem'>
+
+        <bean name='latestModel'
+          description='Provide Access to Latest Model Runs.'
+          handlerClassName='thredds.dqc.server.latest.LatestDqcHandler'
+          handlerConfigFileName='configDqcHandler.latestModel-InvCat1.0.xml' />
+
+        <bean name='latestModelNew'
+          description='Provide Access to Latest Model Runs.'
+          handlerClassName='thredds.dqc.server.latest.LatestDqcHandler'
+          handlerConfigFileName='configDqcHandler.latestModel-InvCat1.0.xml' />
+
+        <bean name='latestModel-InvCat1.0'
+          description='Provide Access to Latest Model Runs.'
+          handlerClassName='thredds.dqc.server.latest.LatestDqcHandler'
+          handlerConfigFileName='configDqcHandler.latestModel-InvCat1.0.xml' />
+
+        <bean name='latestModel-InvCat1.0.TDS-nc'
+          description='Provide Access to Latest Model Runs.'
+          handlerClassName='thredds.dqc.server.latest.LatestDqcHandler'
+          handlerConfigFileName='configDqcHandler.latestModel-InvCat1.0.xml' />
+
+      </beanCollection>
+    </map>
+  </root>
+</preferences>

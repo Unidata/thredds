@@ -92,11 +92,11 @@ public class SuperComboBox extends JPanel {
   private int height = 222;
   private int width = 100;
 
-   /** default : one column, with an iterator of NamedObjects
-    * @param parent: parent container
-    * @param name: column name
-    * @param sortOK : true allow sorting, column adding and removing
-    * @param iter: Iterator of objects inside the combobox.
+   /** default is one column, with an iterator of NamedObjects
+    * @param parent parent container
+    * @param name column name
+    * @param sortOK  true allow sorting, column adding and removing
+    * @param iter Iterator of objects inside the combobox.
     */
   public SuperComboBox(RootPaneContainer parent, String name, boolean sortOK, Iterator iter) {
     this.name = name;
@@ -220,6 +220,10 @@ public class SuperComboBox extends JPanel {
    * otherwise will use object.toString()
    */
   public void setCollection( Iterator iter) {
+    setCollection(iter, false);
+  }
+
+  public void setCollection( Iterator iter, boolean keepIndex) {
     eventOK = false;
     list = new ArrayList();
 
@@ -231,7 +235,7 @@ public class SuperComboBox extends JPanel {
         Object o = iter.next();
         TableRow row;
         if (o instanceof GeoGrid) // LOOK hackawack
-          row = new DescObjectRow((NamedObject) o);
+          row = new GeoGridRow((NamedObject) o);
         else if (o instanceof NamedObject)
           row = new NamedObjectRow((NamedObject) o);
         else
@@ -254,8 +258,11 @@ public class SuperComboBox extends JPanel {
     table.setList(list);
     if (list.size() == 0)
       setLabel("none");
-    else
-      setSelectedByIndex(0);
+    else {
+      int currIndex = getSelectedIndex();
+      if (currIndex >= list.size() || currIndex < 0 || !keepIndex)
+        setSelectedByIndex(0);
+    }
     eventOK = true;
   }
 
@@ -281,9 +288,8 @@ public class SuperComboBox extends JPanel {
   }
 
   /** Set the currently selected object using its choice name.
-   * /NO If not found, will be set to first element. ?NO
    * Note that no event is sent due to this call.
-   * @param choiceName: name of object to match.
+   * @param choiceName name of object to match.
    * @return index of selection, or -1 if not found;
    */
   public int setSelectedByName( String choiceName) {
@@ -329,21 +335,21 @@ public class SuperComboBox extends JPanel {
       Object selectedObject = selected.getValueAt(0);
       String selectedName = selectedObject.toString();
       text.setText( selectedName.trim());
-      if ((selected instanceof NamedObjectRow) || (selected instanceof DescObjectRow)) {
+      if ((selected instanceof NamedObjectRow) || (selected instanceof GeoGridRow)) {
         text.setToolTipText( ((NamedObject)selected.getUserObject()).getDescription());
       }
       repaint();
 
-      if (selected instanceof DescObjectRow) {
-        selectedName = ((DescObjectRow) selected).getDescription();
+      if (selectedObject instanceof GeoGridRow) {
+        selectedObject = ((GeoGridRow) selectedObject).getUserObject();
       }
 
       if (sendExternalEvent) {
         if (debugEvent) System.out.println("--->SuperCombo send event "+selectedName);
         if (immediateMode)
-          actionSource.fireActionValueEvent( "redrawImmediate", selectedName);
+          actionSource.fireActionValueEvent( "redrawImmediate", selectedObject);
         else
-          actionSource.fireActionValueEvent( ActionSourceListener.SELECTED, selectedName);
+          actionSource.fireActionValueEvent( ActionSourceListener.SELECTED, selectedObject);
       }
     }
   }
@@ -415,16 +421,21 @@ public class SuperComboBox extends JPanel {
     public String toString() { return getName(); }
   }
 
-  // reverse name and desc
-  private class DescObjectRow extends TableRowAbstract implements NamedObject {
+  private class GeoGridRow extends TableRowAbstract implements NamedObject {
     NamedObject o;
-    DescObjectRow( NamedObject o){ this.o = o; }
+    GeoGridRow(NamedObject o){ this.o = o; }
     public Object getValueAt( int col) { return this; }
     public Object getUserObject() { return o; }
 
-    public String getName() { return o.getDescription(); }
-    public String getDescription() { return o.getName(); }
-    public String toString() { return getName(); }
+    public String getName() { return o.getName(); }
+    public String getDescription() { return o.getDescription(); }
+    public String toString() {
+      String desc = o.getDescription();
+      if (desc == null || desc.isEmpty() || desc.trim().equals("-"))
+        return o.getName();
+      else
+        return o.getName() +" == "+ o.getDescription();
+    }
   }
 
   private class MyTextField extends JLabel {

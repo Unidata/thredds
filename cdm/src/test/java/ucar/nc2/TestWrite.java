@@ -34,7 +34,6 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
-import ucar.nc2.util.CompareNetcdf;
 
 import java.io.*;
 import java.util.*;
@@ -427,7 +426,7 @@ public class TestWrite extends TestCase {
       // Prints "0 0 12 0 24 0 36 0 48 0".
       Array result2 = ncFile.readSection("time");
       System.out.println(result2);
-      CompareNetcdf.compareData(result1, result2);
+      ucar.unidata.test.util.CompareNetcdf.compareData(result1, result2);
     } finally {
       ncFile.close();
     }

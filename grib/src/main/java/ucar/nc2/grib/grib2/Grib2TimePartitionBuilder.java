@@ -57,7 +57,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2Partition0Index";
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2TimePartitionBuilder.class);
-  static private final int versionTP = 4;  // this needs to update when grib2collection version does
+  //static private final int versionTP = 4;  // this needs to update when grib2collection version does
   static private final boolean trace = false;
 
   // called by tdm
@@ -112,8 +112,9 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private final Grib2TimePartition tp;  // build this object
 
   private Grib2TimePartitionBuilder(String name, File directory, TimePartitionCollection tpc) {
-    this.tp = new Grib2TimePartition(name, directory,
-            (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG));
+    FeatureCollectionConfig.GribConfig config = null;
+    if (tpc != null) config = (FeatureCollectionConfig.GribConfig) tpc.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
+    this.tp = new Grib2TimePartition(name, directory, config);
     this.gc = tp;
     this.tpc = tpc;
   }
@@ -429,7 +430,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     try {
       //// header message
       raf.write(MAGIC_START.getBytes("UTF-8"));
-      raf.writeInt(versionTP);
+      raf.writeInt(version);
       raf.writeLong(0); // no record section
 
       GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
@@ -550,10 +551,6 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
 
   ///////////////////////////////////////////////////////////////////////////
   // reading ncx
-
-  protected int getVersion() {
-    return versionTP;
-  }
 
   @Override
   protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto) {

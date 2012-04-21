@@ -256,15 +256,16 @@ public class InvCatalogFactory {
   }
 
   /**
-   * Create an InvCatalog from an XML document at a named URL.
+   * Create an InvCatalog from an XML document at a named URI.
    * Failures and exceptions are handled
    * by causing validate() to fail. Therefore, be sure to call validate() before trying
    * to use the InvCatalog object.
    *
-   * @param uriString : the URI name that the XML doc is at.
+   * @param uriString : the URI name that the XML doc is at. May start with a "file:"
    * @return an InvCatalogImpl object
    */
   public InvCatalogImpl readXML(String uriString) {
+    
     URI uri;
     try {
       uri = new URI(uriString);
@@ -274,6 +275,21 @@ public class InvCatalogFactory {
           uriString + ") " + e.getMessage() + "\n", true);
       return cat;
     }
+
+    /* if (uriString.startsWith("file:")) {
+      String filename = uriString.substring(5);
+      File f = new File(filename);
+      if (f.exists()) {
+        try {
+          return readXML(new FileInputStream(f), uri);
+
+        } catch (Exception e) {
+          InvCatalogImpl cat = new InvCatalogImpl(uriString, null, null);
+          cat.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML error (" +
+              uriString + ") " + e.getMessage() + "\n", true);
+        }
+      }
+    }  */
 
     return readXML(uri);
   }
@@ -696,36 +712,6 @@ public class InvCatalogFactory {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(false);
     //doOne(catFactory, "http://www.unidata.ucar.edu/georesources/idvcatalog.xml", true);
     doOne(catFactory, "file:C:/data/work/maurer/atm_mod.xml", true);
-    //Thread.currentThread().sleep(10 * 10000);
-    //InvCatalogFactory catFactoryNo = InvCatalogFactory.getDefaultFactory(false);
-
-    // 0.6
-    //doOne(catFactory, "http://motherlode.ucar.edu:8088/thredds/casestudy/vgeeCatalog.0.6.xml");
-    /* doOne(catFactory, "file:///C:/dev/thredds/catalog/test/data/ParseFails.xml");
-    doOne(catFactory, "file:///C:/dev/thredds/catalog/test/data/malFormed.xml"); // */
-    //doOne(catFactory, "file:///C:/dev/thredds/server/resources/initialContent/catalog.xml");
-
-    // 1.0
-    //doOne(catFactory, "file:///C:/dev/thredds/catalog/test/data/Example1.0.xml");
-    /* doOne(catFactory, "file:///C:/dev/thredds/catalog/test/data/TestInherit.1.0.xml"); // */
-    //doOne(catFactory, "file:///C:/dev/thredds/catalog/test/data/catalogDev.xml");
-    //doOne(catFactory, "http://motherlode.ucar.edu:8088/thredds/catalog.xml"); // */
-    //doOne(catFactoryNo, "http://motherlode.ucar.edu:8088/thredds/catalog.xml"); // */
-
-    // 1.1
-    //doOne(catFactory, "file:C:/data/catalog/obsData.xml", false);
-    /* InvCatalogImpl cat = doOne(catFactory, "file:///C:/dev/thredds/resourceswar/initialContent/dodsC/catalog3.xml");
-InvDatasetScan dsScan = (InvDatasetScan) cat.findDatasetByID("testScan");
-InvCatalogImpl catScan = dsScan.makeCatalogForDirectory("reqURL", "model/test/", "serviceId", "latestServiceId");
-System.out.println(" scanned catalog=\n" + catFactory.writeXML(catScan)); */
-
-    //doOne(catFactory, "http://whoopee:8080/thredds/dodsC/model/test/catalog.xml");
-
-    // catgen
-    //catFactory.registerMetadataConverter( MetadataType.CATALOG_GEN_CONFIG.toString(),
-    //                                         new CatGenConfigMetadataFactory());
-    //doOne(catFactory, "file:///C:/dev/thredds/test/data/thredds/cataloggen/test.xml");
-    // doOne(catFactory, "file:///C:/dev/thredds/test/data/testScan.xml");
   }
 
 }

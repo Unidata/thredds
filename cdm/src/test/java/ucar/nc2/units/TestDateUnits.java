@@ -36,6 +36,7 @@ import junit.framework.*;
 
 import java.util.*;
 
+import ucar.nc2.util.Misc;
 import ucar.units.*;
 import ucar.nc2.TestAll;
 
@@ -143,7 +144,7 @@ public class TestDateUnits extends TestCase {
 
     value = du.makeValue(d);
     System.out.println("testDateValue " + value + " == " + formatter.toDateTimeStringISO(d));
-    assert ucar.nc2.TestLocal.closeEnough(value, 365) : value;
+    assert Misc.closeEnough(value, 365) : value;
   }
 
   private void showUnitInfo(Unit uu) {

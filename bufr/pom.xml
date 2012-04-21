@@ -7,13 +7,13 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.9-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
-  <groupId>edu.ucar</groupId>
+  <!-- groupId>edu.ucar</groupId-->
   <artifactId>bufr</artifactId>
   <packaging>jar</packaging>
   <name>BUFR IOSP</name>
@@ -57,18 +57,55 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>net.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
-    <testSourceDirectory>void</testSourceDirectory>
-    <resources>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <!-- resources>
       <resource>
         <directory>src/main/resources</directory>
         <includes>
           <include>resources/**</include>
+          <include>META-INF/services/**</include>
         </includes>
       </resource>
-    </resources>
+    </resources -->
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        	<testFailureIgnore>true</testFailureIgnore>
+          <includes>
+            <include>ucar/nc2/iosp/bufr/Test*.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+
+    </plugins>
+
   </build>
+
 
 </project>

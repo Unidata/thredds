@@ -34,16 +34,17 @@ package thredds.catalog;
 
 import java.util.*;
 import junit.framework.*;
-import thredds.catalog.util.DeepCopyUtilsTest;
-import ucar.nc2.TestAll;
+import thredds.catalog.util.TestDeepCopyUtils;
 
 /**
  * TestSuite that runs all the sample tests
  *
  */
 public class TestCatalogAll extends TestCase {
-  public static String tmpDir = TestAll.temporaryLocalDataDir;
-  public static String dataDir = TestAll.cdmLocalTestDataDir + "thredds/catalog/";
+
+  public static String tmpDir = "target/test/tmp/";
+  public static String dataDir = "src/test/data/thredds/catalog/";
+
   static private boolean showValidation = false;
   static boolean debug = true, showValidationMessages = true;
 
@@ -142,8 +143,7 @@ public class TestCatalogAll extends TestCase {
     suite.addTest(new TestSuite(TestSpatialCoverage.class)); // */
     suite.addTest(new TestSuite(TestTimeCoverage.class)); // */
 
-    suite.addTest( new JUnit4TestAdapter( DatasetScanExpandSubdirsTest.class ));
-    suite.addTest( new JUnit4TestAdapter( DeepCopyUtilsTest.class ));
+    suite.addTest( new JUnit4TestAdapter( TestDeepCopyUtils.class ));
 
     suite.addTestSuite( thredds.catalog.parser.jdom.TestDatasetScanFilter.class );
     suite.addTestSuite( thredds.catalog.parser.jdom.TestReadMetadata.class );

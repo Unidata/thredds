@@ -22,7 +22,7 @@
       </div> 
 
        <ul>        
-        <li>Sun Java 1.6 (latest version)</li>       
+        <li>Sun Java 1.6 or 1.7 (latest version)</li>       
         <li>Apache Tomcat 5.5 or above (we recommend the latest version of Tomcat 6.0)</li>  
        </ul>
        <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <i>Sun Java</i> and the <i>Apache Tomcat</i> servlet container.</p>
@@ -33,7 +33,7 @@
      <div id="subsection">
       <h3>Installing Java</h3>
       <ol>
-       <li><a href="http://java.sun.com/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun.</li>
+       <li><a href="http://java.sun.com/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun. You can use the latest 1.6 or 1.7 version of the JDK.</li>
         <p>At the time of this workshop, that is version <i>1.6.0_26</i>.  We will be using the Linux x64-bit, <i>non-rpm</i>, self-extracting file:</p>
         <p><code>jdk-6u26-linux-x64.bin</code></p>
        <li>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>
@@ -191,10 +191,8 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
           <li>This is one of the directories you will be looking for log files (the TDS logs elsewhere by default).</li>
           <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues.</i> (Hint, hint.)</li>
           <li>Logs files may contain useful information for assessing the security of your system.</li>
-          <li>You will become very familiar with the Tomcat-generated <code><small>catalina.out</small></code> and <code><small>localhost_access_log.yyyy-mm-dd.log</small></code> files by the end of this workshop.</li>
+          <li>You will become very familiar with the Tomcat-generated <code><small>catalina.out</small></code>, <code><small>catalina.yyyy-mm-dd.log</small></code> and <code><small>localhost_access_log.yyyy-mm-dd.log</small></code> files by the end of this workshop.</li>
          </ul>
-
-
       </ol>
      </div> <!-- end subsection -->
 
@@ -251,7 +249,7 @@ tds      27049     1  2 17:50 pts/1    00:00:02 /usr/bin/java -Djava.util.loggin
        <h4>Troubleshooting tips</h4>
        <ul>
         <li>Check the logs mostly recently generated in the Tomcat <code><small>logs</small></code> for clues about why Tomcat failed to start or stop.</li>
-        <li>Pay particular attention to what is being reported in Tomcat's main log file: <code><small>catalina.out</small></code>.</li>
+        <li>Pay particular attention to what is being reported in Tomcat's main log file: <code><small>catalina.out</small></code>. </li>
        </ul>
       </div>
 
@@ -549,7 +547,8 @@ total 20
         <li><code><small>catalina.out</small></code> is not automatically rotated in Tomcat.</li>
         <li>You should employ an outside log rotation program (e.g., <code><small>logadm</small></code> or <code><small>logrotate</small></code>) to rotate <code><small>catalina.out</small></code>.</li>
         <li>It is good practice to archive and remove old <code><small>catalina.out</small></code> files and other log files out of the Tomcat <code><small>logs/</small></code> on a regular basis.</li>
-        </ul>
+        <li>On Windows, the <code><small>catalina.out</small></code> file is not automatically created. Instead only the <code><small>catalina.yyyy-mm-dd.log</small></code> files are used. These have equivalent content.</li>
+       </ul>
      </div> <!-- end subsection -->
 
    </div> <!-- end A Cursory Look at Log Files section -->

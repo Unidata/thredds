@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Test CdmRemote"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+
+  <dataset name="Metar Netcdf Decoded Collection" ID="metarNcdecodedCollection" urlPath="idd/metar/ncdecoded">
+
+    <metadata inherited="true">
+      <serviceName>cdmremote</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Station</dataType>
+      <dataFormat>NetCDF</dataFormat>
+      <documentation type="rights">Freely available</documentation>
+      <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html" xlink:title="NCEP Model documentation"></documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml" />
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>14 days</duration>
+      </timeCoverage>
+    </metadata>
+
+  </dataset>
+
+  <dataset name="Metar Gempak Surface Collection" ID="metarGempakSurfaceCollection" urlPath="idd/metar/gempak" >
+
+    <metadata inherited="true">
+      <serviceName>cdmremote</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Station</dataType>
+      <dataFormat>GEMPAK</dataFormat>
+      <documentation type="rights">Freely available</documentation>
+      <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html" xlink:title="NCEP Model documentation"></documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml" />
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>14 days</duration>
+      </timeCoverage>
+    </metadata>
+  </dataset>
+
+</catalog>

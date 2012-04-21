@@ -33,23 +33,29 @@
 
 package thredds.server.config;
 
-import thredds.servlet.ThreddsConfig;
-import thredds.servlet.ServletUtil;
-import thredds.catalog.parser.jdom.InvCatalogFactory10;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grib.GribCollection;
-import ucar.nc2.grib.TimePartition;
-import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.DiskCache2;
-import ucar.nc2.util.DiskCache;
-import ucar.nc2.ncml.Aggregation;
-import ucar.nc2.iosp.grid.GridServiceProvider;
-
+import java.io.File;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.io.File;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import thredds.catalog.parser.jdom.InvCatalogFactory10;
+import thredds.inventory.CollectionUpdater;
+import thredds.servlet.ServletUtil;
+import thredds.servlet.ThreddsConfig;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.TimePartition;
+import ucar.nc2.iosp.grid.GridServiceProvider;
+import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.util.DiskCache;
+import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.cache.FileCache;
 
 /**
  * A Singleton class to initialize the CDM, instantiated by Spring.
@@ -58,19 +64,25 @@ import java.io.File;
  * @author caron
  * @since Feb 20, 2009
  */
-public class CdmInit {
+
+@Component
+public class CdmInit implements InitializingBean,  DisposableBean{
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   private DiskCache2 aggCache, gcCache;
   private Timer timer;
   private thredds.inventory.MController cacheManager;
+  
+  @Autowired
+  private TdsContext tdsContext;
 
   /* private String fmrcDefinitionDirectory;
   public void setFmrcDefinitionDirectory(String dir) {
     fmrcDefinitionDirectory = dir;
   } */
 
-  void init(TdsContext tdsContext) {
+  //public void init(TdsContext tdsContext) {
+  public void afterPropertiesSet(){
     // prefer cdmRemote when available
     ThreddsDataFactory.setPreferCdm(true);
 
@@ -205,7 +217,7 @@ public class CdmInit {
     startupLog.info("CdmInit complete");
   }
 
-  // should be called when tomcat exits
+  //should be called when tomcat exits
   public void destroy() throws Exception {
     if (timer != null) timer.cancel();
     FileCache.shutdown();
@@ -213,7 +225,9 @@ public class CdmInit {
     if (gcCache != null) gcCache.exit();
     if (cacheManager != null) cacheManager.close();
     thredds.inventory.bdb.MetadataManager.closeAll();
+    CollectionUpdater.INSTANCE.shutdown();
     startupLog.info("CdmInit shutdown");
+   
   }
 
   private class CacheScourTask extends TimerTask {

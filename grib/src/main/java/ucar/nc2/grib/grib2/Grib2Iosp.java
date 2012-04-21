@@ -45,8 +45,11 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.*;
 import java.util.Formatter;
 
@@ -61,14 +64,18 @@ public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
   static private final boolean debugTime = false, debugRead = false, debugName = false;
   static private boolean useGenType = false; // LOOK dummy for now
-
+  
   static public String makeVariableName(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+    return makeVariableNameFromTable(tables, gribCollection,  vindex);
+  }
+
+  static public String makeVariableNameFromTable(Grib2Customizer tables, GribCollection gribCollection, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
     GribTables.Parameter param = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
 
     if (param == null) {
-      f.format("VAR%d-%d-%d_FROM%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion);
+      f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter, gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion);
     } else {
       f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
     }
@@ -82,8 +89,11 @@ public class Grib2Iosp extends GribIosp {
       if (vindex.isLayer) f.format("_layer");
     }
 
-    if (vindex.intvType >= 0) {
+    if (vindex.intvName != null && !vindex.intvName.isEmpty()) {
       f.format("_%s", vindex.intvName);
+    }
+
+    if (vindex.intvType >= 0) {
       String statName = tables.getIntervalNameShort(vindex.intvType);
       if (statName != null) f.format("_%s", statName);
     }
@@ -94,7 +104,7 @@ public class Grib2Iosp extends GribIosp {
 
     else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
       String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
-      f.format("_Prob_%s", s);
+      f.format("_probability_%s", s);
     }
 
     if (vindex.genProcessType >= 0 && useGenType) {
@@ -106,66 +116,126 @@ public class Grib2Iosp extends GribIosp {
     return f.toString();
   }
 
-  /* static public String makeVariableNameOld(GribTables tables, GribCollection.VariableIndex vindex, VertCoord vc) {
+  /* http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB
+    GRIB2 data variable name encoding
+
+    (Note: examples show intermediate steps in the formation of the name)
+
+    if production status is TIGGE test or operational and matches entry in TIGGE table:
+       <parameter_short_name> (ex: t)
+    else if entry matching product discipline, parameter category, and parameter number is found:
+       <parameter_short_name> (ex: TMP)
+    else:
+       VAR_<product_discipline_number>_<parameter_category_number>_<parameter_number> (ex: VAR_3_0_9)
+
+    _P<product_definition_template_number> (ex: TMP_P0)
+
+    if single level type:
+       _L<level_type_number> (ex: TMP_P0_L103)
+    else if two levels of the same type:
+       _2L<level_type_number> (ex: TMP_P0_2L106)
+    else if two levels of different types:
+       _2L<_first_level_type_number>_<second_level_type_number> (ex: LCLD_P0_2L212_213)
+
+    if grid type is supported (fully or partially):
+       _G<grid_abbreviation><grid_number> (ex: UGRD_P0_L108_GLC0)
+    else:
+       _G<grid_number> (ex: UGRD_P0_2L104_G0)
+
+    if not statistically processed variable and not duplicate name the name is complete at this point.
+
+    if statistically-processed variable and constant statistical processing duration:
+       if statistical processing type is defined:
+          _<statistical_processing_type_abbreviation><statistical_processing_duration><duration_units> (ex: APCP_P8_L1_GLL0_acc3h)
+       else
+          _<statistical_processing_duration><duration_units> (ex: TMAX_P8_L103_GCA0_6h)
+    else if statistically-processed variable and variable-duration processing always begins at initial time:
+       _<statistical_processing_type_abbreviation> (ex: ssr_P11_GCA0_acc)
+
+    if variable name is duplicate of existing variable name (this should not normally occur):
+       _n (where n begins with 1 for first duplicate) (ex: TMAX_P8_L103_GCA0_6h_1)
+
+     VAR_%d-%d-%d[_error][_L%d][_layer][_I%s_S%d][_D%d][_Prob_%s]
+      %d-%d-%d = discipline-category-paramNo
+      L = level type
+      S = stat type
+      D = derived type
+   */
+  static public String makeVariableNameFromRecord(GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
-    GribTables.Parameter gp = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
-    if (gp == null)
-      f.format("U%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
-    else
-      f.format("%s", gp.getName());
 
-    f.format("_%s", tables.getLevelNameShort(vindex.levelType));
-    if (vc != null && vc.isLayer()) f.format("_layer");
+    f.format("VAR_%d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
 
-    if (vindex.intvType >= 0)
-      f.format("_%s", tables.getIntervalNameShort(vindex.intvType));
+    if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) { // LOOK
+      f.format("_error");  // its an "error" type variable - add to name
+    }
 
-    if (vindex.ensDerivedType >= 0)
-      f.format("_%s", tables.getProbabilityNameShort(vindex.ensDerivedType));
+    if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+      f.format("_L%d", vindex.levelType); // code table 4.5
+      if (vindex.isLayer) f.format("_layer");
+    }
+
+    if (vindex.intvName != null  && !vindex.intvName.isEmpty()) {
+      if (vindex.intvName.equals("Mixed_intervals"))
+        f.format("_Imixed");
+      else
+        f.format("_I%s", vindex.intvName);
+    }
+
+    if (vindex.intvType >= 0) {
+      f.format("_S%s", vindex.intvType);
+    }
+
+    if (vindex.ensDerivedType >= 0) {
+      f.format("_D%d", vindex.ensDerivedType);
+    }
 
     else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
       String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
-      f.format("_%s", s);
+      f.format("_Prob_%s", s);
     }
 
     return f.toString();
-  } */
+  }
 
-  static public String makeVariableLongName(Grib2Customizer tables, GribCollection.VariableIndex vindex) {
+  static public String makeVariableLongName(Grib2Customizer cust, GribCollection.VariableIndex vindex) {
     Formatter f = new Formatter();
 
     boolean isProb = (vindex.probabilityName != null && vindex.probabilityName.length() > 0);
     if (isProb)
       f.format("Probability ");
 
-    GribTables.Parameter gp = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+    GribTables.Parameter gp = cust.getParameter(vindex.discipline, vindex.category, vindex.parameter);
     if (gp == null)
       f.format("Unknown Parameter %d-%d-%d", vindex.discipline, vindex.category, vindex.parameter);
     else
       f.format("%s", gp.getName());
 
-    if (vindex.intvType >= 0) {
-      //String statName = tables.getIntervalNameShort(vindex.intvType);
-      String intvName = tables.getTableValue("4.10", vindex.intvType);
-      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = tables.getIntervalNameShort(vindex.intvType);
+    if (vindex.intvType >= 0 && vindex.intvName != null && !vindex.intvName.isEmpty()) {
+      String intvName = cust.getIntervalNameShort(vindex.intvType);
+      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getIntervalNameShort(vindex.intvType);
       if (intvName == null) f.format(" (%s)", vindex.intvName);
       else f.format(" (%s %s)", vindex.intvName, intvName);
+
+    } else if (vindex.intvType >= 0) {
+      String intvName = cust.getIntervalNameShort(vindex.intvType);
+      f.format(" (%s)", intvName);
     }
 
     if (vindex.ensDerivedType >= 0)
-      f.format(" (%s)", tables.getTableValue("4.7", vindex.ensDerivedType));
+      f.format(" (%s)", cust.getTableValue("4.7", vindex.ensDerivedType));
 
     else if (isProb)
-      f.format(" %s %s", vindex.probabilityName, getVindexUnits(tables, vindex)); // add data units here
+      f.format(" %s %s", vindex.probabilityName, getVindexUnits(cust, vindex)); // add data units here
 
     if (!useGenType && (vindex.genProcessType == 6 || vindex.genProcessType == 7)) {
       f.format(" error");
     } else if (useGenType && vindex.genProcessType >= 0) {
-      f.format(" %s", tables.getGeneratingProcessTypeName(vindex.genProcessType));
+      f.format(" %s", cust.getGeneratingProcessTypeName(vindex.genProcessType));
     }
 
     if (vindex.levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", tables.getTableValue("4.5", vindex.levelType));
+      f.format(" @ %s", cust.getTableValue("4.5", vindex.levelType));
       if (vindex.isLayer) f.format(" layer");
     }
 
@@ -187,7 +257,7 @@ public class Grib2Iosp extends GribIosp {
 
   private Grib2TimePartition timePartition;
   private GribCollection gribCollection;
-  private Grib2Customizer tables;
+  private Grib2Customizer cust;
   private GribCollection.GroupHcs gHcs;
   private boolean isTimePartitioned;
   private boolean owned; // if Iosp is owned by GribCollection; affects close()
@@ -237,7 +307,7 @@ public class Grib2Iosp extends GribIosp {
     boolean isGribFile = (raf != null) && Grib2RecordScanner.isValidFile(raf);
     if (isGribFile) {
       this.gribCollection = GribIndex.makeGribCollectionFromSingleFile(false, raf, gribConfig, CollectionManager.Force.test, new Formatter());
-      tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+      cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
     }
 
     if (gHcs != null) { // just use the one group that was set in the constructor
@@ -246,7 +316,7 @@ public class Grib2Iosp extends GribIosp {
         isTimePartitioned = true;
         timePartition = (Grib2TimePartition) gribCollection;
       }
-      tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+      cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
       addGroup(ncfile, gHcs, false);
 
     } else if (gribCollection != null) { // use the gribCollection that was set in the constructor
@@ -254,9 +324,12 @@ public class Grib2Iosp extends GribIosp {
         isTimePartitioned = true;
         timePartition = (Grib2TimePartition) gribCollection;
       }
-      tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
-      boolean useGroups = gribCollection.getGroups().size() > 1;
-      for (GribCollection.GroupHcs g : gribCollection.getGroups())
+      cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+
+      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
+      Collections.sort(groups);
+      boolean useGroups = groups.size() > 1;
+      for (GribCollection.GroupHcs g : groups)
         addGroup(ncfile, g, useGroups);
 
     } else { // otherwise, its an ncx file : read in entire collection
@@ -279,33 +352,35 @@ public class Grib2Iosp extends GribIosp {
         gribCollection = Grib2CollectionBuilder.createFromIndex(name, f.getParentFile(), raf, gribConfig);
       }
 
-      tables = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
+      cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal());
 
-      boolean useGroups = gribCollection.getGroups().size() > 1;
-      for (GribCollection.GroupHcs g : gribCollection.getGroups())
+      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
+      Collections.sort(groups);
+      boolean useGroups = groups.size() > 1;
+      for (GribCollection.GroupHcs g : groups)
         addGroup(ncfile, g, useGroups);
     }
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
     ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
-    val = tables.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
+    val = cust.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
     ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
-    ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.getMaster() + "/" + gribCollection.getLocal()));
+    ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.getMaster() + "/" + gribCollection.getLocal())); // LOOK
 
-    val = tables.getTableValue("4.3", gribCollection.getGenProcessType());
+    val = cust.getTableValue("4.3", gribCollection.getGenProcessType());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Type of generating process", val));
-    val = tables.getGeneratingProcessName(gribCollection.getGenProcessId());
+    val = cust.getGeneratingProcessName(gribCollection.getGenProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Analysis or forecast generating process identifier (defined by originating centre)", val));
-    val = tables.getGeneratingProcessName(gribCollection.getBackProcessId());
+    val = cust.getGeneratingProcessName(gribCollection.getBackProcessId());
     if (val != null)
       ncfile.addAttribute(null, new Attribute("Background generating process identifier (defined by originating centre)", val));
 
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib2Collection"));
     ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
-    ncfile.addAttribute(null, new Attribute("file format", "GRIB-2"));
+    ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
 
     for (Parameter p : gribCollection.getParams())
       ncfile.addAttribute(null, new Attribute(p));
@@ -314,7 +389,7 @@ public class Grib2Iosp extends GribIosp {
   private void addGroup(NetcdfFile ncfile, GribCollection.GroupHcs gHcs, boolean useGroups) {
     GdsHorizCoordSys hcs = gHcs.hcs;
     String grid_mapping = hcs.getName()+"_Projection";
-    VertCoord.assignVertNames(gHcs.vertCoords, tables);
+    VertCoord.assignVertNames(gHcs.vertCoords, cust);
 
     Group g;
     if (useGroups) {
@@ -383,89 +458,12 @@ public class Grib2Iosp extends GribIosp {
       cv.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
     }
 
-    // create names, disambiguate vertical coordinates - now in grib collection
-    // assignVertNames(gHcs.vertCoords);
-
     for (VertCoord vc : gHcs.vertCoords) {
-      int n = vc.getSize();
-      String vcName = vc.getName().toLowerCase();
-      ncfile.addDimension(g, new Dimension(vcName, n));
-      Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
-      if (vc.getUnits() != null) {
-        v.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
-        String desc = tables.getTableValue("4.5", vc.getCode());
-        if (desc != null) v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
-        v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
-      }
-
-      v.addAttribute(new Attribute("GRIB2_level_type", vc.getCode()));
-      VertCoord.VertUnit vu = Grib2Utils.getLevelUnit(vc.getCode());
-      if (vu != null) {
-        if (vu.getDatum() != null)
-          v.addAttribute(new Attribute("datum", vu.getDatum()));
-      }
-
-      if (vc.isLayer()) {
-        float[] data = new float[n];
-        int count = 0;
-        for (VertCoord.Level val : vc.getCoords())
-          data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
-        v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
-
-        Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName + "_bounds", DataType.FLOAT, vcName + " 2"));
-        v.addAttribute(new Attribute(CF.BOUNDS, vcName + "_bounds"));
-        bounds.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
-        bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + vcName));
-
-        data = new float[2 * n];
-        count = 0;
-        for (VertCoord.Level level : vc.getCoords()) {
-          data[count++] = (float) level.getValue1();
-          data[count++] = (float) level.getValue2();
-        }
-        bounds.setCachedData(Array.factory(DataType.FLOAT, new int[]{n, 2}, data));
-
-      } else {
-        float[] data = new float[n];
-        int count = 0;
-        for (VertCoord.Level val : vc.getCoords())
-          data[count++] = (float) val.getValue1();
-        v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
-      }
+      addVerticalCoordinate(ncfile, g, vc);
     }
 
     for (TimeCoord tc : gHcs.timeCoords) {
-      int n = tc.getSize();
-      String tcName = tc.getName();
-      ncfile.addDimension(g, new Dimension(tcName, n));
-      Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, tcName));
-      v.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
-      v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
-
-      int[] data = new int[n];
-      int count = 0;
-
-      if (tc.isInterval()) {
-        for (TimeCoord.Tinv tinv : tc.getIntervals()) data[count++] = tinv.getBounds2();
-      } else {
-        for (int val : tc.getCoords()) data[count++] = val;
-      }
-      v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
-
-      if (tc.isInterval()) {
-        Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName + "_bounds", DataType.INT, tcName + " 2"));
-        v.addAttribute(new Attribute(CF.BOUNDS, tcName + "_bounds"));
-        bounds.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
-        bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
-
-        data = new int[2 * n];
-        count = 0;
-        for (TimeCoord.Tinv tinv : tc.getIntervals()) {
-          data[count++] = tinv.getBounds1();
-          data[count++] = tinv.getBounds2();
-        }
-        bounds.setCachedData(Array.factory(DataType.INT, new int[]{n, 2}, data));
-      }
+      addTimeCoordinate(ncfile, g, tc);
     }
 
     int ccount = 0;
@@ -504,17 +502,17 @@ public class Grib2Iosp extends GribIosp {
 
       dims.append(" ").append(horizDims);
 
-      String vname = makeVariableName(tables, gribCollection, vindex);
+      String vname = makeVariableName(cust, gribCollection, vindex);
       Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dims.toString());
       ncfile.addVariable(g, v);
       if (debugName) System.out.printf("added %s%n",vname);
 
-      String desc = makeVariableLongName(tables, vindex);
+      String desc = makeVariableLongName(cust, vindex);
       v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
-      v.addAttribute(new Attribute(CDM.UNITS, makeVariableUnits(tables, vindex)));
+      v.addAttribute(new Attribute(CDM.UNITS, makeVariableUnits(cust, vindex)));
       v.addAttribute(new Attribute(CDM.MISSING_VALUE, Float.NaN));
 
-      GribTables.Parameter gp = tables.getParameter(vindex.discipline, vindex.category, vindex.parameter);
+      GribTables.Parameter gp = cust.getParameter(vindex.discipline, vindex.category, vindex.parameter);
       if (gp != null) {
         if (gp.getDescription() != null)
           v.addAttribute(new Attribute(CDM.DESCRIPTION, gp.getDescription()));
@@ -536,6 +534,8 @@ public class Grib2Iosp extends GribIosp {
         v.addAttribute(new Attribute(CF.GRID_MAPPING, grid_mapping));
       }
 
+      v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));
+
       int[] param = new int[] {vindex.discipline,vindex.category,vindex.parameter};
       v.addAttribute(new Attribute("Grib2_Parameter", Array.factory(param)));
       v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
@@ -543,7 +543,7 @@ public class Grib2Iosp extends GribIosp {
         v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
       if (vindex.intvType >= 0) {
         v.addAttribute(new Attribute("Grib2_Statistical_Interval_Type", vindex.intvType));
-        GribStatType statType = GribStatType.getStatTypeFromGrib2(vindex.intvType);
+        GribStatType statType = cust.getStatType(vindex.intvType);
         if (statType != null) {
           CF.CellMethods cm = GribStatType.getCFCellMethod( statType);
           if (cm != null) v.addAttribute(new Attribute("cell_methods", tcName + ": " + cm.toString()));
@@ -551,14 +551,110 @@ public class Grib2Iosp extends GribIosp {
       }
       if (vindex.ensDerivedType >= 0)
         v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.ensDerivedType));
-      else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0)
-        v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.probabilityName));
+      else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
+        v.addAttribute(new Attribute("Grib2_Probability_Type", vindex.probType));
+        v.addAttribute(new Attribute("Grib2_Probability_Name", vindex.probabilityName));
+      }
       if (vindex.genProcessType >= 0)
-        v.addAttribute(new Attribute("Grib2_Generating_Process_Type", tables.getGeneratingProcessTypeName(vindex.genProcessType)));
+        v.addAttribute(new Attribute("Grib2_Generating_Process_Type", cust.getGeneratingProcessTypeName(vindex.genProcessType)));
 
       v.setSPobject(vindex);
     }
   }
+
+  private void addTimeCoordinate(NetcdfFile ncfile, Group g, TimeCoord tc) {
+    int n = tc.getSize();
+    String tcName = tc.getName();
+    ncfile.addDimension(g, new Dimension(tcName, n));
+    Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.INT, tcName));
+    v.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, "time"));
+
+    // coordinate values
+    int[] data = new int[n];
+    int count = 0;
+
+    if (tc.isInterval()) {
+      for (TimeCoord.Tinv tinv : tc.getIntervals()) data[count++] = tinv.getBounds2();
+    } else {
+      for (int val : tc.getCoords()) data[count++] = val;
+    }
+    v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
+
+    if (tc.isInterval()) {
+      v.addAttribute(new Attribute(CDM.LONG_NAME, cust.getIntervalName(tc.getCode())));
+      /* GribStatType statType = cust.getStatType(tc.getCode());
+      if (statType == null) {
+        v.addAttribute(new Attribute("Grib2 statistical type", tc.getCode()));
+      } else {
+        v.addAttribute(new Attribute("Grib statistical type", GribStatType.getStatTypeDescription(statType)));
+      } */
+
+      Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName + "_bounds", DataType.INT, tcName + " 2"));
+      v.addAttribute(new Attribute(CF.BOUNDS, tcName + "_bounds"));
+      bounds.addAttribute(new Attribute(CDM.UNITS, tc.getUnits()));
+      bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + tcName));
+
+      // coordinate intervals
+      data = new int[2 * n];
+      count = 0;
+      for (TimeCoord.Tinv tinv : tc.getIntervals()) {
+        data[count++] = tinv.getBounds1();
+        data[count++] = tinv.getBounds2();
+      }
+      bounds.setCachedData(Array.factory(DataType.INT, new int[]{n, 2}, data));
+    }
+  }
+
+
+  private void addVerticalCoordinate(NetcdfFile ncfile, Group g, VertCoord vc) {
+      int n = vc.getSize();
+      String vcName = vc.getName().toLowerCase();
+      ncfile.addDimension(g, new Dimension(vcName, n));
+      Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName, DataType.FLOAT, vcName));
+      if (vc.getUnits() != null) {
+        v.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
+        String desc = cust.getTableValue("4.5", vc.getCode());
+        if (desc != null) v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
+        v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+      }
+
+      v.addAttribute(new Attribute("GRIB2_level_type", vc.getCode()));
+      VertCoord.VertUnit vu = Grib2Utils.getLevelUnit(vc.getCode());
+      if (vu != null) {
+        if (vu.getDatum() != null)
+          v.addAttribute(new Attribute("datum", vu.getDatum()));
+      }
+
+      if (vc.isLayer()) {
+        float[] data = new float[n];
+        int count = 0;
+        for (VertCoord.Level val : vc.getCoords())
+          data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
+        v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
+
+        Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, vcName + "_bounds", DataType.FLOAT, vcName + " 2"));
+        v.addAttribute(new Attribute(CF.BOUNDS, vcName + "_bounds"));
+        bounds.addAttribute(new Attribute(CDM.UNITS, vc.getUnits()));
+        bounds.addAttribute(new Attribute(CDM.LONG_NAME, "bounds for " + vcName));
+
+        data = new float[2 * n];
+        count = 0;
+        for (VertCoord.Level level : vc.getCoords()) {
+          data[count++] = (float) level.getValue1();
+          data[count++] = (float) level.getValue2();
+        }
+        bounds.setCachedData(Array.factory(DataType.FLOAT, new int[]{n, 2}, data));
+
+      } else {
+        float[] data = new float[n];
+        int count = 0;
+        for (VertCoord.Level val : vc.getCoords())
+          data[count++] = (float) val.getValue1();
+        v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
+      }
+  }
+
 
   private String searchCoord(GribCollection gc, Grib2Utils.LatLonCoordType type, List<GribCollection.VariableIndex> list) {
     if (type == null) return null;
@@ -568,15 +664,15 @@ public class Grib2Iosp extends GribIosp {
       case U:
         lat = searchCoord(list, 198);
         lon = searchCoord(list, 199);
-        return (lat != null && lon != null) ? makeVariableName(tables, gc, lat) + " "+ makeVariableName(tables, gc, lon) : null;
+        return (lat != null && lon != null) ? makeVariableName(cust, gc, lat) + " "+ makeVariableName(cust, gc, lon) : null;
       case V:
         lat = searchCoord(list, 200);
         lon = searchCoord(list, 201);
-        return (lat != null && lon != null) ? makeVariableName(tables, gc, lat) + " "+ makeVariableName(tables, gc, lon) : null;
+        return (lat != null && lon != null) ? makeVariableName(cust, gc, lat) + " "+ makeVariableName(cust, gc, lon) : null;
       case P:
         lat = searchCoord(list, 202);
         lon = searchCoord(list, 203);
-        return (lat != null && lon != null) ? makeVariableName(tables, gc, lat) + "  "+ makeVariableName(tables, gc, lon) : null;
+        return (lat != null && lon != null) ? makeVariableName(cust, gc, lat) + "  "+ makeVariableName(cust, gc, lon) : null;
     }
     return null;
   }
@@ -616,6 +712,24 @@ public class Grib2Iosp extends GribIosp {
       result = readDataFromPartition(v2, section);
     else
       result = readDataFromCollection(v2, section);
+
+    long took = System.currentTimeMillis() - start;
+    if (debugTime) System.out.println("  read data took=" + took + " msec ");
+    return result;
+  }
+
+  // LOOK this is by Variable - might want to do over variables, so only touch a file once, if multiple variables in a file
+  @Override
+  public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    long start = System.currentTimeMillis();
+
+    long result;
+    //if (isTimePartitioned)
+   //   result = streamDataFromPartition(v2, section, channel);
+    //else
+      result = streamDataFromCollection(v2, section, channel);
 
     long took = System.currentTimeMillis() - start;
     if (debugTime) System.out.println("  read data took=" + took + " msec ");
@@ -769,6 +883,41 @@ public class Grib2Iosp extends GribIosp {
     return dataReceiver.getArray();
   }
 
+  private long streamDataFromCollection(Variable v, Section section, WritableByteChannel channel) throws IOException, InvalidRangeException {
+    GribCollection.VariableIndex vindex = (GribCollection.VariableIndex) v.getSPobject();
+
+    // first time, read records and keep in memory
+    if (vindex.records == null)
+      vindex.readRecords();
+
+    // canonical order: time, ens, z, y, x
+    int rangeIdx = 0;
+    Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range ensRange = (vindex.ensIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range levRange = (vindex.vertIdx >= 0) ? section.getRange(rangeIdx++) : new Range(0, 0);
+    Range yRange = section.getRange(rangeIdx++);
+    Range xRange = section.getRange(rangeIdx);
+
+    ChannelReceiver dataReceiver = new ChannelReceiver(channel, yRange, xRange);
+    DataReader dataReader = new DataReader(vindex);
+
+    // collect all the records that need to be read
+    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
+      for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
+        for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
+          // where this particular record fits into the result array, modulo horiz
+          int resultIndex = GribCollection.calcIndex(timeRange.index(timeIdx), ensRange.index(ensIdx), levRange.index(levelIdx),
+                  ensRange.length(), levRange.length());
+          dataReader.addRecord(ensIdx, timeIdx, levelIdx, resultIndex);
+        }
+      }
+    }
+
+    // sort by file and position, then read
+    dataReader.read(dataReceiver);
+    return 0; // LOOK
+  }
+
   private class DataReader {
     GribCollection.VariableIndex vindex;
     List<DataRecord> records = new ArrayList<DataRecord>();
@@ -783,7 +932,7 @@ public class Grib2Iosp extends GribIosp {
       records.add(new DataRecord(timeIdx, ensIdx, levIdx, resultIndex, record.fileno, record.pos));
     }
 
-    void read(DataReceiver dataReceiver) throws IOException {
+    void read(DataReceiverIF dataReceiver) throws IOException {
       Collections.sort(records);
 
       int currFile = -1;
@@ -830,10 +979,14 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
-  private class DataReceiver {
-    Array dataArray;
-    Range yRange, xRange;
-    int horizSize;
+  private interface DataReceiverIF {
+    void addData(float[] data, int resultIndex, int nx) throws IOException;
+  }
+
+  private class DataReceiver implements DataReceiverIF {
+    private Array dataArray;
+    private Range yRange, xRange;
+    private int horizSize;
 
     DataReceiver(Section section, Range yRange, Range xRange) {
       dataArray = Array.factory(DataType.FLOAT, section.getShape());
@@ -847,12 +1000,14 @@ public class Grib2Iosp extends GribIosp {
         iter.setFloatNext(Float.NaN);
     }
 
-    void addData(float[] data, int resultIndex, int nx) throws IOException {
+    public void addData(float[] data, int resultIndex, int nx) throws IOException {
       int start = resultIndex * horizSize;
       int count = 0;
       for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
         for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
           int dataIdx = y * nx + x;
+          if (dataIdx >= data.length)
+            System.out.println("HEY");
           dataArray.setFloat(start + count, data[dataIdx]);
           count++;
         }
@@ -864,14 +1019,40 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
+  private class ChannelReceiver implements DataReceiverIF {
+    private WritableByteChannel channel;
+    private DataOutputStream outStream;
+    private Range yRange, xRange;
+
+    ChannelReceiver(WritableByteChannel channel, Range yRange, Range xRange) {
+      this.channel = channel;
+      this.outStream = new DataOutputStream(Channels.newOutputStream(channel));
+      this.yRange = yRange;
+      this.xRange = xRange;
+    }
+
+    public void addData(float[] data, int resultIndex, int nx) throws IOException {
+       // LOOK: write some ncstream header
+      // outStream.write(header);
+
+      // now write the data
+      for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
+        for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
+          int dataIdx = y * nx + x;
+          outStream.writeFloat(data[dataIdx]);
+        }
+      }
+    }
+  }
+
   private void show(Grib2Record gr, long pos) {
     if (gr != null) {
        Formatter f = new Formatter();
        f.format("File=%s%n", raf.getLocation());
-       f.format("  Parameter=%s%n", tables.getVariableName(gr));
+       f.format("  Parameter=%s%n", cust.getVariableName(gr));
        f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
-       f.format("  ForecastDate=%s%n", tables.getForecastDate(gr));
-       TimeCoord.TinvDate tinv = tables.getForecastTimeInterval(gr);
+       f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
+       TimeCoord.TinvDate tinv = cust.getForecastTimeInterval(gr);
        if (tinv != null) f.format("  TimeInterval=%s%n",tinv);
        f.format("  ");
        gr.getPDS().show(f);

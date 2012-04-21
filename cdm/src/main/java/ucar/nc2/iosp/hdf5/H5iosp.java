@@ -44,7 +44,6 @@ import ucar.nc2.*;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Date;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -65,6 +64,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugChunkIndexer = false;
   static boolean debugVlen = false;
   static boolean debugStructure = false;
+  static boolean skipEos = false;
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
 
@@ -76,6 +76,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     debugFilterIndexer = debugFlag.isSet("H5iosp/filterIndexer");
     debugChunkIndexer = debugFlag.isSet("H5iosp/chunkIndexer");
     debugVlen = debugFlag.isSet("H5iosp/vlen");
+    skipEos = debugFlag.isSet("HdfEos/turnOff");
 
     H5header.setDebugFlags(debugFlag);
     H4header.setDebugFlags(debugFlag);
@@ -86,6 +87,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
+    if (isEos) return "HDF5-EOS";
     return "HDF5";
   }
 
@@ -97,6 +99,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   private RandomAccessFile myRaf;
   private H5header headerParser;
+  private boolean isEos;
 
   /////////////////////////////////////////////////////////////////////////////
   // reading
@@ -110,8 +113,8 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     // check if its an HDF5-EOS file
     Group eosInfo = ncfile.getRootGroup().findGroup("HDFEOS INFORMATION");
-    if (eosInfo != null) {
-      HdfEos.amendFromODL(ncfile, eosInfo);
+    if (eosInfo != null && !skipEos) {
+      isEos = HdfEos.amendFromODL(ncfile, eosInfo);
     }
 
     ncfile.finish();
@@ -248,50 +251,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       }
       //return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
       return new ArrayObject(data[0].getClass(), shape, data);
-
     }
-
-    /* if (dataType == DataType.STRUCTURE) {  // LOOK what about subset ?
-      boolean hasStrings = false;
-      Structure s = (Structure) v;
-
-      // create StructureMembers - must set offsets
-      StructureMembers sm = s.makeStructureMembers();
-      for (StructureMembers.Member m : sm.getMembers()) {
-        Variable v2 = s.findVariable(m.getName());
-        H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
-        if (vm.typeInfo.byteOrder >= 0) // apparently each member may have seperate byte order (!!!??)
-          m.setDataObject(vm.typeInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-        m.setDataParam((int) (vm.dataPos)); // offset since start of Structure
-        if (v2.getDataType() == DataType.STRING)
-          hasStrings = true;
-      }
-      int recsize = layout.getElemSize();
-      sm.setStructureSize(recsize); // gotta calculate this ourself
-
-      // place data into an ArrayStructureBB for efficiency
-      ArrayStructureBB asbb = new ArrayStructureBB(sm, shape);
-      byte[] byteArray = asbb.getByteBuffer().array();
-      while (layout.hasNext()) {
-        Layout.Chunk chunk = layout.next();
-        if (chunk == null) continue;
-        if (debugStructure)
-          System.out.println(" readStructure " + v.getName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
-        // copy bytes directly into the underlying byte[] LOOK : assumes contiguous layout ??
-        myRaf.seek(chunk.getSrcPos());
-        myRaf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
-      }
-
-      // strings are stored on the heap, and must be read separately
-      if (hasStrings) {
-        int destPos = 0;
-        for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
-          convertStrings(asbb, destPos, sm);
-          destPos += layout.getElemSize();
-        }
-      }
-      return asbb;
-    } // */
 
     if (dataType == DataType.STRUCTURE) {  // LOOK what about subset ?
       int recsize = layout.getElemSize();
@@ -321,7 +281,8 @@ public class H5iosp extends AbstractIOServiceProvider {
     String[] result = new String[nelems];
     for (int i = 0; i < nelems; i++) {
       long reference = refArray.getLong(ima.set(i));
-      result[i] = headerParser.getDataObjectName(reference);
+      String name = headerParser.getDataObjectName(reference);
+      result[i] = name != null ? name : Long.toString(reference);
       if (debugVlen) System.out.printf(" convertReference 0x%x to %s %n", reference, result[i]);
     }
     return Array.factory(String.class, new int[]{nelems}, result);

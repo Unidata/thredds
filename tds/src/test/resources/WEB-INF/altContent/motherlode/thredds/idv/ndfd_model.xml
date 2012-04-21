@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="NCEP Model Data" version="1.0.1">
+  <service name="latest" serviceType="Resolver" base="" />
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+  </service>
+  <dataset name="NWS National Digital Forecast Database" ID="idv/NCEP/NDFD">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Grid</dataType>
+      <dataFormat>GRIB-2</dataFormat>
+      <documentation type="summary">NWS gridded forecasts of sensible weather elements.</documentation>
+      <documentation type="rights">Freely available</documentation>
+      <documentation xlink:href="http://www.nws.noaa.gov/ndfd/" xlink:title="NCEP Model documentation" />
+      <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml" />
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>60 days</duration>
+      </timeCoverage>
+      <variables vocabulary="GRIB-2" />
+    </metadata>
+    <datasetScan name="NWS National Digital Forecast Database 5km CONUS" collectionType="ForecastModelRuns" harvest="true"
+                 ID="idv/NCEP/NDFD/CONUS_5km"
+                 path="model/NCEP/NDFD/CONUS_5km"
+                 location="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/">
+      <documentation xlink:href="/thredds/modelInventory/model/NCEP/NDFD/CONUS_5km/" xlink:title="Available Inventory" />
+      <documentation type="summary">1073 by 689 points, resolution 5 km. Models are run daily at 12Z. Forecasts every 6 hours from 96 to 180 hours.</documentation>
+      <metadata inherited="true">
+        <geospatialCoverage>
+          <northsouth>
+            <start>20.16524</start>
+            <size>29.95542</size>
+            <units>degrees_north</units>
+          </northsouth>
+          <eastwest>
+            <start>-121.57306</start>
+            <size>60.72563</size>
+            <units>degrees_east</units>
+          </eastwest>
+        </geospatialCoverage>
+        <variables vocabulary="GRIB-2">
+          <variable name="Categorical_Rain" vocabulary_name="Meteorological_products / Moisture / Categorical_Rain" units="" vocabulary_id="2,0,1,192">Categorical Rain @ surface</variable>
+          <variable name="Dew_point_temperature" vocabulary_name="Meteorological_products / Temperature / Dew_point_temperature" units="K" vocabulary_id="2,0,0,6">Dew point temperature @ height_above_ground1</variable>
+          <variable name="Maximum_temperature" vocabulary_name="Meteorological_products / Temperature / Maximum_temperature" units="K" vocabulary_id="2,0,0,4">Maximum temperature @ height_above_ground1</variable>
+          <variable name="Minimum_temperature" vocabulary_name="Meteorological_products / Temperature / Minimum_temperature" units="K" vocabulary_id="2,0,0,5">Minimum temperature @ height_above_ground1</variable>
+          <variable name="Probablity_of_1_tenth_inch_Precipipation_POP" vocabulary_name="Hydrological_products / Hydrology_probabilities / Probability_of_Precipipation" units="percent" vocabulary_id="2,1,1,2">Probablity of 1 tenth inch Precipipation POP @ surface</variable>
+          <variable name="Total_cloud_cover" vocabulary_name="Meteorological_products / Cloud / Total_cloud_cover" units="percent" vocabulary_id="2,0,6,1">Total cloud cover @ entire_atmosphere</variable>
+          <variable name="Wind_direction_from_which_blowing" vocabulary_name="Meteorological_products / Momentum / Wind_direction" units="deg true" vocabulary_id="2,0,2,0">Wind direction from which blowing @ height_above_ground</variable>
+          <variable name="Wind_speed" vocabulary_name="Meteorological_products / Momentum / Wind_speed" units="m s-1" vocabulary_id="2,0,2,1">Wind speed @ height_above_ground</variable>
+        </variables>
+      </metadata>
+      <filter>
+        <include regExp=".*\.grib2$" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NWS National Digital Forecast Database 5km CONUS" />
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addLatest />
+      <addDatasetSize />
+      <addTimeCoverage datasetNameMatchPattern="NDFD_CONUS_5km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib2"
+                       startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="180 hours" />
+    </datasetScan>
+  </dataset>
+</catalog>
+

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         name="Data for Comet Case Study 039" version="1.0">
+
+<dataset name="Data for Comet Case Study 039" >
+    <service name="mlodeDODS" serviceType="DODS" 
+        base="/thredds/dodsC/" />
+
+    <service name="mlodeADDE" serviceType="ADDE" 
+		base="adde://adde.ucar.edu/imagedata"/>
+
+    <dataset name="NCEP Model Data">
+        <metadata inherited="true">
+            <dataType>Grid</dataType>
+        </metadata>
+
+        <dataset name="ETA 1998-06-29 00:00 GMT"  serviceName="mlodeDODS"
+            urlPath="casestudies/ccs039/grids/netCDF/1998062900_eta.nc" />
+        <dataset name="ETA 1998-06-29 12:00 GMT"  serviceName="mlodeDODS"
+            urlPath="casestudies/ccs039/grids/netCDF/1998062912_eta.nc" />
+        <dataset name="ETA 1998-06-30 00:00 GMT"  serviceName="mlodeDODS"
+            urlPath="casestudies/ccs039/grids/netCDF/1998063000_eta.nc" />
+
+    </dataset>
+</dataset>
+
+</catalog>

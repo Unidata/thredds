@@ -34,6 +34,7 @@ package ucar.nc2.units;
 
 import junit.framework.*;
 
+import ucar.nc2.util.Misc;
 import ucar.units.Unit;
 import ucar.units.ScaledUnit;
 import ucar.units.DerivedUnit;
@@ -85,7 +86,7 @@ public class TestTimeUnits extends TestCase  {
     assert tu.getValue() == 33.0;
     assert 3600.0 * tu.getValue() == tu.getValueInSeconds() : tu.getValue() +" "+tu.getValueInSeconds();
     assert tu.getUnitString().equals( unitBefore);
-    assert TestAll.closeEnough(tu.getValueInSeconds(), 11.0 * secsBefore) : (tu.getValueInSeconds())+" "+ secsBefore;
+    assert Misc.closeEnough(tu.getValueInSeconds(), 11.0 * secsBefore) : (tu.getValueInSeconds())+" "+ secsBefore;
 
     System.out.println();
     tu.setValueInSeconds( 3600.0);
@@ -94,7 +95,7 @@ public class TestTimeUnits extends TestCase  {
     assert tu.getValue() == 1.0;
     assert tu.getValueInSeconds() == 3600.0 : tu.getValueInSeconds();
     assert tu.getUnitString().equals( unitBefore);
-    assert TestAll.closeEnough( 3.0 * tu.getValueInSeconds(), secsBefore) : tu.getValueInSeconds()+" "+secsBefore;
+    assert Misc.closeEnough( 3.0 * tu.getValueInSeconds(), secsBefore) : tu.getValueInSeconds()+" "+secsBefore;
 
     TimeUnit day = new TimeUnit(1.0, "day");
     double hoursInDay = day.convertTo(1.0, tu);

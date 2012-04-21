@@ -56,6 +56,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   static private final int MISSING_INT = -9999;
   static private final float MISSING_FLOAT = Float.NaN;
 
+
   public boolean isValidFile( RandomAccessFile raf) throws IOException {
     try {
       raf.seek(0);
@@ -64,7 +65,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       String test = new String( b);
       return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ||
              test.equals( Level2VolumeScan.AR2V0003)|| test.equals( Level2VolumeScan.AR2V0004) ||
-             test.equals( Level2VolumeScan.AR2V0002) || test.equals( Level2VolumeScan.AR2V0006);
+             test.equals( Level2VolumeScan.AR2V0002) || test.equals( Level2VolumeScan.AR2V0006) ||
+             test.equals( Level2VolumeScan.AR2V0007);
     } catch (IOException ioe) {
       return false;
     }
@@ -75,6 +77,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   private double radarRadius;
   private Variable v0, v1;
   private DateFormatter formatter = new DateFormatter();
+  private boolean overMidNight = false;
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     NexradStationDB.init();
@@ -171,7 +174,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(d)));
     ncfile.addAttribute(null, new Attribute("time_coverage_end", formatter.toDateTimeStringISO(volScan.getEndDate())));
 
-    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
+    ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of Nexrad Level 2 file into CDM"));
     ncfile.addAttribute(null, new Attribute("DataType", "Radial"));
 
     ncfile.addAttribute(null, new Attribute("Title", "Nexrad Level 2 Station "+volScan.getStationId()+" from "+
@@ -312,13 +315,13 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     timeVar.setDimensions(dim2);
     ncfile.addVariable(null, timeVar);
 
-
     // int julianDays = volScan.getTitleJulianDays();
     // Date d = Level2Record.getDate( julianDays, 0);
-    Date d = getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
+    // Date d = getDate(volScan.getTitleJulianDays(), volScan.getTitleMsecs());
+    Date d = getDate(volScan.getTitleJulianDays(), 0);  // times are msecs from midnight
     String units = "msecs since "+formatter.toDateTimeStringISO(d);
 
-    timeVar.addAttribute( new Attribute(CDM.LONG_NAME, "time since base date"));
+    timeVar.addAttribute( new Attribute(CDM.LONG_NAME, "time of each ray"));
     timeVar.addAttribute( new Attribute(CDM.UNITS, units));
     timeVar.addAttribute( new Attribute(CDM.MISSING_VALUE, MISSING_INT));
     timeVar.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
@@ -524,9 +527,10 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     while (ii.hasNext())
       ii.setFloatNext(MISSING_FLOAT);
 
-    // now set the  coordinate variables from the Level2Record radial
+        // now set the  coordinate variables from the Level2Record radial
     int last_msecs = Integer.MIN_VALUE;
     int nscans = groups.size();
+
     for (int scan = 0; scan < nscans; scan++) {
       List scanGroup = (List) groups.get(scan);
       int nradials = scanGroup.size();
@@ -537,7 +541,13 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         if (first == null) first = r;
 
         int radial = r.radial_num-1;
-        timeData.setInt( timeIndex.set(scan, radial), r.data_msecs);
+        if(last_msecs != Integer.MIN_VALUE && (last_msecs - r.data_msecs ) > 80000000 ) {
+             overMidNight = true;
+        }
+        if(overMidNight)
+            timeData.setInt( timeIndex.set(scan, radial), r.data_msecs + 24 * 3600 * 1000);
+        else
+            timeData.setInt( timeIndex.set(scan, radial), r.data_msecs);
         elevData.setFloat( elevIndex.set(scan, radial), r.getElevation());
         aziData.setFloat( aziIndex.set(scan, radial), r.getAzimuth());
 

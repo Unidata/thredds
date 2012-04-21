@@ -84,7 +84,9 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       }
 
       if (record.getTimeUnit() != this.timeUnit) {
-        throw new IllegalStateException("time units must match");
+        // ignore for now - 4.2 is apparently fixed
+        //throw new IllegalStateException("time units must match");
+        log.warn("time units mismatch {} != {}", record.getTimeUnit(),this.timeUnit);
       }
     }
 

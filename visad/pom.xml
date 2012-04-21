@@ -7,11 +7,11 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.9-SNAPSHOT</version>
   </parent>
 
-  <groupId>edu.ucar</groupId>
-  <artifactId>visad</artifactId>
+  <!-- groupId>edu.ucar</groupId -->
+  <artifactId>visadCdm</artifactId>
   <packaging>jar</packaging>
   <name>VisAD-based IOSPs</name>
   <description>
@@ -21,33 +21,6 @@
   </description>
   <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
-  <developers>
-    <developer>
-      <name>Don Murray</name>
-      <organization>NOAA/ESRL/PSD</organization>
-      <organizationUrl>http://www.esrl.noaa.gov/psd/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Robb Kambic</name>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>John Caron</name>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-  </developers>
-
   <!-- Dependencies -->
   <dependencies>
     <dependency>
@@ -56,7 +29,7 @@
     </dependency>
 
     <dependency>
-      <groupId>edu.wisc</groupId>
+      <groupId>edu.wisc.ssec</groupId>
       <artifactId>visad</artifactId>
     </dependency>
 
@@ -64,15 +37,63 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
-  <!-- Build configuration
-       We declare a non-existant test directory as a dirty trick
-       for skiping completly the tests, including compilation.
-    -->
   <build>
-    <finalName>visadCdm</finalName>
-    <testSourceDirectory>void</testSourceDirectory>
+    <!-- finalName>visadCdm</finalName -->
+    <!--testSourceDirectory>void</testSourceDirectory-->
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+              <artifactSet>
+                <includes>
+                  <include>edu.wisc.ssec:visad</include>
+                </includes>
+              </artifactSet>
+
+              <filters>
+                <filter>
+                  <artifact>edu.wisc.ssec:visad</artifact>
+                  <excludes>
+                    <exclude>dods/**</exclude>
+                    <exclude>gnu/**</exclude>
+                    <exclude>HTTPClient/**</exclude>
+                    <exclude>loci/**</exclude>
+                    <exclude>ncsa/**</exclude>
+                    <exclude>ucar/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

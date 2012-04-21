@@ -57,16 +57,13 @@ import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.point.writer.WriterCFPointDataset;
+import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.Aggregation;
-//import ucar.nc2.dt.*;
-//import ucar.nc2.dt.radial.StationRadarCollectionImpl;
-//import ucar.nc2.thredds.TDSRadarDatasetCollection;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dataset.*;
 
@@ -118,8 +115,8 @@ import org.bounce.text.xml.XMLEditorKit;
 public class ToolsUI extends JPanel {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ToolsUI.class);
 
-  static private final String WorldDetailMap = "/optional/nj22/maps/Countries.zip";
-  static private final String USMap = "/optional/nj22/maps/US.zip";
+  static private final String WorldDetailMap = "/resources/nj22/ui/maps/Countries.zip";
+  static private final String USMap = "/resources/nj22/ui/maps/US.zip";
 
   static private final String FRAME_SIZE = "FrameSize";
   static private final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
@@ -150,6 +147,7 @@ public class ToolsUI extends JPanel {
   private GribTemplatePanel gribTemplatePanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2TablePanel grib2TablePanel;
+  private GribRenamePanel gribVariableRenamePanel;
   private Hdf5Panel hdf5Panel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
@@ -300,6 +298,7 @@ public class ToolsUI extends JPanel {
     grib2TabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
     grib2TabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
     grib2TabPane.addTab("GRIB2-TABLES", new JLabel("GRIB2-TABLES"));
+    grib2TabPane.addTab("GRIB-RENAME", new JLabel("GRIB-RENAME"));
     grib2TabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = grib2TabPane.getSelectedComponent();
@@ -526,6 +525,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("GRIB2-TABLES")) {
       grib2TablePanel = new Grib2TablePanel((PreferencesExt) mainPrefs.node("grib2-tables"));
       c = grib2TablePanel;
+
+    } else if (title.equals("GRIB-RENAME")) {
+      gribVariableRenamePanel = new GribRenamePanel((PreferencesExt) mainPrefs.node("grib-rename"));
+      c = gribVariableRenamePanel;
 
     } else if (title.equals("CoordSys")) {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
@@ -1006,6 +1009,7 @@ public class ToolsUI extends JPanel {
     if (gribTemplatePanel != null) gribTemplatePanel.save();
     if (grib1TablePanel != null) grib1TablePanel.save();
     if (grib2TablePanel != null) grib2TablePanel.save();
+    if (gribVariableRenamePanel != null) gribVariableRenamePanel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5Panel != null) hdf5Panel.save();
     if (hdf4Panel != null) hdf4Panel.save();
@@ -2076,7 +2080,7 @@ public class ToolsUI extends JPanel {
       } catch (Exception e) {
         e.printStackTrace(new PrintStream(bos));
         detailTA.setText(bos.toString());
-        detailWindow.showIfNotIconified();
+        detailWindow.show();
         err = true;
       }
 
@@ -3163,6 +3167,30 @@ public class ToolsUI extends JPanel {
 
     void save() {
       codeTable.save();
+      super.save();
+    }
+
+    void closeOpenFiles() {
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////
+
+  private class GribRenamePanel extends OpPanel {
+    ucar.nc2.ui.GribRenamePanel panel;
+
+    GribRenamePanel(PreferencesExt p) {
+      super(p, "", false, false, false);
+      panel = new ucar.nc2.ui.GribRenamePanel(prefs, buttPanel);
+      add(panel, BorderLayout.CENTER);
+    }
+
+    boolean process(Object command) {
+      return true;
+    }
+
+    void save() {
+      panel.save();
       super.save();
     }
 
@@ -5220,7 +5248,7 @@ public class ToolsUI extends JPanel {
 
     void doWriteCF(String filename) {
       try {
-        int count = WriterCFPointDataset.writePointFeatureCollection(pfDataset, filename);
+        int count = CFPointWriter.writeFeatureCollection(pfDataset, filename);
         JOptionPane.showMessageDialog(this, count + " records written");
       } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());

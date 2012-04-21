@@ -33,19 +33,20 @@
 package ucar.nc2.dods;
 
 import junit.framework.*;
+import org.junit.*;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
 import java.io.*;
 
+import static junit.framework.Assert.assertEquals;
+
 /** Test nc2 dods in the JUnit framework. */
 
-public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
+public class TestDODSMultiArrayPrimitiveTypes {
 
-  public TestDODSMultiArrayPrimitiveTypes( String name) {
-    super(name);
-  }
-
+  @org.junit.Test
   public void testArrays() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
 
@@ -216,6 +217,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
   }
 
+  @Test
   public void testStride() throws IOException, InvalidRangeException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");
 
@@ -251,6 +253,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
     System.out.println("TestDODSMultiArrayPrimitiveTypes TestStride ok");
   }
 
+  @Test
   public void testSection() throws IOException, InvalidRangeException {
     DODSNetcdfFile.setPreload( false);
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.03");

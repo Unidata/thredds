@@ -41,32 +41,17 @@ import java.util.*;
 public class TestWrite extends TestCase {
   static boolean debugCompare = true, debugCompareList = true;
 
-  public TestWrite( String name) {
-    super(name);
-  }
-
   public void testWrite() {
-    // testWrite( "test0.xml");
-    testWrite( "test1.xml");
-    /* testWrite( "test2.xml");
-    testWrite( "catalogDev.xml");
-    testWrite( "TestInherit.1.0.xml"); //
-    testWrite( "Example1.0rc7.xml"); //
-    testWrite( "TestHarvest.xml"); //
-    testWrite( "catgen1.0.xml"); //
-
-    testWrite( "TestInherit.0.6.xml"); //
-    testWrite( "InvCatalog.0.6.xml");  //
-    testWrite( "testMetadata.xml");  // */
+    testWrite1( "test1.xml");
   }
 
-  public void testWrite(String filename) {
-    InvCatalogImpl cat = (InvCatalogImpl) TestCatalogAll.open( filename, true);
+  private void testWrite1(String filename) {
+    InvCatalogImpl cat = TestCatalogAll.open( filename, true);
 
     // create a file and write it out
     //File tmpDir = new File(TestAll.tmpDir);
     //tmpDir.mkdir();
-    String fileOutName = TestCatalogAll.dataDir+filename+".tmp";
+    String fileOutName = TestCatalogAll.tmpDir+filename+".tmp";
     System.out.println(" output filename= "+fileOutName);
     try {
       OutputStream out = new BufferedOutputStream( new FileOutputStream( fileOutName));
@@ -78,8 +63,8 @@ public class TestWrite extends TestCase {
     }
 
     // read it back in
-    String urlR = "file:/"+fileOutName;
-    InvCatalogImpl catR = (InvCatalogImpl) TestCatalogAll.openAbsolute( urlR, true);
+    String urlR = "file:"+fileOutName;
+    InvCatalogImpl catR = TestCatalogAll.openAbsolute( urlR, true);
 
     if (!cat.equals( catR)) {
       System.out.println("cat = "+cat.hashCode()+" catR= "+catR.hashCode()+" not equals");
@@ -89,17 +74,22 @@ public class TestWrite extends TestCase {
     assert cat.equals( catR);
   }
 
-  public void compare(InvCatalogImpl cat, InvCatalogImpl catR) {
+  private void compare(InvCatalogImpl cat, InvCatalogImpl catR) {
     List datasets = cat.getDatasets();
     List datasetsR = catR.getDatasets();
 
-    for (int i=0; i<datasets.size(); i++) {
+    if (datasets.size() != datasetsR.size()) {
+      System.out.printf("%s%n", "different number of datasets");
+    }
+
+    int n = Math.min(datasets.size(), datasetsR.size());
+    for (int i=0; i<n; i++) {
       InvDatasetImpl dd = (InvDatasetImpl) datasets.get(i);
       compareDatasets( dd, (InvDatasetImpl) datasetsR.get(i));
     }
   }
 
-  public void compareDatasets(InvDatasetImpl d, InvDatasetImpl dR) {
+  private void compareDatasets(InvDatasetImpl d, InvDatasetImpl dR) {
     if (debugCompare) System.out.println(" compare datasets ("+d+") and ("+dR+")");
     /* compareList( d.getDocumentation(), dR.getDocumentation());
     compareList( d.getAccess(), dR.getAccess()); */
@@ -118,7 +108,7 @@ public class TestWrite extends TestCase {
   }
 
 
-  public void compareList(List d, List dR) {
+  private void compareList(List d, List dR) {
     Iterator iter = d.iterator();
     while (iter.hasNext()) {
       Object item = iter.next();
@@ -136,7 +126,7 @@ public class TestWrite extends TestCase {
     }
   }
 
-  public void compareListVariables(List d, List dR) {
+  private void compareListVariables(List d, List dR) {
     Iterator iter = d.iterator();
     while (iter.hasNext()) {
       ThreddsMetadata.Variables item = (ThreddsMetadata.Variables) iter.next();
@@ -158,7 +148,7 @@ public class TestWrite extends TestCase {
   }
 
 
-  public void check(String url) {
+  private void check(String url) {
     InvCatalogImpl cat = (InvCatalogImpl) TestCatalogAll.open( url, true);
 
     // read it back in
@@ -170,15 +160,4 @@ public class TestWrite extends TestCase {
     assert cat.equals( catR);
   }
 
-  public static void main(String[] args) {
-    TestWrite t = new TestWrite("dummy");
-    t.testWrite( "testCatgenOrg.xml");
-
-    /*TestAll.dataDir = "C:/data/catalogs/catgen/";
-    t.testWrite( "catgen.org.xml");
-
-    InvCatalogImpl catOrg = (InvCatalogImpl) TestAll.open( "catgen.org.xml", true);
-    InvCatalogImpl catNew = (InvCatalogImpl) TestAll.open( "catgen.new.xml", true);
-    t.compare( catOrg, catNew); */
-  }
 }

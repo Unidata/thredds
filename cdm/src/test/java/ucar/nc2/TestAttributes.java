@@ -41,9 +41,6 @@ import java.io.IOException;
 
 public class TestAttributes extends TestCase {
 
-  public TestAttributes( String name) {
-    super(name);
-  }
 
   public void testNC3ReadAttributes() throws IOException {
     NetcdfFile ncfile = TestLocalNC2.openFile("testWrite.nc");

@@ -32,14 +32,15 @@
  */
 package thredds.util.filesource;
 
-import junit.framework.*;
-import org.springframework.util.StringUtils;
-import thredds.TestAll;
-
 import java.io.File;
 import java.io.IOException;
 
-import ucar.unidata.util.TestFileDirUtils;
+import junit.framework.TestCase;
+
+import org.springframework.util.StringUtils;
+
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
  * _more_
@@ -59,7 +60,7 @@ public class TestBasicDescendantFileSource extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicDescendantFileSource" );
+    tmpDir = TestFileDirUtils.addDirectory( new File( TestDir.temporaryLocalDataDir ), "TestBasicDescendantFileSource" );
 
     File dir1 = TestFileDirUtils.addDirectory( tmpDir, "dir1" );
     TestFileDirUtils.addFile( dir1, "file1_1" );

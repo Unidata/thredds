@@ -33,14 +33,14 @@
 package ucar.nc2.ncml;
 
 import junit.framework.*;
-import ucar.nc2.TestAll;
+import ucar.nc2.TestLocal;
 
 /**
  * TestSuite that runs all the sample tests   - data in TestAll.cdmLocalTestDataDir
  *
  */
 public class TestNcML {
-  public static String topDir = TestAll.cdmLocalTestDataDir + "ncml/";
+  public static String topDir = TestLocal.cdmTestDataDir + "ncml/";
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
@@ -66,8 +66,6 @@ public class TestNcML {
 
     suite.addTest(new TestSuite(TestAggExistingPromote.class));
     suite.addTest(new TestSuite(TestAggMisc.class));
-
-    suite.addTest(new TestSuite(TestNcMLStrides.class));
 
     // requires remote (network) access
     // suite.addTest(new TestSuite(TestRemoteAggregation.class)); not working

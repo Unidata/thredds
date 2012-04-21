@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Detailed configuration of the WMS service.  This config file can be used to
+set default styling parameters for each dataset/variable, and to enable or disable
+the GetFeatureInfo operation.
+
+See http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration
+for more information.
+-->
+<!DOCTYPE wmsConfig [
+
+<!ELEMENT wmsConfig (global, overrides?)>
+
+<!ELEMENT global (defaults, standardNames?)>
+
+<!ELEMENT defaults (allowFeatureInfo, defaultColorScaleRange, defaultPaletteName, defaultNumColorBands, logScaling)>
+
+<!ELEMENT standardNames (standardName*)>
+
+<!ELEMENT standardName (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+<!ATTLIST standardName name CDATA #REQUIRED>
+<!ATTLIST standardName units CDATA #REQUIRED>
+
+<!ELEMENT overrides (datasetPath*)>
+
+<!ELEMENT datasetPath (pathDefaults?, variables?)>
+<!ATTLIST datasetPath pathSpec CDATA #REQUIRED>
+
+<!ELEMENT pathDefaults (allowFeatureInfo?, defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+
+<!ELEMENT variables (variable*)>
+
+<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+<!ATTLIST variable id CDATA #REQUIRED>
+
+<!ELEMENT allowFeatureInfo (#PCDATA)>
+<!ELEMENT defaultColorScaleRange (#PCDATA)>
+<!ELEMENT defaultPaletteName (#PCDATA)>
+<!ELEMENT defaultNumColorBands (#PCDATA)>
+<!ELEMENT logScaling (#PCDATA)>
+]>
+<wmsConfig>
+
+    <global>
+        <defaults>
+            <allowFeatureInfo>true</allowFeatureInfo>
+            <defaultColorScaleRange>-50 50</defaultColorScaleRange>
+            <defaultPaletteName>rainbow</defaultPaletteName>
+            <defaultNumColorBands>20</defaultNumColorBands>
+            <logScaling>false</logScaling>
+        </defaults>
+    </global>
+
+</wmsConfig>

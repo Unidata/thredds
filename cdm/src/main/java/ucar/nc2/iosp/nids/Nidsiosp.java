@@ -220,7 +220,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("rays_time")) {
-      String rt = ncfile.findGlobalAttribute("DateCreated").getStringValue();
+      String rt = ncfile.findGlobalAttribute("time_coverage_start").getStringValue();
       java.util.Date pDate = DateUnit.getStandardOrISO(rt);
       double lt = pDate.getTime();
       double[] dd = new double[vinfo.yt];

@@ -3,6 +3,30 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
+ 9: (2012-04-19)
+  RotatedPole fix (from Robert Schmunk)
+  HDF5: add HDF5_chunksize attribute
+  timeseriesProfile: allow time(time)
+  show table path in GribCollectionPanel show processed PDS
+  GRIB: human readable grib names
+  JoinNew has bug when groups are present because non-agg vars are not getting proxied.
+  HdfEos: use Group.addDimensionIfNotExists()
+  UI: use both name and description (if present) in the GridViewer field selector
+  TransverseMercator projection: allow alternate parameter names; bugs in km/m in ellipsoid
+  Grib1, Grib2 scanners look through entire 16K for valid record.
+  NCSS maxFileSize, time striding, allow grid subsetting by (single) vertical level, add grid description to dataset description, web form.
+  WRF accept gridtype E. GridCoordSys horiz stagger.
+  GRIB Collections: dont sort groups, since we have indexes into them; make them immutable; sort at presentation layer
+  CollectionManagerSingleFile: bug when using a reletive path
+  RuntimeLoading: fix docs, grib1 table loading, add feature dataset factory runtime loading.
+  GRIB: was not using DiskCache standardPolicy
+  GRIB2 Collection: can filter on interval length by variable; also filter out (0,0) intervals
+  GRIB2 variable names - use NCL-like syntax
+  CoordinateAxis1D flipping bounds when all starting bounds were zero.
+  Add SwathDatasetFactory - fake for now.
+  HDF4: remove "." in identifier
+  GRIB-2: fix when lat/lon GDS has lo1 == lo2 == 180
+
  8: (2012-02-09)
   GRIB-1 ensembles for ECMWF type=30
   GRIB-1 merge intervals
@@ -35,7 +59,7 @@ Changes in version 4.3:
   Fix when earth_radius comes in km instead of meters.
   DatasetCollectionMFiles: olderThan applies only to newly found files.
   DatasetCollectionMFiles: use dateFormatMark if present.
-  CollectionSpecParser: Remove seperate dateMatch string, forName.
+  CollectionSpecParser: Remove separate dateMatch string, forName.
   upgrade to quartz 2.1.1
   get GRIB collections working
   GRIB: update ncx when data file changes

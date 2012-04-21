@@ -71,16 +71,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   //  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionImpl.class);
 
   /**
-   * Projection Name
-   *
-   * @deprecated use CF.GRID_MAPPING_NAME
-   */
-  public static final String ATTR_NAME = "grid_mapping_name";
-
-  /**
    * Earth radius in kilometers
    */
-  static public final double EARTH_RADIUS = Earth.getRadius() * .001;  // km
+  static public final double EARTH_RADIUS = Earth.getRadius() * 0.001;  // km
 
   // package private, i hope
 
@@ -267,6 +260,13 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     return atts;
   }
 
+  public Parameter findProjectionParameter(String want) {
+    for (Parameter p : atts) {
+      if (p.getName().equals(want)) return p;
+    }
+    return null;
+  }
+
   /**
    * Add an attribute to this projection
    *
@@ -295,7 +295,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   protected void addParameter(Parameter p) {
     atts.add(p);
   }
-
+  
   /**
    * Is this the lat/lon Projection ?
    *
@@ -707,7 +707,7 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
 
   /**
    * Alternate way to calculate latLonToProjBB, originally in GridCoordSys.
-   * Difficult to do this in a generral way.
+   * Difficult to do this in a general way.
    *
    * @param latlonRect desired lat/lon rectangle
    * @return a ProjectionRect

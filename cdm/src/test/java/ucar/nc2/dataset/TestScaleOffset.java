@@ -32,23 +32,17 @@
  */
 package ucar.nc2.dataset;
 
+import org.junit.Test;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.CompareNetcdf;
 import ucar.ma2.*;
-
-import junit.framework.TestCase;
 
 import java.io.IOException;
 
-public class TestScaleOffset extends TestCase {
-  private String filename = TestAll.temporaryLocalDataDir +"scaleOffset.nc";
+public class TestScaleOffset {
+  private String filename = TestLocal.temporaryDataDir +"scaleOffset.nc";
 
-  public TestScaleOffset( String name) {
-    super(name);
-  }
-
-
+  @Test
   public void testWrite() throws Exception {
     System.out.printf("Open %s%n", filename);
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename);
@@ -96,7 +90,7 @@ public class TestScaleOffset extends TestCase {
     Variable v = ncfileRead.findVariable("packed");
     assert v != null;
     Array readPacked = v.read();
-    CompareNetcdf.compareData(readPacked, packed);
+    ucar.unidata.test.util.CompareNetcdf.compareData(readPacked, packed);
     ncfileRead.close();
 
     // read the packed form, enhance using scale/offset, compare to original
@@ -113,7 +107,7 @@ public class TestScaleOffset extends TestCase {
     //TestCompare.compareData(readUnpacked, unpacked);
     testClose(packed, cnvertPacked, readEnhanced, 1.0/so.scale);
 
-
+    doSubset();
   }
 
   void testClose(Array packed, Array data1, Array data2, double close) {
@@ -132,7 +126,7 @@ public class TestScaleOffset extends TestCase {
   }
 
   // check section of scale/offset only applies it once
-  public void testSubset() throws IOException, InvalidRangeException {
+  private void doSubset() throws IOException, InvalidRangeException {
     // read the packed form, enhance using scale/offset, compare to original
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
     Variable vs = ncd.findVariable("packed");
@@ -146,9 +140,8 @@ public class TestScaleOffset extends TestCase {
     Array readSection = sec.read();
     NCdumpW.printArray(readSection);
 
-    CompareNetcdf.compareData(readEnhanced, readSection);
+    ucar.unidata.test.util.CompareNetcdf.compareData(readEnhanced, readSection);
 
     ncd.close();
-
   }
 }

@@ -748,11 +748,14 @@ public abstract class Aggregation {
    * @throws IOException on i/o error
    */
   protected void setDatasetAcquireProxy(Dataset typicalDataset, NetcdfDataset newds) throws IOException {
+    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
+    setDatasetAcquireProxy( proxy, newds.getRootGroup());
+  }
+
+  protected void setDatasetAcquireProxy(DatasetProxyReader proxy, Group g) throws IOException {
 
     // all normal (non agg) variables must use a proxy to lock the file
-    DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
-    List<Variable> allVars = newds.getRootGroup().getVariables();
-    for (Variable v : allVars) {
+    for (Variable v : g.getVariables()) {
 
       if (v.getProxyReader() != v) {
         if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + v.getFullName());
@@ -766,6 +769,11 @@ public abstract class Aggregation {
         v.setProxyReader(proxy);
         if (debugProxy) System.out.println(" debugProxy: set proxy on " + v.getFullName());
       }
+    }
+
+    // recurse
+    for (Group nested : g.getGroups()) {
+      setDatasetAcquireProxy(proxy, nested);
     }
   }
 

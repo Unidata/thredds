@@ -36,7 +36,7 @@ import thredds.catalog.*;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.CompareNetcdf;
+import ucar.unidata.test.util.CompareNetcdf;
 
 import java.io.IOException;
 import java.util.*;

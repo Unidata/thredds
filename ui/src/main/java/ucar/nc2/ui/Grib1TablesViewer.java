@@ -79,7 +79,7 @@ public class Grib1TablesViewer extends JPanel {
         Grib1ParamTable wmo = new Grib1ParamTables().getParameterTable(0, 0, bean.getVersion());
         if (wmo == null) {
           infoTA.setText("Cant find WMO version " + bean.getVersion());
-          infoWindow.showIfNotIconified();
+          infoWindow.show();
           return;
         }
 
@@ -255,7 +255,7 @@ public class Grib1TablesViewer extends JPanel {
 
     infoTA.setText(f.toString());
     infoTA.gotoTop();
-    infoWindow.showIfNotIconified();
+    infoWindow.show();
   }
 
   private void compare(Grib1ParamTable t1, Grib1ParamTable t2, Grib1TableCompareDialog.Data data, Formatter out) {

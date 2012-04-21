@@ -32,14 +32,14 @@
  */
 package ucar.nc2.iosp.misc;
 
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.constants._Coordinate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.*;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 
@@ -124,7 +124,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Direct read of NMC ON29 by CDM"));
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "Unidata"));
-    ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.STATION_PROFILE.toString()));
+    ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeriesProfile.toString()));
 
     try {
       ncfile.addDimension(null, new Dimension("station", stations.size()));

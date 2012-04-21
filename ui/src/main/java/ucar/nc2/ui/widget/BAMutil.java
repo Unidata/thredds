@@ -226,8 +226,8 @@ public class BAMutil {
     The point of all this is that once you set it up, you work exclusively with the action object,
     and all changes are automatically reflected in the UI.
 
-    @param menu : add to this menu
-    @param act: the Action to make it out of
+    @param menu  add to this menu
+    @param act the Action to make it out of
     @param menuPos if >= 0, add at this position, otherwise append
     @return the MenuItem created
   */
@@ -315,9 +315,9 @@ public class BAMutil {
     The point of all this is that once you set it up, you work exclusively with the action object,
     and all changes are automatically reflected in the UI.
 
-    @param c : add to this Container
-    @param act: the Action to make it out of
-    @param pos: add to the container at this position (if pos < 0, add at the end)
+    @param c  add to this Container
+    @param act the Action to make it out of
+    @param pos add to the container at this position (if pos < 0, add at the end)
     @return the AbstractButton created  (JButton or JToggleButton)
   */
 
@@ -395,11 +395,11 @@ public class BAMutil {
   *    action.putValue(BAMutil.STATE, new Boolean(true/false));
   *
   * @param act  add properties to this action
-  * @param icon_name : name of icon (or null).
-  * @param action_name: menu name / tooltip
-  * @param is_toggle: true if its a toggle
-  * @param mnemonic : menu item shortcut
-  * @param accel: menu item global keyboard accelerator
+  * @param icon_name name of icon (or null).
+  * @param action_name menu name / tooltip
+  * @param is_toggle true if its a toggle
+  * @param mnemonic  menu item shortcut
+  * @param accel menu item global keyboard accelerator
   **/
   public static void setActionProperties( AbstractAction act, String icon_name, String action_name,
     boolean is_toggle, int mnemonic, int accel ) {
@@ -416,11 +416,11 @@ public class BAMutil {
 
  /** Standard way to set Properties and state for "Toggle" Actions.  *
   * @param act  add properties to this action
-  * @param icon_name : name of icon (or null).
-  * @param action_name: menu name / tooltip
-  * @param toggleValue: default value of toggle
-  * @param mnemonic : menu item shortcut
-  * @param accel: menu item global keyboard accelerator
+  * @param icon_name  name of icon (or null).
+  * @param action_name menu name / tooltip
+  * @param toggleValue default value of toggle
+  * @param mnemonic  menu item shortcut
+  * @param accel menu item global keyboard accelerator
   **/
   public static void setActionPropertiesToggle( AbstractAction act, String icon_name, String action_name,
     boolean toggleValue, int mnemonic, int accel ) {

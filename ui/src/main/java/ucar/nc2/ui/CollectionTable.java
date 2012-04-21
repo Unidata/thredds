@@ -131,7 +131,7 @@ public class CollectionTable extends JPanel {
 
   private void showData(DataBean bean) {
     infoTA.setText(bean.getValue());
-    infoWindow.showIfNotIconified();
+    infoWindow.show();
   }
 
   // private MetadataManager mm;

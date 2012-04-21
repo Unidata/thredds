@@ -128,7 +128,7 @@ public class GribPDSParamTable {
     // match from lookup tables(s)
     table = findParameterTable(center, subcenter, tableVersion);
     if (table == null) {
-      logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
+      if (strict) logger.warn("GRIBOLD: Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
       return (strict) ? null : defaultTable;
     }
 

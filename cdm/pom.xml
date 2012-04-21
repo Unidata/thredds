@@ -7,13 +7,13 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.9-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
-  <groupId>edu.ucar</groupId>
+  <!-- groupId>edu.ucar</groupId-->
   <artifactId>netcdf</artifactId>
   <packaging>jar</packaging>
   <name>NetCDF-Java Library</name>
@@ -21,104 +21,7 @@
     The NetCDF-Java Library is a Java interface to NetCDF files,
     as well as to many other types of scientific data formats.
   </description>
-  <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
-
-  <!-- ===========================================================
-           Developers and Contributors
-       =========================================================== -->
-  <developers>
-    <developer>
-      <id>caron</id>
-      <name>John Caron</name>
-      <email>caron@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>chastang</id>
-      <name>Julien Chastang</name>
-      <email>chastang@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>edavis</id>
-      <name>Ethan Davis</name>
-      <email>edavis@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>ed</id>
-      <name>Ed Hartnett</name>
-      <email>ed@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>C Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>dmh</id>
-      <name>Dennis Heimbigner</name>
-      <email>dmh@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>yuanho</id>
-      <name>Ho Yuan</name>
-      <email>yuanho@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>rkambic</id>
-      <name>Robb Kambic</name>
-      <email>rkambic@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>oxelson</id>
-      <name>Jennifer Ganter Oxelson</name>
-      <email>oxelson@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>russ</id>
-      <name>Russel Rew</name>
-      <email>russ@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>C Developer</role>
-      </roles>
-    </developer>
-  </developers>
-
+  <url>http://www.unidata.ucar.edu/software/netcdf-java/documentation.htm</url>
 
   <!-- ===========================================================
            Dependencies
@@ -129,6 +32,10 @@
            his own pom.xml file if we want to read some formats.
        =========================================================== -->
   <dependencies>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>udunits</artifactId>
+    </dependency>
 
     <!-- HTTP client -->
     <dependency>
@@ -136,6 +43,7 @@
       <artifactId>commons-httpclient</artifactId>
     </dependency>
 
+    <!-- calendar / datetime -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
@@ -151,36 +59,50 @@
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
-      <scope>provided</scope>
     </dependency>
+
+    <!-- concurrency annotations -->
+    <dependency>
+      <groupId>net.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
+    </dependency>
+
+    <!-- jni -->
+    <dependency>
+     	<groupId>com.sun.jna</groupId>
+     	<artifactId>jna</artifactId>
+     </dependency>
 
     <!-- Required for reading THREDDS files. -->
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Required for ncstream, cdmRemote. -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Required for object caching. -->
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Required for using aggregations. -->
     <dependency>
       <artifactId>je</artifactId>
       <groupId>com.sleepycat</groupId>
-      <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 
@@ -195,39 +117,100 @@
       <name>Oracle Maven repository</name>
       <url>http://download.oracle.com/maven</url>
     </repository>
-    <!-- Temporary repository for edu.wisc.visad -->
+    <!-- Temporary repository for edu.wisc.visad
     <repository>
-       <id>geotoolkit</id>
-       <name>Geotoolkit binaries</name>
-       <url>http://maven.geotoolkit.org/</url>
-    </repository>
+      <id>geotoolkit</id>
+      <name>Geotoolkit binaries</name>
+      <url>http://maven.geotoolkit.org/</url>
+    </repository -->
   </repositories>
 
   <build>
-    <testSourceDirectory>void</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>thredds/logs/**</exclude>
+            <!-- exclude>thredds/logs/**</exclude -->
             <exclude>ucar/nc2/dataset/grid/**</exclude>
             <exclude>ucar/nc2/jni/**</exclude>
             <exclude>ucar/nc2/util/reflect/**</exclude>
           </excludes>
+
+          <testExcludes>
+            <exclude>thredds/catalog2/**</exclude>
+          </testExcludes>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+          <testFailureIgnore>true</testFailureIgnore>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <skipIfEmpty>true</skipIfEmpty>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jar-test-classes</id>
+            <phase>package</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+            <configuration>
+              <includes>
+                <include>ucar/unidata/test/**</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.1</version>
+        <executions>
+          <execution>
+            <id>bundle-sources</id>
+            <phase>package</phase>
+            <goals>
+              <!-- produce source artifact for main project sources -->
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
+
     <resources>
       <resource>
         <directory>src/main/resources</directory>
         <includes>
           <include>resources/nj22/**</include>
           <include>resources/thredds/**</include>
+          <include>resources/wmo/**</include>
         </includes>
       </resource>
     </resources>
+
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+    </testResources>
+
   </build>
+
 
 </project>

@@ -43,13 +43,9 @@ import java.io.*;
 public class TestWritePermute extends TestCase {
   private boolean show = false;
 
-  public TestWritePermute( String name) {
-    super(name);
-  }
-
   public void testWritePermute() throws Exception {
     NetcdfFileWriteable ncfile = new NetcdfFileWriteable();
-    ncfile.setName(TestGrid.topDir+"permuteTest.nc");
+    ncfile.setName(TestLocal.cdmTestDataDir+"permuteTest.nc");
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);

@@ -43,7 +43,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testDataType() {
-    InvCatalogImpl cat = TestCatalogAll.open("InvCatalog.0.6.xml", true);
+    InvCatalogImpl cat = TestCatalogAll.open("InvCatalog-1.0.xml", true);
 
     InvDataset ds = cat.findDatasetByID("testSubset");
     assert (ds != null) : "cant find dataset 'testSubset'";

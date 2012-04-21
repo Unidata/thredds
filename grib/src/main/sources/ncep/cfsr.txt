@@ -1,0 +1,340 @@
+CFSR summary
+
+LINKS
+  NCEP
+    http://cfs.ncep.noaa.gov/cfsr/
+    http://cfs.ncep.noaa.gov/
+
+  NOMADS
+    http://nomads.ncdc.noaa.gov/data.php#cfs-reanal-data
+    http://nomads.ncdc.noaa.gov/docs/CFSRR-KnownDataIssues.pdf
+
+  NCAR DSS
+    http://dss.ucar.edu/datasets/ds093.2/docs/time_ranges.html
+
+SUMMARY
+
+  1979 - 2009 (31 years, 372 months)
+
+   1) CFSR hourly time series
+     nomads: http://nomads.ncdc.noaa.gov/data/cfsr/
+     NCAR: http://dss.ucar.edu/datasets/ds093.1/
+     Unidata: http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCDC/CFSR/TimeSeries/catalog.html
+
+   2) CFSR monthly mean dataset
+     nomads: http://nomads.ncdc.noaa.gov/data/cfsrmon/
+     NCAR: http://dss.ucar.edu/datasets/ds093.2/
+
+   3) CFSR 6-hourly dataset
+     nomads: http://nomads.ncdc.noaa.gov/modeldata/
+     NCAR: http://dss.ucar.edu/datasets/ds093.0/
+
+   4) CFSRR Hi-Priority Monthly Means from Seasonal Runs
+     nomads: http://nomads.ncdc.noaa.gov/data/cfsr-hpr-mms/
+
+   5) CFSRR Hi-Priority Time Series from 45-day & Seasonal Runs
+     nomads: http://nomads.ncdc.noaa.gov/data/cfsr-hpr-ts45/
+
+GROUPS / GDS names
+
+  Use this in catalog:
+
+      <gribConfig>
+        <gdsHash from="1450218978" to="1450192070"/>
+        <gdsName hash='1450192070' groupName='Gaussian T382'/>
+        <gdsName hash='2079260842' groupName='Gaussian T62'/>
+        <gdsName hash='-175190888' groupName='LatLon0p5'/>
+        <gdsName hash='-1857264615' groupName='LatLon0p5wind'/>
+        <gdsName hash='823344589' groupName='LatLon1p0'/>
+        <gdsName hash='-829780679' groupName='LatLon2p5'/>
+        <intvFilter excludeZero="true"/>
+      </gribConfig>
+
+  to name the groups. TDS breaks groups into seperate datasets, named:
+
+    Gaussian-T382_collection
+    Gaussian-T62_collection
+    LatLon0p5_collection
+    LatLon0p5wind_collection
+    LatLon1p0_collection
+    LatLon2p5_collection
+
+
+TIMESERIES
+  http://nomads.ncdc.noaa.gov/data/cfsr/yyyymm/<param>.gdas.yyymm.grb2
+  http://nomads.ncdc.noaa.gov/data/cfsr/yyyymm/<param>.l.gdas.yyymm.grb2
+
+  one month (200808) of timeseries data: 151 files, 15.8 GB  (not abs sure this is complete)
+
+  G:\nomads\cfsr\timeseries\
+
+  http://nomads.ncdc.noaa.gov/docs/CFSR-Hourly-Timeseries.pdf
+    Record 1: f00: forecast at first time step of 3 mins
+    Record 2: f01: forecast (either averaged over 0 to 1 hour, or instantaneous at 1 hour)
+    Record 3: f02: forecast (either averaged over 0 to 2 hours, or instantaneous at 2 hours)
+    Record 4: f03: forecast (either averaged over 0 to 3 hour, or instantaneous at 3 hours)
+    Record 5: f04: forecast (either averaged over 0 to 4 hours, or instantaneous at 4 hours)
+    Record 6: f05: forecast (either averaged over 0 to 5 hours, or instantaneous at 5 hours)
+    Record 7: f06: forecast (either averaged over 0 to 6 hours, or instantaneous at 6 hours)
+
+    Important Note: The forecast at the first time step (f00) of 3 minutes constitutes
+    a spin up of the model physics, and extreme care should be taken when using it
+    as a proxy of any type of validation.  IT IS NOT THE ANALYSIS.
+
+  NCAR: http://dss.ucar.edu/datasets/ds093.1/
+     "Selected CFSR timeseries products are available at 0.3, 0.5, 1.0, and 2.5 degree horizontal resolutions at hourly
+     intervals by combining either 1) the analysis and one- through five-hour forecasts, or 2) the one- through six-hour
+     forecasts, for each initialization time"
+
+    from bob dattore (NCAR DSS)
+     In ds093.1, the hourly time series dataset, the original files from NCDC contain either 28 or 32 grids per day.
+     This is because for each of the four initializations per day, NCEP left in grids which are for the very first time
+     step (the 3-minute model spinup).  The metadata make them look like an analysis grid, but they are not.
+     Also, for the parameters that are analyzed by CFSR, NCEP also left in the 6-hour forecast grids, which are not
+     necessary because there is a new analysis available at the next initialization.  We filtered out the spinup grids,
+     and also the 6-hour forecasts for analyzed parameters, so that our files all have 24 grids per day.
+
+  - G:/nomads/cfsr/timeseries/200808/chi200.gdas.200808.grb2
+     we see spinup at 0 hour, plus overlap 6 hour forecast and 0 hour at next interval.
+     so we see 2 of 8 records are duplicates: records unique=745 total=992 dups=247 (0.248992)
+
+  - Instantaneous fields: Because we use the latest record in the file for each time coordinate, the 6 hour forecast and the 0-hour spin-up are not used,
+    in favor of the 0 hour analysis.
+
+  - Interval fields: We decided not to seperate different interval lengths into different variables, because associating
+    those variables together would be non-standard.
+
+    We exclude the (0,0) interval records with:
+
+        <gribConfig>
+          <intvFilter excludeZero="true"/>
+        </gribConfig>
+
+    The time interval coords then look like:
+
+          (0.000000,1.000000) = 1.000000
+          (0.000000,2.000000) = 2.000000
+          (0.000000,3.000000) = 3.000000
+          (0.000000,4.000000) = 4.000000
+          (0.000000,5.000000) = 5.000000
+          (0.000000,6.000000) = 6.000000
+          (6.000000,7.000000) = 1.000000
+          (6.000000,8.000000) = 2.000000
+          (6.000000,9.000000) = 3.000000
+          (6.000000,10.000000) = 4.000000
+           ...
+
+    These are called "mixed interval" coordinates.
+
+MONTHLY MEAN
+  http://nomads.ncdc.noaa.gov/data/cfsrmon/yyymm/<param>.gdas.yyymm.grb2
+  http://nomads.ncdc.noaa.gov/data/cfsrmon/yyymm/<param>.gdas.yyymm.hhZ.grb2
+  ( may have to sperate the two)
+
+  one month (200808) of timeseries data: 410 files, 10.3 GB (not abs sure this is complete)
+
+  G:\nomads\cfsr\monthly\200808\diabf01.gdas.200808.00Z.grb2
+
+  http://nomads.ncdc.noaa.gov/docs/CFSR-Monthly-Means.pdf
+
+  NCAR http://dss.ucar.edu/datasets/ds093.2/
+    "CFSR monthly atmospheric, oceanic and land surface output products are available at 0.5, 1.0, and 2.5 degree horizontal
+    resolutions as 6-hourly diurnal monthly means (00Z, 06Z, 12Z, and 18Z) and regular monthly means."
+
+
+ - from bob dattore:
+
+    In ds093.2, the monthly mean dataset, we did not make any modifications, but NCEP did not encode the statistical processing fields
+    (octets 47-58 and 59-70) according to the GRIB2 standard.  Instead, they did their own thing, which is described here:
+    http://dss.ucar.edu/datasets/ds093.2/docs/time_ranges.html.
+
+    ds093.2 CFSR Time Range Specification
+    NCEP does not follow the GRIB2 standard to indicate the statistical processing time range for the CFSR monthly means.
+    Instead, they specify octets 47-58 and 59-70 in Product Template 4.8 as follows:
+
+    Octet(s)	Description
+        47	From NCEP Code Table 4.10
+        48	Should be ignored
+        49	Should be ignored
+        50-53	Number of grids used in the average
+        54	Should be ignored
+        55-58	This is "P2" from the GRIB1 format
+        59	From NCEP Code Table 4.10
+        60	Should be ignored
+        61	Should be ignored
+        62-65	This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+        66	Should be ignored
+        67-70	Should be ignored
+
+
+
+6-HOUR
+  http://nomads.ncdc.noaa.gov/modeldata/cmd_dataset/yyyy/yyyymm/yyyymmdd/param.gdas.yyymmddhh.grb2
+  eg:
+    http://nomads.ncdc.noaa.gov/modeldata/cmd_flxf/1987/198709/19870910/flxf01.gdas.1987091000.grb2
+    http://nomads.ncdc.noaa.gov/modeldata/cmd_grblow/1990/199012/19901211/ocnf03.gdas.1990121106.grb2
+
+  NCAR http://dss.ucar.edu/datasets/ds093.0/
+    CFSR was initialized 4 times per day (00Z, 06Z, 12Z, and 18Z), and the 6-hourly atmospheric, oceanic and land surface
+    analyzed products are available at 0.3, 0.5, 1.0, and 2.5 degree horizontal resolutions, along with forecast hours 1 through 6 and 9.
+
+
+ - from http://nomads.ncdc.noaa.gov/docs/CFSRR-KnownDataIssues.pdf
+
+    CFS Reanalysis Hourly Files : Particular Files/GRIB Records
+    http://nomads.ncdc.noaa.gov/modeldata/   (Aug 2011)
+     There are temperature at the surface (tmpsfc) records in the ipv*nl files.  These
+    records should not be used, more appropriate records can be found in the flx*
+    files.
+    The ocnh* and ocnf* group contains a variable named “Geometric depth below
+    sea surface” which may have their isothermal level mislabeled as all zeroes for
+    all the level values.  In cases where this is encountered, the zeroes correspond
+    to (in record order): 2.5C, 5.0C, 10.0C, 15.0C, 20.0C, 25.0C, and 28.0C
+    isotherms
+
+    this appears to refer to 6-hour, not hourly. or maybe hourly == 6-hour, not timeseries.
+
+CFSRR
+    A complete Reforecast of CFS version 2, over the 29-year period (1982-2010) has been created in order to provide stable
+    calibration and skill estimates of the new system, for operational seasonal and sub seasonal prediction at NCEP.
+    Coupled full 9-month forecasts from initial conditions every 5 days apart (for all 4 c cycles on that day) have been
+    made for each calendar year with the T126L64 GFS with half-hourly coupling to the ocean (MOM4 at 1/4° equatorial, 1/2° global).
+    Total number of 9-month forecasts is 73x4 for each year, amounting to 8468 forecast runs for the full period.
+    In addition to the 9-month runs, there is a full season run from every 0Z cycle over a 12-year period (1999-2010)
+    for a total of 4380 runs. There is also a short 45-day forecast from every 6Z, 12Z and 18Z cycle over the same 12-year period
+    (1999-2010) for a total of 13140 runs.
+
+CFSRR Hi-Priority Monthly Means from Seasonal Runs
+  http://nomads.ncdc.noaa.gov/data/cfsr-hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.grb2
+  http://nomads.ncdc.noaa.gov/data/cfsr-hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.12Z.grb2
+
+  http://nomads.ncdc.noaa.gov/data/cfsr-hpr-mms/param/yyyy/yyyymm/paramyyyymmddhh.nmonths.avrg.grb2
+  http://nomads.ncdc.noaa.gov/data/cfsr-hpr-mms/param/yyyy/yyyymm/paramyyyymmddhh.nmonths.avrg.12Z.grb2
+
+  from Dan:
+
+    The result will be either 3 or 4 records for that particular parameter
+      (TMP @ 500 mb).
+    This constitutes the t(f) for this t(i) and parameter.
+    There is a seasonal (3 month) t(f) sequence for each day @ 00Z
+       for all parameters in the file type.  If the t(i) day-of-month is the 25th
+    or later, the sequence consists of 3 files, otherwise, the current month
+    is also included, making 4 files (or records per parameter) in the sequence.
+
+  2) ive downloaded pgbf2008122500.01.*.avrg.grb2:
+
+    G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.00Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.06Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.12Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.18Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.00Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.06Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.12Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.18Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200902.avrg.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.00Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.06Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.12Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.18Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200903.avrg.grb2
+
+    I can look at the entire collection in the toolsui iosp-grib2-grib2collection by putting a collection spec for the name of the datasets:
+
+      G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/.*grb2
+
+    now im looking at the temperature at 500 mb. there are 15 records, one from each file.
+
+    All of them have:
+        ReferenceDate=2008-12-25T00:00:00.000Z
+        Ending Date    =2008-12-25T00:00:00.000Z
+
+    If i look at just the five *200901 files, they all have a forecast time of 1 month
+    If i look at just the five *200902 files, they all have a forecast time of 2 month
+    If i look at just the five *200903 files, they all have a forecast time of 3 month
+
+    however, the time intervals _all_ appear to be one month long, so all intervals look like:
+
+      TimeInterval=(2008-11-25T00:00:00.000Z,2008-12-25T00:00:00.000Z)
+
+    im not sure how to interpret this.
+
+    Also, theres no differernce at all between, eg, the five *200901 records (except the data is different):
+
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.00Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.06Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.12Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.18Z.grb2
+     G:/nomads/cfsr/hpr-mms/pgbf/2008/200812/pgbf2008122500.01.200901.avrg.grb2
+
+    so what are the meanings of these 5 records? Apparently you will need to know the filename to decode (bad dog!)
+
+ - from Dan:
+
+    What you list as the "Ending Date" {or the t(v) as I term it},
+    There is a known issue where all the t(v) info is set to t(i) values in the headers.
+    I do not know if this, or a offshoot of this, is messing with your decoders.
+
+    In the example wgrib2 commands I gave in the last message, it gives me:
+
+    187:8194041:d=2008122500:TMP:500 mb:1-2 month ave fcst:
+    187:8500869:d=2008122500:TMP:500 mb:2-3 month ave fcst:
+    187:8452157:d=2008122500:TMP:500 mb:3-4 month ave fcst:
+
+    The statistical period in all the records is 1 month, which is
+    somewhat Of a bug since the first record is not 1 month in this case,
+    (it is 5 days.)
+
+    I am not exactly sure where wgrib2 is getting the 1,2,3-4 for the total period,
+    I will look into this.  I am not using the rigged-up wgrib2 that Wesley
+    recently released that auto-corrects the problems in CFSR.
+
+    In the diurnal fraction files (~.hhZ.grb2)
+    What they *SHOULD* be is a sequence 3-4 monthly records-
+     consisting of 28-31x 6hr periods for a given month
+    with a statistical process run on them.  So they will appear to
+    have identical t(i) and t(f)'s,   They way the statistical data is
+    calculated, however, is different.
+
+CFSRR Hi-Priority Time Series from 45-day & Seasonal Runs
+  nomads: http://nomads.ncdc.noaa.gov/data/cfsr-hpr-ts45/
+      cfsr-hpr-ts45/<fld>/yyyy/yyyymm/<fld>._f.01.refdate.lastdate.refdate.grb2
+      yyyy = 1999-2010
+      mm 1-12
+      fld = about 30, single level, eg t850
+      apparently 00 runs are 120 days, others are 45 day.
+
+  F:/data2/nomads/t850_f/2010/201001/t850_f.01.2010010100.2010050100.2010010100.grb2
+   temperature at 850mb, every 6 hours = 4 * 120 = 480 time steps.
+
+  F:/data2/nomads/t850_f/2010/201001/t850_f.01.2010010106.2010021506.2010010106.grb2
+   temperature at 850mb, every 6 hours = 4 * 45 = 180 time steps.
+   ReferenceDate=2010-01-01T06:00:00.000Z
+   last ForecastDate=2010-02-15T06:00:00.000Z
+
+ -from http://nomads.ncdc.noaa.gov/data/cfsr-hpr-ts45/readme.txt
+
+ 	File Name explanation	 (2011-12-08)
+
+ 		Example
+      ocnv5_h.01.2005051600.2005062918.2005051518.grb2
+ 		Pattern
+      <var>.<ensMem>.<yyyymmddhh t(i)>.<yyyymmddhh t(v)>.<yyyymmdd t(ic)>.grb2
+
+ 	var    : The output weather element
+ 	t(i)   : Initialization or cycle run time.
+ 	t(v)   : Final verification time of the series
+ 	t(ic)  : Date/time of initial condition data used for forecast sequence.
+ 	ensMem : Always/only 01 for this high-priority distribution.
+
+ 	Each 00:00 UTC cycle contains a sequence of forecast records extended
+ 	   to approximately 2920 hours (or 4 months)
+ 	Alternately for 06:00 / 12:00 / 18:00 UTC cycles:
+ 	   Each file contains a sequence of forecast records extending out
+ 	   to 1080 hours (45 days)
+ 	Some fields, such as ocean, the t(ic) will differ from the t(i) by six
+ 	   hours.  in most cases, they are the same.
+
+
+
+

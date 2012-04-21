@@ -42,16 +42,11 @@ import java.io.*;
 /** Test in JUnit framework. */
 
 public class TestReadPermute extends TestCase {
-  private boolean show = true;
-
-  public TestReadPermute( String name) {
-    super(name);
-  }
 
   public void testReadPermute() {
     try {
 
-      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestGrid.topDir+"permuteTest.nc");
+      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestLocal.cdmTestDataDir+"permuteTest.nc");
 
       doRead4(dataset, "tzyx");
       doRead4(dataset, "tzxy");

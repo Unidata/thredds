@@ -36,8 +36,8 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.util.*;
@@ -45,7 +45,7 @@ import java.util.*;
 /** Test TestStandardVar in JUnit framework. */
 
 public class TestStandardVar extends TestCase {
-  private String filename = TestAll.cdmLocalTestDataDir +"standardVar.nc";
+  private String filename = TestLocal.cdmTestDataDir +"standardVar.nc";
 
   public TestStandardVar( String name) {
     super(name);
@@ -415,7 +415,7 @@ public class TestStandardVar extends TestCase {
     ima = A.getIndex();
 
     val = A.getFloat(ima.set(1,1));
-    assert TestAll.closeEnough(val, -999.99) : val;
+    assert Misc.closeEnough(val, -999.99) : val;
     assert v.isMissing(val);
   }
 

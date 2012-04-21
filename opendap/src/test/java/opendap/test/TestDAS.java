@@ -35,27 +35,23 @@ package opendap.test;
 
 // Test that the DAS parsing is correct
 
-public class TestDAS extends TestDapParser
-{
-    final String TITLE = "DAP DAS Parser Tests";
+import org.junit.Test;
 
+public class TestDAS extends TestDapParser {
+  final static String TITLE = "DAP DAS Parser Tests";
 
-    public TestDAS(String name, String testdir) {
-        super(name, testdir, ".das");
-    }
-    
-    public TestDAS(String name) {
-        super(name, null, ".das");
-    }
+  public TestDAS() {
+    setExtension(".dds");
+  }
 
-    public void testDAS() throws Exception
-    {
-	parse();
-    }
+  @Test
+  public void testDAS() throws Exception {
+    parse();
+  }
 
-    public static void main(String args[]) throws Exception {
-        new TestDAS("TestDDAS", null).testDAS();
-    }
+  public static void main(String args[]) throws Exception {
+    new TestDAS().testDAS();
+  }
 
 }
 

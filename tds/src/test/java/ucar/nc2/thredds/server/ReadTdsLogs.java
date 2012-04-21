@@ -122,6 +122,7 @@ public class ReadTdsLogs {
         total_expected_time.getAndAdd((long) log.msecs);
 
       } catch (Throwable t) {
+        t.printStackTrace();
         failed = true;
         failMessage = t.getMessage();
       }
@@ -134,7 +135,8 @@ public class ReadTdsLogs {
       HTTPMethod method = null;
       try {
         String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
-        String urlencoded = server + URLnaming.escapeQuery(unescapedForm);
+        String urlencoded = server + unescapedForm;
+        // String urlencoded = server + URLnaming.escapeQuery(unescapedForm);
         httpClient = new HTTPSession(urlencoded);
         method = HTTPMethod.Get(httpClient);  // escape the query part
         //out2.format("send %s %n", method.getPath());
@@ -420,10 +422,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (log.path.indexOf("dodsC") < 0) {  // only dods
+      if (log.path.indexOf("/dts/") > 0) {  // skip dts
         skip++;
         continue;
-      }  */
+      }
 
       /* if (log.path.indexOf("fmrc") > 0)  {  // exclude fmrc
         // System.out.println(" *** skip fmrc " + log);

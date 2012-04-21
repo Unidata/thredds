@@ -32,10 +32,10 @@
 
 package ucar.nc2.ncml;
 
-import ucar.nc2.TestAll;
 import junit.framework.TestSuite;
 import junit.extensions.TestSetup;
 import thredds.inventory.MController;
+import ucar.nc2.TestLocal;
 
 import java.io.IOException;
 
@@ -46,7 +46,7 @@ import java.io.IOException;
  * @since Jun 30, 2009
  */
 public class TestNcMLcaching {
-  public static String topDir = TestAll.cdmLocalTestDataDir + "ncml/";
+  public static String topDir = TestLocal.cdmTestDataDir + "ncml/";
   public static MController mc;
 
   public static junit.framework.Test suite ( ) throws IOException {
@@ -60,8 +60,8 @@ public class TestNcMLcaching {
     //DatasetScanner.setController(mc);
 
     suite.addTest( ucar.nc2.ncml.TestNcML.suite());
-    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */
-    suite.addTest( new TestSuite(TestOffAggForecastModel.class));  // */
+    //suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite());  // */
+    //suite.addTest( new TestSuite(TestOffAggForecastModel.class));  // */
 
 
     return new TestSetup(suite) {

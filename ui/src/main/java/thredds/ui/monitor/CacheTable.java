@@ -108,7 +108,7 @@ public class CacheTable extends JPanel {
         }
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -142,7 +142,7 @@ public class CacheTable extends JPanel {
         CacheFileBean bean = (CacheFileBean) cfileTable.getSelectedBean();
         if (bean == null) return;
         infoTA.setText(bean.cfile.toString());
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 

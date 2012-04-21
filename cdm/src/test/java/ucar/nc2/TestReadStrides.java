@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.unidata.test.ma2.TestMa2Utils;
 
 import java.io.*;
 import java.util.List;
@@ -248,7 +249,7 @@ public class TestReadStrides extends TestCase {
          Array sectionRead = v.read(ranges);
          Array sectionMake = allData.sectionNoReduce( ranges);
 
-         TestMA2.testEquals(sectionRead, sectionMake);
+         TestMa2Utils.testEquals(sectionRead, sectionMake);
        }
      }
 

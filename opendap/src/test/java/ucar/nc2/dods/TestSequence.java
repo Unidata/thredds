@@ -1,9 +1,6 @@
 package ucar.nc2.dods;
 
 import junit.framework.TestCase;
-import ucar.nc2.util.net.EscapeStrings;
-import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.methods.GetMethod;
 import ucar.ma2.Array;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -16,6 +13,7 @@ public class TestSequence extends TestCase
   public TestSequence(String name, String testdir) {
     super(name);
   }
+
   public TestSequence(String name) {
     super(name);
   }

@@ -54,11 +54,11 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   static public final Version standard = Version.GRIB2_8_0_0;
 
   public enum Version {
-    GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0;
+    GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0;
 
     String getResourceName() {
       if (this == GRIB2_8_0_0) return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
-      return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_E.xml";
+      return "/sources/wmo/" + this.name() + "_CodeFlag_E.xml";
     }
 
     String[] getElemNames() {

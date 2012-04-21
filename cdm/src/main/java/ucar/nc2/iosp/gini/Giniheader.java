@@ -554,6 +554,7 @@ class Giniheader {
     this.ncfile.addAttribute(null, new Attribute("id", gini_GetSectorID(sec_id)));
     this.ncfile.addAttribute(null, new Attribute("keywords_vocabulary", gini_GetPhysElemID(phys_elem, ent_id)));
     this.ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
+    this.ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
     this.ncfile.addAttribute(null, new Attribute("standard_name_vocabulary", getPhysElemLongName(phys_elem, ent_id)));
     this.ncfile.addAttribute(null, new Attribute("creator_name", "UNIDATA"));
     this.ncfile.addAttribute(null, new Attribute("creator_url", "http://www.unidata.ucar.edu/"));

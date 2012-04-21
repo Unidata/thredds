@@ -107,7 +107,7 @@ public class AccessLogTable extends JPanel {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
         if (log == null) return;
         infoTA.setText(log.toString());
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -119,7 +119,7 @@ public class AccessLogTable extends JPanel {
         Formatter f = new Formatter();
         log.toString(f);
         infoTA.setText(f.toString());
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -132,7 +132,7 @@ public class AccessLogTable extends JPanel {
         } catch (Exception ee) {
           infoTA.setTextFromStackTrace(ee);
         }
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 

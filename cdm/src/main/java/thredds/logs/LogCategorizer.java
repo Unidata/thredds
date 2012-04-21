@@ -260,6 +260,9 @@ public class LogCategorizer {
     String service =  getServiceSpecial( path);
     if (service != null) return service;
 
+    if (path.startsWith("/dts/"))
+      return "dts";
+
     if (path.startsWith("/thredds/")) {
       String spath = path.substring(9);
       service = findService(spath);

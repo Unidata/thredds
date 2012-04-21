@@ -38,7 +38,6 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.Variable;
-import ucar.unidata.geoloc.Earth;
 
 /**
  * VerticalPerspectiveView projection.
@@ -72,7 +71,7 @@ public class VerticalPerspective extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-    double earth_radius = getEarthRadius(ctv);
+    double earth_radius = getEarthRadiusInKm(ctv);
 
     ucar.unidata.geoloc.projection.VerticalPerspectiveView proj =
             new ucar.unidata.geoloc.projection.VerticalPerspectiveView(lat0, lon0, earth_radius, distance, false_easting, false_northing);

@@ -17,7 +17,6 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
-import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.util.CompareNetcdf2;
 
 import java.io.IOException;

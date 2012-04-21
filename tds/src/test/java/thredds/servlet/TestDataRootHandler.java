@@ -32,30 +32,43 @@
  */
 package thredds.servlet;
 
-import junit.framework.*;
-import thredds.TestAll;
-import thredds.util.TdsConfiguredPathAliasReplacement;
-import thredds.util.PathAliasReplacement;
-import thredds.server.config.TdsContext;
-import thredds.crawlabledataset.CrawlableDatasetFilter;
-import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
-import thredds.crawlabledataset.filter.MultiSelectorFilter;
-import thredds.catalog.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
-import ucar.unidata.util.TestFileDirUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.core.io.FileSystemResourceLoader;
+import thredds.catalog.InvCatalogFactory;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvCatalogRef;
+import thredds.catalog.InvDatasetImpl;
+import thredds.catalog.InvDatasetScan;
+import thredds.catalog.InvMetadata;
+import thredds.catalog.InvService;
+import thredds.catalog.ServiceType;
+import thredds.catalog.ThreddsMetadata;
+import thredds.catalog.XMLEntityResolver;
+import thredds.crawlabledataset.CrawlableDatasetFilter;
+import thredds.crawlabledataset.filter.MultiSelectorFilter;
+import thredds.crawlabledataset.filter.WildcardMatchOnNameFilter;
+import thredds.mock.web.MockTdsContextLoader;
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
  * _more_
@@ -63,7 +76,11 @@ import org.springframework.core.io.FileSystemResourceLoader;
  * @author edavis
  * @since Mar 21, 2007 1:07:18 PM
  */
-public class TestDataRootHandler extends TestCase
+//public class TestDataRootHandler extends TestCase
+//@RunWith(SpringJUnit4ParameterizedClassRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
+public class TestDataRootHandler
 {
 
 //  private String tmpDirPath = TestAll.temporaryDataDir + "TestDataRootHandler/";
@@ -74,17 +91,38 @@ public class TestDataRootHandler extends TestCase
   private File contentDir;
   private File publicContentDir;
 
+  private String name;
+  
+  //@Autowired
+  //private TdsContext tdsContext; 
+  
+  @Autowired
   private DataRootHandler drh;
+  
+  
+  /*@Parameters
+  public static List<String> getTestParameters(){
+	  
+	  return Arrays.asList(new String[]{"param1"} );
+  } */ 
 
-  public TestDataRootHandler( String name )
+  /*public TestDataRootHandler( String name )
   {
-    super( name );
-  }
-
-  protected void setUp()
+    //super( name );
+	this.name = name;
+  }*/
+  
+  public TestDataRootHandler(){
+   
+	
+  }  
+  
+  
+  @Before
+  public void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.createTempDirectory( "TestDataRootHandler", new File( TestAll.temporaryDataDir ) );
+    tmpDir = TestFileDirUtils.createTempDirectory( "TestDataRootHandler", new File( TestDir.temporaryLocalDataDir ) );
     contentDir = TestFileDirUtils.addDirectory( TestFileDirUtils.addDirectory( tmpDir, "content" ), "thredds");
     publicContentDir = TestFileDirUtils.addDirectory( contentDir, "public");
     
@@ -94,18 +132,18 @@ public class TestDataRootHandler extends TestCase
     TestFileDirUtils.addDirectory( warRootDir, "motherlode");
   }
 
-  protected void tearDown()
+  @After
+  public void tearDown()
   {
     // Delete temp directory.
     TestFileDirUtils.deleteDirectoryAndContent( tmpDir );
   }
 
-  private void buildTdsContextAndDataRootHandler()
+  /*private void buildTdsContextAndDataRootHandler()
   {
-    // Create, configure, and initialize a DataRootHandler.
+    //Create, configure, and initialize a DataRootHandler.
     TdsContext tdsContext = new TdsContext();
     tdsContext.setWebappVersion( "0.0.0.0" );
-    tdsContext.setWebappVersionBrief( "0.0" );
     tdsContext.setWebappVersionBuildDate( "20080904.2244" );
     tdsContext.setContentPath( "thredds" );
     tdsContext.setContentRootPath( "../../content" );
@@ -122,13 +160,14 @@ public class TestDataRootHandler extends TestCase
     PathAliasReplacement par = new TdsConfiguredPathAliasReplacement( "content" );
     drh.setDataRootLocationAliasExpanders( Collections.singletonList( par ) );
     drh.init();
-    DataRootHandler.setInstance( drh );
-  }
+    DataRootHandler.setInstance( drh ); 
+  }*/
 
   /**
    * Test behavior when a datasetScan@location results in
    * a CrDs whose exists() method returns false.
    */
+  @Test
   public void testNonexistentScanLocation()
   {
     // Create a catalog with a datasetScan that points to a non-existent location
@@ -143,7 +182,7 @@ public class TestDataRootHandler extends TestCase
                                                   dsScanLocation, null, null, null );
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
-    buildTdsContextAndDataRootHandler();
+    //buildTdsContextAndDataRootHandler();
 
     // Check that bad dsScan wasn't added to DataRootHandler.
     if ( drh.hasDataRootMatch( dsScanPath) )
@@ -187,7 +226,7 @@ public class TestDataRootHandler extends TestCase
                                                   dsScanLocation, null, null, null );
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
-    buildTdsContextAndDataRootHandler();
+    //buildTdsContextAndDataRootHandler();
 
     // Check that bad dsScan wasn't added to DataRootHandler.
     if ( drh.hasDataRootMatch( dsScanPath) )
@@ -249,7 +288,7 @@ public class TestDataRootHandler extends TestCase
                                                   dsScanLocation, null, null, null );
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
-    buildTdsContextAndDataRootHandler();
+    //buildTdsContextAndDataRootHandler();
 
     // Check that dsScan was added to DataRootHandler.
     if ( ! drh.hasDataRootMatch( dsScanPath) )
@@ -347,7 +386,7 @@ public class TestDataRootHandler extends TestCase
                                                   dsScanLocation, null, null, null );
     writeConfigCatalog( catalog, new File( contentDir, catFilename) );
 
-    buildTdsContextAndDataRootHandler();
+    //buildTdsContextAndDataRootHandler();
 
     // Check that dsScan was added to DataRootHandler.
     if ( ! drh.hasDataRootMatch( dsScanPath) )
@@ -433,7 +472,7 @@ public class TestDataRootHandler extends TestCase
                                                           "*.grib2", null, null );
     writeConfigCatalog( outsideContentDirCat, new File( contentDir, "../catalog.xml") );
 
-    buildTdsContextAndDataRootHandler();
+    //buildTdsContextAndDataRootHandler();
 
     // Make sure DRH does not have "../catalog.xml".
     String dotDotPath = "../catalog.xml";
@@ -473,7 +512,7 @@ public class TestDataRootHandler extends TestCase
     File cat2File = new File( contentDir, cat2Filename );
     writeConfigCatalog( catalog2, cat2File );
 
-    buildTdsContextAndDataRootHandler();
+    //buildTdsContextAndDataRootHandler();
 
     // Call DataRootHandler.initCatalogs() on the config catalogs
     List<String> catPaths = new ArrayList<String>();

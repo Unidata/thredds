@@ -45,7 +45,7 @@ import junit.framework.TestCase;
  * @author caron
  */
 public class TestSectionFillValue extends TestCase {
-  private String filename = TestAll.cdmLocalTestDataDir +"standardVar.nc";
+  private String filename = TestLocal.cdmTestDataDir +"standardVar.nc";
 
   public TestSectionFillValue( String name) {
     super(name);

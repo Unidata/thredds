@@ -106,16 +106,16 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   // debugging
-  static public List<GribTableId> getLocalTableIds() {
+  static public List<GribTableId> getTableIds() {
     List<GribTableId> result = new ArrayList<GribTableId>();
+    result.add(new GribTableId("WMO",0,-1,-1,-1));
     result.add(new GribTableId("NCEP",7,-1,-1,-1));
     result.add(new GribTableId("NDFD",8,0,-1,-1));
     result.add(new GribTableId("KMA",40,-1,-1,-1));
-    result.add(new GribTableId("DSS",7,-1,2,1)); // ??
+    // result.add(new GribTableId("DSS",7,-1,2,1)); // ??
     result.add(new GribTableId("FSL",59,-1,-1,-1));
     return result;
   }
-
 
   static protected int makeHash(int discipline, int category, int number) {
     return (discipline << 16) + (category << 8) + number;
@@ -155,23 +155,30 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   // debugging
+  public String getTablePath(int discipline, int category, int number) {
+    return WmoCodeTable.standard.getResourceName();
+  }
+
+  // debugging
   public List getParameters() {
+    List allParams = new ArrayList(3000);
     try {
       WmoCodeTable.WmoTables wmo = WmoCodeTable.getWmoStandard();
-      WmoCodeTable params = wmo.map.get("4.2");
-      return params.entries;
-      //List<GribTables.Parameter> result = new ArrayList<GribTables.Parameter>();
-      //for (WmoCodeTable.TableEntry entry : params.entries) result.add(entry); // covariant balony
-      //return result;
+      for (String key : wmo.map.keySet()) {
+        if (key.startsWith("4.2.")) {
+          WmoCodeTable params = wmo.map.get(key);
+          allParams.addAll(params.entries);
+        }
+      }
     } catch (IOException e) {
       System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
     }
-    return null;
+    return allParams;
   }
 
   public CalendarDate getForecastDate(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
-    if (pds.isInterval()) {
+    if (pds.isTimeInterval()) {
       TimeCoord.TinvDate intv = getForecastTimeInterval(gr);
       return intv.getEnd();
 
@@ -220,7 +227,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     and if there was no interval then I used:
     C2) End of Interval = Begin of Interval = Ref + ForeT.
     */
-    if (!gr.getPDS().isInterval()) return null;
+    if (!gr.getPDS().isTimeInterval()) return null;
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
     int timeUnitOrg = gr.getPDS().getTimeUnit();
 
@@ -304,65 +311,65 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
     switch (id) {
       case 1:
-        return "Surface";
+        return "surface";
       case 2:
-        return "Cloud_base";
+        return "cloud_base";
       case 3:
-        return "Cloud_tops";
+        return "cloud_tops";
       case 4:
-        return "ZeroDegC_isotherm";
+        return "zeroDegC_isotherm";
       case 5:
-        return "Adiabatic_condensation_lifted";
+        return "adiabatic_condensation_lifted";
       case 6:
-        return "Maximum_wind";
+        return "maximum_wind";
       case 7:
-        return "Tropopause";
+        return "tropopause";
       case 8:
-        return "Atmosphere_top";
+        return "atmosphere_top";
       case 9:
-        return "Sea_bottom";
+        return "sea_bottom";
       case 10:
-        return "Entire_atmosphere";
+        return "entire_atmosphere";
       case 11:
-        return "Cumulonimbus_base";
+        return "cumulonimbus_base";
       case 12:
-        return "Cumulonimbus_top";
+        return "cumulonimbus_top";
       case 20:
-        return "Isotherm";
+        return "isotherm";
       case 100:
-        return "Pressure";
+        return "pressure";
       case 101:
-        return "Msl";
+        return "msl";
       case 102:
-        return "Altitude_above_msl";
+        return "altitude_above_msl";
       case 103:
-        return "Height_above_ground";
+        return "height_above_ground";
       case 104:
-        return "Sigma";
+        return "sigma";
       case 105:
-        return "Hybrid";
+        return "hybrid";
       case 106:
-        return "Depth_below_surface";
+        return "depth_below_surface";
       case 107:
-        return "Isentrope";
+        return "isentrope";
       case 108:
-        return "Pressure_difference";
+        return "pressure_difference";
       case 109:
-        return "Potential_vorticity_surface";
+        return "potential_vorticity_surface";
       case 111:
-        return "Eta";
+        return "eta";
       case 113:
-        return "Log_hybrid";
+        return "log_hybrid";
       case 117:
-        return "Mixed_layer_depth";
+        return "mixed_layer_depth";
       case 118:
-        return "Hybrid_height";
+        return "hybrid_height";
       case 119:
-        return "Hybrid_pressure";
+        return "hybrid_pressure";
       case 120:
-        return "Pressure_thickness";
+        return "pressure_thickness";
       case 160:
-        return "Depth_below_sea";
+        return "depth_below_sea";
       case GribNumbers.UNDEFINED:
         return "none";
       default:
@@ -390,33 +397,41 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   public String getProbabilityNameShort(int id) {
     switch (id) {
       case 0:
-        return "Unweighted_mean";
+        return "unweightedMean";
       case 1:
-        return "Weighted_mean";
+        return "weightedMean";
       case 2:
-        return "Standard_deviation";
+        return "stdDev";
       case 3:
-        return "Standard_deviation_normalized";
+        return "stdDevNormalized";
       case 4:
-        return "Spread";
+        return "spread";
       case 5:
-        return "Large_anomaly_index";
+        return "largeAnomalyIndex";
       case 6:
-        return "Unweighted_mean_cluster";
+        return "unweightedMeanCluster";
       case 7:
-        return "Interquartile_range";
+        return "interquartileRange";
       case 8:
-        return "Minimum_ensemble";
+        return "minimumEnsemble";
       case 9:
-        return "Maximum_ensemble";
+        return "maximumEnsemble";
       default:
         return "UnknownProbType" + id;
      }
   }
 
+  public String getIntervalName(int id) {
+    return getTableValue("4.10", id); // WMO
+  }
+
   public String getIntervalNameShort(int id) {
     GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
     return (stat == null) ?"UnknownStatType-" + id : stat.toString();
+  }
+
+  public GribStatType getStatType(int grib2StatCode) {
+    return GribStatType.getStatTypeFromGrib2(grib2StatCode);
   }
 
   /////////////////////////////////////////////

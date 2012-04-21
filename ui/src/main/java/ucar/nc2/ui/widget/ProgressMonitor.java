@@ -146,9 +146,9 @@ public class ProgressMonitor {
   /**
    * Call this from awt event thread.
    * The task is run in a background thread.
-   * @param top: put ProgressMonitor on top of this component (may be null)
-   * @param taskName: display name of task
-   * @param progressMaxCount: maximum number of Progress indicator
+   * @param top put ProgressMonitor on top of this component (may be null)
+   * @param taskName display name of task
+   * @param progressMaxCount maximum number of Progress indicator
    */
   public synchronized void start(java.awt.Component top, String taskName, int progressMaxCount) {
     // create ProgressMonitor

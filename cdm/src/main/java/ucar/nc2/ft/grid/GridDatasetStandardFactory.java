@@ -51,7 +51,7 @@ public class GridDatasetStandardFactory implements FeatureDatasetFactory {
 
   public Object isMine(FeatureType wantFeatureType, NetcdfDataset ncd, Formatter errlog) throws IOException {
     // If they ask for a grid, and there seems to be some grids, go for it
-    if (wantFeatureType == FeatureType.GRID ) {
+    if (wantFeatureType == FeatureType.GRID || wantFeatureType == FeatureType.SWATH) {
       ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset( ncd);
       if (gds.getGrids().size() > 0) {
         return gds;
@@ -66,6 +66,6 @@ public class GridDatasetStandardFactory implements FeatureDatasetFactory {
   }
 
   public FeatureType[] getFeatureType() {
-    return new FeatureType[] {FeatureType.GRID};
+    return new FeatureType[] {FeatureType.GRID, FeatureType.SWATH};
   }
 }

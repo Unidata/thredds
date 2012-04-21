@@ -40,7 +40,7 @@ package ucar.nc2.grib.grib1;
  */
 public class Grib1Utils {
 
-  static public String makeVariableName(Grib1Record record) {
+  static public String extractParameterCode(Grib1Record record) {
     Grib1SectionProductDefinition pds = record.getPDSsection();
     return pds.getCenter()+"-"+pds.getSubCenter()+"-"+pds.getTableVersion()+"-"+pds.getParameterNumber();
   }

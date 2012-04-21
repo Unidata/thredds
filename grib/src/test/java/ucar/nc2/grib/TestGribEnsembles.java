@@ -32,31 +32,36 @@
 
 package ucar.nc2.grib;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grib.grib1.Grib1Iosp;
+import ucar.nc2.grib.grib2.Grib2Iosp;
+import ucar.unidata.test.util.TestDir;
 
-import java.io.File;
-import java.net.URL;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
-
-public class TestGribEnsembles extends TestCase {
+public class TestGribEnsembles {
 
   // from jitka
+  @Test
   public void testWMOgrib2() throws Exception {
 
-    String filename = "E:/work/jitka/ftp/MOEASURGEENS20100709060002.grib";
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/MOEASURGEENS20100709060002.grib";
+    System.out.printf("Open %s%n", filename);
     NetcdfFile datafile = NetcdfFile.open(filename);
     NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
     GridDataset gridDataset = new GridDataset(netcdfDataset);
 
-    String variableName = "VAR10-3-192_FROM74-0-0_Surface";
+    String variableName = "VAR_10-3-192_L1";
 
-    GridDatatype gridDatatype = gridDataset.findGridDatatype(variableName);
+    GridDatatype gridDatatype = gridDataset.findGridDatatypeByAttribute(Grib2Iosp.VARIABLE_ID_ATTNAME, variableName);
     assertNotNull(gridDatatype);
 
     Dimension rtDimension = gridDatatype.getRunTimeDimension();
@@ -94,16 +99,14 @@ public class TestGribEnsembles extends TestCase {
     Variable variable = gridDatatype.getVariable().getOriginalVariable();
     ensDim = variable.getDimension(ensIndex); //ensIndex = 0
 
-    //ToDo BUG  returns time dimension instead of ens dimension
-    //assertEquals("ens0", ensDim.getName()); //... fails
-    //assertEquals(1, ensDim.getLength());  //... fails
-
   }
 
-  // from jitka
+  @Test
   public void testEcmwfEns() throws Exception {
 
-    String filename = "E:/work/jitka/ftp/ECMWF_ensembles/ECME_RIZ_201201101200_00600_GB";
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/ECME_RIZ_201201101200_00600_GB";
+    System.out.printf("Open %s%n", filename);
+
     NetcdfFile datafile = NetcdfFile.open(filename);
     NetcdfDataset netcdfDataset = new NetcdfDataset(datafile);
     GridDataset gridDataset = new GridDataset(netcdfDataset);

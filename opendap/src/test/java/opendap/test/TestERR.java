@@ -35,27 +35,23 @@ package opendap.test;
 
 // Test that the error body parsing is correct
 
-public class TestERR extends TestDapParser
-{
-    final String TITLE = "DAP error body Parser Tests";
+import org.junit.Test;
 
+public class TestERR extends TestDapParser {
+  final static String TITLE = "DAP error body Parser Tests";
 
-    public TestERR(String name, String testdir) {
-        super(name, testdir, ".err");
-    }
-    
-    public TestERR(String name) {
-        super(name, null, ".err");
-    }
+  public TestERR() {
+    setExtension(".err");
+  }
 
-    public void testERR() throws Exception
-    {
-	parse();
-    }
+  @Test
+  public void testERR() throws Exception {
+    parse();
+  }
 
-    public static void main(String args[]) throws Exception {
-        new TestERR("TestDDAS", null).testERR();
-    }
+  public static void main(String args[]) throws Exception {
+    new TestERR().testERR();
+  }
 
 }
 

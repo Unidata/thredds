@@ -44,13 +44,9 @@ import java.io.*;
 public class TestGridRank2 extends TestCase {
   private boolean show = false;
 
-  public TestGridRank2( String name) {
-    super(name);
-  }
-
   public void testWrite() throws Exception {
     NetcdfFileWriteable ncfile = new NetcdfFileWriteable();
-    ncfile.setName(TestGrid.topDir+"rankTest2.nc");
+    ncfile.setName(TestLocal.cdmTestDataDir+"rankTest2.nc");
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);
@@ -209,7 +205,7 @@ public class TestGridRank2 extends TestCase {
   public void testRead() {
     try {
 
-      ucar.nc2.dt.grid.GridDataset ds = GridDataset.open( TestGrid.topDir+"rankTest2.nc");
+      ucar.nc2.dt.grid.GridDataset ds = GridDataset.open( TestLocal.cdmTestDataDir+"rankTest2.nc");
       //System.out.println("dataset= "+ds.getInfo());
       GeoGrid gg = ds.findGridByName("badTime");
       assert (ds.findGridByName("badTime") == null);

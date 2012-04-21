@@ -50,10 +50,6 @@ import java.util.Date;
 
 public class TestAggExistingPromote extends TestCase {
 
-  public TestAggExistingPromote(String name) {
-    super(name);
-  }
-
   public void testWithDateFormatMark() throws Exception, InvalidRangeException {
     String filename = "file:" + TestNcML.topDir + "aggExistingPromote.ncml";
 

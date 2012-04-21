@@ -103,6 +103,11 @@
   </appender>
 
   <!-- special loggers -->
+  <logger name="thredds.server.ncSubset" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="consoleLogger"/>
+  </logger>  
+  
   <logger name="cacheLogger" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="cacheLog"/>

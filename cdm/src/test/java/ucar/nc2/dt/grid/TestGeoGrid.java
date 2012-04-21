@@ -36,9 +36,6 @@ import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dt.GridCoordSystem;
 
 import java.io.*;
@@ -46,14 +43,9 @@ import java.io.*;
 /** Test grids with 1 dimensional z and/or t dimension */
 
 public class TestGeoGrid extends TestCase {
-  private boolean show = false;
-
-  public TestGeoGrid( String name) {
-    super(name);
-  }
 
   public void testSubset() throws Exception {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestGrid.topDir+"rankTest.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestLocal.cdmTestDataDir+"rankTest.nc");
 
     GeoGrid grid = dataset.findGridByName("full4");
     assert null != grid;

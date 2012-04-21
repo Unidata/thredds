@@ -56,6 +56,13 @@ public interface GridDatatype extends Comparable<GridDatatype> {
   public String getFullName();
 
   /**
+   * Get the short name of the Grid
+   *
+   * @return the short name of the Grid
+   */
+  public String getShortName();
+
+  /**
    * Alias for getFullName().
    * @return the full, unescaped name
    */

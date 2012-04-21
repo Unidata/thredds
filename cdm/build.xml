@@ -8,7 +8,7 @@
 
   <property name="release.version" value="4.3"/>
   <!-- TeamCity sets "build.number" property to value of its build counter. -->
-  <property name="build.number" value="8" />
+  <property name="build.number" value="9rc1" />
   <property name="build.number" value="${build.time.number}" />
   <property name="release.version.minor" value="${release.version}.${build.number}"/>
 
@@ -563,7 +563,7 @@
   </target>
 
   <property name="jarUI" value="netcdfUI-${release.version}.jar"/>
-  <target name="makeUI" depends="compile, compileUI" description="make toolsUI jar">
+  <target name="makeUI" depends="compile, compileUI" description="make netcdfUI.jar">
     <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${build.time}"/>

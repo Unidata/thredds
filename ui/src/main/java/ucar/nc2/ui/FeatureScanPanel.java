@@ -123,6 +123,17 @@ public class FeatureScanPanel extends JPanel {
       }
     });
 
+    varPopup.addAction("Show Report on selected rows", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List<FeatureScan.Bean> selected = ftTable.getSelectedBeans();
+        Formatter f = new Formatter();
+        for (FeatureScan.Bean bean : selected) {
+          bean.toString(f, false);
+        }
+        dumpTA.setText(f.toString());          
+      }
+    });
+
     // the info window
     infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
@@ -153,8 +164,6 @@ public class FeatureScanPanel extends JPanel {
     ftTable.setBeans(beans);
     return true;
   }
-
-
 
   private void setSelectedFeatureDataset(FeatureScan.Bean ftb) {
     dumpTA.setText(ftb.toString());

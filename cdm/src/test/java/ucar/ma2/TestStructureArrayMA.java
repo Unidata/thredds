@@ -33,11 +33,9 @@
 package ucar.ma2;
 
 import junit.framework.TestCase;
+import ucar.unidata.test.ma2.TestStructureArray;
 
 import java.io.IOException;
-import java.util.List;
-
-import ucar.nc2.*;
 
 
 public class TestStructureArrayMA extends TestCase {

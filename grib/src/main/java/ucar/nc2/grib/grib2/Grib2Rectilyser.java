@@ -118,7 +118,7 @@ public class Grib2Rectilyser {
 
       setTimeUnit(vb);
       TimeCoord use = null;
-      if (vb.first.getPDS().isInterval()) {
+      if (vb.first.getPDS().isTimeInterval()) {
         use = makeTimeCoordsIntv(vb);
       } else {
         boolean isUniform = checkTimeCoordsUniform(vb);
@@ -456,7 +456,7 @@ public class Grib2Rectilyser {
     result += result * 37 + pds2.getParameterCategory();
     result += result * 37 + pds2.getTemplateNumber();
 
-    if (pds2.isInterval()) {
+    if (pds2.isTimeInterval()) {
       if (!intvMerge) {
         double size = 0;
         try {
@@ -471,7 +471,11 @@ public class Grib2Rectilyser {
       result += result * 37 + pds2.getStatisticalProcessType(); // create new variable for each stat type
     }
 
-    result += result * 37 + pds2.getParameterNumber();
+    if (pds2.isSpatialInterval()) {
+       result += result * 37 + pds2.getStatisticalProcessType(); // template 15
+     }
+
+     result += result * 37 + pds2.getParameterNumber();
 
     int ensDerivedType = -1;
     if (pds2.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
@@ -493,7 +497,7 @@ public class Grib2Rectilyser {
 
     // if this uses any local tables, then we have to add the center id, and subcenter if present
     if ((pds2.getParameterCategory() > 191) || (pds2.getParameterNumber() > 191) || (pds2.getLevelType1() > 191)
-            || (pds2.isInterval() && pds2.getStatisticalProcessType() > 191)
+            || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191)
             || (ensDerivedType > 191) || (probType > 191)) {
       Grib2SectionIdentification id = gr.getId();
       result += result * 37 + id.getCenter_id();

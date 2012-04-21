@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>edu.ucar</groupId>
+    <artifactId>thredds-parent</artifactId>
+    <version>4.3.9-SNAPSHOT</version>
+  </parent>
+
+  <!-- ===========================================================
+     Module Description
+ =========================================================== -->
+  <!-- groupId>edu.ucar</groupId-->
+  <artifactId>ui</artifactId>
+  <packaging>jar</packaging>
+  <name>UI Module</name>
+  <description>Package that allows to run the netCDFToolsUI directly from it</description>
+  <url>http://www.unidata.ucar.edu/software/tds/</url>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>bufr</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>grib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>opendap</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>visadCdm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sleepycat</groupId>
+      <artifactId>je</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jgoodies</groupId>
+      <artifactId>forms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jfree</groupId>
+      <artifactId>jcommon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>lucene</groupId>
+      <artifactId>lucene</artifactId>
+      <version>1.4.3</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.bounce</groupId>
+      <artifactId>bounce</artifactId>
+      <version>0.14</version>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build-toolsUI</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <finalName>toolsUI-4.3</finalName>
+
+              <artifactSet>
+                <excludes>
+                  <exclude>commons-logging:commons-logging</exclude>
+                  <exclude>edu.wisc:visad</exclude>
+                </excludes>
+              </artifactSet>
+
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>log4j.xml</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>ucar.nc2.ui.ToolsUI</mainClass>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.handlers</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/spring.schemas</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>build-netcdfAll</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedArtifactId>wtf</shadedArtifactId>
+              <finalName>netcdfAll-4.3</finalName>
+
+              <artifactSet>
+                <excludes>
+                  <exclude>edu.ucar:ui</exclude>
+                  <exclude>aopalliance:aopalliance</exclude>
+                  <exclude>com.jgoodies:forms</exclude>
+                  <exclude>commons-logging:commons-logging</exclude>
+                  <exclude>jfree:*</exclude>
+                  <exclude>lucene:lucene</exclude>
+                  <exclude>org.springframework:*</exclude>
+                  <exclude>org.bounce:*</exclude>
+                  <exclude>org.slf4j:slf4j-jdk14</exclude>
+                </excludes>
+              </artifactSet>
+
+            </configuration>
+
+          </execution>
+
+        </executions>
+
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>aggregate</id>
+            <goals>
+              <goal>aggregate</goal>
+            </goals>
+            <phase>deploy</phase>
+
+            <configuration>
+              <minmemory>128m</minmemory>
+              <maxmemory>1g</maxmemory>
+
+              <includeDependencySources>true</includeDependencySources>
+              <dependencySourceIncludes>
+                <dependencySourceInclude>edu.ucar:netcdf</dependencySourceInclude>
+              </dependencySourceIncludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>release</id>
+            <phase>deploy</phase>
+            <configuration>
+              <tasks>
+                <property name="ftp.dir" value="V:/pub/netcdf-java/v4.3/"/>
+                <property name="web.dir" value="W:/content/software/netcdf-java/v4.3/"/>
+                <echo message="ftp.dir: ${ftp.dir}"/>
+                <echo message="web.dir: ${web.dir}"/>
+
+                <copy todir="${ftp.dir}" overwrite="true">
+                  <fileset dir="./target" includes="netcdfAll-4.3.jar"/>
+                  <fileset dir="./target" includes="toolsUI-4.3.jar"/>
+                  <fileset dir="../cdm" includes="CHANGES"/>
+                </copy>
+
+                <checksum>
+                  <fileset dir="${ftp.dir}">
+                    <include name="*.jar"/>
+                  </fileset>
+                </checksum>
+
+                <copy todir="${web.dir}" overwrite="true">
+                  <fileset dir="../cdm" includes="CHANGES.txt"/>
+                  <fileset dir="../cdm" includes="README"/>
+                </copy>
+
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+</project>

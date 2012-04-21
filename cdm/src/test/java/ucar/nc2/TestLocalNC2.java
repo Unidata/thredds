@@ -66,10 +66,10 @@ public class TestLocalNC2 {
     return open( TestLocal.cdmTestDataDir +filename);
   }
 
-  public static junit.framework.Test suite ( ) {
+  /* public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
     suite.addTest(new TestSuite(TestIndexChunker.class));
-   // suite.addTest(new TestSuite(TestRegularLayout.class)); // */
+   // suite.addTest(new TestSuite(TestRegularLayout.class)); //
     suite.addTest(new TestSuite(TestNetcdfFileCache.class));
     
     suite.addTest(new TestSuite(TestWrite.class));
@@ -80,8 +80,8 @@ public class TestLocalNC2 {
     suite.addTest(new TestSuite(TestWriteFill.class)); //
     suite.addTest(new TestSuite(TestWriteMiscProblems.class)); //
     suite.addTest(new TestSuite(TestReadRecord.class));
-    suite.addTest(new TestSuite(TestDump.class)); // */
-    suite.addTest(new TestSuite(TestRedefine.class)); // */
+    suite.addTest(new TestSuite(TestDump.class)); //
+    suite.addTest(new TestSuite(TestRedefine3.class)); //
 
     suite.addTest(new TestSuite(TestLongOffset.class)); //
     suite.addTest(new TestSuite(TestReadSection.class)); //
@@ -94,6 +94,11 @@ public class TestLocalNC2 {
 
     suite.addTest( new TestSuite(TestUnsigned.class));
 
+    suite.addTest(new TestSuite(TestHTTP.class)); //
+    suite.addTest(new TestSuite(TestStructure.class)); //
+    suite.addTest(new TestSuite(TestStructureArray.class)); //
+    suite.addTest(new TestSuite(TestStructureArray2.class)); //
+
     return suite;
-  }
+  } */
 }

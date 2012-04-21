@@ -92,7 +92,7 @@ public class RadialDatasetTable extends JPanel {
          infoTA.clear();
          infoTA.appendLine( v.toString());
          infoTA.gotoTop();
-         infoWindow.showIfNotIconified();
+         infoWindow.show();
        }
      });
 

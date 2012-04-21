@@ -34,6 +34,8 @@ package ucar.nc2.dt.grid;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -469,6 +471,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       }
     }
 
+    // WRF NMM
+    Attribute att = getXHorizAxis().findAttribute(_Coordinate.Stagger);
+    if (att != null)
+      setHorizStaggerType(att.getStringValue());
   }
 
   /**
@@ -612,9 +618,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
           domain.add(dim);
       }
     }
-
-    //makeLevels();  do this lazy
-    //makeTimes();
+    
+    setHorizStaggerType(from.getHorizStaggerType());        
   }
 
   private CoordinateAxis convertUnits(CoordinateAxis axis) {
@@ -795,6 +800,16 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     if (!((CoordinateAxis1D) axis).isRegular()) return false;
     return true;
   }
+  
+  private String horizStaggerType;
+
+  public String getHorizStaggerType() {
+    return horizStaggerType;
+  }
+
+  public void setHorizStaggerType(String horizStaggerType) {
+    this.horizStaggerType = horizStaggerType;
+  }
 
   /**
    * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
@@ -834,8 +849,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /**
    * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
-   * If outside the range, the closest point is returned
-   * Not implemented yet for 2D.
+   * If outside the range, the closest point is returned, eg, 0 or n-1 depending on if the coordinate is too small or too large.
    *
    * @param x_coord position in x coordinate space.
    * @param y_coord position in y coordinate space.

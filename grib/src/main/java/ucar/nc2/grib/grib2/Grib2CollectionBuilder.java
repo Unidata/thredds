@@ -57,7 +57,7 @@ import java.util.*;
 public class Grib2CollectionBuilder {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
   public static final String MAGIC_START = "Grib2CollectionIndex";
-  protected static final int version = 10;
+  protected static final int version = 11;
   private static final boolean intvMergeDefault = true;
 
     // called by tdm
@@ -152,7 +152,7 @@ public class Grib2CollectionBuilder {
     File idx = gc.getIndexFile();
     if (force || !idx.exists() || !readIndex(idx.getPath()) )  {
       idx = gc.makeNewIndexFile(); // make sure we have a writeable index
-      logger.info("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
+      logger.debug("GribCollection {}: createIndex {}", gc.getName(), idx.getPath());
       createIndex(idx, f);        // write out index
       gc.setIndexRaf(new RandomAccessFile(idx.getPath(), "r"));
       readIndex(gc.getIndexRaf()); // read back in index
@@ -230,6 +230,7 @@ public class Grib2CollectionBuilder {
       gc.filenames = new ArrayList<String>(proto.getFilesCount());
       for (int i = 0; i < proto.getFilesCount(); i++)
         gc.filenames.add(proto.getFiles(i));
+      gc.filenames = Collections.unmodifiableList(gc.filenames);
 
       // error condition on a GribCollection Index
       if ((proto.getFilesCount() == 0) && !(this instanceof Grib2TimePartitionBuilder)) {
@@ -240,7 +241,9 @@ public class Grib2CollectionBuilder {
       gc.groups = new ArrayList<GribCollection.GroupHcs>(proto.getGroupsCount());
       for (int i = 0; i < proto.getGroupsCount(); i++)
         gc.groups.add(readGroup(proto.getGroups(i), gc.makeGroup()));
-      Collections.sort(gc.groups);
+      gc.groups = Collections.unmodifiableList(gc.groups);
+
+      // Collections.sort(gc.groups);
       //int count = 0;
       //for (GribCollection.GroupHcs gh : gc.groups)
       //  gh.setId("group"+(count++));
@@ -456,7 +459,7 @@ public class Grib2CollectionBuilder {
             this.tables = Grib2Customizer.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
             if (config != null) tables.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt really work with multiple collections
           }
-          if (intvMap != null && filterTinv(gr, intvMap, f)) {
+          if (intvMap != null && filterOut(gr, intvMap, f)) {
             stats.filter++;
             continue; // skip
           }
@@ -490,7 +493,8 @@ public class Grib2CollectionBuilder {
     return result;
   }
 
-  private boolean filterTinv(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter, Formatter f) {
+  // true means remove
+  private boolean filterOut(Grib2Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter, Formatter f) {
     int[] intv = tables.getForecastTimeIntervalOffset(gr);
     if (intv == null) return false;
     int haveLength = intv[1] - intv[0];
@@ -503,17 +507,24 @@ public class Grib2CollectionBuilder {
       }
       return false;
 
-    } else if (intvFilter.hasMap()) {
+    } else if (intvFilter.hasFilter()) {
       int discipline = gr.getIs().getDiscipline();
-      int category = gr.getPDS().getParameterCategory();
-      int number = gr.getPDS().getParameterNumber();
+      Grib2Pds pds = gr.getPDS();
+      int category = pds.getParameterCategory();
+      int number = pds.getParameterNumber();
       int id = (discipline << 16) + (category << 8) + number;
-      Integer needLength = intvFilter.getLengthById(id);
 
-      if (needLength != null && needLength != haveLength) {
-        //f.format(" FILTER INTV [%d != %d] %s%n", haveLength, needLength, gr);
-        return true;
+      int prob = Integer.MIN_VALUE;
+      if (pds.isProbability()) {
+        prob = (int) (1000 * pds.getProbabilityUpperLimit());
       }
+      return intvFilter.filterOut(id, haveLength, prob);
+      //Integer needLength = intvFilter.getLengthById(id);
+
+      //if (needLength != null && needLength != haveLength) {
+        //f.format(" FILTER INTV [%d != %d] %s%n", haveLength, needLength, gr);
+        //return true;
+      //}
     }
     return false;
   }
@@ -762,7 +773,7 @@ public class Grib2CollectionBuilder {
       b.setProbabilityType(pdsProb.getProbabilityType());
     }
 
-    if (pds.isInterval())
+    if (pds.isTimeInterval())
       b.setIntvName(rect.getTimeIntervalName(vb.timeCoordIndex));
 
     int genType = pds.getGenProcessType();

@@ -32,27 +32,42 @@
  */
 package thredds.servlet;
 
-import thredds.catalog.*;
-import thredds.server.config.TdsContext;
-import thredds.server.config.HtmlConfig;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateType;
-
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridDataset;
-import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil2;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.io.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import thredds.catalog.InvAccess;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvCatalogRef;
+import thredds.catalog.InvDataset;
+import thredds.catalog.InvDatasetImpl;
+import thredds.catalog.ServiceType;
+import thredds.server.config.HtmlConfig;
+import thredds.server.config.TdsContext;
+import thredds.server.viewer.dataservice.ViewerService;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.units.DateType;
+import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
@@ -63,14 +78,21 @@ import java.io.*;
  *
  * @author edavis
  */
-public class HtmlWriter {
-  static private org.slf4j.Logger log =
-      org.slf4j.LoggerFactory.getLogger(HtmlWriter.class);
+
+@Component
+public class HtmlWriter implements InitializingBean {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HtmlWriter.class);
 
   private static HtmlWriter singleton;
 
+  @Autowired
   private TdsContext tdsContext;
+  
+  @Autowired
   private HtmlConfig htmlConfig;
+  
+  @Autowired
+  private ViewerService viewerService;
 
   private HtmlWriter() {}
 
@@ -82,8 +104,13 @@ public class HtmlWriter {
     this.htmlConfig = htmlConfig;
   }
 
+  // old
   public void setSingleton( HtmlWriter self) {
     this.singleton = self;
+  }
+
+  public void afterPropertiesSet() {
+    singleton = this;
   }
 
   public static HtmlWriter getInstance() {
@@ -761,8 +788,9 @@ public class HtmlWriter {
 
     // optional access through Viewers
     if ( isLocalCatalog )
-      ViewServlet.showViewers( sb, dataset, request );
-
+      //ViewServlet.showViewers( sb, dataset, request );
+      viewerService.showViewers(sb, dataset, request);	
+    
     sb.append( "</body>\r\n" );
     sb.append( "</html>\r\n" );
 

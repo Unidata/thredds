@@ -36,6 +36,10 @@ import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 
 import ucar.unidata.util.Format;
+import ucar.unidata.util.Parameter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the "fake" identity projection where world coord = latlon coord.
@@ -59,7 +63,8 @@ public class LatLonProjection extends ProjectionImpl {
    * copy constructor - avoid clone !!
    */
   public ProjectionImpl constructCopy() {
-    return new LatLonProjection(getName(), getDefaultMapArea());
+    ProjectionImpl result = new LatLonProjection(getName(), getDefaultMapArea());
+    return result;
   }
 
   /**

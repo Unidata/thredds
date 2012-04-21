@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="NCEP Model Data" version="1.0.1">
+  <service name="latest" serviceType="Resolver" base="" />
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="ncServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+  </service>
+  <dataset name="NCEP Rapid Update Cycle Model" ID="idv/NCEP/RUC">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Grid</dataType>
+      <dataFormat>GRIB-2</dataFormat>
+      <documentation type="rights">Freely available</documentation>
+      <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html" xlink:title="NCEP Model documentation" />
+      <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml" />
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>60 days</duration>
+      </timeCoverage>
+    </metadata>
+    <dataset name="NCEP RUC2 CONUS 20km" ID="idv/NCEP/RUC2/CONUS_20km">
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Rapid Update Cycle 2 (RUC2). Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs, there are also 6, 9, and 12 hour forecasts. Horizontal = 301 by 225 points, resolution 20.31 km, Lambert Conformal projection.</documentation>
+        <geospatialCoverage zpositive="down">
+          <northsouth>
+            <start>16.17247</start>
+            <size>39.36248</size>
+            <units>degrees_north</units>
+          </northsouth>
+          <eastwest>
+            <start>-126.20814</start>
+            <size>68.99827</size>
+            <units>degrees_east</units>
+          </eastwest>
+          <updown>
+            <start>255.0</start>
+            <size>0.0</size>
+            <units>hPa</units>
+          </updown>
+        </geospatialCoverage>
+      </metadata>
+      <datasetScan name="surface" ID="idv/NCEP/RUC2/CONUS_20km/surface"
+                   path="model/NCEP/RUC2/CONUS_20km/surface"
+                   location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/">
+        <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_20km/surface/" xlink:title="Available Inventory" />
+        <metadata inherited="true">
+          <documentation type="summary">NCEP RUC2, surface parameters.</documentation>
+          <variables vocabulary="GRIB-1">
+            <variable name="Accumulated_snow" vocabulary_name="Accumulated snow" units="kg/m^2" vocabulary_id="1,7,2,65">Accumulated snow @ surface</variable>
+            <variable name="Best_lifted_index_to_500_hPa" vocabulary_name="Best lifted index to 500 hPa" units="K" vocabulary_id="1,7,2,77">Best lifted index to 500 hPa @ surface</variable>
+            <variable name="Categorical_freezing_rain" vocabulary_name="Categorical freezing rain" units="yes=1;no=0" vocabulary_id="1,7,2,141">Categorical freezing rain @ surface</variable>
+            <variable name="Categorical_ice_pellets" vocabulary_name="Categorical ice pellets" units="yes=1;no=0" vocabulary_id="1,7,2,142">Categorical ice pellets @ surface</variable>
+            <variable name="Categorical_rain" vocabulary_name="Categorical rain" units="yes=1;no=0" vocabulary_id="1,7,2,140">Categorical rain @ surface</variable>
+            <variable name="Categorical_snow" vocabulary_name="Categorical snow" units="yes=1;no=0" vocabulary_id="1,7,2,143">Categorical snow @ surface</variable>
+            <variable name="Convective_Avail_Pot_Energy" vocabulary_name="Convective Avail Pot Energy" units="J/kg" vocabulary_id="1,7,2,157">Convective Avail Pot Energy @ layer_between_two_pressure_difference_from_ground</variable>
+            <variable name="Convective_Avail_Pot_Energy_surface" vocabulary_name="Convective Avail Pot Energy" units="J/kg" vocabulary_id="1,7,2,157">Convective Avail Pot Energy @ surface</variable>
+            <variable name="Convective_inhibition" vocabulary_name="Convective inhibition" units="J/kg" vocabulary_id="1,7,2,156">Convective inhibition @ layer_between_two_pressure_difference_from_ground</variable>
+            <variable name="Convective_inhibition_surface" vocabulary_name="Convective inhibition" units="J/kg" vocabulary_id="1,7,2,156">Convective inhibition @ surface</variable>
+            <variable name="Convective_precipitation" vocabulary_name="Convective precipitation" units="kg/m^2" vocabulary_id="1,7,2,63">Convective precipitation @ surface</variable>
+            <variable name="Dew_point_depression" vocabulary_name="Dew point depression" units="K" vocabulary_id="1,7,2,18">Dew point depression @ height_above_ground</variable>
+            <variable name="Dew_point_temperature" vocabulary_name="Dew point temperature" units="K" vocabulary_id="1,7,2,17">Dew point temperature @ height_above_ground</variable>
+            <variable name="Large_scale_precipitation" vocabulary_name="Large scale precipitation" units="kg/m^2" vocabulary_id="1,7,2,62">Large scale precipitation @ surface</variable>
+            <variable name="Mean_sea_level_pressure_MAPS" vocabulary_name="Mean sea level pressure MAPS" units="Pa" vocabulary_id="1,7,2,129">Mean sea level pressure MAPS @ msl</variable>
+            <variable name="Potential_temperature" vocabulary_name="Potential temperature" units="K" vocabulary_id="1,7,2,13">Potential temperature @ height_above_ground</variable>
+            <variable name="Pressure" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ surface</variable>
+            <variable name="Pressure_tendency" vocabulary_name="Pressure tendency" units="Pa/s" vocabulary_id="1,7,2,3">Pressure tendency @ surface</variable>
+            <variable name="Pseudo_adiabatic_pot_temperature" vocabulary_name="Pseudo-adiabatic pot temperature" units="K" vocabulary_id="1,7,2,14">Pseudo-adiabatic pot temperature @ surface</variable>
+            <variable name="Specific_humidity" vocabulary_name="Specific humidity" units="kg/kg" vocabulary_id="1,7,2,51">Specific humidity @ height_above_ground</variable>
+            <variable name="Storm_relative_helicity" vocabulary_name="Storm relative helicity" units="m^2/s^2" vocabulary_id="1,7,2,190">Storm relative helicity @ surface</variable>
+            <variable name="Surface_lifted_index" vocabulary_name="Surface lifted index" units="K" vocabulary_id="1,7,2,131">Surface lifted index @ surface</variable>
+            <variable name="Temperature" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ height_above_ground</variable>
+            <variable name="Temperature_surface" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ surface</variable>
+            <variable name="u_wind" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ height_above_ground1</variable>
+            <variable name="v_wind" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ height_above_ground1</variable>
+          </variables>
+        </metadata>
+        <filter>
+          <include regExp=".*\.grib2$" atomic="true" collection="false" />
+        </filter>
+        <addID />
+        <namer>
+          <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RUC2 CONUS 20km - Surface" />
+        </namer>
+        <sort>
+          <lexigraphicByName increasing="false" />
+        </sort>
+        <addLatest />
+        <addDatasetSize />
+        <addTimeCoverage
+                datasetNameMatchPattern="RUC2_CONUS_20km_surface_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
+      </datasetScan>
+      <datasetScan name="pressure" ID="idv/NCEP/RUC2/CONUS_20km/pressure"
+                   path="model/NCEP/RUC2/CONUS_20km/pressure"
+                   location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/">
+        <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_20km/pressure/" xlink:title="Available Inventory" />
+        <metadata inherited="true">
+          <documentation type="summary">NCEP RUC2, parameters on pressure levels.</documentation>
+          <variables vocabulary="GRIB-1">
+            <variable name="Absolute_vorticity" vocabulary_name="Absolute vorticity" units="1/s" vocabulary_id="1,7,2,41">Absolute vorticity @ isobaric1</variable>
+            <variable name="Accumulated_snow" vocabulary_name="Accumulated snow" units="kg/m^2" vocabulary_id="1,7,2,65">Accumulated snow @ surface</variable>
+            <variable name="Baseflow_groundwater_runoff" vocabulary_name="Baseflow-groundwater runoff" units="kg/m^2" vocabulary_id="1,7,2,234">Baseflow-groundwater runoff @ depth_below_surface</variable>
+            <variable name="Best_lifted_index_to_500_hPa" vocabulary_name="Best lifted index to 500 hPa" units="K" vocabulary_id="1,7,2,77">Best lifted index to 500 hPa @ surface</variable>
+            <variable name="Categorical_freezing_rain" vocabulary_name="Categorical freezing rain" units="yes=1;no=0" vocabulary_id="1,7,2,141">Categorical freezing rain @ surface</variable>
+            <variable name="Categorical_ice_pellets" vocabulary_name="Categorical ice pellets" units="yes=1;no=0" vocabulary_id="1,7,2,142">Categorical ice pellets @ surface</variable>
+            <variable name="Categorical_rain" vocabulary_name="Categorical rain" units="yes=1;no=0" vocabulary_id="1,7,2,140">Categorical rain @ surface</variable>
+            <variable name="Categorical_snow" vocabulary_name="Categorical snow" units="yes=1;no=0" vocabulary_id="1,7,2,143">Categorical snow @ surface</variable>
+            <variable name="Convective_Avail_Pot_Energy" vocabulary_name="Convective Avail Pot Energy" units="J/kg" vocabulary_id="1,7,2,157">Convective Avail Pot Energy @ layer_between_two_pressure_difference_from_ground1</variable>
+            <variable name="Convective_Avail_Pot_Energy_surface" vocabulary_name="Convective Avail Pot Energy" units="J/kg" vocabulary_id="1,7,2,157">Convective Avail Pot Energy @ surface</variable>
+            <variable name="Convective_inhibition" vocabulary_name="Convective inhibition" units="J/kg" vocabulary_id="1,7,2,156">Convective inhibition @ layer_between_two_pressure_difference_from_ground1</variable>
+            <variable name="Convective_inhibition_surface" vocabulary_name="Convective inhibition" units="J/kg" vocabulary_id="1,7,2,156">Convective inhibition @ surface</variable>
+            <variable name="Convective_precipitation" vocabulary_name="Convective precipitation" units="kg/m^2" vocabulary_id="1,7,2,63">Convective precipitation @ surface</variable>
+            <variable name="Dew_point_depression" vocabulary_name="Dew point depression" units="K" vocabulary_id="1,7,2,18">Dew point depression @ height_above_ground</variable>
+            <variable name="Dew_point_temperature" vocabulary_name="Dew point temperature" units="K" vocabulary_id="1,7,2,17">Dew point temperature @ height_above_ground</variable>
+            <variable name="Geometric_height" vocabulary_name="Geometric height" units="m" vocabulary_id="1,7,2,8">Geometric height @ cloud_base</variable>
+            <variable name="Geometric_height_cloud_tops" vocabulary_name="Geometric height" units="m" vocabulary_id="1,7,2,8">Geometric height @ cloud_tops</variable>
+            <variable name="Geopotential_height" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ isobaric</variable>
+            <variable name="Geopotential_height_convective_cloud_top" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ convective_cloud_top</variable>
+            <variable name="Geopotential_height_equilibrium" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ equilibrium</variable>
+            <variable name="Geopotential_height_highest_tropospheric_freezing" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ highest_tropospheric_freezing</variable>
+            <variable name="Geopotential_height_surface" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ surface</variable>
+            <variable name="Geopotential_height_zeroDegC_isotherm" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ zeroDegC_isotherm</variable>
+            <variable name="Large_scale_precipitation" vocabulary_name="Large scale precipitation" units="kg/m^2" vocabulary_id="1,7,2,62">Large scale precipitation @ surface</variable>
+            <variable name="Mean_sea_level_pressure_MAPS" vocabulary_name="Mean sea level pressure MAPS" units="Pa" vocabulary_id="1,7,2,129">Mean sea level pressure MAPS @ msl</variable>
+            <variable name="Moisture_availability" vocabulary_name="Moisture availability" units="%" vocabulary_id="1,7,2,207">Moisture availability @ surface</variable>
+            <variable name="Planetary_boundary_layer_height" vocabulary_name="Planetary boundary layer height" units="m" vocabulary_id="1,7,2,221">Planetary boundary layer height @ surface</variable>
+            <variable name="Potential_temperature" vocabulary_name="Potential temperature" units="K" vocabulary_id="1,7,2,13">Potential temperature @ height_above_ground</variable>
+            <variable name="Potential_temperature_tropopause" vocabulary_name="Potential temperature" units="K" vocabulary_id="1,7,2,13">Potential temperature @ tropopause</variable>
+            <variable name="Precipitable_water" vocabulary_name="Precipitable water" units="kg/m^2" vocabulary_id="1,7,2,54">Precipitable water @ entire_atmosphere</variable>
+            <variable name="Precipitation_rate" vocabulary_name="Precipitation rate" units="kg/m^2/s" vocabulary_id="1,7,2,59">Precipitation rate @ surface</variable>
+            <variable name="Pressure" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ highest_tropospheric_freezing</variable>
+            <variable name="Pressure_maximum_equivalent_potential_temperature" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ maximum_equivalent_potential_temperature</variable>
+            <variable name="Pressure_maximum_wind" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ maximum_wind</variable>
+            <variable name="Pressure_surface" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ surface</variable>
+            <variable name="Pressure_tendency" vocabulary_name="Pressure tendency" units="Pa/s" vocabulary_id="1,7,2,3">Pressure tendency @ surface</variable>
+            <variable name="Pressure_tropopause" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ tropopause</variable>
+            <variable name="Pressure_vertical_velocity" vocabulary_name="Pressure vertical velocity" units="Pa/s" vocabulary_id="1,7,2,39">Pressure vertical velocity @ isobaric</variable>
+            <variable name="Pressure_vertical_velocity_layer_between_two_pressure_difference_from_ground" vocabulary_name="Pressure vertical velocity" units="Pa/s" vocabulary_id="1,7,2,39">Pressure vertical velocity @ layer_between_two_pressure_difference_from_ground</variable>
+            <variable name="Pressure_zeroDegC_isotherm" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ zeroDegC_isotherm</variable>
+            <variable name="Pseudo_adiabatic_pot_temperature" vocabulary_name="Pseudo-adiabatic pot temperature" units="K" vocabulary_id="1,7,2,14">Pseudo-adiabatic pot temperature @ surface</variable>
+            <variable name="Relative_humidity" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ isobaric</variable>
+            <variable name="Relative_humidity_height_above_ground" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ height_above_ground</variable>
+            <variable name="Relative_humidity_highest_tropospheric_freezing" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ highest_tropospheric_freezing</variable>
+            <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ layer_between_two_pressure_difference_from_ground</variable>
+            <variable name="Relative_humidity_zeroDegC_isotherm" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ zeroDegC_isotherm</variable>
+            <variable name="Snow_depth" vocabulary_name="Snow depth" units="m" vocabulary_id="1,7,2,66">Snow depth @ surface</variable>
+            <variable name="Specific_humidity" vocabulary_name="Specific humidity" units="kg/kg" vocabulary_id="1,7,2,51">Specific humidity @ height_above_ground</variable>
+            <variable name="Storm_relative_helicity" vocabulary_name="Storm relative helicity" units="m^2/s^2" vocabulary_id="1,7,2,190">Storm relative helicity @ layer_between_two_heights_above_ground</variable>
+            <variable name="Storm_relative_helicity_surface" vocabulary_name="Storm relative helicity" units="m^2/s^2" vocabulary_id="1,7,2,190">Storm relative helicity @ surface</variable>
+            <variable name="Storm_surface_runoff" vocabulary_name="Storm surface runoff" units="kg/m^2" vocabulary_id="1,7,2,235">Storm surface runoff @ surface</variable>
+            <variable name="Surface_lifted_index" vocabulary_name="Surface lifted index" units="K" vocabulary_id="1,7,2,131">Surface lifted index @ surface</variable>
+            <variable name="Surface_wind_gust" vocabulary_name="Surface wind gust" units="m/s" vocabulary_id="1,7,2,180">Surface wind gust @ surface</variable>
+            <variable name="Temperature" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ isobaric</variable>
+            <variable name="Temperature_height_above_ground" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ height_above_ground</variable>
+            <variable name="Temperature_layer_between_two_pressure_difference_from_ground" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ layer_between_two_pressure_difference_from_ground</variable>
+            <variable name="Temperature_surface" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ surface</variable>
+            <variable name="Temperature_tropopause" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ tropopause</variable>
+            <variable name="Visibility" vocabulary_name="Visibility" units="m" vocabulary_id="1,7,2,20">Visibility @ surface</variable>
+            <variable name="u_component_of_storm_motion" vocabulary_name="u-component of storm motion" units="m/s" vocabulary_id="1,7,2,196">u-component of storm motion @ surface</variable>
+            <variable name="u_wind" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ isobaric</variable>
+            <variable name="u_wind_height_above_ground" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ height_above_ground1</variable>
+            <variable name="u_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ layer_between_two_pressure_difference_from_ground</variable>
+            <variable name="u_wind_maximum_wind" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ maximum_wind</variable>
+            <variable name="u_wind_tropopause" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ tropopause</variable>
+            <variable name="v_component_of_storm_motion" vocabulary_name="v-component of storm motion" units="m/s" vocabulary_id="1,7,2,197">v-component of storm motion @ surface</variable>
+            <variable name="v_wind" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ isobaric</variable>
+            <variable name="v_wind_height_above_ground" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ height_above_ground1</variable>
+            <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ layer_between_two_pressure_difference_from_ground</variable>
+            <variable name="v_wind_maximum_wind" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ maximum_wind</variable>
+            <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
+          </variables>
+        </metadata>
+        <filter>
+          <include regExp=".*\.grib2$" atomic="true" collection="false" />
+        </filter>
+        <addID />
+        <namer>
+          <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RUC2 CONUS 20km - Pressure" />
+        </namer>
+        <sort>
+          <lexigraphicByName increasing="false" />
+        </sort>
+        <addLatest />
+        <addDatasetSize />
+        <addTimeCoverage
+                datasetNameMatchPattern="RUC2_CONUS_20km_pressure_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
+      </datasetScan>
+      <datasetScan name="hybrid" ID="idv/NCEP/RUC2/CONUS_20km/hybrid" path="model/NCEP/RUC2/CONUS_20km/hybrid" location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/">
+        <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC2/CONUS_20km/hybrid/" xlink:title="Available Inventory" />
+        <metadata inherited="true">
+          <documentation type="summary">NCEP RUC2, parameters on hybrid levels.</documentation>
+          <variables vocabulary="GRIB-1">
+            <variable name="Accumulated_snow" vocabulary_name="Accumulated snow" units="kg/m^2" vocabulary_id="1,7,2,65">Accumulated snow @ surface</variable>
+            <variable name="Baseflow_groundwater_runoff" vocabulary_name="Baseflow-groundwater runoff" units="kg/m^2" vocabulary_id="1,7,2,234">Baseflow-groundwater runoff @ depth_below_surface3</variable>
+            <variable name="Cloud_water" vocabulary_name="Cloud water" units="kg/kg" vocabulary_id="1,7,2,153">Cloud water @ hybrid</variable>
+            <variable name="Convective_Avail_Pot_Energy" vocabulary_name="Convective Avail Pot Energy" units="J/kg" vocabulary_id="1,7,2,157">Convective Avail Pot Energy @ layer_between_two_pressure_difference_from_ground</variable>
+            <variable name="Convective_inhibition" vocabulary_name="Convective inhibition" units="J/kg" vocabulary_id="1,7,2,156">Convective inhibition @ layer_between_two_pressure_difference_from_ground</variable>
+            <variable name="Convective_precipitation" vocabulary_name="Convective precipitation" units="kg/m^2" vocabulary_id="1,7,2,63">Convective precipitation @ surface</variable>
+            <variable name="Density" vocabulary_name="Density" units="kg/m^3" vocabulary_id="1,7,2,89">Density @ depth_below_surface2</variable>
+            <variable name="Geopotential_height" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ hybrid</variable>
+            <variable name="Graupel_mixing_ratio" vocabulary_name="Graupel mixing ratio" units="kg/kg" vocabulary_id="1,7,2,179">Graupel mixing ratio @ hybrid</variable>
+            <variable name="Humidity_mixing_ratio" vocabulary_name="Humidity mixing ratio" units="kg/kg" vocabulary_id="1,7,2,53">Humidity mixing ratio @ hybrid</variable>
+            <variable name="Humidity_mixing_ratio_height_above_ground" vocabulary_name="Humidity mixing ratio" units="kg/kg" vocabulary_id="1,7,2,53">Humidity mixing ratio @ height_above_ground1</variable>
+            <variable name="Humidity_mixing_ratio_surface" vocabulary_name="Humidity mixing ratio" units="kg/kg" vocabulary_id="1,7,2,53">Humidity mixing ratio @ surface</variable>
+            <variable name="Ice_mixing_ratio" vocabulary_name="Ice mixing ratio" units="kg/kg" vocabulary_id="1,7,2,178">Ice mixing ratio @ hybrid</variable>
+            <variable name="Icing_SIGMETAIRMET" vocabulary_name="Icing SIGMET/AIRMET" units="non-dim" vocabulary_id="1,7,2,186">Icing SIGMET/AIRMET @ surface</variable>
+            <variable name="Large_scale_precipitation" vocabulary_name="Large scale precipitation" units="kg/m^2" vocabulary_id="1,7,2,62">Large scale precipitation @ surface</variable>
+            <variable name="Latent_heat_flux" vocabulary_name="Latent heat flux" units="W/m^2" vocabulary_id="1,7,2,121">Latent heat flux @ surface</variable>
+            <variable name="Lightning" vocabulary_name="Lightning" units="non-dim" vocabulary_id="1,7,2,187">Lightning @ surface</variable>
+            <variable name="Mean_sea_level_pressure_MAPS" vocabulary_name="Mean sea level pressure MAPS" units="Pa" vocabulary_id="1,7,2,129">Mean sea level pressure MAPS @ msl</variable>
+            <variable name="Net_long_wave_surface" vocabulary_name="Net long wave surface" units="W/m^2" vocabulary_id="1,7,2,112">Net long wave surface @ surface</variable>
+            <variable name="Net_short_wave_surface" vocabulary_name="Net short wave surface" units="W/m^2" vocabulary_id="1,7,2,111">Net short wave surface @ surface</variable>
+            <variable name="No_concen_ice_particles" vocabulary_name="No concen ice particles" units="" vocabulary_id="1,7,2,198">No concen ice particles @ hybrid</variable>
+            <variable name="Plant_canopy_surface_water" vocabulary_name="Plant canopy surface water" units="kg/m^2" vocabulary_id="1,7,2,223">Plant canopy surface water @ surface</variable>
+            <variable name="Potential_temperature" vocabulary_name="Potential temperature" units="K" vocabulary_id="1,7,2,13">Potential temperature @ tropopause</variable>
+            <variable name="Precipitable_water" vocabulary_name="Precipitable water" units="kg/m^2" vocabulary_id="1,7,2,54">Precipitable water @ entire_atmosphere</variable>
+            <variable name="Precipitation_rate" vocabulary_name="Precipitation rate" units="kg/m^2/s" vocabulary_id="1,7,2,59">Precipitation rate @ surface</variable>
+            <variable name="Pressure" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ hybrid</variable>
+            <variable name="Pressure_tropopause" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ tropopause</variable>
+            <variable name="Pressure_vertical_velocity" vocabulary_name="Pressure vertical velocity" units="Pa/s" vocabulary_id="1,7,2,39">Pressure vertical velocity @ hybrid</variable>
+            <variable name="Rain_water_mixing_ratio" vocabulary_name="Rain water mixing ratio" units="kg/kg" vocabulary_id="1,7,2,170">Rain water mixing ratio @ hybrid</variable>
+            <variable name="Rate_of_water_dropping_from_canopy_to_gnd" vocabulary_name="Rate of water dropping from canopy to gnd" units="kg/m^2" vocabulary_id="1,7,2,188">Rate of water dropping from canopy to gnd @ surface</variable>
+            <variable name="Sensible_heat_flux" vocabulary_name="Sensible heat flux" units="W/m^2" vocabulary_id="1,7,2,122">Sensible heat flux @ surface</variable>
+            <variable name="Snow_depth" vocabulary_name="Snow depth" units="m" vocabulary_id="1,7,2,66">Snow depth @ surface</variable>
+            <variable name="Snow_mixing_ratio" vocabulary_name="Snow mixing ratio" units="kg/kg" vocabulary_id="1,7,2,171">Snow mixing ratio @ hybrid</variable>
+            <variable name="Snow_temperature" vocabulary_name="Snow temperature" units="K" vocabulary_id="1,7,2,239">Snow temperature @ depth_below_surface1</variable>
+            <variable name="Soil_temperature" vocabulary_name="Soil temperature" units="K" vocabulary_id="1,7,2,85">Soil temperature @ depth_below_surface</variable>
+            <variable name="Soil_temperature_surface" vocabulary_name="Soil temperature" units="K" vocabulary_id="1,7,2,85">Soil temperature @ surface</variable>
+            <variable name="Soil_type_Zobler" vocabulary_name="Soil type Zobler" units="0..9" vocabulary_id="1,7,2,224">Soil type Zobler @ surface</variable>
+            <variable name="Storm_surface_runoff" vocabulary_name="Storm surface runoff" units="kg/m^2" vocabulary_id="1,7,2,235">Storm surface runoff @ surface</variable>
+            <variable name="Temperature" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ height_above_ground1</variable>
+            <variable name="Turbulent_kinetic_energy" vocabulary_name="Turbulent kinetic energy" units="J/kg" vocabulary_id="1,7,2,158">Turbulent kinetic energy @ hybrid</variable>
+            <variable name="Vegetation_type_as_in_SiB" vocabulary_name="Vegetation type as in SiB" units="0..13" vocabulary_id="1,7,2,225">Vegetation type as in SiB @ surface</variable>
+            <variable name="Virtual_pot_temperature" vocabulary_name="Virtual pot temperature" units="K" vocabulary_id="1,7,2,189">Virtual pot temperature @ hybrid</variable>
+            <variable name="Volumetric_soil_moisture" vocabulary_name="Volumetric soil moisture" units="fraction" vocabulary_id="1,7,2,144">Volumetric soil moisture @ depth_below_surface</variable>
+            <variable name="Volumetric_soil_moisture_surface" vocabulary_name="Volumetric soil moisture" units="fraction" vocabulary_id="1,7,2,144">Volumetric soil moisture @ surface</variable>
+            <variable name="u_wind" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ hybrid</variable>
+            <variable name="u_wind_height_above_ground" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ height_above_ground</variable>
+            <variable name="u_wind_tropopause" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ tropopause</variable>
+            <variable name="v_wind" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ hybrid</variable>
+            <variable name="v_wind_height_above_ground" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ height_above_ground</variable>
+            <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
+          </variables>
+        </metadata>
+        <filter>
+          <include regExp=".*\.grib2$" atomic="true" collection="false" />
+        </filter>
+        <addID />
+        <namer>
+          <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RUC2 CONUS 20km - Hybrid" />
+        </namer>
+        <sort>
+          <lexigraphicByName increasing="false" />
+        </sort>
+        <addLatest />
+        <addDatasetSize />
+        <addTimeCoverage
+                datasetNameMatchPattern="RUC2_CONUS_20km_hybrid_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
+                startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
+      </datasetScan>
+    </dataset>
+    <datasetScan name="NCEP RUC CONUS 80km" harvest="true" ID="idv/NCEP/RUC/CONUS_80km" path="model/NCEP/RUC/CONUS_80km" location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/">
+      <documentation xlink:href="/thredds/modelInventory/model/NCEP/RUC/CONUS_80km/" xlink:title="Available Inventory" />
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC). Model runs are made hourly, with analysis and 3 hour forecast; on the 0, 3, 6, 9, 12, 15, 18, and 21Z runs, there are also 6, 9, and 12 hour forecasts. horizontal = 93 by 65 points, resolution 81.27 km LambertConformal projection</documentation>
+        <geospatialCoverage zpositive="down">
+          <northsouth>
+            <start>11.74795</start>
+            <size>45.72577</size>
+            <units>degrees_north</units>
+          </northsouth>
+          <eastwest>
+            <start>-133.70633</start>
+            <size>85.03587</size>
+            <units>degrees_east</units>
+          </eastwest>
+          <updown>
+            <start>1000.0</start>
+            <size>-900.0</size>
+            <resolution>-50.0</resolution>
+            <units>hPa</units>
+          </updown>
+        </geospatialCoverage>
+        <variables vocabulary="GRIB-1">
+          <variable name="Convective_precipitation" vocabulary_name="Convective precipitation" units="kg/m^2" vocabulary_id="1,7,2,63">Convective precipitation @ surface</variable>
+          <variable name="Geopotential_height" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ isobaric</variable>
+          <variable name="Geopotential_height_surface" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ surface</variable>
+          <variable name="Geopotential_height_zeroDegC_isotherm" vocabulary_name="Geopotential height" units="gpm" vocabulary_id="1,7,2,7">Geopotential height @ zeroDegC_isotherm</variable>
+          <variable name="Large_scale_precipitation" vocabulary_name="Large scale precipitation" units="kg/m^2" vocabulary_id="1,7,2,62">Large scale precipitation @ surface</variable>
+          <variable name="Mean_sea_level_pressure_MAPS" vocabulary_name="Mean sea level pressure MAPS" units="Pa" vocabulary_id="1,7,2,129">Mean sea level pressure MAPS @ msl</variable>
+          <variable name="Potential_temperature" vocabulary_name="Potential temperature" units="K" vocabulary_id="1,7,2,13">Potential temperature @ tropopause</variable>
+          <variable name="Precipitation_rate" vocabulary_name="Precipitation rate" units="kg/m^2/s" vocabulary_id="1,7,2,59">Precipitation rate @ surface</variable>
+          <variable name="Pressure" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ maximum_wind</variable>
+          <variable name="Pressure_surface" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ surface</variable>
+          <variable name="Pressure_tropopause" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ tropopause</variable>
+          <variable name="Pressure_vertical_velocity" vocabulary_name="Pressure vertical velocity" units="Pa/s" vocabulary_id="1,7,2,39">Pressure vertical velocity @ isobaric1</variable>
+          <variable name="Pressure_zeroDegC_isotherm" vocabulary_name="Pressure" units="Pa" vocabulary_id="1,7,2,1">Pressure @ zeroDegC_isotherm</variable>
+          <variable name="Relative_humidity" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ isobaric</variable>
+          <variable name="Relative_humidity_height_above_ground" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ height_above_ground1</variable>
+          <variable name="Relative_humidity_layer_between_two_pressure_difference_from_ground" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ layer_between_two_pressure_difference_from_ground</variable>
+          <variable name="Relative_humidity_zeroDegC_isotherm" vocabulary_name="Relative humidity" units="%" vocabulary_id="1,7,2,52">Relative humidity @ zeroDegC_isotherm</variable>
+          <variable name="Temperature" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ isobaric</variable>
+          <variable name="Temperature_height_above_ground" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ height_above_ground1</variable>
+          <variable name="Temperature_layer_between_two_pressure_difference_from_ground" vocabulary_name="Temperature" units="K" vocabulary_id="1,7,2,11">Temperature @ layer_between_two_pressure_difference_from_ground</variable>
+          <variable name="Total_precipitation" vocabulary_name="Total precipitation" units="kg/m^2" vocabulary_id="1,7,2,61">Total precipitation @ surface</variable>
+          <variable name="u_wind" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ isobaric</variable>
+          <variable name="u_wind_height_above_ground" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ height_above_ground</variable>
+          <variable name="u_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ layer_between_two_pressure_difference_from_ground</variable>
+          <variable name="u_wind_maximum_wind" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ maximum_wind</variable>
+          <variable name="u_wind_tropopause" vocabulary_name="u wind" units="m/s" vocabulary_id="1,7,2,33">u wind @ tropopause</variable>
+          <variable name="v_wind" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ isobaric</variable>
+          <variable name="v_wind_height_above_ground" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ height_above_ground</variable>
+          <variable name="v_wind_layer_between_two_pressure_difference_from_ground" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ layer_between_two_pressure_difference_from_ground</variable>
+          <variable name="v_wind_maximum_wind" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ maximum_wind</variable>
+          <variable name="v_wind_tropopause" vocabulary_name="v wind" units="m/s" vocabulary_id="1,7,2,34">v wind @ tropopause</variable>
+        </variables>
+      </metadata>
+      <filter>
+        <include regExp=".*\.grib1$" atomic="true" collection="false" />
+      </filter>
+      <addID />
+      <namer>
+        <regExpOnName regExp="latest.xml" replaceString="Latest NCEP RUC CONUS 80km" />
+      </namer>
+      <sort>
+        <lexigraphicByName increasing="false" />
+      </sort>
+      <addLatest />
+      <addDatasetSize />
+      <addTimeCoverage
+              datasetNameMatchPattern="RUC_CONUS_80km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$"
+              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
+    </datasetScan>
+  </dataset>
+</catalog>
+

@@ -16,10 +16,9 @@ dl {margin: 10px 5px 5px 15px;}
 </p>
 <ul>
   <li><a href="#WriteGrib">Writing Grib Files</a></li>
-  <li><a href="#ReadGrib1">Reading Grib-1 files with the CDM library</a></li>
   <li><a href="#GribTables">GRIB-1 Tables</a></li>
   <li><a href="#DefineGrib1Params">XML Schema for defining Grib-1 Parameters</a></li>
-  <li><a href="#ReadGrib2">Reading Grib-2 files with the CDM library</a></li>
+  <li>GRIB-2 Tables (not done yet)</li>
 </ul>
 <hr>
 <h2>Writing Grib Files<a name="WriteGrib" id="WriteGrib"></a></h2>
@@ -48,28 +47,6 @@ dl {margin: 10px 5px 5px 15px;}
   <li>Unidata encourages the use of <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html#Database">udunit formatting</a> for expressing units.</li>
   <li>We need to be able to find your tables. Add enough metadata so that a google search on &quot;&lt;your center name&gt; GRIB tables&quot; finds you within the first 2 pages. Send a link to netcdf-java@unidata.ucar.edu and we will link to you (and use your tables in the CDM library).</li>
 </ol>
-<hr WIDTH="100%">
-<h2>Reading Grib-1<a name="ReadGrib1"></a> files with the CDM library version 4.3</h2>
-<h3>Homogeneity requirements for collections of GRIB-1 records</h3>
-<p>The CDM library makes certain assumptions about collections of GRIB records, called <strong><em>homogeneity requirements</em></strong>:</p>
-<ul>
-  <li>The center, subcenter ids are assumed constant for all records. This effects which  tables are used, and also global attributes added to the file.</li>
-  <li>The table version may differ across records.</li>
-  <li>The reference dates may differ across records.</li>
-  <li>Records on different Grids (different GDS) are put in seperate CDM Groups.</li>
-</ul>
-<h3>Constructing CDM Variables from collections of GRIB-1 records</h3>
-<p>The CDM library takes unordered collections of GRIB records and groups them into 3D or 4D CDM Variables with a time and optional vertical dimension. It uses the following GRIB fields to construct a unique variable:</p>
-<ul>
-  <li>Table Version (octet 4 of PDS)</li>
-  <li>Parameter Number (octet 9 of PDS)</li>
-  <li>if (param &gt; 127) the Center and Subcenter ids</li>
-  <li>Level Type (octet 10 of PDS)</li>
-  <li>if a vertical layer</li>
-  <li>if a time interval, the Statistical Process Type (octet 21 of PDS)</li>
-  <li>the GDS hashcode</li>
-</ul>
-<p>see <strong>ucar.nc2.grib.grib1.Grib1Record.cdmVariableHash()</strong> for exact definition.</p>
 <hr WIDTH="100%">
 <h2>GRIB-1 Table Handling<a name="GribTables"></a></h2>
 <h3>Standard table mapping</h3>
@@ -190,35 +167,9 @@ dl {margin: 10px 5px 5px 15px;}
 
 &lt;/parameterMap&gt;</pre>
 <hr WIDTH="100%">
-<h2>Reading Grib-2<a name="ReadGrib2" id="ReadGrib2"></a> files with the CDM library version 4.3</h2>
-<h3>Homogeneity requirements for collections of GRIB-2 records</h3>
-<p>The CDM library makes certain assumptions about collections of GRIB records, called <strong><em>homogeneity requirements</em></strong>:</p>
-<ul>
-  <li>The center, subcenter ids are assumed constant for all records. This affects which  tables are used and  the global attributes.</li>
-  <li>The generating process id is assumed to be constant. This only affects the global attributes.</li>
-  <li>The master and local table versions may differ across records.</li>
-  <li>The reference dates may differ across records.</li>
-  <li>Records on different Grids (different GDS) are put in seperate CDM Groups.</li>
-</ul>
-<h3>Constructing CDM Variables from collections of GRIB-2 records</h3>
-<p>The CDM library takes unordered collections of GRIB-2 records and groups them into 3D or 4D CDM Variables with a time and optional vertical and ensemble dimensions. It uses the following GRIB fields to construct a unique variable:</p>
-<ul>
-  <li>Discipline (octet 7 of Indicator section)</li>
-  <li>Category (octet 10 of PDS)</li>
-  <li>Parameter (octet 11 of PDS)</li>
-  <li>Table Versions (octet 10 and 11 of Identification Section)</li>
-  <li>if local tables are used, the Center and Subcenter ids (octet 6-9 of Identification Section)</li>
-  <li>PDS Template (octet 8 and 9 of PDS)</li>
-  <li>Level-1 Type (eg octet 23 of PDS template 0)</li>
-  <li>is a vertical layer (Level-2 Type exists) (eg octet 29 of PDS template 0)</li>
-  <li>Statistical process Type for time averages (PDS templates 8-14) (eg octet 47 of PDS template 8)</li>
-  <li>Ensemble derived Type (PDS templates 2-4)  (eg octet 35 of PDS template 2)</li>
-  <li>Probability Type (octet 11 of PDS)</li>
-  <li>GDS hashcode</li>
-</ul>
-<p>see <strong>ucar.nc2.grib.grib2.Grib2Record.cdmVariableHash()</strong> for exact definition.</p>
+<h2>GRIB-2 Tables (TBD)</h2>
 <hr>
-<h2>Appendix</h2>
+<h2>Notes</h2>
 <p>In GRIB-1, a single byte contains the  version number, with separate bytes for the center and the subcenter. The WMO  manual on codes describes the version byte as: </p>
 <pre>4: GRIB tables Version No. (currently 3 for international  exchange) &ndash; Version numbers 128&ndash;254 are reserved for local use  </pre>
 <p>So the rules for GRIB-1 seem to be in actual practice:</p>
@@ -252,7 +203,7 @@ Notes:
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated January 22, 2012
+<img src="../nc.gif" alt="" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated February, 2012
 </address>
 </body>
 </html>

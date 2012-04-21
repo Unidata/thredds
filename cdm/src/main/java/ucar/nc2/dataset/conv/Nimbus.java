@@ -36,6 +36,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -63,7 +64,8 @@ public class Nimbus extends COARDSConvention {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    ds.addAttribute(null, new Attribute("cdm_data_type", ucar.nc2.constants.FeatureType.TRAJECTORY.name()));
+    ds.addAttribute(null, new Attribute("cdm_data_type", ucar.nc2.constants.FeatureType.TRAJECTORY.name()));  // deprecated
+    ds.addAttribute(null, new Attribute(CF.FEATURE_TYPE, ucar.nc2.constants.FeatureType.TRAJECTORY.name()));
 
     if (!setAxisType(ds, "LATC", AxisType.Lat))
       if (!setAxisType(ds, "LAT", AxisType.Lat))

@@ -36,8 +36,6 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.Earth;
 
 /**
  * Create a LambertAzimuthal Projection from the information in the Coordinate Transform Variable.
@@ -60,7 +58,7 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
     double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
     double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
-    double earth_radius = getEarthRadius(ctv);
+    double earth_radius = getEarthRadiusInKm(ctv);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
       double scalef = getFalseEastingScaleFactor(ds, ctv);

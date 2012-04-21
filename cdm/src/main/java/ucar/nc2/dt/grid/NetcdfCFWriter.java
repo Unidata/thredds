@@ -64,13 +64,23 @@ import java.text.ParseException;
  * @author caron
  */
 public class NetcdfCFWriter {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCFWriter.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCFWriter.class);
 
   static public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb, CalendarDateRange range)
           throws IOException, InvalidRangeException {
     NetcdfCFWriter writer = new NetcdfCFWriter();
     writer.makeFile(location, gds, gridList, llbb, range, false, 1, 1, 1);
   }
+
+  public long makeGridFileSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList,
+            LatLonRect llbb, int horizStride,
+            Range zRange,
+            CalendarDateRange dateRange, int stride_time,
+            boolean addLatLon) throws IOException, InvalidRangeException {
+
+    return makeOrTestSize(null, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, true);
+  }
+
 
   /**
    * Write a CF compliant Netcdf-3 file from any gridded dataset.
@@ -88,18 +98,29 @@ public class NetcdfCFWriter {
    * @throws InvalidRangeException if subset is illegal
    */
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          LatLonRect llbb, CalendarDateRange range,
+          LatLonRect llbb,
+          CalendarDateRange range,
           boolean addLatLon,
           int horizStride, int stride_z, int stride_time)
           throws IOException, InvalidRangeException {
     makeFile(location, gds, gridList, llbb, horizStride, null, range, stride_time, addLatLon);
   }
 
-  public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+  public long makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
           LatLonRect llbb, int horizStride,
           Range zRange,
           CalendarDateRange dateRange, int stride_time,
           boolean addLatLon)
+          throws IOException, InvalidRangeException {
+    
+    return makeOrTestSize(location, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, false);
+  }
+  
+  private long makeOrTestSize(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+          LatLonRect llbb, int horizStride,
+          Range zRange,
+          CalendarDateRange dateRange, int stride_time,
+          boolean addLatLon, boolean testSizeOnly)
           throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
@@ -119,6 +140,7 @@ public class NetcdfCFWriter {
       GridDatatype grid = gds.findGridDatatype(gridName);
       GridCoordSystem gcsOrg = grid.getCoordinateSystem();
       CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
+      CoordinateAxis1D vertAxis = gcsOrg.getVerticalAxis();
 
       // make subset if needed
       Range timeRange = null;
@@ -129,11 +151,13 @@ public class NetcdfCFWriter {
           throw new InvalidRangeException("start time=" + dateRange.getStart() + " must be >= " + timeAxis.getCalendarDate(0));
         if (endIndex < 0)
           throw new InvalidRangeException("end time=" + dateRange.getEnd() + " must be >= " + timeAxis.getCalendarDate(0));
-        timeRange = new Range(startIndex, endIndex);
+        if (stride_time <= 1) stride_time = 1;
+        timeRange = new Range(startIndex, endIndex, stride_time);
       }
 
-      if ((null != timeRange) || (zRange != null) || (llbb != null) || (horizStride > 1)) {
-        grid = grid.makeSubset(timeRange, zRange, llbb, 1, horizStride, horizStride);
+      Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
+      if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
+        grid = grid.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
       }
 
       Variable gridV = (Variable) grid.getVariable();
@@ -145,8 +169,11 @@ public class NetcdfCFWriter {
       for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
         if (!varNameList.contains(axis.getFullName())) {
           varNameList.add(axis.getFullName());
-          varList.add(axis); // LOOK dont we have to subset these ??
+          varList.add(axis);
           axisList.add(axis);
+          if (timeAxis != null && timeAxis.isInterval()) {
+            // LOOK gotta add the bounds  !!!
+          }
         }
       }
 
@@ -168,6 +195,9 @@ public class NetcdfCFWriter {
         }
       }
     }
+    
+    if (testSizeOnly)
+      return total_size;
 
     // check size is ok
     boolean isLargeFile = false;
@@ -220,7 +250,7 @@ public class NetcdfCFWriter {
     }
 
     for (CoordinateAxis axis : axisList) {
-      Variable newV = root.findVariable(axis.getShortName()); // LOOK ???
+      Variable newV = root.findVariable(axis.getShortName()); // LOOK short name ???
       if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
         if (null != axis.getPositive())
           newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
@@ -258,6 +288,7 @@ public class NetcdfCFWriter {
     // LOOK not dealing with crossing the seam
 
     writer.finish(); // this writes the data to the new file.
+    return 0; // ok
   }
 
   private void convertProjectionCTV(NetcdfDataset ds, Variable ctv) {
@@ -333,6 +364,7 @@ public class NetcdfCFWriter {
     varList.add(lonVar);
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////
   public static void test1() throws IOException, InvalidRangeException, ParseException {
     String fileIn = "C:/data/ncmodels/NAM_CONUS_80km_20051206_0000.nc";
     String fileOut = "C:/temp/cf3.nc";

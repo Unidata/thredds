@@ -33,7 +33,6 @@
 package thredds.catalog;
 
 import junit.framework.*;
-import ucar.nc2.TestAll;
 
 /**
  * _more_
@@ -43,7 +42,7 @@ import ucar.nc2.TestAll;
  */
 public class TestDatasetScanBrowseMetadata extends TestCase
 {
-  private String tmpDirPath = TestAll.temporaryLocalDataDir + "TestDatasetScanBrowseMetadata/";
+  private String tmpDirPath = TestCatalogAll.tmpDir + "TestDatasetScanBrowseMetadata/";
 
   public TestDatasetScanBrowseMetadata( String name )
   {

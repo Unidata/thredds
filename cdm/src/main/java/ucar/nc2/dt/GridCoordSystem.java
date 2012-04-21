@@ -311,5 +311,5 @@ public interface GridCoordSystem {
 
   public CalendarDateRange getCalendarDateRange();
 
-
+  public String getHorizStaggerType();
 }

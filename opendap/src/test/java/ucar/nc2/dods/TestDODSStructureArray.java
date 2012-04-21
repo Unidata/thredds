@@ -32,7 +32,8 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
+import opendap.test.TestSources;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -41,12 +42,9 @@ import java.io.*;
 
 /** Test nc2 dods in the JUnit framework. */
 
-public class TestDODSStructureArray extends TestCase {
+public class TestDODSStructureArray {
 
-  public TestDODSStructureArray( String name) {
-    super(name);
-  }
-
+  @Test
   public void testArrays() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
 
@@ -109,6 +107,7 @@ public class TestDODSStructureArray extends TestCase {
 
   }
 
+  @Test
   public void testArray2() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
     DODSStructure exp = (DODSStructure) dodsfile.findVariable("exp");
@@ -169,6 +168,7 @@ public class TestDODSStructureArray extends TestCase {
 
   }
 
+  @Test
   public void testSARead() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.21");
     DODSStructure exp = (DODSStructure) dodsfile.findVariable("exp");
@@ -185,8 +185,9 @@ public class TestDODSStructureArray extends TestCase {
     assert a.getShort( ima.set(1,1)) == (short) 768;
   }
 
+  @Test
   public void testDODS() throws IOException, InvalidRangeException {
-    testW(TestDODS.server+"test.53", "types", false);
+    testW(TestSources.XURL1+"/test.53", "types", false);
   }
 
   public void testW(String url, String sname, boolean isScalar) throws IOException, InvalidRangeException {
@@ -200,7 +201,7 @@ public class TestDODSStructureArray extends TestCase {
     assert( data instanceof ArrayStructure);
     assert(data.getElementType() == StructureData.class);
 
-    new ucar.ma2.TestStructureArray().testArrayStructure( (ArrayStructure) data);
+    new ucar.unidata.test.ma2.TestStructureArray().testArrayStructure( (ArrayStructure) data);
     ncfile.close();
   }
 

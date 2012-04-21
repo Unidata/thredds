@@ -5,11 +5,13 @@
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="wms" serviceType="WMS" base="/thredds/wms/" />
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
     <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
     <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
   </service>
+
   <dataset name="Unidata Real-Time Regional Model" ID="Unidata-Regional-Model">
 
     <metadata inherited="true">
@@ -19,7 +21,6 @@
       <dataFormat>GRIB-1</dataFormat>
       <documentation xlink:href="http://www.unidata.ucar.edu/software/gempak/rtmodel/" xlink:title="Unidata documentation" />
       <documentation type="rights">Freely available</documentation>
-      <documentation type="processing_level">Read by CDM Forecast Model Run Collection.</documentation>
       <creator>
         <name vocabulary="DIF">UCAR/UNIDATA</name>
         <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
@@ -30,19 +31,12 @@
       </publisher>
     </metadata>
 
-    <!-- featureCollection name="NMM (Primary Domain) FMRC" featureType="FMRC" harvest="true" path="fmrc/Unidata/NMM/Primary">
+    <featureCollection name="NMM Primary Domain" featureType="GRIB" harvest="true" path="grib/Unidata/NMM/Primary">
+      <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm.GrbF.*" olderThan="5 min"/>
+      <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+    </featureCollection>
 
-      <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm.GrbF.*"
-                  name="rtmodel_primary"
-                  recheckAfter="15 min"
-                  olderThan="5 min"/>
-      <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
-      <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
-      <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-      <fmrcConfig regularize="true" datasetTypes="Best Files" />
-    </featureCollection -->
-
-    <datasetScan name="NMM (Primary Domain) individual files" ID="Unidata-Regional-Model/nmm/files" path="Unidata/rtmodel/nmm/files" location="/data/ldm/pub/rtmodel/">
+    <!-- datasetScan name="NMM (Primary Domain) individual files" ID="Unidata-Regional-Model/nmm/files" path="Unidata/rtmodel/nmm/files" location="/data/ldm/pub/rtmodel/">
       <filter>
         <include regExp=".*nmm\.Grb.*" atomic="true" collection="false" />
       </filter>
@@ -51,7 +45,7 @@
         <lexigraphicByName increasing="false" />
       </sort>
       <addDatasetSize />
-    </datasetScan>
+    </datasetScan -->
 
    <!--datasetFmrc name="NMM (Secondary Domain) Runs" path="fmrc/Unidata/rtmodel/nmm-alt" collectionType="ForecastModelRuns" harvest="true" runsOnly="true">
       <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
@@ -61,19 +55,12 @@
       </netcdf>
     </datasetFmrc -->
 
-    <!-- featureCollection name="NMM (Secondary Domain) FMRC" featureType="FMRC" harvest="true" path="fmrc/Unidata/NMM/Secondary">
+    <featureCollection name="NMM Secondary Domain" featureType="GRIB" harvest="true" path="grib/Unidata/NMM/Secondary">
+      <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm_alt1\.GrbF.*" olderThan="5 min"/>
+      <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+    </featureCollection>
 
-      <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm_alt1\.GrbF.*"
-                  name="rtmodel_alt"
-                  recheckAfter="15 min"
-                  olderThan="5 min"/>
-      <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
-      <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
-      <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-      <fmrcConfig regularize="true" datasetTypes="Best Files" />
-    </featureCollection -->
-
-    <datasetScan name="NMM (Secondary Domain) individual files" ID="Unidata-Regional-Model/nmm-alt/files" path="Unidata/rtmodel/nmm-alt/files" location="/data/ldm/pub/rtmodel/">
+    <!-- datasetScan name="NMM (Secondary Domain) individual files" ID="Unidata-Regional-Model/nmm-alt/files" path="Unidata/rtmodel/nmm-alt/files" location="/data/ldm/pub/rtmodel/">
       <filter>
         <include regExp=".*nmm_alt1\.Grb.*" atomic="true" collection="false" />
       </filter>
@@ -82,7 +69,7 @@
         <lexigraphicByName increasing="false" />
       </sort>
       <addDatasetSize />
-    </datasetScan>
+    </datasetScan -->
 
   </dataset>
 </catalog>

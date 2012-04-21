@@ -46,7 +46,9 @@ import java.util.Formatter;
 import java.util.StringTokenizer;
 
 /**
- * "Unidata Observation Dataset v1.0" point or station or trajectory
+ * "Unidata Observation Dataset v1.0" point or station or trajectory.
+ * This convention is deprecated in favor of CF-1.6.
+ *
  * @author caron
  * @since Apr 23, 2008
  */

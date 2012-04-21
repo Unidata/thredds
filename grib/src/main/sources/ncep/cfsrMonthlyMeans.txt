@@ -1,0 +1,385 @@
+Notes on CFSR dataset
+
+ - 01/28/2012 from email from bob dattore
+
+    In ds093.2, the monthly mean dataset, we did not make any modifications, but NCEP did not encode the statistical processing fields
+    (octets 47-58 and 59-70) according to the GRIB2 standard.  Instead, they did their own thing, which is described here:
+    http://dss.ucar.edu/datasets/ds093.2/docs/time_ranges.html.
+
+    ds093.2 CFSR Time Range Specification
+    NCEP does not follow the GRIB2 standard to indicate the statistical processing time range for the CFSR monthly means.
+    Instead, they specify octets 47-58 and 59-70 in Product Template 4.8 as follows:
+
+    Octet(s)	Description
+        47	From NCEP Code Table 4.10
+        48	Should be ignored
+        49	Should be ignored
+        50-53	Number of grids used in the average
+        54	Should be ignored
+        55-58	This is "P2" from the GRIB1 format
+        59	From NCEP Code Table 4.10
+        60	Should be ignored
+        61	Should be ignored
+        62-65	This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+        66	Should be ignored
+        67-70	Should be ignored
+
+    It is unlikely that current GRIB decoders will understand this time range specification, so the times and product types
+    for the grids may appear as something very different than what they should. One alternative is to convert the grids to GRIB1 format.
+
+ -01/28/2012 notes
+
+   so for template 8, the following are affected by octets >= 47 :   TimeInterval[] readTimeIntervals().
+   so the time unit is ok:
+         47: Statistical process == 193 (table 4.10: Average of N forecasts)
+
+   special handling:
+      55-58: This is "P2" from the GRIB1 format
+      62-65: This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+
+ -01/28/2012 an example from this dataset:
+
+    File=G:/nomads/cfsr/monthly/200808/flxf01.gdas.200808.grb2 (0)
+      Parameter=Momentum flux, u-component
+      ReferenceDate=2008-08-01T00:00:00.000Z
+      ForecastDate=2008-10-01T13:00:00.000Z
+      TimeInterval=(2008-09-26T07:00:00.000Z,2008-10-01T13:00:00.000Z)
+
+    Grib2Pds{ id=2-17 template=8, forecastTime= 0 timeUnit=1 }
+       Grib2Pds8: endInterval=2008-10-01T13:00:00.000Z
+      TimeInterval: statProcessType= 205, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 124, timeIncrementUnit= 1, timeIncrement=1
+      TimeInterval: statProcessType= 205, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 1, timeIncrementUnit= 1, timeIncrement=0
+
+
+    4.8) Product definition template 4.8 - average, accumulation and/or extreme values or other statistically-processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval
+      1:                                                                                 PDS length == 70
+      5:                                                                                    Section == 4
+      6:                                                Number of coordinates values after Template == 0
+      8:                                                         Product Definition Template Number == 8
+     10:                                                                         Parameter category == 2
+     11:                                                                           Parameter number == 17
+     12:                                                                 Type of generating process == 2 (table 4.3: Forecast)
+     13:                   Background generating process identifier (defined by originating centre) == 0 (table ProcessId: Table ProcessId code 0 not found)
+     14:         Analysis or forecast generating process identifier (defined by originating centre) == 82 (table ProcessId: Analysis from GDAS (Global Data Assimilation System))
+     15:                                                  Hours after reference time of data cutoff == 0
+     17:                                                Minutes after reference time of data cutoff == 0
+     18:                                                            Indicator of unit of time range == 1 (table 4.4: Hour)
+     19:                                                 Forecast time in units defined by octet 18 == 0
+     23:                                                                Type of first fixed surface == 1 (table 4.5: Ground or water surface)
+     24:                                                        Scale factor of first fixed surface == 0
+     25:                                                        Scaled value of first fixed surface == 0
+     29:                                                               Type of second fixed surface == 255 (table 4.5: Missing)
+     30:                                                       Scale factor of second fixed surface == 0
+     31:                                                       Scaled value of second fixed surface == 0
+     35:                                                Year - time of end of overall time interval == 2008
+     37:                                               Month - time of end of overall time interval == 10
+     38:                                                 Day - time of end of overall time interval == 1
+     39:                                                Hour - time of end of overall time interval == 13
+     40:                                              Minute - time of end of overall time interval == 0
+     41:                                              Second - time of end of overall time interval == 0
+     42: n - number of time range specifications describing the time intervals used to calculate the statistically-processed field == 2
+     43:                                 Total number of data values missing in statistical process == 0
+     47: Statistical process used to calculate the processed field from the field at each time increment during the time range == 205 (table 4.10: Average of forecast averages)
+     48:        Type of time increment between successive fields used in the statistical processing == 1 (table 4.11: Successive times processed have same forecast time, start time of forecast is incremented)
+     49:         Indicator of unit of time for time range over which statistical processing is done == 1 (table 4.4: Hour)
+     50: Length of the time range over which statistical processing is done, in units defined by the previous octet == 124
+     54:             Indicator of unit of time for the increment between the successive fields used == 1 (table 4.4: Hour)
+     55:           Time increment between successive fields, in units defined by the previous octet == 1
+     59:                                      As octets 47 to 58, next innermost step of processing == -9999
+     71: Additional time range specifications, included in accordance with the value of n. Contents as octets 47 to 58, repeated as necessary == -9999
+
+2/20/2012
+
+- Apply http://dss.ucar.edu/datasets/ds093.2/docs/time_ranges.html to records in CFSR MM. SHow in Grib2-collection-show processed record:
+
+    File=G:/nomads/cfsr/monthly/200808/diabf01.gdas.200808.00Z.grb2 (0)
+      Parameter=Long-Wave Radiative Heating Rate (LWHR)
+      Level=100.000000/100.000000 Pa; level name =  (Pressure)
+      Time Unit=1 Hour ;Stat=AverageAvg-24hourIntv
+      ReferenceDate=2008-08-01T00:00:00.000Z
+      ForecastDate=2008-08-02T09:00:00.000Z
+      TimeInterval=(2008-08-01T00:00:00.000Z,2008-08-02T09:00:00.000Z)
+
+    Grib2Pds{ id=5-194 template=8, forecastTime= 0 timeUnit=1 }
+       Grib2Pds8: endInterval=null
+      TimeInterval: statProcessType= 197, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 31, timeIncrementUnit= 1, timeIncrement=1
+      TimeInterval: statProcessType= 197, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 1, timeIncrementUnit= 1, timeIncrement=0
+
+    CFSR MM special encoding=
+      (47) Code Table 4.10 = 197
+      (59) Code Table 4.10 = 197
+      Num vals in average  = 31
+      Grib1 P1             = 1
+      Grib1 P2 minus P1    = 1
+
+- Description of Stat=197
+     // Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
+     // Reference time is the start time of the first forecast,
+     // other forecasts at 24-hour intervals. Number in Ave = number of forecast used
+
+  It appears that this is
+    ReferenceDate=2008-08-01T00:00:00.000Z
+    start = 1
+    end = 2
+
+  although bob may be misinterpreting:
+     62-65	This is "P2 minus P1"; P1 and P2 are fields from the GRIB1 format
+  perhaps its just P2 ?
+
+-   NCAR http://dss.ucar.edu/datasets/ds093.2/
+    "CFSR monthly atmospheric, oceanic and land surface output products are available at 0.5, 1.0, and 2.5 degree horizontal
+    resolutions as 6-hourly diurnal monthly means (00Z, 06Z, 12Z, and 18Z) and regular monthly means."
+
+- trying to seperate the diurnal from regular monthly.
+  regular: G:/nomads/cfsr/monthly/200808/.*200808.grb2
+
+  File=G:/nomads/cfsr/monthly/200808/diabf01.gdas.200808.grb2 (0)
+    Parameter=Pressure (PRES)
+    Level=0.000000/0.000000 null; level name =  (Surface)
+    Time Unit=1 Hour ;Stat=AverageNforecasts
+    ReferenceDate=2008-08-01T00:00:00.000Z
+    ForecastDate=2008-08-06T15:00:00.000Z
+    TimeInterval=(2008-08-01T00:00:00.000Z,2008-08-06T15:00:00.000Z)
+
+  Grib2Pds{ id=3-0 template=8, forecastTime= 1 timeUnit=1 }
+     Grib2Pds8: endInterval=null
+    TimeInterval: statProcessType= 193, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 124, timeIncrementUnit= 1, timeIncrement=6
+    TimeInterval: statProcessType= 205, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 5, timeIncrementUnit= 1, timeIncrement=0
+
+  CFSR MM special encoding=
+    (47) Code Table 4.10 = 193
+    (59) Code Table 4.10 = 205
+    Num vals in average  = 124
+    Grib1 P1             = 6
+    Grib1 P2 minus P1    = 5
+
+- http://nomads.ncdc.noaa.gov/docs/CFSRR-KnownDataIssues.pdf
+
+    CFS Reanalysis Monthly Mean
+     - The Verification time encoded in Section 4 Octets 35-41 are zeroes.
+     - The num_in_avg, or the count of the number of points (6hr cycles) averaged within the respective monthly average,
+       is encoded in Section 4 Octet 53, possibly 32 bits: 50-53.
+     - Section 4 Octet 58 (possibly 32 bits: 55-58) is the length of the averaging period per unit.
+       For cycle fractions, this is 24, for complete monthly averages, it is 6.
+       The product of this and the num_in_avg {above} should always equal the total number of hours in a respective month.
+     - Section 4 Octet 65 is the hours skipped between each calculation component.
+     - The original form of these files, as output from NCEP computers, is GRIB1 format, many of these issues cropped up
+       when the data was converted from GRIB1 to GRIB2 for considerable storage and transmission savings.  Regardless
+       of being in GRIB2 format, they still suffer deficiencies of GRIB1 file metadata.
+
+ example for regular monthly:
+
+     File=G:/nomads/cfsr/monthly/200808/ipvhnl.gdas.200808.grb2 (44)
+       Parameter=Temperature (TMP)
+       Level=0.000000/0.000000 null; level name =  (Surface)
+       Time Unit=1 Hour ;Stat=AverageNanalysis
+       ReferenceDate=2008-08-01T00:00:00.000Z
+       ForecastDate=2008-08-06T16:00:00.000Z
+       TimeInterval=(2008-08-01T00:00:00.000Z,2008-08-06T16:00:00.000Z)
+
+     Grib2Pds{ id=0-0 template=8, forecastTime= 0 timeUnit=1 }
+        Grib2Pds8: endInterval=null
+       TimeInterval: statProcessType= 194, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 124, timeIncrementUnit= 1, timeIncrement=6
+       TimeInterval: statProcessType= 0, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 6, timeIncrementUnit= 1, timeIncrement=0
+
+     CFSR MM special encoding (NCAR)
+       (47) Code Table 4.10 = 194
+       (50-53) N in avg     = 124
+       (55-58) Grib1 P2     = 6
+       (59) Code Table 4.10 = 0
+       (62-65) P2 minus P1  = 6
+
+     CFSR MM special encoding (Swank)
+       (55-58) length of avg period per unit                     = 6
+       (62-65) hours skipped between each calculation component  = 6
+       nhours in month 744 should be  = 744
+
+ example for diurnal monthly
+
+   File=G:/nomads/cfsr/monthly/200808/ipvl01.gdas.200808.12Z.grb2 (0)
+     Parameter=Pressure (PRES)
+     Level=0.000000/0.000000 null; level name =  (Surface)
+     Time Unit=1 Hour ;Stat=AverageNforecasts
+     ReferenceDate=2008-08-01T12:00:00.000Z
+     ForecastDate=2008-08-04T18:00:00.000Z
+     TimeInterval=(2008-08-01T12:00:00.000Z,2008-08-04T18:00:00.000Z)
+
+   Grib2Pds{ id=3-0 template=8, forecastTime= 1 timeUnit=1 }
+      Grib2Pds8: endInterval=null
+     TimeInterval: statProcessType= 193, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 31, timeIncrementUnit= 1, timeIncrement=24
+     TimeInterval: statProcessType= 0, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 23, timeIncrementUnit= 1, timeIncrement=0
+
+   CFSR MM special encoding (NCAR)
+     (47) Code Table 4.10 = 193
+     (50-53) N in avg     = 31
+     (55-58) Grib1 P2     = 24
+     (59) Code Table 4.10 = 0
+     (62-65) P2 minus P1  = 23
+
+   CFSR MM special encoding (Swank)
+     (55-58) length of avg period per unit                     = 24
+     (62-65) hours skipped between each calculation component  = 23
+     nhours in month 744 should be  = 744
+
+ guess:
+   the "regular" monthly mean is the average value for that month = average of the 4 diurnal means.
+   the "diurnal" means are the average values in the interval, not the instantaneous values, so this does match the CF example.
+     whats troubling is i dont see a "six hour" interval anywhere.
+
+- possible CF representation:
+
+    dimensions:
+      time=4;
+      nv=2;
+
+     variables:
+      float precipitation(time,lat,lon);
+        precipitation:long_name="surface air temperature";
+        precipitation:cell_methods="time: sum within days time: mean over days";
+        precipitation:units="K";
+
+     double time(time);
+        time:climatology="climatology_bounds";
+        time:units="days since 2008-01-01";
+
+     double climatology_bounds(time,nv);
+
+    data:
+      time="2008-08-01T03:00Z", "2008-08-01T09:00Z", "2008-08-01T15:00Z", "2008-08-01T21:00Z" ;
+
+      climatology_bounds="2008-08-01T00:00Z",  "2008-08-31T06:00Z",
+                         "2008-08-01T06:00Z",  "2008-08-31T12:00Z",
+                         "2008-08-01T12:00Z",  "2008-08-31T18:00Z",
+                         "2008-08-01T18:00Z",  "2008-08-31T24:00Z" ;
+
+  there seem to be 2 elements:
+
+      1) the time coordinate or time interval coordinate
+
+      2) the length of time the statistic is applied (here - 1 month or 31 days)
+
+  one apparently infers the gap between intervals.
+
+02/20/2012 standard MM
+  G:/nomads/cfsr/monthly/200808/diabf01.gdas.200808.grb2
+
+  has a single surface pressure record with statType = 193
+    <description>Average of N forecasts (or initialized analyses); each product has forecast period of P1 (P1=0 for initialized analyses);
+    products have reference times at intervals of P2, beginning at the given reference time.</description>
+
+  Grib2Pds{ id=3-0 template=8, forecastTime= 1 timeUnit=1 }
+     Grib2Pds8: endInterval=null
+    TimeInterval: statProcessType= 193, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 124, timeIncrementUnit= 1, timeIncrement=6
+    TimeInterval: statProcessType= 205, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 5, timeIncrementUnit= 1, timeIncrement=0
+
+  CFSR MM special encoding (NCAR)
+    (47) Code Table 4.10 = 193
+    (50-53) N in avg     = 124
+    (55-58) Grib1 P2     = 6
+    (59) Code Table 4.10 = 205
+    (62-65) P2 minus P1  = 5
+
+  CFSR MM special encoding (Swank)
+    (55-58) length of avg period per unit                     = 6
+    (62-65) hours skipped between each calculation component  = 5
+    nhours in month 744 should be  = 744
+
+  all other are on 37 pressure levels with statProcessType= 205
+    <description>Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
+    Reference time is the start time of the first forecast, other forecasts at 6-hour intervals.
+    Number in Ave = number of forecast used</description>
+
+    Grib2Pds{ id=2-211 template=8, forecastTime= 0 timeUnit=1 }
+       Grib2Pds8: endInterval=null
+      TimeInterval: statProcessType= 205, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 124, timeIncrementUnit= 1, timeIncrement=1
+      TimeInterval: statProcessType= 205, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 1, timeIncrementUnit= 1, timeIncrement=0
+
+    CFSR MM special encoding (NCAR)
+      (47) Code Table 4.10 = 205
+      (50-53) N in avg     = 124
+      (55-58) Grib1 P2     = 1
+      (59) Code Table 4.10 = 205
+      (62-65) P2 minus P1  = 1
+
+    CFSR MM special encoding (Swank)
+      (55-58) length of avg period per unit                     = 1
+      (62-65) hours skipped between each calculation component  = 1
+      nhours in month 124 should be  = 744
+
+      note 124 * 6 = 744 makes me think that "length of avg period per unit" should be 6 ??
+
+
+ 02/20/2012 diurnal MM
+    G:/nomads/cfsr/monthly/200808/diabf01.gdas.200808.06Z.grb2
+
+    has a single surface pressure record with statType = 193
+
+    Grib2Pds{ id=3-0 template=8, forecastTime= 1 timeUnit=1 }
+       Grib2Pds8: endInterval=null
+      TimeInterval: statProcessType= 193, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 31, timeIncrementUnit= 1, timeIncrement=24
+      TimeInterval: statProcessType= 197, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 23, timeIncrementUnit= 1, timeIncrement=0
+
+    CFSR MM special encoding (NCAR)
+      (47) Code Table 4.10 = 193
+      (50-53) N in avg     = 31
+      (55-58) Grib1 P2     = 24
+      (59) Code Table 4.10 = 197
+      (62-65) P2 minus P1  = 23
+
+    CFSR MM special encoding (Swank)
+      (55-58) length of avg period per unit                     = 24
+      (62-65) hours skipped between each calculation component  = 23
+      nhours in month 744 should be  = 744
+
+
+  all other are on 37 pressure levels with statProcessType= 197
+    <description>Average of forecast averages. P1 = start of averaging period. P2 = end of averaging period.
+    Reference time is the start time of the first forecast, other forecasts at 24-hour intervals.
+    Number in Ave = number of forecast used</description>
+
+    Grib2Pds{ id=1-213 template=8, forecastTime= 0 timeUnit=1 }
+       Grib2Pds8: endInterval=null
+      TimeInterval: statProcessType= 197, timeIncrementType= 1, timeRangeUnit= 1, timeRangeLength= 31, timeIncrementUnit= 1, timeIncrement=1
+      TimeInterval: statProcessType= 197, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 1, timeIncrementUnit= 1, timeIncrement=0
+
+    CFSR MM special encoding (NCAR)
+      (47) Code Table 4.10 = 197
+      (50-53) N in avg     = 31
+      (55-58) Grib1 P2     = 1
+      (59) Code Table 4.10 = 197
+      (62-65) P2 minus P1  = 1
+
+    CFSR MM special encoding (Swank)
+      (55-58) length of avg period per unit                     = 1
+      (62-65) hours skipped between each calculation component  = 1
+      nhours in month 31 should be  = 744
+
+   Note that standard MM has "other forecasts at 6-hour intervals"
+   Note that diurnal MM has "other forecasts at 24-hour intervals"
+   I guess they are referring to the skip?
+
+   How to encode? standard MM is just the monthly average, although maybe the intervals need to be considered ??
+
+   looking at all dmm (G:/nomads/cfsr/monthly/200808/.*Z.grb2)
+
+   statType
+        0: count = 92288
+        1: count = 5040
+      193: count = 33344
+      194: count = 5280
+      195: count = 480
+      197: count = 119664
+      255: count = 384
+
+   looking at all standard mm (G:/nomads/cfsr/monthly/200808/.*200808.grb2)
+
+    statType
+         0: count = 21812
+       193: count = 8336
+       194: count = 1320
+       204: count = 288
+       205: count = 32268
+       255: count = 96
+
+
+

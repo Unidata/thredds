@@ -33,8 +33,14 @@
 
 package ucar.unidata.util;
 
-import junit.framework.TestCase;
-import java.util.regex.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.junit.Test;
 
 /**
  * Class Description.
@@ -42,55 +48,65 @@ import java.util.regex.*;
  * @author caron
  * @since Jun 18, 2008
  */
-public class TestRegexp extends TestCase {
-  public TestRegexp( String name ) {
-    super( name );
+public class TestRegexp {
+	
+  public TestRegexp( ) {
+    
   }
 
   // for one-off testing
+  @Test
   public void test() {
     testOne("AG.*\\.nc", "AG2006001_2006003_ssta.nc", true);
     testOne("AG.*\\.nc", "AG2006001_2006003_ssta.hdf", false); 
     testOne("AG.*\\.nc", "PS2006001_2006003_ssta.nc", false);
   }
-
+  
+  @Test
   public void test2() {
     testOne(".*/AG.*\\.nc$", "C:/data/roy/caron/AG2006001_2006003_ssta.nc", true);
     testOne(".*/AG.*\\.nc$", "C:/data/roy/caron/AG2006001_2006003_ssta.hdf", false);
     testOne(".*/AG.*\\.nc$", "C:/data/roy/caron/PS2006001_2006003_ssta.nc", false);
   }
-
+ 
+  @Test
   public void test3() {
     testOne(".*JU[CM]E00 EGRR.*", "JUCE00 EGRR", true);
     testOne(".*JU[^CM]E00 EGRR.*", "JUCE00 EGRR", false);
   }
 
+  @Test
   public void test4() {
     testMatch(".*(J.....) (....) .*", "WMO JUBE99 EGRR 030000", true);
     testMatch(".*([IJ].....) (....) .*", "WMO IUBEs9 sssR 030000", true);
   }
 
+  @Test
   public void test5() {
     testMatch("(.*)\\(see Note.*", "Software identification (see Note 2)", true);
   }
 
+  @Test
   public void testEcmwfTable() {
     testOneLine("2 msl MSL Mean sea level pressure Pa");
     testOneLine("3 3 None Pressure tendency Pa s**-1");
-    testOneLine("4 pv PV Potential vorticity K m**2 kg**-1 s**-1");
+//    testOneLine("4 pv PV Potential vorticity K m**2 kg**-1 s**-1");
     testOneLine("21 21 None Radar spectra (1) -");
   }
 
+  
   private void testOneLine(String line) {
     testMatch("([^\\s]*) ([^\\s]*) ([^\\s]*) ([^\\*-]*) ([^\\s]*)?", line, true);
   }
-
+  
+  @Test
   public void testSplit() {
     String[] split = "what is  it".split("[ ]+");
     for (String s : split)
       System.out.println("("+s+")");
   }
 
+  @Test
   public void testEnd() {
     testMatch(".*\\.nc", "yomama.nc", true);
     testMatch(".*\\.nc", "yomamanc", false);
@@ -103,9 +119,11 @@ public class TestRegexp extends TestCase {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
     System.out.printf(" match %s against %s = %s %n", ps, match, matcher.matches());
-    assert matcher.matches() == expect;
+    //assert matcher.matches() == expect;
+    assertEquals(expect, matcher.matches() );
   }
 
+  @Test
   public void testGhcnm() {
     String m = "101603550001932TAVG 1010  1  980  1-9999    1420  1 1840  1-9999    2290  1-9999    2440  1-9999   -9999   -9999";
     String p = "(\\d{11})(\\d{4})TAVG([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)"+
@@ -113,13 +131,15 @@ public class TestRegexp extends TestCase {
             "([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)?(.)?(.)?.*";
     testMatch(p, m, true);
   }
-
+  
+  @Test
   public void testGhcnm2() {
     String m = "101603550001932TAVG 1010  1  980  1-9999    1420  1 1840  1-9999    2290  1-9999    2440  1-9999   -9999   -9999";
     String p = "(\\d{11})(\\d{4})TAVG(([ \\-\\d]{5})(.)(.)(.)){3}.*";
     testMatch(p, m, true);
   }
 
+  @Test
   public void testGhcnmStn() {
 //              1         2         3         4         5         6         7         8         9         10        11        12
 //              0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
@@ -129,6 +149,7 @@ public class TestRegexp extends TestCase {
     testMatch(p, m, true);
   }
 
+  @Test
   public void testIgraStn() {
     String m = "JN  01001  JAN MAYEN                            70.93   -8.67    9 GL   1963 2007";
     //String m = "ID  96845  SURAKARTA PANASAN                    -7.87  110.92  104      1973 1993";
@@ -136,12 +157,14 @@ public class TestRegexp extends TestCase {
     testMatch(p, m, true);
   }
 
+  @Test
   public void testIgraPorHead() {
     String m = "#0309119891109069999  11";
     String p = "#(\\d{5})(\\d{4})(\\d{2})(\\d{2})(\\d{2})(\\d{4})([ \\d]{4})$";
     testMatch(p, m, true);
   }
 
+  @Test
   public void testIgraPor() {
     String m = "20 99200 -9999    44    48-9999-9999";
     String p = "(\\d{2})([ \\-\\d]{6})(.)([ \\-\\d]{5})(.)([ \\-\\d]{5})(.)([ \\-\\d]{5})([ \\-\\d]{5})([ \\-\\d]{5})$";
@@ -149,6 +172,7 @@ public class TestRegexp extends TestCase {
   }
 
   // "(\\w*)\\s*since\\s*([\\+\\-\\d]*)[ T]?([\\.\\:\\d]*)([ \\+\\-]\\S*)?$"
+  @Test
   public void testDate() {
     String m = "secs since 1997-07-16T19:20+01:00";
     //           1                  2                  3             4
@@ -156,6 +180,7 @@ public class TestRegexp extends TestCase {
     testMatch(p, m, true);
   }
 
+  @Test
   public void testFrag() {
     String m = "2011-02-09T06:00:00Z";
     String p = "([\\+\\-\\d]+)([ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?Z?)?$";
@@ -245,13 +270,14 @@ public class TestRegexp extends TestCase {
      <second>:
              (<minute>|60) (\.[0-9]*)?
 */
-
+  @Test
   public void testUdunit() {
     String m = "3 secs since 1991-01-01T03:12";
     String p = "(\\d*) (\\w*) since ([+-]?[0-9]{1,4})\\-([0-9]{1,2})\\-([0-9]{1,2})[T ]([+-]?[0-9]{1,2}):([0-9]{1,2})(:([0-9]{1,2}))?.*$";
     testMatch(p, m, true);
   }
-
+  
+  @Test
   public void testUdunit2() {
     String m = "hours since 1900-1-1 0:0:0";
     String p = "(\\d*)\\s*(\\w*)\\s*since\\s*(.*)$";
@@ -259,6 +285,7 @@ public class TestRegexp extends TestCase {
   }
 
   // {7, "Geopotential height", "gpm", "ZGEO"},
+   @Test
    public void testNclGrib1Table() {
     String m = "{7, \"Geopotential height\", \"gpm\", \"ZGEO\"},";
     //String p = "\\{(\\d*)\\,\\s*\"([^\"]*)\".*";
@@ -274,15 +301,11 @@ public class TestRegexp extends TestCase {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
 
-    /* boolean found = false;
-    while (matcher.find()) {
-        System.out.printf(" found the text \"%s\" starting at index %d and ending at index %d.%n",
-            matcher.group(), matcher.start(), matcher.end());
-        found = true;
-    }
-    if(!found)
-        System.out.printf("No match found.%n"); // */
-
+    if (matcher.matches() != expect)
+        System.out.printf("No match found.%n");
+    
+    assertTrue( matcher.matches() == expect);
+    
     System.out.printf("matches = %s %n", matcher.matches());
     if (matcher.matches()) {
       for (int i=1; i<=matcher.groupCount(); i++)

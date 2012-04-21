@@ -115,6 +115,9 @@ public interface IOServiceProvider {
   public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
+  public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
+         throws java.io.IOException, ucar.ma2.InvalidRangeException;
+
   /**
    * Allows reading sections of nested variables
    * @param cer section specification : what data is wanted

@@ -40,7 +40,7 @@ import java.io.File;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
- * TestSuite that runs all nj22 unit tests uing only local (to svn tree) files.
+ * TestSuite that runs all nj22 unit tests using only local (to svn tree) files.
  *
  */
 public class TestLocal {
@@ -69,12 +69,12 @@ public class TestLocal {
     }
   }
 
-  public static junit.framework.Test suite ( ) {
+  /* public static junit.framework.Test suite ( ) {
 
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();
-    suite.addTest( ucar.ma2.TestMA2.suite());
+    //suite.addTest( ucar.ma2.TestMA2.suite());
     suite.addTest( ucar.nc2.TestLocalNC2.suite());
     suite.addTest( ucar.nc2.units.TestUnitsAll.suite());
 
@@ -103,32 +103,11 @@ public class TestLocal {
   }
 
   static private void checkLeaks() {
-    for (String filename : RandomAccessFile.getOpenFiles()) {
-      System.out.println(" open= " + filename);
-    }
-  }
+          for (String filename : RandomAccessFile.getOpenFiles()) {
+            System.out.println(" open= " + filename);
+          }
+        }
 
-  static public boolean closeEnough( double d1, double d2) {
-    if (d1 < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
-  }
-
-  static public boolean closeEnough( double d1, double d2, double tol) {
-    if (d1 < tol) return Math.abs(d1-d2) < tol;
-    return Math.abs((d1-d2)/d1) < tol;
-  }
-
-  static public boolean closeEnough( float d1, float d2) {
-    if (d1 < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
-  }
-
-  static public void showMem(String where) {
-    Runtime runtime = Runtime.getRuntime();
-    System.out.println(where+ " memory free = " + runtime.freeMemory() * .001 * .001 +
-        " total= " + runtime.totalMemory() * .001 * .001 +
-        " max= " + runtime.maxMemory() * .001 * .001 +
-        " MB");
-  }
+  */
 
 }

@@ -33,6 +33,8 @@
 package ucar.nc2.ui.grid;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -40,6 +42,7 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 
 import ucar.unidata.util.Format;
+import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
@@ -54,11 +57,7 @@ import java.util.*;
  */
 
 public class GridRenderer {
-  public static final int HORIZ_MinMaxType = 0;
-  public static final int VERT_MinMaxType = 1;
-  public static final int VOL_MinMaxType = 2;
-  public static final int HOLD_MinMaxType = 3;
-  public static final int USER_MinMaxType = 4;
+  public static enum MinMaxType {horiz, log, hold};
 
   private PreferencesExt store;
 
@@ -67,9 +66,10 @@ public class GridRenderer {
   private boolean drawGridLines = true;
   private boolean drawContours = false;
   private boolean drawContourLabels = false;
+  private boolean isNewField = true;
 
   private ColorScale cs = null;
-  private int dataMinMaxType;
+  private MinMaxType dataMinMaxType = MinMaxType.horiz;
   private ProjectionImpl drawProjection = null;    // current drawing Projection
   private ProjectionImpl dataProjection = null;    // current GridDatatype Projection
   private GridDatatype orgGrid = null;
@@ -77,7 +77,6 @@ public class GridRenderer {
 
   // data stuff
   private Array dataH, dataV;
-  //private Index imaH, imaV;
   private int wantLevel = -1, wantSlice = -1, wantTime = -1, horizStride = 1;   // for next draw()
   private int wantRunTime = -1, wantEnsemble = -1;
   private int lastLevel = -1, lastTime = -1, lastSlice = -1, lastStride = -1;   // last data read
@@ -91,18 +90,14 @@ public class GridRenderer {
   private LatLonProjection projectll;       // special handling for LatLonProjection
 
   // working objects to minimize excessive gc
-  //private StringBuffer sbuff = new StringBuffer(200);
   private LatLonPointImpl ptL1 = new LatLonPointImpl();
   private LatLonPointImpl ptL2 = new LatLonPointImpl();
   private ProjectionPointImpl ptP1 = new ProjectionPointImpl();
   private ProjectionPointImpl ptP2 = new ProjectionPointImpl();
   private ProjectionRect[] rects = new ProjectionRect[2];
-  private Point pt = new Point();
 
   private final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
   private boolean debugPathShape = false, debugArrayShape = false, debugPts = false;
-
-  private final double TOLERANCE = 1.0e-5;
 
   /**
    * constructor
@@ -130,16 +125,10 @@ public class GridRenderer {
   }
 
   /**
-   * get the ColorScale data min/max type
-   */
-  public int getDataMinMaxType() {
-    return dataMinMaxType;
-  }
-
-  /**
    * set the ColorScale data min/max type
+   * @param type MinMaxType
    */
-  public void setDataMinMaxType(int type) {
+  public void setDataMinMaxType(MinMaxType type) {
     if (type != dataMinMaxType) {
       dataMinMaxType = type;
       colorScaleChanged = true;
@@ -161,6 +150,7 @@ public class GridRenderer {
     this.lastGrid = null;
     dataProjection = grid.getProjection();
     makeStridedGrid();
+    isNewField = true;
   }
 
   public Array getCurrentHorizDataSlice() {
@@ -627,21 +617,21 @@ public class GridRenderer {
 
   // set colorscale limits, missing data
   private void setColorScaleParams() {
-    if (dataMinMaxType == HOLD_MinMaxType)
+       if (dataMinMaxType == MinMaxType.hold && !isNewField)
       return;
+    isNewField = false;
 
-    Array dataArr;
-    if (dataMinMaxType == HORIZ_MinMaxType)
-      dataArr = makeHSlice(stridedGrid, wantLevel, wantTime, wantEnsemble, wantRunTime);
-    else
-      dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
+    Array dataArr = makeHSlice(stridedGrid, wantLevel, wantTime, wantEnsemble, wantRunTime);
+
+    //else
+    //  dataArr = makeVSlice(stridedGrid, wantSlice, wantTime, wantEnsemble, wantRunTime);
 
     if (dataArr != null) {
-      MAMath.MinMax minmax = stridedGrid.hasMissingData() ?
-              stridedGrid.getMinMaxSkipMissingData(dataArr) : MAMath.getMinMax(dataArr);
+      MAMath.MinMax minmax = stridedGrid.hasMissingData() ? stridedGrid.getMinMaxSkipMissingData(dataArr) : MAMath.getMinMax(dataArr);
       cs.setMinMax(minmax.min, minmax.max);
       cs.setGeoGrid(stridedGrid);
     }
+
     dataVolumeChanged = false;
     colorScaleChanged = false;
   }
@@ -755,55 +745,6 @@ public class GridRenderer {
       drawContours(g, dataH.transpose(0, 1), dFromN);
     if (drawGridLines)
       drawGridLines(g);
-
-    // LOOK removed this to allow 2D x, y coordinates 10/29/06
-    /* draw the vertical line indicating current slice
-  gpRun.reset();
-
-  Point2D.Double ptSrc = new Point2D.Double();
-  Point2D.Double ptDest = new Point2D.Double();
-  AffineTransform at = g.getTransform();
-
-  boolean showPts = Debug.isSet("GridRenderer/XORline");
-  if (showPts)
-    System.out.println("GridRenderer/XORline: drawXORline:"+at);
-
-  GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
-  CoordinateAxis xaxis =  geocs.getXHorizAxis();
-  CoordinateAxis1D zaxis = geocs.getVerticalAxis();
-  int nx = (int) xaxis.getSize();
-  if ((zaxis != null) && (xaxis != null) && (wantSlice >=0) && (wantSlice < nx)) {
-    double xval = xaxis.getCoordValue(wantSlice);
-
-    CoordinateAxis1D yaxis = (CoordinateAxis1D) geocs.getYHorizAxis();
-    int ny = (int) yaxis.getSize();
-    int count = 0;
-    for (int i=0; i<ny; i++) {
-      double yval = yaxis.getCoordValue(i);
-      LatLonPoint llp = dataProjection.projToLatLon( xval, yval);
-      ProjectionPoint pt = drawProjection.latLonToProj( llp);
-
-      // workaround for bug in jdk 1.3, coord overflow hangs... fixed in 1.4
-      ptSrc.setLocation( pt.getX(), pt.getY());
-      at.transform( ptSrc, ptDest);
-      if (showPts) System.out.println("  "+ptDest);
-      if ( Math.abs(ptDest.getX()) > Short.MAX_VALUE ||
-          Math.abs(ptDest.getY()) > Short.MAX_VALUE) {
-        if (showPts) System.out.println("  --> skipped ");
-        continue;
-      }
-
-      if (count == 0)
-        gpRun.moveTo( (float) pt.getX(), (float) pt.getY());
-      else
-        gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-      count++;
-    }
-
-    g.setColor(Color.black);
-    if (!Debug.isSet("GridRenderer/XORlineDraw"))
-      g.draw(gpRun);
-  }  */
   }
 
   private void drawGridHoriz(java.awt.Graphics2D g, Array data) {
@@ -829,10 +770,11 @@ public class GridRenderer {
     CoordinateAxis2D xaxis2D = (CoordinateAxis2D) xaxis;
     CoordinateAxis2D yaxis2D = (CoordinateAxis2D) yaxis;
 
-    /* if (geocs.isStaggered()) {
-      drawGridHorizStaggered(g, data, xaxis2D, yaxis2D);
+    String stag = geocs.getHorizStaggerType();
+    if (stag != null && stag.equals(CDM.ARAKAWA_E)) {
+      drawGridHorizRotated(g, data, xaxis2D, yaxis2D);
       return;
-    } */
+    }
 
     ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdges(xaxis2D.getMidpoints());
     ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdges(yaxis2D.getMidpoints());
@@ -910,7 +852,7 @@ public class GridRenderer {
   }
 
 
-  private void drawGridHorizStaggered(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D, CoordinateAxis2D yaxis2D) {
+  private void drawGridHorizRotated(java.awt.Graphics2D g, Array data, CoordinateAxis2D xaxis2D, CoordinateAxis2D yaxis2D) {
     ArrayDouble.D2 edgex = CoordinateAxis2D.makeXEdgesRotated(xaxis2D.getMidpoints());
     ArrayDouble.D2 edgey = CoordinateAxis2D.makeYEdgesRotated(yaxis2D.getMidpoints());
 

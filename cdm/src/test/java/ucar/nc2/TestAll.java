@@ -35,18 +35,12 @@ package ucar.nc2;
 import junit.framework.*;
 import junit.extensions.TestSetup;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileFilter;
 
 import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.TestDiskCacheUtils;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -59,100 +53,9 @@ public class TestAll {
 
   public static long startTime;
 
-  /**
-   * Old test data directory. may have cruft in it
-   * Unidata "//fileserver/data/testdata2" directory.
-   */
-  private static String testdataDir = null;
-
-  /**
-   * New test data directory. do not put temprory files in here. migrate all test data here eventually
-   * Unidata "//fileserver/data/testdata2/cdmUnitTest" directory.
-   */
-  public static String cdmUnitTestDir = null;
-
-  /**
-   * Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
-   */
-  public static String cdmLocalTestDataDir = "src/test/data/";
-
-  /**
-   * Temporary data directory (for writing temporary data).
-   */
-  public static String temporaryLocalDataDir = "target/test/tmp/";
-
-  //////////////////////////////////////////////////////////////////////
-  /** Property name for the path to the Unidata test data directory,
-   * e.g unidata.testdata2.path=//shemp/data/testdata2/
-   * the real directory is at shemp:/data/testdata2
-   */
-  private static String testdataDirPropName ="unidata.testdata.path";
-
-
-  /** Filename of the user property file read from the "user.home" directory
-   * if the "unidata.testdata2.path" and "unidata.upc.share.path" are not
-   * available as system properties. */
-  private static String threddsPropFileName = "thredds.properties";
-
   // TODO all the static stuff below is also in thredds.unidata.testUtil.TestAll, can we unify?
 
-  // Determine how Unidata "/upc/share" directory is mounted
-  // on local machine by reading system or THREDDS property.
-  static {
-    // Check for system property
-    String testdataDirPath = System.getProperty( testdataDirPropName );
-
-    if (testdataDirPath == null )
-    {
-      // Get user property.
-      File userHomeDirFile = new File( System.getProperty( "user.home" ) );
-      File userThreddsPropsFile = new File( userHomeDirFile, threddsPropFileName );
-      if ( userThreddsPropsFile.exists() && userThreddsPropsFile.canRead() )
-      {
-        Properties userThreddsProps = new Properties();
-        try
-        {
-          userThreddsProps.load( new FileInputStream( userThreddsPropsFile ) );
-        }
-        catch ( IOException e )
-        {
-          System.out.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
-        }
-        if ( userThreddsProps != null && ! userThreddsProps.isEmpty() )
-        {
-          if ( testdataDirPath == null )
-            testdataDirPath = userThreddsProps.getProperty( testdataDirPropName );
-        }
-      }
-    }
-
-    // Use default paths if needed.
-    if ( testdataDirPath == null )
-    {
-      System.out.println( "**No \"unidata.testdata.path\"property, defaulting to \"/share/testdata/\"." );
-      testdataDirPath = "/share/testdata/";
-    }
-    // Make sure paths ends with a slash.
-    if ((!testdataDirPath.endsWith( "/")) && !testdataDirPath.endsWith( "\\"))
-      testdataDirPath += "/";
-
-    testdataDir = testdataDirPath;
-    cdmUnitTestDir = testdataDirPath + "cdmUnitTest/";
-
-    File file = new File( cdmUnitTestDir );
-    if ( ! file.exists() || !file.isDirectory() )
-    {
-      System.out.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
-    }
-
-    File tmpDataDir = new File(temporaryLocalDataDir);
-    if ( ! tmpDataDir.exists() )
-    {
-      if ( ! tmpDataDir.mkdirs() )
-      {
-        System.out.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
-      }
-    }
+  /* static {
 
     // Setup for DiskCache
     TestDiskCacheUtils.setupDiskCacheInTmpDir( true );
@@ -160,31 +63,23 @@ public class TestAll {
 
     // Setup for DiskCache2.
     TestDiskCacheUtils.setupDiskCache2WithTmpRootDir();
-  }
+  } */
 
-  public static junit.framework.Test suite ( ) {
+  /* public static junit.framework.Test suite ( ) {
     RandomAccessFile.setDebugLeaks( true);
 
     TestSuite suite= new TestSuite();
 
     suite.addTest( ucar.nc2.TestLocal.suite()); // data in the release
 
-    suite.addTest( ucar.nc2.TestNC2.suite());
-    suite.addTest( ucar.nc2.dataset.TestDataset.suite());  //
-
     // aggregation, no cache
     suite.addTest( ucar.nc2.ncml.TestNcML.suite());
-    suite.addTest( ucar.nc2.ncml.TestNcMLoffsite.suite()); //
-
-    suite.addTest( ucar.nc2.dt.grid.TestGrid.suite()); //
-    suite.addTest( ucar.nc2.ft.TestFeatureDatasets.suite());
-    suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite()); // deprecated, but backwards compatible
 
     suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //
 
     suite.addTest( thredds.catalog.TestCatalogAll.suite()); //
 
-    suite.addTest( ucar.nc2.TestIosp.suite());   //  */
+    suite.addTest( ucar.nc2.TestIosp.suite());   //
 
 
    return new TestSetup(suite) {
@@ -208,7 +103,7 @@ public class TestAll {
         showFilesUsed();
       }
     };
-  }
+  } */
 
   static public void checkLeaks() {
     if (RandomAccessFile.getOpenFiles().size() > 0) {
@@ -221,32 +116,11 @@ public class TestAll {
     }
   }
 
-  static private void showFilesUsed() {
+  /* static private void showFilesUsed() {
     System.out.println("All Files Used:");
     for (String s : RandomAccessFile.getAllFiles()) {
       System.out.printf(" %s%n", s);
     }
-  }
-
-  static public boolean closeEnough( double d1, double d2) {
-    if (Math.abs(d1) < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
-  }
-
-  static public boolean closeEnough( double d1, double d2, double tol) {
-    if (Math.abs(d1) < tol) return Math.abs(d1-d2) < tol;
-    double pd = (d1-d2)/d1;
-    return Math.abs(pd) < tol;
-  }
-
-  static public double howClose( double d1, double d2) {
-    double pd = (d1-d2)/d1;
-    return Math.abs(pd);
-  }
-
-  static public boolean closeEnough( float d1, float d2) {
-    if (Math.abs(d1) < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
-    return Math.abs((d1-d2)/d1) < 1.0e-5;
   }
 
   static public void showMem(String where) {
@@ -255,7 +129,7 @@ public class TestAll {
         " total= " + runtime.totalMemory() * .001 * .001 +
         " max= " + runtime.maxMemory() * .001 * .001 +
         " MB");
-  }
+  }  */
 
   /* usage:
     TestAll.readAllDir(dirName, new FileFilter() {
@@ -341,88 +215,6 @@ public class TestAll {
     }
 
     return 1;
-  }
-
-
-  ////////////////////////////////////////////////
-
-  public interface Act {
-    /**
-     * @param filename file to act on
-     * @return count
-     * @throws IOException  on IO error
-     */
-    int doAct( String filename) throws IOException;
-  }
-
-  public static class FileFilterWant implements FileFilter {
-    String[] suffixes;
-    public FileFilterWant(String suffixes) {
-      this.suffixes = suffixes.split(" ");
-    }
-
-    @Override
-    public boolean accept(File file) {
-      for (String s: suffixes)
-        if (file.getPath().endsWith(s)) return true;
-      return false;
-    }
-  }
-
-  public static class FileFilterNoWant implements FileFilter {
-    String[] suffixes;
-    public FileFilterNoWant(String suffixes) {
-      this.suffixes = suffixes.split(" ");
-    }
-
-    @Override
-    public boolean accept(File file) {
-      for (String s: suffixes)
-        if (file.getPath().endsWith(s)) return false;
-      return true;
-    }
-  }
-
-  public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
-    return actOnAll( dirName, ff, act, true);
-  }
-
-  /**
-   * @param dirName recurse into this directory
-   * @param ff for files that pass this filter, may be null
-   * @param act perform this acction
-   * @return count
-   * @throws IOException on IO error
-   */
-  public static int actOnAll(String dirName, FileFilter ff, Act act, boolean recurse) throws IOException {
-    int count = 0;
-
-    System.out.println("---------------Reading directory "+dirName);
-    File allDir = new File( dirName);
-    File[] allFiles = allDir.listFiles();
-    if (null == allFiles) {
-      System.out.println("---------------INVALID "+dirName);
-      return count;
-    }
-    List<File> flist = Arrays.asList(allFiles);
-    Collections.sort(flist);
-
-    for (File f : flist) {
-      String name = f.getAbsolutePath();
-      if (f.isDirectory())
-        continue;
-      if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude"))
-        count += act.doAct(name);
-    }
-
-    if (!recurse) return count;
-    
-    for (File f : allFiles) {
-      if (f.isDirectory() && !f.getName().equals("exclude"))
-        count += actOnAll(f.getAbsolutePath(), ff, act);
-    }
-
-    return count;
   }
 
   ////////////////////////////////////////////////

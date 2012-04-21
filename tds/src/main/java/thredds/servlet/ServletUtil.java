@@ -52,6 +52,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 public class ServletUtil {
+  public static final org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   public static final String CONTENT_TEXT = "text/plain; charset=utf-8";
 

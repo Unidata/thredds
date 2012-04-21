@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.ma2.*;
+import ucar.nc2.util.Misc;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -94,7 +95,7 @@ public class TestReadSection extends TestCase {
     while (s1.hasNext()) {
       double d1 = s1.getDoubleNext();
       double d2 = s2.getDoubleNext();
-      assert TestLocal.closeEnough( d1, d2) : count+" "+d1 +" != "+d2;
+      assert Misc.closeEnough(d1, d2) : count+" "+d1 +" != "+d2;
       count++;
     }
 
@@ -158,7 +159,7 @@ public class TestReadSection extends TestCase {
     while (s1.hasNext()) {
       double d1 = s1.getDoubleNext();
       double d2 = s2.getDoubleNext();
-      assert TestLocal.closeEnough( d1, d2) : count+" "+d1 +" != "+d2;
+      assert Misc.closeEnough( d1, d2) : count+" "+d1 +" != "+d2;
       count++;
     }
 

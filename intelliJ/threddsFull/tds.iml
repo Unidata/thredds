@@ -2,7 +2,23 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
-      <configuration />
+      <configuration>
+        <fileset id="web: application context" profiles="" autodetected="true" />
+        <fileset id="web: admin servlet context" profiles="" autodetected="true" />
+        <fileset id="web: cdmrFeature servlet context" profiles="" autodetected="true" />
+        <fileset id="web: cdmvalidator servlet context" profiles="" autodetected="true" />
+        <fileset id="web: cdmRemote servlet context" profiles="" autodetected="true" />
+        <fileset id="web: root servlet context" profiles="" autodetected="true" />
+        <fileset id="web: NetcdfSubsetService servlet context" profiles="" autodetected="true" />
+        <fileset id="web: catalogService servlet context" profiles="" autodetected="true" />
+        <fileset id="web: test servlet context" profiles="" autodetected="true" />
+        <fileset id="web: wms servlet context" profiles="" autodetected="true" />
+        <fileset id="web: dqc servlet context" profiles="" autodetected="true" />
+        <fileset id="web: ncss servlet context" profiles="" autodetected="true" />
+        <fileset id="web: catalogGen servlet context" profiles="" autodetected="true" />
+        <fileset id="web: metadata servlet context" profiles="" autodetected="true" />
+        <fileset id="web: serverInfo servlet context" profiles="" autodetected="true" />
+      </configuration>
     </facet>
     <facet type="web" name="tds">
       <configuration>
@@ -15,7 +31,6 @@
         <sourceRoots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
         </sourceRoots>
-        <context-artifact name="tds:war exploded" />
       </configuration>
     </facet>
     <facet type="web" name="dqcServletRedirect">
@@ -52,6 +67,7 @@
     <content url="file://$MODULE_DIR$/../../tds">
       <sourceFolder url="file://$MODULE_DIR$/../../tds/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../tds/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../tds/src/test_framework/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../../tds/content" />
       <excludeFolder url="file://$MODULE_DIR$/../../tds/doc" />
       <excludeFolder url="file://$MODULE_DIR$/../../tds/target" />
@@ -272,6 +288,24 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/org.springframework.beans-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/org.springframework.aop-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../tds/src/test/resources" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

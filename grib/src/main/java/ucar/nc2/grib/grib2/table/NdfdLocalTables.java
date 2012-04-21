@@ -49,6 +49,12 @@ public class NdfdLocalTables extends Grib2Customizer {
     init();
   }
 
+  @Override
+  public String getTablePath(int discipline, int category, int number) {
+    if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
+    return this.getClass().getName();
+  }
+
     @Override
   public List getParameters() {
     List<Grib2Parameter> result = new ArrayList<Grib2Parameter>();

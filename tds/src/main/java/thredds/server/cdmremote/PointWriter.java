@@ -32,6 +32,7 @@
 
 package thredds.server.cdmremote;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.point.writer.WriterCFPointCollection;
@@ -285,7 +286,9 @@ public class PointWriter {
     WriterNetcdf() throws IOException {
       super(null);
       netcdfResult = diskCache.createUniqueFile("CdmrFeature", ".nc");
-      cfWriter = new WriterCFPointCollection(netcdfResult.getAbsolutePath(), "Extracted data from TDS Feature Collection " + fd.getLocation());
+      List<Attribute> atts = new ArrayList<Attribute>();
+      atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS Feature Collection " + fd.getLocation() ));
+      cfWriter = new WriterCFPointCollection(netcdfResult.getAbsolutePath(), atts );
     }
 
     public void header() {

@@ -33,6 +33,8 @@
 package ucar.nc2.dods;
 
 import junit.framework.*;
+import org.junit.*;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -54,12 +56,9 @@ import java.io.*;
     } types;
 } SimpleStructure;*/
 
-public class TestDODSStructureScalars extends TestCase {
+public class TestDODSStructureScalars {
 
-  public TestDODSStructureScalars( String name) {
-    super(name);
-  }
-
+  @org.junit.Test
   public void testStructureRead() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
 
@@ -73,6 +72,7 @@ public class TestDODSStructureScalars extends TestCase {
     checkSD( sdata);
   }
 
+  @Test
   public void testRead() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
 
@@ -171,6 +171,7 @@ public class TestDODSStructureScalars extends TestCase {
 
   }
 
+  @Test
   public void testScalarRead() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
 
@@ -180,6 +181,7 @@ public class TestDODSStructureScalars extends TestCase {
     scalarRead((Structure) v);
   }
 
+  @Test
   public void testScalarReadUncached() throws IOException {
     DODSNetcdfFile.setPreload( false);
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
@@ -332,6 +334,7 @@ public class TestDODSStructureScalars extends TestCase {
     assert str.equals("http://www.opendap.org") || str.equals("http://www.dods.org") : str;
   }
 
+  @Test
   public void testDODSwithDataset() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.04");
     NetcdfDataset ds = new  NetcdfDataset( dodsfile, false);

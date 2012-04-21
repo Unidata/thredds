@@ -738,7 +738,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
     while (n < len) {
       int count = this.read(b, off + n, len - n);
       if (count < 0) {
-        throw new EOFException();
+        throw new EOFException("Reading "+location+" at "+filePosition+" file length = "+length());
       }
       n += count;
     }

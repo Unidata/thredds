@@ -138,9 +138,9 @@ public abstract class GribCollection implements FileCacheable {
   // set by the builder
   public int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
-  public List<String> filenames;
-  public List<GroupHcs> groups;
-  public List<Parameter> params;
+  public List<String> filenames;  // must be kept in order
+  public List<GroupHcs> groups; // must be kept in order
+  public List<Parameter> params;  // used ??
 
   // LOOK need thread safety
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file
@@ -166,7 +166,7 @@ public abstract class GribCollection implements FileCacheable {
   public File getIndexFile() {
     if (indexFile == null) {
       File f = new File(directory, name + IDX_EXT);
-      indexFile = DiskCache.getFile(f.getPath(), false);
+      indexFile = DiskCache.getFileStandardPolicy(f.getPath());
     }
     return indexFile;
   }
@@ -597,7 +597,7 @@ public abstract class GribCollection implements FileCacheable {
       sb.append(", ensIdx=").append(ensIdx);
       sb.append(", recordsPos=").append(recordsPos);
       sb.append(", recordsLen=").append(recordsLen);
-      sb.append(", group=").append(group);
+      sb.append(", group=").append(group.getId());
       sb.append(", ntimes=").append(ntimes);
       sb.append(", nverts=").append(nverts);
       sb.append(", nens=").append(nens);

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	- DispatcherServlet application context for TDS root servlet.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+  <bean id="anyXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
+    <property name="catalogSupportOnly" value="false"/>
+    <property name="htmlView" value="false"/>
+
+    <property name="supportedMethods" value="GET,HEAD"/>
+  </bean>
+
+  <bean id="anyHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
+    <property name="catalogSupportOnly" value="false"/>
+    <property name="htmlView" value="true"/>
+
+    <property name="supportedMethods" value="GET,HEAD"/>
+  </bean>
+
+  <bean id="catalogXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
+    <property name="catalogSupportOnly" value="true"/>
+    <property name="htmlView" value="false"/>
+
+    <property name="supportedMethods" value="GET,HEAD"/>
+  </bean>
+
+  <bean id="catalogHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
+    <property name="catalogSupportOnly" value="true"/>
+    <property name="htmlView" value="true"/>
+
+    <property name="supportedMethods" value="GET,HEAD"/>
+  </bean>
+
+  <bean id="remoteCatalogController" class="thredds.server.catalogservice.RemoteCatalogServiceController">
+    <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
+
+    <property name="supportedMethods" value="GET"/>
+  </bean>
+
+  <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+      <value>
+        /**/*.xml=anyXmlController
+        /**/*.html=anyHtmlController
+        /remoteCatalogService=remoteCatalogController
+        /catalogServices=remoteCatalogController <!-- For backwards compatibility only. -->
+        /remoteCatalogValidation.html=remoteCatalogController
+      </value>
+    </property>
+  </bean>
+
+  <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+    <property name="cache" value="true"/>
+    <property name="order" value="1"/>
+    <property name="location" value="/WEB-INF/view.xml"/>
+  </bean>
+
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+  </bean>
+
+</beans>

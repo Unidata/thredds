@@ -80,7 +80,9 @@ public class WRFConvention extends CoordSysBuilder {
     } else {
       att = ncfile.findGlobalAttribute("GRIDTYPE");
       if (att == null) return false;
-      if (!att.getStringValue().equalsIgnoreCase("C")) return false;
+      if (!att.getStringValue().equalsIgnoreCase("C") &&  
+          !att.getStringValue().equalsIgnoreCase("E")) 
+        return false;
     }
 
     att = ncfile.findGlobalAttribute("MAP_PROJ");
@@ -91,6 +93,7 @@ public class WRFConvention extends CoordSysBuilder {
 
   private double centerX = 0.0, centerY = 0.0;
   private ProjectionCT projCT = null;
+  private boolean gridE = false;
 
   public WRFConvention() {
     this.conventionName = "WRF";
@@ -164,10 +167,13 @@ map_proj =  1: Lambert Conformal
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
     if (null != ds.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
 
+    Attribute att = ds.findGlobalAttribute("GRIDTYPE");
+    gridE = att != null && att.getStringValue().equalsIgnoreCase("E");
+    
     // kludge in fixing the units
     List<Variable> vlist = ds.getVariables();
     for (Variable v : vlist) {
-      Attribute att = v.findAttributeIgnoreCase(CDM.UNITS);
+      att = v.findAttributeIgnoreCase(CDM.UNITS);
       if (att != null) {
         String units = att.getStringValue();
         v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
@@ -175,7 +181,7 @@ map_proj =  1: Lambert Conformal
     }
 
     // make projection transform
-    Attribute att = ds.findGlobalAttribute("MAP_PROJ");
+    att = ds.findGlobalAttribute("MAP_PROJ");
     int projType = att.getNumericValue().intValue();
     boolean isLatLon = false;
 
@@ -191,6 +197,7 @@ map_proj =  1: Lambert Conformal
         parseInfo.format("Projection type 203 - expected GLAT variable not found\n");
       } else {
         glat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+        if (gridE) glat.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glat.setDimensions("south_north west_east");
         glat.setCachedData(convertToDegrees(glat), false);
         glat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
@@ -201,6 +208,7 @@ map_proj =  1: Lambert Conformal
         parseInfo.format("Projection type 203 - expected GLON variable not found\n");
       } else {
         glon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+        if (gridE) glon.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         glon.setDimensions("south_north west_east");
         glon.setCachedData(convertToDegrees(glon), false);
         glon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
@@ -242,7 +250,7 @@ map_proj =  1: Lambert Conformal
           // Thanks to Heiko Klein for figuring out WRF Stereographic
           double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
           double lat0 = (Double.isNaN(centralLat)) ? lat2 : centralLat;  // ?? 7/20/2010
-          double scaleFactor = (1 + Math.abs(Math.sin(Math.toRadians(lat1)))) / 2.;  // R Schmunk 9/10/07
+          double scaleFactor = (1 + Math.abs( Math.sin(Math.toRadians(lat1)))) / 2.;  // R Schmunk 9/10/07
           // proj = new Stereographic(lat2, lon0, scaleFactor);
           proj = new Stereographic(lat0, lon0, scaleFactor);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
@@ -315,6 +323,7 @@ map_proj =  1: Lambert Conformal
       if (projCT != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, projCT);
         v.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
+        if (gridE) v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
         ds.addVariable(null, v);
       }
     }
@@ -461,12 +470,12 @@ map_proj =  1: Lambert Conformal
     //System.out.println(" originX= "+originX+" startx= "+startx);
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoX coordinate from DX attribute");
-    ds.setValues(v, nx, startx, dx);
+    v.setValues(nx, startx, dx);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
     if (!axisName.equals(dim.getName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
 
-    //ADD: is staggered grid being dealt with?
+    if (gridE) v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
     return v;
   }
 
@@ -478,11 +487,12 @@ map_proj =  1: Lambert Conformal
     //System.out.println(" originY= "+originY+" starty= "+starty);
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, axisName, DataType.DOUBLE, dim.getName(), "km", "synthesized GeoY coordinate from DY attribute");
-    ds.setValues(v, ny, starty, dy);
+    v.setValues(ny, starty, dy);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
     if (!axisName.equals(dim.getName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getName()));
-    //ADD: is staggered grid being dealt with?
+
+    if (gridE) v.addAttribute(new Attribute(_Coordinate.Stagger, CDM.ARAKAWA_E));
     return v;
   }
 
@@ -680,54 +690,6 @@ map_proj =  1: Lambert Conformal
     WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
     return (VerticalCT) builder.makeCoordinateTransform(ds, null);
   }
-
-  /* private boolean isStaggered(CoordinateAxis axis) {
-  	if (axis == null) return false;
-  	String name = axis.getName();
-  	if (name == null) return false;
-  	if (name.endsWith("stag")) return true;
-  	return false;
-  }
-
-  private class WRFEtaBuilder extends AbstractCoordTransBuilder {
-    private CoordinateSystem cs;
-
-    WRFEtaBuilder(CoordinateSystem cs) {
-      this.cs = cs;
-    }
-
-    public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable v) {
-      VerticalCT.Type type = VerticalCT.Type.WRFEta;
-      VerticalCT ct = new VerticalCT(type.toString(), conventionName, type, this);
-
-      ct.addParameter(new Parameter("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
-      ct.addParameter(new Parameter(WRFEta.PerturbationGeopotentialVariable, "PH"));
-      ct.addParameter(new Parameter(WRFEta.BaseGeopotentialVariable, "PHB"));
-      ct.addParameter(new Parameter("pressure formula", "pressure(x,y,z) = P(x,y,z) + PB(x,y,z)"));
-      ct.addParameter(new Parameter(WRFEta.PerturbationPressureVariable, "P"));
-      ct.addParameter(new Parameter(WRFEta.BasePressureVariable, "PB"));
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredX, ""+isStaggered(cs.getXaxis())));
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredY, ""+isStaggered(cs.getYaxis())));
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredZ, ""+isStaggered(cs.getZaxis())));
-      ct.addParameter(new Parameter("eta", ""+cs.getZaxis().getName()));
-
-      parseInfo.append(" added vertical coordinate transform = "+type+"\n");
-      return ct;
-    }
-
-    public String getTransformName() {
-      return "WRF_Eta";
-    }
-
-    public TransformType getTransformType() {
-      return TransformType.Vertical;
-    }
-
-    public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-      return new WRFEta(ds, timeDim, vCT);
-    }
-
-  } */
 
   public static void main(String args[]) throws IOException, InvalidRangeException {
     NetcdfFile ncd = NetcdfDataset.openFile("R:/testdata/wrf/WRFOU~C@", null);

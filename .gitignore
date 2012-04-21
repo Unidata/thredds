@@ -17,3 +17,21 @@ atlassian-ide-plugin.xml
 
 # Ignore Dreamweaver balogna
 _notes
+
+# Ignore eclipse project files
+.classpath
+.project
+.settings/
+**/.classpath
+**/.project
+**/.settings/
+**/bin/
+*~
+
+# Ignore default content directory for mock servlets
+/tds/src/content/
+
+#More testing stuff
+/tds/src/test/data/thredds/cataloggen/config/
+/tds/src/test/data/thredds/logs/
+/opendap/src/test/data/test.*.*

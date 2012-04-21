@@ -45,6 +45,7 @@ import java.util.Date;
 /**
  * A Coordinate System for gridded data. Assume:
  * <ul>
+ * <li> always a product set</li>
  * <li> X and Y are 1 or 2 dimensional
  * <li> T is 1 or 2 dimensional. The 2D case is that it depends on runtime.
  * <li> We can create Dates out of the T and RT coordinate values.

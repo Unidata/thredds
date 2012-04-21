@@ -41,7 +41,6 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib1.tables.Grib1WmoTimeType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -687,10 +686,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     public String getName() {
       if (param == null) return null;
-      //TimeCoord tc = timeCoords.get(timeIdx);
-      //String intvName = tc.getTimeIntervalName();
-      return cust.makeVariableName(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
-              pds.getLevelType(), pds.getTimeRangeIndicator(), null);
+      return cust.makeVariableName(pds);
     }
 
     public String getUnit() {

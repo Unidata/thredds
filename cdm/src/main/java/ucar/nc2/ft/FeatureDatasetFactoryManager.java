@@ -44,6 +44,7 @@ import ucar.nc2.ft.point.standard.PointDatasetStandardFactory;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.grid.GridDatasetStandardFactory;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
+import ucar.nc2.ft.swath.SwathDatasetFactory;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.stream.CdmrFeatureDataset;
 
@@ -72,6 +73,8 @@ public class FeatureDatasetFactoryManager {
   // search in the order added
   static {
     registerFactory(FeatureType.ANY_POINT, PointDatasetStandardFactory.class);
+    registerFactory(FeatureType.SWATH, SwathDatasetFactory.class);
+    registerFactory(FeatureType.SWATH, GridDatasetStandardFactory.class); // LOOK - why not use FeatureType[] getFeatureType(
     registerFactory(FeatureType.GRID, GridDatasetStandardFactory.class);
     registerFactory(FeatureType.RADIAL, RadialDatasetStandardFactory.class);
     registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
@@ -324,7 +327,7 @@ public class FeatureDatasetFactoryManager {
     if ((lat != null) && (lat.getSize() <= 1)) return false; // COARDS singletons
     if ((lon != null) && (lon.getSize() <= 1)) return false;
 
-    // hueristics - cant say i like this, multidim point features could eaily violate
+    // hueristics - cant say i like this, multidim point features could easily violate
     return (use.getRankDomain() > 2) && (use.getRankDomain() <= use.getRankRange());
   }
 
@@ -393,9 +396,21 @@ public class FeatureDatasetFactoryManager {
   public static void main(String[] args) throws  IOException {
     String server = "http://motherlode:8080/";
     String dataset = "/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2009-05-13T12:00:00Z";
+    String testFile = "Q:/cdmUnitTest/formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
     Formatter errlog = new Formatter();
-    FeatureDataset fd = FeatureDatasetFactoryManager.open( FeatureType.GRID, server + dataset,  null, errlog );
-    System.out.printf("%s%n", fd);
+    FeatureDataset fd = null;
+
+    //FeatureDataset fd = FeatureDatasetFactoryManager.open( FeatureType.ANY, testFile,  null, errlog );
+    //System.out.printf("ANY = %s%n", fd);
+
+    if (fd == null) {
+      fd = FeatureDatasetFactoryManager.open( FeatureType.SWATH, testFile,  null, errlog );
+      System.out.printf("Swath = %s%n", fd);
+    }
+    if (fd == null) {
+      fd = FeatureDatasetFactoryManager.open( FeatureType.GRID, testFile,  null, errlog );
+      System.out.printf("Grid = %s%n", fd);
+    }
   }
 
 }

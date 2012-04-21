@@ -32,7 +32,7 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -40,12 +40,9 @@ import java.io.*;
 
 /** Test nc2 dods in the JUnit framework. */
 
-public class TestDODSScalars extends TestCase {
+public class TestDODSScalars {
 
-  public TestDODSScalars( String name) {
-    super(name);
-  }
-
+  @Test
   public void testScalar() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.01");
 
@@ -199,6 +196,7 @@ public class TestDODSScalars extends TestCase {
 
   }
 
+  @Test
   public void testStrings() throws IOException, InvalidRangeException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.02");
     Variable v = null;

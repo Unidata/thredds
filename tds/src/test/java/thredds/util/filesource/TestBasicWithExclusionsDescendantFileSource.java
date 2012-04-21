@@ -32,18 +32,19 @@
  */
 package thredds.util.filesource;
 
-import junit.framework.*;
-import org.springframework.util.StringUtils;
-import thredds.TestAll;
-import thredds.util.filesource.BasicWithExclusionsDescendantFileSource;
-import thredds.util.filesource.DescendantFileSource;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import ucar.unidata.util.TestFileDirUtils;
+import junit.framework.TestCase;
+
+import org.springframework.util.StringUtils;
+
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.TestFileDirUtils;
+
+
 
 /**
  * _more_
@@ -63,7 +64,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
   protected void setUp()
   {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.addDirectory( new File( TestAll.temporaryDataDir ), "TestBasicWithExclusionsDescendantFileSource" );
+    tmpDir = TestFileDirUtils.addDirectory( new File( TestDir.temporaryLocalDataDir ), "TestBasicWithExclusionsDescendantFileSource" );
 
     File dir1 = TestFileDirUtils.addDirectory( tmpDir, "dir1" );
     TestFileDirUtils.addFile( dir1, "file1_1" );

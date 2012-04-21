@@ -132,7 +132,7 @@ public class Grib2TablesViewer extends JPanel {
     buttPanel.add(infoButton);
 
     try {
-      java.util.List<Grib2Customizer.GribTableId> tables = Grib2Customizer.getLocalTableIds();
+      java.util.List<Grib2Customizer.GribTableId> tables = Grib2Customizer.getTableIds();
       java.util.List<TableBean> beans = new ArrayList<TableBean>(tables.size());
       for (Grib2Customizer.GribTableId t : tables) {
         beans.add(new TableBean(t));
@@ -167,11 +167,11 @@ public class Grib2TablesViewer extends JPanel {
 
   public void lookForProblems() {
     int total = 0;
-    int dups = 0;
+    int probs = 0;
 
     Formatter f = new Formatter();
 
-    f.format("non-udunits%n");
+    f.format("PROBLEMS with units%n");
     for (Object t : entryTable.getBeans()) {
       Grib2Customizer.Parameter p = ((EntryBean) t).param;
       if (p.getUnit() == null) continue;
@@ -180,18 +180,20 @@ public class Grib2TablesViewer extends JPanel {
         SimpleUnit su = SimpleUnit.factoryWithExceptions(p.getUnit());
         if (su.isUnknownUnit()) {
           f.format("%s '%s' has UNKNOWN udunit%n", p.getId(), p.getUnit());
-          dups++;
+          probs++;
         }
       } catch (Exception ioe) {
         f.format("%s '%s' FAILS on udunit parse%n", p.getId(), p.getUnit());
-        dups++;
+        probs++;
       }
       total++;
     }
-    f.format("%nTotal=%d problems=%d%n%n", total, dups);
+    f.format("%nUNITS: Total=%d problems=%d%n%n", total, probs);
 
     int extra = 0;
-    int conflict = 0;
+    int nameDiffers = 0;
+    int caseDiffers = 0;
+    int unitsDiffer = 0;
     f.format("Conflicts with WMO%n");
     for (Object t : entryTable.getBeans()) {
       Grib2Customizer.Parameter p = ((EntryBean) t).param;
@@ -201,12 +203,17 @@ public class Grib2TablesViewer extends JPanel {
         extra++;
         f.format(" NEW %s%n", p);
       } else if (!p.getName().equals( wmo.getName()) || !p.getUnit().equals( wmo.getUnit())) {
+        boolean nameDiffer = !p.getName().equals( wmo.getName());
+        boolean caseDiffer = nameDiffer && p.getName().equalsIgnoreCase( wmo.getName());
+        if (nameDiffer)  nameDiffers++;
+        if (caseDiffer)  caseDiffers++;
+        if (!p.getUnit().equals( wmo.getUnit())) unitsDiffer++;
+        
         f.format("this=%10s %40s %15s%n", p.getId(), p.getName(), p.getUnit());
         f.format(" wmo=%10s %40s %15s%n%n", wmo.getId(), wmo.getName(), wmo.getUnit());
-        conflict++;
       }
     }
-    f.format("%nConflicts=%d extra=%d%n%n", conflict, extra);
+    f.format("%nWMO differences: nameDiffers=%d caseDiffers=%d, unitsDiffer=%d, extra=%d%n%n", nameDiffers, caseDiffers, unitsDiffer, extra);
 
     infoTA.setText(f.toString());
     infoWindow.show();

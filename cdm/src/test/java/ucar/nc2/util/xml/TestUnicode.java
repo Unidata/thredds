@@ -33,10 +33,7 @@
 
 package ucar.nc2.util.xml;
 
-import ucar.nc2.NetcdfFileWriteable;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
+import ucar.nc2.*;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
@@ -56,9 +53,6 @@ import junit.framework.TestCase;
  */
 public class TestUnicode extends TestCase {
 
-  public TestUnicode(String name) {
-    super(name);
-  }
 
   static public void testCharsets() {
     Map<String,Charset> map = Charset.availableCharsets();
@@ -131,8 +125,8 @@ public class TestUnicode extends TestCase {
     write(helloGreek, "UTF-8");
     //writeFile(lineb, null, "C:/data/unicode/mathOut.txt");
     //writeFile(lineb, "UTF-8", "C:/data/unicode/mathOut8.txt");
-    writeFile(helloGreek, null, "C:/data/unicode/mathOut.html");
-    writeFile(helloGreek, "UTF-8", "C:/data/unicode/mathOut8.html");
+    //writeFile(helloGreek, null, TestLocalNC. "C:/data/unicode/mathOut.html");
+    //writeFile(helloGreek, "UTF-8", "C:/data/unicode/mathOut8.html");
         /*
     System.out.println("\nRussian Char=  ?");
     char[] cline = new char[] {'?','?','?','?','?','?','?','?','?','?','?','?','?','?','?','?','?'};

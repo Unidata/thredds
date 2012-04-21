@@ -49,7 +49,7 @@ import java.util.*;
 import java.io.*;
 
 /**
- * Write ProfileObsDataset in Unidata Station Obs COnvention.
+ * Write ProfileObsDataset in Unidata Obs Convention.
  *
  * @author caron
  */

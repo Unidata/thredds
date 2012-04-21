@@ -584,7 +584,7 @@ public class DatasetViewer extends JPanel {
     }
     else return;
 
-    dataWindow.showIfNotIconified();
+    dataWindow.show();
   }
 
   private Variable getCurrentVariable(BeanTableSorted from) {

@@ -203,7 +203,7 @@ public class SpatialGrid {
   }
 
   /** Find the closest marked cell to the given point
-   * @param pt:  find the closest marked cell to this point
+   * @param pt  find the closest marked cell to this point
    * @return the object associated with the closest cell, or null if none
   */
   public Object findClosest(Point2D pt) {

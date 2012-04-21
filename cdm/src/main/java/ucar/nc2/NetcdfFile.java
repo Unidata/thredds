@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -58,9 +58,9 @@ import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import javax.imageio.spi.ServiceRegistry;
 
 /**
- * HI TOM!
  * Read-only scientific datasets that are accessible through the netCDF API.
  * Immutable after setImmutable() is called. However, reading data is not thread-safe.
  * <p> Be sure to close the file when done, best practice is to enclose in a try/finally block:
@@ -100,7 +100,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   static private ArrayList<IOServiceProvider> registeredProviders = new ArrayList<IOServiceProvider>();
   static protected boolean debugSPI = false, debugCompress = false, showRequest = false;
   static boolean debugStructureIterator = false;
-  static boolean loadWarnings = true;
+  static boolean loadWarnings = false;
 
   static private boolean userLoads = false;
 
@@ -114,7 +114,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    try {
+    /* try {
       registerIOProvider("ucar.nc2.grib.grib2.Grib2Iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
@@ -123,7 +123,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       registerIOProvider("ucar.nc2.grib.grib1.Grib1Iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
-    }
+    } */
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
@@ -134,7 +134,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    try {
+    /* try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider");
       registerIOProvider("ucar.nc2.iosp.grib.GribServiceProvider");
     } catch (Throwable e) {
@@ -145,7 +145,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       registerIOProvider(iosp);
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load resource: " + e);
-    }
+    } */
     try {
       registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
     } catch (Throwable e) {
@@ -212,14 +212,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
 
-    ////////////////////////////////
-    // may have false positives
-    try {
-      registerIOProvider("ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-
     ////////////////////////////////////////////////////////////////////////////////
     // iosps below here are a bit slow in isValidFile() eg needing an exception thrown
     // so they are relegated to the end
@@ -266,6 +258,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
 
+    ////////////////////////////////
+    // may have false positives
+    try {
+      registerIOProvider("ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
 
     userLoads = true;
   }
@@ -528,6 +527,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (N3header.isValidFile(raf)) {
       return true;
     } else {
+      Iterator<IOServiceProvider> iterator = ServiceRegistry.lookupProviders(ucar.nc2.iosp.IOServiceProvider.class);
+      while(iterator.hasNext()) {
+          if (iterator.next().isValidFile(raf)) {
+              return true;
+          }
+      }
       for (IOServiceProvider registeredSpi : registeredProviders) {
         if (registeredSpi.isValidFile(raf))
           return true;
@@ -836,6 +841,24 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       // spi = new ucar.nc2.iosp.hdf5.H5iosp();
 
     } else {
+
+      // look for dynamically loaded IOSPs
+      Iterator<IOServiceProvider> iterator = ServiceRegistry.lookupProviders(IOServiceProvider.class);
+      while(iterator.hasNext()) {
+          IOServiceProvider currentSpi = iterator.next();
+          if (currentSpi.isValidFile(raf)) {
+             Class c = currentSpi.getClass();
+            try {
+                spi = (IOServiceProvider) c.newInstance();
+            } catch (InstantiationException e) {
+                throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor."); // shouldnt happen
+            } catch (IllegalAccessException e) {
+                throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage()); // shouldnt happen
+            }
+            break;
+          }
+      }
+
       // look for registered providers
       for (IOServiceProvider registeredSpi : registeredProviders) {
         if (debugSPI) System.out.println(" try iosp = " + registeredSpi.getClass().getName());
@@ -860,7 +883,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       throw new IOException("Cant read " + location + ": not a valid CDM file.");
     }
 
-    // send before iosp is opened
+    // send iospMessage before the iosp is opened
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 
@@ -869,7 +892,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
 
-    // send after iosp is opened
+    // send iospMessage after iosp is opened
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 
@@ -1087,6 +1110,20 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (v == null) return null;
     }
     return v;
+  }
+  
+  public Variable findVariableByAttribute(Group g, String attName, String attValue) {
+    if (g == null) g = getRootGroup();
+    for (Variable v : variables) {
+      for (Attribute att : v.getAttributes())
+        if (attName.equals(att.getName()) && attValue.equals(att.getStringValue()))
+          return v;
+    }
+    for (Group nested : g.getGroups()) {
+      Variable v = findVariableByAttribute(nested, attName, attValue);
+      if (v != null) return v;
+    }
+    return null;
   }
 
   /**
@@ -1902,7 +1939,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
 
     if (spi == null) {
-      throw new IOException("BAD: missing spi: " + v.getFullName());
+      throw new IOException("spi is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
     }
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());

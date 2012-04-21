@@ -101,8 +101,8 @@ public class TestCrawlableDataset extends TestCase
     String name = "java";
     List results = new ArrayList();
     results.add( "dods" );
-    results.add( "thredds" );
-    results.add( "ucar" );
+    results.add("src/test/java/thredds");
+    results.add("ucar");
 
     checkCrDsChildren( path, name, results );
   }
@@ -110,10 +110,10 @@ public class TestCrawlableDataset extends TestCase
   public void testSrcMainJavaDotDotPath()
   {
     String path = "src/main/java/..";
-    String name = "..";
+    String name = "target/generated-sources";
     List results = new ArrayList();
     results.add( "java" );
-    results.add( "resources" );
+    results.add("resources");
 
     checkCrDsChildren( path, name, results );
   }
@@ -121,7 +121,7 @@ public class TestCrawlableDataset extends TestCase
   public void testSrcMainJavaDotDotSlashDotDotPath()
   {
     String path = "src/main/java/../..";
-    String name = "..";
+    String name = "target/generated-sources";
     List results = new ArrayList();
     results.add( "main" );
     results.add( "test" );

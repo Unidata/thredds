@@ -32,38 +32,36 @@
  */
 package ucar.nc2.grib;
 
-import junit.framework.*;
-
 import java.io.*;
 
-import ucar.nc2.TestAll;
+import org.junit.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.TestDir;
 
 /** Test reading grib files */
 
-public class TestJustReadGrib extends TestCase {
+public class TestJustReadGrib  {
   private boolean show = false;
 
-  public TestJustReadGrib(String name) {
-    super(name);
+
+  @Test
+  public void readGrib1Files() throws Exception {
+    readAllDir( TestDir.cdmUnitTestDir + "formats/grib1", null, false);
   }
 
-  public void testReadGrib1Files() throws Exception {
-    readAllDir( TestAll.cdmUnitTestDir + "formats/grib1", null, false);
+  @Test
+  public void readGrib2Files() throws Exception {
+    readAllDir( TestDir.cdmUnitTestDir + "formats/grib1", null, false);
   }
 
-  public void testReadGrib2Files() throws Exception {
-    readAllDir( TestAll.cdmUnitTestDir + "formats/grib1", null, false);
-  }
-
-  public void testReadMotherloadFiles() throws Exception {
-    readAllDir( TestAll.cdmUnitTestDir + "tds/grib", null, true);
-    readAllDir( TestAll.cdmUnitTestDir + "tds/ncep", null, true);
+  @Test
+  public void readMotherloadFiles() throws Exception {
+    readAllDir( TestDir.cdmUnitTestDir + "tds/ncep", null, true);
   }
 
   void readAllDir(String dirName, String suffix, boolean recurse) throws Exception {
-    TestAll.actOnAll(dirName, new GribFilter(), new GribAct(), recurse);
+    TestDir.actOnAll(dirName, new GribFilter(), new GribAct(), recurse);
   }
 
   class GribFilter implements FileFilter {
@@ -80,7 +78,7 @@ public class TestJustReadGrib extends TestCase {
     }
   }
 
-  class GribAct implements TestAll.Act {
+  class GribAct implements TestDir.Act {
 
     @Override
     public int doAct(String filename) throws IOException {

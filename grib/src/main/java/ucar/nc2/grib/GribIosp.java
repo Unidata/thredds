@@ -45,6 +45,8 @@ import ucar.nc2.ncml.NcMLReader;
  * @since 1/22/12
  */
 public abstract class GribIosp extends AbstractIOServiceProvider {
+  static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
+
   private static final boolean debug = false;
 
   protected FeatureCollectionConfig.GribConfig gribConfig = new FeatureCollectionConfig.GribConfig();

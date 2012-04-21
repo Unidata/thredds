@@ -79,7 +79,7 @@ public abstract class GribIndex {
   };
 
   static public File getIndexFile(String path) {
-    return DiskCache.getFile(path + IDX_EXT, false);
+    return DiskCache.getFileStandardPolicy(path + IDX_EXT);
   }
 
   static public CollectionManager.ChangeChecker getChangeChecker() {

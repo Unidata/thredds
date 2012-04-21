@@ -39,6 +39,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.ma2.*;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.util.Date;
@@ -139,9 +140,9 @@ public class TestAggSynGrid extends TestCase {
         assert data.getElementType() == float.class;
 
         IndexIterator dataI = data.getIndexIterator();
-        assert TestAll.closeEnough(dataI.getDoubleNext(), 41.0);
-        assert TestAll.closeEnough(dataI.getDoubleNext(), 40.0);
-        assert TestAll.closeEnough(dataI.getDoubleNext(), 39.0);
+        assert Misc.closeEnough(dataI.getDoubleNext(), 41.0);
+        assert Misc.closeEnough(dataI.getDoubleNext(), 40.0);
+        assert Misc.closeEnough(dataI.getDoubleNext(), 39.0);
       } catch (IOException io) {}
 
     }
@@ -200,7 +201,7 @@ public class TestAggSynGrid extends TestCase {
           for (int k=0; k<shape[2]; k++) {
             double val = data.getDouble( tIndex.set(i, j, k));
             // System.out.println(" "+val);
-            assert TestAll.closeEnough(val, 100*i + 10*j + k) : val;
+            assert Misc.closeEnough(val, 100*i + 10*j + k) : val;
           }
 
       } catch (IOException io) {
@@ -228,7 +229,7 @@ public class TestAggSynGrid extends TestCase {
           for (int k=0; k<shape[2]; k++) {
             double val = data.getDouble( tIndex.set(i, j, k));
             //System.out.println(" "+val);
-            assert TestAll.closeEnough(val, 100*(i+origin[0]) + 10*j + k) : val;
+            assert Misc.closeEnough(val, 100*(i+origin[0]) + 10*j + k) : val;
           }
 
       } catch (InvalidRangeException io) {

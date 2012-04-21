@@ -32,29 +32,57 @@
  */
 package thredds.servlet;
 
-import thredds.catalog.*;
-import thredds.crawlabledataset.CrawlableDataset;
-import thredds.crawlabledataset.CrawlableDatasetFile;
-import thredds.crawlabledataset.CrawlableDatasetDods;
-import thredds.cataloggen.ProxyDatasetHandler;
-import thredds.server.config.TdsContext;
-import thredds.util.PathAliasReplacement;
-import thredds.util.StartsWithPathAliasReplacement;
-import thredds.util.TdsPathUtils;
-import thredds.util.RequestForwardUtils;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateType;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.ServletException;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import javax.annotation.Resource;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import thredds.catalog.DataRootConfig;
+import thredds.catalog.InvCatalog;
+import thredds.catalog.InvCatalogFactory;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvCatalogRef;
+import thredds.catalog.InvDataset;
+import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.catalog.InvDatasetFmrc;
+import thredds.catalog.InvDatasetImpl;
+import thredds.catalog.InvDatasetScan;
+import thredds.catalog.InvProperty;
+import thredds.catalog.InvService;
+import thredds.cataloggen.ProxyDatasetHandler;
+import thredds.crawlabledataset.CrawlableDataset;
+import thredds.crawlabledataset.CrawlableDatasetDods;
+import thredds.crawlabledataset.CrawlableDatasetFile;
+import thredds.server.config.TdsContext;
+import thredds.util.PathAliasReplacement;
+import thredds.util.RequestForwardUtils;
+import thredds.util.StartsWithPathAliasReplacement;
+import thredds.util.TdsPathUtils;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -70,12 +98,14 @@ import ucar.unidata.util.StringUtil2;
  *
  * @author caron
  */
-public class DataRootHandler {
+@Component
+public final class DataRootHandler implements InitializingBean{
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
+  //Spring bean so --> there will be one per context (by default is a singleton in the Spring realm) 
   static private DataRootHandler singleton = null;
 
   /**
@@ -110,7 +140,9 @@ public class DataRootHandler {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private final TdsContext tdsContext;
+  @Autowired
+  private TdsContext tdsContext;
+  //private final TdsContext tdsContext;
   private boolean staticCache;
 
   // @GuardedBy("this") LOOK should be able to access without synchronization
@@ -125,22 +157,28 @@ public class DataRootHandler {
 
   private List<ConfigListener> configListeners = new ArrayList<ConfigListener>();
 
+  //private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
+  private List<PathAliasReplacement> dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
+
   /**
    * Constructor.
    * Managed bean - dont do nuttin else !!
    *
    * @param tdsContext
    */
-  public DataRootHandler(TdsContext tdsContext) {
+  private DataRootHandler(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
   }
+  
+  private DataRootHandler(){
+	  
+  }
 
-  private PathAliasReplacement contentPathAliasReplacement = null;
-  private PathAliasReplacement iddDataRootPathAliasReplacement = null;
-  private List<PathAliasReplacement> fullDataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
-  private List<PathAliasReplacement> dataRootLocAliasExpanders = Collections.emptyList();
+  //private PathAliasReplacement contentPathAliasReplacement2 = null;
+  //private PathAliasReplacement iddDataRootPathAliasReplacement2 = null;
+  //private List<PathAliasReplacement> dataRootLocAliasExpanders2 = Collections.emptyList();
 
-  public void setDataRootLocationAliasExpanders(List<PathAliasReplacement> dataRootLocAliasExpanders) {
+  /* public void setDataRootLocationAliasExpanders(List<PathAliasReplacement> dataRootLocAliasExpanders) {
     if (dataRootLocAliasExpanders != null)
       this.dataRootLocAliasExpanders = new ArrayList<PathAliasReplacement>(dataRootLocAliasExpanders);
     this.updateFullDataRootLocationAliasExpanders(this.dataRootLocAliasExpanders);
@@ -148,36 +186,57 @@ public class DataRootHandler {
 
   public List<PathAliasReplacement> getDataRootLocationAliasExpanders() {
     return Collections.unmodifiableList(this.dataRootLocAliasExpanders);
+  } */
+
+  /* private void updateFullDataRootLocationAliasExpanders(List<PathAliasReplacement> list) {
+    this.dataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
+    this.dataRootLocationAliasExpanders.add(this.contentPathAliasReplacement);
+    if (iddDataRootPathAliasReplacement != null)
+      this.dataRootLocationAliasExpanders.add(this.iddDataRootPathAliasReplacement);
+    if (list != null && !list.isEmpty())
+      this.dataRootLocationAliasExpanders.addAll(list);
+  } */
+  
+  //Set method must be called so annotation at method level rather than property level
+  @Resource(name="dataRootLocationAliasExpanders")
+  public void setDataRootLocationAliasExpanders(Map<String, String> aliases) {
+    for (String key : aliases.keySet()) {
+      String value = aliases.get(key);
+      if (value == null || value.isEmpty()) continue;
+      dataRootLocationAliasExpanders.add( new StartsWithPathAliasReplacement("${"+key+"}", value));
+    }
   }
+  
 
   //////////////////////////////////////////////
 
-  public void init() {
+  //public void init() {
+  public void afterPropertiesSet() {
+	  
+	//Registering first the AccessConfigListener
+	registerConfigListener( new RestrictedAccessConfigListener() );
+	
     // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
     String contentReplacementPath = StringUtils.cleanPath(tdsContext.getPublicDocFileSource().getFile("").getPath());
-    this.contentPathAliasReplacement = new StartsWithPathAliasReplacement("content", contentReplacementPath);
+    dataRootLocationAliasExpanders.add( new StartsWithPathAliasReplacement("content", contentReplacementPath));
 
-    String iddDataRootReplacementPath = ThreddsConfig.get("DataRoots.idd", null);
+    /* String iddDataRootReplacementPath = ThreddsConfig.get("DataRoots.idd", null);
     if (iddDataRootReplacementPath != null) {
       iddDataRootReplacementPath = StringUtils.cleanPath(iddDataRootReplacementPath);
       this.iddDataRootPathAliasReplacement = new StartsWithPathAliasReplacement("${iddDataRoot}", iddDataRootReplacementPath);
     }
-    this.updateFullDataRootLocationAliasExpanders(null);
+    this.updateFullDataRootLocationAliasExpanders(null);  */
 
     //this.contentPath = this.tdsContext.
     this.initCatalogs();
 
     this.makeDebugActions();
     DatasetHandler.makeDebugActions();
-  }
-
-  private void updateFullDataRootLocationAliasExpanders(List<PathAliasReplacement> list) {
-    this.fullDataRootLocationAliasExpanders = new ArrayList<PathAliasReplacement>();
-    this.fullDataRootLocationAliasExpanders.add(this.contentPathAliasReplacement);
-    if (iddDataRootPathAliasReplacement != null)
-      this.fullDataRootLocationAliasExpanders.add(this.iddDataRootPathAliasReplacement);
-    if (list != null && !list.isEmpty())
-      this.fullDataRootLocationAliasExpanders.addAll(list);
+    
+	//Set the instance
+	DataRootHandler.setInstance(this);
+    
+    
   }
 
   private void getExtraCatalogs(List<String> extraList) {
@@ -361,8 +420,8 @@ public class DataRootHandler {
 
   private InvCatalogFactory getCatalogFactory(boolean validate) {
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(validate);
-    if (!this.fullDataRootLocationAliasExpanders.isEmpty())
-      factory.setDataRootLocationAliasExpanders(this.fullDataRootLocationAliasExpanders);
+    if (!this.dataRootLocationAliasExpanders.isEmpty())
+      factory.setDataRootLocationAliasExpanders(this.dataRootLocationAliasExpanders);
     return factory;
   }
 
@@ -465,7 +524,7 @@ public class DataRootHandler {
         addRoot(fc);
         needsCache = true;
 
-        // not a DatasetScan or InvDatasetFmrc
+        // not a DatasetScan or InvDatasetFmrc or InvDatasetFeatureCollection
       } else if (invDataset.getNcmlElement() != null) {
         DatasetHandler.putNcmlDataset(invDataset.getUrlPath(), invDataset);
       }

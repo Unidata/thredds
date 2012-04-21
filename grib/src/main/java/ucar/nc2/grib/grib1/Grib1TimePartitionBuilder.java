@@ -55,7 +55,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
   public static final String MAGIC_START = "Grib1Partition0Index";
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1TimePartitionBuilder.class);
-  static private final int versionTP = 4;
+  //static private final int versionTP = 4;
   static private final boolean trace = false;
 
   // called by tdm
@@ -401,7 +401,7 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
     try {
       //// header message
       raf.write(MAGIC_START.getBytes("UTF-8"));
-      raf.writeInt(versionTP);
+      raf.writeInt(version);
       raf.writeLong(0); // no record section
 
       GribCollectionProto.GribCollectionIndex.Builder indexBuilder = GribCollectionProto.GribCollectionIndex.newBuilder();
@@ -522,10 +522,6 @@ public class Grib1TimePartitionBuilder extends Grib1CollectionBuilder {
 
   ///////////////////////////////////////////////////////////////////////////
   // reading ncx
-
-  protected int getVersion() {
-    return versionTP;
-  }
 
   @Override
   protected boolean readPartitions(GribCollectionProto.GribCollectionIndex proto) {

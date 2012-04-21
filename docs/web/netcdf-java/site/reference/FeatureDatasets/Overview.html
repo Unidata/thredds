@@ -80,7 +80,7 @@ public enum <strong>ucar.nc2.constants.FeatureType</strong> {
 }</pre>
  
  <h3>Opening a FeatureDataset from a URL or file path</h3>
-<p>One cal also get a FeatureDataset by calling </p>
+<p>One can also get a FeatureDataset by calling </p>
 <pre>  FeatureDataset <strong>FeatureDatasetFactoryManager.open</strong>( FeatureType type, String location, ucar.nc2.util.CancelTask task, java.util.Formatter errlog);
 </pre>
 <p>where location is a URL (eg OPeNDAP or cdmremote) or a local file pathname (see <a href="../DatasetUrls.html">here</a> for details).  </p>
@@ -124,9 +124,9 @@ public enum <strong>ucar.nc2.constants.FeatureType</strong> {
       if (fdataset != null) fdataset.close();
     }
 </pre>
-<p>Note that these are the only feature types implemented so far.</p>
-<h3>Point FeatureDatasets</h3>
-<p>A <strong>FeatureDatasetPoint</strong> simply contains a list of <strong>FeatureCollections</strong>: </p>
+<p>&nbsp;</p>
+<h2>Point FeatureDatasets</h2>
+<p>A <strong>FeatureDatasetPoint</strong>  contains a list of <strong>FeatureCollections</strong>: </p>
 <pre>  public interface <strong>ucar.nc2.ft.FeatureDatasetPoint</strong> extends FeatureDataset {<br />     List&lt;FeatureCollection&gt; <strong>getPointFeatureCollectionList</strong>();<br />  }</pre>
 <p>All of the specialization is in the subclass of <strong>FeatureCollection</strong>, and you typically cast to process the data: </p>
 <pre>
@@ -173,7 +173,7 @@ public enum <strong>ucar.nc2.constants.FeatureType</strong> {
 </ul>
 <hr width="100%" />
 <address>
-<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May, 2011
+<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April, 2012
 </address>
 </body>
 </html>

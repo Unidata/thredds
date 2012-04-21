@@ -41,6 +41,7 @@ import ucar.grib.GribResourceReader;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.wmo.CommonCodeTable;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -163,13 +164,62 @@ public class Grib1Customizer implements GribTables {
    * Note that the duration period and units abbreviation were added in NCL version 4.2.0.a028 in order to handle GRIB files with
      more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
      names relative to earlier versions.
+
+   Variable name is:
+
+    VAR_%d-%d-%d-%d[_L%d][_layer][_I%s_S%d]
+
+    where:
+     %d-%d-%d-%d = center-subcenter-tableVersion-paramNo
+     L%d = level type  (octet 10 of PDS)
+     _layer = added if its a vertical layer
+     S%d = stat type (octet 21 of PDS)
   */
 
-  public String makeVariableName(int center, int subcenter, int version, int paramNo,
-                                 int levelType, int intvType, String intvName) {
+  public String makeVariableName(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+    return makeVariableNameFromTables(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
+            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName);
+  }
+
+  public String makeVariableName(Grib1SectionProductDefinition pds) {
+    return makeVariableNameFromTables(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
+             pds.getLevelType(), isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(), null);
+  }
+
+  public String makeVariableNameFromRecord(GribCollection gribCollection, GribCollection.VariableIndex vindex) {
+    return makeVariableNameFromRecord(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.tableVersion, vindex.parameter,
+            vindex.levelType, vindex.isLayer, vindex.intvType, vindex.intvName);
+  }
+
+  private String makeVariableNameFromRecord(int center, int subcenter, int tableVersion, int paramNo,
+                                 int levelType, boolean isLayer, int intvType, String intvName) {
     Formatter f = new Formatter();
 
-    Grib1Parameter param = getParameter(center, subcenter, version, paramNo);
+    f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);
+
+    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+      f.format("_L%d", levelType); // code table 4.5
+      if (isLayer) f.format("_layer");
+    }
+
+    if (intvType >= 0) {
+      if (intvName != null) {
+        if (intvName.equals("Mixed_intervals"))
+          f.format("_Imixed");
+        else
+          f.format("_I%s", intvName);
+      }
+      f.format("_S%s", intvType);
+    }
+
+    return f.toString();
+  }
+
+  private String makeVariableNameFromTables(int center, int subcenter, int version, int paramNo,
+                                 int levelType, boolean isLayer, int intvType, String intvName) {
+    Formatter f = new Formatter();
+
+    Grib1Parameter param = getParameter(center, subcenter, version, paramNo); // code table 2
     if (param == null) {
       f.format("VAR%d-%d-%d-%d", center, subcenter, version, paramNo);
     } else {
@@ -181,14 +231,14 @@ public class Grib1Customizer implements GribTables {
 
     if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
       f.format("_%s", getLevelNameShort(levelType)); // code table 3
-      // if (vindex.isLayer) f.format("_layer"); LOOK ? assumes that cant have two variables on same vertical type, differing only by isLayer
+      if (isLayer) f.format("_layer");
     }
 
     if (intvType >= 0) {
-      GribStatType stype = Grib1WmoTimeType.getStatType(intvType);
-      if (stype != null) {
+      GribStatType stat = Grib1WmoTimeType.getStatType(intvType);
+      if (stat != null) {
         if (intvName != null) f.format("_%s", intvName);
-        f.format("_%s", stype.name());
+        f.format("_%s", stat.name());
       } else {
         if (intvName != null) f.format("_%s", intvName);
         f.format("_%d", intvType);
@@ -239,6 +289,7 @@ public class Grib1Customizer implements GribTables {
     return new Grib1ParamTime(this, pds);
   }
 
+  // code table 5
   public String getTimeTypeName(int timeRangeIndicator) {
     return Grib1WmoTimeType.getTimeTypeName(timeRangeIndicator);
   }

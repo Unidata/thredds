@@ -32,6 +32,7 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import junit.framework.*;
 
@@ -42,10 +43,6 @@ public class TestProjectionTiming extends TestCase {
   int NPTS = 1000;
   double TOLERENCE = 1.0e-6;
   boolean checkit = true;
-
-  public TestProjectionTiming( String name) {
-    super(name);
-  }
 
   /////////////////// testLatLonArea /////////////////
 
@@ -75,8 +72,8 @@ public class TestProjectionTiming extends TestCase {
         LatLonPoint endL = proj.projToLatLon( p);
 
         if (checkit) {
-          assert close(from[0][i], endL.getLatitude()) : "lat: "+from[0][i] + "!="+ endL.getLatitude();
-          assert close(from[1][i], endL.getLongitude())  : "lon: "+from[1][i] + "!="+ endL.getLongitude();
+          assert Misc.closeEnough(from[0][i], endL.getLatitude()) : "lat: "+from[0][i] + "!="+ endL.getLatitude();
+          assert closeEnoughLon(from[1][i], endL.getLongitude())  : "lon: "+from[1][i] + "!="+ endL.getLongitude();
         }
       }
     }
@@ -93,8 +90,8 @@ public class TestProjectionTiming extends TestCase {
 
         if (checkit) {
           for (int i=0; i<NPTS; i++) {
-            assert close(from[0][i], result2[0][i]) : "lat: "+from[0][i] + "!="+ result2[0][i];
-            assert close(from[1][i], result2[1][i])  : "lon: "+from[1][i] + "!="+ result2[1][i];
+            assert Misc.closeEnough(from[0][i], result2[0][i]) : "lat: "+from[0][i] + "!="+ result2[0][i];
+            assert closeEnoughLon(from[1][i], result2[1][i])  : "lon: "+from[1][i] + "!="+ result2[1][i];
           }
         }
     }
@@ -105,8 +102,8 @@ public class TestProjectionTiming extends TestCase {
 
   }
 
-  boolean close (double d1, double d2) {
-    return Math.abs( d1-d2) < TOLERENCE;
+  public static boolean closeEnoughLon( double v1, double v2) {
+    return Misc.closeEnough(LatLonPointImpl.lonNormal(v1), LatLonPointImpl.lonNormal(v2) );
   }
 
   public void testEachProjection() {

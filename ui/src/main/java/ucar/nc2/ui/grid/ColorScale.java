@@ -350,10 +350,25 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   /**
    * Get which color interval this value lies in.
    *
-   * @param value: minimum data value.
+   * @param value minimum data value.
    * @return the color index.
    */
   public int getIndexFromValue(double value) {
+    int index;
+    if (hasMissingData && gg.isMissingData(value))
+      index = ncolors;  // missing data
+    else if (value <= min)
+      index = 0;
+    else if (value >= max)
+      index = ncolors - 1;
+    else
+      index = (int) ((value - min) / interval) + 1;
+
+    hist[index]++;
+    return index;
+  }
+
+  public int getIndexFromValueLog(double value) {
     int index;
     if (hasMissingData && gg.isMissingData(value))
       index = ncolors;  // missing data
@@ -384,8 +399,8 @@ public class ColorScale implements Cloneable, java.io.Serializable {
    *  n                    value = missingDataValue
    * </pre>
    *
-   * @param min: minimum data value
-   * @param max: maximum data value
+   * @param min minimum data value
+   * @param max maximum data value
    */
   public void setMinMax(double min, double max) {
     this.min = min;

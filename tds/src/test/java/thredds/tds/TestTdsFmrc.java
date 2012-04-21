@@ -11,7 +11,6 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.util.CompareNetcdf2;
 
 import java.io.IOException;

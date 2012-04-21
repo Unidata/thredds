@@ -193,7 +193,7 @@ public class StringUtil2 {
     for (int i = 0, len = name.length(); i < len; i++) {
       int c = name.charAt(i);
       if (c == 0x2f)
-        sbuff.append(RC.getUseGroups()?c:'_');
+        sbuff.append(RC.getUseGroups() ? c : '_');
       else if (c >= 0x20)
         sbuff.append((char) c);
     }
@@ -218,7 +218,7 @@ public class StringUtil2 {
     return i;
   }
 
-    /**
+  /**
    * Left pad the given value with zeros up to the number of digits
    *
    * @param value     The value.
@@ -428,7 +428,7 @@ public class StringUtil2 {
     return sb.toString();
   }
 
-    /**
+  /**
    * Collapse continuous whitespace into one single " ".
    *
    * @param s operate on this string
@@ -455,7 +455,7 @@ public class StringUtil2 {
    * Replace any char "out" in s with "in".
    *
    * @param s   string to replace
-   * @param out repalce this character
+   * @param out replace this character
    * @param in  with this string
    * @return modified string if needed
    */
@@ -472,7 +472,7 @@ public class StringUtil2 {
 
 
   /**
-   * Replace all ocurrences of any char in replaceChar with corresponding String in replaceWith
+   * Replace all occurrences of any char in replaceChar with corresponding String in replaceWith
    *
    * @param x           operate on this string
    * @param replaceChar get rid of these
@@ -485,13 +485,11 @@ public class StringUtil2 {
     for (int i = 0; i < replaceChar.length; i++) {
       int pos = x.indexOf(replaceChar[i]);
       ok = (pos < 0);
-      if (!ok) {
+      if (!ok)
         break;
-      }
     }
-    if (ok) {
+    if (ok)
       return x;
-    }
 
     // gotta do it
     StringBuilder sb = new StringBuilder(x);

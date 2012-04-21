@@ -210,7 +210,7 @@ public class Structure extends Variable {
     for (int i = 0; i < members.size(); i++) {
       Variable v =  members.get(i);
       if (v.getShortName() == null)
-          System.out.println("BAD null short name");
+          System.out.println("BAD null short name"); // E:/work/ghansham/iasi_20110513_045057_metopa_23676_eps_o.l1_bufr
       if (v.getShortName().equals( newVar.getShortName())) {
         members.set( i, newVar);
         found = true;

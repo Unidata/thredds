@@ -6,7 +6,6 @@
 <body>
 <h1><img src="../images/THREDDSlogo.jpg" height="54" width="67"> NetCDF Subset Service for Gridded Data (version 0.2)</h1>
 <hr>
-<div class="head">
   <h3>Please note that the interface described here is still a prototype, and subject to change. </h3>
   <p><em>Please send comments to the <a href="mailto:thredds@unidata.ucar.edu">THREDDS  email group</a> (preferred) or to <a href="mailto:caron@unidata.ucar.edu">John Caron</a></em></p>
   <p>See <a href="NetcdfSubsetService.html">NetCDF Subset Service</a> for an overview.</p>
@@ -111,9 +110,14 @@ slice closest to the requested time will be returned. </p>
     <li><strong> time=2007-03-29T12:00:00Z</strong></li>
     <li><strong>time=present</strong></li>
   </ul>
+  <p><strong>3. Specify time stride (<em>Grid</em> Subsetting only)</strong></p>
+  <p>You can optionally take only every nth point in time. </p>
+  <p>Example:</p>
+  <ul>
+    <li><strong> timeStride=2 </strong>(take every other point in time) </li>
+  </ul>
   <h3><strong>E. Specify the vertical coordinate</strong></h3>
-  <p>For <em>Grid as Point</em>
-only (for now), you may specify the vertical coordinate. The vertical
+  <p>You may specify the vertical coordinate. The vertical
 slice closest to the requested coordinate will be returned. The
 possible vertical coordinates are shown in the Dataset Descriptor
 document, and on the HTML form. The following indicates that variables <em>Geopotential_height, Geopotential_height, Temperature, u_wind </em>and<em> v_wind</em> all have a vertical coordinate named <em>isobaric</em>, with possible values 1000.0 850.0 700.0 500.0 400.0 300.0 250.0 200.0 150.0 100.0 <em>hPa</em>:</p>
@@ -133,15 +137,24 @@ document, and on the HTML form. The following indicates that variables <em>Geopo
   <h4>Variable with different vertical<a name="vertical"></a> coordinates</h4>
   <p>If
 you specify multiple variables with different vertical coordinates,
-ambiguous results are possible, and you are advised not to use the
+ambiguous results are likely, and you are advised not to use the
 service in this way. If you do, the following rules are used:</p>
-  <ol>
-    <li>Variables
-are examined in order they appear in the query, and the vertical
-coordinate for the first variable that has one is used.</li>
-    <li>The service loops through the levels of that vertical coordinate, and for each variable looks for the closest value <em><strong>(ignoring units!!)</strong></em> </li>
-    <li>If the value is outside the range for that variable, a missing value (NaN) is used. </li>
-  </ol>
+  <blockquote>
+    <p>For Grids:</p>
+    <ol>
+      <li>Variables are examined in order they appear in the query. The first variable with a  vertical coordinate  with size &gt; 1 is used.</li>
+      <li>The service loops through the levels of that vertical coordinate, and finds the level with  the closest value to the specified<em><strong></strong></em> level.</li>
+      <li>All 3D variables with a  vertical coordinate  with size &gt; 1 are sliced with that index.</li>
+    </ol>
+    <p>For Grids as Point:</p>
+    <ol>
+      <li>Variables
+        are examined in order they appear in the query, and the vertical
+        coordinate for the first variable that has one is used.</li>
+      <li>The service loops through the levels of that vertical coordinate, and for each variable looks for the closest value <em><strong>(ignoring units!!)</strong></em> </li>
+      <li>If the value is outside the range for that variable, a missing value (NaN) is used. </li>
+    </ol>
+  </blockquote>
   <p>For example, when choosing these two variables: </p>
   <blockquote>
     <p><strong>with Vertical Levels (isobaric1) :</strong> 850.0 700.0 500.0 250.0 <em>hPa</em> <br>
@@ -173,7 +186,7 @@ level to a common coordinate value is sensible though:</p>
     <li>For <em>Grid</em> Subsetting, only <strong>accept=netcdf</strong> is supported. </li>
     <li>For <em>Grid as Point</em> subsetting, <strong>accept=xml</strong> or <strong>accept=csv</strong> or <strong>accept=netcdf </strong>are  supported. </li>
   </ul>
-  <h3><strong>G. Adding Lat/Lon arrays to the file </strong></h3>
+  <h3><strong>G. Adding 2D Lat/Lon arrays to the file </strong></h3>
   <p>For <em>Grid</em>
 Subsetting: If the grid is a lat/lon grid, the lat and lon coordinates
 will be automatically included (as 1D coordinate variables). When the
@@ -188,11 +201,10 @@ unless the query parameter <strong>addLatLon</strong> is present. In that case, 
     <li>If a bounding box or time range is specified, the variable and its coordinates are subsetted. </li>
     <li>All global attributes are included.</li>
   </ul>
-</div>
 <p> </p>
 <hr width="100%">
 <address>
-<img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 18, 2007 
+<img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on March 2012
 </address>
 <p>&nbsp;
 </p>

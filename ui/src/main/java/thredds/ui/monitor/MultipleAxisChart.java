@@ -64,7 +64,10 @@ public class MultipleAxisChart extends JPanel {
    * A demonstration application showing how to create a time series chart
    * with multiple axes.
    *
-   * @param title the frame title.
+   * @param title1 the frame title.
+   * @param xaxis1 xaxis title
+   * @param yaxis1 yaxis title
+   * @param series1 the data
    */
   public MultipleAxisChart(String title1, String xaxis1, String yaxis1, TimeSeries series1) {
 

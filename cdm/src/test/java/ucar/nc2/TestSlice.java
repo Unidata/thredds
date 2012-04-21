@@ -38,7 +38,6 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.util.CompareNetcdf;
 import junit.framework.TestCase;
 
 
@@ -142,6 +141,6 @@ public class TestSlice extends TestCase {
 
     Array org = var.read("3,3,:,:");
     Array data = sliced2.read();
-    CompareNetcdf.compareData(org, data);
+    ucar.unidata.test.util.CompareNetcdf.compareData(org, data);
   }
 }

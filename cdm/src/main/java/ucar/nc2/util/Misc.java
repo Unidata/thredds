@@ -58,6 +58,29 @@ public class Misc {
     return diff < maxReletiveError;
   } */
 
+  /* from testAll
+  static public boolean closeEnough( double d1, double d2) {
+    if (Math.abs(d1) < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
+    return Math.abs((d1-d2)/d1) < 1.0e-5;
+  }
+
+  static public boolean closeEnough( double d1, double d2, double tol) {
+    if (Math.abs(d1) < tol) return Math.abs(d1-d2) < tol;
+    double pd = (d1-d2)/d1;
+    return Math.abs(pd) < tol;
+  }
+
+  static public boolean closeEnough( float d1, float d2) {
+    if (Math.abs(d1) < 1.0e-5) return Math.abs(d1-d2) < 1.0e-5;
+    return Math.abs((d1-d2)/d1) < 1.0e-5;
+  } */
+
+  static public double howClose( double d1, double d2) {
+    double pd = (d1-d2)/d1;
+    return Math.abs(pd);
+  }
+
+
   /**
    * Check if numbers are equal with tolerance
    * @param v1 first floating point number

@@ -34,6 +34,7 @@ package thredds.inventory;
 
 import ucar.nc2.time.CalendarDate;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,11 @@ public class CollectionManagerSingleFile extends CollectionManagerAbstract {
   public String getRoot() {
     String path = mfile.getPath();
     int pos = path.lastIndexOf("/");
-    return path.substring(0,pos);
+    if (pos >=0)
+      return path.substring(0,pos);
+
+    // otherwise it must be a path reletive to working directory
+    return System.getProperty("user.dir");
   }
 
   @Override

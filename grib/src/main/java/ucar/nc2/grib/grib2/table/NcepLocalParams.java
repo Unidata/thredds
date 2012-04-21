@@ -62,13 +62,24 @@ public class NcepLocalParams {
     int key = (discipline << 8) + category;
     NcepLocalParams params = tableMap.get( key);
     if (params == null) {
-      params = new NcepLocalParams( discipline, category);
+      params = factory( discipline, category);
       if (params == null) return null;
       tableMap.put(key, params);
     }
     return params.getParameter(number);
   }
 
+  static NcepLocalParams factory(String path) {
+    NcepLocalParams params = new NcepLocalParams();
+    if (!params.readParameterTableXml(path)) return null;
+    return params;
+  }
+
+  static private NcepLocalParams factory(int discipline, int category) {
+    NcepLocalParams params = new NcepLocalParams();
+    if (!params.readParameterTableFromResource(getTablePath(discipline, category))) return null;
+    return params;
+  }
 
   private String title;
   private String source;
@@ -76,13 +87,8 @@ public class NcepLocalParams {
   private int discipline, category;
   private Map<Integer, Grib2Parameter> paramMap;
 
-  NcepLocalParams(String path) {
-    readParameterTableXml(path);
-  }
-
-  NcepLocalParams(int discipline, int category) {
-    String path = "/resources/grib2/ncep/Table4.2."+discipline+"."+category+".xml";
-    readParameterTableFromResource(path);
+  public static String getTablePath(int discipline, int category) {
+    return "/resources/grib2/ncep/Table4.2."+discipline+"."+category+".xml";
   }
 
   public List<Grib2Parameter> getParameters() {
@@ -313,7 +319,7 @@ public class NcepLocalParams {
     File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
     for (File f : dir.listFiles()) {
       if (f.getName().startsWith(match)) {
-        NcepLocalParams nt = new NcepLocalParams(f.getPath());
+        NcepLocalParams nt = factory(f.getPath());
         System.out.printf("%s%n", nt);
         compareTables(nt, wmo);
       }
@@ -334,7 +340,7 @@ public class NcepLocalParams {
      File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
      for (File f : dir.listFiles()) {
        if (f.getName().startsWith(match)) {
-         NcepLocalParams nt = new NcepLocalParams(f.getPath());
+         NcepLocalParams nt = factory(f.getPath());
          System.out.printf("%s%n", nt);
          for (Grib2Parameter p : nt.getParameters()) {
            if (p.getCategory() < 192 && p.getNumber() < 192) continue;

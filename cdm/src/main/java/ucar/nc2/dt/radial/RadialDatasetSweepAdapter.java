@@ -41,6 +41,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
+import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
@@ -88,7 +89,9 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     sbuff.append(" Data Format Name= "+getDataFormat()+"\n");
     sbuff.append(" Common Type = "+getCommonType()+"\n");
     sbuff.append(" Common Origin = "+getCommonOrigin()+"\n");
-    sbuff.append(" Date Unit = "+getTimeUnits().getUnitsString()+"\n");
+    DateUnit dt = getTimeUnits();
+    if (dt != null)
+      sbuff.append(" Date Unit = "+dt.getUnitsString()+"\n");
     sbuff.append(" isStationary = "+isStationary()+"\n");
     //sbuff.append(" isRadial = "+isRadial()+"\n");
     sbuff.append(" isVolume = "+isVolume()+"\n");

@@ -49,7 +49,7 @@ import java.util.List;
 /**
  * Superclass for rendering collections of GisFeatures.
  *
- * @author: John Caron
+ * @author John Caron
  */
 public abstract class GisFeatureRenderer implements Renderer {
   private Color color = Color.blue;                   // default color of polylines

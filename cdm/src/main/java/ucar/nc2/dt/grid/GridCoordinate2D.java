@@ -44,7 +44,7 @@ import java.io.IOException;
  * 2D Coordinate System has lat(x,y) and lon(x,y).
  * This class implements finding the index (i,j) from (lat, lon) coord.
  * This is for "one-off" computation, not a systematic lookup table for all points in a pixel array.
- * Hueristically searches the 2D space for the cell tha contains the point.
+ * Hueristic search of the 2D space for the cell that contains the point.
  *
  * @author caron
  * @since Jul 10, 2009
@@ -312,13 +312,15 @@ public class GridCoordinate2D {
   private boolean jump2(double wantLat, double wantLon, int[] rectIndex) {
     int row = Math.max( Math.min(rectIndex[0], nrows-1), 0);
     int col = Math.max( Math.min(rectIndex[1], ncols-1), 0);
-    double dlatdy = latEdge.get(row + 1, col) - latEdge.get(row, col);
-    double dlatdx = latEdge.get(row, col+1) - latEdge.get(row, col);
-    double dlondx = lonEdge.get(row, col + 1) - lonEdge.get(row, col);
-    double dlondy = lonEdge.get(row + 1, col) - lonEdge.get(row, col);
+    double lat = latEdge.get(row, col);
+    double lon =  lonEdge.get(row, col);
+    double diffLat = wantLat - lat;
+    double diffLon = wantLon - lon;
 
-    double diffLat = wantLat - latEdge.get(row, col);
-    double diffLon = wantLon - lonEdge.get(row, col);
+    double dlatdy = latEdge.get(row + 1, col) - lat;
+    double dlatdx = latEdge.get(row, col+1) - lat;
+    double dlondx = lonEdge.get(row, col + 1) - lon;
+    double dlondy = lonEdge.get(row + 1, col) - lon;
 
     // solve for dlon
 
@@ -445,9 +447,9 @@ public class GridCoordinate2D {
   }
 
   public static void test3() throws IOException {
-    String filename = "/data/testdata/cdmUnitTest/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
+    String filename = "Q:/cdmUnitTest/ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     GridDataset gds = GridDataset.open(filename);
-    GeoGrid grid = gds.findGridByName("Sea_Surface_Height_Relative_to_Geoid");
+    GeoGrid grid = gds.findGridByName("Sea_Surface_Height_Relative_to_Geoid_surface");
     GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis lonAxis = gcs.getXHorizAxis();
     assert lonAxis instanceof CoordinateAxis2D;
@@ -463,6 +465,7 @@ public class GridCoordinate2D {
 
 
   public static void main(String[] args) throws IOException {
+    debug = true;
     test3();
   }
 

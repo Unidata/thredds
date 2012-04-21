@@ -81,11 +81,11 @@ public class HdfEos {
     return true;
   }
 
-  static public void getEosInfo(NetcdfFile ncfile, Group eosGroup, Formatter f) throws IOException {
+  static public boolean getEosInfo(NetcdfFile ncfile, Group eosGroup, Formatter f) throws IOException {
     String smeta = getStructMetadata(eosGroup);
     if (smeta == null) {
       f.format("No StructMetadata variables in group %s %n", eosGroup.getName());
-      return;
+      return false;
     }
     f.format("raw = %n%s%n", smeta);
     ODLparser parser = new ODLparser();
@@ -93,6 +93,7 @@ public class HdfEos {
     ByteArrayOutputStream bos = new ByteArrayOutputStream(1000 * 1000);
     parser.showDoc(bos);
     f.format("parsed = %n%s%n", bos.toString());
+    return true;
   }
 
   static private String getStructMetadata(Group eosGroup) throws IOException {
@@ -203,7 +204,7 @@ public class HdfEos {
 
     if (featureType != null) {
       if (showWork) System.out.println("***EOS featureType= "+featureType.toString());
-      rootg.addAttribute(new Attribute("cdm_data_type", featureType.toString()));
+      rootg.addAttribute(new Attribute(CF.FEATURE_TYPE, featureType.toString()));
     }
 
   }
@@ -232,8 +233,8 @@ public class HdfEos {
           }
         } else {
           dim = new Dimension(name, length);
-          parent.addDimension(dim);
-          if (showWork) System.out.printf(" Add dimension %s %n",dim);
+          if (parent.addDimensionIfNotExists(dim) && showWork)
+            System.out.printf(" Add dimension %s %n",dim);
         }
       } else {
         log.warn("Dimension "+name+" has size "+sizeS);
@@ -365,8 +366,8 @@ public class HdfEos {
     String ydimSizeS = gridElem.getChild("YDim").getText();
     int xdimSize = Integer.parseInt(xdimSizeS);
     int ydimSize = Integer.parseInt(ydimSizeS);
-    parent.addDimension(new Dimension("XDim", xdimSize));
-    parent.addDimension(new Dimension("YDim", ydimSize));
+    parent.addDimensionIfNotExists(new Dimension("XDim", xdimSize));
+    parent.addDimensionIfNotExists(new Dimension("YDim", ydimSize));
 
     // global Dimensions
     Element d = gridElem.getChild("Dimension");
@@ -383,8 +384,8 @@ public class HdfEos {
       if ((old == null) || (old.getLength() != length)) {
         if (length > 0) {
           Dimension dim = new Dimension(name, length);
-          parent.addDimension(dim);
-          if (showWork) System.out.printf(" Add dimension %s %n", dim);
+          if (parent.addDimensionIfNotExists(dim) && showWork)
+            System.out.printf(" Add dimension %s %n", dim);
         } else {
           log.warn("Dimension "+name+" has size "+sizeS);
           Dimension udim = new Dimension(name, 1);
@@ -424,6 +425,7 @@ public class HdfEos {
       List<Element> vars = (List<Element>) f.getChildren();
       for (Element elem : vars) {
         String varname = elem.getChild("DataFieldName").getText();
+        varname = H4header.createValidObjectName( varname);
         Variable v = dataG.findVariable(varname);
         //if (v == null)
         //  v = dataG.findVariable( H4header.createValidObjectName(varname));
@@ -515,7 +517,7 @@ public class HdfEos {
           dim.setUnlimited( true); // allow zero length dimension !!
         dim.setLength(len); // use existing (anon) dimension
         Group parent = dim.getGroup();
-        parent.addDimension(dim);  // add to the parent
+        parent.addDimensionIfNotExists(dim);  // add to the parent
         unknownDims.remove(dim); // remove from list LOOK is this ok?
         log.warn("unknownDim " + wantDim+" length set to "+oldDim.getLength());
         return dim;

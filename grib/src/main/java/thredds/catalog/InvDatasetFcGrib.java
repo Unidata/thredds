@@ -41,6 +41,7 @@ import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.TimePartitionCollection;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Iosp;
@@ -298,7 +299,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (localState.timePartition == null) {
 
-      for (GribCollection.GroupHcs group : localState.gribCollection.getGroups()) {
+      List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(localState.gribCollection.getGroups());
+      Collections.sort(groups);
+      for (GribCollection.GroupHcs group : groups) {
         String groupId = group.getId();
         InvDatasetImpl ds = new InvDatasetImpl(this, group.getDescription());
         //groupId = StringUtil2.replace(groupId, ' ', "_");
@@ -413,7 +416,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String id = getID();
     if (id == null) id = getPath();
 
-    for (GribCollection.GroupHcs group : gribCollection.getGroups()) {
+    List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
+    Collections.sort(groups);
+    for (GribCollection.GroupHcs group : groups) {
       String groupId = group.getId();
       InvDatasetImpl ds = new InvDatasetImpl(this, groupId + "_" + COLLECTION);
       //groupId = StringUtil2.replace(groupId, ' ', "_");
@@ -506,6 +511,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   @Override
   public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
+    // handle FILES
+    GridDataset result = super.getGridDataset(matchPath);
+    if (result != null) return result;
+
     StateGrib localState = null;
     try {
       localState = checkState();
@@ -531,7 +540,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
       if (tpp != null) {
         GribCollection gc =  tpp.getGribCollection();
-        ucar.nc2.dt.GridDataset result = gc.getGridDataset(paths[1], filename, gribConfig);
+        result = gc.getGridDataset(paths[1], filename, gribConfig);
         // LOOK WRONG gc.close();
         return result;
       }
@@ -608,7 +617,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     if (gc.isGrib1()) {
       if (cust1 == null) cust1 = Grib1Customizer.factory(gc.getCenter(), gc.getSubcenter(), gc.getLocal(), null);
-      tv.setName(Grib1Iosp.makeVariableName(cust1, gc, vindex));
+      tv.setName(cust1.makeVariableName(gc, vindex));
       tv.setDescription(Grib1Iosp.makeVariableLongName(cust1, gc, vindex));
       tv.setUnits(Grib1Iosp.makeVariableUnits(cust1, gc, vindex));
       tv.setVocabularyId("1-" + vindex.discipline + "-" + vindex.category + "-" + vindex.parameter);

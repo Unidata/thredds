@@ -42,17 +42,15 @@ import java.util.List;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import opendap.test.TestSources;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
 import ucar.nc2.NCdump;
 import ucar.nc2.util.IO;
+import ucar.unidata.test.ma2.TestMa2Utils;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Feb 6, 2006
- * Time: 2:24:00 PM
- * To change this template use File | Settings | File Templates.
+ *
  */
 public class TestConvertD2N {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +175,7 @@ public class TestConvertD2N {
 
       if (useNC) {
         Array data2 = v.read();
-        TestMA2.testEquals( data, data2);
+        TestMa2Utils.testEquals(data, data2);
       }
 
       if (showData)
@@ -324,7 +322,7 @@ public class TestConvertD2N {
     //test(server+"NestedSeq"); // nested Seq
     //test(server+"NestedSeq2"); // nested Seq   */
 
-    testDataDDSfromServer(TestDODS.server+"NestedSeq2", "person1.age,person1.stuff&person1.age=3"); // nested Seq
+    testDataDDSfromServer(TestSources.XURL1+"/NestedSeq2", "person1.age,person1.stuff&person1.age=3"); // nested Seq
    // testDataDDSfromServer("http://dapper.pmel.noaa.gov/dapper/epic/woce_sl_time_monthly.cdp","location.profile&location._id=3"); // nested Seq
 
     // testDataDDSfromServer("http://dapper.pmel.noaa.gov/dapper/argo/argo_all.cdp", ""); // Sequence

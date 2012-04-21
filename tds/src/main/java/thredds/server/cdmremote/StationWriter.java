@@ -32,6 +32,7 @@
 
 package thredds.server.cdmremote;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.point.writer.WriterCFStationCollection;
@@ -58,7 +59,7 @@ import javax.xml.stream.XMLStreamException;
 
 /**
  * CdmrFeature subsetting for station data.
- * thread safety: new object for each rquest
+ * thread safety: new object for each request
  *
  * @author caron
  * @since Aug 19, 2009
@@ -632,7 +633,9 @@ public class StationWriter {
       super(null);
 
       netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
-      cfWriter = new WriterCFStationCollection(netcdfResult.getAbsolutePath(), "Extracted data from TDS using CDM remote subsetting");
+      List<Attribute> atts = new ArrayList<Attribute>();
+      atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS using CDM remote subsetting" ));      
+      cfWriter = new WriterCFStationCollection(netcdfResult.getAbsolutePath(), atts);
 
       // verify SpatialSelection has some stations
       if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.bb) {
@@ -664,7 +667,7 @@ public class StationWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           if (!headerWritten) {
             try {
-              cfWriter.writeHeader(wantStations, wantVars, pf.getTimeUnit());
+              cfWriter.writeHeader(wantStations, wantVars, pf.getTimeUnit(), null);
               headerWritten = true;
             } catch (IOException e) {
               log.error("WriterNetcdf.header", e);

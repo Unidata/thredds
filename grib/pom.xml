@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <project xmlns="http://maven.apache.org/POM/4.0.0"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.9-SNAPSHOT</version>
   </parent>
 
 
   <!-- ===========================================================
            Module Description
        =========================================================== -->
-  <groupId>edu.ucar</groupId>
+  <!-- groupId>edu.ucar</groupId-->
   <artifactId>grib</artifactId>
   <packaging>jar</packaging>
   <name>GRIB IOSP and Feature Collection</name>
@@ -74,8 +74,8 @@
     </dependency>
 
     <dependency>
-        <groupId>org.jsoup</groupId>
-        <artifactId>jsoup</artifactId>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
     </dependency>
 
     <dependency>
@@ -83,26 +83,41 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>net.jcip</groupId>
+      <artifactId>jcip-annotations</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
-    <!-- ===========================================================
-            Build configuration
-
-            We declare a non-existant test directory as a dirty trick
-            for skiping completly the tests, including compilation.
-        =========================================================== -->
   <build>
-    <!-- Skip tests, because they require the /share/testdata/cdmUnitTest/ directory. -->
-    <testSourceDirectory>void</testSourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skipTests>true</skipTests>
+          <skip>true</skip>
+        	<testFailureIgnore>true</testFailureIgnore>
         </configuration>
       </plugin>
+
     </plugins>
+
   </build>
 
 </project>

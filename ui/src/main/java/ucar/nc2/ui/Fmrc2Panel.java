@@ -155,7 +155,7 @@ public class Fmrc2Panel extends JPanel {
         InvBean dsb = (InvBean) invTable.getSelectedBean();
         if (dsb == null) return;
         infoTA.setText(dsb.fmrInv.writeXML(null));
-        infoWindow.showIfNotIconified();
+        infoWindow.show();
       }
     });
 
@@ -287,7 +287,7 @@ public class Fmrc2Panel extends JPanel {
     status = true;
 
     if (alwaysShow)
-      infoWindow.showIfNotIconified();
+      infoWindow.show();
     return status;
   }
 
@@ -354,7 +354,7 @@ public class Fmrc2Panel extends JPanel {
 
   private void showGridDatasetInfo(GridDataset gds) {
     infoTA.setText(gds.getDetailInfo());
-    infoWindow.showIfNotIconified();
+    infoWindow.show();
   }
 
   private void setFmr(FmrInv fmr) {
@@ -452,7 +452,7 @@ public class Fmrc2Panel extends JPanel {
       }
     }
     infoTA.setText(out.toString());
-    infoWindow.showIfNotIconified();
+    infoWindow.show();
   }
 
   public void showInfo(Formatter result) throws IOException {
@@ -498,7 +498,7 @@ public class Fmrc2Panel extends JPanel {
     lite.showGridInfo(ugrid.getName(), out);
 
     infoTA.setText(out.toString());
-    infoWindow.showIfNotIconified();
+    infoWindow.show();
   }
 
   private int showActualInventory(GridDatasetInv.Grid inv, TimeCoord union, int w, Formatter out) {
@@ -622,7 +622,7 @@ public class Fmrc2Panel extends JPanel {
     }
 
     infoTA.setText(out.toString());
-    infoWindow.showIfNotIconified();
+    infoWindow.show();
   }
 
 

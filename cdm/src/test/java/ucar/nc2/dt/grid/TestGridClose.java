@@ -35,10 +35,7 @@ package ucar.nc2.dt.grid;
 import junit.framework.TestCase;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
-import ucar.nc2.TestAll;
+import ucar.nc2.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
@@ -55,13 +52,9 @@ import java.io.IOException;
 public class TestGridClose extends TestCase {
   private String newVarName = "some_data";
 
-  public TestGridClose(String name) {
-    super(name);
-  }
-
   public void testClose() throws IOException {
-    File org = new File(TestAll.cdmLocalTestDataDir + "rankTest.nc");
-    File copy = new File(TestAll.temporaryLocalDataDir + "rankTest.nc");
+    File org = new File(TestLocal.cdmTestDataDir + "rankTest.nc");
+    File copy = new File(TestLocal.temporaryDataDir + "rankTest.nc");
     IO.copyFile(org, copy);
 
     String url = copy.getPath();

@@ -51,6 +51,13 @@ import java.io.File;
  */
 public class ServletLogParser implements LogReader.LogParser {
   static public class ServletLog extends LogReader.Log {
+    long reqTime;
+    long reqSeq;
+    String level, where;
+    public StringBuilder extra;
+    boolean isDone, isStart;
+    int nthreads;
+
     public long getReqTime() {
       return reqTime;
     }
@@ -75,11 +82,13 @@ public class ServletLogParser implements LogReader.LogParser {
       return isStart;
     }
 
-    long reqTime;
-    long reqSeq;
-    String level, where;
-    public StringBuilder extra;
-    boolean isDone, isStart;
+    public int getNthreads() {
+      return nthreads;
+    }
+
+    public void setNthreads(int nthreads) {
+      this.nthreads = nthreads;
+    }
 
     public String toString() {
       Formatter f = new Formatter();

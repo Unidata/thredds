@@ -35,7 +35,7 @@ package thredds.catalog2.simpleImpl;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.easymock.EasyMock;
+//import org.easymock.EasyMock;
 import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog2.builder.ThreddsMetadataBuilder;
 
@@ -141,14 +141,16 @@ public class VariableTest
     assertTrue( bldrIssues.isEmpty());
   }
 
+  // TODO : where should this go ?
   private ThreddsMetadataBuilder.VariableGroupBuilder createMockVarGroupBasic( String vocabAuthId, String vocabAuthUrl )
   {
-    ThreddsMetadataBuilder.VariableGroupBuilder mockVarGrp = EasyMock.createMock( ThreddsMetadataBuilder.VariableGroupBuilder.class );
+    /* ThreddsMetadataBuilder.VariableGroupBuilder mockVarGrp = EasyMock.createMock( ThreddsMetadataBuilder.VariableGroupBuilder.class );
     EasyMock.expect( mockVarGrp.getVocabularyAuthorityId()).andReturn( vocabAuthId );
     EasyMock.expect( mockVarGrp.getVocabularyAuthorityUrl()).andReturn( vocabAuthUrl );
 
     EasyMock.replay( mockVarGrp );
 
-    return mockVarGrp;
+    return mockVarGrp; */
+    return null;
   }
 }

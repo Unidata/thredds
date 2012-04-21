@@ -40,6 +40,7 @@ import ucar.nc2.grib.grib2.Grib2CollectionBuilder;
 import ucar.nc2.grib.grib2.Grib2Rectilyser;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.FileManager;
@@ -1021,7 +1022,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public final String getStatType() {
-      if (pds.isInterval()) {
+      if (pds.isTimeInterval()) {
         Formatter f = new Formatter();
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         int count = 0;
@@ -1042,7 +1043,7 @@ public class Grib2CollectionPanel extends JPanel {
     }  */
 
     public long getIntvHash() {
-      if (pds.isInterval()) {
+      if (pds.isTimeInterval()) {
         long sum = 0;
         for (Grib2RecordBean bean : records) {
           Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) bean.pds;
@@ -1061,7 +1062,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public String toProcessedString() {
       Formatter f = new Formatter();
-      showProcessedPds(pds, discipline, f);
+      showProcessedPds(gr, pds, discipline, f);
       return f.toString();
     }
 
@@ -1174,7 +1175,7 @@ public class Grib2CollectionPanel extends JPanel {
     Grib2SectionProductDefinition pdss = gr.getPDSsection();
     f.format("%nGrib2ProductDefinitionSection%n");
     Grib2Pds pds = pdss.getPDS();
-    if (pds.isInterval()) {
+    if (pds.isTimeInterval()) {
       TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
       if (intv != null) f.format(" Interval     = %s%n", intv);
     }
@@ -1227,12 +1228,11 @@ public class Grib2CollectionPanel extends JPanel {
   }
 
   ////////////////////////////////////////////////////////
-  private void showProcessedPds(Grib2Pds pds, int discipline, Formatter f) {
+  private void showProcessedPds(Grib2Record gr, Grib2Pds pds, int discipline, Formatter f) {
     int template = pds.getTemplateNumber();
     f.format(" Product Template %3d = %s%n", template, cust.getTableValue("4.0", template));
     f.format(" Discipline %3d     = %s%n", discipline, cust.getTableValue("0.0", discipline));
-    f.format(" Category %3d       = %s%n", pds.getParameterCategory(), cust.getTableValue("4.1" + discipline,
-            pds.getParameterCategory()));
+    f.format(" Category %3d       = %s%n", pds.getParameterCategory(), cust.getTableValue("4.1" + discipline, pds.getParameterCategory()));
     Grib2Customizer.Parameter entry = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
     if (entry != null) {
       f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(), entry.getName());
@@ -1241,6 +1241,7 @@ public class Grib2CollectionPanel extends JPanel {
       f.format(" Unknown Parameter  = %d-%d-%d %n", discipline, pds.getParameterCategory(), pds.getParameterNumber());
       cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber()); // debug
     }
+    f.format(" Parameter Table  = %s%n", cust.getTablePath(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
 
     int tgp = pds.getGenProcessType();
     f.format(" Generating Process Type = %3d %s %n", tgp, cust.getTableValue("4.3", tgp));
@@ -1299,8 +1300,9 @@ public class Grib2CollectionPanel extends JPanel {
       return pds.getForecastTime();
     }
 
-    public final int getFile() {
-      return gr.getFile();
+    public final String getFile() {
+      int fno = gr.getFile();
+      return fileList.get(fno).getName();
     }
 
     /* public String getSurfaceType() {
@@ -1321,7 +1323,7 @@ public class Grib2CollectionPanel extends JPanel {
     TimeInterval: statProcessType= 197, timeIncrementType= 2, timeRangeUnit= 1, timeRangeLength= 23, timeIncrementUnit= 1, timeIncrement=0
      */
     public String getTInv() {
-      if (pds.isInterval()) {
+      if (pds.isTimeInterval()) {
         Formatter f = new Formatter();
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         int count = 0;
@@ -1335,7 +1337,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public String getIntv() {
-      if (pds.isInterval() && cust != null) {
+      if (pds.isTimeInterval() && cust != null) {
         TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
         return intv.toString();
       }
@@ -1343,7 +1345,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public String getIntv2() {
-      if (pds.isInterval() && cust != null) {
+      if (pds.isTimeInterval() && cust != null) {
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
         return intv[0]+"-"+intv[1];
       }
@@ -1351,7 +1353,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public long getIntvHash() {
-      if (pds.isInterval()) {
+      if (pds.isTimeInterval()) {
         Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
         return pdsi.getIntervalHash();
       }
@@ -1417,6 +1419,13 @@ public class Grib2CollectionPanel extends JPanel {
       if (intv != null) f.format("  TimeInterval=%s%n", intv);
       f.format("%n");
       pds.show(f);
+
+      //CFSR malarky
+      if (pds.getTemplateNumber() == 8 && cust instanceof NcepLocalTables) {
+        NcepLocalTables ncepCust =  (NcepLocalTables) cust;
+        ncepCust.showCfsr(pds, f);
+      }
+
       return f.toString();
     }
 

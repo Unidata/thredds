@@ -73,7 +73,7 @@ public class TimeCoord {
 
   private String units;
   private int index;
-  private final int code; // GRIB1 timeRangeIndicator, GRIB2 not used yet
+  private final int code; // GRIB1 timeRangeIndicator, GRIB2 statProcessType (4.10)
 
   // from reading ncx
   public TimeCoord(int code, String udunitString, List coords) {

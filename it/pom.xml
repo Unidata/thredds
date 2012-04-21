@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>edu.ucar</groupId>
+    <artifactId>thredds-parent</artifactId>
+    <version>4.3.9-SNAPSHOT</version>
+  </parent>
+
+  <!-- ===========================================================
+     Module Description
+ =========================================================== -->
+  <!-- groupId>edu.ucar</groupId-->
+  <artifactId>it</artifactId>
+  <packaging>pom</packaging>
+  <name>Integration Test module</name>
+  <description>
+    TDS - NetCDF-Java library integration Test module. This module contains all classes and settings
+    needed to test the NetCDF-Java library in a servlet container.
+  </description>
+  <url>http://www.unidata.ucar.edu/software/tds/</url>
+
+  <!-- ===========================================================
+     Dependencies
+
+     Mandatory dependencies are listed first. Then everything
+     else is declared with the "provided" scope, meaning that
+     the user have to declare those dependencies himself in
+     his own pom.xml file if we want to read some formats.
+ =========================================================== -->
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- thredds dependencies are not needed jet. Cargo takes the thredds.war from the tds/target directory -->
+    <!-- dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>thredds</artifactId>          
+      <type>war</type>
+    </dependency>
+    
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>thredds</artifactId>          
+      <type>jar</type>
+      <classifier>classes</classifier>
+    </dependency-->
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>grib</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>opendap</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>visadCdm</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <!-- this is a new project so setting the testSourceDirectory to its default -->
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>false</skip>
+          <testFailureIgnore>true</testFailureIgnore>
+          <includes>
+            <include>ucar/nc2/TestReadFormats.java</include>
+          </includes>
+        </configuration>
+      </plugin -->
+
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>false</skip>
+          <testFailureIgnore>true</testFailureIgnore>
+        </configuration>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+          <execution>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- ===========================================================
+         Cargo configuration.
+        Runs in the pre-integration-test and post-integration-test phases
+        It uses a new tomcat 7.0.25. It downloads, installs, runs and stops a new tomcat instance on every run.
+         It could also use an existing tomcat instance.
+     =========================================================== -->
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <version>1.1.1</version>
+        <executions>
+          <execution>
+            <id>start-containter</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop-containter</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <skip>true</skip>
+          <wait>false</wait>
+          <timeout>20000</timeout>
+          <container>
+            <timeout>300000</timeout>
+            <containerId>tomcat7x</containerId>
+            <zipUrlInstaller>
+              <!-- url>http://www.carfab.com/apachesoftware/tomcat/tomcat-7/v7.0.25/bin/apache-tomcat-7.0.25.zip</url-->
+              <url>http://ftp.wayne.edu/apache/tomcat/tomcat-7/v7.0.26/bin/apache-tomcat-7.0.26.zip</url>
+              <downloadDir>${project.build.directory}/downloads</downloadDir>
+              <extractDir>${project.build.directory}/extracts</extractDir>
+            </zipUrlInstaller>
+          </container>
+          <configuration>
+            <properties>
+              <cargo.jvmargs>-Dtds.content.root.path="/share/testcatalogs/content" -Xmx1024m -server</cargo.jvmargs>
+              <cargo.servlet.port>8081</cargo.servlet.port>
+              <cargo.tomcat.ajp.port>8010</cargo.tomcat.ajp.port>
+              <cargo.tomcat.shutdown.port>8006</cargo.tomcat.shutdown.port>
+            </properties>
+            <deployables>
+              <deployable>
+                <location>${project.basedir}/../tds/target/thredds.war</location>
+                <!-- location>${project.build.directory}/thredds.war</location-->
+                <!-- groupId>${project.groupId}</groupId>
+                            <artifactId>thredds</artifactId-->
+                <type>war</type>
+                <pingURL>http://localhost:8081/thredds/catalog.html</pingURL>
+                <properties>
+                  <context>/thredds</context>
+                </properties>
+              </deployable>
+            </deployables>
+          </configuration>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+
+</project>

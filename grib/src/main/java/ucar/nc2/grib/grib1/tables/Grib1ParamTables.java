@@ -255,7 +255,7 @@ public class Grib1ParamTables {
     public boolean readLookupTable(String resourceName) throws IOException {
       InputStream inputStream = GribResourceReader.getInputStream(resourceName);
       if (inputStream == null) {
-        logger.debug("Could not open table file:" + resourceName);
+        logger.warn("Could not open table file:" + resourceName);
         return false;
       }
       return readLookupTable(inputStream, resourceName);
@@ -327,7 +327,8 @@ public class Grib1ParamTables {
       if (table == null)
         table = findParameterTable(center, subcenter, tableVersion);
       if (table == null) {
-        if (strict) {
+        if (strict || defaultTable == null) {
+          table = findParameterTable(center, subcenter, tableVersion); // debug
           logger.warn("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
           throw new UnsupportedOperationException("Could not find a table for GRIB file with center: " + center + " subCenter: " + subcenter + " version: " + tableVersion);
         }

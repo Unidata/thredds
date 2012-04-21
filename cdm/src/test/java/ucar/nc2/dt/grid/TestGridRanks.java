@@ -44,13 +44,9 @@ import java.io.*;
 public class TestGridRanks extends TestCase {
   private boolean show = false;
 
-  public TestGridRanks( String name) {
-    super(name);
-  }
-
   public void testWrite() throws Exception {
     NetcdfFileWriteable ncfile = new NetcdfFileWriteable();
-    ncfile.setName(TestGrid.topDir+"rankTest.nc");
+    ncfile.setName(TestLocal.cdmTestDataDir+"rankTest.nc");
 
     // define dimensions
     Dimension xDim = ncfile.addDimension("x", 3);
@@ -223,7 +219,7 @@ public class TestGridRanks extends TestCase {
 
   //////////////////////////////////////////////
   public void testRead() throws Exception {
-      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestGrid.topDir+"rankTest.nc");
+      ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open( TestLocal.cdmTestDataDir+"rankTest.nc");
 
       doRead4(dataset, "full4");
       doRead4(dataset, "withZ1");

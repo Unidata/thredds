@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         name="Various test datasets" version="1.0.2">
+
+  <service name="all" serviceType="Compound" base="">
+    <service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+  </service>
+
+  <datasetRoot path="restrict" location="content/"/>
+
+  <!-- Serve any datasets in content/thredds/public. -->
+  <datasetScan name="public datasets" ID="public/dataset" path="public/dataset" location="content/">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+  </datasetScan>
+
+  <!-- idv -->
+  <catalogRef xlink:title="GEMPAK Test Catalog" xlink:href="gempakTestCat.xml" name="" />
+  
+  <!-- idv -->
+  <datasetScan name="McIDAS AREA Test files" ID="McIDAS/test"
+               path="mcidas/test" location="/data/ldm/pub/casestudies/idvtest/sat">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+  </datasetScan>
+
+  <!-- john -->
+  <catalogRef xlink:href="cdmremoteCatalog.xml" xlink:title="CDM Remote Test datasets" name=""/>
+
+  <!-- john -->
+  <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="restrict/testData.nc"
+           restrictAccess="tiggeData">
+    <serviceName>odap</serviceName>
+    <dataType>Grid</dataType>
+  </dataset>
+
+  <!-- dennis -->
+  <datasetScan name="OPeNDAP Test Data" ID="testdods" path="testdods" location="/data/testdods">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <dataType>Grid</dataType>
+    </metadata>
+  </datasetScan>
+
+</catalog>

@@ -483,6 +483,7 @@ public class GridDatasetInfo {
 
     Element varElem = new Element("grid");
     varElem.setAttribute("name", grid.getFullName());
+    varElem.setAttribute("desc", grid.getDescription());
 
     StringBuilder buff = new StringBuilder();
     List dims = grid.getDimensions();
@@ -534,13 +535,13 @@ public class GridDatasetInfo {
   public static void main(String args[]) throws IOException {
     // String url = "C:/data/test2.nc";
 
-    String url = "C:/data/NAM_CONUS_12km_20060227_1200.grib2";
+    String url = "cdmremote:http://localhost:8080/thredds/cdmremote/grib/NCDC/CFSR/NCDC-CFSR/PGB-LatLon0p5";
 
     // String url = "http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NDFD/CONUS_5km/NDFD-CONUS_5km_best.ncd";
 
     GridDataset ncd = ucar.nc2.dt.grid.GridDataset.open(url);
     GridDatasetInfo info = new GridDatasetInfo(ncd, null);
-    FileOutputStream fos2 = new FileOutputStream("C:/TEMP/gridInfo.xml");
+    FileOutputStream fos2 = new FileOutputStream("C:/tmp2/gridInfo.xml");
     info.writeXML(info.makeGridForm(), fos2);
     fos2.close();
 

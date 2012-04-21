@@ -2,7 +2,11 @@
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
-      <configuration />
+      <configuration>
+        <fileset id="web: application context" profiles="" autodetected="true" />
+        <fileset id="web: wmoTables servlet context" profiles="" autodetected="true" />
+        <fileset id="web: bufrTables servlet context" profiles="" autodetected="true" />
+      </configuration>
     </facet>
     <facet type="web" name="wmoTables">
       <configuration>
@@ -13,7 +17,6 @@
           <root url="file://$MODULE_DIR$/../../wmoTables/src/main/webapp" relative="/" />
         </webroots>
         <sourceRoots />
-        <context-artifact name="wmoTables:war exploded" />
       </configuration>
     </facet>
   </component>

@@ -323,8 +323,8 @@ public class LambertConformal extends ProjectionImpl {
   public String toString() {
     return "LambertConformal{" +
             "earth_radius=" + earth_radius +
-            ", lat0=" + lat0 +
-            ", lon0=" + lon0 +
+            ", lat0=" + Math.toDegrees(lat0) +
+            ", lon0=" + Math.toDegrees(lon0) +
             ", par1=" + par1 +
             ", par2=" + par2 +
             ", falseEasting=" + falseEasting +

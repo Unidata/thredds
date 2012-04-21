@@ -25,8 +25,7 @@ or NetCDF format allowing WCS clients to specify a subset of a gridded dataset a
 NetCDF-Java Common Data Model must be able to identify the coordinates
 system used. Check this by opening in the Grid Panel of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">ToolsUI</a>
 application. There should be one or more variables shown as a GeoGrid.</li>
-<li>Currently due to WCS and GeoTIFF limitations, the X,Y and
-(if it exists) Z axes must be regularly spaced.</li>
+<li>Currently due to WCS and GeoTIFF limitations, the X and Y  axes must be regularly spaced.</li>
 </ol>
 <h2>Configuration</h2><p>WCS must be enabled in the <code>threddsConfig.xml</code> configuration file before it can be used. This is done by adding an <strong>allow</strong> element to the <strong>WCS</strong> element as follows:</p><pre style="margin-left: 40px;">&lt;WCS&gt;<br>  &lt;allow&gt;true&lt;/allow&gt;<br>  ...<br>&lt;/WCS&gt;</pre><p>Once
 WCS is enabled, datasets can be configured to have a WCS access method

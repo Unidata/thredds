@@ -41,24 +41,24 @@ import java.io.*;
 
 public class TestNids extends TestCase {
 
-  public static String basereflectFile = TestAll.cdmLocalTestDataDir + "nids/N0R_20041119_2147";
-  public static String basereflect1File = TestAll.cdmLocalTestDataDir + "nids/N1R_20050119_1548";
-  public static String basereflect2File = TestAll.cdmLocalTestDataDir + "nids/N2R_20050119_1528";
-  public static String basereflect3File = TestAll.cdmLocalTestDataDir + "nids/N3R_20050119_1548";
-  public static String basereflectCFile = TestAll.cdmLocalTestDataDir + "nids/NCR_20050119_1548";
-  public static String basereflect248File = TestAll.cdmLocalTestDataDir + "nids/N0Z_20050119_1538";
-  public static String radialVelocityFile = TestAll.cdmLocalTestDataDir + "nids/N0V_20041117_1646";
-  public static String radialVelocity1File = TestAll.cdmLocalTestDataDir + "nids/N1V_20050119_1548";
-  public static String echotopFile = TestAll.cdmLocalTestDataDir + "nids/NET_20041123_1648";
-  public static String oneHourPrecipFile = TestAll.cdmLocalTestDataDir + "nids/N1P_20041122_1837";
-  public static String StormRelMeanVel0File = TestAll.cdmLocalTestDataDir + "nids/N0S_20050119_1548";
-  public static String StormRelMeanVel1File = TestAll.cdmLocalTestDataDir + "nids/N1S_20041117_1640";
-  public static String StormRelMeanVel2File = TestAll.cdmLocalTestDataDir + "nids/N2S_20050120_1806";
-  public static String StormRelMeanVel3File = TestAll.cdmLocalTestDataDir + "nids/N3S_20050120_1806";
-  public static String totalPrecipFile = TestAll.cdmLocalTestDataDir + "nids/NTP_20050119_1528";
-  public static String digitPrecipArrayFile = TestAll.cdmLocalTestDataDir + "nids/DPA_20041123_1709";
-  public static String vertIntegLiquidFile = TestAll.cdmLocalTestDataDir + "nids/NVL_20041130_1946";
-  public static String vadWindProfileFile = TestAll.cdmLocalTestDataDir + "nids/NVW_20041117_1657";
+  public static String basereflectFile = TestLocal.cdmTestDataDir + "nids/N0R_20041119_2147";
+  public static String basereflect1File = TestLocal.cdmTestDataDir + "nids/N1R_20050119_1548";
+  public static String basereflect2File = TestLocal.cdmTestDataDir + "nids/N2R_20050119_1528";
+  public static String basereflect3File = TestLocal.cdmTestDataDir + "nids/N3R_20050119_1548";
+  public static String basereflectCFile = TestLocal.cdmTestDataDir + "nids/NCR_20050119_1548";
+  public static String basereflect248File = TestLocal.cdmTestDataDir + "nids/N0Z_20050119_1538";
+  public static String radialVelocityFile = TestLocal.cdmTestDataDir + "nids/N0V_20041117_1646";
+  public static String radialVelocity1File = TestLocal.cdmTestDataDir + "nids/N1V_20050119_1548";
+  public static String echotopFile = TestLocal.cdmTestDataDir + "nids/NET_20041123_1648";
+  public static String oneHourPrecipFile = TestLocal.cdmTestDataDir + "nids/N1P_20041122_1837";
+  public static String StormRelMeanVel0File = TestLocal.cdmTestDataDir + "nids/N0S_20050119_1548";
+  public static String StormRelMeanVel1File = TestLocal.cdmTestDataDir + "nids/N1S_20041117_1640";
+  public static String StormRelMeanVel2File = TestLocal.cdmTestDataDir + "nids/N2S_20050120_1806";
+  public static String StormRelMeanVel3File = TestLocal.cdmTestDataDir + "nids/N3S_20050120_1806";
+  public static String totalPrecipFile = TestLocal.cdmTestDataDir + "nids/NTP_20050119_1528";
+  public static String digitPrecipArrayFile = TestLocal.cdmTestDataDir + "nids/DPA_20041123_1709";
+  public static String vertIntegLiquidFile = TestLocal.cdmTestDataDir + "nids/NVL_20041130_1946";
+  public static String vadWindProfileFile = TestLocal.cdmTestDataDir + "nids/NVW_20041117_1657";
 
   public static boolean dumpFile = false;
 

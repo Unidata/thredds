@@ -19,8 +19,7 @@ import ucar.unidata.util.StringUtil2;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Allow external triggers for rereading Feature collections
@@ -47,7 +46,14 @@ public class CollectionController extends AbstractController {
 
     act = new DebugHandler.Action("showCollection", "Show Collections") {
       public void doAction(DebugHandler.Event e) {
+        // get sorted list of collections
         List<InvDatasetFeatureCollection> fcList = DataRootHandler.getInstance().getFeatureCollections();
+        Collections.sort(fcList, new Comparator<InvDatasetFeatureCollection>() {
+          public int compare(InvDatasetFeatureCollection o1, InvDatasetFeatureCollection o2) {
+            return o1.getName().compareTo(o2.getName());
+          }
+        });
+
         for (InvDatasetFeatureCollection fc : fcList) {
           String ename = StringUtil2.escape(fc.getName(), "");
           String url = tdsContext.getContextPath() + PATH + "?" + COLLECTION + "=" + ename;

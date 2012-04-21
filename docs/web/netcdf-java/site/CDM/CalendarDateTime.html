@@ -13,13 +13,13 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>CDM Calendar Date Handling </h1>
-<p>As of CDM version 4.3, dates are no longer handled by the <a href="http://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects <em><strong>datetime</strong></em> coordinate handling, called <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#time-coordinate">time coordinates</a> in CF. For all dimensional units, the udunits package is still used. </p>
+<p>As of CDM version 4.3, dates are no longer handled by the <a href="http://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects <em><strong>datetime</strong></em> coordinate handling, called <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#time-coordinate">time coordinates</a> in CF. For all <a href="http://en.wikipedia.org/wiki/Dimensional_analysis">dimensional units</a>, the udunits package is still used. </p>
 <hr width="100%" />
 <h3>Definitions and Background</h3>
 <ul>
   <li><strong><em>time</em></strong> is a duration of time (a dimensional unit). Udunits handles this using a base unit of &quot;seconds&quot;. All other udunit time units are fixed multiples of a second.</li>
   <li><em><strong>datetime</strong></em> is an instant of historical time. Udunits represents a datetime as a fixed number of seconds since a reference date, eg  &quot;12 days since 1990-02-03 12:22&quot;. </li>
-  <li><strong><em>calendar date</em></strong> (eg &quot;1990-02-03 12:22&quot;) is a representation of      a datetime using calendar fields (<em>millisec, second, minute, hour, day, month, year)</em>. This allows one to correctly represent the same instant of time that, for example, is printed in a newspaper or is referenced in a history book. We are following the design from the <a href="http://joda-time.sourceforge.net/userguide.html">joda-time library</a>.</li>
+  <li><strong><em>calendar date</em></strong> (eg &quot;1990-02-03 12:22&quot;) is a representation of      a datetime using calendar fields (<em>millisec, second, minute, hour, day, month, year)</em>. This allows one to correctly represent the same instant of time that, for example, is printed in a newspaper or is referenced in a history book. We are following the design from the <a href="http://joda-time.sourceforge.net/userguide.html">joda-time library</a>, which has a very good discussion  of the issues in datetime handling software.</li>
 </ul>
 <hr width="100%" />
 <h3>CDM datetime coordinates<br />

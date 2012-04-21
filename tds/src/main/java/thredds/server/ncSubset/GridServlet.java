@@ -41,11 +41,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Random;
 
+import ucar.ma2.Range;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridDatasetInfo;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.InvalidRangeException;
@@ -455,10 +460,34 @@ public class GridServlet extends AbstractServlet {
         }
       }
 
-       boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
+      // allow a vert level to be specified - but only one, and look in first 3D var with nlevels > 1
+      Range zRange = null;
+      if (qp.hasVerticalCoord) {
+        for (String varName : qp.vars) {
+          GridDatatype grid = gds.findGridDatatype(varName);
+          GridCoordSystem gcs = grid.getCoordinateSystem();
+          CoordinateAxis1D vaxis = gcs.getVerticalAxis();
+          if (vaxis != null && vaxis.getSize() > 1) {
+            int bestIndex = -1;
+            double bestDiff = Double.MAX_VALUE;
+            for (int i=0; i<vaxis.getSize(); i++) {
+              double diff = Math.abs(vaxis.getCoordValue(i) - qp.vertCoord);
+              if (diff < bestDiff) {
+                bestIndex = i;
+                bestDiff = diff;
+              }
+            }
+            if (bestIndex >= 0) zRange = new Range(bestIndex, bestIndex);
+            break;
+          }
+        }
+        // theres also a qp.vertStride, but not needed since only 1D slice is allowed
+      }
+      
+      boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
 
       try {
-        sendFile(req, res, gds, qp, hasBB, addLatLon);
+        makeGridFile(req, res, gds, qp, hasBB, addLatLon, zRange);
       } catch (InvalidRangeException e) {
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range: "+e.getMessage());
@@ -484,8 +513,8 @@ public class GridServlet extends AbstractServlet {
     }
   }
 
-  private void sendFile(HttpServletRequest req, HttpServletResponse res, GridDataset gds, QueryParams qp,
-          boolean useBB, boolean addLatLon) throws IOException, InvalidRangeException {
+  private void makeGridFile(HttpServletRequest req, HttpServletResponse res, GridDataset gds, QueryParams qp,
+          boolean useBB, boolean addLatLon, Range zRange) throws IOException, InvalidRangeException {
 
 
     String filename = req.getRequestURI();
@@ -505,10 +534,14 @@ public class GridServlet extends AbstractServlet {
 
     try {
       NetcdfCFWriter writer = new NetcdfCFWriter();
+
       writer.makeFile(cacheFilename, gds, qp.vars,
               useBB ? qp.getBB() : null,
+              qp.horizStride,
+              zRange,
               qp.hasDateRange ? qp.getCalendarDateRange() : null,
-              addLatLon, qp.horizStride, qp.vertStride, qp.timeStride);
+              qp.timeStride,
+              addLatLon);
 
     } catch (IllegalArgumentException e) { // file too big
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));

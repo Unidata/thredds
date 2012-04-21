@@ -9,7 +9,6 @@
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;}
-.style1 {font-style: italic}
 </style>
 </head>
 <body>
@@ -34,7 +33,7 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <p><strong>Which jar files do I need?</strong> See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want. </p>
 <p><strong>Which version? </strong>All current versions require  Java 6 or above. The last release using Java 5 was  4.0.49. The last release using Java 4.2 was  2.2.20. No  bug fixes are done on these earlier versions. </p>
 <h3><strong><a name="v42" id="v42"></a>Current stable release version 4.2 (requires  Java 6) </strong></h3>
-<p>See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want:</p>
+<p>See <a href="reference/JarDependencies.html#v42">Jar Dependencies</a> for explanation of which library you want:</p>
 <ul>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/netcdf-4.2.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/netcdf-4.2.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/netcdfAll-4.2.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/netcdfAll-4.2.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
@@ -61,41 +60,39 @@ mvn install</pre>
   </blockquote>
   <p>  You can also get the 4.2.28 build at  <a href="http://maven.geotoolkit.org/edu/ucar/netcdf/">http://maven.geotoolkit.org/edu/ucar/netcdf/  </a></p>
 </blockquote>
-<h3><strong><a name="v43" id="v43"></a> Development version 4.3 (alpha) </strong><strong>(requires  Java 6) </strong></h3>
-<p>See <a href="reference/JarDependencies.html">Jar Dependencies</a> for explanation of which library you want:</p>
-<ul>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdf-4.3.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdf-4.3.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.zip.MD5">MD5</a>) includes all the jar files you might need. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar.MD5">MD5</a>) allows you to run the netCDF ToolsUI application directly from it. </li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv.jar">ncIdv.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv.jar.MD5">MD5</a>) which you can use in the IDV</li>
-  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncCore-4.3.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncCore-4.3.jar.MD5">MD5</a>) just reads netcdf-3  files.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfUI-4.3.jar">unbundled GUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfUI-4.3.jar.MD5">MD5</a>) for GUI applications that want to choose which other jars are needed</li>
-  <li>See <a href="v4.3/CHANGES">CHANGES</a> for version changes.</li>
+<h3><strong><a name="v43" id="v43"></a> Development version 4.3 (ALPHA) </strong><strong>(requires  Java 6) </strong></h3>
+<p>CDM/TDS source is now hosted on <a href="reference/Git.html">GitHub</a>, and the source jar is no longer available, and ant builds are no longer supported. To build version 4.3 from source with maven:</p>
+<blockquote>
+  <pre>
+git clone git://github.com/Unidata/thredds.git thredds
+cd thredds
+mvn install</pre>
+  </blockquote>
+<p>If you want to do careful JAR inclusion, see <a href="reference/JarDependencies.html#v43">Jar Dependencies</a> for explanation of which jars you need. Most needs can be fulfilled using the complete CDM or ToolsUI JARs:</p>
+<ul><li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar.MD5">MD5</a>) also includes UI classes, and allows you to run the netCDF ToolsUI application directly from it with &quot;<em>java -Xmx1024m -jar  toolsUI.jar</em>&quot;</li>
+  <li>The ncIDV jar is not yet available.</li>
+  <li>See <a href="v4.3/CHANGES.txt">CHANGES</a> for version changes.</li>
   <li>Try out the <strong> 4.3</strong> version of ToolsUI application: <a href="v4.3/webstart/netCDFtools.jnlp">launch from webstart</a>. </li>
   <li><a href="v4.3/javadoc/index.html">Public javadoc</a>, downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/javadoc-4.3.jar">jar file</a>. This is the public interface. Future changes to the API will remain backwards compatible with this API. </li>
   <li><a href="v4.3/javadocAll/index.html">All javadoc, </a>downloadable<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/javadocAll-4.3.jar"> jar file. </a>This is the javadoc for all packages and all methods except private.  CAREFUL, some of this may change.</li>
 </ul>
 <blockquote>
-  <h4><strong><a name="maven" id="v2"></a>Building from source</strong></h4>
-  <p>CDM/TDS source is now hosted on <a href="reference/Git.html">GitHub</a>, and the source jar is no longer available. To build version 4.3 from source with maven:</p>
-  <blockquote>
-    <pre>
-git clone git://github.com/Unidata/thredds.git thredds
-cd thredds
-mvn install</pre>
-    </blockquote>
-  <p>To build version 4.3 from source with ant:</p>
-  <blockquote>
-    <pre>
-git clone git://github.com/Unidata/thredds.git thredds
-cd thredds/cdm
-
-ant clean makeMainComplete</pre>
-  </blockquote>
+  <h4>&nbsp;</h4>
 </blockquote>
 <h3>File format<a name="formats"></a> types</h3>
 <p>The NetCDF-Java library   can read these <a href="formats/FileTypes.html">file types and remote access protocols</a>.</p>
+<p>Note to GRIB users:</p>
+<blockquote>
+  <p><strong>If you are depending on the CDM/TDS to read GRIB files, you must      upgrade to 4.3 AND closely examine the output of any files that you      really care about. Check parameter names and everything else against      the original documentation if possible, especially if there is any      local parameter use. Please send us any files you suspect might be      incorrectly read by the CDM library. Note that we will not backport      fixes to version 4.2. Note that the variable names in 4.3 will be      different from those in 4.2.<br>
+    </strong><br>
+  Evolving documentation for GRIB is at:</p>
+  <ul>
+    <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html"> http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html</a></li>
+    <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html"> http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html</a><br>
+    </li>
+  </ul>
+</blockquote>
 <h3><strong>Caveats and not-so-stable APIs</strong>:</h3>
 <ul>
   <li><strong>Writing</strong> to netCDF-3 format is supported, but new features in the CDM, e.g. groups, structures,  long data types are not  yet supported. </li>
@@ -125,10 +122,20 @@ ant clean makeMainComplete</pre>
 <h3>CF Conventions</h3>
 <ul>
   <li><a href="http://www.cfconventions.org">CF Conventions Home page</a></li>
-  <li>CF Discrete Sampling Geometries conventions (final) <a href="http://www.unidata.ucar.edu/staff/caron/public/CFch9-may10.pdf">pdf</a> (May 2011)</li>
+  <li><a href="reference/FeatureDatasets/CFpointImplement.html">Short guide to writing files using CF 1.6 discrete sampling features Conventions</a></li>
   <li><a href="CDM/CFdiff.html">Differences between CF and CDM</a></li>
   <li><a href="reference/FeatureDatasets/CFencodingTable.html">CF Point Observation Data encoding Table</a></li>
   <li><a href="http://www.ral.ucar.edu/projects/titan/docs/radial_formats/cfradial.html">CF/Radial RADAR/LIDAR Data Format</a></li>
+  <li>CF Convention Conformance Checking
+    <ul>
+      <li><a href="http://cf-pcmdi.llnl.gov/conformance/compliance-checker/">http://cf-pcmdi.llnl.gov/conformance/compliance-checker/</a>
+
+          </li>
+    </ul>
+  </li>
+  <ul>
+    <li><a href="http://htap.icg.kfa-juelich.de:50080/upload">http://htap.icg.kfa-juelich.de:50080/upload</a></li>
+  </ul>
 </ul>
 <h3>Coordinate Systems</h3>
 <p>Working notes and documentation on the <strong><em>coordinate system</em></strong> layer of the CDM</p>
@@ -151,7 +158,7 @@ ant clean makeMainComplete</pre>
 </ul>
 <h3>Software libraries used by the Netcdf-Java library: </h3>
 <ul>
-  <li> Apache Commons <a href="http://jakarta.apache.org/commons/httpclient/">HttpClient</a> for  HTTP access, which also uses <a href="http://jakarta.apache.org/commons/logging/">commons-logging</a> and <a href="http://jakarta.apache.org/commons/codec/">commons-codec</a>. </li>
+  <li> Apache Commons <a href="http://jakarta.apache.org/commons/httpclient/">HttpClient</a> for  HTTP access</li>
   <li>Java-OPeNDAP library  for reading OPeNDAP. (note this is branched from the opendap.org site)</li>
   <li><a href="http://www.jdom.org/">JDOM</a>  for parsing XML.</li>
   <li><a href="http://www.jgoodies.com/">JGoodies</a> for UI stuff </li>
@@ -186,7 +193,8 @@ ant clean makeMainComplete</pre>
 <ul>
   <li>Talk at netCDF workshop 2010 (<a href="http://www.unidata.ucar.edu/staff/caron/presentations/DataSummit2010.pptx">pptx</a>)</li>
   <li>Talk at netCDF workshop 2009 (<a href="talks/NetCDFworkshop2009.ppt">ppt</a>)</li>
-  <li>Unidata public<a href="http://svn.unidata.ucar.edu/repos/thredds/"> svn repository</a></li>
+  <li>Unidata public<a href="http://github.com/unidata"> GitHub repository</a> for version 4.3</li>
+  <li>Unidata public<a href="http://svn.unidata.ucar.edu/repos/thredds/"> SVN repository</a> for version 4.2</li>
   <li>NetCDF-Java <a href="ring2.jpg">logo</a></li>
   <li><a href="http://www.unidata.ucar.edu/staff/caron/bufr/">BUFR Tables</a> project (in progress)  </li>
   <li><a href="http://www.unidata.ucar.edu/proposals/2011367OPeNDAP OPULS/OPULS Narrative final.pdf">OPULS project</a> (in progress)</li>
@@ -233,7 +241,7 @@ ant clean makeMainComplete</pre>
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated December 2011
+and was last updated April 2012
 </address>
 
 </body>

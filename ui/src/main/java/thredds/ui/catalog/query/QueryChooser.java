@@ -177,7 +177,7 @@ public class QueryChooser extends JPanel {
   /**
    * Set the DQC from a dataset with access type ServiceType.QC.
    *
-   * @param ds: InvDataset with an access of ServiceType.QC
+   * @param ds InvDataset with an access of ServiceType.QC
    * @return true if successful
    */
   public boolean setDataset(InvDataset ds) {
@@ -203,7 +203,7 @@ public class QueryChooser extends JPanel {
   /**
    * Set the DQC from a URL string pointing to a DQC.
    *
-   * @param urlString: url of the qc document
+   * @param urlString url of the qc document
    * @throws java.net.MalformedURLException : if urlString is malformed.
    * @throws java.io.IOException            : error reading qc
    */
@@ -1010,9 +1010,9 @@ public class QueryChooser extends JPanel {
    * Do not call before calling setDataset() or setQC().
    * Use dialog.show() and dialog.setVisible(true) to popup and hide.
    *
-   * @param parent: parent of the dialog, usually a JFrame
-   * @param title:  Dialog title; if null, use QC name
-   * @param modal:  is modal
+   * @param parent parent of the dialog, usually a JFrame
+   * @param title  Dialog title; if null, use QC name
+   * @param modal  is modal
    * @return the JDialog
    */
   public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {

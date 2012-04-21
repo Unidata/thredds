@@ -277,7 +277,7 @@
   <target name="compile-war-extra" description="some extra stuff for war generation">
 
     <property name="tds.properties.TEMPLATE.path"
-              location="src/main/template/thredds/server/tds.properties.TEMPLATE" />
+              location="src/main/template/thredds/server/tds.properties" />
     <property name="tds.properties.file.path"
               value="${webapp.dir}/WEB-INF/classes/thredds/server/tds.properties" />
     <property name="tds.properties.header"
@@ -320,7 +320,7 @@
 
     <!-- create README file with time and version -->
     <mkdir dir="${war.dir}"/>
-    <copy file="README.TEMPLATE" tofile="${readme.file}" overwrite="true">
+    <copy file="README.txt" tofile="${readme.file}" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="BUILD.NAME" value="${build.name}"/>
@@ -544,7 +544,7 @@
     <mkdir dir="${war.dir}"/>
 
     <!-- create README file with time and version -->
-    <copy file="README.TEMPLATE" tofile="${war.dir}/docs/README.txt" overwrite="true">
+    <copy file="README.txt" tofile="${war.dir}/docs/README.txt" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>

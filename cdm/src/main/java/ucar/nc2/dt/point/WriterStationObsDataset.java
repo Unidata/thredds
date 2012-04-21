@@ -47,10 +47,9 @@ import java.util.*;
 import java.io.*;
 
 /**
- * Write StationObsDataset in Unidata Station Obs COnvention.
+ * Write StationObsDataset in Unidata Station Obs Convention.
  *
  * @author caron
- * @version $Revision$ $Date$
  */
 public class WriterStationObsDataset {
   private static final String recordDimName = "record";
@@ -95,18 +94,9 @@ public class WriterStationObsDataset {
     this.title = title;
   }
 
-  public void setLength(long size) {
-    ncfile.setLength( size);
-  }
-
   public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars) throws IOException {
     createGlobalAttributes();
     createStations(stns);
-
-    // dummys, update in finish()
-    ncfile.addGlobalAttribute("time_coverage_start", dateFormatter.toDateTimeStringISO(new Date()));
-    ncfile.addGlobalAttribute("time_coverage_end", dateFormatter.toDateTimeStringISO(new Date()));
-
     createDataVariables(vars);
 
     ncfile.create(); // done with define mode
@@ -516,62 +506,6 @@ public class WriterStationObsDataset {
 
     long took = System.currentTimeMillis() - start;
     System.out.println("That took = " + took);
-  }
-
-  public static void rewrite(String fileIn, String fileOut) throws IOException {
-    long start = System.currentTimeMillis();
-
-    // do it in memory for speed
-    NetcdfFile ncfile = NetcdfFile.openInMemory(fileIn);
-    NetcdfDataset ncd = new NetcdfDataset( ncfile);
-
-    StringBuilder errlog = new StringBuilder();
-    StationObsDataset sobs = (StationObsDataset) TypedDatasetFactory.open(FeatureType.STATION, ncd, null, errlog);
-
-    List<ucar.unidata.geoloc.Station> stns = sobs.getStations();
-    List<VariableSimpleIF> vars = sobs.getDataVariables();
-
-    WriterStationObsDataset writer = new WriterStationObsDataset(fileOut, "rewrite "+fileIn);
-    File f = new File( fileIn);
-    writer.setLength(f.length());
-    writer.writeHeader(stns, vars);
-
-    for (ucar.unidata.geoloc.Station s : stns) {
-      DataIterator iter = sobs.getDataIterator(s);
-      while (iter.hasNext()) {
-        StationObsDatatype sobsData = (StationObsDatatype) iter.nextData();
-        StructureData data = sobsData.getData();
-        writer.writeRecord(sobsData, data);
-      }
-    }
-
-    writer.finish();
-
-    long took = System.currentTimeMillis() - start;
-    System.out.println("Rewrite " + fileIn+" to "+fileOut+ " took = " + took);
-  }
-
-  public static void main2(String args[]) throws IOException {
-    long start = System.currentTimeMillis();
-    String toLocation = "C:/temp2/";
-    String fromLocation = "C:/data/metars/";
-
-    if (args.length > 1) {
-      fromLocation = args[0];
-      toLocation = args[1];
-    }
-    System.out.println("Rewrite .nc files from "+fromLocation+" to "+toLocation);
-    
-    File dir = new File(fromLocation);
-    File[] files = dir.listFiles();
-    for (File file : files) {
-      if (file.getName().endsWith(".nc"))
-        rewrite(file.getAbsolutePath(), toLocation + file.getName());
-    }
-
-    long took = System.currentTimeMillis() - start;
-    System.out.println("That took = " + took);
-
   }
 
 
