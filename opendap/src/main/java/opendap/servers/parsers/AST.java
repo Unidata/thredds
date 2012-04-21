@@ -104,10 +104,10 @@ class ASTconstraint extends AST
             for(ASTprojection proj: projections) {
            proj.walk(ceEval);
         } else
-	    getCeEval().markAll(true);
-        if(selections != null)
-            for(ASTclause cl: selections) {
-           getCeEval().appendClause(cl.translate());
+	        getCeEval().markAll(true);
+            if(selections != null)
+                for(ASTclause cl: selections) {
+            getCeEval().appendClause(cl.translate());
         }
     }
 }
@@ -294,7 +294,7 @@ class ASTsegment extends AST
         components = getSdds().search(name,components);
         if(slices != null && slices.size() > 0) {
             try {
-                bt = (BaseType)components.peek();
+                bt = (SDArray)components.peek();
             } catch (ClassCastException cce) {
                     String msg = "Attempt to treat the variable `" + name
                                  + "' as if it is an array.";

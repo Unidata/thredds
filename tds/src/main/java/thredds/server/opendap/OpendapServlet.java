@@ -811,6 +811,7 @@ public class OpendapServlet extends AbstractServlet
   }
 
   // Recursively compute size of the dds to be returned
+  // Note that the dds may be empty (e-support ZTH-269982)
   private long
   computeSize(DConstructor ctor, boolean isAscii)
     throws Exception

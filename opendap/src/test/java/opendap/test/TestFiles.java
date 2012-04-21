@@ -208,4 +208,11 @@ static String[] ddstestfiles = {
     static String[] xtestfiles = {
     };
 
+    static String[][] specialtests = {
+{".das",
+ "http://dods.mbari.org/cgi-bin/nph-nc/data/ssdsdata/deployments/m1/200810",
+  "OS_M1_20081008_TS.nc"
+}
+    };
+
 }

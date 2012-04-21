@@ -13,6 +13,7 @@
           <root url="file://$MODULE_DIR$/../../wmoTables/src/main/webapp" relative="/" />
         </webroots>
         <sourceRoots />
+        <context-artifact name="wmoTables:war exploded" />
       </configuration>
     </facet>
   </component>
