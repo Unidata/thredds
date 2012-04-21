@@ -1010,9 +1010,9 @@ public class QueryChooser extends JPanel {
    * Do not call before calling setDataset() or setQC().
    * Use dialog.show() and dialog.setVisible(true) to popup and hide.
    *
-   * @param parent: parent of the dialog, usually a JFrame
-   * @param title:  Dialog title; if null, use QC name
-   * @param modal:  is modal
+   * @param parent parent of the dialog, usually a JFrame
+   * @param title  Dialog title; if null, use QC name
+   * @param modal  is modal
    * @return the JDialog
    */
   public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {

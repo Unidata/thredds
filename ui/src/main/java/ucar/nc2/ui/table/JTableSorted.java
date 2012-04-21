@@ -95,11 +95,11 @@ public class JTableSorted extends JPanel {
   /**
     Constructor.
 
-    @param columnName: list of column names
-    @param listRT : list of rows. This must contain objects that implement
+    @param columnName list of column names
+    @param listRT  list of rows. This must contain objects that implement
       the TableRow interface. May be null or empty.
-    @param enableColumnManipulation : allow columns to be added, deleted via click-right popup
-    @param threadSorter : if not null, add a "thread sorting" column
+    @param enableColumnManipulation  allow columns to be added, deleted via click-right popup
+    @param threadSorter  if not null, add a "thread sorting" column
 
   */
   public JTableSorted(String[] columnName, ArrayList listRT, boolean enableColumnManipulation,

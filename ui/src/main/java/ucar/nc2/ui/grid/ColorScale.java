@@ -350,7 +350,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   /**
    * Get which color interval this value lies in.
    *
-   * @param value: minimum data value.
+   * @param value minimum data value.
    * @return the color index.
    */
   public int getIndexFromValue(double value) {
@@ -399,8 +399,8 @@ public class ColorScale implements Cloneable, java.io.Serializable {
    *  n                    value = missingDataValue
    * </pre>
    *
-   * @param min: minimum data value
-   * @param max: maximum data value
+   * @param min minimum data value
+   * @param max maximum data value
    */
   public void setMinMax(double min, double max) {
     this.min = min;

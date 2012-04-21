@@ -122,7 +122,7 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
   /**
    * Set a new rowlist. This will automaticaly sort.
    * We make a copy of the Array, but these point to the original objects.
-   * @param rows: array of rows that implement TableRow interface
+   * @param rows array of rows that implement TableRow interface
    */
   public void setRows( ArrayList rows) {
     this.rowList = new ArrayList(rows);

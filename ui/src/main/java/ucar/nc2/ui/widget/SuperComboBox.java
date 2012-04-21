@@ -92,11 +92,11 @@ public class SuperComboBox extends JPanel {
   private int height = 222;
   private int width = 100;
 
-   /** default : one column, with an iterator of NamedObjects
-    * @param parent: parent container
-    * @param name: column name
-    * @param sortOK : true allow sorting, column adding and removing
-    * @param iter: Iterator of objects inside the combobox.
+   /** default is one column, with an iterator of NamedObjects
+    * @param parent parent container
+    * @param name column name
+    * @param sortOK  true allow sorting, column adding and removing
+    * @param iter Iterator of objects inside the combobox.
     */
   public SuperComboBox(RootPaneContainer parent, String name, boolean sortOK, Iterator iter) {
     this.name = name;
@@ -289,7 +289,7 @@ public class SuperComboBox extends JPanel {
 
   /** Set the currently selected object using its choice name.
    * Note that no event is sent due to this call.
-   * @param choiceName: name of object to match.
+   * @param choiceName name of object to match.
    * @return index of selection, or -1 if not found;
    */
   public int setSelectedByName( String choiceName) {

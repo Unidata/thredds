@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Superclass for rendering collections of GisFeatures.
  *
- * @author: John Caron
+ * @author John Caron
  */
 public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
   private static boolean useDiscretization = false;

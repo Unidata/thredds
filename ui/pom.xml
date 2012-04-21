@@ -199,6 +199,13 @@
             <phase>deploy</phase>
 
             <configuration>
+              <minmemory>128m</minmemory>
+              <maxmemory>1g</maxmemory>
+
+              <includeDependencySources>true</includeDependencySources>
+              <dependencySourceIncludes>
+                <dependencySourceInclude>edu.ucar:netcdf</dependencySourceInclude>
+              </dependencySourceIncludes>
             </configuration>
           </execution>
         </executions>
