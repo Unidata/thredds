@@ -12,7 +12,7 @@
 
   <artifactId>cdm-test</artifactId>
   <packaging>jar</packaging>
-  <name>Test CDM (upc/share)</name>
+  <name>Test CDM (upc/share - Unidata only)</name>
   <description>Classes for CDM unit and integration testing.</description>
 
   <dependencies>

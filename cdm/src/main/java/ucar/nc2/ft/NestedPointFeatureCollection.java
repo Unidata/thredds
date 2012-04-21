@@ -92,7 +92,7 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
   public PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
 
   /**
-   * @deprecated, use  CalendarDateRange
+   * @deprecated use  CalendarDateRange
    */
   public PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 

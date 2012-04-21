@@ -461,8 +461,8 @@ static public String getCanonicalURL(String legalurl)
  * Convert path to use '/' consistently and
  * to remove any trailing '/'
  *
- * @param path
- * @return
+ * @param path convert this path
+ * @return canonicalized version
  */
 static public String canonicalpath(String path)
 {

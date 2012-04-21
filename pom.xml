@@ -15,7 +15,7 @@
   <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
   <version>4.3.9-SNAPSHOT</version>
-  <name>Unidata THREDDS parent</name>
+  <name>Parent THREDDS and CDM modules</name>
   <description>
     The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
     the THREDDS Data Server (TDS).

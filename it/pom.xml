@@ -16,7 +16,7 @@
   <!-- groupId>edu.ucar</groupId-->
   <artifactId>it</artifactId>
   <packaging>pom</packaging>
-  <name>Integration Test module</name>
+  <name>Test Integration</name>
   <description>
     TDS - NetCDF-Java library integration Test module. This module contains all classes and settings
     needed to test the NetCDF-Java library in a servlet container.
@@ -126,7 +126,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>false</skip>
+          <skip>true</skip>
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>
         <executions>

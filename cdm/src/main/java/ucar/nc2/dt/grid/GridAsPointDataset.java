@@ -153,14 +153,14 @@ public class GridAsPointDataset {
   }
   
   /**
-   * Reads data for the given point (earthlocation) and if bounded is true returs data for the closest point within the grid, for points outside of the grid
+   * Reads data for the given point (earthlocation) and if bounded is true returns data for the closest point within the grid, for points outside of the grid
    * 
-   * @param grid
-   * @param date
+   * @param grid read data from here
+   * @param date at this time
    * @param location EarthLocation, if altitude is NaN assume that is 2D point
-   * @param bounded
-   * @return
-   * @throws java.io.IOException
+   * @param bounded if bounded, location must be in grid cell; otherwise get nearest grid point to location
+   * @return the location and data value
+   * @throws java.io.IOException on bad stuff
    */
   public Point readData(GridDatatype grid, CalendarDate date, EarthLocation location, boolean bounded)  throws java.io.IOException {
 
