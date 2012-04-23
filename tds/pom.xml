@@ -249,25 +249,34 @@
 
   <!-- ===========================================================
            Build configuration
-
-           We declare a non-existant test directory as a dirty trick
-           for skiping completly the tests, including compilation.
        =========================================================== -->
   <build>
     <finalName>thredds</finalName>
-    <!--resources></resources-->
+    <!-- 
+    	BINARY FILES MUST NEVER EVER EVER EVER BE FILTERED
+        Since binary data for general unit testing is in content/thredds/public 
+        we define two mutually exclusive resource sets. The first one contains everything but the public directory and is filtered
+        The second one only contains the public directory and is not filtered.
+        BINARY FILES MUST NEVER EVER EVER EVER BE FILTERED    
+    -->
     <testResources>
       <testResource>
         <filtering>true</filtering>
         <directory>${basedir}/src/test/resources</directory>
+        <excludes>
+        	<exclude>content/thredds/public/**</exclude>
+        	<exclude>content/thredds/cache/**</exclude>
+        	<exclude>content/thredds/logs/**</exclude>
+        	<exclude>content/thredds/cataloggen/**</exclude>
+        </excludes>
       </testResource>
-      <!-- testResource>
-        <filtering>true</filtering>
-        <directory>${basedir}/src/main/template</directory>
+      <testResource>
+        <filtering>false</filtering>
+        <directory>${basedir}/src/test/resources</directory>
         <includes>
-          <include>**/tds.properties</include>
+          <include>content/thredds/public/**</include>
         </includes>
-      </testResource-->
+      </testResource>
     </testResources>
     <plugins>
 
@@ -397,6 +406,7 @@
   </build>
 
   <properties>
-    <testContent.root.path>/share/testcatalogs/content</testContent.root.path>
+    <!-- testContent.root.path>/share/testcatalogs/content</testContent.root.path-->
+    <testContent.root.path>content</testContent.root.path>
   </properties>
 </project>

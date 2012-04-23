@@ -169,6 +169,7 @@
             <configuration>
               <includes>
                 <include>ucar/unidata/test/**</include>
+                <include>ucar/nc2/util/**</include>
               </includes>
             </configuration>
           </execution>
