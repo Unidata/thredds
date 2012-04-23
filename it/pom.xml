@@ -126,7 +126,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>true</skip>
+          <skip>${skipTests}</skip>
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>
         <executions>
@@ -173,7 +173,7 @@
           </execution>
         </executions>
         <configuration>
-          <skip>true</skip>
+          <skip>${skipTests}</skip>
           <wait>false</wait>
           <timeout>20000</timeout>
           <container>

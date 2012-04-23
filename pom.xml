@@ -621,12 +621,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${maven-surefire-plugin.version}</version>
-          <configuration>
-            <!-- completely skipping tests by default compiling? (compiler plugin will compile tests) and running -->
-            <skip>true</skip>
-            <!-- disable skipTest will compile test but won't run them  -->
-            <!-- skipTest>true</skipTest -->
-          </configuration>
         </plugin>
 
         <plugin>
@@ -674,6 +668,9 @@
   </modules>
 
   <properties>
+    <!-- default is to skip tests. use mvn test -DskipTests=false to override on command line -->
+    <skipTests>true</skipTests>
+
     <!-- Source character encoding (different plug-ins use different sourceEncoding properties) -->
     <sourceEncoding>UTF-8</sourceEncoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
