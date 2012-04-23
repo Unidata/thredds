@@ -15,6 +15,7 @@ import opendap.dap.parsers.*;
 import opendap.servers.*;
 import java.io.*;
 import java.util.*;
+import ucar.nc2.util.log.LogStream;
 }
 
 %code {
@@ -31,6 +32,7 @@ import java.util.*;
 	super(factory);
 	this.yylexer = new Celex(this);
 	super.lexstate = (Celex)this.yylexer;
+	this.yyDebugStream = LogStream.err;
     }
 
 
@@ -269,7 +271,7 @@ ident:  word
 	;
 
 word:  SCAN_WORD
-	    {$$ = $1;}
+	    {$$=unescapeDAPName($1);}
 	;
 
 number:  SCAN_NUMBERCONST

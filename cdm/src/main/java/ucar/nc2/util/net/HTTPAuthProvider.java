@@ -125,7 +125,7 @@ getCredentials(AuthScheme authscheme,
     Credentials credentials = null;
 
     if(isproxy)
-	scheme = HTTPAuthScheme.PROXY;
+	scheme = HTTPAuthScheme.BASIC; // use this for proxy authentication
     else
 	scheme = HTTPAuthScheme.schemeForName(authscheme.getSchemeName());
 

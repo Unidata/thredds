@@ -1,5 +1,5 @@
-#!/bin/sh
-
+##   #!/bin/sh
+exit # make it not runnable
 SVC="localhost"
 
 PWD="changeit"

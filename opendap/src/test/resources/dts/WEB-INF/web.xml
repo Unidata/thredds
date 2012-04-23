@@ -18,7 +18,7 @@
 
   <servlet>
     <servlet-name>dts</servlet-name>
-    <servlet-class>opendap.test.dts.TestServlet</servlet-class>
+    <servlet-class>opendap.test.dts.DTSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
 
     <!-- The following directory paths should be

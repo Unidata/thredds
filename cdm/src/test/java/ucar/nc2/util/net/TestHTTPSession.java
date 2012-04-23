@@ -33,10 +33,12 @@
 package ucar.nc2.util.net;
 
 import org.junit.Test;
+import ucar.nc2.util.UnitTestCommon;
 
 import static junit.framework.Assert.assertTrue;
 
-public class TestHTTPSession extends ucar.nc2.util.TestCommon {
+public class TestHTTPSession extends UnitTestCommon
+{
   //////////////////////////////////////////////////
 
   // Define the test sets
@@ -50,7 +52,9 @@ public class TestHTTPSession extends ucar.nc2.util.TestCommon {
   String datadir = null;
   String threddsroot = null;
 
-  public TestHTTPSession() {
+  public TestHTTPSession()
+  {
+    super();
     setTitle("HTTP Session tests");
   }
 
@@ -60,7 +64,7 @@ public class TestHTTPSession extends ucar.nc2.util.TestCommon {
     String globalagent = "TestUserAgent123global";
     String sessionagent = "TestUserAgent123session";
     String url =
-            "http://localhost:8080/thredds/dodsC/testStandardTdsScan/1day.nc.dds";
+            "http://motherlode:8081/dts/test.01.dds";
 
     System.out.println("*** Testing: User Agent");
     System.out.println("*** URL: " + url);
