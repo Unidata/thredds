@@ -15,7 +15,7 @@
            Module Description
        =========================================================== -->
   <!-- groupId>edu.ucar</groupId-->
-  <artifactId>thredds</artifactId>
+  <artifactId>tds</artifactId>
   <packaging>war</packaging>
   <name>THREDDS Data Server (TDS)</name>
   <description>
@@ -352,6 +352,46 @@
                       </configuration>
                   </execution>
                   </executions-->
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>${skipTests}</skip>
+        </configuration>
+      </plugin>
+
+      <plugin>  <!-- release kludge for now -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>release</id>
+            <phase>deploy</phase>
+            <configuration>
+              <tasks>
+                <property name="ftp.dir" value="V:/pub/thredds/v4.3/4.3.10"/>
+                <echo message="ftp.dir: ${ftp.dir}"/>
+
+                <copy todir="${ftp.dir}" overwrite="true">
+                  <fileset dir="./target" includes="thredds.war"/>
+                  <fileset dir="." includes="CHANGES.txt"/>
+                </copy>
+
+                <checksum>
+                  <fileset dir="${ftp.dir}">
+                    <include name="*.war"/>
+                  </fileset>
+                </checksum>
+
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
