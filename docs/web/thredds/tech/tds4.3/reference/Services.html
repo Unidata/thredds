@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  
+  <title>TDS Services</title>
+  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+</head>
+
+<body>
+<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75">TDS Services </h1>
+<hr>
+
+
+<p>In your configuration catalogs, you must define the service like this:</p>
+<pre>  &lt;service name=&quot;all&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;<br />    &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;<br />    &lt;service name=&quot;HTTPServer&quot; serviceType=&quot;HTTPServer&quot; base=&quot;/thredds/fileServer/&quot;/&gt;<br />    &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot;/&gt;<br />    &lt;service name=&quot;wms&quot; serviceType=&quot;WMS&quot; base=&quot;/thredds/wms/&quot;/&gt;<br />    &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid/&quot;/&gt;<br />    &lt;service name=&quot;cdmremote&quot; serviceType=&quot;CdmRemote&quot; base=&quot;/thredds/cdmremote/&quot;/&gt;<br />    &lt;service name=&quot;ncml&quot; serviceType=&quot;NCML&quot; base=&quot;/thredds/ncml/&quot;/&gt;<br />    &lt;service name=&quot;uddc&quot; serviceType=&quot;UDDC&quot; base=&quot;/thredds/uddc/&quot;/&gt;<br />    &lt;service name=&quot;iso&quot; serviceType=&quot;ISO&quot; base=&quot;/thredds/iso/&quot;/&gt;<br />  &lt;/service&gt;</pre>
+<br />
+
+</body>
+</html>
