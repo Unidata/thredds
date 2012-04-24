@@ -599,7 +599,7 @@
           <version>${maven-javadoc-plugin.version}</version>
           <configuration>
             <links>
-              <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+              <link>http://docs.oracle.com/javase/6/docs/api/</link>
             </links>
             <use>false</use>
             <quiet>true</quiet>
