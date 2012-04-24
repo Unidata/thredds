@@ -42,6 +42,7 @@ import opendap.dap.parsers.ParseException;
 import static opendap.servers.parsers.CeParser.*;
 
 import java.io.*;
+import ucar.nc2.util.log.LogStream;
 
 
 class Celex implements Lexer, ExprParserConstants
@@ -51,7 +52,7 @@ class Celex implements Lexer, ExprParserConstants
     static final String wordchars1 =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%\\";
     static final String wordcharsn =
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%\\";
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%\\ ";
     static String worddelims = "{}[]:;=,&";
 
     /* Number characters */
@@ -178,6 +179,7 @@ class Celex implements Lexer, ExprParserConstants
                         }
                         yytext.append((char) c);
                     }
+                    removetrailingblanks();
                     /* See if this is a number */
                     try {
                         Double number = new Double(yytext.toString());
@@ -214,6 +216,7 @@ class Celex implements Lexer, ExprParserConstants
                         }
                         yytext.append((char) c);
                     }
+                    removetrailingblanks();
                     token = SCAN_WORD;
                 } else {
                     /* we have a single char token */
@@ -240,16 +243,17 @@ class Celex implements Lexer, ExprParserConstants
     {
         switch (token) {
         case SCAN_STRINGCONST:
-            System.err.printf("TOKEN = |\"%s\"|\n", lval);
+            LogStream.err.printf("TOKEN = |\"%s\"|\n", lval);
             break;
         case SCAN_WORD:
         case SCAN_NUMBERCONST:
-            System.err.printf("TOKEN = |%s|\n", lval);
+            LogStream.err.printf("TOKEN = |%s|\n", lval);
             break;
         default:
-            System.err.printf("TOKEN = |%c|\n", (char)token);
+            LogStream.err.printf("TOKEN = |%c|\n", (char)token);
             break;
         }
+        LogStream.err.logflush();
     }
 
     static int
@@ -291,14 +295,15 @@ class Celex implements Lexer, ExprParserConstants
      */
     public void yyerror(String s)
     {
-        System.err.print("yyerror: constraint parse error:" + s + "; char "+ charno);
+        LogStream.err.print("yyerror: constraint parse error:" + s + "; char "+ charno);
         if(yytext.length() > 0)
-            System.err.print(" near |"+ yytext + "|");
-        System.err.println();
+            LogStream.err.print(" near |"+ yytext + "|");
+        LogStream.err.println();
 	    // Add extra info
-        if(parsestate.getURL() != null) System.err.println("\turl="+parsestate.getURL());
-        System.err.println("\tconstraint="+(constraint==null?"none":constraint));
-        new Exception().printStackTrace(System.err);
+        if(parsestate.getURL() != null) LogStream.err.println("\turl="+parsestate.getURL());
+        LogStream.err.println("\tconstraint="+(constraint==null?"none":constraint));
+        new Exception().printStackTrace(LogStream.err);
+        LogStream.err.logflush();
     }
 
     public void lexerror(String msg)
@@ -316,5 +321,14 @@ class Celex implements Lexer, ExprParserConstants
         System.out.printf("Lex error: %s; charno: %d: %s^%s\n", msg, charno, yytext, nextline);
     }
 
-
+    void removetrailingblanks()
+    {
+        /* If the last characters were blank, then push them back */
+        if(yytext.charAt(yytext.length()-1) == ' ') {
+            while(yytext.charAt(yytext.length()-1) == ' ') {
+               yytext.setLength(yytext.length()-1);
+            }
+            pushback(' ');
+        }
+    }
 }

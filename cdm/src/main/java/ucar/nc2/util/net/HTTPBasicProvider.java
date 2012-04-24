@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -32,49 +33,53 @@
 
 package ucar.nc2.util.net;
 
-import org.junit.Test;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScheme;
+import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 
-import static junit.framework.Assert.assertTrue;
+import java.io.IOException;
+import java.io.Serializable;
 
-public class TestMisc extends ucar.nc2.util.TestCommon {
-  //////////////////////////////////////////////////
 
-  // Define the test sets
+//////////////////////////////////////////////////
+// Provide a non-interactive CredentialsProvider to hold
+// a username + password that might have been taken from e.g.
+// the user info part of a URL.
 
-  int passcount = 0;
-  int xfailcount = 0;
-  int failcount = 0;
-  boolean verbose = true;
-  boolean pass = false;
+public class HTTPBasicProvider implements CredentialsProvider, Credentials, Serializable
+{
+    String username = null;
+    String password = null;
 
-  String datadir = null;
-  String threddsroot = null;
-
-  public TestMisc() {
-    setTitle("HTTP Session tests");
-  }
-
-  static final String[] esinputs = {
-          "http://localhost:8080/dts/test.01",
-          "http://localhost:8080///xx/",
-          "http://localhost:8080/<>^/`/",
-  };
-  static final String[] esoutputs = {
-          "http://localhost:8080/dts/test.01",
-          "http://localhost:8080///xx/",
-          "http://localhost:8080/%3c%3e%5e/%60/",
-  };
-
-  @Test
-  public void
-  testEscapeStrings() throws Exception {
-    pass = true;
-    assert (esinputs.length == esoutputs.length);
-    for (int i = 0; i < esinputs.length && pass; i++) {
-      String result = EscapeStrings.escapeURL(esinputs[i]);
-      if (!result.equals(esoutputs[i])) pass = false;
-      System.out.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
+    public HTTPBasicProvider(String username, String password)
+    {
+	this.username = username;
+	this.password = password;
     }
-    assertTrue("TestMisc.testEscapeStrings", pass);
-  }
+
+    // Credentials Provider Interface
+    public Credentials
+    getCredentials(AuthScheme authscheme, String host, int port, boolean isproxy)
+	throws CredentialsNotAvailableException
+    {
+	UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
+	return creds;
+    }
+
+    // Serializable Interface
+    private void writeObject(java.io.ObjectOutputStream oos)
+	throws IOException
+    {
+	oos.writeObject(this.username);
+	oos.writeObject(this.password);
+    }
+
+    private void readObject(java.io.ObjectInputStream ois)
+	throws IOException, ClassNotFoundException
+    {
+	this.username = (String) ois.readObject();
+	this.password = (String) ois.readObject();
+    }
 }

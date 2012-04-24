@@ -309,19 +309,20 @@ public class testDataset implements GuardedDataset {
      */
     public DAS getDAS() throws DAP2Exception, ParseException {
 
-        DataInputStream is = null;
         DAS myDAS = null;
         boolean gotDDX = false;
         boolean gotDDS = false;
         boolean gotDAS = false;
+        // Try to get an open an InputStream that contains the DDX for the
+        // requested dataset.
+        DataInputStream dds_source = null;
+        DataInputStream is = null;
 
         ServerDDS myDDS = getMyDDS();
 
-        // Try to get an open an InputStream that contains the DDX for the
-        // requested dataset.
-        DataInputStream dds_source = openCachedDDX(rs);
-
-        /*if (dds_source != null) { // Did it work?
+        /*
+        dds_source = openCachedDDX(rs);
+        if (dds_source != null) { // Did it work?
 
             // Then parse the DDX
             myDDS.parseXML(dds_source, true);
@@ -332,7 +333,7 @@ public class testDataset implements GuardedDataset {
             gotDDX = true;
 
         } else   // Ok, no DDX
-         */
+        */
         {
 
             // Try to get an open an InputStream that contains the DDS for the
@@ -345,6 +346,8 @@ public class testDataset implements GuardedDataset {
                     //myDDS.setBlobURL(rs.getDodsBlobURL());
                     LogStream.out.println("Got DDS.");
                 }
+                try {dds_source.close(); } catch(IOException ioe) {};
+
             }
             LogStream.out.println("-------------");
             myDAS = new DAS();

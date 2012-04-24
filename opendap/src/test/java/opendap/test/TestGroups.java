@@ -34,6 +34,7 @@ package opendap.test;
 
 import org.junit.Test;
 import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.util.UnitTestCommon;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.test.Diff;
 
@@ -41,8 +42,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestGroups extends ucar.nc2.util.TestCommon {
-  static final String DFALTTESTSERVER = "motherlode.ucar.edu:8080";
+public class TestGroups extends UnitTestCommon
+{
+  static final String DFALTTESTSERVER = "motherlode.ucar.edu:8081";
 
   public TestGroups() {
     setTitle("DAP Group tests");
@@ -93,7 +95,7 @@ public class TestGroups extends ucar.nc2.util.TestCommon {
 
     if (!RC.getUseGroups()) {
       System.out.println("Groups not supported; continuing");
-      //junit.framework.Assert.assertTrue("Groups not supported; continuing", true);
+      //assertTrue("Groups not supported; continuing", true);
       //return; // do not run if groups are not being supported
     }
 
@@ -120,7 +122,7 @@ public class TestGroups extends ucar.nc2.util.TestCommon {
       baserdr.close();
       resultrdr.close();
       if (!pass) {
-        junit.framework.Assert.assertTrue("Testing " + result.title, pass);
+        assertTrue("Testing " + result.title, pass);
       }
       // Dump the output for visual comparison
       if (System.getProperty("visual") != null) {

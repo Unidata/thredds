@@ -46,7 +46,7 @@ import ucar.nc2.util.net.HTTPSession;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-public class TestAuth2 extends TestCase
+public class NoTestAuth2 extends TestCase
 {
   static class Data
   {
@@ -69,7 +69,7 @@ public class TestAuth2 extends TestCase
       new Data("https://motherlode.ucar.edu:8443/dts/b31.dds",null),
     };
 
-  @Test
+
   public void testAuth2() throws Exception
   {
     boolean pass = true;
@@ -99,9 +99,9 @@ public class TestAuth2 extends TestCase
         }
     }
     if(pass)
-      junit.framework.Assert.assertTrue("testAuth2", true);
+      assertTrue("testAuth2", true);
     else
-      junit.framework.Assert.assertTrue("testAuth2", false);
+      assertTrue("testAuth2", false);
   }
 
 }

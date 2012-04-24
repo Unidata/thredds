@@ -37,6 +37,7 @@ import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servers.*;
 import org.junit.Test;
+import ucar.nc2.util.UnitTestCommon;
 
 import java.util.*;
 import java.io.*;
@@ -44,7 +45,8 @@ import java.io.*;
 // Test that the Constraint parsing is correct
 
 
-public class TestCeParser extends ucar.nc2.util.TestCommon {
+public class TestCeParser extends UnitTestCommon
+{
   static boolean generate = true;
 
   // Constraint list produced by GenerateConstraints.java
@@ -548,7 +550,7 @@ public class TestCeParser extends ucar.nc2.util.TestCommon {
       }
       if (!generate && !pass) break;
     }
-    if (!generate) junit.framework.Assert.assertTrue("TestCeParser", pass);
+    if (!generate) assertTrue("TestCeParser", pass);
   }
 
   public static void main(String args[]) throws Exception {

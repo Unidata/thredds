@@ -1,11 +1,14 @@
 package opendap.test;
 
+import ucar.nc2.util.UnitTestCommon;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestSources extends ucar.nc2.util.TestCommon {
+public class TestSources extends UnitTestCommon
+{
 //////////////////////////////////////////////////
 // Remote test info
 
@@ -14,7 +17,7 @@ public class TestSources extends ucar.nc2.util.TestCommon {
   static final String TESTDATA1DIR = "testdata1";
 
   /* Use this for experimenting with new URLS */
-  public static final String XURL1 = "http://motherlode.ucar.edu:8080/dts";
+  public static final String XURL1 = "http://motherlode.ucar.edu:8081/dts";
 
   //"http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_12km/files";
   static final String[] X1 = {
@@ -22,7 +25,7 @@ public class TestSources extends ucar.nc2.util.TestCommon {
   };
 
   // These shorter tests are always run
-  static final String REMOTEURLS1 = "http://motherlode.ucar.edu:8080/dts";
+  static final String REMOTEURLS1 = "http://motherlode.ucar.edu:8081/dts";
   static final String[] REMOTETESTSS1 = {
           "test.01", "test.02", "test.04", "test.05", "test.06a", "test.07a", "test.07",
           "test.21", "test.22", "test.23",
@@ -43,7 +46,7 @@ public class TestSources extends ucar.nc2.util.TestCommon {
   };
 
   // Following tests are to check constraint handling
-  static final String REMOTEURLC1 = "http://motherlode.ucar.edu:8080/dts";
+  static final String REMOTEURLC1 = "http://motherlode.ucar.edu:8081/dts";
   static final String[] REMOTETESTSC1 = {
           "test.01;1;f64",
           "test.02;1;b[1:2:10]",

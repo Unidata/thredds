@@ -104,7 +104,7 @@ static private org.slf4j.Logger LOG = null;
         {
 	    if(verbose) {
             if(LOG == null)  LOG = org.slf4j.LoggerFactory.getLogger(HTTPMethod.class);
-		    LOG.info(String.format("Retry: count=%d exception=%s\n",executionCount, exception.toString()));
+		    LOG.debug(String.format("Retry: count=%d exception=%s\n",executionCount, exception.toString()));
         }
         return super.retryMethod(method,exception,executionCount);
         }

@@ -12,6 +12,7 @@ wmoTables/target/
 # Ignore unwanted IntelliJ IDEA project files
 intelliJ/maven/
 intelliJ/thredds/
+intelliJ/threddsFull/
 *.iws
 atlassian-ide-plugin.xml
 

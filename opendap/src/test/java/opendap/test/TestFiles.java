@@ -33,12 +33,15 @@
 
 package opendap.test;
 
+import ucar.nc2.util.UnitTestCommon;
+
 import java.io.*;
 
 // WARNING: assumes we are operating inside cdm directory
 // when invoked
 
-public class TestFiles extends ucar.nc2.util.TestCommon {
+public class TestFiles extends UnitTestCommon
+{
   // Following are with respect to threddsRoot
   static final String TESTSUFFIX = "opendap/src/test/data";
   static final String RESULTSUFFIX = "opendap/target/results";

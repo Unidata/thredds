@@ -437,9 +437,9 @@ public abstract class Ceparse implements ExprParserConstants
     {
         // Reverse the stack.
         Stack bts = new Stack();
-        // System.err.println("Variables to be marked:");
+        // LogStream.err.println("Variables to be marked:");
         while (!s.empty()) {
-            // System.err.println(((BaseType)s.peek()).getName());
+            // LogStream.err.println(((BaseType)s.peek()).getName());
             bts.push(s.pop());
         }
 

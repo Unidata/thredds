@@ -155,7 +155,7 @@ public class TestClone extends TestFiles {
         clonerdr.close();
         resultrdr.close();
         if (!pass)
-          junit.framework.Assert.assertTrue(testname, pass);
+          assertTrue(testname, pass);
       } catch (IOException ioe) {
         System.err.println("Close failure");
       }

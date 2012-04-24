@@ -1,6 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -33,44 +32,54 @@
 
 package ucar.nc2.util.net;
 
-/**
- * HTTPAuthScheme defines an enum about the currently supported schemes.
- */
+import org.junit.Test;
+import ucar.nc2.util.UnitTestCommon;
 
-public enum HTTPAuthScheme
+import static junit.framework.Assert.assertTrue;
+
+public class TestMisc extends UnitTestCommon
 {
-    BASIC("BASIC"),
-    DIGEST("DIGEST"),
-    SSL("SSL"),
-    ANY("ANY");
+  //////////////////////////////////////////////////
 
-    // Define the associated standard name
-    private final String name;
+  // Define the test sets
 
-    HTTPAuthScheme(String name)
-    {
-        this.name = name;
+  int passcount = 0;
+  int xfailcount = 0;
+  int failcount = 0;
+  boolean verbose = true;
+  boolean pass = false;
+
+  String datadir = null;
+  String threddsroot = null;
+
+  public TestMisc() {
+    setTitle("HTTP Session tests");
+  }
+
+  static final String[] esinputs = {
+          "http://localhost:8081/dts/test.01",
+          "http://localhost:8081///xx/",
+          "http://localhost:8081/<>^/`/",
+  };
+  static final String[] esoutputs = {
+          "http://localhost:8081/dts/test.01",
+          "http://localhost:8081///xx/",
+          "http://localhost:8081/%3c%3e%5e/%60/",
+  };
+
+  @Test
+  public void
+  testEscapeStrings() throws Exception {
+    pass = true;
+    assert (esinputs.length == esoutputs.length);
+    for (int i = 0; i < esinputs.length && pass; i++) {
+      String result = EscapeStrings.escapeURL(esinputs[i]);
+        System.err.printf("input= |%s|\n",esinputs[i]);
+        System.err.printf("result=|%s|\n",result);
+        System.err.printf("output=|%s|\n",esoutputs[i]);
+      if (!result.equals(esoutputs[i])) pass = false;
+      System.out.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
     }
-
-    public String getSchemeName()   { return name; }
- 
-    static public HTTPAuthScheme schemeForName(String name)
-    {
-	if(name != null) {
-  	    for(HTTPAuthScheme s: HTTPAuthScheme.values()) {
-  	        if(name.equalsIgnoreCase(s.name())) return s;
-	    }
-	}
-	return null;
-    }
-
-    static public HTTPAuthScheme fromAuthScope(String scheme)
-    {
-	if(scheme == null) return null;
-	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.BASIC))
-	    return BASIC;
-	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.DIGEST))
-	    return DIGEST;
-	return null;
-    }
+    assertTrue("TestMisc.testEscapeStrings", pass);
+  }
 }

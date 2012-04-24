@@ -161,10 +161,10 @@ public class SpringJUnit4ParameterizedClassRunner extends Suite {
 					fParameterSetNumber);
 		}
 
-		@Override
-		protected void validateConstructor(List<Throwable> errors) {
+
+		/*protected void validateConstructor(List<Throwable> errors) {
 			validateOnlyOneConstructor(errors);
-		}
+		} */
 
 		@Override
 		protected Statement classBlock(RunNotifier notifier) {
