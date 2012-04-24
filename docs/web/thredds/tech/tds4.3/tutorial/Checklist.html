@@ -33,7 +33,7 @@ dl {margin: 10px 5px 5px 15px;)
         <li>32-bit JVM: JAVA_OPTS=&quot;-Xmx1500m -Xms512m -XX:MaxPermSize=180m -server -Djava.awt.headless=true&quot;</li>
         <li>64-bit JVM: JAVA_OPTS=&quot;-Xmx4096m -Xms512m -XX:MaxPermSize=180m -server -Djava.awt.headless=true&quot;</li>
       </ul>
-      <li>If you are using WMS, <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/faq.html#javaUtilPrefs">clean up java.util.prefs messages:</a>
+      <li>If you are using WMS, <a href="http://en.wikipedia.org/wiki/Certificate_authority">clean up java.util.prefs messages:</a>
         <ol>
           <li> Add this option to JAVA_OPTS: &quot;-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs&quot;</li>
           <li>Create a directory at $TOMCAT_HOME/content/thredds/javaUtilPrefs/.systemPrefs and make it writeable by the tomcat user</li>
@@ -42,7 +42,7 @@ dl {margin: 10px 5px 5px 15px;)
     </ol>
   </li>
   <br/>
-  <li>Buy a real certificate from a <a href="http://en.wikipedia.org/wiki/Certificate_authority">certificate authority</a>, so  browsers wont say things like &quot;this is not a legitimate business&quot; when users come to your web site.</li>
+  <li>Buy a real certificate from a <a href="http://en.wikipedia.org/wiki/Certificate_authority">certificate authority</a>, so  browsers won't say things like &quot;this is not a legitimate business&quot; when users come to your web site.</li>
   <ol>
     <li>Otherwise, <a href="BasicTomcatAndTDSSecurity.html#createCert">create a self-signed certificate</a> with <strong>$JAVA_HOME/bin//keytool -genkey -alias tomcat -keyalg RSA -keystore $TOMCAT_HOME/conf/keystore</strong></li>
   </ol>

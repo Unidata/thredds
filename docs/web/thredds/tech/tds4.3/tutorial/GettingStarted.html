@@ -319,7 +319,8 @@ export CATALINA_HOME
          <li><code><small>-Xmx</small></code> the maximum allocated memory of the JVM (for performance).</li>
          <li><code><small>-server</small></code> tells the Hostspot compiler to run the JVM in "server" mode.</li>
          <li><code><small>-Djava.awt.headless=true</small></code> is needed to prevent graphics rendering code from assuming a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
-          <li><code><small>-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs</small></code> allows the <a href="/projects/THREDDS/tech/tds4.2/faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS service to write system preferences to a location that is writable by the user that Tomcat runs under</li>.
+          <li><code><small>-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs</small></code> allows the <a href="../faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS service to write system preferences to a location that is writable by the user that Tomcat runs under</li>
+          .
         </ul>
  
        <li>Restart Tomcat to implement your changes.</li>
@@ -402,7 +403,7 @@ Incompatible minimum and maximum heap sizes specified
 
       <div id="note" class="info">
        <h4>Upgrading the TDS</h4>
-       <p>The <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/index.html">reference</a> documentation contains information on <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/UpgradingTo4.2.html">upgrading</a> the TDS. </p>
+       <p>The <a href="../reference/index.html">reference</a> documentation contains information on <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/UpgradingTo4.2.html">upgrading</a> the TDS. </p>
       </div>
 
       <ol>

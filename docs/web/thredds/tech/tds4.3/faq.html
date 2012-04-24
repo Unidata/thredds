@@ -113,7 +113,7 @@
 
 <p><strong>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? </strong><br>
 </p>
-<p>A: Heres the general idea in the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/tutorial/BasicConfig.html">tutorial</a> and the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM library, you can call </p>
+<p>A: Heres the general idea in the <a href="tutorial/BasicConfig.html">tutorial</a> and the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM library, you can call </p>
 <pre>InvAccess.getUrlPath()</pre>
 
 <hr width="50%" align="left">
@@ -307,18 +307,13 @@ mkdir javaUtilPrefs/.systemPrefs
 <p><strong>Q: We use <a name="compressed"></a> compressed netcdf files and the very first access to them are quite slow, although  subsequent accesses are much   faster, then become slow again after a while. I   can see that TDS uncompress these files to the cdm cache  directory, but then they must get deleted.  Is there a way to keep them in the cache  permanently? </strong><br>
 </p>
 <blockquote>
-  <p>Esentially this is a tradeoff between storage spaceand the time to decompress . I assume you dont want to   store the files uncompressed, so you have to pay the price of that. To control how these files are cached, see:<br>
-    <br>
-    <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/ThreddsConfigXMLFile.html#DiskCache">http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/ThreddsConfigXMLFile.html#DiskCache</a><br>
-    <br>
-    I would suggest that you use:<br>
-  </p>
+  <p>Esentially this is a tradeoff between storage spaceand the time to decompress. I assume you dont want to   store the files uncompressed, so you have to pay the price of that. To control how these files are cached, see <a href="reference/ThreddsConfigXMLFile.html#DiskCache">CDM library Disk cache</a>. I would suggest that you use:<br>
+</p>
 </blockquote>
 <pre> &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;true&lt;/alwaysUse&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;</pre>
 <blockquote>
-  <p>    and choose <strong>maxSize</strong> carefully. The default directory is&nbsp;<em>{tomcat}/content/thredds/cache/cdm/ </em>by default, or set it in the above   xml.<br>
-    <br>
-  The   trick is to make <strong>maxSize</strong> big enough to keep the "working set"   uncompressed, ie if there is a reletively small "hot" set of files that   get accessed a lot, you want to give enough cache space to keep them   uncompressed in the cache. Monitor the cache directory closely to see what files stay uncompressed, and how old they are, and modify <strong>maxSize</strong> as needed.<br>
+  <p>    and choose <strong>maxSize</strong> carefully. 
+  The   trick is to make <strong>maxSize</strong> big enough to keep the "working set"   uncompressed, i.e. if there is a reletively small "hot" set of files that   get accessed a lot, you want to give enough cache space to keep them   uncompressed in the cache. Monitor the cache directory closely to see what files stay uncompressed, and how old they are, and modify <strong>maxSize</strong> as needed.<br>
   </p>
 </blockquote>
 
