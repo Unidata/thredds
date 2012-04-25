@@ -655,13 +655,13 @@
        Modules for the build in approximate dependency order
      =========================================================== -->
   <modules>
+    <module>udunits</module>
     <module>cdm</module>
     <module>bufr</module>
     <module>grib</module>
     <module>opendap</module>
     <module>tds</module>
     <module>visad</module>
-    <module>udunits</module>
     <module>ui</module>
     <module>cdm-test</module>
     <module>it</module>
