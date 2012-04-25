@@ -51,10 +51,10 @@ public class TestCeParser extends UnitTestCommon
 
   // Constraint list produced by GenerateConstraints.java
   static final String[] xconstraints = {
-          //"&v1[0]>=2"
+          //"&g.a!=101"
   };
   static final String[] xexpected = {
-          "&v1[0]=2"
+    "&g.a!=101"
   };
 
   static final String[] constraints = {
@@ -157,7 +157,8 @@ public class TestCeParser extends UnitTestCommon
           "st.f1[0],g.m1[1:9]&st.f0>=\"string\"&v3[9][9][9]<101",
           "v3[0][1:9][0],sq.f2[1:9][0]",
           "v2[0][0],v1[0]",
-          "sq.f3[1:9][1:9][1:9]&sq.f2[2][2]>=101&g.m2[9]>g.m3[9]"
+          "sq.f3[1:9][1:9][1:9]&sq.f2[2][2]>=101&g.m2[9]>g.m3[9]",
+          "1-hour[0:1:0][0:1:0][0:1:0]"
   };
 
 
@@ -261,7 +262,8 @@ public class TestCeParser extends UnitTestCommon
           "st.f1[0],st,g.m1[1:9],g&st.f0>=\"string\"&v3[9][9][9]<101",
           "v3[0][1:9][0],sq.f2[1:9][0],sq",
           "v2[0][0],v1[0]",
-          "sq.f3[1:9][1:9][1:9],sq&sq.f2[2][2]>=101&g.m2[9]>g.m3[9]"
+          "sq.f3[1:9][1:9][1:9],sq&sq.f2[2][2]>=101&g.m2[9]>g.m3[9]",
+          "1-hour[0:1:0][0:1:0][0:1:0]"
   };
 
   //////////////////////////////////////////////////
@@ -294,6 +296,7 @@ public class TestCeParser extends UnitTestCommon
                   + "int32 m2[d2=10];\n"
                   + "int32 m3[d3=10];\n"
                   + "} g;\n"
+                  + "int32 1-hour;\n" // test number versus name check
                   + "} TestCeParser;\n";
 
   //////////////////////////////////////////////////

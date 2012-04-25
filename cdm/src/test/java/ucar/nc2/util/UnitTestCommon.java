@@ -106,10 +106,12 @@ public class UnitTestCommon extends TestCase
 
   public UnitTestCommon()
   {
+      this("UnitTest");
   }
 
   public UnitTestCommon(String name)
   {
+    super(name);
     this.name = name;
   }
 
