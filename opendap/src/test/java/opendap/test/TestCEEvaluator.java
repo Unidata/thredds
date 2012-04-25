@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.server;
+package opendap.test;
 
 import junit.framework.TestCase;
 import opendap.dap.BaseType;
@@ -40,7 +40,6 @@ import opendap.dap.DDS;
 import opendap.dap.DefaultFactory;
 import opendap.servers.*;
 import opendap.servlet.AsciiWriter;
-import org.apache.catalina.ServerFactory;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.Diff;
 import ucar.nc2.NetcdfFile;
