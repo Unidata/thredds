@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import thredds.mock.params.PathInfoRequest;
 import thredds.mock.web.MockTdsContextLoader;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -20,7 +21,8 @@ public class DataRootHandlerTest {
 	public void testAliasExpandersDatasetScan(){
 		
 		//datasetScan request path 
-		reqPath ="/opendapTest/GFS_Puerto_Rico_191km_20100515_0000.grib1";
+		//reqPath ="/opendapTest/GFS_Puerto_Rico_191km_20100515_0000.grib1";
+		reqPath =PathInfoRequest.getPatInfo().get(1);
 		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 		assertNotNull(match);
 								
@@ -29,7 +31,7 @@ public class DataRootHandlerTest {
 	@Test
 	public void testAliasExpandersDatasetFeaturecollection(){
 		//featureCollection request path
-		reqPath ="/hioos/model/wav/swan/oahu/runs/SWAN_Oahu_Regional_Wave_Model_(500m)_RUN_2011-07-12T00:00:00.000Z";
+		reqPath =PathInfoRequest.getPatInfo().get(3);
 		DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
 		assertNotNull(match);		
 	}

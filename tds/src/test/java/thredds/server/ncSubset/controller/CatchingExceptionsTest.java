@@ -1,24 +1,21 @@
 package thredds.server.ncSubset.controller;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-//import org.junit.runners.Parameterized.Parameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
-import thredds.server.ncSubset.exception.OutOfBoundariesException;
+import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
+import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
@@ -38,7 +35,8 @@ public class CatchingExceptionsTest {
 	@Parameters
 	public static Collection<String[]> getTestParameters(){
 		
-		return Arrays.asList(new String[][]{{"/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1"}});
+		
+		return Arrays.asList(new String[][]{{PointDataParameters.getPathInfo().get(1)}});
 	}
 	
 	@Before
@@ -65,7 +63,7 @@ public class CatchingExceptionsTest {
 		//No vert. levels
 		//params.setVar( Arrays.asList("VAR_7-0-2-2_L102","VAR_7-0-2-1_L1","VAR_7-0-2-156_L1") );
 		//Different vert levels
-		params.setVar( Arrays.asList("Relative_humidity_height_above_ground","Temperature_isobaric"));
+		params.setVar( Arrays.asList("Relative_humidity_height_above_ground","Temperature"));
 		params.setPoint(true);
 		params.setVertCoord(null);
 		params.setAccept("text/csv");
@@ -110,7 +108,7 @@ public class CatchingExceptionsTest {
 		params.setLongitude(-105.0);		
 		//params.setVar( Arrays.asList("VAR_7-0-2-2_L102","VAR_7-0-2-1_L1","VAR_7-0-2-156_L1") );
 		//Same vert levels
-		params.setVar( Arrays.asList("Temperature_isobaric"));
+		params.setVar( Arrays.asList("Temperature"));
 		params.setPoint(true);
 		params.setVertCoord(null);
 		params.setAccept("text/csv");

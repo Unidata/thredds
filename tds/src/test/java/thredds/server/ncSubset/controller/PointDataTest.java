@@ -1,6 +1,5 @@
 package thredds.server.ncSubset.controller;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -18,8 +17,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
+import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.PointDataParameters;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;

@@ -29,8 +29,8 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest{
 	
 	public void showCommandTest() throws Exception{
 		
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/hioos/model/wav/swan/oahu/catalog.xml");
-		request.setServletPath("/hioos/model/wav/swan/oahu/catalog.xml");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testTdsScan/catalog.xml");
+		request.setServletPath("/testTdsScan/catalog.xml");
         MockHttpServletResponse response = new MockHttpServletResponse();
 		
         ModelAndView mv =anyXmlController.handleRequest(request, response);        
@@ -45,14 +45,14 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest{
 		// SUBSET COMMAND REQUEST 
 		// setting up the request with default values:
 		// command =null
-		// datasetId=NCOF/POLCOMS/IRISH_SEA 
+		// datasetId=testFeatureCollection/Test_Feature_Collection_best.ncd 
 		// htmlView= null
 		// verbose = null
 		// command null and a providing a datasetId becomes in a subset command  		
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/hioos/model/wav/swan/oahu/catalog.xml");
-		request.setServletPath("/hioos/model/wav/swan/oahu/catalog.xml");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testFeatureCollection/catalog.xml");
+		request.setServletPath("/testFeatureCollection/catalog.xml");
 		//request.setParameter("command", "subset");
-		request.setParameter("dataset", "swan_oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_best.ncd");
+		request.setParameter("dataset", "testFeatureCollection/Test_Feature_Collection_best.ncd");
         MockHttpServletResponse response = new MockHttpServletResponse();
 		
         ModelAndView mv =anyXmlController.handleRequest(request, response);        
@@ -68,8 +68,8 @@ public class AnyXmlControllerTest extends AbstractCatalogServiceTest{
 		// datasetId= null
 		// htmlView= null
 		// verbose = null 		
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/NCOF/POLCOMS/IRISH_SEA/catalog.xml");
-		request.setServletPath("/NCOF/POLCOMS/IRISH_SEA/catalog.xml");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/thredds/catalog/testFeatureCollection/catalog.xml");
+		request.setServletPath("/testFeatureCollection/catalog.xml");
 		request.setParameter("datasetId", "FMRC/NCEP/SREF");		
 		request.setParameter("command", "validate");
 		
