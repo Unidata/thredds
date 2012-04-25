@@ -43,12 +43,11 @@ import opendap.dap.parsers.*;
 import opendap.servers.*;
 import java.io.*;
 import java.util.*;
-import ucar.nc2.util.log.LogStream;
 
 
 
 /* Line 33 of lalr1.java  */
-/* Line 52 of "CeParser.java"  */
+/* Line 51 of "CeParser.java"  */
 
 /**
  * A Bison parser, automatically generated from <tt>ce.y</tt>.
@@ -297,7 +296,7 @@ public class CeParser extends Ceparse
   if (yyn == 8)
     
 /* Line 354 of lalr1.java  */
-/* Line 102 of "ce.y"  */
+/* Line 101 of "ce.y"  */
     {projections(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -306,7 +305,7 @@ public class CeParser extends Ceparse
   if (yyn == 9)
     
 /* Line 354 of lalr1.java  */
-/* Line 107 of "ce.y"  */
+/* Line 106 of "ce.y"  */
     {selections(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -315,7 +314,7 @@ public class CeParser extends Ceparse
   if (yyn == 10)
     
 /* Line 354 of lalr1.java  */
-/* Line 113 of "ce.y"  */
+/* Line 112 of "ce.y"  */
     {yyval=projectionlist(parsestate,(Object)null,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -324,7 +323,7 @@ public class CeParser extends Ceparse
   if (yyn == 11)
     
 /* Line 354 of lalr1.java  */
-/* Line 115 of "ce.y"  */
+/* Line 114 of "ce.y"  */
     {yyval=projectionlist(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
@@ -333,7 +332,7 @@ public class CeParser extends Ceparse
   if (yyn == 12)
     
 /* Line 354 of lalr1.java  */
-/* Line 121 of "ce.y"  */
+/* Line 120 of "ce.y"  */
     {yyval=projection(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -342,7 +341,7 @@ public class CeParser extends Ceparse
   if (yyn == 13)
     
 /* Line 354 of lalr1.java  */
-/* Line 123 of "ce.y"  */
+/* Line 122 of "ce.y"  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
@@ -351,7 +350,7 @@ public class CeParser extends Ceparse
   if (yyn == 14)
     
 /* Line 354 of lalr1.java  */
-/* Line 128 of "ce.y"  */
+/* Line 127 of "ce.y"  */
     {yyval=function(parsestate,((yystack.valueAt (3-(1)))),null);};
   break;
     
@@ -360,7 +359,7 @@ public class CeParser extends Ceparse
   if (yyn == 15)
     
 /* Line 354 of lalr1.java  */
-/* Line 130 of "ce.y"  */
+/* Line 129 of "ce.y"  */
     {yyval=function(parsestate,((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
@@ -369,7 +368,7 @@ public class CeParser extends Ceparse
   if (yyn == 16)
     
 /* Line 354 of lalr1.java  */
-/* Line 136 of "ce.y"  */
+/* Line 135 of "ce.y"  */
     {yyval=segmentlist(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -378,7 +377,7 @@ public class CeParser extends Ceparse
   if (yyn == 17)
     
 /* Line 354 of lalr1.java  */
-/* Line 138 of "ce.y"  */
+/* Line 137 of "ce.y"  */
     {yyval=segmentlist(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
@@ -387,7 +386,7 @@ public class CeParser extends Ceparse
   if (yyn == 18)
     
 /* Line 354 of lalr1.java  */
-/* Line 144 of "ce.y"  */
+/* Line 143 of "ce.y"  */
     {yyval=segment(parsestate,((yystack.valueAt (1-(1)))),null);};
   break;
     
@@ -396,7 +395,7 @@ public class CeParser extends Ceparse
   if (yyn == 19)
     
 /* Line 354 of lalr1.java  */
-/* Line 146 of "ce.y"  */
+/* Line 145 of "ce.y"  */
     {yyval=segment(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
@@ -405,7 +404,7 @@ public class CeParser extends Ceparse
   if (yyn == 20)
     
 /* Line 354 of lalr1.java  */
-/* Line 152 of "ce.y"  */
+/* Line 151 of "ce.y"  */
     {yyval=rangelist(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -414,7 +413,7 @@ public class CeParser extends Ceparse
   if (yyn == 21)
     
 /* Line 354 of lalr1.java  */
-/* Line 154 of "ce.y"  */
+/* Line 153 of "ce.y"  */
     {yyval=rangelist(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
@@ -423,7 +422,7 @@ public class CeParser extends Ceparse
   if (yyn == 22)
     
 /* Line 354 of lalr1.java  */
-/* Line 160 of "ce.y"  */
+/* Line 159 of "ce.y"  */
     {yyval=range(parsestate,((yystack.valueAt (1-(1)))),null,null);};
   break;
     
@@ -432,7 +431,7 @@ public class CeParser extends Ceparse
   if (yyn == 23)
     
 /* Line 354 of lalr1.java  */
-/* Line 162 of "ce.y"  */
+/* Line 161 of "ce.y"  */
     {yyval=range(parsestate,((yystack.valueAt (5-(2)))),null,((yystack.valueAt (5-(4)))));};
   break;
     
@@ -441,7 +440,7 @@ public class CeParser extends Ceparse
   if (yyn == 24)
     
 /* Line 354 of lalr1.java  */
-/* Line 164 of "ce.y"  */
+/* Line 163 of "ce.y"  */
     {yyval=range(parsestate,((yystack.valueAt (7-(2)))),((yystack.valueAt (7-(4)))),((yystack.valueAt (7-(6)))));};
   break;
     
@@ -450,7 +449,7 @@ public class CeParser extends Ceparse
   if (yyn == 25)
     
 /* Line 354 of lalr1.java  */
-/* Line 168 of "ce.y"  */
+/* Line 167 of "ce.y"  */
     {yyval = range1(parsestate,((yystack.valueAt (3-(2)))));};
   break;
     
@@ -459,7 +458,7 @@ public class CeParser extends Ceparse
   if (yyn == 26)
     
 /* Line 354 of lalr1.java  */
-/* Line 175 of "ce.y"  */
+/* Line 174 of "ce.y"  */
     {yyval=clauselist(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -468,7 +467,7 @@ public class CeParser extends Ceparse
   if (yyn == 27)
     
 /* Line 354 of lalr1.java  */
-/* Line 177 of "ce.y"  */
+/* Line 176 of "ce.y"  */
     {yyval=clauselist(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
@@ -477,7 +476,7 @@ public class CeParser extends Ceparse
   if (yyn == 28)
     
 /* Line 354 of lalr1.java  */
-/* Line 183 of "ce.y"  */
+/* Line 182 of "ce.y"  */
     {yyval=sel_clause(parsestate,1,((yystack.valueAt (6-(2)))),((yystack.valueAt (6-(3)))),((yystack.valueAt (6-(5)))));};
   break;
     
@@ -486,7 +485,7 @@ public class CeParser extends Ceparse
   if (yyn == 29)
     
 /* Line 354 of lalr1.java  */
-/* Line 185 of "ce.y"  */
+/* Line 184 of "ce.y"  */
     {yyval=sel_clause(parsestate,2,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),((yystack.valueAt (4-(4)))));};
   break;
     
@@ -495,7 +494,7 @@ public class CeParser extends Ceparse
   if (yyn == 30)
     
 /* Line 354 of lalr1.java  */
-/* Line 187 of "ce.y"  */
+/* Line 186 of "ce.y"  */
     {yyval=((yystack.valueAt (2-(1))));};
   break;
     
@@ -504,7 +503,7 @@ public class CeParser extends Ceparse
   if (yyn == 31)
     
 /* Line 354 of lalr1.java  */
-/* Line 192 of "ce.y"  */
+/* Line 191 of "ce.y"  */
     {yyval=value_list(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -513,7 +512,7 @@ public class CeParser extends Ceparse
   if (yyn == 32)
     
 /* Line 354 of lalr1.java  */
-/* Line 194 of "ce.y"  */
+/* Line 193 of "ce.y"  */
     {yyval=value_list(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
@@ -522,7 +521,7 @@ public class CeParser extends Ceparse
   if (yyn == 33)
     
 /* Line 354 of lalr1.java  */
-/* Line 199 of "ce.y"  */
+/* Line 198 of "ce.y"  */
     {yyval=value(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -531,7 +530,7 @@ public class CeParser extends Ceparse
   if (yyn == 34)
     
 /* Line 354 of lalr1.java  */
-/* Line 201 of "ce.y"  */
+/* Line 200 of "ce.y"  */
     {yyval=value(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -540,7 +539,7 @@ public class CeParser extends Ceparse
   if (yyn == 35)
     
 /* Line 354 of lalr1.java  */
-/* Line 203 of "ce.y"  */
+/* Line 202 of "ce.y"  */
     {yyval=value(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -549,7 +548,7 @@ public class CeParser extends Ceparse
   if (yyn == 36)
     
 /* Line 354 of lalr1.java  */
-/* Line 208 of "ce.y"  */
+/* Line 207 of "ce.y"  */
     {yyval=constant(parsestate,((yystack.valueAt (1-(1)))),SCAN_NUMBERCONST);};
   break;
     
@@ -558,7 +557,7 @@ public class CeParser extends Ceparse
   if (yyn == 37)
     
 /* Line 354 of lalr1.java  */
-/* Line 210 of "ce.y"  */
+/* Line 209 of "ce.y"  */
     {yyval=constant(parsestate,((yystack.valueAt (1-(1)))),SCAN_STRINGCONST);};
   break;
     
@@ -567,7 +566,7 @@ public class CeParser extends Ceparse
   if (yyn == 38)
     
 /* Line 354 of lalr1.java  */
-/* Line 215 of "ce.y"  */
+/* Line 214 of "ce.y"  */
     {yyval=var(parsestate,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -576,7 +575,7 @@ public class CeParser extends Ceparse
   if (yyn == 39)
     
 /* Line 354 of lalr1.java  */
-/* Line 224 of "ce.y"  */
+/* Line 223 of "ce.y"  */
     {yyval=indexpath(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -585,7 +584,7 @@ public class CeParser extends Ceparse
   if (yyn == 40)
     
 /* Line 354 of lalr1.java  */
-/* Line 226 of "ce.y"  */
+/* Line 225 of "ce.y"  */
     {yyval=indexpath(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
@@ -594,7 +593,7 @@ public class CeParser extends Ceparse
   if (yyn == 41)
     
 /* Line 354 of lalr1.java  */
-/* Line 231 of "ce.y"  */
+/* Line 230 of "ce.y"  */
     {yyval=index(parsestate,((yystack.valueAt (1-(1)))),null);};
   break;
     
@@ -603,7 +602,7 @@ public class CeParser extends Ceparse
   if (yyn == 42)
     
 /* Line 354 of lalr1.java  */
-/* Line 233 of "ce.y"  */
+/* Line 232 of "ce.y"  */
     {yyval=index(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
@@ -612,7 +611,7 @@ public class CeParser extends Ceparse
   if (yyn == 43)
     
 /* Line 354 of lalr1.java  */
-/* Line 239 of "ce.y"  */
+/* Line 238 of "ce.y"  */
     {yyval=array_indices(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -621,7 +620,7 @@ public class CeParser extends Ceparse
   if (yyn == 44)
     
 /* Line 354 of lalr1.java  */
-/* Line 241 of "ce.y"  */
+/* Line 240 of "ce.y"  */
     {yyval=array_indices(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
@@ -630,7 +629,7 @@ public class CeParser extends Ceparse
   if (yyn == 45)
     
 /* Line 354 of lalr1.java  */
-/* Line 246 of "ce.y"  */
+/* Line 245 of "ce.y"  */
     {yyval=function(parsestate,((yystack.valueAt (3-(1)))),null);};
   break;
     
@@ -639,7 +638,7 @@ public class CeParser extends Ceparse
   if (yyn == 46)
     
 /* Line 354 of lalr1.java  */
-/* Line 248 of "ce.y"  */
+/* Line 247 of "ce.y"  */
     {yyval=function(parsestate,((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
@@ -648,7 +647,7 @@ public class CeParser extends Ceparse
   if (yyn == 47)
     
 /* Line 354 of lalr1.java  */
-/* Line 253 of "ce.y"  */
+/* Line 252 of "ce.y"  */
     {yyval=arg_list(parsestate,null,((yystack.valueAt (1-(1)))));};
   break;
     
@@ -657,7 +656,7 @@ public class CeParser extends Ceparse
   if (yyn == 48)
     
 /* Line 354 of lalr1.java  */
-/* Line 255 of "ce.y"  */
+/* Line 254 of "ce.y"  */
     {yyval=arg_list(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))));};
   break;
     
@@ -666,7 +665,7 @@ public class CeParser extends Ceparse
   if (yyn == 49)
     
 /* Line 354 of lalr1.java  */
-/* Line 260 of "ce.y"  */
+/* Line 259 of "ce.y"  */
     {yyval=new Integer(EQUAL);};
   break;
     
@@ -675,7 +674,7 @@ public class CeParser extends Ceparse
   if (yyn == 50)
     
 /* Line 354 of lalr1.java  */
-/* Line 261 of "ce.y"  */
+/* Line 260 of "ce.y"  */
     {yyval=new Integer(GREATER);};
   break;
     
@@ -684,7 +683,7 @@ public class CeParser extends Ceparse
   if (yyn == 51)
     
 /* Line 354 of lalr1.java  */
-/* Line 262 of "ce.y"  */
+/* Line 261 of "ce.y"  */
     {yyval=new Integer(LESS);};
   break;
     
@@ -693,7 +692,7 @@ public class CeParser extends Ceparse
   if (yyn == 52)
     
 /* Line 354 of lalr1.java  */
-/* Line 263 of "ce.y"  */
+/* Line 262 of "ce.y"  */
     {yyval=new Integer(NOT_EQUAL);};
   break;
     
@@ -702,7 +701,7 @@ public class CeParser extends Ceparse
   if (yyn == 53)
     
 /* Line 354 of lalr1.java  */
-/* Line 264 of "ce.y"  */
+/* Line 263 of "ce.y"  */
     {yyval=new Integer(GREATER_EQL);};
   break;
     
@@ -711,7 +710,7 @@ public class CeParser extends Ceparse
   if (yyn == 54)
     
 /* Line 354 of lalr1.java  */
-/* Line 265 of "ce.y"  */
+/* Line 264 of "ce.y"  */
     {yyval=new Integer(LESS_EQL);};
   break;
     
@@ -720,7 +719,7 @@ public class CeParser extends Ceparse
   if (yyn == 55)
     
 /* Line 354 of lalr1.java  */
-/* Line 266 of "ce.y"  */
+/* Line 265 of "ce.y"  */
     {yyval=new Integer(REGEXP);};
   break;
     
@@ -729,7 +728,7 @@ public class CeParser extends Ceparse
   if (yyn == 56)
     
 /* Line 354 of lalr1.java  */
-/* Line 270 of "ce.y"  */
+/* Line 269 of "ce.y"  */
     {yyval = ((yystack.valueAt (1-(1))));};
   break;
     
@@ -738,7 +737,7 @@ public class CeParser extends Ceparse
   if (yyn == 57)
     
 /* Line 354 of lalr1.java  */
-/* Line 274 of "ce.y"  */
+/* Line 273 of "ce.y"  */
     {yyval=unescapeDAPName(((yystack.valueAt (1-(1)))));};
   break;
     
@@ -747,7 +746,7 @@ public class CeParser extends Ceparse
   if (yyn == 58)
     
 /* Line 354 of lalr1.java  */
-/* Line 278 of "ce.y"  */
+/* Line 277 of "ce.y"  */
     {yyval = ((yystack.valueAt (1-(1))));};
   break;
     
@@ -756,7 +755,7 @@ public class CeParser extends Ceparse
   if (yyn == 59)
     
 /* Line 354 of lalr1.java  */
-/* Line 282 of "ce.y"  */
+/* Line 281 of "ce.y"  */
     {yyval = ((yystack.valueAt (1-(1))));};
   break;
     
@@ -764,7 +763,7 @@ public class CeParser extends Ceparse
 
 
 /* Line 354 of lalr1.java  */
-/* Line 768 of "CeParser.java"  */
+/* Line 767 of "CeParser.java"  */
 	default: break;
       }
 
@@ -1302,12 +1301,12 @@ public class CeParser extends Ceparse
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   private static final short yyrline_[] =
   {
-         0,    92,    92,    93,    94,    95,    98,    98,   102,   107,
-     112,   114,   120,   122,   127,   129,   135,   137,   143,   145,
-     151,   153,   159,   161,   163,   167,   174,   176,   182,   184,
-     186,   191,   193,   198,   200,   202,   207,   209,   214,   223,
-     225,   230,   232,   238,   240,   245,   247,   252,   254,   260,
-     261,   262,   263,   264,   265,   266,   269,   273,   277,   281
+         0,    91,    91,    92,    93,    94,    97,    97,   101,   106,
+     111,   113,   119,   121,   126,   128,   134,   136,   142,   144,
+     150,   152,   158,   160,   162,   166,   173,   175,   181,   183,
+     185,   190,   192,   197,   199,   201,   206,   208,   213,   222,
+     224,   229,   231,   237,   239,   244,   246,   251,   253,   259,
+     260,   261,   262,   263,   264,   265,   268,   272,   276,   280
   };
 
   // Report on the debug stream that the rule yyrule is going to be reduced.
@@ -1384,7 +1383,7 @@ public class CeParser extends Ceparse
 /* Unqualified %code blocks.  */
 
 /* Line 876 of lalr1.java  */
-/* Line 21 of "ce.y"  */
+/* Line 20 of "ce.y"  */
 
  
     private List<AST> nodeset = null;
@@ -1399,7 +1398,7 @@ public class CeParser extends Ceparse
 	super(factory);
 	this.yylexer = new Celex(this);
 	super.lexstate = (Celex)this.yylexer;
-	this.yyDebugStream = LogStream.err;
+	this.yyDebugStream = System.out;
     }
 
 
@@ -1449,12 +1448,12 @@ public class CeParser extends Ceparse
 
 
 /* Line 876 of lalr1.java  */
-/* Line 1453 of "CeParser.java"  */
+/* Line 1452 of "CeParser.java"  */
 
 }
 
 
 /* Line 880 of lalr1.java  */
-/* Line 285 of "ce.y"  */
+/* Line 284 of "ce.y"  */
 
 

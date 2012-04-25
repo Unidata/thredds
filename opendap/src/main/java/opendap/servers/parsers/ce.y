@@ -15,7 +15,6 @@ import opendap.dap.parsers.*;
 import opendap.servers.*;
 import java.io.*;
 import java.util.*;
-import ucar.nc2.util.log.LogStream;
 }
 
 %code {
@@ -32,7 +31,7 @@ import ucar.nc2.util.log.LogStream;
 	super(factory);
 	this.yylexer = new Celex(this);
 	super.lexstate = (Celex)this.yylexer;
-	this.yyDebugStream = LogStream.err;
+	this.yyDebugStream = System.out;
     }
 
 

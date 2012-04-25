@@ -315,7 +315,7 @@ class ASTsegment extends AST
                     sam = (ServerArrayMethods)bt;
 		            slice.walk(sam,0);
                 }
-            } else {
+            } else if(bt instanceof ServerArrayMethods) {
                 sam = (ServerArrayMethods)bt;
                 for(int i=0;i<slices.size();i++) {
                     ASTslice slice = slices.get(i);
