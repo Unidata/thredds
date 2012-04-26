@@ -40,18 +40,25 @@ package thredds.server.wms;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import ucar.nc2.dt.GridDatatype;
-import uk.ac.rdg.resc.ncwms.cdm.CdmUtils;
-import uk.ac.rdg.resc.ncwms.cdm.DataReadingStrategy;
-import uk.ac.rdg.resc.ncwms.coords.HorizontalPosition;
-import uk.ac.rdg.resc.ncwms.coords.PointList;
+import uk.ac.rdg.resc.edal.cdm.CdmUtils;
+import uk.ac.rdg.resc.edal.cdm.DataReadingStrategy;
+import uk.ac.rdg.resc.edal.geometry.HorizontalPosition;
 import uk.ac.rdg.resc.ncwms.exceptions.InvalidDimensionValueException;
-import uk.ac.rdg.resc.ncwms.util.Range;
+import uk.ac.rdg.resc.edal.util.Range;
 import uk.ac.rdg.resc.ncwms.wms.AbstractScalarLayer;
+import uk.ac.rdg.resc.edal.coverage.CoverageMetadata;
+import uk.ac.rdg.resc.edal.coverage.domain.Domain;
+
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import thredds.server.wms.config.LayerSettings;
+import thredds.server.wms.config.WmsDetailedConfig;
 import ucar.nc2.Attribute;
+import uk.ac.rdg.resc.edal.cdm.PixelMap;
+import uk.ac.rdg.resc.edal.coverage.grid.HorizontalGrid;
 import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
 
 /**
@@ -61,18 +68,59 @@ import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
  */
 class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
 {
-    private GridDatatype grid;
-    private ThreddsDataset dataset;
-    private List<DateTime> times;
-    private DataReadingStrategy dataReadingStrategy;
+  private GridDatatype grid;
+  private ThreddsDataset dataset;
+  private List<DateTime> times;
+  private DataReadingStrategy dataReadingStrategy;
 
-    // Will be set in ThreddsWmsController.ThreddsLayerFactory
-    private LayerSettings layerSettings;
+  // Will be set in ThreddsWmsController.ThreddsLayerFactory
+  private LayerSettings layerSettings;
 
-    public ThreddsScalarLayer(String id) {
-        super(id);
+  public ThreddsScalarLayer(CoverageMetadata cm) {
+      super(cm);
+  }
+
+  public List<List<Float>> readVerticalSection(DateTime dt, List<Double> list, Domain<HorizontalPosition> domain) throws InvalidDimensionValueException, IOException {
+
+    int tIndex = this.findAndCheckTimeIndex( dt );        
+    Domain<HorizontalPosition> targetDomain = domain;
+
+    // Defend against null values
+    List<Integer> zIndices;
+    if (list == null) {
+      zIndices = Arrays.asList(-1);
+    } else {
+      zIndices = new ArrayList<Integer>(list.size());
+      for (Double el : list) {
+        zIndices.add(this.findAndCheckElevationIndex(el));
+      }
     }
-
+    HorizontalGrid hg = CdmUtils.createHorizontalGrid(grid.getCoordinateSystem());
+    PixelMap pixelMap = new PixelMap(hg, targetDomain);
+    return CdmUtils.readVerticalSection(null, grid, tIndex, zIndices, pixelMap, dataReadingStrategy, (int)targetDomain.size());
+  }   
+    
+  /**
+   *
+   * Static factory method. Builds a new ThreddsScalarLayer and set several properties
+   * 
+   * @param cm
+   * @param gdt
+   * @param drStrategy
+   * @param ds
+   * @param wmsConfig
+   * @return 
+   */
+  public static ThreddsScalarLayer getNewLayer( CoverageMetadata cm, GridDatatype gdt, DataReadingStrategy drStrategy, ThreddsDataset ds, WmsDetailedConfig wmsConfig ){
+    ThreddsScalarLayer tsl = new ThreddsScalarLayer(cm);                
+    tsl.setGridDatatype(gdt);    
+    tsl.setTimeValues(cm.getTimeValues());
+    tsl.setDataReadingStrategy(drStrategy);
+    tsl.setDataset(ds);
+    tsl.setLayerSettings(wmsConfig.getSettings(tsl));
+    return tsl;
+  }
+    
   @Override
   public String getName()
   {
@@ -109,24 +157,19 @@ class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
     public Float readSinglePoint(DateTime time, double elevation, HorizontalPosition xy)
             throws InvalidDimensionValueException, IOException
     {
-        PointList singlePoint = PointList.fromPoint(xy);
-        return this.readPointList(time, elevation, singlePoint).get(0);
+        Domain singlePoint = (Domain<HorizontalPosition>)xy;
+        return this.readHorizontalPoints(time, elevation, singlePoint).get(0);
     }
 
-    @Override
-    public List<Float> readPointList(DateTime time, double elevation, PointList pointList)
+    public List<Float> readHorizonalPoints(DateTime time, double elevation, Domain domain)
             throws InvalidDimensionValueException, IOException
     {
         int tIndex = this.findAndCheckTimeIndex(time);
         int zIndex = this.findAndCheckElevationIndex(elevation);
-        return CdmUtils.readPointList(
-            this.grid,
-            this.getHorizontalCoordSys(),
-            tIndex,
-            zIndex,
-            pointList,
-            this.dataReadingStrategy
-        );
+        Domain<HorizontalPosition> targetDomain = domain;
+        HorizontalGrid hg = CdmUtils.createHorizontalGrid(grid.getCoordinateSystem());
+        PixelMap pixelMap = new PixelMap(hg, targetDomain);
+        return CdmUtils.readHorizontalPoints(null, grid,  tIndex, zIndex, pixelMap, this.dataReadingStrategy, (int)targetDomain.size());
     }
 
     public String getStandardName() {
