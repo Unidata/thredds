@@ -43,6 +43,11 @@
       <artifactId>commons-httpclient</artifactId>
     </dependency>
 
+    <dependency>  <!-- replace commons-logging -->
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+
     <!-- calendar / datetime -->
     <dependency>
       <groupId>joda-time</groupId>

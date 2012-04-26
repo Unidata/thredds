@@ -77,6 +77,10 @@ public class TestCompareFileWriter extends TestCase {
   }
 
   private void doOne(String datasetIn, String filenameOut) throws IOException {
+    File fin = new File(datasetIn);
+    File fout = new File(filenameOut);
+    System.out.printf("Write %s to %s%n", fin.getAbsolutePath(), fout.getAbsolutePath());
+
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     NetcdfFile ncfileOut = FileWriter.writeToFile( ncfileIn, filenameOut);
     ucar.unidata.test.util.CompareNetcdf.compareFiles(ncfileIn, ncfileOut);

@@ -427,6 +427,19 @@ public class GradsDataDescriptorFile {
             //System.out.println("Time to parse file = "
             //                   + (System.currentTimeMillis() - start2));
 
+            // update the units for the zDimension if they are specified as
+            // an attribute
+            if (zDim != null) {
+                for (GradsAttribute attr : attrList) {
+                    if (attr.getVariable().equalsIgnoreCase(ZDEF) &&
+                            attr.getType().equalsIgnoreCase(GradsAttribute.STRING) &&
+                            attr.getName().equalsIgnoreCase("units")) {
+                                zDim.setUnit(attr.getValue());
+                                break;
+                            }
+                }
+            }
+
         } catch (IOException ioe) {
             log.error("Error parsing metadata for " + ddFile);
             throw new IOException("error parsing metadata for " + ddFile);
