@@ -46,6 +46,12 @@ public class TestCFPointWriter {
     assert 22 ==  writeDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, false);
   }
 
+  @Test
+  public void testProblem() throws IOException {
+    assert 50 ==  writeDataset(CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE, false);
+  }
+
+
   int writeDataset(String location, FeatureType ftype, boolean show) throws IOException {
     File fileIn = new File(location);
 

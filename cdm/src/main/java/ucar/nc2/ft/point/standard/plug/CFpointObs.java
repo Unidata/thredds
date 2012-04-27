@@ -1098,6 +1098,13 @@ public class CFpointObs extends TableConfigurerImpl {
       return true;
     }
 
+    // time(station, profile)
+    if (info.time.getRank() == 2 && info.time.getDimension(0) == stnDim) {
+      profileDim = info.time.getDimension(1);
+      info.set(Encoding.multidim, stnDim, profileDim, obsDim);
+      return true;
+    }
+
     errlog.format("CFpointObs %s unrecognized form%n", ftype);
     return false;
   }

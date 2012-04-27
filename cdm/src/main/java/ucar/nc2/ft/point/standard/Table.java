@@ -158,16 +158,17 @@ public abstract class Table {
     this.extraJoins = config.extraJoin;
 
     // try to exclude coordinate vars and "structural data" from the list of data variables
-    /* checkNonDataVariable(config.lat);
+    checkNonDataVariable(config.lat);
     checkNonDataVariable(config.lon);
-    checkNonDataVariable(config.elev);
+    // checkNonDataVariable(config.elev);  LOOK
     checkNonDataVariable(config.timeNominal);
     checkNonDataVariable(config.stnId);
     checkNonDataVariable(config.stnDesc);
     checkNonDataVariable(config.stnWmoId);
-    checkNonDataVariable(config.stnAlt); */
+    checkNonDataVariable(config.stnAlt);
     checkNonDataVariable(config.stnNpts);
     checkNonDataVariable(config.limit);
+    checkNonDataVariable(config.feature_id);
   }
 
   protected void checkNonDataVariable(String name) {

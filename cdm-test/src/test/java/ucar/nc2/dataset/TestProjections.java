@@ -96,11 +96,6 @@ public class TestProjections extends TestCase {
         "Temperature_isobaric",
         Mercator.class);
 
-    p = test(testDir+ "rotatedPole/snow.DMI.ecctrl.nc",
-        "rotated_pole",
-        "snow",
-        RotatedPole.class);
-
     p = test(testDir+ "Eumetsat.VerticalPerspective.grb",
         "SpaceViewPerspective_Projection",
         "Pixel_scene_type",

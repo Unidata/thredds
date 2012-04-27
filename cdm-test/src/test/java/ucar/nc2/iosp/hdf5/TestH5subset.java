@@ -54,7 +54,7 @@ public class TestH5subset extends TestCase {
   private String dirName = TestH5.testDir;
 
  public void testSubsetting() throws IOException, InvalidRangeException {
-    int ntrials = 37;
+    int ntrials = 3;
 
     // H5tiledLayoutBB
     TestSubsettingUtils.subsetVariables(dirName + "HIRDLS/HIRDLS2-Aura12h_b033_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);

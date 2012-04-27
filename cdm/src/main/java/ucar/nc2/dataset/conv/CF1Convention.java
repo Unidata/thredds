@@ -275,10 +275,10 @@ public class CF1Convention extends CSMConvention {
       if (sname.equalsIgnoreCase("longitude"))
         return AxisType.Lon;
 
-      if (sname.equalsIgnoreCase("projection_x_coordinate") || sname.equalsIgnoreCase("grid_longitude"))
+      if (sname.equalsIgnoreCase("projection_x_coordinate") || sname.equalsIgnoreCase("grid_longitude") || sname.equalsIgnoreCase("rotated_longitude"))
         return AxisType.GeoX;
 
-      if (sname.equalsIgnoreCase("projection_y_coordinate") || sname.equalsIgnoreCase("grid_latitude"))
+      if (sname.equalsIgnoreCase("projection_y_coordinate") || sname.equalsIgnoreCase("grid_latitude") || sname.equalsIgnoreCase("rotated_latitude"))
         return AxisType.GeoY;
 
       for (String vertical_coord : vertical_coords)

@@ -185,7 +185,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    assert 40 == checkPointDataset(topdir + "cfPoint/stationProfile/timeSeriesProfile-Ragged-SingleStation-H.5.3.nc", FeatureType.STATION_PROFILE, true);
+    assert 36 == checkPointDataset(CFpointObs_topdir + "stationProfileMultidimJoinTimeAndZ.ncml", FeatureType.STATION_PROFILE, false);
   }
 
   public void testCF() throws IOException {

@@ -56,7 +56,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
 {
   private TrajectoryObsDataset me;
 
-  private String testFilePath = TestTrajectoryObsDataset.getRemoteTestDataDir() + "/trajectory/aircraft";
+  private String testFilePath = TestTrajectoryObsDataset.getRemoteTestDataDir() + "/aircraft";
   private String test_Raf_1_2_FileName = "raftrack.nc";
   private String test_Raf_1_3_Recvar_FileName = "135_raw.nc";
   private String test_Raf_1_3_NoRecvar_FileName = "135_ordrd.nc";
@@ -130,7 +130,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
   /**
    * Test ...
    */
-  public void testRaf_1_3_Recvar_And_NoRecvar() throws IOException {
+  public void utestRaf_1_3_Recvar_And_NoRecvar() throws IOException {
     // Test for raw file which has  record variable.
     String location = testFilePath + "/" + test_Raf_1_3_Recvar_FileName;
     assertTrue( "Test file <" + location + "> does not exist.",
@@ -198,8 +198,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     catch ( IOException e )
     {
       String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + location + ">: " + e.getMessage();
-      assertTrue( tmpMsg,
-                  false );
+      assertTrue( tmpMsg, false);
     }
     assertTrue( "Null TrajectoryObsDataset after open <" + location + "> ",
                 me != null );

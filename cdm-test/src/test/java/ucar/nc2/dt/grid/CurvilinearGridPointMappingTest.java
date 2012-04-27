@@ -27,7 +27,7 @@ import java.util.Collections;
  */
 public class CurvilinearGridPointMappingTest
 {
-  private String datasetLocation = TestDir.cdmUnitTestDir + "/JIRA_TDS-173/curviliniearGrid_artabro_20110419.nc";
+  private String datasetLocation = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
   private int i = 170;
   private int j = 62;
   private double lat = 43.58750915527344;

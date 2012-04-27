@@ -87,7 +87,7 @@ public class TestH4subset {
 
   @Test
   public void testSubsetting() throws IOException, InvalidRangeException {
-    int ntrials = 10;
+    int ntrials = 3;
 
     // LayoutRegular
     TestSubsettingUtils.subsetVariables(TestH4readAndCount.testDir + "MI1B2T_B54_O003734_AN_05.hdf", "Infrared_Radiance_RDQI", ntrials);

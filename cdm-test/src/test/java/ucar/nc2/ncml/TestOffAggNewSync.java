@@ -32,51 +32,45 @@
  */
 package ucar.nc2.ncml;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.io.File;
 import java.io.StringReader;
 
+import org.junit.Test;
 import ucar.nc2.*;
-import ucar.ma2.DataType;
 import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
 import ucar.unidata.test.util.TestDir;
 
-public class TestOffAggNewSync extends TestCase {
+public class TestOffAggNewSync {
 
-  public TestOffAggNewSync(String name) {
-    super(name);
-  }
-
-  String dataDir = "//shemp/data/testdata/image/testSync/";
-
-  public void testMove() throws IOException, InterruptedException {
-    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
-
-    String filename = "file:./" + TestDir.cdmUnitTestDir + "ncml/offsite/aggExistingSync.xml";
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    testAggCoordVar(ncfile, 7);
-    ncfile.close();
-
-    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
-
-    ncfile = NcMLReader.readNcML(filename, null);
-    testAggCoordVar(ncfile, 8);
-    ncfile.close();
-  }
-
-
+  String dataDir = TestDir.cdmUnitTestDir + "formats/gini/";
+  
   private String aggExistingSync =
             "<?xml version='1.0' encoding='UTF-8'?>\n" +
             "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
             "  <aggregation  dimName='time' type='joinExisting' recheckEvery='1 sec' >\n" +
             "    <variableAgg name='IR_WV'/>\n" +
-            "    <scan location='//shemp/data/testdata/image/testSync' suffix='.gini' dateFormatMark='SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm'/>\n" +
+            "    <scan location='"+dataDir+"' regExp='SUPER-NATIONAL.*\\.gini' dateFormatMark='SUPER-NATIONAL_8km_WV_#yyyyMMdd_HHmm'/>\n" +
             "  </aggregation>\n" +
             "</netcdf>";
 
+  @Test
+  public void testMove() throws IOException, InterruptedException {
+    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    System.out.printf("%s%n", aggExistingSync);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
+    testAggCoordVar(ncfile, 7);
+    ncfile.close();
+
+    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+
+    ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
+    testAggCoordVar(ncfile, 8);
+    ncfile.close();
+    System.out.printf("ok testMove%n");
+  }
+
+  @Test
   public void testRemove() throws IOException, InterruptedException {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 8);
@@ -91,8 +85,10 @@ public class TestOffAggNewSync extends TestCase {
     ncfile.close();
 
     moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    System.out.printf("ok testRemove%n");
   }
 
+  @Test
   public void testSync() throws IOException, InterruptedException {
     move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
 
@@ -105,8 +101,10 @@ public class TestOffAggNewSync extends TestCase {
     ncfile.sync();
     testAggCoordVar(ncfile, 8);
     ncfile.close();
+    System.out.printf("ok testSync%n");
   }
 
+  @Test
   public void testSyncRemove() throws IOException, InterruptedException {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 8);
@@ -121,8 +119,8 @@ public class TestOffAggNewSync extends TestCase {
     ncfile.close();
 
     moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    System.out.printf("ok testSyncRemove %n");
   }
-
 
   public void testAggCoordVar(NetcdfFile ncfile, int n) throws IOException {
     Variable time = ncfile.findVariable("time");
@@ -131,7 +129,6 @@ public class TestOffAggNewSync extends TestCase {
     assert time.getRank() == 1;
     assert time.getSize() == n : time.getSize() +" != " + n;
     assert time.getShape()[0] == n;
-    assert time.getDataType() == DataType.DOUBLE;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -139,16 +136,6 @@ public class TestOffAggNewSync extends TestCase {
     assert data.getRank() == 1;
     assert data.getSize() == n;
     assert data.getShape()[0] == n;
-    assert data.getElementType() == double.class;
-
-    double prev = Double.NaN;
-    IndexIterator dataI = data.getIndexIterator();
-    while (dataI.hasNext()) {
-      double dval = dataI.getDoubleNext();
-      System.out.println(" coord=" + dval);
-      assert (Double.isNaN(prev) || dval > prev);
-      prev = dval;
-    }
   }
 
   boolean move(String filename) {

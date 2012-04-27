@@ -79,7 +79,9 @@ public class TestCompareFileWriter extends TestCase {
   private void doOne(String datasetIn, String filenameOut) throws IOException {
     File fin = new File(datasetIn);
     File fout = new File(filenameOut);
-    System.out.printf("Write %s to %s%n", fin.getAbsolutePath(), fout.getAbsolutePath());
+    System.out.printf("Write %s %n   to %s (%s %s)%n", fin.getAbsolutePath(), fout.getAbsolutePath(), fout.exists(), fout.getParentFile().exists());
+    File tempDir = new File(TestDir.temporaryLocalDataDir);
+    System.out.printf("Temp dir %s (%s)%n", tempDir.getAbsolutePath(), tempDir.exists());
 
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     NetcdfFile ncfileOut = FileWriter.writeToFile( ncfileIn, filenameOut);
