@@ -36,7 +36,7 @@ public class CatchingExceptionsTest {
 	public static Collection<String[]> getTestParameters(){
 		
 		
-		return Arrays.asList(new String[][]{{PointDataParameters.getPathInfo().get(1)}});
+		return Arrays.asList( new String[][]{{PointDataParameters.getPathInfo().get(1)}});
 	}
 	
 	@Before

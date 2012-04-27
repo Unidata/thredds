@@ -92,6 +92,18 @@ public class CalendarDateFormatter {
     DateFormatter df = new DateFormatter();
     return df.getISODate(iso);
   }
+  
+  /**
+   *  
+   * @param iso ISO 8601 date String
+   * @return 
+   * @throws IllegalArgumentException if the String is not a valid ISO 8601 date
+   */
+  static public Date isoStringToDate(String iso) throws IllegalArgumentException{
+	  DateTime dt = new DateTime(iso);
+	  
+	  return new Date(dt.getMillis());
+  }
 
   /*
    * Parse text in the format "yyyy-MM-dd'T'HH:mm:ss"

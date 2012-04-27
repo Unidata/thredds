@@ -120,12 +120,25 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 	  }
 	  
 	  private boolean validateISOString(String isoString, String msg, ConstraintValidatorContext constraintValidatorContext){
-		    
-		  	boolean isValid = false;
+		    		  	
 		  	
 		  	if("present".equals(isoString)) return true;
 		  	
-			Date date = isoString2Date(isoString);
+		  	boolean isValid = true;
+		  	Date date= null;
+		  	
+		  	try {
+		  		date = isoString2Date(isoString);
+		  		
+			} catch (IllegalArgumentException iea) {
+				//Invalid format for param time!!!
+				isValid = false;
+				constraintValidatorContext
+				.buildConstraintViolationWithTemplate(msg)
+				.addConstraintViolation();				
+			}
+		  	
+			/*Date date = isoString2Date(isoString);
 			if(date != null){
 				isValid = true;
 				
@@ -134,14 +147,16 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 				constraintValidatorContext
 				.buildConstraintViolationWithTemplate(msg)
 				.addConstraintViolation();				
-			}		  
-		return isValid;  
+			}*/
+		  	
+		  	return isValid;  
 	  }
 	  
 	  private Date isoString2Date(String isoString){
 		  
 		  if("present".equals(isoString)) return new Date();
 		  
-		  return CalendarDateFormatter.parseISODate(isoString);
+		  //return CalendarDateFormatter.parseISODate(isoString);
+		  return CalendarDateFormatter.isoStringToDate(isoString);
 	  }
 }

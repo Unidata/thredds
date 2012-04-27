@@ -181,7 +181,7 @@
             <containerId>tomcat7x</containerId>
             <zipUrlInstaller>
               <!-- url>http://www.carfab.com/apachesoftware/tomcat/tomcat-7/v7.0.25/bin/apache-tomcat-7.0.25.zip</url-->
-              <url>http://ftp.wayne.edu/apache/tomcat/tomcat-7/v7.0.26/bin/apache-tomcat-7.0.26.zip</url>
+              <url>http://newverhost.com/pub/tomcat/tomcat-7/v7.0.27/bin/apache-tomcat-7.0.27.zip</url>
               <downloadDir>${project.build.directory}/downloads</downloadDir>
               <extractDir>${project.build.directory}/extracts</extractDir>
             </zipUrlInstaller>

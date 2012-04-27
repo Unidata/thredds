@@ -107,6 +107,12 @@
       <artifactId>slf4j-jdk14</artifactId>
       <scope>test</scope>
     </dependency>
+    
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>jcl-over-slf4j</artifactId>
+		<scope>test</scope>
+	</dependency>    
 
   </dependencies>
 
@@ -175,6 +181,7 @@
               <includes>
                 <include>ucar/unidata/test/**</include>
                 <include>ucar/nc2/util/**</include>
+                <include>ucar/nc2/TestLocal.*</include>
               </includes>
             </configuration>
           </execution>
