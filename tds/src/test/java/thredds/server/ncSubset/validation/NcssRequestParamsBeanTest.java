@@ -70,7 +70,7 @@ public class NcssRequestParamsBeanTest {
 		params.setVar( Arrays.asList("var1", "var2") );
 		params.setPoint(true);
 		params.setAccept("text/csv");
-		params.setTime("20120327");							
+		params.setTime("2012x0327");							
 		
 		Set<ConstraintViolation<PointDataRequestParamsBean>> constraintViolations = validator.validate(params);
 		assertEquals(1 , constraintViolations.size());
@@ -106,6 +106,7 @@ public class NcssRequestParamsBeanTest {
 		params.setVar( Arrays.asList("var1", "var2") );
 		params.setPoint(true);
 		params.setTime_start("2012-03-27T00:00:00Z");
+		//params.setTime_start("2012-0-27T08:00:00+0200");
 		params.setTime_end("2012-03-28");
 		params.setAccept("text/csv");
 		//params.setTime_duration("PT18H");
