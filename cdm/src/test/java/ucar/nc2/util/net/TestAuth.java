@@ -180,17 +180,18 @@ public class TestAuth extends UnitTestCommon
         }
     }
 
-    @Test
-    public void
-    testBasic() throws Exception
-    {
-        AuthDataBasic[] basictests = {
+    static AuthDataBasic[] basictests = {
                 new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
                         "tiggeUser", "tigge", MUSTPASS),
                 new AuthDataBasic("http://motherlode.ucar.edu:8080/thredds/dodsC/restrict/testdata/testData.nc.html",
                         "", "", MUSTFAIL)
         };
 
+
+    @Test
+    public void
+    testBasic() throws Exception
+    {
         System.out.println("*** Testing: Http Basic Password Authorization");
 
         for (AuthDataBasic data : basictests) {
@@ -215,6 +216,55 @@ public class TestAuth extends UnitTestCommon
             if (pass) {
                 // Test global credentials provider
                 HTTPSession.setGlobalCredentialsProvider(provider);
+                session = new HTTPSession(data.url);
+                method = HTTPMethod.Get(session);
+                status = method.execute();
+                System.out.printf("\tglobal provider test: status code = %d\n", status);
+                System.out.flush();
+                pass = (status == 200 || status == 404); // non-existence is ok
+                if (data.xfail) {
+                    msg = pass ? "Local test failed to fail (xfail)" : "Local test passed (xfail)";
+                    pass = !pass;
+                } else {
+                    msg = pass ? "Local test passed" : "Local test failed";
+                }
+                System.out.println("\t" + msg);
+            }
+            if (pass)
+                assertTrue("testBasic", true);
+            else
+                assertTrue("testBasic", false);
+        }
+    }
+
+    @Test
+    public void
+    testBasic2() throws Exception
+    {
+        System.out.println("*** Testing: Http Basic Password Authorization Using direct credentials");
+
+        for (AuthDataBasic data : basictests) {
+            Credentials cred = new UsernamePasswordCredentials(data.user, data.password);
+            System.out.println("*** URL: " + data.url);
+            // Test local credentials provider
+            HTTPSession session = new HTTPSession(data.url);
+            session.setCredentials(HTTPAuthScheme.BASIC,cred);
+            HTTPMethod method = HTTPMethod.Get(session);
+            int status = method.execute();
+            System.out.printf("\tlocal provider: status code = %d\n", status);
+            System.out.flush();
+            pass = (status == 200 || status == 404); // non-existence is ok
+            String msg;
+            if (data.xfail) {
+                msg = pass ? "Local test failed to fail (xfail)" : "Local test passed (xfail)";
+                pass = !pass;
+            } else {
+                msg = pass ? "Local test passed" : "Local test failed";
+            }
+            System.out.println("\t" + msg);
+            if (pass) {
+                // Test global credentials provider
+                HTTPSession.setGlobalCredentials(HTTPAuthScheme.BASIC,cred);
                 session = new HTTPSession(data.url);
                 method = HTTPMethod.Get(session);
                 status = method.execute();

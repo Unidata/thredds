@@ -44,7 +44,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.auth.*;
 
 /**
- * HTTPAuthCreds contains the necessary information to support a given
+ * HTTPAuthProvider contains the necessary information to support a given
  * authorization scheme in the context of HTTPSession.
  * <p/>
  * It is intended to be thread safe using, currently,
