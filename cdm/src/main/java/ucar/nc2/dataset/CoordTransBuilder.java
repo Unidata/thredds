@@ -59,20 +59,23 @@ public class CoordTransBuilder {
 
   // search in the order added
   static {
-    registerTransform("albers_conical_equal_area", AlbersEqualArea.class);
+    registerTransform(CF.ALBERS_CONICAL_EQUAL_AREA, AlbersEqualArea.class);
+    registerTransform(CF.AZIMUTHAL_EQUIDISTANT, AzimuthalEquidistant.class);
     registerTransform("flat_earth", FlatEarth.class);
-    registerTransform("lambert_azimuthal_equal_area", LambertAzimuthal.class);
-    registerTransform("lambert_conformal_conic", LambertConformalConic.class);
+    registerTransform(CF.LAMBERT_AZIMUTHAL_EQUAL_AREA, LambertAzimuthal.class);
+    registerTransform(CF.LAMBERT_CONFORMAL_CONIC , LambertConformalConic.class);
+    registerTransform(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA , LambertCylindricalEqualArea.class);
     registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder"); // optional - needs visad.jar
-    registerTransform("mercator", Mercator.class);
+    registerTransform(CF.MERCATOR, Mercator.class);
     registerTransform("MSGnavigation", MSGnavigation.class);
-    registerTransform("orthographic", Orthographic.class);
-    registerTransform("polar_stereographic", PolarStereographic.class);
-    registerTransform("rotated_latitude_longitude", RotatedPole.class);
+    registerTransform(CF.ORTHOGRAPHIC, Orthographic.class);
+    registerTransform(CF.POLAR_STEREOGRAPHIC, PolarStereographic.class);
+    registerTransform("polyconic", PolyconicProjection.class); // ghansham@sac.isro.gov.in 1/8/2012
+    registerTransform(CF.ROTATED_LATITUDE_LONGITUDE, RotatedPole.class);
     registerTransform("rotated_latlon_grib", RotatedLatLon.class);
-    registerTransform("stereographic", Stereographic.class);
-    registerTransform("transverse_mercator", TransverseMercator.class);
-    registerTransform("vertical_perspective", VerticalPerspective.class);
+    registerTransform(CF.STEREOGRAPHIC, Stereographic.class);
+    registerTransform(CF.TRANSVERSE_MERCATOR, TransverseMercator.class);
+    registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);
     registerTransform("UTM", UTM.class);
 
     // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class); // DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
@@ -87,9 +90,6 @@ public class CoordTransBuilder {
     //-sachin 03/25/09
     registerTransform("ocean_s_coordinate_g1", VOceanSG1.class);
     registerTransform("ocean_s_coordinate_g2", VOceanSG2.class);
-
-    // ghansham@sac.isro.gov.in 1/8/2012
-    registerTransform("polyconic", PolyconicProjection.class);
 
     // further calls to registerTransform are by the user
     userMode = true;

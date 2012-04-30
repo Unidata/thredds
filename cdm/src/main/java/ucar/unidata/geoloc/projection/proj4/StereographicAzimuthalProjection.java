@@ -32,7 +32,7 @@ import ucar.unidata.geoloc.*;
  * @author Heiko.Klein@met.no
  */
 public class StereographicAzimuthalProjection extends ProjectionImpl {
-  // projection paramters
+  // projection parameters
   double projectionLatitude, projectionLongitude; // origin in radian
   double n; // Math.sin(projectionLatitude)
   double scaleFactor, trueScaleLatitude;  // scale or trueScale in radian
@@ -40,20 +40,15 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
 
   // earth shape
   private Earth earth;
-  private double e;   // earth.getEccentricitySquared
-  private double es;  // earth.getEccentricitySquared
-  private double one_es;  // 1-es
+  private double e;   // earth.getEccentricity
   private double totalScale; // scale to convert cartesian coords in km
-  // spherical vs ellipsoidal
-  private boolean isSpherical;
 
-  public final static int NORTH_POLE = 1;
-  public final static int SOUTH_POLE = 2;
-  public final static int EQUATOR = 3;
-  public final static int OBLIQUE = 4;
+  private final static int NORTH_POLE = 1;
+  private final static int SOUTH_POLE = 2;
+  private final static int EQUATOR = 3;
+  private final static int OBLIQUE = 4;
 
   private final static double TOL = 1.e-8;
-  private double EPS10 = 1.e-10;
 
   private double akm1, sinphi0, cosphi0;
   private int mode;
@@ -82,12 +77,10 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     scaleFactor = scale;
     falseEasting = false_easting;
     falseNorthing = false_northing;
+
     // earth figure
     this.earth = earth;
     this.e = earth.getEccentricity();
-    this.es = earth.getEccentricitySquared();
-    this.isSpherical = (e == 0.0);
-    this.one_es = 1.0 - es;
     this.totalScale = earth.getMajor(); // scale factor for cartesion coords in km.
     initialize();
 
@@ -111,12 +104,12 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   private void initialize() {
     double t;
 
-    if (Math.abs((t = Math.abs(projectionLatitude)) - MapMath.HALFPI) < EPS10)
+    if (Math.abs((t = Math.abs(projectionLatitude)) - MapMath.HALFPI) < MapMath.EPS10)
       mode = projectionLatitude < 0. ? SOUTH_POLE : NORTH_POLE;
     else
-      mode = t > EPS10 ? OBLIQUE : EQUATOR;
+      mode = t > MapMath.EPS10 ? OBLIQUE : EQUATOR;
     trueScaleLatitude = Math.abs(trueScaleLatitude);
-    if (isSpherical) { // sphere
+    if (earth.isSpherical()) { // sphere
       switch (mode) {
         case OBLIQUE:
           sinphi0 = Math.sin(projectionLatitude);
@@ -126,7 +119,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
           break;
         case SOUTH_POLE:
         case NORTH_POLE:
-          akm1 = Math.abs(trueScaleLatitude - MapMath.HALFPI) >= EPS10 ?
+          akm1 = Math.abs(trueScaleLatitude - MapMath.HALFPI) >= MapMath.EPS10 ?
                   Math.cos(trueScaleLatitude) / Math.tan(MapMath.QUARTERPI - .5 * trueScaleLatitude) :
                   2. * scaleFactor;
           break;
@@ -137,7 +130,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
       switch (mode) {
         case NORTH_POLE:
         case SOUTH_POLE:
-          if (Math.abs(trueScaleLatitude - MapMath.HALFPI) < EPS10)
+          if (Math.abs(trueScaleLatitude - MapMath.HALFPI) < MapMath.EPS10)
             akm1 = 2. * scaleFactor /
                     Math.sqrt(Math.pow(1 + e, 1 + e) * Math.pow(1 - e, 1 - e));
           else {
@@ -167,20 +160,20 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
     double sinlam = Math.sin(lam);
     double sinphi = Math.sin(phi);
 
-    if (isSpherical) { // sphere
+    if (earth.isSpherical()) { // sphere
       double cosphi = Math.cos(phi);
 
       switch (mode) {
         case EQUATOR:
           xy.y = 1. + cosphi * coslam;
-          if (xy.y <= EPS10)
+          if (xy.y <= MapMath.EPS10)
             throw new RuntimeException("I");
           xy.x = (xy.y = akm1 / xy.y) * cosphi * sinlam;
           xy.y *= sinphi;
           break;
         case OBLIQUE:
           xy.y = 1. + sinphi0 * sinphi + cosphi0 * cosphi * coslam;
-          if (xy.y <= EPS10)
+          if (xy.y <= MapMath.EPS10)
             throw new RuntimeException("I");
           xy.x = (xy.y = akm1 / xy.y) * cosphi * sinlam;
           xy.y *= cosphi0 * sinphi - sinphi0 * cosphi * coslam;
@@ -228,7 +221,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
   }
 
   public Point2D.Double projectInverse(double x, double y, Point2D.Double lp) {
-    if (isSpherical) {
+    if (earth.isSpherical()) {
       double c, rh, sinc, cosc;
 
       sinc = Math.sin(c = 2. * Math.atan((rh = MapMath.distance(x, y)) / akm1));
@@ -236,7 +229,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
       lp.x = 0.;
       switch (mode) {
         case EQUATOR:
-          if (Math.abs(rh) <= EPS10)
+          if (Math.abs(rh) <= MapMath.EPS10)
             lp.y = 0.;
           else
             lp.y = Math.asin(y * sinc / rh);
@@ -244,7 +237,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
             lp.x = Math.atan2(x * sinc, cosc * rh);
           break;
         case OBLIQUE:
-          if (Math.abs(rh) <= EPS10)
+          if (Math.abs(rh) <= MapMath.EPS10)
             lp.y = projectionLatitude;
           else
             lp.y = Math.asin(cosc * sinphi0 + y * sinc * cosphi0 / rh);
@@ -254,7 +247,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
         case NORTH_POLE:
           y = -y;
         case SOUTH_POLE:
-          if (Math.abs(rh) <= EPS10)
+          if (Math.abs(rh) <= MapMath.EPS10)
             lp.y = projectionLatitude;
           else
             lp.y = Math.asin(mode == SOUTH_POLE ? -cosc : cosc);
@@ -289,7 +282,7 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
       for (int i = 8; i-- != 0; phi_l = lp.y) {
         sinphi = e * Math.sin(phi_l);
         lp.y = 2. * Math.atan(tp * Math.pow((1. + sinphi) / (1. - sinphi), halfe)) - halfpi;
-        if (Math.abs(phi_l - lp.y) < EPS10) {
+        if (Math.abs(phi_l - lp.y) < MapMath.EPS10) {
           if (mode == SOUTH_POLE)
             lp.y = -lp.y;
           lp.x = (x == 0. && y == 0.) ? 0. : Math.atan2(x, y);
@@ -299,17 +292,6 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
       throw new RuntimeException("Iteration didn't converge");
     }
     return lp;
-  }
-
-  /**
-   * Returns true if this projection is conformal
-   */
-  public boolean isConformal() {
-    return true;
-  }
-
-  public boolean hasInverse() {
-    return true;
   }
 
   private double ssfn(double phit, double sinphi, double eccen) {

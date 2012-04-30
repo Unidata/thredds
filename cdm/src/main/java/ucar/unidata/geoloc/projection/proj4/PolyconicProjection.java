@@ -60,6 +60,7 @@ public class PolyconicProjection extends ProjectionImpl {
   private final static int N_ITER = 10;
   private final static int I_ITER = 20;
   private final static double ITOL = 1.e-12;
+
   //New variables added
   private boolean spherical = true;
   private double projectionLatitude;

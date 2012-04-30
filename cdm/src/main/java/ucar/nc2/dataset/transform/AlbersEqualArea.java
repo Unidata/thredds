@@ -61,27 +61,11 @@ public class AlbersEqualArea extends AbstractCoordTransBuilder {
     double[] pars = readAttributeDouble2(ctv.findAttribute(CF.STANDARD_PARALLEL));
     if (pars == null) return null;
 
-    double lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);
-    double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
-    double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
-
-    if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(ds, ctv);
-      false_easting *= scalef;
-      false_northing *= scalef;
-    }
-
-    double earth_radius = getEarthRadiusInKm(ctv);
-    double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
-    double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
-    double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);
+    readStandardParams(ds, ctv);
 
     ucar.unidata.geoloc.ProjectionImpl proj;
 
-    // check for ellipsoidal earth
-    if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
-      Earth earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);
+    if (earth != null) {
       proj = new AlbersEqualAreaEllipse(lat0, lon0, pars[0], pars[1], false_easting, false_northing, earth);
 
     } else {

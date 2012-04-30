@@ -77,7 +77,7 @@ class SliceReader implements ProxyReader {
     Section orgSection = new Section(section.getRanges());
     orgSection.insertRange(sliceDim, slice.getRange(sliceDim));
     Array data = orgClient._read( orgSection);
-    data.reduce( sliceDim);
+    data = data.reduce( sliceDim);
     return data;
   }
 

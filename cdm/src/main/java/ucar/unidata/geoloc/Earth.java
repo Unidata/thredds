@@ -236,7 +236,7 @@ public class Earth {
 
     if (Double.compare(earth.equatorRadius, equatorRadius) != 0) return false;
     if (Double.compare(earth.poleRadius, poleRadius) != 0) return false;
-    if (name != null ? !name.equals(earth.name) : earth.name != null) return false;
+    // if (name != null ? !name.equals(earth.name) : earth.name != null) return false;
 
     return true;
   }

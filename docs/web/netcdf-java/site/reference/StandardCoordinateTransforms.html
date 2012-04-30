@@ -65,9 +65,10 @@ dl {margin: 10px 5px 5px 15px;)
 <p>In some cases, the ellipsoidal form of the projection may be used. This is indicated by the presence of the <em><strong>semi_major_axis,</strong></em> and either the<em><strong> semi_minor_axis </strong></em>or  <em><strong> inverse_flattening</strong></em> attributes. Note that not all projections have an ellipsoidal implementation. </p>
 <p>When neither  <em><strong>earth_radius</strong></em> or <em><strong>semi_major_axis</strong></em> is allowed or specified, the projection will be spherical with a default earth radius in km.</p>
 <p>The units of <em><strong>earth_radius</strong></em>, <em><strong>semi_major_axis</strong></em>, <em><strong>semi_minor_axis</strong></em> must be in meters.</p>
-<p>The <em><strong><a name="false_easting"></a>, </strong></em>and<em><strong> false_northing</strong></em> should match the units of the x and y projection coordinates. Alternatively, the attribute &quot;units&quot; may be speccified on the dummy Coordinate Transform Variable (this is CDM standard, not CF).</p>
+<p>The <strong>false_easting</strong><em><strong><a name="false_easting"></a>, </strong></em>and<em><strong> false_northing</strong></em> should match the units of the x and y projection coordinates. Alternatively, the attribute &quot;units&quot; may be speccified on the dummy Coordinate Transform Variable (this is CDM standard, not CF).</p>
 <h3>albers_conical_equal_area</h3>
-<pre>   char Albers_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;albers_conical_equal_area&quot;;<br>     :<strong>standard_parallel</strong> = 20.0, 60.0; // one or two<br>     :<strong>longitude_of_central_meridian</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; <br>     :<em><strong>false_easting</strong></em> = 0.0;
+<blockquote>
+  <pre>   char Albers_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;albers_conical_equal_area&quot;;<br>     :<strong>standard_parallel</strong> = 20.0, 60.0; // one or two<br>     :<strong>longitude_of_central_meridian</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; <br>     :<em><strong>false_easting</strong></em> = 0.0;
      :<em><strong>false_northing</strong></em> = 0.0;
      :<em><strong>earth_radius</strong></em> = 6371.229;
      :<em><strong>semi_major_axis</strong></em> =  6378.137;
@@ -75,20 +76,39 @@ dl {margin: 10px 5px 5px 15px;)
      :<em><strong>inverse_flattening</strong></em> =   298.257;
      :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;
 </pre>
-<p>This uses a spherical or ellipsoidal earth. See Snyder, p 98. </p>
+  <p>This uses a spherical or ellipsoidal earth. See Snyder, p 98. </p>
+</blockquote>
+<h3><strong>azimuthal_equidistant</strong></h3>
+<blockquote>
+  <pre>char azimuthal_equidistant;
+ :<strong>grid_mapping_name</strong> = &quot;azimuthal_equidistant&quot;;
+ :<strong>semi_major_axis</strong> = 6378137.0; // double
+ :<strong>inverse_flattening</strong> = 298.257223563; // double
+ :<strong>longitude_of_prime_meridian</strong> = 0.0; // double
+ :<strong>false_easting</strong> = 0.0; // double
+ :<strong>false_northing</strong> = 0.0; // double
+ :<strong>latitude_of_projection_origin</strong> = -37.0; // double
+ :<strong>longitude_of_projection_origin</strong> = 145.0; // double</pre>
+  <p>Adapted from proj4 / jhlabs. See Snyder, p 191. As of version 4.3.10</p>
+</blockquote>
 <h3>flat_earth</h3>
-<pre>   char Flat_Earth;<br>     :<strong>grid_mapping_name</strong> = &quot;flat_earth&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -132.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; <br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;
+<blockquote>
+  <pre>   char Flat_Earth;<br>     :<strong>grid_mapping_name</strong> = &quot;flat_earth&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -132.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; <br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;
 </pre>
-<p>This is not a standard CF projection. It is used when a &quot;flat earth&quot; assumption is acceptable. </p>
+  <p>This is not a standard CF projection. It is used when a &quot;flat earth&quot; assumption is acceptable. </p>
+</blockquote>
 <h3>lambert_azimuthal_equal_area</h3>
-<pre>   char Lambert_azimuth_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;lambert_azimuthal_equal_area&quot;;
+<blockquote>
+  <pre>   char Lambert_azimuth_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;lambert_azimuthal_equal_area&quot;;
      :<strong>longitude_of_projection_origin</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<em><strong>false_easting</strong></em> = 0.0; // km 
      :<em><strong>false_northing</strong></em> = 0.0; // km 
      :<em><strong>earth_radius</strong></em> = 6371.229;<strong>
      </strong>:<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p>This uses a spherical earth. See Snyder, p 184.</p>
+  <p>This uses a spherical earth. See Snyder, p 184.</p>
+</blockquote>
 <h3>lambert_conformal_conic</h3>
-<pre>   char Lambert_Conformal;<br>     :<strong>grid_mapping_name</strong> = &quot;lambert_conformal_conic&quot;;<br>     :<strong>standard_parallel</strong> = 33.0, 45.0;   // one or two<br>     :<strong>longitude_of_central_meridian</strong> = -97.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; 
+<blockquote>
+  <pre>   char Lambert_Conformal;<br>     :<strong>grid_mapping_name</strong> = &quot;lambert_conformal_conic&quot;;<br>     :<strong>standard_parallel</strong> = 33.0, 45.0;   // one or two<br>     :<strong>longitude_of_central_meridian</strong> = -97.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; 
      :<em><strong>false_easting</strong></em> = 0.0;
      :<em><strong>false_northing</strong></em> = 0.0;
      :<em><strong>earth_radius</strong></em> = 6371.229;
@@ -97,161 +117,217 @@ dl {margin: 10px 5px 5px 15px;)
      :<em><strong>inverse_flattening</strong></em> =   298.257;
      :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;
 </pre>
-<p>This uses a spherical  or ellipsoidal earth. See Snyder, p 104. </p>
+  <p>This uses a spherical  or ellipsoidal earth. See Snyder, p 104. </p>
+</blockquote>
+<h3>lambert_cylindrical_equal_area</h3>
+<blockquote>
+  <pre>char lambert_cylindrical_equal_area;
+ :<strong>grid_mapping_name</strong> = &quot;lambert_cylindrical_equal_area&quot;;
+ :<strong>semi_major_axis</strong> = 6378137.0; // double
+ :<strong>inverse_flattening</strong> = 298.257223563; // double
+
+ :<strong>longitude_of_central_meridian</strong> = 145.0; // double
+ :<strong>false_easting</strong> = 0.0; // double
+ :<strong>false_northing</strong> = 0.0; // double
+ :<strong>standard_parallel</strong> = -37.0; // double</pre>
+  <p>Adapted from proj4 / jhlabs. See Snyder, p 76. As of version 4.3.10</p>
+  <p>TODO: allow <strong>scale_factor_at_projection_origin</strong>&nbsp; </p>
+</blockquote>
 <h3>mcidas_area</h3>
-<pre>   char McIDAS_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;mcidas_area&quot;;<br>     :<strong>AreaHeader</strong> = 33.0, 45.0, ...;   // an integer array<br>     :<strong>NavHeader</strong> = -97.0, ...; 		// an integer array <br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;
+<blockquote>
+  <pre>   char McIDAS_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;mcidas_area&quot;;<br>     :<strong>AreaHeader</strong> = 33.0, 45.0, ...;   // an integer array<br>     :<strong>NavHeader</strong> = -97.0, ...; 		// an integer array <br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;
 </pre>
-<p>This is not a standard CF projection. The headers are read from a McIDAS Area file, and placed in the attributes as int arrays.  </p>
+  <p>This is not a standard CF projection. The headers are read from a McIDAS Area file, and placed in the attributes as int arrays.  </p>
+</blockquote>
 <h3>mercator</h3>
-<pre>
+<blockquote>
+  <pre>
   char Mercator_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;mercator&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = 110.0; <br>     :<strong>latitude_of_projection_origin</strong> = -25.0; <br>     :<strong>standard_parallel</strong> = 0.02; <br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;
      :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p>This uses a spherical earth and default radius. See Snyder, p 47. </p>
+  <p>This uses a spherical earth and default radius. See Snyder, p 47. </p>
+</blockquote>
 <p>TODO: allow   <strong>scale_factor_at_projection_origin</strong>&nbsp; </p>
 <h3>MSGnavigation<a name="MSG"></a></h3>
 <p>Used for MSG (METEOSAT 8 onwards) data.</p>
-<pre>   char Space_View_Perspective_or_Orthographic;<br>     :<strong>grid_mapping_name</strong> = &quot;MSGnavigation&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = 0.0; // double<br>     :<strong>latitude_of_projection_origin</strong> = 0.0; // double<br>     :<strong>semi_major_axis</strong> = 6356755.5; // double<br>     :<strong>semi_minor_axis</strong> = 6378140.0; // double<br>     :<strong>height_from_earth_center</strong> = 4.2163970098E7; // double<br>     :<strong>scale_x</strong> = 35785.830098; // double<br>     :<strong>scale_y</strong> = -35785.830098; // double<br>     :_CoordinateTransformType = &quot;Projection&quot;;
+<blockquote>
+  <pre>   char Space_View_Perspective_or_Orthographic;<br>     :<strong>grid_mapping_name</strong> = &quot;MSGnavigation&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = 0.0; // double<br>     :<strong>latitude_of_projection_origin</strong> = 0.0; // double<br>     :<strong>semi_major_axis</strong> = 6356755.5; // double<br>     :<strong>semi_minor_axis</strong> = 6378140.0; // double<br>     :<strong>height_from_earth_center</strong> = 4.2163970098E7; // double<br>     :<strong>scale_x</strong> = 35785.830098; // double<br>     :<strong>scale_y</strong> = -35785.830098; // double<br>     :_CoordinateTransformType = &quot;Projection&quot;;
      :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p>This is not a standard CF projection. This uses an ellipsoidal earth. See <a href="http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=PDF_CGMS_03&RevisionSelectionMethod=LatestReleased">this document</a>. Note there is a bug in some versions of Eumetsat GRIB encoding, per Simon Eliot 1/18/2010, in which the &quot;apparent diameter of earth in units of grid lengths&quot; is incorrectly specified. We do a correction for this in ucar.nc2.iosp.grid.GridHorizCoordSys when we read the GRIB file.</p>
+  <p>This is not a standard CF projection. This uses an ellipsoidal earth. See <a href="http://www.eumetsat.int/idcplg?IdcService=GET_FILE&dDocName=PDF_CGMS_03&RevisionSelectionMethod=LatestReleased">this document</a>. Note there is a bug in some versions of Eumetsat GRIB encoding, per Simon Eliot 1/18/2010, in which the &quot;apparent diameter of earth in units of grid lengths&quot; is incorrectly specified. We do a correction for this in ucar.nc2.iosp.grid.GridHorizCoordSys when we read the GRIB file.</p>
+</blockquote>
 <h3>orthographic</h3>
-<pre>
+<blockquote>
+  <pre>
   char Orthographic_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;orthographic&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = 110.0; <br>     :<strong>latitude_of_projection_origin</strong> = -25.0; <br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;
      :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p>This is not a standard CF projection. This uses a spherical earth  and default radius. See Snyder, p 145. </p>
+  <p>This is not a standard CF projection. This uses a spherical earth  and default radius. See Snyder, p 145. </p>
+</blockquote>
 <h3>  polar_stereographic</h3>
-<pre>   char Polar_Stereographic;<br>     :<strong>grid_mapping_name</strong> = &quot;polar_stereographic&quot;;<br>     :<strong>straight_vertical_longitude_from_pole</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>scale_factor_at_projection_origin</strong> = 0.9330127018922193; <br>     :<em><strong>false_easting</strong></em> = 0.0;
+<blockquote>
+  <pre>   char Polar_Stereographic;<br>     :<strong>grid_mapping_name</strong> = &quot;polar_stereographic&quot;;<br>     :<strong>straight_vertical_longitude_from_pole</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>scale_factor_at_projection_origin</strong> = 0.9330127018922193; <br>     :<em><strong>false_easting</strong></em> = 0.0;
      :<em><strong>false_northing</strong></em> = 0.0;
      :<em><strong>semi_major_axis</strong></em> =  6378.137;
      :<em><strong>semi_minor_axis</strong></em> =  6356.752;
      :<em><strong>inverse_flattening</strong></em> =   298.257;
      :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p>The  Polar Stereographic is the same as the Stereographic  projection with origin at the north or south pole. It can use a spherical or ellipsoidal earth.</p>
-<p>The polar stereographic will accept these alternate parameter names:</p>
-<pre>   char Polar_Stereographic;<br>     :<strong>grid_mapping_name</strong> = &quot;polar_stereographic&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>standard_parallel</strong> = 0.9330127018922193; <br>
+  <p>The  Polar Stereographic is the same as the Stereographic  projection with origin at the north or south pole. It can use a spherical or ellipsoidal earth.</p>
+  <p>The polar stereographic will accept these alternate parameter names:</p>
+  <pre>   char Polar_Stereographic;<br>     :<strong>grid_mapping_name</strong> = &quot;polar_stereographic&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>standard_parallel</strong> = 0.9330127018922193; <br>
 </pre>
-<p>If the <strong>standard_parallel</strong> is specified, this indicates the parallel where the scale factor = 1.0. In that case the projection scale factor is calculated as </p>
-<pre> double sin = Math.abs(Math.sin( Math.toRadians( stdpar)));
+  <p>If the <strong>standard_parallel</strong> is specified, this indicates the parallel where the scale factor = 1.0. In that case the projection scale factor is calculated as </p>
+  <pre> double sin = Math.abs(Math.sin( Math.toRadians( stdpar)));
  scale = (1.0 + sin)/2;</pre>
+</blockquote>
+
 <h3>rotated_pole<a name="rotated_pole"></a> </h3>
-<pre> char rotated_pole;
+<blockquote>
+  <pre> char rotated_pole;
  	 :<strong>grid_mapping_name</strong> = &quot;rotated_latitude_longitude&quot;;
    :<strong>grid_north_pole_latitude</strong> = 37.0f; // float
    :<strong>grid_north_pole_longitude</strong> = -153.0f; // float
    :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;
    :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p> The rotated latitude and longitude coordinates are identified by the <code class="varname">standard_name</code> attribute values <code class="varname"><strong>grid_latitude</strong></code> and <code class="varname"><strong>grid_longitude</strong></code> respectively. Example:</p>
-<pre> float rlat(rlat=84);<br>     :<strong>standard_name</strong> = &quot;grid_latitude&quot;;<br>     :long_name = &quot;rotated latitude&quot;;<br>     :units = &quot;degrees&quot;;<br>     :_CoordinateAxisType = &quot;GeoY&quot;;<br>   float rlon(rlon=90);<br>     :<strong>standard_name</strong> = &quot;grid_longitude&quot;;<br>     :long_name = &quot;rotated longitude&quot;;<br>     :units = &quot;degrees&quot;;<br>     :_CoordinateAxisType = &quot;GeoX&quot;;
+  <p> The rotated latitude and longitude coordinates are identified by the <code class="varname">standard_name</code> attribute values <code class="varname"><strong>grid_latitude</strong></code> and <code class="varname"><strong>grid_longitude</strong></code> respectively. Example:</p>
+  <pre> float rlat(rlat=84);<br>     :<strong>standard_name</strong> = &quot;grid_latitude&quot;;<br>     :long_name = &quot;rotated latitude&quot;;<br>     :units = &quot;degrees&quot;;<br>     :_CoordinateAxisType = &quot;GeoY&quot;;<br>   float rlon(rlon=90);<br>     :<strong>standard_name</strong> = &quot;grid_longitude&quot;;<br>     :long_name = &quot;rotated longitude&quot;;<br>     :units = &quot;degrees&quot;;<br>     :_CoordinateAxisType = &quot;GeoX&quot;;
 </pre>
-<p>The rotated longitude coordinate must be in the range [-180,180] (so there will be a problem when it crosses the dateline). Code contributed by Robert Schmunk. Added in version 4.0. </p>
+  <p>The rotated longitude coordinate must be in the range [-180,180] (so there will be a problem when it crosses the dateline). Code contributed by Robert Schmunk.</p>
+</blockquote>
+
 <h3>rotated_latlon_grib<a name="rotated_pole"></a> </h3>
-<p>Grib 1 projection 10 and Grib 2 projection 1. This is not a standard CF projection.</p>
-<pre> char rotated_pole;
+<blockquote>
+  <p>Grib 1 projection 10 and Grib 2 projection 1. This is not a standard CF projection.</p>
+  <pre> char rotated_pole;
    :<strong>grid_mapping_name</strong> = &quot;rotated_latlon_grib&quot;;
    :<strong>grid_south_pole_latitude</strong> = 37.0f; // float
    :<strong>grid_south_pole_longitude</strong>= -153.0f; // float
    :<strong>grid_south_pole_angle</strong>= 0.0f; // float
    :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;
    :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p> Contributed by Tor Christian Bekkvik.</p>
+  <p> Contributed by Tor Christian Bekkvik.</p>
+</blockquote>
 <h3>stereographic</h3>
-<pre>   char Stereographic;<br>     :<strong>grid_mapping_name</strong> = &quot;stereographic&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>scale_factor_at_projection_origin</strong> = 0.9330127018922193; <br>     :<em><strong>false_easting</strong></em> = 0.0;
+<blockquote>
+  <pre>   char Stereographic;<br>     :<strong>grid_mapping_name</strong> = &quot;stereographic&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 90.0; <br>     :<strong>scale_factor_at_projection_origin</strong> = 0.9330127018922193; <br>     :<em><strong>false_easting</strong></em> = 0.0;
      :<em><strong>false_northing</strong></em> = 0.0;
      :<em><strong>semi_major_axis</strong></em> =  6378.137;
      :<em><strong>semi_minor_axis</strong></em> =  6356.752;
      :<em><strong>inverse_flattening</strong></em> =   298.257;
      :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p>This uses a spherical or ellipsoidal earth. See Snyder, p 153. </p>
+  <p>This uses a spherical or ellipsoidal earth. See Snyder, p 153. </p>
+</blockquote>
 <h3>transverse_mercator</h3>
-<pre>   char Transverse_mercator;<br>     :<strong>grid_mapping_name</strong> = &quot;transverse_mercator&quot;;<br>     :<strong>longitude_of_central_meridian</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; <br>     :<strong>scale_factor_at_central_meridian</strong> = 0.9330127018922193; <br>     :<em><strong>false_easting</strong></em> = 0.0;
+<blockquote>
+  <pre>   char Transverse_mercator;<br>     :<strong>grid_mapping_name</strong> = &quot;transverse_mercator&quot;;<br>     :<strong>longitude_of_central_meridian</strong> = -32.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; <br>     :<strong>scale_factor_at_central_meridian</strong> = 0.9330127018922193; <br>     :<em><strong>false_easting</strong></em> = 0.0;
      :<em><strong>false_northing</strong></em> = 0.0;
      :<em><strong>semi_major_axis</strong></em> =  6378.137;
      :<em><strong>semi_minor_axis</strong></em> =  6356.752;
      :<em><strong>inverse_flattening</strong></em> =   298.257;
      :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;<br>     :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p>  This uses a spherical or ellipsoidal earth. See Snyder, p 53. </p>
+  <p>  This uses a spherical or ellipsoidal earth. See Snyder, p 53. </p>
+</blockquote>
 <h3><a name="UTM"></a> UTM (Universal Transverse Mercator)</h3>
-<pre>   char UTM_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;universal_transverse_mercator&quot;;<br>     :<strong>utm_zone_number</strong> = 22; <br>     :<em><strong>semi_major_axis</strong></em> = 6378.137;<br>     :<em><strong>inverse_flattening</strong></em> = 298.257;<br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;
+<blockquote>
+  <pre>   char UTM_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;universal_transverse_mercator&quot;;<br>     :<strong>utm_zone_number</strong> = 22; <br>     :<em><strong>semi_major_axis</strong></em> = 6378.137;<br>     :<em><strong>inverse_flattening</strong></em> = 298.257;<br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;
      :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;</pre>
-<p>This is not a standard CF projection. UTM uses an ellipsoidal earth. Code contributed from the GeoTransform package by Dan Toms, SRI International.</p>
+  <p>This is not a standard CF projection. UTM uses an ellipsoidal earth. Code contributed from the GeoTransform package by Dan Toms, SRI International.</p>
+</blockquote>
 <h3>vertical_perspective</h3>
-<pre>   char vertical_perspective_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;vertical_perspective&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -97.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; 
+<blockquote>
+  <pre>   char vertical_perspective_Projection;<br>     :<strong>grid_mapping_name</strong> = &quot;vertical_perspective&quot;;<br>     :<strong>longitude_of_projection_origin</strong> = -97.0; <br>     :<strong>latitude_of_projection_origin</strong> = 40.0; 
      :<strong>height_above_earth</strong> = 23980.0; // km
      :<em><strong>earth_radius</strong></em> = 6371.229;
      :<em><strong>false_easting</strong></em> = 0.0; 
      :<em><strong>false_northing</strong></em> = 0.0; <br>     :<em><strong>_CoordinateTransformType</strong></em> = &quot;Projection&quot;;
      :<em><strong>_CoordinateAxisTypes</strong></em> = &quot;GeoX GeoY&quot;;
 </pre>
-<p>This uses a spherical earth. See Snyder, p 176.</p>
-<p>TODO: allow  <strong>perspective_point_height</strong> </p>
+  <p>This uses a spherical earth. See Snyder, p 176.</p>
+  <p>TODO: allow  <strong>perspective_point_height</strong> </p>
+</blockquote>
 <h2><a name="vertTransforms"></a>Standard Vertical Transforms</h2>
 <p>These are examples of placing the Coordinate Transform parameters on the corresponding vertical coordinate (required by CF). If you are using CF Conventions, you do not have to add the <strong>_Coordinate</strong> attributes, as they will be added automatically in the CoordSysBuilder.</p>
-<h3>atmosphere_ln_pressure_coordinate</h3>
-<pre>
+<blockquote>
+  <h3>atmosphere_ln_pressure_coordinate</h3>
+  <pre>
   double levCoord(levCoord=26);<br>     :long_name = &quot;log pressure levels&quot;;
      :units = &quot;&quot;;<br>     :positive = &quot;down&quot;;<br>     :<strong>standard_name</strong> = &quot;atmosphere_ln_pressure_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;p0: P0 lev: levCoord&quot;;
 </pre>
-<p>atmosphere_ln_pressure_coordinate transform  only works in  CF Conventions.</p>
+  <p>atmosphere_ln_pressure_coordinate transform  only works in  CF Conventions.</p>
+</blockquote>
 <h3>atmosphere_hybrid_height_coordinate</h3>
-<pre>
+<blockquote>
+  <pre>
   double lev(lev=26);<br>     :long_name = &quot;hybrid hybrid height coordinate&quot;;
      :units = &quot;m&quot;;<br>     :positive = &quot;up&quot;;<br>     :<strong>standard_name</strong> = &quot;atmosphere_hybrid_height_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;a: varA b: varB orog: orography&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;up;
 
      :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
-
 </pre>
+</blockquote>
 <h3>atmosphere_hybrid_sigma_pressure_coordinate</h3>
-<pre>
+<blockquote>
+  <pre>
   double lev(lev=26);<br>     :long_name = &quot;hybrid level at midpoints (1000*(A+B))&quot;;
      :units = &quot;&quot;;<br>     :positive = &quot;down&quot;;<br>     :<strong>standard_name</strong> = &quot;atmosphere_hybrid_sigma_pressure_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;a: hyam b: hybm p0: P0 ps: PS&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;down;
 
      :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
 </pre>
-<p>  or<br>
-</p>
-<pre>
+  <p>  or<br>
+  </p>
+  <pre>
   double lev(lev=26);<br>     :long_name = &quot;hybrid level at midpoints (1000*(A+B))&quot;;
      :units = &quot;&quot;;<br>     :positive = &quot;down&quot;;<br>     :<strong>standard_name</strong> = &quot;atmosphere_hybrid_sigma_pressure_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;ap: hyam b: hybm p0: P0&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;down;
 
      :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;lev&quot;;
-
 </pre>
+</blockquote>
+
 <h3>atmosphere_sigma_coordinate</h3>
-<pre>   float level(level=2);<br>     :units = &quot;&quot;;<br>     :long_name = &quot;sigma at layer midpoints&quot;;<br>     :positive = &quot;down&quot;;
+<blockquote>
+  <pre>   float level(level=2);<br>     :units = &quot;&quot;;<br>     :long_name = &quot;sigma at layer midpoints&quot;;<br>     :positive = &quot;down&quot;;
      :<strong>standard_name</strong> = &quot;atmosphere_sigma_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;sigma: level ps: PS ptop: PTOP&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;down&quot;;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;level&quot;;<br>
 </pre>
+</blockquote>
 <h3>ocean_s_coordinate</h3>
-<pre>
+<blockquote>
+  <pre>
   double s_rho(s_rho=20);<br>     :long_name = &quot;S-coordinate at RHO-points&quot;;<br>     :units = &quot;&quot;;
      :positive = &quot;up&quot;;
      :<strong>standard_name</strong> = &quot;ocean_s_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;up&quot;; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;s_rho&quot;;
-
 </pre>
+</blockquote>
 <h3>ocean_s_coordinate_g1</h3>
-<pre>
+<blockquote>
+  <pre>
   double s_rho(s_rho=20);<br>     :long_name = &quot;S-coordinate at RHO-points&quot;;<br>     :units = &quot;&quot;;
      :positive = &quot;up&quot;;
      :<strong>standard_name</strong> = &quot;ocean_s_coordinate_g1&quot;;<br>     :<strong>formula_terms</strong> = &quot;s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc&quot;;<br>
      :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;up&quot;; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;s_rho&quot;;
 </pre>
+</blockquote>
 <h3>ocean_s_coordinate_g2</h3>
-<pre>
+<blockquote>
+  <pre>
   double s_rho(s_rho=20);<br>     :long_name = &quot;S-coordinate at RHO-points&quot;;<br>     :units = &quot;&quot;;
      :positive = &quot;up&quot;;
      :<strong>standard_name</strong> = &quot;ocean_s_coordinate_g2&quot;;<br>     :<strong>formula_terms</strong> = &quot;s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;up&quot;; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;s_rho&quot;;</pre>
+</blockquote>
 <h3>ocean_sigma_coordinate</h3>
-<pre>
+<blockquote>
+  <pre>
    float zpos(zpos=22);<br>     :long_name = &quot;Sigma Layer&quot;;<br>     :units = &quot;&quot;;<br>     :positive = &quot;up&quot;;
      :<strong>standard_name</strong> = &quot;ocean_sigma_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;sigma: zpos eta: elev depth: depth&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;up&quot;;<br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;zpos&quot;;
 
 </pre>
+</blockquote>
 <h3>explicit_field</h3>
-<pre>
+<blockquote>
+  <pre>
   char ExplicitField;
     :<strong>standard_name</strong> = &quot;explicit_field&quot;;  // canonical transform name
     :<strong>existingDataField</strong> = &quot;ght_hybr&quot;;  // must be a 3 or 4D pressure / height / geopotential height field<br>    :<strong>_CoordinateTransformType</strong> = &quot;vertical&quot;; // unambiguouly identifies it as vertical transform<br>    :<strong>_CoordinateAxes</strong> = &quot;hybr&quot;; // attach transform to any coord sys with the &quot;hbyr&quot; axis.</pre>
-<p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate.     </p>
+  <p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate.     </p>
+</blockquote>
 <h2>Using Vertical Transforms</h2>
-<pre> public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
+<blockquote>
+  <pre> public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
   GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + &quot;conventions/cf/ccsm2.nc&quot;); 
   GridDatatype grid = gds.findGridDatatype(&quot;T&quot;);
   GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -264,9 +340,10 @@ dl {margin: 10px 5px 5px 15px;)
 	   doSomething(ca);
   }
 }</pre>
+</blockquote>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated May 2011 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated April 2012 
 </address>
 <p>&nbsp;</p>
 </body>

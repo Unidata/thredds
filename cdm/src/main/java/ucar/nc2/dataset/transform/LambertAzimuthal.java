@@ -66,7 +66,6 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-
     ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea proj =
             new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing, earth_radius);
 

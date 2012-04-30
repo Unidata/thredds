@@ -5,6 +5,11 @@ project and module files. Below are instructions on how to import the entire
 THREDDS project code base (CDM, TDS, GRIB, etc.) into IntelliJ IDEA using the
 Maven POM files.
 
+## installation of tools
+
+1. download and install git : follow http://help.github.com/ and choose beginner / set up git
+2. download and install maven v3 from http://maven.apache.org/download.html
+
 ## Source Code
 
 THREDDS source code is available from the THREDDS GitHub repository:
@@ -31,3 +36,5 @@ THREDDS source code is available from the THREDDS GitHub repository:
   - Check the "Automatically download: checkboxes (both "Sources" and "Documentation").
 5. In the next window, select the "THREDDS" profile ...
 6. In the next window, "select all" modules ...
+
+
