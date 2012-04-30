@@ -253,7 +253,6 @@ static String globalAgent = "/NetcdfJava/HttpClient3";
 static int threadcount = DFALTTHREADCOUNT;
 static List<HTTPSession> sessionList; // List of all HTTPSession instances
 static boolean globalauthpreemptive = false;
-static CredentialsProvider globalProvider = null;
 static int globalSoTimeout = 0;
 static int globalConnectionTimeout = 0;
 static Proxy globalproxy = null;
@@ -290,7 +289,6 @@ HttpState context = null;
 boolean closed = false;
 String identifier = "Session";
 String useragent = null;
-CredentialsProvider sessionProvider = null;
 String legalurl = null;
 
 /**
@@ -667,7 +665,6 @@ setAnyCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider
 static public void
 setGlobalCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
 {
-  globalProvider = provider;
   setAnyCredentialsProvider(scheme,HTTPAuthStore.ANY_URL,provider);
 }
 
@@ -701,7 +698,6 @@ setGlobalCredentialsProvider(String url)
 public void
 setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
 {
-  sessionProvider = provider;
   defineCredentialsProvider(scheme,legalurl,provider);
 }
 
@@ -729,6 +725,22 @@ setCredentialsProvider(String url)
             setCredentialsProvider(HTTPAuthScheme.BASIC,bp);
         }
     }
+}
+
+// It is convenient to be able to directly set the Credentials
+// (not the provider) when those credentials are fixed.
+static public void
+setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds)
+{
+  CredentialsProvider provider = new HTTPCredsProvider(creds);
+  defineCredentialsProvider(scheme,HTTPAuthStore.ANY_URL,provider);
+}
+
+public void
+setCredentials(HTTPAuthScheme scheme, Credentials creds)
+{
+  CredentialsProvider provider = new HTTPCredsProvider(creds);
+  defineCredentialsProvider(scheme,legalurl,provider);
 }
 
 // Provide for backward compatibility
