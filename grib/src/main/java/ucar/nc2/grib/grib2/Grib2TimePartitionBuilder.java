@@ -157,7 +157,7 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
   private boolean needsUpdate(long collectionLastModified, Formatter f) throws IOException {
     CollectionManager.ChangeChecker cc = Grib2Index.getChangeChecker();
     for (CollectionManager dcm : tpc.makePartitions()) { // LOOK not really right, since we dont know if these files are the same as in the index
-      File idxFile = new File(dcm.getRoot(), dcm.getCollectionName() + GribCollection.IDX_EXT);
+      File idxFile = GribCollection.getIndexFile(dcm);
       if (!idxFile.exists())
         return true;
       if (collectionLastModified < idxFile.lastModified())

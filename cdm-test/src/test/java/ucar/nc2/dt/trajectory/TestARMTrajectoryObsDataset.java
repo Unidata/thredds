@@ -34,6 +34,8 @@
 package ucar.nc2.dt.trajectory;
 
 import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.Assert.*;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TrajectoryObsDatatype;
 import ucar.nc2.dt.PointObsDatatype;
@@ -43,6 +45,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.InvalidRangeException;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.io.File;
@@ -57,13 +60,9 @@ public class TestARMTrajectoryObsDataset extends TestCase
 {
   private TrajectoryObsDataset me;
 
-  private String testFilePath = TestTrajectoryObsDataset.getRemoteTestDataDir() + "sounding";
+  private String testFilePath = TestDir.cdmUnitTestDir + "ft/sounding/netcdf";
   private String testDataFileName = "sgpsondewnpnC1.a1.20020507.112400.cdf";
 
-  public TestARMTrajectoryObsDataset( String name )
-  {
-    super( name );
-  }
 
   protected void setUp()
   {
@@ -72,6 +71,7 @@ public class TestARMTrajectoryObsDataset extends TestCase
   /**
    * Test ...
    */
+  @Test
   public void testARM() throws IOException {
     String location = testFilePath + "/" + testDataFileName;
     assertTrue( "Test file <" + location + "> does not exist.",

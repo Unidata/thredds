@@ -62,7 +62,7 @@ public class TestOffAggFmrcScan2 {
       "  </aggregation>\n" +
       "</netcdf>";
 
-    String filename = "file:./"+TestDir.cdmUnitTestDir + "ncml/offsite/aggFmrcScan2.xml";
+    String filename = "fake:TestOffAggFmrcScan2/aggFmrcScan2.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
@@ -85,7 +85,7 @@ public class TestOffAggFmrcScan2 {
       "  </aggregation>\n" +
       "</netcdf>";
     
-    String filename = "file:./"+TestDir.cdmUnitTestDir + "ncml/offsite/aggFmrcNomads.xml";
+    String filename = "fake:TestOffAggFmrcScan2/aggFmrcNomads.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
