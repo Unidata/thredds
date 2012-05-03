@@ -181,6 +181,22 @@ public class TestRegexp {
   }
 
   @Test
+  public void testIsoDate() {
+    String p = "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
+    //String m = "2012-05-03 10:03:29Z";
+    String m = "1997-07-16T19:20+01:00";
+    testMatch(p, m, true);
+  }
+
+  @Test
+  public void testIsoDate2() {
+    String p = "([\\+\\-\\d]+)([ t])([\\.\\:\\d]*)(([ \\+\\-]\\S*)?z?)?$";
+    //String m = "2012-05-03 10:03:29Z";
+    String m = "2012-05-03 10:03:29+03";
+    testMatch(p, m, true);
+  }
+
+  @Test
   public void testFrag() {
     String m = "2011-02-09T06:00:00Z";
     String p = "([\\+\\-\\d]+)([ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?Z?)?$";

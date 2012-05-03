@@ -173,6 +173,43 @@
 
           </execution>
 
+          <execution>
+            <id>build-ncIdv</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedArtifactId>wth</shadedArtifactId>
+              <finalName>ncIdv-4.3</finalName>
+
+              <artifactSet>
+                <excludes>
+                  <exclude>edu.ucar:ui</exclude>
+                  <exclude>aopalliance:aopalliance</exclude>
+                  <exclude>com.jgoodies:forms</exclude>
+                  <exclude>commons-logging:commons-logging</exclude>
+                  <exclude>jfree:*</exclude>
+                  <exclude>lucene:lucene</exclude>
+                  <exclude>org.springframework:*</exclude>
+                  <exclude>org.bounce:*</exclude>
+                </excludes>
+              </artifactSet>
+
+              <filters>
+                <filter>
+                  <artifact>edu.ucar:visadCdm</artifact>
+                  <excludes>
+                    <exclude>visad/**</exclude>
+                    <exclude>edu/wisc/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+
+            </configuration>
+
+          </execution>
+
         </executions>
 
       </plugin>

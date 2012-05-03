@@ -33,6 +33,7 @@
 package ucar.nc2.time;
 
 import net.jcip.annotations.ThreadSafe;
+import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -41,6 +42,9 @@ import ucar.nc2.units.DateFormatter;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Threadsafe static routines for date formatting.
@@ -55,8 +59,6 @@ public class CalendarDateFormatter {
   private static DateTimeFormatter isof = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC();
   private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss'Z'").withZoneUTC();
   private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
-
-  // DatUtil.ISO_DATE_TIME = new DateFormatHandler("yyyy-MM-dd\'T\'HH:mm:ssz");
 
   static public String toDateTimeStringISO(CalendarDate cd) {
     return isof.print(cd.getDateTime());
@@ -82,16 +84,18 @@ public class CalendarDateFormatter {
     return df.print(new DateTime());
   }
 
-  //////////////////////////
-
   static public String toDateTimeString(Date date) {
     return toDateTimeString(CalendarDate.of(date));
   }
+  
+    
+  /////////////////////////////////////////////////////////////////////////////
+  // reading an ISO formatted date
 
   /**
-   * 
-   * @param iso
-   * @return
+   * Old version using DateFormatter
+   * @param iso ISO 8601 date String
+   * @return equivilent Date
    * 
    * @deprecated As of 4.3.10 use {@link #isoStringToDate(String)} instead
    *     
@@ -103,24 +107,140 @@ public class CalendarDateFormatter {
   }
   
   /**
-   *  
+   * Convert an ISO formatted String to a CalendarDate.
    * @param iso ISO 8601 date String
-   * @return 
+     <pre>possible forms for W3C profile of ISO 8601
+        Year:
+         YYYY (eg 1997)
+      Year and month:
+         YYYY-MM (eg 1997-07)
+      Complete date:
+         YYYY-MM-DD (eg 1997-07-16)
+      Complete date plus hours and minutes:
+         YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
+      Complete date plus hours, minutes and seconds:
+         YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
+      Complete date plus hours, minutes, seconds and a decimal fraction of a second
+         YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
+   
+   where:
+        YYYY = four-digit year
+        MM   = two-digit month (01=January, etc.)
+        DD   = two-digit day of month (01 through 31)
+        hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
+        mm   = two digits of minute (00 through 59)
+        ss   = two digits of second (00 through 59)
+        s    = one or more digits representing a decimal fraction of a second
+        TZD  = time zone designator (Z or +hh:mm or -hh:mm)
+   except:
+       You may use a space instead of the 'T'
+       The year may be preceeded by a '+' (ignored) or a '-' (makes the date BCE)
+       The date part uses a '-' delimiter instead of a fixed number of digits for each field
+       The time part uses a ':' delimiter instead of a fixed number of digits for each field
+   </pre>
+   * @return CalendarDate using default calendar
    * @throws IllegalArgumentException if the String is not a valid ISO 8601 date
    */
+  static public CalendarDate isoStringToCalendarDate(String iso) throws IllegalArgumentException{
+	  DateTime dt = parseIsoTimeString(iso);
+	  return new CalendarDate(null, dt);
+  }
+  
   static public Date isoStringToDate(String iso) throws IllegalArgumentException{
-	  DateTime dt = new DateTime(iso);
-	  
-	  return new Date(dt.getMillis());
+    CalendarDate dt = isoStringToCalendarDate(iso);	  
+	  return  dt.toDate();
   }
 
-  /*
-   * Parse text in the format "yyyy-MM-dd'T'HH:mm:ss"
-   * @param text parse this text
-   * @return equivalent Date
-   * @throws java.text.ParseException if not formatted correctly
-   *
-  public Date isoDateTimeFormat(String text) throws java.text.ParseException { */
+
+  //                                                   1                  2            3
+  private static final String isodatePatternString = "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
+                                          String p = "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
+
+  // private static final String isodatePatternString = "([\\+\\-\\d]+)[ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
+  private static final Pattern isodatePattern = Pattern.compile(isodatePatternString);
+
+  private static DateTime parseIsoTimeString(String iso) {
+    iso = iso.trim();
+    iso = iso.toLowerCase();
+
+    Matcher m = isodatePattern.matcher(iso);
+    if (!m.matches()) {
+      //System.out.printf("'%s' does not match regexp '%s'%n", dateUnitString, udunitPatternString);
+      throw new IllegalArgumentException(iso + " does not match " + isodatePatternString);
+    }
+
+    String dateString = m.group(1);
+    String timeString = m.group(3);
+    String zoneString = m.group(4);
+
+    // Set the defaults for any values that are not specified
+    int year = 0;
+    int month = 1;
+    int day = 1;
+    int hour = 0;
+    int minute = 0;
+    double second = 0.0;
+
+    try {
+      boolean isMinus = false;
+      if (dateString.startsWith("-")) {
+         isMinus = true;
+         dateString = dateString.substring(1);
+       } else if (dateString.startsWith("+")) {
+         dateString = dateString.substring(1);
+       }
+
+      StringTokenizer dateTokenizer = new StringTokenizer(dateString, "-");
+      if (dateTokenizer.hasMoreTokens()) year = Integer.parseInt(dateTokenizer.nextToken());
+      if (dateTokenizer.hasMoreTokens()) month = Integer.parseInt(dateTokenizer.nextToken());
+      if (dateTokenizer.hasMoreTokens()) day = Integer.parseInt(dateTokenizer.nextToken());
+
+      // Parse the time if present
+      if (timeString != null && timeString.length() > 0) {
+        StringTokenizer timeTokenizer = new StringTokenizer(timeString, ":");
+        if (timeTokenizer.hasMoreTokens()) hour = Integer.parseInt(timeTokenizer.nextToken());
+        if (timeTokenizer.hasMoreTokens()) minute = Integer.parseInt(timeTokenizer.nextToken());
+        if (timeTokenizer.hasMoreTokens()) second = Double.parseDouble(timeTokenizer.nextToken());
+      }
+
+      if (isMinus) year = -year;
+
+      // Get a DateTime object in this Chronology
+      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0);
+      // Add the seconds
+      dt = dt.plus((long) (1000 * second));
+
+      // Parse the time zone if present
+      if (zoneString != null) {
+        zoneString = zoneString.trim();
+        if (zoneString.length() > 0 && !zoneString.equals("Z") && !zoneString.equals("UTC") && !zoneString.equals("GMT")) {
+          isMinus = false;
+          if (zoneString.startsWith("-")) {
+             isMinus = true;
+             zoneString = zoneString.substring(1);
+           } else if (zoneString.startsWith("+")) {
+             zoneString = zoneString.substring(1);
+           }
+
+          StringTokenizer zoneTokenizer = new StringTokenizer(zoneString, ":");
+          int hourOffset = zoneTokenizer.hasMoreTokens() ? Integer.parseInt(zoneTokenizer.nextToken()) : 0;
+          int minuteOffset = zoneTokenizer.hasMoreTokens() ? Integer.parseInt(zoneTokenizer.nextToken()) : 0;
+          if (isMinus) hourOffset = -hourOffset;
+          DateTimeZone dtz = DateTimeZone.forOffsetHoursMinutes(hourOffset, minuteOffset);
+
+          // Apply the time zone offset, retaining the field values.  This
+          // manipulates the millisecond instance.
+          dt = dt.withZoneRetainFields(dtz);
+          // Now convert to the UTC time zone, retaining the millisecond instant
+          dt = dt.withZone(DateTimeZone.UTC);
+        }
+      }
+
+      return dt;
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Illegal base time specification: '" + dateString+"' "+e.getMessage());
+    }
+  }
 
    public static void main(String arg[]) {
      CalendarDate cd = CalendarDate.present();
