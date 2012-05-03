@@ -143,9 +143,6 @@
             <exclude>ucar/nc2/util/reflect/**</exclude>
           </excludes>
 
-          <testExcludes>
-            <exclude>thredds/catalog2/**</exclude>
-          </testExcludes>
         </configuration>
       </plugin>
 

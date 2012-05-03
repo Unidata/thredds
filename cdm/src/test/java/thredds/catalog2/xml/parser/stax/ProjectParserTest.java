@@ -54,12 +54,12 @@ public class ProjectParserTest
     if ( authorityAttValue != null )
       attributes.put( authorityAttName, authorityAttValue );
 
-    String xml = StaxParserUtils.wrapContentXmlInXmlDocRootElement( elemName, attributes, projName );
+    String xml = StaxParserTestUtils.wrapContentXmlInXmlDocRootElement( elemName, attributes, projName );
 
-    XMLEventReader reader = StaxParserUtils.createXmlEventReaderOnXmlString( xml, docBaseUriString );
+    XMLEventReader reader = StaxParserTestUtils.createXmlEventReaderOnXmlString( xml, docBaseUriString );
 
     ProjectElementParser.Factory fac = new ProjectElementParser.Factory();
-    StaxParserUtils.advanceReaderToFirstStartElement( reader );
+    StaxParserTestUtils.advanceReaderToFirstStartElement( reader );
     assertTrue( fac.isEventMyStartElement( reader.peek() ) );
 
     ProjectElementParser projectNameParser = fac.getNewParser( reader, this.fac, this.tmBldr );

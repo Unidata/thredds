@@ -52,12 +52,12 @@ public class KeyphraseParserTest
     if ( authorityAttValue != null )
       attributes.put( authorityAttName, authorityAttValue );
 
-    String xml = StaxParserUtils.wrapContentXmlInXmlDocRootElement( elemName, attributes, phrase );
+    String xml = StaxParserTestUtils.wrapContentXmlInXmlDocRootElement( elemName, attributes, phrase );
 
-    XMLEventReader reader = StaxParserUtils.createXmlEventReaderOnXmlString( xml, "http://test.catalog2.thredds/DateTypeParserTest/someTest.xml" );
+    XMLEventReader reader = StaxParserTestUtils.createXmlEventReaderOnXmlString( xml, "http://test.catalog2.thredds/DateTypeParserTest/someTest.xml" );
 
     KeyphraseElementParser.Factory fac = new KeyphraseElementParser.Factory();
-    StaxParserUtils.advanceReaderToFirstStartElement( reader );
+    StaxParserTestUtils.advanceReaderToFirstStartElement( reader );
     assertTrue( fac.isEventMyStartElement( reader.peek() ) );
 
     KeyphraseElementParser keyphraseParser = fac.getNewParser( reader, this.fac, this.tmBldr );
