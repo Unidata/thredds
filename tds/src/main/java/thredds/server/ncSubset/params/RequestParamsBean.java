@@ -34,6 +34,8 @@ public class RequestParamsBean {
 	
 	private String time;
 	
+	private String temporal;
+	
 	private Double vertCoord;
 	
 	public List<String> getVar() {
@@ -68,6 +70,14 @@ public class RequestParamsBean {
 	public String getTime(){
 		return this.time;
 	}
+	
+	public void setTemporal(String temporal){
+		this.temporal = temporal;
+	}
+	
+	public String getTemporal(){
+		return this.temporal;
+	}	
 	
 	public void setAccept(String accept){
 		this.accept = accept;

@@ -88,6 +88,15 @@ public class CalendarDateFormatter {
     return toDateTimeString(CalendarDate.of(date));
   }
 
+  /**
+   * 
+   * @param iso
+   * @return
+   * 
+   * @deprecated As of 4.3.10 use {@link #isoStringToDate(String)} instead
+   *     
+   */
+  @Deprecated
   static public Date parseISODate(String iso) {
     DateFormatter df = new DateFormatter();
     return df.getISODate(iso);

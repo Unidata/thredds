@@ -1,6 +1,7 @@
 package thredds.server.ncSubset.controller;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,13 +25,17 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
 		log.info("preHandle(): " + UsageLog.setupRequestContext(request));
+		
+		Map parameters = request.getParameterMap();
+		
 		//Check allow
 		boolean allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
 		AbstractNcssController hm =  (AbstractNcssController)((HandlerMethod) handler).getBean();
 		// pathInfo is the string containing any additional path information, that is, anything following the servlet path and preceding the query string.
 		// For Spring, as the DispatcherServlet is mapped into "/" the servletPath is everything preceding the query string so the request.getPathInfo() 
 		// returns an empty string.
-		// Here we get the pathInfo form the request servletPath and the AbstractNcssController servletPath 
+		// Here we get the pathInfo form the request servletPath and the AbstractNcssController servletPath
+		
 	    String servletPath = request.getServletPath();
 	    String pathInfo = servletPath.substring(AbstractNcssController.getServletPath().length()  , servletPath.length());
 	    
@@ -70,8 +75,7 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void afterCompletion(HttpServletRequest request,	HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
-						
-		
+
 
 	}
 	

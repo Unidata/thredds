@@ -97,8 +97,9 @@ public class CalendarDate implements Comparable<CalendarDate> {
    */
   public static CalendarDate parseISOformat(String calendarName, String isoDateString) {
 
-    Date date = CalendarDateFormatter.parseISODate(isoDateString);
-
+    //Date date = CalendarDateFormatter.parseISODate(isoDateString);
+	Date date = CalendarDateFormatter.isoStringToDate(isoDateString);
+	  
     Calendar cal = Calendar.get(calendarName);
     Chronology chronology = Calendar.getChronology(cal);
     DateTime dt = new DateTime(date, chronology);

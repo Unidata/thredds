@@ -41,21 +41,6 @@ enum SupportedOperation {
 	}
 	
 	public static SupportedFormat isSupportedFormat(String format, SupportedOperation operation){
-	
-		/*boolean found = false; 
-		SupportedFormat[] sf = SupportedFormat.values();
-		int len = sf.length;
-		int cont =0;
-		while(!found  && cont < len){
-		
-			if( sf[cont].getOperations().contains(operation) ){			
-				List<String> aliases=  sf[cont].getAliases();
-				if(aliases.contains(format)) found= true;
-			}	
-			cont++;		
-		}
-
-		if(found ) return sf[cont-1];*/
 		
 		List<SupportedFormat> supportedFormats = operation.getSupportedFormats(); 
 		int len = supportedFormats.size();
@@ -67,7 +52,7 @@ enum SupportedOperation {
 			cont++;
 		} 
  	
-		if( cont < len ) return supportedFormats.get(cont-1); 
+		if( found ) return supportedFormats.get(cont-1); 
 		
 		return operation.defaultFormat;
 	}	

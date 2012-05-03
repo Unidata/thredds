@@ -49,8 +49,9 @@ public class PointDataTest {
 		
 		return Arrays.asList(new Object[][]{  
 				{PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
-				{PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
-				{PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }
+				//{PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
+				//{PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				//{PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }
 
 		});				
 	}
@@ -87,7 +88,8 @@ public class PointDataTest {
 		String endDate= dates.get(end).toString();
 		params.setTime_end(endDate);
 		params.setPoint(true);
-		params.setAccept("xml");
+		params.setAccept("csv");
+		//params.setVertCoord(300.0);
 		result = new BeanPropertyBindingResult(params, "params");
 	}
 	

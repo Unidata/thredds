@@ -1,6 +1,7 @@
 package thredds.server.ncSubset.view;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 
@@ -13,16 +14,21 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 interface PointDataWriter {
 
-
-	boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, CoordinateAxis1D zAxis);
+	boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point);
 	
-	boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point);
+	boolean write(Map<String, List<String>> groupedVars, GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel);
 	
-	boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits);
+	//boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, CoordinateAxis1D zAxis);
 	
-	boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point);
+	//boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point);
+	
+	//boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits);
+	
+	//boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point);
 	
 	boolean trailer();
 	
 	HttpHeaders getResponseHeaders();
+
+	
 }

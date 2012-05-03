@@ -6,6 +6,7 @@ import static org.springframework.test.web.ModelAndViewAssert.assertModelAttribu
 import static org.springframework.test.web.ModelAndViewAssert.assertViewName;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -79,6 +80,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 
 	}
 
+	@Ignore
 	@Test
 	public void subsetCommandTest() throws Exception{
 
@@ -105,7 +107,7 @@ public class RemoteCatalogControllerTest extends AbstractCatalogServiceTest{
 		assertTrue( response.getStatus() == 200 );
 	}
 	
-	
+	@Ignore
 	@Test
 	public void validateCommandTest() throws Exception {
 

@@ -1,8 +1,10 @@
 package thredds.server.ncSubset.view;
 
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,15 +13,10 @@ import org.springframework.http.HttpHeaders;
 import thredds.server.ncSubset.controller.SupportedFormat;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import thredds.server.ncSubset.util.NcssRequestUtils;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
+import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 
@@ -27,115 +24,56 @@ public final class PointDataStream {
 
 	static private Logger log = LoggerFactory.getLogger(PointDataStream.class);
 
-	//private final SupportedFormat supportedFormat;
-	//private final OutputStream outputStream;
-	
 	private final PointDataWriter pointDataWriter;
 
 	private PointDataStream(SupportedFormat supportedFormat, OutputStream outputStream) {
-		//this.supportedFormat = supportedFormat;
-		//this.outputStream = outputStream;
+		
 		this.pointDataWriter = AbstractPointDataWriterFactory
 				.createPointDataWriterFactory(supportedFormat)
 				.createPointDataWriter(outputStream);
 	}
 
-	//private final boolean stream(GridDataset gds, LatLonPoint point, CalendarDateRange dates, List<String> vars) throws OutOfBoundariesException, DateUnitException{
-	private final boolean stream(GridDataset gds, LatLonPoint point, List<CalendarDate> wDates, List<String> vars) throws OutOfBoundariesException, DateUnitException{
+	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, Map<String, List<String>> groupedVars, Double vertCoord) throws OutOfBoundariesException, DateUnitException, UnsupportedOperationException {
 		
+		boolean allDone= false;
+		List<String> vars = new ArrayList<String>();
+		List<String> keys = new ArrayList<String>(groupedVars.keySet());
+		for(String key : keys){			
+			vars.addAll(groupedVars.get(key));
+
+		}				
 		
-		boolean allDone = false;
-		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds,	vars);
-		//List<CalendarDate> wDates = NcssRequestUtils.wantedDates(gap, dates);
-		
-		//Variables have same 1D timeAxis??? 
-		GridDatatype grid = gds.findGridDatatype(vars.get(0));
-						
-		CoordinateAxis timeAxis =grid.getCoordinateSystem().getTimeAxis();		 		 
-		 //if( timeAxis instanceof CoordinateAxis1DTime  ){
-		 if( CoordinateAxis1DTime.class.isAssignableFrom(timeAxis.getClass())  ){
-			 timeAxis = (CoordinateAxis1DTime)timeAxis;
-		 }else{
-			 //This is unsupported...??
-			 log.debug("Unsupported operation on grids with 2D time axis");
-		 }		
-		
-		boolean pointRead=true;
-		if(pointDataWriter.header(vars, gds, wDates,getDateUnit(grid), point)){			
-			// Iterating the wanted dates				
-			CalendarDate date;
-			Iterator<CalendarDate> it = wDates.iterator();
-			while(pointRead && it.hasNext()){
-				date = it.next();
-				pointRead =pointDataWriter.write(vars, gds, gap, date, point);
+		if(vertCoord!=null){//Only one vertical level requested --> All variables must have the same vertical dimension			
+			if(groupedVars.size() > 1){
+				throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. For vertical subsetting only requests on variables with same vertical levels are supported.");
 			}
 		}
-			
-		allDone = pointDataWriter.trailer() && pointRead;
-				
-		return allDone;
-	}
-
-	//public final boolean stream(GridDataset gds, LatLonPoint point,	CalendarDateRange dates, List<String> vars, List<Double> vertCoords) throws OutOfBoundariesException, DateUnitException {
-	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, List<String> vars, List<Double> vertCoords) throws OutOfBoundariesException, DateUnitException {
-
-
-		if (vertCoords.isEmpty()) return stream(gds, point, wDates, vars);
-		boolean allDone = false;
-
-		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds,	vars);
-		//List<CalendarDate> wDates = NcssRequestUtils.wantedDates(gap, dates);
-
-		// Asuming all vars have the same vertical level...(and same 1D timeAxis!!! )
-		GridDatatype gridForVertLevels = gds.findGridDatatype(vars.get(0));
-		CoordinateAxis1D zAxis = gridForVertLevels.getCoordinateSystem().getVerticalAxis();		
-		CoordinateAxis timeAxis =gridForVertLevels.getCoordinateSystem().getTimeAxis();		 		 
-		 //if( timeAxis instanceof CoordinateAxis1DTime  ){
-		 if( CoordinateAxis1DTime.class.isAssignableFrom(timeAxis.getClass())  ){
-			 timeAxis = (CoordinateAxis1DTime)timeAxis;
-		 }else{
-			 //This is unsupported...??
-		 }
-					
-	 
-		if(pointDataWriter.header(vars, gds, wDates, getDateUnit(gridForVertLevels), point, zAxis)){
-			boolean pointRead=true;
-			//Iterating on the requested vertical levels
-			for (Double vertLevel : vertCoords) {
-				// --- Find the targeted vertical level on zAxis corresponding to
-				// the first grid with vertical levels ) ---
-				Double targetLevel = vertLevel;
-				int coordLevel = 0;
-				// If zAxis has one level zAxis.findCoordElement(vertLevel) returns -1 and only works with vertLevel = 0
-				// Workaround while not fixed in CoordinateAxis1D
-				if (zAxis.getSize() == 1) {
-					targetLevel = 0.0;
-				} else {
-					coordLevel = zAxis.findCoordElement(vertLevel);
-					if (coordLevel > 0) {
-						targetLevel = zAxis.getCoordValue(coordLevel);
-					}
-				}
-				// Iterating the wanted dates				
-				CalendarDate date;
-				Iterator<CalendarDate> it = wDates.iterator();
-				
-				try{
-					while(pointRead && it.hasNext()){
-						date = it.next();
-						pointRead =pointDataWriter.write(vars, gds, gap, date, point, targetLevel, zAxis.getUnitsString());
-					}
-				}catch(ArrayIndexOutOfBoundsException e){
-					throw new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data.", e);
+		
+		//Assuming all variables have same time dimension!!!
+		GridDatatype gridForTimeUnits= gds.findGridDatatype(vars.get(0));
+		
+		if(pointDataWriter.header(groupedVars, gds, wDates, getDateUnit(gridForTimeUnits) , point)){ 
+			//loop over wDates
+			CalendarDate date;
+			Iterator<CalendarDate> it = wDates.iterator();
+			boolean pointRead =true;
+			try{
+				while( pointRead && it.hasNext() ){
+					date = it.next();
+					pointRead = pointDataWriter.write(groupedVars, gds, date, point, vertCoord);
 				}
 				
+			}catch(ArrayIndexOutOfBoundsException e){
+						
+				throw new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data.");
 			}
 			
 			allDone = pointDataWriter.trailer() && pointRead;
-		}			
-
+		}
 		return allDone;
 	}
+	
+
 	
 	
 	private DateUnit getDateUnit(GridDatatype grid) throws DateUnitException{
@@ -152,6 +90,7 @@ public final class PointDataStream {
 		return du;
 		
 	}
+	
 	
 	public final HttpHeaders getHttpHeaders(){
 		

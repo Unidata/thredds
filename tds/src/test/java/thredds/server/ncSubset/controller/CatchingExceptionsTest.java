@@ -65,9 +65,9 @@ public class CatchingExceptionsTest {
 		//Different vert levels
 		params.setVar( Arrays.asList("Relative_humidity_height_above_ground","Temperature"));
 		params.setPoint(true);
-		params.setVertCoord(null);
+		params.setVertCoord(300.0);
 		params.setAccept("text/csv");
-		params.setTime_start("2012-02-29T12:00:00.000Z");
+		params.setTime_start("2012-04-18T12:00:00.000Z");
 		params.setTime_duration("PT18H");
 		
 		BindingResult result = new BeanPropertyBindingResult(params, "params");
@@ -90,7 +90,7 @@ public class CatchingExceptionsTest {
 		params.setPoint(true);
 		params.setVertCoord(null);
 		params.setAccept("text/csv");
-		params.setTime_start("2012-02-29T12:00:00.000Z");
+		params.setTime_start("2012-04-18T12:00:00.000Z");
 		params.setTime_duration("PT18H");
 		
 		BindingResult result = new BeanPropertyBindingResult(params, "params");
@@ -112,7 +112,7 @@ public class CatchingExceptionsTest {
 		params.setPoint(true);
 		params.setVertCoord(null);
 		params.setAccept("text/csv");
-		params.setTime_start("2012-02-29T12:00:00.000Z");
+		params.setTime_start("2012-04-18T12:00:00.000Z");
 		params.setTime_duration("PT18H");
 		
 		BindingResult result = new BeanPropertyBindingResult(params, "params");
