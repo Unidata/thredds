@@ -277,7 +277,7 @@ public abstract class GribCollection implements FileCacheable {
       throw new FileNotFoundException("data file not found = " + filename);
     }
 
-    RandomAccessFile want = getDataRaf(filename);
+    RandomAccessFile want = getDataRaf(dataFile.getPath());
     want.order(RandomAccessFile.BIG_ENDIAN);
     return want;
   }
