@@ -17,6 +17,7 @@ import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
+import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
@@ -75,6 +76,29 @@ public class CatchingExceptionsTest {
 		pointDataController.getPointData(params, result, new MockHttpServletResponse());
 
 	}
+	
+	@Test(expected=UnsupportedResponseFormatException.class)
+	public void testUnsupportedResponseFormatException() throws Exception{
+
+		//All parameters get the controller validated so set good values 
+		PointDataRequestParamsBean params = new PointDataRequestParamsBean();
+		params.setLatitude(42.04);
+		params.setLongitude(-105.0);		
+		//No vert. levels
+		//params.setVar( Arrays.asList("VAR_7-0-2-2_L102","VAR_7-0-2-1_L1","VAR_7-0-2-156_L1") );
+		//Different vert levels
+		params.setVar( Arrays.asList("Relative_humidity_height_above_ground","Temperature"));
+		params.setPoint(true);
+		params.setVertCoord(300.0);
+		params.setAccept("invalidformat");
+		params.setTime_start("2012-04-18T12:00:00.000Z");
+		params.setTime_duration("PT18H");
+		
+		BindingResult result = new BeanPropertyBindingResult(params, "params");
+		
+		pointDataController.getPointData(params, result, new MockHttpServletResponse());
+
+	}	
 	
 	@Test(expected=VariableNotContainedInDatasetException.class)
 	public void testVariableNotContainedInDatasetException() throws Exception{

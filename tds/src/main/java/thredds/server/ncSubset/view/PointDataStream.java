@@ -33,7 +33,7 @@ public final class PointDataStream {
 				.createPointDataWriter(outputStream);
 	}
 
-	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, Map<String, List<String>> groupedVars, Double vertCoord) throws OutOfBoundariesException, DateUnitException, UnsupportedOperationException {
+	public final boolean stream(GridDataset gds, LatLonPoint point,	List<CalendarDate> wDates, Map<String, List<String>> groupedVars, Double vertCoord) throws DateUnitException, UnsupportedOperationException {
 		
 		boolean allDone= false;
 		List<String> vars = new ArrayList<String>();
@@ -57,15 +57,9 @@ public final class PointDataStream {
 			CalendarDate date;
 			Iterator<CalendarDate> it = wDates.iterator();
 			boolean pointRead =true;
-			try{
-				while( pointRead && it.hasNext() ){
-					date = it.next();
-					pointRead = pointDataWriter.write(groupedVars, gds, date, point, vertCoord);
-				}
-				
-			}catch(ArrayIndexOutOfBoundsException e){
-						
-				throw new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data.");
+			while( pointRead && it.hasNext() ){
+				date = it.next();
+				pointRead = pointDataWriter.write(groupedVars, gds, date, point, vertCoord);
 			}
 			
 			allDone = pointDataWriter.trailer() && pointRead;

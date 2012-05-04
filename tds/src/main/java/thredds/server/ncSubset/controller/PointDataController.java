@@ -3,10 +3,9 @@ package thredds.server.ncSubset.controller;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,17 +24,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.view.PointDataStream;
 import thredds.servlet.UsageLog;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionPoint;
 
 @Controller
 @RequestMapping(value="/ncss/grid/**")
@@ -57,15 +56,14 @@ class PointDataController extends AbstractNcssController{
 			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.POINT_REQUEST  );			
 			
 			LatLonPoint point = params.getLatLonPoint(); //Check if the point is within boundaries!!
-			
-			/*if( !isPointWithinBoundaries(params.getLatLonPoint(), getGridDataset() ) ){			
-				throw  new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data. "+
-						"Data Bounding Box = " + getGridDataset().getBoundingBox().toString2());
-			}*/
-			
+					
 			checkRequestedVars(gridDataset,  params);
 			Map<String, List<String>> groupVars= groupVarsByVertLevels(gridDataset, params);
-			
+
+			if( !isPointWithinBoundaries(params.getLatLonPoint(), groupVars ) ){			
+			throw  new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data. "+
+					"Data Bounding Box = " + getGridDataset().getBoundingBox().toString2());
+			}			
 						
 			List<CalendarDate> wantedDates = getRequestedDates( gridDataset, params);
 	
@@ -93,9 +91,27 @@ class PointDataController extends AbstractNcssController{
 	
 
 	
-	private boolean isPointWithinBoundaries(LatLonPoint point, GridDataset gds){	
-		LatLonRect bbox = gds.getBoundingBox();		
-		return bbox.contains(point);
+	private boolean isPointWithinBoundaries(LatLonPoint point, Map<String, List<String>> groupVars){	
+		//LatLonRect bbox = gds.getBoundingBox();
+		boolean isInData = true;
+		List<String> keys = new ArrayList<String>(groupVars.keySet());
+		
+		int[] xy = new int[2];
+		Iterator<String> it = keys.iterator();
+
+		while( it.hasNext() && isInData ){
+			String key = it.next();
+			GridDatatype grid = gridDataset.findGridDatatype(groupVars.get(key).get(0));
+			GridCoordSystem coordSys = grid.getCoordinateSystem();
+			ProjectionPoint p = coordSys.getProjection().latLonToProj(point);
+			xy = coordSys.findXYindexFromCoord(p.getX(), p.getY(), null);
+			
+			if(xy[0] < 0 || xy[1] < 0  ){
+				isInData = false;
+			}
+		}
+		
+		return isInData;
 	}
 	
 	private Map<String, List<String>> groupVarsByVertLevels(GridDataset gds, PointDataRequestParamsBean params) throws VariableNotContainedInDatasetException{

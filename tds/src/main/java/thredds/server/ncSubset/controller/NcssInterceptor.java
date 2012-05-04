@@ -26,8 +26,6 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 
 		log.info("preHandle(): " + UsageLog.setupRequestContext(request));
 		
-		Map parameters = request.getParameterMap();
-		
 		//Check allow
 		boolean allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
 		AbstractNcssController hm =  (AbstractNcssController)((HandlerMethod) handler).getBean();

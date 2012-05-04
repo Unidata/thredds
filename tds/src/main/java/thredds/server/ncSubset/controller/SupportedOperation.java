@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
+
 /**
  * netcdf subset service allows 3 kinds of operations
  *  
@@ -13,7 +15,7 @@ import java.util.List;
 enum SupportedOperation {
 	
 	DATASET_INFO_REQUEST("Dataset info request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML })),SupportedFormat.XML),
-	POINT_REQUEST("Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML, SupportedFormat.CSV, SupportedFormat.NETCDF})),SupportedFormat.XML),
+	POINT_REQUEST("Grid as Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML, SupportedFormat.CSV, SupportedFormat.NETCDF})),SupportedFormat.XML),
 	GRID_REQUEST("Grid data request",Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.NETCDF})),SupportedFormat.NETCDF);
 	
 	private final String operationName; 
@@ -40,9 +42,10 @@ enum SupportedOperation {
 		return defaultFormat;
 	}
 	
-	public static SupportedFormat isSupportedFormat(String format, SupportedOperation operation){
+	public static SupportedFormat isSupportedFormat(String format, SupportedOperation operation) throws UnsupportedResponseFormatException{
 		
-		List<SupportedFormat> supportedFormats = operation.getSupportedFormats(); 
+		List<SupportedFormat> supportedFormats = operation.getSupportedFormats();
+		
 		int len = supportedFormats.size();
 		int cont =0;
 		boolean found=false;
@@ -54,6 +57,6 @@ enum SupportedOperation {
  	
 		if( found ) return supportedFormats.get(cont-1); 
 		
-		return operation.defaultFormat;
+		throw new UnsupportedResponseFormatException("Format "+format+" is not supported for "+operation.getOperation());
 	}	
 }
