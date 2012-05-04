@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="myserver" serviceType="Compound" base="">
+    <service name="tdsDods" serviceType="DODS" base="/thredds/dodsC"/>
+    <service name="tdsHttp" serviceType="HTTPServer" base="/thredds/fileServer"/>
+  </service>
+  <service name="latest" serviceType="RESOLVER" base=""/>
+  <dataset name="eta_211" ID="my/data/models/eta_211">
+    <metadata inherited="true">
+      <serviceName>myserver</serviceName>
+    </metadata>
+    <dataset name="latest.xml" ID="my/data/models/eta_211/latest.xml" urlPath="latest.xml">
+      <serviceName>latest</serviceName>
+    </dataset>
+    <catalogRef xlink:href=".svn/catalog.xml" xlink:title=".svn" ID="my/data/models/eta_211/.svn" name=""/>
+    <dataset name="2004050412_eta_211.nc" ID="my/data/models/eta_211/2004050412_eta_211.nc"
+             urlPath="testData/eta_211/2004050412_eta_211.nc"/>
+    <dataset name="2004050400_eta_211.nc" ID="my/data/models/eta_211/2004050400_eta_211.nc"
+             urlPath="testData/eta_211/2004050400_eta_211.nc"/>
+    <dataset name="2004050312_eta_211.nc" ID="my/data/models/eta_211/2004050312_eta_211.nc"
+             urlPath="testData/eta_211/2004050312_eta_211.nc"/>
+    <dataset name="2004050300_eta_211.nc" ID="my/data/models/eta_211/2004050300_eta_211.nc"
+             urlPath="testData/eta_211/2004050300_eta_211.nc"/>
+  </dataset>
+</catalog>

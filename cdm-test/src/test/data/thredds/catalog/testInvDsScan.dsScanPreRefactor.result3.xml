@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="ncdods" serviceType="OPENDAP" base=""/>
+  <service name="latest" serviceType="Resolver" base=""/>
+  <dataset name="Alaska_191km" ID="myGridDataID/NCEP/GFS/Alaska_191km">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+    <dataset name="latest.xml" ID="myGridDataID/NCEP/GFS/Alaska_191km/latest.xml" urlPath="latest.xml">
+      <serviceName>latest</serviceName>
+    </dataset>
+    <dataset name="GFS_Alaska_191km_20051012_0000.grib1"
+             ID="myGridDataID/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051012_0000.grib1"
+             urlPath="GFS_Alaska_191km_20051012_0000.grib1">
+      <dataSize units="Mbytes">3.545</dataSize>
+      <timeCoverage>
+        <start>2005-10-12T00:00</start>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </dataset>
+    <dataset name="GFS_Alaska_191km_20051011_1800.grib1"
+             ID="myGridDataID/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_1800.grib1"
+             urlPath="GFS_Alaska_191km_20051011_1800.grib1">
+      <dataSize units="Mbytes">3.534</dataSize>
+      <timeCoverage>
+        <start>2005-10-11T18:00</start>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </dataset>
+    <dataset name="GFS_Alaska_191km_20051011_1200.grib1"
+             ID="myGridDataID/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_1200.grib1"
+             urlPath="GFS_Alaska_191km_20051011_1200.grib1">
+      <dataSize units="Mbytes">3.528</dataSize>
+      <timeCoverage>
+        <start>2005-10-11T12:00</start>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </dataset>
+    <dataset name="GFS_Alaska_191km_20051011_0600.grib1"
+             ID="myGridDataID/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0600.grib1"
+             urlPath="GFS_Alaska_191km_20051011_0600.grib1">
+      <dataSize units="Mbytes">3.526</dataSize>
+      <timeCoverage>
+        <start>2005-10-11T06:00</start>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </dataset>
+    <dataset name="GFS_Alaska_191km_20051011_0000.grib1"
+             ID="myGridDataID/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"
+             urlPath="GFS_Alaska_191km_20051011_0000.grib1">
+      <dataSize units="Mbytes">3.530</dataSize>
+      <timeCoverage>
+        <start>2005-10-11T00:00</start>
+        <duration>7 days</duration>
+      </timeCoverage>
+    </dataset>
+  </dataset>
+</catalog>

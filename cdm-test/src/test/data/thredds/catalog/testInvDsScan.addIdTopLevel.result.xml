@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="ncdods" serviceType="DODS" base="http://localhost:8080/thredds/docsC" />
+  <dataset name="Test Data" ID="my/data/models">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+    <catalogRef xlink:href=".svn/catalog.xml" xlink:title=".svn" ID="my/data/models/.svn" name="" />
+    <dataset name="2004050412_eta_211.nc" ID="my/data/models/2004050412_eta_211.nc" urlPath="testData/2004050412_eta_211.nc" />
+    <dataset name="2004050400_eta_211.nc" ID="my/data/models/2004050400_eta_211.nc" urlPath="testData/2004050400_eta_211.nc" />
+    <dataset name="2004050318_gfs_211.nc" ID="my/data/models/2004050318_gfs_211.nc" urlPath="testData/2004050318_gfs_211.nc" />
+    <dataset name="2004050312_gfs_211.nc" ID="my/data/models/2004050312_gfs_211.nc" urlPath="testData/2004050312_gfs_211.nc" />
+    <dataset name="2004050312_eta_211.nc" ID="my/data/models/2004050312_eta_211.nc" urlPath="testData/2004050312_eta_211.nc" />
+    <dataset name="2004050306_gfs_211.nc" ID="my/data/models/2004050306_gfs_211.nc" urlPath="testData/2004050306_gfs_211.nc" />
+    <dataset name="2004050300_gfs_211.nc" ID="my/data/models/2004050300_gfs_211.nc" urlPath="testData/2004050300_gfs_211.nc" />
+    <dataset name="2004050300_eta_211.nc" ID="my/data/models/2004050300_eta_211.nc" urlPath="testData/2004050300_eta_211.nc" />
+  </dataset>
+</catalog>
