@@ -262,8 +262,8 @@ public class TestPointFeatureTypes extends TestCase {
     assert 1516 == checkPointDataset(topdir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
 
     //RAF-Nimbus
-    assert 7741 == checkPointDataset(topdir + "ft/trajectory/raf/135_ordrd.nc", FeatureType.TRAJECTORY, false);
-    assert 8157 == checkPointDataset(topdir + "ft/trajectory/raf/raftrack.nc", FeatureType.TRAJECTORY, false);
+    assert 7741 == checkPointDataset(topdir + "ft/trajectory/aircraft/135_ordrd.nc", FeatureType.TRAJECTORY, false);
+    assert 8157 == checkPointDataset(topdir + "ft/trajectory/aircraft/raftrack.nc", FeatureType.TRAJECTORY, false);
 
     // Madis
     assert 5063 == checkPointDataset(topdir + "ft/trajectory/acars/acars_20091109_0800.nc", FeatureType.TRAJECTORY, false);
