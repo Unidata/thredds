@@ -33,7 +33,9 @@
 // $Id: TestRafTrajectoryObsDataset.java 51 2006-07-12 17:13:13Z caron $
 package ucar.nc2.dt.trajectory;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.DataType;
@@ -41,6 +43,7 @@ import ucar.ma2.StructureData;
 import ucar.nc2.dt.*;
 import ucar.ma2.Range;
 import ucar.ma2.Array;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.io.File;
@@ -52,47 +55,38 @@ import java.util.Iterator;
  * @author edavis
  * @since Feb 11, 2005T2:33:51 PM
  */
-public class TestRafTrajectoryObsDataset extends TestCase
+public class TestRafTrajectoryObsDataset
 {
   private TrajectoryObsDataset me;
 
-  private String testFilePath = TestTrajectoryObsDataset.getRemoteTestDataDir() + "/aircraft";
+  private File testFileDir = new File( TestDir.cdmUnitTestDir, "ft/trajectory/aircraft");
   private String test_Raf_1_2_FileName = "raftrack.nc";
   private String test_Raf_1_3_Recvar_FileName = "135_raw.nc";
   private String test_Raf_1_3_NoRecvar_FileName = "135_ordrd.nc";
 
-  public TestRafTrajectoryObsDataset( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
-  {
-  }
-
   /**
    * Test ...
    */
+  @Test
   public void testRaf_1_2() throws IOException {
-    String location = testFilePath + "/" + test_Raf_1_2_FileName;
-    assertTrue( "Test file <" + location + "> does not exist.",
-                new File( location ).exists() );
+    File datasetFile = new File(  testFileDir, test_Raf_1_2_FileName);
+    assertTrue( "Test file <" + datasetFile.getPath() + "> does not exist.",
+                datasetFile.exists() );
     try
     {
       StringBuilder errlog = new StringBuilder();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, datasetFile.getPath(), null, errlog);
     }
     catch ( IOException e )
     {
-      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + location + ">: " + e.getMessage();
+      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file [" + datasetFile.getPath() + "]: " + e.getMessage();
       assertTrue( tmpMsg,
                   false);
     }
-    assertTrue( "Null TrajectoryObsDataset after open <" + location + "> ",
+    assertTrue( "Null TrajectoryObsDataset after open [" + datasetFile.getPath() + "] ",
                 me != null );
-    assertTrue( "Dataset <" + location + "> not a RafTrajectoryObsDataset.",
+    assertTrue( "Dataset [" + datasetFile.getPath() + "] not a RafTrajectoryObsDataset.",
                 me instanceof RafTrajectoryObsDataset );
-
 
     int dsNumVars = 341; //325;
     String exampleVarName = "PITCH";
@@ -114,7 +108,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     float exampleTrajEndElev = -19.944588f;
     TestTrajectoryObsDataset.TrajDatasetInfo trajDsInfo =
             new TestTrajectoryObsDataset.TrajDatasetInfo(
-                    null, null, location,
+                    null, null, datasetFile.getPath(),
                     1105193344000l, 1105201500000l, null,
                     14, "Source", "NCAR Research Aviation Facility",
                     dsNumVars, exampleVarName, exampleVarDescription,
@@ -123,34 +117,70 @@ public class TestRafTrajectoryObsDataset extends TestCase
                     numTrajs, exampleTrajId, exampleTrajDesc, exampleTrajNumPoints,
                     exampleTrajStartLat, exampleTrajEndLat, exampleTrajStartLon, exampleTrajEndLon, exampleTrajStartElev, exampleTrajEndElev );
 
-    TestTrajectoryObsDataset.testTrajInfo( me, trajDsInfo);
+    TestTrajectoryObsDataset.assertTrajectoryObsDatasetInfoAsExpected( me, trajDsInfo );
 
   }
 
   /**
    * Test ...
    */
-  public void utestRaf_1_3_Recvar_And_NoRecvar() throws IOException {
+  @Test
+  public void testRaf_1_3_Recvar_() throws IOException {
     // Test for raw file which has  record variable.
-    String location = testFilePath + "/" + test_Raf_1_3_Recvar_FileName;
-    assertTrue( "Test file <" + location + "> does not exist.",
-                new File( location ).exists() );
+    File datasetFile = new File(  testFileDir, test_Raf_1_3_Recvar_FileName);
+    assertTrue( "Test file <" + datasetFile.getPath() + "> does not exist.",
+                datasetFile.exists() );
     try
     {
       StringBuilder errlog = new StringBuilder();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, datasetFile.getPath(), null, errlog);
     }
     catch ( IOException e )
     {
-      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + location + ">: " + e.getMessage();
+      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + datasetFile.getPath() + ">: " + e.getMessage();
       assertTrue( tmpMsg,
                   false );
     }
-    assertTrue( "Null TrajectoryObsDataset after open <" + location + "> ",
+    assertTrue( "Null TrajectoryObsDataset after open <" + datasetFile.getPath() + "> ",
                 me != null );
-    assertTrue( "Dataset <" + location + "> not a RafTrajectoryObsDataset.",
+    assertTrue( "Dataset <" + datasetFile.getPath() + "> not a RafTrajectoryObsDataset.",
                 me instanceof RafTrajectoryObsDataset );
 
+    TestTrajectoryObsDataset.TrajDatasetInfo trajDsInfo = setupTrajDatasetInfo( datasetFile );
+
+    TestTrajectoryObsDataset.assertTrajectoryObsDatasetInfoAsExpected( me, trajDsInfo );
+  }
+
+  @Test
+  public void testRaf_1_3_NoRecvar() throws IOException {
+
+    // Test for same post-processed file which has no record variable.
+    File datasetFile = new File(  testFileDir, test_Raf_1_3_NoRecvar_FileName);
+
+    //location = testFilePath + "/" + test_Raf_1_3_NoRecvar_FileName;
+    try
+    {
+      StringBuilder errlog = new StringBuilder();
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, datasetFile.getPath(), null, errlog);
+    }
+    catch ( IOException e )
+    {
+      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + datasetFile.getPath() + ">: " + e.getMessage();
+      assertTrue( tmpMsg, false);
+    }
+    assertTrue( "Null TrajectoryObsDataset after open <" + datasetFile.getPath() + "> ",
+                me != null );
+    assertTrue( "Dataset <" + datasetFile.getPath() + "> not a RafTrajectoryObsDataset.",
+                me instanceof RafTrajectoryObsDataset );
+
+    TestTrajectoryObsDataset.TrajDatasetInfo trajDsInfo = setupTrajDatasetInfo( datasetFile );
+
+    //trajDsInfo.setLocationURI( datasetFile.getPath() );
+    TestTrajectoryObsDataset.assertTrajectoryObsDatasetInfoAsExpected( me, trajDsInfo );
+  }
+
+  private TestTrajectoryObsDataset.TrajDatasetInfo setupTrajDatasetInfo( File datasetFile )
+  {
     long startDateLong = 1102515300000l;
     long endDateLong = 1102523040000l;
     int numGlobalAtts = 16;
@@ -176,37 +206,14 @@ public class TestRafTrajectoryObsDataset extends TestCase
     float exampleTrajEndLon = -61.79102f;
     float exampleTrajStartElev = 28.45f;
     float exampleTrajEndElev = 23.349998f;
-    TestTrajectoryObsDataset.TrajDatasetInfo trajDsInfo =
-            new TestTrajectoryObsDataset.TrajDatasetInfo( null, null, location,
-                                                          startDateLong, endDateLong, null,
-                                                          numGlobalAtts, exampGlobalAttName, exampGlobalAttVal,
-                                                          dsNumVars, exampleVarName, exampleVarDescription,
-                                                          exampleVarUnitsString, exampleVarRank, exampleVarShape, exampleVarDataType, exampleVarNumAtts,
-                                                          exampleVarStartVal, exampleVarEndVal,
-                                                          numTrajs, exampleTrajId, exampleTrajDesc, exampleTrajNumPoints,
-                                                          exampleTrajStartLat, exampleTrajEndLat, exampleTrajStartLon, exampleTrajEndLon, exampleTrajStartElev, exampleTrajEndElev );
-
-    TestTrajectoryObsDataset.testTrajInfo( me, trajDsInfo );
-
-    // Test for same post-processed file which has no record variable.
-    location = testFilePath + "/" + test_Raf_1_3_NoRecvar_FileName;
-    try
-    {
-      StringBuilder errlog = new StringBuilder();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
-    }
-    catch ( IOException e )
-    {
-      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + location + ">: " + e.getMessage();
-      assertTrue( tmpMsg, false);
-    }
-    assertTrue( "Null TrajectoryObsDataset after open <" + location + "> ",
-                me != null );
-    assertTrue( "Dataset <" + location + "> not a RafTrajectoryObsDataset.",
-                me instanceof RafTrajectoryObsDataset );
-
-    trajDsInfo.setLocationURI( location );
-    TestTrajectoryObsDataset.testTrajInfo( me, trajDsInfo );
+    return new TestTrajectoryObsDataset.TrajDatasetInfo( null, null, datasetFile.getPath(),
+                                                  startDateLong, endDateLong, null,
+                                                  numGlobalAtts, exampGlobalAttName, exampGlobalAttVal,
+                                                  dsNumVars, exampleVarName, exampleVarDescription,
+                                                  exampleVarUnitsString, exampleVarRank, exampleVarShape, exampleVarDataType, exampleVarNumAtts,
+                                                  exampleVarStartVal, exampleVarEndVal,
+                                                  numTrajs, exampleTrajId, exampleTrajDesc, exampleTrajNumPoints,
+                                                  exampleTrajStartLat, exampleTrajEndLat, exampleTrajStartLon, exampleTrajEndLon, exampleTrajStartElev, exampleTrajEndElev );
   }
 
   /**
@@ -216,24 +223,26 @@ public class TestRafTrajectoryObsDataset extends TestCase
    */
   public void formerly_testTiming() throws Exception
   {
+    // ToDo Move or remove this test.
     //================ record written data ====================
-    String location = testFilePath + "/" + test_Raf_1_3_Recvar_FileName;
-    assertTrue( "Test file <" + location + "> does not exist.",
-                new File( location ).exists() );
+    File datasetFile = new File( testFileDir, test_Raf_1_3_Recvar_FileName);
+    String datasetFilePath = datasetFile.getPath();
+    assertTrue( "Test file <" + datasetFilePath + "> does not exist.",
+                datasetFile.exists() );
     try
     {
       StringBuilder errlog = new StringBuilder();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, datasetFilePath, null, errlog);
     }
     catch ( IOException e )
     {
-      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + location + ">: " + e.getMessage();
+      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + datasetFilePath + ">: " + e.getMessage();
       assertTrue( tmpMsg,
                   false );
     }
-    assertTrue( "Null TrajectoryObsDataset after open <" + location + "> ",
+    assertTrue( "Null TrajectoryObsDataset after open <" + datasetFilePath + "> ",
                 me != null );
-    assertTrue( "Dataset <" + location + "> not a RafTrajectoryObsDataset.",
+    assertTrue( "Dataset <" + datasetFilePath + "> not a RafTrajectoryObsDataset.",
                 me instanceof RafTrajectoryObsDataset );
 
     long startDate, endDate;
@@ -269,23 +278,25 @@ public class TestRafTrajectoryObsDataset extends TestCase
     System.out.println( "Point-oriented iterator read of record written data: " + ( ( endDate - startDate ) / 1000.0 ) + " seconds" );
 
     //================ non-record written data ====================
-    location = testFilePath + "/" + test_Raf_1_3_NoRecvar_FileName;
-    assertTrue( "Test file <" + location + "> does not exist.",
-                new File( location ).exists() );
+    datasetFile = new File( testFileDir, test_Raf_1_3_NoRecvar_FileName);
+    datasetFilePath = datasetFile.getPath();
+
+    assertTrue( "Test file <" + datasetFilePath + "> does not exist.",
+                datasetFile.exists() );
     try
     {
       StringBuilder errlog = new StringBuilder();
-      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, location, null, errlog);
+      me = (TrajectoryObsDataset) TypedDatasetFactory.open(FeatureType.TRAJECTORY, datasetFilePath, null, errlog);
     }
     catch ( IOException e )
     {
-      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + location + ">: " + e.getMessage();
+      String tmpMsg = "Couldn't create TrajectoryObsDataset from RAF aircraft file <" + datasetFilePath + ">: " + e.getMessage();
       assertTrue( tmpMsg,
                   false );
     }
-    assertTrue( "Null TrajectoryObsDataset after open <" + location + "> ",
+    assertTrue( "Null TrajectoryObsDataset after open <" + datasetFilePath + "> ",
                 me != null );
-    assertTrue( "Dataset <" + location + "> not a RafTrajectoryObsDataset.",
+    assertTrue( "Dataset <" + datasetFilePath + "> not a RafTrajectoryObsDataset.",
                 me instanceof RafTrajectoryObsDataset );
 
     // Read all data in variable oriented manner.
@@ -323,61 +334,3 @@ public class TestRafTrajectoryObsDataset extends TestCase
                 false);
   }
 }
-
-/*
- * $Log: TestRafTrajectoryObsDataset.java,v $
- * Revision 1.11  2006/06/06 16:07:17  caron
- * *** empty log message ***
- *
- * Revision 1.10  2006/05/08 02:47:37  caron
- * cleanup code for 1.5 compile
- * modest performance improvements
- * dapper reading, deal with coordinate axes as structure members
- * improve DL writing
- * TDS unit testing
- *
- * Revision 1.9  2005/05/25 20:53:42  edavis
- * Add some test data to CVS, the rest is on /upc/share/testdata2.
- *
- * Revision 1.8  2005/05/23 20:18:38  caron
- * refactor for scale/offset/missing
- *
- * Revision 1.7  2005/05/20 19:44:28  edavis
- * Add getDataIterator() to TrajectoryObsDatatype and implement
- * in SingleTrajectoryObsDataset (returns null in
- * MultiTrajectoryObsDataset).
- *
- * Revision 1.6  2005/05/16 23:49:55  edavis
- * Add ucar.nc2.dt.trajectory.ARMTrajectoryObsDataset to handle
- * ARM sounding files. Plus a few other fixes and updates to the
- * tests.
- *
- * Revision 1.5  2005/05/16 16:47:53  edavis
- * A few improvements to SingleTrajectoryObsDataset and start using
- * it in RafTrajectoryObsDataset. Add MultiTrajectoryObsDataset
- * (based on SingleTrajectoryObsDataset) and use in
- * Float10TrajectoryObsDataset.
- *
- * Revision 1.4  2005/05/11 22:16:05  caron
- * some TypedVariables sliiped through the cracks
- *
- * Revision 1.3  2005/05/11 00:10:10  caron
- * refactor StuctureData, dt.point
- *
- * Revision 1.2  2005/04/16 15:55:13  edavis
- * Fix Float10Trajectory. Improve testing.
- *
- * Revision 1.1  2005/03/18 00:29:08  edavis
- * Finish trajectory implementations with the new TrajectoryObsDatatype
- * and TrajectoryObsDataset interfaces and update tests.
- *
- * Revision 1.3  2005/03/01 22:02:24  edavis
- * Two more implementations of the TrajectoryDataset interface.
- *
- * Revision 1.2  2005/02/22 20:54:38  edavis
- * Second pass at TrajectoryDataset interface and RAF aircraft implementation.
- *
- * Revision 1.1  2005/02/15 17:57:05  edavis
- * Implement TrajectoryDataset for RAF Aircraft trajectory data.
- *
- */
