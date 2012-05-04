@@ -41,6 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+import ucar.nc2.time.CalendarDateFormatter;
 
 /**
  * Class Description.
@@ -182,9 +183,9 @@ public class TestRegexp {
 
   @Test
   public void testIsoDate() {
-    String p = "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
+    String p = CalendarDateFormatter.isodatePatternString;
     //String m = "2012-05-03 10:03:29Z";
-    String m = "1997-07-16T19:20+01:00";
+    String m = "2012-04-27t08:00:00-0600";
     testMatch(p, m, true);
   }
 

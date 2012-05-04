@@ -1,9 +1,9 @@
 package ucar.nc2.time;
 
-import junit.framework.TestCase;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.units.*;
+import org.junit.Test;
 
 import java.util.Date;
 
@@ -13,13 +13,9 @@ import java.util.Date;
  * @author caron
  * @since 3/25/11
  */
-public class TestCalendarDateUnit extends TestCase {
+public class TestCalendarDateUnit {
   DateFormatter df = new DateFormatter();
   UnitFormat format = UnitFormatManager.instance();
-
-  public TestCalendarDateUnit( String name) {
-    super(name);
-  }
 
   /*
   http://www.w3.org/TR/NOTE-datetime.html
@@ -37,6 +33,7 @@ public class TestCalendarDateUnit extends TestCase {
 second
       YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
    */
+  @Test
   public void testW3cIso() {
     testBase("secs since 1997");
     testBase("secs since 1997-07");
@@ -45,6 +42,7 @@ second
     testBase("secs since 1997-07-16T19:20:30+01:00");
   }
 
+  @Test
   public void testChangeoverDate() {
     testBase("secs since 1997-01-01");
     testBase("secs since 1582-10-16");
@@ -57,6 +55,7 @@ second
     //testBase("secs since 1582-10-06"); // fail
   }
 
+  @Test
   public void testyearZero() {
     testCalendar(null, "secs since 0000-01-01");
     testCalendar(null, "secs since 0001-01-01");
@@ -65,21 +64,8 @@ second
     testCalendar("gregorian", "secs since -0001-01-01");
   }
 
-  // expect to fail
-  public void testFail() {
-    String s = "secs since 0000-01-01";
-    try {
-      CalendarDateUnit cdu = CalendarDateUnit.of("gregorian", s);
-      System.out.printf("%s == %s (joda %s) %n", s, cdu, cdu.getCalendar());
-    } catch (Exception e) {
-      System.out.printf("%s == %s %n", s, e.getMessage());
-      assert true;
-      return;
-    }
-    assert false;
-  }
-
   // UNIT since [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]
+  @Test
   public void testUdunits() {
     testBase("secs since 1992-10-8 15:15:42.5 -6:00");
     testBase("secs since 1992-10-8 15:15:42.5 +6");
@@ -108,9 +94,9 @@ second
     testBase("seconds since 1968-05-23 00:00:00 GMT");
   }
 
+  @Test
   public void testProblem()  {
-    //testCoord("0.5 days since 2007");
-    testCoord("365.5 days since 2007");
+    testBase("seconds since 1968-05-23 00:00:00 UTC");
   }
 
   private void testCoord(String unit) {
@@ -165,7 +151,7 @@ second
     System.out.printf("%s == %s (joda %s) == %s (udunit) %n", s, cdu, cdu.getCalendar(), df.toDateTimeStringISO(base));
 
     if (!base.equals(cdu.getBaseDate())) {
-      System.out.printf("  BAD %s == %d != %d (diff = %d)%n", s, cdu.getBaseDate().getTime(), base.getTime(), cdu.getBaseDate().getTime() - base.getTime());
+      System.out.printf("  BAD compare CDU and udunits '%s' == %d != %d (diff = %d)%n", s, cdu.getBaseDate().getTime(), base.getTime(), cdu.getBaseDate().getTime() - base.getTime());
     }
   }
 
@@ -195,6 +181,7 @@ second
       System.out.printf("  BAD diff = %d%n", cdu.getBaseDate().getTime() - base.getTime());
   }
 
+  @Test
   public void testCoords() {
     boolean test = false;
     testCoords("days", test);
@@ -231,6 +218,7 @@ second
     }
   }
 
+  @Test
   public void testCoordsByCalendarField() {
     boolean test = false;
     testCoordsByCalendarField("calendar days", test);
@@ -256,6 +244,7 @@ second
     System.out.printf("%n");
   }
 
+  @Test
   public void testMinMax() {
     CalendarDate max = CalendarDate.of(Long.MAX_VALUE);
     System.out.printf("CalendarDate%n");
@@ -270,6 +259,7 @@ second
     System.out.printf("min = %s%n", ds);
   }
 
+  @Test
   public void testBig() {
     CalendarDateUnit cdu = CalendarDateUnit.of(null, "years since 1970-01-01");
     long val = 50*1000*1000;

@@ -39,6 +39,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ucar.nc2.units.DateFormatter;
+import ucar.unidata.util.StringUtil2;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -108,6 +109,7 @@ public class CalendarDateFormatter {
   
   /**
    * Convert an ISO formatted String to a CalendarDate.
+   * @param calt calendar, may be null for default calendar (Calendar.getDefault())
    * @param iso ISO 8601 date String
      <pre>possible forms for W3C profile of ISO 8601
         Year:
@@ -140,22 +142,21 @@ public class CalendarDateFormatter {
    </pre>
    * @return CalendarDate using default calendar
    * @throws IllegalArgumentException if the String is not a valid ISO 8601 date
+   * @see "http://www.w3.org/TR/NOTE-datetime"
    */
-  static public CalendarDate isoStringToCalendarDate(String iso) throws IllegalArgumentException{
+  static public CalendarDate isoStringToCalendarDate(Calendar calt, String iso) throws IllegalArgumentException{
 	  DateTime dt = parseIsoTimeString(iso);
-	  return new CalendarDate(null, dt);
+	  return new CalendarDate(calt, dt);
   }
   
   static public Date isoStringToDate(String iso) throws IllegalArgumentException{
-    CalendarDate dt = isoStringToCalendarDate(iso);	  
+    CalendarDate dt = isoStringToCalendarDate(null, iso);
 	  return  dt.toDate();
   }
 
 
   //                                                   1                  2            3
-  private static final String isodatePatternString = "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
-                                          String p = "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
-
+  static public final String isodatePatternString = "([\\+\\-\\d]+)([ t]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing
   // private static final String isodatePatternString = "([\\+\\-\\d]+)[ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
   private static final Pattern isodatePattern = Pattern.compile(isodatePatternString);
 
@@ -206,14 +207,14 @@ public class CalendarDateFormatter {
       if (isMinus) year = -year;
 
       // Get a DateTime object in this Chronology
-      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0);
+      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0, DateTimeZone.UTC); // default UTC
       // Add the seconds
       dt = dt.plus((long) (1000 * second));
 
       // Parse the time zone if present
       if (zoneString != null) {
         zoneString = zoneString.trim();
-        if (zoneString.length() > 0 && !zoneString.equals("Z") && !zoneString.equals("UTC") && !zoneString.equals("GMT")) {
+        if (zoneString.length() > 0 && !zoneString.equalsIgnoreCase("Z") && !zoneString.equalsIgnoreCase("UTC") && !zoneString.equalsIgnoreCase("GMT")) {
           isMinus = false;
           if (zoneString.startsWith("-")) {
              isMinus = true;
@@ -222,10 +223,31 @@ public class CalendarDateFormatter {
              zoneString = zoneString.substring(1);
            }
 
-          StringTokenizer zoneTokenizer = new StringTokenizer(zoneString, ":");
-          int hourOffset = zoneTokenizer.hasMoreTokens() ? Integer.parseInt(zoneTokenizer.nextToken()) : 0;
-          int minuteOffset = zoneTokenizer.hasMoreTokens() ? Integer.parseInt(zoneTokenizer.nextToken()) : 0;
-          if (isMinus) hourOffset = -hourOffset;
+          // allow 01:00, 1:00, 01 or 0100
+          int hourOffset = 0;
+          int minuteOffset = 0;
+          int posColon = zoneString.indexOf(':');
+          if (posColon > 0) {
+            String hourS = zoneString.substring(0,posColon);
+            String minS = zoneString.substring(posColon+1);
+            hourOffset = Integer.parseInt(hourS);
+            minuteOffset = Integer.parseInt(minS);
+
+          } else {   // no colon - assume 2 digit hour, optional minutes
+            if (zoneString.length() > 2) {
+              String hourS = zoneString.substring(0,2);
+              String minS = zoneString.substring(2);
+              hourOffset = Integer.parseInt(hourS);
+              minuteOffset = Integer.parseInt(minS);
+            } else {
+              hourOffset = Integer.parseInt(zoneString);
+            }
+          }
+          if (isMinus) {
+            // DateTimeZone.forOffsetHoursMinutes: "If constructed with the values (-2, 30), the resulting zone is '-02:30'.
+            // so i guess dont make minuteOffset negetive
+            hourOffset = -hourOffset;
+          }
           DateTimeZone dtz = DateTimeZone.forOffsetHoursMinutes(hourOffset, minuteOffset);
 
           // Apply the time zone offset, retaining the field values.  This
@@ -233,6 +255,8 @@ public class CalendarDateFormatter {
           dt = dt.withZoneRetainFields(dtz);
           // Now convert to the UTC time zone, retaining the millisecond instant
           dt = dt.withZone(DateTimeZone.UTC);
+        } else {
+
         }
       }
 

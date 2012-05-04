@@ -1,14 +1,8 @@
 package ucar.nc2.time;
 
 import net.jcip.annotations.Immutable;
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.chrono.ISOChronology;
-
 import java.util.Date;
 import java.util.Formatter;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +43,8 @@ There’s an alternative proposition, in which the new units of calendar_month a
 public class CalendarDateUnit {
   private static final String byCalendarString = "calendar ";
   //                                                  1                     2             3    4             5
-  private static final String udunitPatternString = "(\\w*)\\s*since\\s*"+"([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
+  private static final String udunitPatternString = "(\\w*)\\s*since\\s*"+CalendarDateFormatter.isodatePatternString;
+  //                                                                     "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing
   private static final Pattern udunitPattern = Pattern.compile(udunitPatternString);
 
   /**
@@ -105,11 +100,15 @@ public class CalendarDateUnit {
 
     unitString = m.group(1);
     periodField = CalendarPeriod.fromUnitString(unitString);
-    DateTime dt = parseUdunitsTimeString(dateUnitString, m.group(2), m.group(4), m.group(5));
-    baseDate = CalendarDate.of(cal, dt);
+
+    int pos = dateUnitString.indexOf("since");
+    String iso = dateUnitString.substring(pos + 5);
+    baseDate = CalendarDateFormatter.isoStringToCalendarDate(cal, iso);
+    //DateTime dt = parseUdunitsTimeString(dateUnitString, m.group(2), m.group(4), m.group(5));
+    //baseDate = CalendarDate.of(cal, dt);
   }
 
-  private DateTime parseUdunitsTimeString(String dateUnitString, String dateString, String timeString, String zoneString) {
+  /* private DateTime parseUdunitsTimeString(String dateUnitString, String dateString, String timeString, String zoneString) {
     // Set the defaults for any values that are not specified
     int year = 0;
     int month = 1;
@@ -177,7 +176,7 @@ public class CalendarDateUnit {
     } catch (Exception e) {
       throw new IllegalArgumentException("Illegal base time specification: '" + dateUnitString+"'", e);
     }
-  }
+  } */
 
   public CalendarDate makeCalendarDate(double value) {
     if (isCalendarField)
