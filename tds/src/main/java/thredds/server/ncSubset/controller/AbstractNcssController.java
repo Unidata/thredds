@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -121,10 +122,13 @@ public class AbstractNcssController implements LastModified{
 		if(params.getTime()!=null){
 			
 			CalendarDate date=null;
+			
 			if( params.getTime().equalsIgnoreCase("present") ){
 				date =CalendarDate.of(new Date());
 			}else{
-				date =CalendarDate.parseISOformat(null, params.getTime());
+				
+				DateTime dt = new DateTime(params.getTime());
+				date = CalendarDate.of(dt.getMillis());				
 			}
 						
 			return CalendarDateRange.of(date,date);

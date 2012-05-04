@@ -80,7 +80,9 @@ public class PointCollectionStreamTest {
 		int randIntNext = rand.nextInt(dates.size());
 		int start = Math.min(randInt, randIntNext);
 		int end = Math.max(randInt, randIntNext);
-		CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));
+		//CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));
+		
+		CalendarDateRange range = CalendarDateRange.of( dates.get(0), dates.get(0));
 		wantedDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range);
 		
 		/*if(verticalLevel >= 0){
