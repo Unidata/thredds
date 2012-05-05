@@ -31,6 +31,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -127,8 +128,8 @@ public class AbstractNcssController implements LastModified{
 				date =CalendarDate.of(new Date());
 			}else{
 				
-				DateTime dt = new DateTime(params.getTime());
-				date = CalendarDate.of(dt.getMillis());				
+				//DateTime dt = new DateTime(params.getTime());
+				date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );				
 			}
 						
 			return CalendarDateRange.of(date,date);
