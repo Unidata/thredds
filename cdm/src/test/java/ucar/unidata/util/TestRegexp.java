@@ -41,6 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+import ucar.nc2.time.CalendarDateFormatter;
 
 /**
  * Class Description.
@@ -177,6 +178,22 @@ public class TestRegexp {
     String m = "secs since 1997-07-16T19:20+01:00";
     //           1                  2                  3             4
     String p = "(\\w*)\\s*since\\s*"+"([\\+\\-\\d]+)([ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?Z?)?$";
+    testMatch(p, m, true);
+  }
+
+  @Test
+  public void testIsoDate() {
+    String p = CalendarDateFormatter.isodatePatternString;
+    //String m = "2012-05-03 10:03:29Z";
+    String m = "2012-04-27t08:00:00-0600";
+    testMatch(p, m, true);
+  }
+
+  @Test
+  public void testIsoDate2() {
+    String p = "([\\+\\-\\d]+)([ t])([\\.\\:\\d]*)(([ \\+\\-]\\S*)?z?)?$";
+    //String m = "2012-05-03 10:03:29Z";
+    String m = "2012-05-03 10:03:29+03";
     testMatch(p, m, true);
   }
 

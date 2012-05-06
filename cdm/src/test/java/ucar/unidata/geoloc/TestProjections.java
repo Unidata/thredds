@@ -36,6 +36,8 @@ import junit.framework.*;
 
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
+import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 import ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse;
@@ -228,6 +230,20 @@ public class TestProjections extends TestCase {
     testProjection(new AlbersEqualArea());
     AlbersEqualArea p = new AlbersEqualArea();
     AlbersEqualArea p2 = (AlbersEqualArea) p.constructCopy();
+    assert p.equals(p2);
+  }
+
+  public void testCEA() {
+    testProjection(new CylindricalEqualAreaProjection());
+    CylindricalEqualAreaProjection p = new CylindricalEqualAreaProjection();
+    CylindricalEqualAreaProjection p2 = (CylindricalEqualAreaProjection) p.constructCopy();
+    assert p.equals(p2);
+  }
+
+  public void testEAP() {
+    testProjection(new EquidistantAzimuthalProjection());
+    EquidistantAzimuthalProjection p = new EquidistantAzimuthalProjection();
+    EquidistantAzimuthalProjection p2 = (EquidistantAzimuthalProjection) p.constructCopy();
     assert p.equals(p2);
   }
 

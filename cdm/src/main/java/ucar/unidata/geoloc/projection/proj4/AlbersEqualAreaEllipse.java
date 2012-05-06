@@ -77,9 +77,6 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
   private double n2;
   private double rho0;
 
-  // spherical vs ellipsoidal
-  private boolean isSpherical;
-
   /**
    * copy constructor - avoid clone !!
    */
@@ -129,7 +126,6 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
     this.earth = earth;
 		this.e = earth.getEccentricity();
 		this.es = earth.getEccentricitySquared();
-    this.isSpherical = (e == 0.0);
 		this.one_es = 1.0-es;
 		this.totalScale = earth.getMajor() * .001; // scale factor for cartesion coords in km.
 
@@ -156,7 +152,6 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
 
     addParameter(CF.SEMI_MAJOR_AXIS, earth.getMajor());
     addParameter(CF.INVERSE_FLATTENING, 1.0/earth.getFlattening());
-
   }
 
   private void precalculate() {
@@ -169,7 +164,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
 		double cosphi = Math.cos(phi1);
 		boolean secant = Math.abs(phi1 - phi2) >= EPS10;
 
-		if (!isSpherical) { // not spherical  LOOK CHANGE
+		if (!earth.isSpherical()) { // not spherical  LOOK CHANGE
 
       // 		if (!(P->en = pj_enfn(P->es))) E_ERROR_0; ??
       if ((MapMath.enfn(es)) == null)
@@ -363,7 +358,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
     double fromLat = Math.toRadians(latLon.getLatitude());
     double theta = computeTheta(latLon.getLongitude());
 
-    double term = isSpherical ? n2 * Math.sin(fromLat) : n * MapMath.qsfn(Math.sin(fromLat), e, one_es);
+    double term = earth.isSpherical() ? n2 * Math.sin(fromLat) : n * MapMath.qsfn(Math.sin(fromLat), e, one_es);
     double rho = c - term;
 
     if (rho < 0.0)
@@ -465,7 +460,7 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
       }
       double lpphi = rho / dd;
 
-      if (!isSpherical) {
+      if (!earth.isSpherical()) {
         lpphi = (c - lpphi * lpphi) / n;
         if (Math.abs(ec - Math.abs(lpphi)) > TOL7) {
           if (Math.abs(lpphi) > 2.0)

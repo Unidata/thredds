@@ -34,6 +34,8 @@
 package ucar.util.prefs;
 
 import junit.framework.*;
+import ucar.nc2.util.Misc;
+
 import java.io.*;
 import java.util.prefs.Preferences;
 
@@ -51,8 +53,8 @@ public class TestXMLStoreChains extends TestCase {
     try {
       XMLStore store2 = XMLStore.createFromFile(storeFile, null);
       PreferencesExt prefs = store2.getPreferences();
-      //System.out.println("-------------");
-      //prefs.exportSubtree( System.out);
+      System.out.println("-------------");
+      prefs.exportSubtree( System.out);
 
       Preferences node = prefs.node("/myApp");
       int ival  = node.getInt("extraOne", 0);
@@ -97,7 +99,7 @@ public class TestXMLStoreChains extends TestCase {
       assert ival == 2 : "testChain fail 1 " + ival;
 
       double dval  = node.getDouble("TestDouble", 0.0);
-      assert closeD(dval, 3.14159) : "testChain fail 2 " + dval;
+      assert Misc.closeEnough(dval, 3.14159) : "testChain fail 2 " + dval;
 
       node.putDouble("TestDouble", 3.14159);
       node.putDouble("TestFloat", -999.0);
@@ -110,7 +112,7 @@ public class TestXMLStoreChains extends TestCase {
       prefs = store.getPreferences();
       node = prefs.node("/myApp");
       dval  = node.getDouble("TestDouble", 0.0);
-      assert closeD(dval, 0.0) : "testChain fail 2 " + dval;
+      assert Misc.closeEnough(dval, 0.0) : "testChain fail 2 " + dval;
 
       // but not if they are in the default
       store = XMLStore.createFromFile(storeFile, null);
@@ -209,10 +211,10 @@ public class TestXMLStoreChains extends TestCase {
 
     node = prefs.node("/myApp");
     double dval  = node.getDouble("TestDouble", 0.0);
-    assert closeD(dval, 3.14159) : "testStandardChain fail 6 " + dval;
+    assert Misc.closeEnough(dval, 3.14159) : "testStandardChain fail 6 " + dval;
 
     float fval  = node.getFloat("TestFloat", 0.0F);
-    assert closeF(fval, -999.0F) : "testStandardChain fail 7 " + fval;
+    assert Misc.closeEnough(fval, -999.0F) : "testStandardChain fail 7 " + fval;
 
   }
 
@@ -237,20 +239,4 @@ public class TestXMLStoreChains extends TestCase {
     return is;
   }
 
-
-  boolean closeD( double d1, double d2) {
-    if (Math.abs(d1) > 1.0E-7)
-      return (Math.abs(d1-d2) / d1) < 1.0E-7;
-    else
-      return (Math.abs(d1-d2)) < 1.0E-7;
-  }
-  boolean closeF( float d1, float d2) { return (Math.abs(d1-d2) / d1) < 1.0E-7; }
-
-
 }
-/* Change History:
-   $Log: TestXMLStoreChains.java,v $
-   Revision 1.1.1.1  2002/12/20 16:40:27  john
-   start new cvs root: prefs
-
-*/

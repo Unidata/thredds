@@ -68,14 +68,10 @@ import java.util.*;
  * @see Projection
  */
 public abstract class ProjectionImpl implements Projection, java.io.Serializable {
-  //  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionImpl.class);
-
   /**
    * Earth radius in kilometers
    */
   static public final double EARTH_RADIUS = Earth.getRadius() * 0.001;  // km
-
-  // package private, i hope
 
   /**
    * Latitude index
@@ -329,7 +325,6 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     }
     return header;
   }
-
 
   /**
    * Get a String representation of this projection.
@@ -679,30 +674,6 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     return to;
   }
 
-  /*
-
-  public double[][] latLonToProj (double[][]from) {
-  if (from == null || from.length != 2)
-  throw new IllegalArgumentException("ProjectionImpl.latLonToProj:" +
-  "null array argument or wrong dimension ");
-  return latLonToProj (from, new double[2][from[0].length]);
-  }
-
-  public double[][] latLonToProj (double[][]from, double[][]to) { return to; }
-
-
-  /* protected double[][] latLonToProj (double[][]from, double[][]to, int latIndex, int lonIndex) { return to; }
-
-  protected double[][] latLonToProj (double[][]from, int latIndex, int lonIndex) {
-  if (from == null || from.length != 2)
-  throw new IllegalArgumentException("ProjectionImpl.latLonToProj:" +
-  "null array argument or wrong dimension ");
-  //      return latLonToProj (from, new double[2][from[0].length], latIndex, lonIndex);
-  return latLonToProj (from, from, latIndex, lonIndex);
-  }
-
-  */
-
   // bounding box utilities
 
   /**
@@ -846,7 +817,8 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
 
   /**
    * From GridCoordSys. use this instead of  projToLatLonBB() ?
-   *
+   * Compute lat/lon bounding box from projection bounding box.
+   * @param bb projection bounding box
    * @return lat, lon bounding box.
    */
   public LatLonRect getLatLonBoundingBox(ProjectionRect bb) {

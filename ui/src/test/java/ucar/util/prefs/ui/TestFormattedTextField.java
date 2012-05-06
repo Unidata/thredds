@@ -39,9 +39,7 @@ import java.text.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
-import junit.framework.*;
-
-public class TestFormattedTextField extends TestCase {
+public class TestFormattedTextField {
   static String pattern = "none";
   static JFormattedTextField d1;
   static JTextField patternTF;
@@ -50,11 +48,7 @@ public class TestFormattedTextField extends TestCase {
   static JCheckBox intOnly, allowsInvalid;
   static boolean intOnlyValue, allowsInvalidValue;
 
-  public TestFormattedTextField( String name) {
-    super(name);
-  }
-
-  private JPanel makePanel() {
+  public JPanel makePanel() {
     JPanel main = new JPanel();
     main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
 
@@ -149,7 +143,7 @@ public class TestFormattedTextField extends TestCase {
       public void windowClosing(WindowEvent e) {System.exit(0);}
     });
 
-    TestFormattedTextField ff = new TestFormattedTextField( "fake");
+    TestFormattedTextField ff = new TestFormattedTextField();
     frame.getContentPane().add( ff.makePanel());
 
     frame.pack();
@@ -157,18 +151,4 @@ public class TestFormattedTextField extends TestCase {
     frame.setVisible(true);
   }
 
-
-
 }
-/* Change History:
-   $Log: TestFormattedTextField.java,v $
-   Revision 1.1  2004/08/26 17:55:19  caron
-   no message
-
-   Revision 1.2  2002/12/24 22:04:54  john
-   add bean, beanObject methods
-
-   Revision 1.1.1.1  2002/12/20 16:40:27  john
-   start new cvs root: prefs
-
-*/

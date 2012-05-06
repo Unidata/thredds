@@ -3,6 +3,12 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
+ 10: (2012-05-xx)
+  CalendarDateFormatter.isoStringToDate:  handle the many different forms of ISO dates
+  GribCollection: for single file case, check relative path for data file.
+  Add lambert_cylindrical_equal_area, albers_conical_equal_area from proj4
+  SliceReader broken when rank > 1
+
  9: (2012-04-19)
   RotatedPole fix (from Robert Schmunk)
   HDF5: add HDF5_chunksize attribute

@@ -107,12 +107,6 @@
       <artifactId>slf4j-jdk14</artifactId>
       <scope>test</scope>
     </dependency>
-    
-	<dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>jcl-over-slf4j</artifactId>
-		<scope>test</scope>
-	</dependency>    
 
   </dependencies>
 
@@ -149,9 +143,6 @@
             <exclude>ucar/nc2/util/reflect/**</exclude>
           </excludes>
 
-          <testExcludes>
-            <exclude>thredds/catalog2/**</exclude>
-          </testExcludes>
         </configuration>
       </plugin>
 

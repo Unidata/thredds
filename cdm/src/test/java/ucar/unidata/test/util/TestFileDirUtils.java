@@ -70,7 +70,7 @@ public class TestFileDirUtils
     if ( prefix.length() < 3 )
       throw new IllegalArgumentException( "Prefix must be at least three characters.");
     if ( directory == null || ! directory.exists() || ! directory.isDirectory() )
-      throw new IllegalArgumentException( "Given directory must exist and be a directory.");
+      throw new IllegalArgumentException( "Given directory [" + directory.getPath() + "] must exist and be a directory.");
 
     File newDir = null;
     Random rand = new Random();

@@ -1,5 +1,7 @@
 package thredds.server.ncSubset.validation;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -31,7 +33,9 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 		boolean isValid =false;
 		String time = params.getTime();
 		
-		if( time !=null ){			
+		if( time !=null ){
+			
+		
 			return validateISOString( time,"{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.parseerror.param.time}", constraintValidatorContext);
 		}
 		

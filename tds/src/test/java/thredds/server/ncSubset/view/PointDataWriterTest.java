@@ -4,8 +4,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.junit.After;
@@ -41,13 +43,11 @@ public class PointDataWriterTest {
 	private String pathInfo;
 
 	
-	private List<String> vars; 
+	private Map<String,List<String>> vars; 
 	private GridDataset gridDataset;
-	private GridAsPointDataset gridAsPointDataset;
 	private LatLonPoint point;
 	private CalendarDate date; 
 	private List<CalendarDate> wDates;
-	private CoordinateAxis1D zAxis;
 	private CoordinateAxis1DTime tAxis;
 	private DateUnit dateUnit;
 	
@@ -55,21 +55,21 @@ public class PointDataWriterTest {
 	public static List<Object[]> getTestParameters(){
 		
 		return Arrays.asList(new Object[][]{  
-				{SupportedFormat.CSV, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
-				{SupportedFormat.CSV, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
-				{SupportedFormat.CSV, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) },
+				{SupportedFormat.CSV, PointDataParameters.getGroupedVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
+				{SupportedFormat.CSV, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
+				{SupportedFormat.CSV, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) },
 				
-				{SupportedFormat.XML, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
-				{SupportedFormat.XML, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
-				{SupportedFormat.XML, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) },
+				{SupportedFormat.XML, PointDataParameters.getGroupedVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
+				{SupportedFormat.XML, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
+				{SupportedFormat.XML, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) },
 				
-				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
-				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
-				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) }				
+				//{SupportedFormat.NETCDF, PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0) },
+				//{SupportedFormat.NETCDF, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1) },
+				//{SupportedFormat.NETCDF, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2) }				
 		});				
 	}
 	
-	public PointDataWriterTest(SupportedFormat supportedFormat,  List<String> vars ,  String pathInfo, LatLonPoint point  ){
+	public PointDataWriterTest(SupportedFormat supportedFormat,  Map<String,List<String>> vars,  String pathInfo, LatLonPoint point  ){
 		
 		this.supportedFormat = supportedFormat;
 		this.vars = vars;		
@@ -81,7 +81,10 @@ public class PointDataWriterTest {
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
 		
 		gridDataset = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars);		
+			
+		List<String> keys = new ArrayList<String>( vars.keySet());		
+		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );		
+		
 		pointDataWriter = AbstractPointDataWriterFactory.createPointDataWriterFactory(supportedFormat).createPointDataWriter(new ByteArrayOutputStream());
 		
 		List<CalendarDate> dates = gridAsPointDataset.getDates();
@@ -94,8 +97,8 @@ public class PointDataWriterTest {
 		wDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range);
 		
 		date = dates.get(randInt);
-		zAxis = gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
-		tAxis = gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getTimeAxis1D();
+		//zAxis = gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
+		tAxis = gridDataset.findGridDatatype(vars.get(keys.get(0)).get(0)).getCoordinateSystem().getTimeAxis1D();
 		dateUnit = new DateUnit(tAxis.getUnitsString());
 	}
 	
@@ -105,14 +108,13 @@ public class PointDataWriterTest {
 	@Test
 	public void shouldWriteResponse(){
 		assertTrue( pointDataWriter.header(vars, gridDataset, wDates, dateUnit, point));
-		assertTrue( pointDataWriter.write(vars, gridDataset, gridAsPointDataset, date, point ));
+		assertTrue( pointDataWriter.write(vars, gridDataset, date, point, null ));
 	}
 	
 	@After
 	public void tearDown(){
 	
 		gridDataset = null;
-		gridAsPointDataset = null;
 		//....
 	}
 

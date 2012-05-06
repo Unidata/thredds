@@ -3,8 +3,6 @@ package thredds.catalog2.simpleImpl;
 import thredds.catalog2.builder.BuilderIssues;
 import thredds.catalog2.builder.BuilderIssue;
 import thredds.catalog2.builder.ThreddsBuilder;
-import thredds.catalog2.builder.BuilderException;
-import thredds.catalog2.Service;
 
 import java.util.Map;
 import java.util.List;
@@ -74,7 +72,7 @@ class GlobalServiceContainer
       ServiceImpl removedService = this.servicesByGloballyUniqueName.remove( service.getName() );
       assert service == removedService;
       boolean promoted = this.promoteFirstServiceWithDuplicateName( service.getName() );
-      assert promoted;
+      //assert promoted;
       return true;
     }
 

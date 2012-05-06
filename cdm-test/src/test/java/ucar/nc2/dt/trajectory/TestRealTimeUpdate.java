@@ -33,7 +33,9 @@
 // $Id: TestRealTimeUpdate.java 51 2006-07-12 17:13:13Z caron $
 package ucar.nc2.dt.trajectory;
 
-import junit.framework.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
@@ -53,23 +55,15 @@ import java.util.Date;
  * @author edavis
  * @since Feb 7, 2006 10:10:45 AM
  */
-public class TestRealTimeUpdate extends TestCase
+public class TestRealTimeUpdate
 {
 
   private String testDataFileOut = "test.TrajectoryRealTimeUpdate.tmp.nc";
 
-  public TestRealTimeUpdate( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
-  {
-  }
-
   /**
    * Test ...
    */
+  @Test
   public void testMuckWithNcfSynchExtend()
   {
     NetcdfFile ncf = null;
@@ -148,6 +142,7 @@ public class TestRealTimeUpdate extends TestCase
       System.out.println( "Lat var not the same." );
   }
 
+  @Test
   public void testTwo()
   {
     TrajectoryObsDataset trajDs;
@@ -219,9 +214,3 @@ public class TestRealTimeUpdate extends TestCase
     System.out.println( "Pressure end value=" + presArray.getFloat( presArray.getIndex() ) );
   }
 }
-/*
- * $Log: TestRealTimeUpdate.java,v $
- * Revision 1.1  2006/02/09 22:57:12  edavis
- * Add syncExtend() method to TrajectoryObsDataset.
- *
- */

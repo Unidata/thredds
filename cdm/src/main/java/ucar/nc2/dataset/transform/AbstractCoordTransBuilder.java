@@ -62,9 +62,40 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     this.errBuffer = errBuffer;
   }
 
+  // for vertical transforms
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     throw new UnsupportedOperationException();
   }
+  
+  protected double lat0, lon0, false_easting, false_northing, earth_radius;
+  protected Earth earth;
+
+  protected void readStandardParams(NetcdfDataset ds, Variable ctv) {
+    lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);
+    if (Double.isNaN(lon0))
+      lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
+    false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
+
+    if ((false_easting != 0.0) || (false_northing != 0.0)) {
+      double scalef = getFalseEastingScaleFactor(ds, ctv);
+      false_easting *= scalef;
+      false_northing *= scalef;
+    }
+
+    double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
+    double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
+    double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);
+
+        // check for ellipsoidal earth
+    if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
+      earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);
+    } else {
+      earth_radius = getEarthRadiusInKm(ctv);
+    }
+  }
+  
 
   /**
    * Read a variable attribute as a double.
@@ -162,26 +193,8 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     return ok ? values : null;
   }
 
-  /* public static void test(String s, String regexp) {
-    String[] result = s.split(regexp);
-    for (String r : result) System.out.println(" <"+r+">");
-  }
-
-  public static void test2(String f, String t) {
-    String[] result = parseFormula(f, t);
-    for (String r : result) System.out.println(" <"+r+">");
-  }
-
-  public static void main(String args[]) {
-    test("ac:b blah:c dah: d dow dee","[\\s:]+");
-    //test("ac:b blah:c dah d","\\s");
-    //test2("ac:b blah:c dah: d dow dee","ac blah dah dow");
-  }    */
-
-
 
   //////////////////////////////////////////
-  //private UnitFormat format;
   static public double getFalseEastingScaleFactor(NetcdfDataset ds, Variable ctv) {
     String units = ds.findAttValueIgnoreCase(ctv, CDM.UNITS, null);
     if (units == null) {

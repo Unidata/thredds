@@ -57,6 +57,7 @@ import java.util.*;
  * A collection of grib files as a single logical dataset.
  * Concrete classes are for Grib1 and Grib2.
  * Note that there is no dependence on GRIB tables here.
+ * Handles .ncx files
  *
  * @author caron
  * @since 4/6/11
@@ -257,13 +258,33 @@ public abstract class GribCollection implements FileCacheable {
   // stuff for Iosp
 
   public RandomAccessFile getDataRaf(int fileno) throws IOException {
+    // absolute location
     String filename = filenames.get(fileno);
-    RandomAccessFile want = getDataRaf(filename);
+    File dataFile = new File(filename);
+ 
+    // check reletive location - eg may be /upc/share instead of Q:
+    if (!dataFile.exists()) {
+      if (filenames.size() == 1) {
+        dataFile =  new File(directory, name); // single file case
+      } else {
+        dataFile =  new File(directory, dataFile.getName()); // must be in same directory as the ncx file
+      }
+    }
+
+       
+    // data file not here
+    if (!dataFile.exists()) {
+      throw new FileNotFoundException("data file not found = " + filename);
+    }
+
+    RandomAccessFile want = getDataRaf(dataFile.getPath());
     want.order(RandomAccessFile.BIG_ENDIAN);
     return want;
   }
 
   private RandomAccessFile getDataRaf(String location) throws IOException {
+
+
     if (dataRafCache != null) {
       return (RandomAccessFile) dataRafCache.acquire(dataRafFactory, location, null);
     } else {

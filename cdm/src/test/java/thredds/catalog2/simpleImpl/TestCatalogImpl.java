@@ -67,11 +67,6 @@ public class TestCatalogImpl
   private DateType catExpires2;
   private DateType catLastModified2;
 
-  private URI docBaseUri;
-
-  private ServiceType type;
-  private URI baseUri;
-
   @Before
   public void setupBasicCatalog() throws URISyntaxException, ParseException
   {
@@ -83,14 +78,6 @@ public class TestCatalogImpl
     this.catLastModified2 = this.catLastModified.add( new TimeDuration( "P1D"));
     this.catExpires2 = this.catLastModified2.add( new TimeDuration( "P5D"));
     this.catImpl = new CatalogImpl( catName, catDocBaseUri, this.catVersion, this.catExpires, this.catLastModified);
-
-    try
-    { baseUri = new URI( "http://server/thredds/dodsC/" );
-      docBaseUri = new URI( "http://server/thredds/aCat.xml" ); }
-    catch ( URISyntaxException e )
-    { fail("Bad URI syntax: " + e.getMessage()); }
-
-    type = ServiceType.OPENDAP;
   }
 
   @Test(expected=IllegalArgumentException.class)
@@ -133,7 +120,7 @@ public class TestCatalogImpl
     assertEquals( this.catDocBaseUri, this.catImpl.getDocBaseUri());
     assertEquals( this.catVersion, this.catImpl.getVersion());
     assertEquals( this.catExpires, this.catImpl.getExpires());
-    assertEquals( this.catLastModified, this.catImpl.getLastModified());
+    assertEquals( this.catLastModified, this.catImpl.getLastModified() );
   }
 
   @Test
@@ -164,12 +151,12 @@ public class TestCatalogImpl
 
     assertBasicCatalogAsExpected();
 
-    assertEquals( "red", this.catImpl.getPropertyValue( "color" ));
+    assertEquals( "red", this.catImpl.getPropertyValue( "color" ) );
     assertEquals( "sweet", this.catImpl.getPropertyValue( "taste" ));
 
-    assertTrue( this.catImpl.removeProperty( "color" ));
+    assertTrue( this.catImpl.removeProperty( "color" ) );
 
-    assertNull( this.catImpl.getPropertyValue( "color" ));
+    assertNull( this.catImpl.getPropertyValue( "color" ) );
   }
 
   @Test
@@ -191,6 +178,39 @@ public class TestCatalogImpl
 
     assertTrue( this.catImpl.removeService( odapService ));
     assertNull( this.catImpl.getServiceBuilderByName( "odap" ));
+  }
+
+  @Test
+  public void checkCatalogAddGetRemoveServicesForDuplicateServiceName() throws URISyntaxException
+  {
+    URI odap1ServiceUri = new URI( "http://server/thredds/dodsC/" );
+    URI odap2ServiceUri = new URI( "http://server/thredds/dodsC2/" );
+    ServiceBuilder odap1Service =  this.catImpl.addService( "odap", ServiceType.OPENDAP, odap1ServiceUri );
+    ServiceBuilder odap2Service =  this.catImpl.addService( "odap", ServiceType.OPENDAP, odap2ServiceUri );
+    ServiceBuilder wcsService =  this.catImpl.addService( "wcs", ServiceType.WCS, new URI( "http://server/thredds/wcs/") );
+
+    assertBasicCatalogAsExpected();
+
+    ServiceBuilder curDapService = this.catImpl.getServiceBuilderByName( "odap" );
+    assertEquals( odap1Service, curDapService );
+    assertEquals( wcsService, this.catImpl.getServiceBuilderByName( "wcs" ));
+
+    List<ServiceBuilder> services = this.catImpl.getServiceBuilders();
+    assertFalse( services.isEmpty());
+    assertEquals( 3, services.size() );
+    assertEquals( odap1Service, services.get( 0 ));
+    assertEquals( odap2Service, services.get( 1));
+    assertEquals( wcsService, services.get( 2));
+
+    assertTrue( this.catImpl.removeService( curDapService ));
+    curDapService = this.catImpl.getServiceBuilderByName( "odap" );
+    assertEquals( odap2Service, curDapService );
+
+    services = this.catImpl.getServiceBuilders();
+    assertFalse( services.isEmpty());
+    assertEquals( 2, services.size());
+    assertEquals( odap2Service, services.get( 0));
+    assertEquals( wcsService, services.get( 1));
   }
 
   @Test

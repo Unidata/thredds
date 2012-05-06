@@ -49,7 +49,7 @@ public class GeospatialCoverageElementParserTest
             .append( "  <duration>").append( duration).append( "</duration>\n")
             .append( "  <resolution>").append( resolution).append( "</resolution>\n");
 
-    String xml = StaxParserUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
+    String xml = StaxParserTestUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
 
 
     assertDateTypeXmlAsExpected( startDate, endDate, duration, resolution, xml );
@@ -69,7 +69,7 @@ public class GeospatialCoverageElementParserTest
             .append( "  <end>").append( endDate).append( "</end>\n")
             .append( "  <duration>").append( duration).append( "</duration>\n");
 
-    String xml = StaxParserUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
+    String xml = StaxParserTestUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
 
 
     assertDateTypeXmlAsExpected( startDate, endDate, duration, null, xml );
@@ -89,7 +89,7 @@ public class GeospatialCoverageElementParserTest
             .append( "  <end>").append( endDate).append( "</end>\n")
             .append( "  <resolution>").append( resolution).append( "</resolution>\n");
 
-    String xml = StaxParserUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
+    String xml = StaxParserTestUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
 
 
     assertDateTypeXmlAsExpected( startDate, endDate, null, resolution, xml );
@@ -109,7 +109,7 @@ public class GeospatialCoverageElementParserTest
             .append( "  <duration>").append( duration).append( "</duration>\n")
             .append( "  <resolution>").append( resolution).append( "</resolution>\n");
 
-    String xml = StaxParserUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
+    String xml = StaxParserTestUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
 
 
     assertDateTypeXmlAsExpected( startDate, null, duration, resolution, xml );
@@ -128,7 +128,7 @@ public class GeospatialCoverageElementParserTest
             .append( "  <duration>" ).append( duration ).append( "</duration>\n" )
             .append( "  <resolution>" ).append( resolution ).append( "</resolution>\n" );
 
-    String xml = StaxParserUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
+    String xml = StaxParserTestUtils.wrapContentXmlInXmlDocRootElement( elemName, null, sb.toString() );
 
 
     assertDateTypeXmlAsExpected( null, endDate, duration, resolution, xml );
@@ -138,8 +138,8 @@ public class GeospatialCoverageElementParserTest
                                             String duration, String resolution, String xml )
           throws XMLStreamException, ThreddsXmlParserException
   {
-    XMLEventReader reader = StaxParserUtils.createXmlEventReaderOnXmlString( xml, "http://test.catalog2.thredds/DateTypeParserTest/someTest.xml" );
-    StaxParserUtils.advanceReaderToFirstStartElement( reader );
+    XMLEventReader reader = StaxParserTestUtils.createXmlEventReaderOnXmlString( xml, "http://test.catalog2.thredds/DateTypeParserTest/someTest.xml" );
+    StaxParserTestUtils.advanceReaderToFirstStartElement( reader );
 
     TimeCoverageElementParser.Factory timeCovParserFactory = new TimeCoverageElementParser.Factory();
 

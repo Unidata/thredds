@@ -95,7 +95,7 @@ public class TestXMLStore extends TestCase {
       PreferencesExt prefs = store.getPreferences();
 
       double d = prefs.getDouble("testD", 0.0);
-      assert closeD(d, 3.14157) : "double failed";
+      assert closeD(d, 3.14157) : "double failed " + d;
 
       float f = prefs.getFloat("testF", 0.0F);
       assert closeF(f, 1.23456F) : "float failed";

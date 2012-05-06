@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.junit.Before;
@@ -19,6 +20,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.controller.SupportedFormat;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
+import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
@@ -43,20 +45,21 @@ public class PointCollectionStreamTest {
 	private GridDataset gridDataset;
 	//private CalendarDateRange range;
 	private List<CalendarDate> wantedDates;
-	private List<String> vars;
-	private List<Double> vertCoords;	
+	private Map<String,List<String>> vars;
+	//private List<Double> vertCoords;
+	private Double vertCoord;
 	
 	@Parameters
 	public static List<Object[]> getTestParameters(){
 		
 		return Arrays.asList(new Object[][]{  
-				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
-				{SupportedFormat.NETCDF, PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
+				{SupportedFormat.NETCDF, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
 
 		});				
 	}
 	
-	public PointCollectionStreamTest(SupportedFormat supportedFormat,  List<String> vars ,  String pathInfo, LatLonPoint point, Double verticalLevel){
+	public PointCollectionStreamTest(SupportedFormat supportedFormat,  Map<String,List<String>> vars ,  String pathInfo, LatLonPoint point, Double verticalLevel){
 		this.supportedFormat = supportedFormat;
 		this.vars = vars;
 		this.pathInfo = pathInfo;
@@ -68,7 +71,8 @@ public class PointCollectionStreamTest {
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
 		
 		gridDataset = DatasetHandlerAdapter.openGridDataset(pathInfo);
-		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars);
+		List<String> keys = new ArrayList<String>( vars.keySet());		
+		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );
 		pointDataStream = PointDataStream.createPointDataStream(supportedFormat, new ByteArrayOutputStream());	
 		List<CalendarDate> dates = gridAsPointDataset.getDates();
 		Random rand = new Random();
@@ -76,10 +80,12 @@ public class PointCollectionStreamTest {
 		int randIntNext = rand.nextInt(dates.size());
 		int start = Math.min(randInt, randIntNext);
 		int end = Math.max(randInt, randIntNext);
-		CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));
+		//CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));
+		
+		CalendarDateRange range = CalendarDateRange.of( dates.get(0), dates.get(0));
 		wantedDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range);
 		
-		if(verticalLevel >= 0){
+		/*if(verticalLevel >= 0){
 			vertCoords = new ArrayList<Double>();
 			vertCoords.add(verticalLevel);
 		}else{
@@ -87,15 +93,15 @@ public class PointCollectionStreamTest {
 			double[] dVertLevels=  zAxis.getCoordValues();
 			vertCoords = new ArrayList<Double>();
 			for( Double d : dVertLevels  ) vertCoords.add(d); 
-		}
+		}*/
 		
 		
 	}
 	
 	@Test
-	public void shouldStreamStationCollection() throws OutOfBoundariesException, DateUnitException{
+	public void shouldStreamStationCollection() throws OutOfBoundariesException, DateUnitException, UnsupportedOperationException{
 		
-		assertTrue( pointDataStream.stream(gridDataset, point, wantedDates, vars, vertCoords) );
+		assertTrue( pointDataStream.stream(gridDataset, point, wantedDates, vars, vertCoord) );
 		
 	}	
 	

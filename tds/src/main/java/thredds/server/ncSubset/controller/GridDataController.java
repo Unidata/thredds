@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import thredds.server.ncSubset.exception.InvalidBBOXException;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
+import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.UsageLog;
@@ -50,21 +52,15 @@ class GridDataController extends AbstractNcssController{
 	private File netcdfResult;
 
 	@RequestMapping(value = "**", params = { "!latitude","!longitude", "var"})
-	void getGridData(@Valid GridDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response )throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException, UnsupportedResponseFormatException{
+	void getGridData(@Valid GridDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response )throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException, UnsupportedResponseFormatException, VariableNotContainedInDatasetException, InvalidBBOXException{
 		
-		if( validationResult.hasErrors() ){
-			
-			handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult );
-			
-		}else{
-			
+		if( validationResult.hasErrors() ){			
+			handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult );			
+		}else{			
 			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.GRID_REQUEST  );
 			//Check the requested bb
-			
-			
 			LatLonRect maxBB = getGridDataset().getBoundingBox();
-			LatLonRect requestedBB = setBBForRequest(params,  gridDataset);
-			
+			LatLonRect requestedBB = setBBForRequest(params,  gridDataset);			
         
 			boolean hasBB = !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLatitude(), maxBB.getUpperRightPoint().getLatitude()) ||
                 !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLatitude(), maxBB.getLowerLeftPoint().getLatitude()) ||
@@ -74,7 +70,13 @@ class GridDataController extends AbstractNcssController{
 			//if(checkBB(maxBB, params.getBB())){
 			if(checkBB(maxBB, requestedBB)){
         
-				Range zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVar());
+				checkRequestedVars(gridDataset,  params);												
+				
+				Range zRange = null;
+				//Request with zRange --> adds a limitation: only variables with the same vertical level???
+				if(params.getVertCoord()!=null)
+					zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVar());
+				
 				List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
 				CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get( wantedDates.size()-1 ));
 				
@@ -116,13 +118,34 @@ class GridDataController extends AbstractNcssController{
 		
 	}
 	
-	private LatLonRect setBBForRequest(GridDataRequestParamsBean params, GridDataset gds ){
+	private LatLonRect setBBForRequest(GridDataRequestParamsBean params, GridDataset gds ) throws InvalidBBOXException{
 		
-		if( params.getNorth()!= null && params.getSouth()!= null && params.getEast()!=null && params.getWest()!=null ){
+		int contValid =0;
+		if(params.getNorth()!= null) contValid++;
+		if(params.getSouth()!= null) contValid++;
+		if(params.getEast()!= null) contValid++;
+		if(params.getWest()!= null) contValid++;
+		
+		if( contValid==4 ){
+			if(params.getNorth() < params.getSouth()){
+				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have north > south");				
+			}
+			if(params.getEast() < params.getWest()){
+				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have east > west; if crossing 180 meridion, use east boundary > 180");				
+			}
+			
 			return new LatLonRect( new LatLonPointImpl(params.getSouth(), params.getWest()),  new LatLonPointImpl(params.getNorth(), params.getEast())); 
+		}else{
+			if(contValid > 0)
+				throw new InvalidBBOXException("Invalid bbox. All params north, south, east and west must be provided"); 
 		}
+			
+				
+		return getGridDataset().getBoundingBox();
+			
+				
 		
-		return getGridDataset().getBoundingBox(); 
+		
 		
 	}
 	
@@ -133,8 +156,7 @@ class GridDataController extends AbstractNcssController{
 		
 		if(verticalCoord != null){
 		  hasVerticalCoord = !Double.isNaN(verticalCoord);	
-	      // allow a vert level to be specified - but only one, and look in first 3D var with nlevels > 1
-	      
+	      // allow a vert level to be specified - but only one, and look in first 3D var with nlevels > 1	      
 	      if (hasVerticalCoord) {
 	    	  try{	  
 	    		  for (String varName : vars) {
@@ -155,12 +177,12 @@ class GridDataController extends AbstractNcssController{
 	    			  }
 	    		  }
 	    	  }catch(InvalidRangeException ire){
-	    		  throw new OutOfBoundariesException( "Invalid vertical level: " + ire.getMessage(),ire);
+	    		  throw new OutOfBoundariesException( "Invalid vertical level: " + ire.getMessage());
 	    	  }	  
 	        // theres also a vertStride, but not needed since only 1D slice is allowed
 	      }		
 		}
-	      return zRange;
+	    return zRange;
 	}
 	
 	private	void makeGridFile(NetcdfCFWriter writer, GridDataset gds, List<String> vars, LatLonRect bbox, Integer horizStride, Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon) throws RequestTooLargeException, InvalidRangeException, IOException{	

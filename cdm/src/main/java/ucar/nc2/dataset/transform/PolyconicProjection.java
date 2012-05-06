@@ -57,7 +57,6 @@ public class PolyconicProjection extends AbstractCoordTransBuilder {
     double semi_minor_axis = readAttributeDouble(ctv, "semi_minor_axis", Double.NaN);
     double inverse_flattening = readAttributeDouble(ctv, "inverse_flattening", 0.0);
 
-
     ucar.unidata.geoloc.ProjectionImpl proj;
 
     // check for ellipsoidal earth
