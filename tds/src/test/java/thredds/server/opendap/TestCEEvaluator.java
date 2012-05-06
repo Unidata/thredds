@@ -31,20 +31,20 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package opendap.test;
+package thredds.server.opendap;
 
 import junit.framework.TestCase;
 import opendap.dap.BaseType;
-import opendap.dap.BaseTypeFactory;
-import opendap.dap.DDS;
-import opendap.dap.DefaultFactory;
-import opendap.servers.*;
+import opendap.servers.CEEvaluator;
+import opendap.servers.ServerDDS;
+import opendap.servers.ServerMethods;
 import opendap.servlet.AsciiWriter;
+import opendap.servlet.GuardedDataset;
+import org.junit.Test;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.Diff;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-
 
 import java.io.*;
 import java.io.FileWriter;
@@ -109,13 +109,9 @@ public class TestCEEvaluator extends UnitTestCommon
         this.testdir = threddsRoot + "/opendap/" +  this.testdir;
     }
 
-    protected void setUp()
-    {
-    }
-
-
     //////////////////////////////////////////////////
 
+    @Test
     public void testCEEvaluator() throws Exception
     {
         if(generate) dogenerate();
@@ -126,6 +122,7 @@ public class TestCEEvaluator extends UnitTestCommon
     {
         File file;
         NetcdfFile ncfile;
+	GuardedDataset ds;
         ServerDDS dds;
         StringWriter content;
         PrintWriter pw;
@@ -133,7 +130,6 @@ public class TestCEEvaluator extends UnitTestCommon
         AsciiWriter writer = new AsciiWriter(); // could be static
         boolean pass = true;
         String expectedfile = null;
-        DataInputStream ds = null;
 
 loop:   for(int i = 0; i < ntestsets && pass; i++) {
             String[] testset = testsets[i];
@@ -152,9 +148,8 @@ loop:   for(int i = 0; i < ntestsets && pass; i++) {
                     file = new File(path);
                     ncfile = NetcdfDataset.openFile(file.getPath(), null);
                     if(ncfile == null) throw new FileNotFoundException(path);
-
-                    ds = getData(path);
-                    dds = getDDS(path);
+                    ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
+                    dds = ds.getDDS();
                     // force the name
                     dds.setEncodedName(basename);
                     if(debug) {System.err.println("initial dds:\n");dds.printDecl(System.err);}
@@ -227,8 +222,8 @@ loop:   for(int i = 0; i < ntestsets && pass; i++) {
     {
         File file;
         NetcdfFile ncfile;
+        GuardedDataset ds;
         ServerDDS dds;
-        DataInputStream ds;
         FileWriter content;
         PrintWriter pw;
         int ntestsets = testsets.length;
@@ -244,8 +239,8 @@ loop:   for(int i = 0; i < ntestsets && pass; i++) {
             file = new File(path);
             ncfile = NetcdfDataset.openFile(file.getPath(), null);
             if(ncfile == null) throw new FileNotFoundException(path);
-            ds = getData(path);
-            dds = getDDS(path);
+            ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
+            dds = ds.getDDS();
             // force the name
             dds.setEncodedName(basename);
             CEEvaluator ce = new CEEvaluator(dds);
@@ -261,7 +256,6 @@ loop:   for(int i = 0; i < ntestsets && pass; i++) {
             for(int j = 1; j < ntests; j++) {
                 String constraint = testset[j];
                 String testname = path + constraint;
-                dds = getDDS(path);
                 ce = new CEEvaluator(dds);
                 ce.parseConstraint(constraint,null);
                 content = new FileWriter(String.format("%s.%02d.asc", path, j));
@@ -275,28 +269,28 @@ loop:   for(int i = 0; i < ntestsets && pass; i++) {
     }
 
 
-    DataInputStream
-    getData(String path)
-    {
-        try {
-            // go get a file stream that points to the requested DDSfile.
-            File fin = new File(path);
-            FileInputStream fp_in = new FileInputStream(fin);
-            DataInputStream dds_source = new DataInputStream(fp_in);
-            return (dds_source);
-        } catch (FileNotFoundException fnfe) {
-            return (null);
-        }
-    }
+//    DataInputStream
+//    getData(String path)
+//    {
+//        try {
+//            // go get a file stream that points to the requested DDSfile.
+//            File fin = new File(path);
+//            FileInputStream fp_in = new FileInputStream(fin);
+//            DataInputStream dds_source = new DataInputStream(fp_in);
+//            return (dds_source);
+//        } catch (FileNotFoundException fnfe) {
+//            return (null);
+//        }
+//    }
 
-    ServerDDS
-    getDDS(String path)
-    {
-        // Get your class factory and instantiate the DDS
-       BaseTypeFactory sfactory = new DefaultFactory();
-       ServerDDS dds = new ServerDDS(path, sfactory, null);
-       return dds;
-    }
+//    ServerDDS
+//    getDDS(DataInputStream)
+//    {
+//        // Get your class factory and instantiate the DDS
+//       BaseTypeFactory sfactory = new DefaultFactory();
+//       ServerDDS dds = new ServerDDS(path, sfactory, null);
+//       return dds;
+//    }
 
 }
 
