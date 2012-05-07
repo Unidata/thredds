@@ -56,13 +56,16 @@ public class TestOffAggNewSync {
 
   @Test
   public void testMove() throws IOException, InterruptedException {
-    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
+    if (!move(fname))
+      System.out.printf("Move failed on %s%n", fname);
     System.out.printf("%s%n", aggExistingSync);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 7);
     ncfile.close();
 
-    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    if (!moveBack(fname))
+      System.out.printf("Move back failed on %s%n", fname);
 
     ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 8);
@@ -77,25 +80,30 @@ public class TestOffAggNewSync {
     System.out.println("");
     ncfile.close();
 
-    boolean ok = move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
+    boolean ok = move(fname);
     int nfiles = ok ? 7 : 8;  // sometimes fails
 
     ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, nfiles);
     ncfile.close();
 
-    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    moveBack(fname);
     System.out.printf("ok testRemove%n");
   }
 
   @Test
   public void testSync() throws IOException, InterruptedException {
-    move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
+    if (!move(fname))
+      System.out.printf("Move failed on %s%n", fname);
 
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 7);
 
-    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    if (!moveBack(fname))
+      System.out.printf("Move back failed on %s%n", fname);
+
     Thread.sleep(2000);
 
     ncfile.sync();
@@ -110,7 +118,8 @@ public class TestOffAggNewSync {
     testAggCoordVar(ncfile, 8);
     System.out.println("");
 
-    boolean ok = move(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
+    boolean ok = move(fname);
     int nfiles = ok ? 7 : 8;  // sometimes fails
     Thread.sleep(2000);
 
@@ -118,8 +127,10 @@ public class TestOffAggNewSync {
     testAggCoordVar(ncfile, nfiles);
     ncfile.close();
 
-    moveBack(dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini");
-    System.out.printf("ok testSyncRemove %n");
+    if (!moveBack(dataDir + fname))
+      System.out.printf("Move back failed on %s%n", fname);
+    else
+      System.out.printf("ok testSyncRemove %n");
   }
 
   public void testAggCoordVar(NetcdfFile ncfile, int n) throws IOException {
@@ -145,9 +156,9 @@ public class TestOffAggNewSync {
     return false;
   }
 
-  void moveBack(String filename) {
+  boolean moveBack(String filename) {
     File f = new File(filename + ".save");
-    f.renameTo(new File(filename));
+    return f.renameTo(new File(filename));
   }
 
 }
