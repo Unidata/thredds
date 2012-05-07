@@ -149,11 +149,10 @@ public class CalendarDateFormatter {
 	  return new CalendarDate(calt, dt);
   }
   
-  static public Date isoStringToDate(String iso) throws IllegalArgumentException{
+  static public Date isoStringToDate(String iso) throws IllegalArgumentException {
     CalendarDate dt = isoStringToCalendarDate(null, iso);
 	  return  dt.toDate();
   }
-
 
   //                                                   1                  2            3
   static public final String isodatePatternString = "([\\+\\-\\d]+)([ t]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing
