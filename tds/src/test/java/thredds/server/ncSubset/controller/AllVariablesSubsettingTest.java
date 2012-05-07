@@ -55,6 +55,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.InvalidBBOXException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
+import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
@@ -102,7 +103,7 @@ public class AllVariablesSubsettingTest {
 	}
 	
 	@Test
-	public void shoudGetAllVariables() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException{
+	public void shoudGetAllVariables() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, UnsupportedOperationException{
 				
 		gridDataController.getGridSubset(params, validationResult, response);
 		

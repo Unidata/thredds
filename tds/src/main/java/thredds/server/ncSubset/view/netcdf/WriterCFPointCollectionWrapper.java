@@ -82,8 +82,13 @@ public final class WriterCFPointCollectionWrapper implements CFPointWriterWrappe
 		boolean allDone = false;
 		List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);
 		CoordinateAxis1D zAxis =  gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
+		
 		double[] targetLevels = zAxis.getCoordValues();
 		
+		if(zAxis.getCoordValues().length ==1 ){
+			targetLevels[0]=0.0;
+		}
+						
 		if(requestLevel !=null){
 			targetLevels = new double[]{requestLevel};
 		}

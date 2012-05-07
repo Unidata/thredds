@@ -71,6 +71,11 @@ class CSVPointDataWriter implements PointDataWriter {
 		
 		return headerWritten;*/
 		
+		//Back to the restriction with only variables with same vertical level!!! --> only one header
+		List<String> keys =new ArrayList<String>(groupedVars.keySet());
+		List<String> varsGroup = groupedVars.get(keys.get(0));
+		writeGroupHeader(varsGroup, gridDataset);
+		
 		return true; //Does nothing
 	}
 
@@ -84,7 +89,7 @@ class CSVPointDataWriter implements PointDataWriter {
 		for(String key : keys){
 
 			List<String> varsGroup = groupedVars.get(key);
-			writeGroupHeader(varsGroup, gridDataset);
+			//writeGroupHeader(varsGroup, gridDataset);
 			
 			GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset,	varsGroup);			
 			CoordinateAxis1D verticalAxisForGroup = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();
@@ -108,7 +113,7 @@ class CSVPointDataWriter implements PointDataWriter {
 				}				
 				
 			}			
-			printWriter.println();
+			//printWriter.println();
 		}
 			
 		return allDone;

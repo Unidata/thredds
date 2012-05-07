@@ -68,16 +68,14 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDataset.Gridset;
-
 
 /**
- * @author marcos
+ * @author mhermida
  *
  */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-public class VariableSpaceSubsettingTest {
+public class CoordinateSpaceSubsettingTest {
 	
 	@Autowired
 	private GridDataController gridDataController;
@@ -88,25 +86,27 @@ public class VariableSpaceSubsettingTest {
 	
 	private String pathInfo;
 	private int[][] expectedShapes;
-	private List<String> vars;
+	private List<String> vars; 
+	private double[] projectionRectParams;
 	
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
 				
 		return Arrays.asList( new Object[][]{
-				{ new int[][]{ {1,65,93}, {1,65,93} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0)}, //No vertical levels 
-				{ new int[][]{ {1,1,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1)}, //Same vertical level (one level)
-				{ new int[][]{ {1,29,65,93}, {1,29,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2)}, //Same vertical level (multiple level)
-				{ new int[][]{ {1,65,93}, {1,29,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3)}, //No vertical levels and vertical levels
-				{ new int[][]{ {1,1,65,93}, {1,29,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4)}, //Different vertical levels
-								
-			});
+				{ new int[][]{ {1,2,2}, {1,2,2} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getProjectionRect().get(0) }, //No vertical levels 
+				{ new int[][]{ {1,1,16,15}, {1,1,16,15} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
+				{ new int[][]{ {1,29,2,93}, {1,29,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), GridDataParameters.getProjectionRect().get(2) }, //Same vertical level (multiple level)
+				//{ new int[][]{ {1,6,5}, {1,29,6,5}, {1,1,6,5} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(0)}, //No vertical levels and vertical levels
+				//{ new int[][]{ {1,1,6,5}, {1,29,6,5} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(0)}, //Different vertical levels							
+			});	
+	
 	}
 	
-	public VariableSpaceSubsettingTest(int[][] result, String pathInfo, List<String> vars){
+	public CoordinateSpaceSubsettingTest(int[][] result, String pathInfo, List<String> vars, double[] projectionRectParams){
 		this.expectedShapes= result;
 		this.pathInfo = pathInfo;
 		this.vars = vars;
+		this.projectionRectParams=projectionRectParams;
 	}
 	
 	@Before
@@ -116,13 +116,18 @@ public class VariableSpaceSubsettingTest {
 		gridDataController.setGridDataset(gds);
 		params = new GridDataRequestParamsBean(); 
 		params.setVar(vars);
-				
+		
+		params.setMinx(projectionRectParams[0]);
+		params.setMiny(projectionRectParams[1]);
+		params.setMaxx(projectionRectParams[2]);
+		params.setMaxy(projectionRectParams[3]);
+		
 		validationResult = new BeanPropertyBindingResult(params, "params");
 		response = new MockHttpServletResponse();
 	}
 	
 	@Test
-	public void shoudGetVariablesSubset() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, UnsupportedOperationException{
+	public void shoudSubsetGrid() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, UnsupportedOperationException{
 				
 		gridDataController.getGridSubset(params, validationResult, response);
 		
@@ -148,5 +153,5 @@ public class VariableSpaceSubsettingTest {
 		assertArrayEquals(expectedShapes, shapes);
 		
 	}	
-
+	
 }

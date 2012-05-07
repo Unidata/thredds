@@ -43,6 +43,8 @@ public class GridDataParameters {
 	
 	private static  List<List<String>> vars;
 	
+	private static List<double[]> projectionRect; //Arrays containing minx, miny, maxx, maxy
+	
 	private GridDataParameters(){}
 	
 	static{
@@ -59,10 +61,21 @@ public class GridDataParameters {
 		vars.add(Arrays.asList(new String[]{"Pressure", "Temperature", "Relative_humidity_height_above_ground"}));
 		//Different vert levels
 		vars.add(Arrays.asList(new String[]{"Relative_humidity_height_above_ground", "Temperature" }));
+		
+		projectionRect = new ArrayList<double[]>();
+		
+		projectionRect.add(new double[]{-4226.106971141345, -832.6983183345455, -4126.106971141345, -732.6983183345455 }); //2x2
+		projectionRect.add(new double[]{-600, -600, 600, 600 });//15x16
+		projectionRect.add(new double[]{-4226.106971141345, 4268.6456816654545, 3250.825028858655, 4368.6456816654545 });//2x93
+
 	}
 	
 	public static List<List<String>>  getVars(){
 		return vars;
-	}	
+	}
+	
+	public static List<double[]> getProjectionRect(){
+		return projectionRect;
+	}
 
 }

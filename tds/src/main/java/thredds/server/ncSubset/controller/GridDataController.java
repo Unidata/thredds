@@ -24,6 +24,7 @@ import thredds.server.ncSubset.exception.InvalidBBOXException;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
+import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
@@ -55,7 +56,7 @@ class GridDataController extends AbstractNcssController{
 	private long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
 	
 	@RequestMapping(value = "**", params = { "!latitude","!longitude", "var"})
-	void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response )throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException{
+	void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response )throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException, UnsupportedOperationException{
 		
 		if( validationResult.hasErrors() ){			
 			handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult );			
@@ -70,33 +71,35 @@ class GridDataController extends AbstractNcssController{
 			}else{
 				coordinatesSubset(params, response);
 			}
+			
+			//Headers...
+			setResponseHeaders(response, httpHeaders );
+			IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);			
+			response.flushBuffer();
+			response.getOutputStream().close();
+			response.setStatus(HttpServletResponse.SC_OK);
+		
+			log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));			
 		}		
 		
 	}
 	
-	//@RequestMapping(value = "**", params = { "!latitude","!longitude", "var"})
 	private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response )throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException,VariableNotContainedInDatasetException, InvalidBBOXException{
 		
-		//if( validationResult.hasErrors() ){			
-		//	handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult );			
-		//}else{			
-		//	SupportedFormat sf = getSupportedFormat(params, SupportedOperation.GRID_REQUEST  );
-			//Check the requested bb
-			LatLonRect maxBB = getGridDataset().getBoundingBox();
-			LatLonRect requestedBB = setBBForRequest(params,  gridDataset);			
+		LatLonRect maxBB = getGridDataset().getBoundingBox();
+		LatLonRect requestedBB = setBBForRequest(params,  gridDataset);			
         
-			boolean hasBB = !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLatitude(), maxBB.getUpperRightPoint().getLatitude()) ||
-                !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLatitude(), maxBB.getLowerLeftPoint().getLatitude()) ||
+		boolean hasBB = !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLatitude(), maxBB.getUpperRightPoint().getLatitude()) ||
+				!ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLatitude(), maxBB.getLowerLeftPoint().getLatitude()) ||
                 !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLongitude(), maxBB.getUpperRightPoint().getLongitude()) ||
                 !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLongitude(), maxBB.getLowerLeftPoint().getLongitude()); 
 
-			//if(checkBB(maxBB, params.getBB())){
-			if(checkBB(maxBB, requestedBB)){
+		if(checkBB(maxBB, requestedBB)){
         																			
-				Range zRange = null;
-				//Request with zRange --> adds a limitation: only variables with the same vertical level???
-				if(params.getVertCoord()!=null)
-					zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVar());
+			Range zRange = null;
+			//Request with zRange --> adds a limitation: only variables with the same vertical level???
+			if(params.getVertCoord()!=null)
+				zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVar());
 				
 				List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
 				CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get( wantedDates.size()-1 ));
@@ -109,32 +112,40 @@ class GridDataController extends AbstractNcssController{
 						throw new RequestTooLargeException( "NCSS request too large = "+estimatedSize+" max = " + maxFileDownloadSize );
 					}
 				}
-				makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon() );
-        	
-				//Headers...
-				setResponseHeaders(response, httpHeaders );
-				IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);			
-				response.flushBuffer();
-				response.getOutputStream().close();
-				response.setStatus(HttpServletResponse.SC_OK);
-			
-				log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-        	        	
-			}
-		//}
-        
+				makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon() );        	        	        	
+		}       
 	}
 	
 
-	private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response ) throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException{
+	private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response ) throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException, InvalidBBOXException{
 		
 		//Check coordinate params: maxx, maxy, minx, miny
-		// TODO
+		Double minx = params.getMinx();
+		Double maxx = params.getMaxx();
+		Double miny = params.getMiny();
+		Double maxy = params.getMaxx();
 		
-		//Check all vars have same x, y coordinate axis		
-		// TODO		
+		int contValid =0;
+		if(minx!= null) contValid++;
+		if(maxx!= null) contValid++;
+		if(miny!= null) contValid++;
+		if(maxy!= null) contValid++;
 		
-		ProjectionRect rect =new ProjectionRect( params.getMinx(), params.getMiny() , params.getMaxx(), params.getMaxy() );
+		if(contValid == 4){			
+			if(minx > maxx){
+				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have minx < maxx");
+			}
+			if(miny > maxy){
+				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have miny < maxy");
+			}
+			
+		}else{
+			throw new InvalidBBOXException("Invalid bbox. All params minx, maxx. miny, maxy must be provided");
+		}
+		
+		
+		ProjectionRect rect =new ProjectionRect( minx, miny , maxx, maxy );
+				
 		
 		Range zRange = null;
 		//Request with zRange --> adds a limitation: only variables with the same vertical level???
@@ -176,14 +187,7 @@ class GridDataController extends AbstractNcssController{
 		
 		netcdfResult = new File(cacheFilename);
 		
-		//Headers...
-		setResponseHeaders(response, httpHeaders );
-		IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);			
-		response.flushBuffer();
-		response.getOutputStream().close();
-		response.setStatus(HttpServletResponse.SC_OK);
-	
-		log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+
 		
 		
 	}	

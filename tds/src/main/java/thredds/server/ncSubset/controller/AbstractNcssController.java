@@ -13,7 +13,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -24,9 +23,11 @@ import org.springframework.web.servlet.mvc.LastModified;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DataRootHandler;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
@@ -210,19 +211,55 @@ public class AbstractNcssController implements LastModified{
 	 * @param gds
 	 * @param params
 	 * @throws VariableNotContainedInDatasetException
+	 * @throws UnsupportedOperationException 
 	 */
-	protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException{
+	protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException, UnsupportedOperationException{
 		//Check vars
 		//if var = all--> all variables requested
 		if(params.getVar().get(0).equals("all")){
 			params.setVar(NcssRequestUtils.getAllVarsAsList(getGridDataset()));
-		}else{ //all the requested are in dataset
+		}/*else{ //all the requested are in dataset
 			for(String var : params.getVar()){						
 				GridDatatype grid = getGridDataset().findGridDatatype(var);
 				if(grid == null) 
 					throw new VariableNotContainedInDatasetException("Variable: "+var+" is not contained in the requested dataset"); 
 			}
-		}		
+		}*/
+		
+		//Check not only all vars are contained in the grid, also they have the same vertical coords
+		Iterator<String> it = params.getVar().iterator();
+		String varName = it.next();
+		GridDatatype grid = gds.findGridByShortName(varName);
+		if(grid == null) 
+			throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
+		
+		CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
+		CoordinateAxis1D newVertAxis = null;
+		boolean sameVertCoord = true;
+		
+		while(sameVertCoord && it.hasNext()){
+			varName = it.next();
+			grid = gds.findGridByShortName(varName);
+			if(grid == null) 
+				throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
+			
+			newVertAxis = grid.getCoordinateSystem().getVerticalAxis();
+			
+			if( vertAxis != null ){
+				if( vertAxis.equals(newVertAxis)){
+					vertAxis = newVertAxis;
+				}else{
+					sameVertCoord = false;
+				}
+			}else{
+				if(newVertAxis != null) sameVertCoord = false;
+			}	
+		}
+		
+		if(!sameVertCoord)
+			throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Only requests on variables with same vertical levels are supported.");
+		
+		
 	}
 	
 	

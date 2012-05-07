@@ -371,11 +371,29 @@ public class NetcdfCFWriter {
       double maxx = upperRigth.getX();
       double maxy = upperRigth.getY();
       
+      //y_range
       CoordinateAxis1D yAxis = (CoordinateAxis1D)gcsOrg.getYHorizAxis();
-      Range y_range = new Range( yAxis.findCoordElement(miny), yAxis.findCoordElement(maxy), horizStride );
+      int minyCoord = yAxis.findCoordElement(miny);
+      if(minyCoord < 0){
+    	  throw new InvalidRangeException("miny="+miny+" must be within ("+yAxis.getMinValue()+", "+yAxis.getMaxValue()+")");
+      }
+      int maxyCoord = yAxis.findCoordElement(maxy);
+      if(maxyCoord < 0){
+    	  throw new InvalidRangeException("maxy="+maxy+" must be within ("+yAxis.getMinValue()+", "+yAxis.getMaxValue()+")");
+      }            
+      Range y_range = new Range( minyCoord, maxyCoord, horizStride );
       
+      //y_range
       CoordinateAxis1D xAxis = (CoordinateAxis1D)gcsOrg.getXHorizAxis();
-      Range x_range = new Range( xAxis.findCoordElement(minx), xAxis.findCoordElement(maxx), horizStride );
+      int minxCoord = xAxis.findCoordElement(minx);
+      if(minxCoord < 0){
+    	  throw new InvalidRangeException("minx="+minx+" must be within ("+xAxis.getMinValue()+", "+xAxis.getMaxValue()+")");
+      }      
+      int maxxCoord = xAxis.findCoordElement(maxx);
+      if(maxxCoord < 0){
+    	  throw new InvalidRangeException("maxx="+maxx+" must be within ("+xAxis.getMinValue()+", "+xAxis.getMaxValue()+")");
+      }            
+      Range x_range = new Range( minxCoord, maxxCoord, horizStride );
             
       Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
       

@@ -43,11 +43,13 @@ public final class PointDataStream {
 
 		}				
 		
-		if(vertCoord!=null){//Only one vertical level requested --> All variables must have the same vertical dimension			
+		//Keep this restriction for all requests as we don't figure out how to write variables with different vertical levels in netcdf files 
+		//if(vertCoord!=null){//Only one vertical level requested --> All variables must have the same vertical dimension			
 			if(groupedVars.size() > 1){
-				throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. For vertical subsetting only requests on variables with same vertical levels are supported.");
+				//throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. For vertical subsetting only requests on variables with same vertical levels are supported.");
+				throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. Only requests on variables with same vertical levels are supported.");
 			}
-		}
+		//}
 		
 		//Assuming all variables have same time dimension!!!
 		GridDatatype gridForTimeUnits= gds.findGridDatatype(vars.get(0));
