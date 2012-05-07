@@ -42,6 +42,7 @@ public enum HTTPAuthScheme
     BASIC("BASIC"),
     DIGEST("DIGEST"),
     SSL("SSL"),
+    NTLM("NTLM"),
     ANY("ANY");
 
     // Define the associated standard name
@@ -71,6 +72,8 @@ public enum HTTPAuthScheme
 	    return BASIC;
 	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.DIGEST))
 	    return DIGEST;
+	if(scheme.equals(org.apache.commons.httpclient.auth.AuthPolicy.NTLM))
+	    return NTLM;
 	return null;
     }
 }
