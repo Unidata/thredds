@@ -33,7 +33,9 @@
 // $Id: TestDatasetEnhancer1.java,v 1.2 2006/01/20 02:08:26 caron Exp $
 package thredds.cataloggen;
 
-import junit.framework.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import thredds.catalog.InvDatasetImpl;
 
 /**
@@ -42,22 +44,11 @@ import thredds.catalog.InvDatasetImpl;
  * @author edavis
  * @since Jun 15, 2005T12:18:21 PM
  */
-public class TestDatasetEnhancer1 extends TestCase
+public class TestDatasetEnhancer1
 {
   private DatasetEnhancer1 me;
 
-  public TestDatasetEnhancer1( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
-  {
-  }
-
-  /**
-   * Test ...
-   */
+  @Test
   public void testAddTimeCoverage()
   {
     String matchPattern = "([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])";
@@ -74,6 +65,7 @@ public class TestDatasetEnhancer1 extends TestCase
                 dateText.equals( expectedDateText ) );
   }
 
+  @Test
   public void testAddId()
   {
     DatasetEnhancer1.DatasetMetadataAdder adder = new DatasetEnhancer1.AddId( "baseId" );
@@ -87,24 +79,3 @@ public class TestDatasetEnhancer1 extends TestCase
   }
 
 }
-
-/*
- * $Log: TestDatasetEnhancer1.java,v $
- * Revision 1.2  2006/01/20 02:08:26  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.1  2005/12/16 23:19:38  edavis
- * Convert InvDatasetScan to use CrawlableDataset and DatasetScanCatalogBuilder.
- *
- * Revision 1.2  2005/12/06 19:39:21  edavis
- * Last CatalogBuilder/CrawlableDataset changes before start using in InvDatasetScan.
- *
- * Revision 1.1  2005/06/24 22:00:58  edavis
- * Write DatasetEnhancer1 to allow adding metadata to datasets.
- * Implement DatasetEnhancers for adding timeCoverage and for
- * adding ID to datasets. Also fix DatasetFilter so that 1) if
- * no filter is applicable for collection datasets, allow all
- * collection datasets and 2) if no filter is applicable for
- * atomic datasets, allow all atomic datasets.
- *
- */

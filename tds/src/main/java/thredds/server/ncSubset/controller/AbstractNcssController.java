@@ -31,6 +31,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -127,8 +128,8 @@ public class AbstractNcssController implements LastModified{
 				date =CalendarDate.of(new Date());
 			}else{
 				
-				DateTime dt = new DateTime(params.getTime());
-				date = CalendarDate.of(dt.getMillis());				
+				//DateTime dt = new DateTime(params.getTime());
+				date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );				
 			}
 						
 			return CalendarDateRange.of(date,date);
@@ -211,7 +212,8 @@ public class AbstractNcssController implements LastModified{
 	 * @throws VariableNotContainedInDatasetException
 	 */
 	protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException{
-		//Check vars --> all variables requested
+		//Check vars
+		//if var = all--> all variables requested
 		if(params.getVar().get(0).equals("all")){
 			params.setVar(NcssRequestUtils.getAllVarsAsList(getGridDataset()));
 		}else{ //all the requested are in dataset

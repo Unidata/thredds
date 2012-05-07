@@ -54,26 +54,16 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 		
-		AbstractNcssController hm =  (AbstractNcssController)((HandlerMethod) handler).getBean();		
-		GridDataset gds = hm.getGridDataset();
+		closeGridDataset(handler);
 		
-		//Check dataset is closed ??
-        if (null != gds)
-            try {
-              gds.close();
-            } catch (IOException ioe) {
-              log.error("Failed to close = " + hm.getRequestPathInfo() );
-            }
-		
-        hm.setRequestPathInfo(null);
-        hm.setGridDataset(null);
 
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request,	HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
-
+		
+		closeGridDataset(handler );
 
 	}
 	
@@ -112,6 +102,24 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 	        }
 	      
 	      return gds;
+	}
+	
+	private void closeGridDataset(Object handler){
+		AbstractNcssController hm =  (AbstractNcssController)((HandlerMethod) handler).getBean();
+		GridDataset gds = hm.getGridDataset();
+		
+		//Check dataset is closed ??
+        if (null != gds){
+            try {
+              gds.close();
+            } catch (IOException ioe) {
+              log.error("Failed to close = " + hm.getRequestPathInfo() );
+            }
+        }		
+        
+        hm.setRequestPathInfo(null);
+        hm.setGridDataset(null);
+        
 	}
 
 }

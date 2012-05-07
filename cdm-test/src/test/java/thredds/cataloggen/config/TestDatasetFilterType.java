@@ -34,61 +34,27 @@
  */
 package thredds.cataloggen.config;
 
-import junit.framework.*;
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
 
 /**
  *
  */
-public class TestDatasetFilterType extends TestCase
+public class TestDatasetFilterType
 {
   private String typeName1;
 
-  public TestDatasetFilterType( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
+  @Before
+  public void setUp()
   {
     typeName1 = "RegExp";
   }
 
-//  protected void tearDown()
-//  {
-//  }
-
+  @Test
   public void testDatasetFilterType()
   {
     assertTrue( DatasetFilter.Type.REGULAR_EXPRESSION.toString().equals( typeName1));
     assertTrue( DatasetFilter.Type.REGULAR_EXPRESSION.equals( DatasetFilter.Type.getType( typeName1)));
   }
-
 }
-
-/*
- * $Log: TestDatasetFilterType.java,v $
- * Revision 1.3  2006/01/20 02:08:25  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.2  2005/07/14 20:01:26  edavis
- * Make ID generation mandatory for datasetScan generated catalogs.
- * Also, remove log4j from some tests.
- *
- * Revision 1.1  2005/03/30 05:41:18  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.3  2004/11/30 22:19:26  edavis
- * Clean up some CatalogGen tests and add testing for DatasetSource (without and with filtering on collection datasets).
- *
- * Revision 1.2  2004/05/11 16:29:07  edavis
- * Updated to work with new thredds.catalog 0.6 stuff and the THREDDS
- * servlet framework.
- *
- * Revision 1.1  2003/08/20 17:23:42  edavis
- * Initial version.
- *
- */

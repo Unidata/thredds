@@ -124,10 +124,7 @@ getCredentials(AuthScheme authscheme,
     HTTPAuthScheme scheme;
     Credentials credentials = null;
 
-    if(isproxy)
-	scheme = HTTPAuthScheme.BASIC; // use this for proxy authentication
-    else
-	scheme = HTTPAuthScheme.schemeForName(authscheme.getSchemeName());
+    scheme = HTTPAuthScheme.schemeForName(authscheme.getSchemeName());
 
     if(scheme == null) {
         LOG.error("HTTPAuthProvider: unsupported scheme: "+authscheme.getSchemeName());

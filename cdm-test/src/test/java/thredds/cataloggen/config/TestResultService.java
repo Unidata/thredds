@@ -34,14 +34,17 @@
  */
 package thredds.cataloggen.config;
 
-import junit.framework.*;
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
+
 import thredds.catalog.ServiceType;
 import thredds.catalog.InvDatasetImpl;
 
 /**
  *
  */
-public class TestResultService extends TestCase
+public class TestResultService
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestResultService.class);
 
@@ -57,12 +60,8 @@ public class TestResultService extends TestCase
 
   private StringBuilder out = null;
 
-  public TestResultService( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
+  @Before
+  public void setUp()
   {
     name = "service name";
     base = "http://www.unidata.ucar.edu/";
@@ -78,12 +77,9 @@ public class TestResultService extends TestCase
     out = new StringBuilder();
   }
 
-//  protected void tearDown()
-//  {
-//  }
-
   // Some minor testing of InvServiceImpl because
   // not sure how much testing is done on InvServiceImpl.
+  @Test
   public void testInvServiceImpl()
   {
     // Test Service.getName()
@@ -99,6 +95,7 @@ public class TestResultService extends TestCase
     assertTrue( me.getSuffix().equals( suffix));
   }
 
+  @Test
   public void testAccessPointHeader()
   {
     // Test ResultService.getAccessPointHeader()
@@ -109,6 +106,7 @@ public class TestResultService extends TestCase
     assertTrue( me.getAccessPointHeader().equals( accessPointHeader2));
   }
 
+  @Test
   public void testIsValid()
   {
     boolean bool;
@@ -131,35 +129,3 @@ public class TestResultService extends TestCase
   }
 
 }
-
-/*
- * $Log: TestResultService.java,v $
- * Revision 1.3  2006/01/20 02:08:25  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.2  2005/07/14 20:01:26  edavis
- * Make ID generation mandatory for datasetScan generated catalogs.
- * Also, remove log4j from some tests.
- *
- * Revision 1.1  2005/03/30 05:41:19  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.4  2004/12/15 17:51:03  edavis
- * Changes to clean up ResultService. Changes to add a server title to DirectoryScanner (becomes the title of the top-level dataset).
- *
- * Revision 1.3  2004/06/03 20:39:51  edavis
- * Added tests to check that CatGen config files are parsed correctly and
- * expanded catalogs are written correctly.
- *
- * Revision 1.2  2004/05/11 16:29:07  edavis
- * Updated to work with new thredds.catalog 0.6 stuff and the THREDDS
- * servlet framework.
- *
- * Revision 1.1  2003/08/20 17:23:43  edavis
- * Initial version.
- *
- */

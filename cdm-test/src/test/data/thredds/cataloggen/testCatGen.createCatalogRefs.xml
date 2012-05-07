@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Test datasetSource@createCatalogRefs: default, true, and false"
+  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+  xmlns:catGen="http://www.unidata.ucar.edu/namespaces/thredds/CatalogGenConfig/v0.5">
+  <dataset name="Test datasetSource@createCatalogRefs: default, true, and false">
+
+    <dataset name="Test datasetSource@createCatalogRefs=default">
+      <metadata metadataType="CatalogGenConfig">
+        <catGen:catalogGenConfig type="Catalog">
+          <catGen:datasetSource name="test of @createCatalogRefs=default"
+                                type="Local" structure="DirTree"
+                                accessPoint="src/test/data/thredds/cataloggen/testData/modelNotFlat">
+            <catGen:resultService name="thisDODS" serviceType="DODS"
+                                  base="/thredds/dodsC/"
+                                  accessPointHeader="src/test/data/thredds/cataloggen/"/>
+            <catGen:datasetFilter name="Accept .nc files only"
+                                  type="RegExp" matchPattern=".*\.nc$"/>
+            <catGen:datasetFilter name="Accept gfs_211/ and eta_211/ directories only"
+                                  type="RegExp" matchPattern=".*[ge][ft][sa]_211$"
+                                  applyToCollectionDatasets="true"
+                                  applyToAtomicDatasets="false"/>
+          </catGen:datasetSource>
+        </catGen:catalogGenConfig>
+      </metadata>
+    </dataset>
+
+    <dataset name="Test datasetSource@createCatalogRefs=false">
+      <metadata metadataType="CatalogGenConfig">
+        <catGen:catalogGenConfig type="Catalog">
+          <catGen:datasetSource name="test of @createCatalogRefs=false"
+                                type="Local" structure="DirTree"
+                                accessPoint="src/test/data/thredds/cataloggen/testData/modelNotFlat"
+                                createCatalogRefs="false">
+            <catGen:resultService name="thisDODS" serviceType="DODS"
+                                  base="/thredds/dodsC/"
+                                  accessPointHeader="src/test/data/thredds/cataloggen/"/>
+            <catGen:datasetFilter name="Accept .nc files only"
+                                  type="RegExp" matchPattern=".*\.nc$"/>
+            <catGen:datasetFilter name="Accept gfs_211/ and eta_211/ directories only"
+                                  type="RegExp" matchPattern=".*[ge][ft][sa]_211$"
+                                  applyToCollectionDatasets="true"
+                                  applyToAtomicDatasets="false"/>
+          </catGen:datasetSource>
+        </catGen:catalogGenConfig>
+      </metadata>
+    </dataset>
+
+    <dataset name="Test datasetSource@createCatalogRefs=true">
+      <metadata metadataType="CatalogGenConfig">
+        <catGen:catalogGenConfig type="Catalog">
+          <catGen:datasetSource name="test of @createCatalogRefs=true"
+                                type="Local" structure="DirTree"
+                                accessPoint="src/test/data/thredds/cataloggen/testData/modelNotFlat"
+                                createCatalogRefs="true">
+            <catGen:resultService name="thisDODS" serviceType="DODS"
+                                  base="/thredds/dodsC/"
+                                  accessPointHeader="src/test/data/thredds/cataloggen/"/>
+            <catGen:datasetFilter name="Accept .nc files only"
+                                  type="RegExp" matchPattern=".*\.nc$"/>
+            <catGen:datasetFilter name="Accept gfs_211/ and eta_211/ directories only"
+                                  type="RegExp" matchPattern=".*[ge][ft][sa]_211$"
+                                  applyToCollectionDatasets="true"
+                                  applyToAtomicDatasets="false"/>
+          </catGen:datasetSource>
+        </catGen:catalogGenConfig>
+      </metadata>
+    </dataset>
+
+  </dataset>
+</catalog>

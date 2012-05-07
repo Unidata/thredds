@@ -243,6 +243,10 @@ the HTTP Basic scheme based on clear-text user name and password.
 <b>Digest</b>:
 the HTTP digest scheme based on encrypted user name and password.
 <p>
+<b>NTLM</b>:
+the NTLM scheme is a Microsoft specific scheme. Support is provided,
+but has never been tested.
+<p>
 <b>SSL</b>:
 a scheme that uses a client-side key to authenticate
 the client to the server.
@@ -264,7 +268,7 @@ accept any certificate sent to it by the server. This includes,
 specifically, self-signed certificates.
 
 <h4>Setting Credentials</h4>
-There are three  primary credentialling methods in
+There are four  primary credentialling methods in
 <i>HTTPSession</i>:
 <ol>
 <li> Insert an arbitrary entry into the auth store.
@@ -283,6 +287,22 @@ defined for that session.
 Its signature is as follows.
 <pre>
 public void setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
+</pre>
+<li> Set the credentials on a per-session basis, using a client provided
+instance of <i>Credentials</i>. This is only useful when the credentials
+are unchanging.
+Its signature is as follows.
+<pre>
+public void setCredentials(HTTPAuthScheme scheme, Credentials creds);
+</pre>
+
+<li> Set the credentials for all sessions
+using a client provided
+instance of <i>Credentials</i>. This is only useful when the credentials
+are unchanging.
+Its signature is as follows.
+<pre>
+public void setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds);
 </pre>
 </ol>
 <p>
@@ -324,7 +344,7 @@ There are two kinds of proxy support: authenticating and
 simple (i.e. not authenticating).
 Both kinds of proxies require the specification of a host name
 and a port. In addition, authenticating proxies require the
-specification of username+password credentials.
+specification of some form of credentials/credentialsprovider.
 The authenticating proxy usually occurs as a corporate or
 governmental firewall controlling access to the "outside world".
 <p>
@@ -343,19 +363,20 @@ http.proxyport
 command line parameters
 </ol>
 <p>
-For authentication, it is assumed that
-BASIC authentication is being used and the
-authentication database is consulted to try
+For authentication, the authentication database is consulted to try
 to locate the proper credentials for the proxy machine.
 <p>
-Also note that one can set the username and password int
+Also note that one can set the username and password into
 the url used to establish an HTTPSession instance.
-Note however that one should not use the url of the proxy
+Note that one should not use the url of the proxy
 but rather the url of the target server from which one is
 trying to obtain information.
 <pre>
 http://username@pwd:server.com/...
 </pre>
+This will only work if the proxy is authenticating using BASIC
+authentication. If it uses, for example, NTLM, then you will
+need to set the authentication programmatically.
 
 <h2><a name="Misc"><u>Miscellaneous Changes</u></a></h2>
 As a side effect of the insertion of the auth mechanisms,
@@ -438,6 +459,20 @@ static void setCredentialsProvider(CredentialsProvider)
           in <i>HTTPAuthStore</i> and an instance of
           <i>HTTPCreds</i> supporting authorization for the session's url,
           using the specified credentials provider and the Basic scheme.
+     <li> throws HTTPException
+     </ul>
+<li>
+public void setCredentials(HTTPAuthScheme scheme, Credentials creds)
+     <ul>
+     <li> Set the credentials on a per-session basis, using the url
+          defined for that session.
+     <li> throws HTTPException
+     </ul>
+<li>
+static void setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds)
+     <ul>
+     <li> Set the credentials for all session, using the url
+          defined for that session.
      <li> throws HTTPException
      </ul>
 </ul

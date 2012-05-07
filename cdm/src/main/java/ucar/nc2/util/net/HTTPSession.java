@@ -52,6 +52,7 @@ public class HTTPSession
 // Convenience
 static final public HTTPAuthScheme BASIC = HTTPAuthScheme.BASIC;
 static final public HTTPAuthScheme DIGEST = HTTPAuthScheme.DIGEST;
+static final public HTTPAuthScheme NTLM = HTTPAuthScheme.NTLM;
 static final public HTTPAuthScheme SSL = HTTPAuthScheme.SSL;
 
 static public int SC_NOT_FOUND = HttpStatus.SC_NOT_FOUND;
@@ -460,6 +461,7 @@ public void clearState()
 {
     sessionClient.getState().clearCookies();
     sessionClient.getState().clearCredentials();
+
 }
 
 
@@ -579,6 +581,7 @@ setProxy(Proxy proxy)
 // For backward compatibility, provide
 // programmatic access for setting proxy info
 // Extract proxy info from command line -D parameters
+// extended 5/7/2012 to get NTLM domain
 // H/T: nick.bower@metoceanengineers.com
 static void
 getGlobalProxyD()
@@ -587,17 +590,21 @@ getGlobalProxyD()
     String host = System.getProperty("http.proxyHost");
     String port = System.getProperty("http.proxyPort");
     int portno = -1;
-    if(host != null && port != null) {
+    
+    if(host != null) {
         host = host.trim();
         if(host.length() == 0) host = null;
-        if(port != null) {
-            port = port.trim();
-            if(port.length() > 0) {
-                try {
-                    portno = Integer.parseInt(port);
-                } catch (NumberFormatException nfe) {portno = 0;}
-            }
+    }
+    if(port != null) {
+        port = port.trim();
+        if(port.length() > 0) {
+            try {
+                portno = Integer.parseInt(port);
+            } catch (NumberFormatException nfe) {portno = -1;}
         }
+    }
+
+    if(host != null) {
         proxy.host = host;
         proxy.port = portno;
         globalproxy = proxy;

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Test datasetSource@createCatalogRefs: default, true, and false">
+  <service name="thisDODS" serviceType="DODS" base="/thredds/dodsC/" />
+  <dataset name="Test datasetSource@createCatalogRefs: default, true, and false">
+    <dataset name="Test datasetSource@createCatalogRefs=default">
+      <dataset name="gfs_211">
+        <metadata inherited="true">
+          <serviceName>thisDODS</serviceName>
+        </metadata>
+        <dataset name="2004050318_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050318_gfs_211.nc" />
+        <dataset name="2004050312_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050312_gfs_211.nc" />
+        <dataset name="2004050306_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050306_gfs_211.nc" />
+        <dataset name="2004050300_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050300_gfs_211.nc" />
+      </dataset>
+      <dataset name="eta_211">
+        <metadata inherited="true">
+          <serviceName>thisDODS</serviceName>
+        </metadata>
+        <dataset name="2004050412_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050412_eta_211.nc" />
+        <dataset name="2004050400_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050400_eta_211.nc" />
+        <dataset name="2004050312_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050312_eta_211.nc" />
+        <dataset name="2004050300_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050300_eta_211.nc" />
+      </dataset>
+    </dataset>
+    <dataset name="Test datasetSource@createCatalogRefs=false">
+      <dataset name="gfs_211">
+        <metadata inherited="true">
+          <serviceName>thisDODS</serviceName>
+        </metadata>
+        <dataset name="2004050318_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050318_gfs_211.nc" />
+        <dataset name="2004050312_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050312_gfs_211.nc" />
+        <dataset name="2004050306_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050306_gfs_211.nc" />
+        <dataset name="2004050300_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050300_gfs_211.nc" />
+      </dataset>
+      <dataset name="eta_211">
+        <metadata inherited="true">
+          <serviceName>thisDODS</serviceName>
+        </metadata>
+        <dataset name="2004050412_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050412_eta_211.nc" />
+        <dataset name="2004050400_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050400_eta_211.nc" />
+        <dataset name="2004050312_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050312_eta_211.nc" />
+        <dataset name="2004050300_eta_211.nc" urlPath="testData/modelNotFlat/eta_211/2004050300_eta_211.nc" />
+      </dataset>
+    </dataset>
+    <dataset name="Test datasetSource@createCatalogRefs=true">
+      <catalogRef xlink:href="gfs_211/catalog.xml" xlink:title="gfs_211" />
+      <catalogRef xlink:href="eta_211/catalog.xml" xlink:title="eta_211" />
+    </dataset>
+  </dataset>
+</catalog>
