@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+      xmlns:xlink="http://www.w3.org/1999/xlink"> <!-- name="NCEP Eta 80km CONUS model data"-->
+  <service name="myServer" serviceType="DODS" base="/dods/" />
+  <dataset name="testData/model/">
+    <metadata inherited="true">
+      <serviceName>myServer</serviceName>
+    </metadata>
+    <dataset name="testData/model/eta_211/">
+      <dataset name="testData/model/eta_211/2004050300_eta_211.nc"
+            urlPath="testData/model/eta_211/2004050300_eta_211.nc" />
+      <dataset name="testData/model/eta_211/2004050312_eta_211.nc"
+            urlPath="testData/model/eta_211/2004050312_eta_211.nc" />
+      <dataset name="testData/model/eta_211/2004050400_eta_211.nc"
+            urlPath="testData/model/eta_211/2004050400_eta_211.nc" />
+      <dataset name="testData/model/eta_211/2004050412_eta_211.nc"
+            urlPath="testData/model/eta_211/2004050412_eta_211.nc" />
+    </dataset>
+    <dataset name="testData/model/gfs_211/">
+      <dataset name="testData/model/gfs_211/2004050300_gfs_211.nc"
+        urlPath="testData/model/gfs_211/2004050300_gfs_211.nc" />
+      <dataset name="testData/model/gfs_211/2004050306_gfs_211.nc"
+        urlPath="testData/model/gfs_211/2004050306_gfs_211.nc" />
+      <dataset name="testData/model/gfs_211/2004050312_gfs_211.nc"
+        urlPath="testData/model/gfs_211/2004050312_gfs_211.nc" />
+      <dataset name="testData/model/gfs_211/2004050318_gfs_211.nc"
+        urlPath="testData/model/gfs_211/2004050318_gfs_211.nc" />
+    </dataset>
+  </dataset>
+</catalog>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <service name="myServer" serviceType="DODS" base="/dods/" />
+  <dataset name="modelNotFlat">
+    <metadata inherited="true">
+      <serviceName>myServer</serviceName>
+    </metadata>
+    <catalogRef xlink:href="eta_211/catalog.xml" xlink:title="eta_211" name=""/>
+    <catalogRef xlink:href="gfs_211/catalog.xml" xlink:title="gfs_211" name=""/>
+  </dataset>
+</catalog>

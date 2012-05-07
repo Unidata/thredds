@@ -33,19 +33,15 @@
 
 package thredds.cataloggen.config;
 
-import thredds.catalog.*;
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
 
-import junit.framework.*;
+import thredds.catalog.*;
 
 import java.io.IOException;
 
-/**
- *
- *
- *
- *
- */
-public class TestDatasetFilter extends TestCase
+public class TestDatasetFilter
 {
   private String parentDsName1 = null;
   private String parentDsName2 = null;
@@ -71,12 +67,8 @@ public class TestDatasetFilter extends TestCase
 
   private DatasetFilter me = null;
 
-  public TestDatasetFilter( String name)
-  {
-    super( name);
-  }
-
-  protected void setUp()
+  @Before
+  public void setUp()
   {
     parentDsName1 = "parent dataset 1";
     parentDsName2 = "parent dataset 2";
@@ -109,10 +101,7 @@ public class TestDatasetFilter extends TestCase
 
   }
 
-//  protected void tearDown()
-//  {
-//  }
-
+  @Test
   public void testGetters()
   {
     assertTrue( me.getParentDatasetSource() == dsSource );
@@ -121,6 +110,7 @@ public class TestDatasetFilter extends TestCase
     assertTrue( me.getMatchPattern().equals( matchPattern1 ) );
   }
 
+  @Test
   public void testValid()
   {
     StringBuilder stringBuilder = new StringBuilder();
@@ -157,6 +147,7 @@ public class TestDatasetFilter extends TestCase
 
   }
 
+  @Test
   public void testAccept()
   {
     String dssName = "ds source";
@@ -196,5 +187,4 @@ public class TestDatasetFilter extends TestCase
     dsFilter.accept( ds );
 
   }
-
 }

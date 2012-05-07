@@ -346,21 +346,19 @@ public class TestCatalogGen
       assertTrue( tmpMsg, false );
     }
 
+    String expectedCatalogAsString;
+    String catalogAsString;
+    try
+    {
+      expectedCatalogAsString = factory.writeXML( (InvCatalogImpl) expectedCatalog );
+      catalogAsString = factory.writeXML( (InvCatalogImpl) expandedCatalog );
+    } catch ( IOException e ) {
+      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
+      return;
+    }
     if ( display )
     {
       // Print expected and resulting catalogs to std out.
-      String expectedCatalogAsString;
-      String catalogAsString;
-      try
-      {
-        expectedCatalogAsString = factory.writeXML( (InvCatalogImpl) expectedCatalog );
-        catalogAsString = factory.writeXML( (InvCatalogImpl) expandedCatalog );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-        return;
-      }
       System.out.println( "Expected catalog (" + expectedCatalogResourceName + "):" );
       System.out.println( "--------------------" );
       System.out.println( expectedCatalogAsString );
@@ -370,9 +368,11 @@ public class TestCatalogGen
       System.out.println( catalogAsString );
       System.out.println( "--------------------\n" );
     }
+    assertEquals( expectedCatalogAsString, catalogAsString );
+    System.out.println( "Expected catalog as String equals resulting catalog as String");
 
     // Compare the two catalogs.
-    assertTrue( "Expanded catalog does not equal expected catalog.",
+    assertTrue( "Expanded catalog object does not equal expected catalog object.",
                 ( (InvCatalogImpl) expandedCatalog ).equals( expectedCatalog ) );
 
   }
@@ -394,21 +394,19 @@ public class TestCatalogGen
 
     expectedCatalogInputStream.close();
 
+    String expectedCatalogAsString;
+    String catalogAsString;
+    try
+    {
+      expectedCatalogAsString = factory.writeXML( (InvCatalogImpl) expectedCatalog );
+      catalogAsString = factory.writeXML( (InvCatalogImpl) expandedCatalog );
+    } catch ( IOException e ) {
+      System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
+      return;
+    }
+    // Print expected and resulting catalogs to std out.
     if ( display )
     {
-      // Print expected and resulting catalogs to std out.
-      String expectedCatalogAsString;
-      String catalogAsString;
-      try
-      {
-        expectedCatalogAsString = factory.writeXML( (InvCatalogImpl) expectedCatalog );
-        catalogAsString = factory.writeXML( (InvCatalogImpl) expandedCatalog );
-      }
-      catch ( IOException e )
-      {
-        System.out.println( "IOException trying to write catalog to sout: " + e.getMessage() );
-        return;
-      }
       System.out.println( "Expected catalog (" + expectedCatalogDocFile.getPath() + "):" );
       System.out.println( "--------------------" );
       System.out.println( expectedCatalogAsString );
@@ -417,11 +415,12 @@ public class TestCatalogGen
       System.out.println( "--------------------" );
       System.out.println( catalogAsString );
       System.out.println( "--------------------\n" );
-      assertEquals( expectedCatalogAsString, catalogAsString );
     }
+    assertEquals( expectedCatalogAsString, catalogAsString );
+    System.out.println( "Expected catalog as String equals resulting catalog as String");
 
     // Compare the two catalogs.
-    assertTrue( "Expanded catalog does not equal expected catalog.",
+    assertTrue( "Expanded catalog object does not equal expected catalog object.",
                 ( (InvCatalogImpl) expandedCatalog ).equals( expectedCatalog ) );
   }
 }
