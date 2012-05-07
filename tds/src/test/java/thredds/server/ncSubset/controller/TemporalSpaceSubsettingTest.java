@@ -130,7 +130,7 @@ public class TemporalSpaceSubsettingTest {
 	@Test
 	public void shouldGetTimeRange() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException{
 		
-		gridDataController.getGridData(params, validationResult, response);
+		gridDataController.getGridSubset(params, validationResult, response);
 		
 		assertEquals(200, response.getStatus());
 		//Open the binary response in memory

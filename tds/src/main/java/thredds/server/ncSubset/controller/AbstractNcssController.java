@@ -212,7 +212,8 @@ public class AbstractNcssController implements LastModified{
 	 * @throws VariableNotContainedInDatasetException
 	 */
 	protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException{
-		//Check vars --> all variables requested
+		//Check vars
+		//if var = all--> all variables requested
 		if(params.getVar().get(0).equals("all")){
 			params.setVar(NcssRequestUtils.getAllVarsAsList(getGridDataset()));
 		}else{ //all the requested are in dataset
