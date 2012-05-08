@@ -138,10 +138,10 @@
     </dependency>
 
     <!-- THREDDS ISO -->
-        <dependency>
-          <groupId>EDS</groupId>
-          <artifactId>threddsIso</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>EDS</groupId>
+      <artifactId>threddsIso</artifactId>
+    </dependency>
 
     <!-- wms -->
     <dependency>
