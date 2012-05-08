@@ -32,7 +32,8 @@
  */
 package thredds.crawlabledataset;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Iterator;
@@ -45,17 +46,11 @@ import java.io.IOException;
  * @author edavis
  * @since 9 June 2005 13:50:59 -0600
  */
-public class TestCrawlableDatasetAlias extends TestCase
+public class TestCrawlableDatasetAlias
 {
-  public TestCrawlableDatasetAlias( String name )
-  {
-    super( name );
-  }
 
-  protected void setUp()
-  {
-  }
-
+  // ToDo Think about CrDs aliases
+  //@Test
   public void testSingleWildcardAllDirs()
   {
     String path = "src/test/data/thredds/cataloggen/testData/uahRadarLevelII/200412*/KBMX";
@@ -104,6 +99,8 @@ public class TestCrawlableDatasetAlias extends TestCase
     }
   }
 
+  // ToDo Think about CrDs aliases
+  //@Test
   public void testFileWildcard()
   {
     String path = "src/test/data/trajectory/aircraft/uw*nc";
@@ -148,6 +145,8 @@ public class TestCrawlableDatasetAlias extends TestCase
                 curCd.getPath().equals( resultPath ) );
   }
 
+  // ToDo Think about CrDs aliases
+  //@Test
   public void testTwoWildcardOneInFile()
   {
     String path = "src/test/data/thredds/cataloggen/testData/uahRadarLevelII/200412*/KBMX/KBMX*bz2";

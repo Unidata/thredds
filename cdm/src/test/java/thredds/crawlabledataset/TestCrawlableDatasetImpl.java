@@ -33,7 +33,8 @@
 // $Id: TestCrawlableDatasetImpl.java 61 2006-07-12 21:36:00Z edavis $
 package thredds.crawlabledataset;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.*;
 import java.io.IOException;
@@ -46,32 +47,33 @@ import thredds.cataloggen.SimpleCatalogBuilder;
  * @author edavis
  * @since Feb 10, 2006 8:13:59 PM
  */
-public class TestCrawlableDatasetImpl extends TestCase
+public class TestCrawlableDatasetImpl
 {
-
-  public TestCrawlableDatasetImpl( String name){ super( name); }
-  protected void setup() {}
-
+  @Test
   public void testSlashRoot()
   {
     doRootPathTesting( "/" );
   }
 
+  @Test
   public void testFooRoot()
   {
     doRootPathTesting( "foo/");
   }
 
+  @Test
   public void testFooBarRoot()
   {
     doRootPathTesting( "foo/bar/");
   }
 
+  @Test
   public void testSlashFooRoot()
   {
     doRootPathTesting( "/foo/");
   }
 
+  @Test
   public void testSlashFooBarRoot()
   {
     doRootPathTesting( "/foo/bar/");
@@ -302,9 +304,3 @@ public class TestCrawlableDatasetImpl extends TestCase
     }
   }
 }
-/*
- * $Log: TestCrawlableDatasetImpl.java,v $
- * Revision 1.1  2006/03/15 21:50:05  edavis
- * Add a new test.
- *
- */
