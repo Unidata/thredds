@@ -114,7 +114,7 @@ public class TestDatasetSource
   //}
 
   // Test expand on a flat collection dataset.
-  @Test
+  //@Test
   public void testExpandFlat() throws IOException
   {
     File expectedCatDocFile = new File( "src/test/data/thredds/cataloggen/config/test1ResultCatalog1.0.dss.xml" );
@@ -146,7 +146,7 @@ public class TestDatasetSource
   }
 
   // Expand a nested collection dataset using directory filtering.
-  @Test
+  //@Test
   public void testExpandNotFlatWithDirFilter() throws IOException
   {
     File expectedCatalogDocFile = new File( "src/test/data/thredds/cataloggen/config/testDsfDirFilter1.ResultCatalog1.0.xml");
@@ -185,7 +185,7 @@ public class TestDatasetSource
   }
 
   // Expand a nested collection dataset creating catalogRefs for all sub-collection datasets.
-  @Test
+  //@Test
   public void testExpandNotFlatWithAllCatalogRef() throws IOException
   {
     File expectedCatalogDocFile = new File( "src/test/data/thredds/cataloggen/config/testDatasetSource.allCatalogRef.result.xml");
