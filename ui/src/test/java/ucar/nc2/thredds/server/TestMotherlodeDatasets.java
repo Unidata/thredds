@@ -34,7 +34,6 @@ package ucar.nc2.thredds.server;
 
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ui.widget.StopButton;
@@ -58,10 +57,12 @@ import javax.swing.*;
  * Run through the named catalogs, open a random dataset from each collection
  * default is to run over the idd/models.xml catalog.
  */
-public class TestMotherlodeModels implements CatalogCrawler.Listener {
+public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   private String catUrl;
   private int type;
-  private boolean skipDatasetScan;
+  private boolean skipDatasetScan = false;
+  private boolean skipNexrad = true;
+  private String[] nexrad = new String[] {"nexrad/level3", "nexrad/level2", "terminal/level3"};
 
   private InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
   private ThreddsDataFactory tdataFactory = new ThreddsDataFactory();
@@ -75,7 +76,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private boolean checkUnknown = true;
   private boolean checkGroups = true;
 
-  TestMotherlodeModels(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
+  TestMotherlodeDatasets(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
     this.catUrl = catURL;
     this.type = type;
     this.skipDatasetScan = skipDatasetScan;
@@ -94,8 +95,25 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     out = System.out; // new PrintStream( new BufferedOutputStream( fout));
   }
 
-  public void crawl() throws IOException {
+  private class FilterDataset implements CatalogCrawler.Filter {
 
+    @Override
+    public boolean skipChildren(InvDataset ds) {
+      if (skipDatasetScan && (ds instanceof InvCatalogRef) && ds.findProperty("DatasetScan") != null) return true;
+      if (skipNexrad) {
+        String cat = ds.getCatalogUrl();
+        for (String skip : nexrad) {
+          if (cat.contains(skip)) {
+            out.printf("** skip %s%n", cat);
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+  }
+
+  public void crawl() throws IOException {
     out.println("Read " + catUrl);
 
     InvCatalogImpl cat = catFactory.readXML(catUrl);
@@ -113,7 +131,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     countNoAccess = 0;
     countNoOpen = 0;
     int countCatRefs = 0;
-    CatalogCrawler crawler = new CatalogCrawler(type, skipDatasetScan, this);
+    CatalogCrawler crawler = new CatalogCrawler(type, new FilterDataset(), this);
     long start = System.currentTimeMillis();
     try {
       countCatRefs = crawler.crawl(cat, stopButton, verbose ? out : null, null);
@@ -244,7 +262,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     String problemCat = "http://motherlode.ucar.edu:9080/thredds/grib/NCDC/CFSR/catalog.xml";
 
     String server = "http://motherlode.ucar.edu:9080/thredds";
-    String catalog = "/catalog.xml";
+    //String catalog = "/catalog.xml";
+    String catalog = "/idd/radars.xml";
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 
@@ -262,7 +281,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
     //TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL_DIRECT, false);
-    TestMotherlodeModels job = new TestMotherlodeModels("dev", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeDatasets job = new TestMotherlodeDatasets("dev", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();

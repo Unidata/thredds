@@ -87,7 +87,7 @@ public class CatalogCrawler {
    */
   static public final int USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST = 4;
 
-  private boolean skipDatasetScan = false;
+  private Filter filter = null;
   private int type = USE_ALL;
   private Listener listen;
 
@@ -104,8 +104,12 @@ public class CatalogCrawler {
    * @param listen          this is called for each dataset.
    */
   public CatalogCrawler(int type, boolean skipDatasetScan, Listener listen) {
+    this (type, new FilterDatasetScan(), listen);
+  }
+
+  public CatalogCrawler(int type, Filter filter, Listener listen) {
     this.type = type;
-    this.skipDatasetScan = skipDatasetScan;
+    this.filter = filter;
     this.listen = listen;
 
     if (type == USE_RANDOM_DIRECT || type == USE_RANDOM_DIRECT_NOT_FIRST_OR_LAST )
@@ -174,8 +178,12 @@ public class CatalogCrawler {
    */
   public void crawlDataset(InvDataset ds, CancelTask task, PrintStream out, Object context, boolean release) {
     boolean isCatRef = (ds instanceof InvCatalogRef);
+    if (filter != null && filter.skipAll(ds)) {
+      if (isCatRef && release) ((InvCatalogRef) ds).release();
+      return;
+    }
+
     boolean isDataScan = ds.findProperty("DatasetScan") != null;
-    boolean skipScanChildren = skipDatasetScan && (ds instanceof InvCatalogRef) && isDataScan;
 
     if (isCatRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;
@@ -189,11 +197,10 @@ public class CatalogCrawler {
       }
     }
 
-    if (!isCatRef || skipScanChildren || isDataScan)
+    if (!isCatRef || isDataScan)
       listen.getDataset(ds, context);
 
     // recurse - depth first
-    if (!skipScanChildren) {
       List<InvDataset> dlist = ds.getDatasets();
       if (isCatRef) {
         InvCatalogRef catref = (InvCatalogRef) ds;
@@ -207,7 +214,6 @@ public class CatalogCrawler {
         if ((task != null) && task.isCancel())
           break;
       }
-    }
 
     if (isCatRef && release) {
       InvCatalogRef catref = (InvCatalogRef) ds;
@@ -226,7 +232,10 @@ public class CatalogCrawler {
    */
   public void crawlDirectDatasets(InvDataset ds, CancelTask task, PrintStream out, Object context, boolean release) {
     boolean isCatRef = (ds instanceof InvCatalogRef);
-    boolean skipScanChildren = skipDatasetScan && (ds instanceof InvCatalogRef) && (ds.findProperty("DatasetScan") != null);
+    if (filter != null && filter.skipAll(ds)) {
+      if (isCatRef && release) ((InvCatalogRef) ds).release();
+      return;
+    }
 
     if (isCatRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;
@@ -268,14 +277,12 @@ public class CatalogCrawler {
     }
 
     // recurse
-    if (!skipScanChildren) {
       for (InvDataset dds : dlist) {
         if (dds.hasNestedDatasets())
           crawlDirectDatasets(dds, task, out, context, release);
         if ((task != null) && task.isCancel())
           break;
       }
-    }
 
     /* if (out != null) {
      int took = (int) (System.currentTimeMillis() - start);
@@ -318,7 +325,18 @@ public class CatalogCrawler {
      * @param context caller can pass this object in (used for thread safety)
      */
     public boolean getCatalogRef(InvCatalogRef dd, Object context);
+  }
+  
+  static public interface Filter {
+    public boolean skipAll(InvDataset ds);
+  }
+  
+  private static class FilterDatasetScan implements Filter {
 
+    @Override
+    public boolean skipAll(InvDataset ds) {
+      return (ds instanceof InvCatalogRef) && (ds.findProperty("DatasetScan") != null);
+    }
   }
 
 }
