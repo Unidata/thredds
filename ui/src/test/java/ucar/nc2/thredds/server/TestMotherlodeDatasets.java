@@ -59,7 +59,7 @@ import javax.swing.*;
  */
 public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   private String catUrl;
-  private int type;
+  private CatalogCrawler.Type type;
   private boolean skipDatasetScan = false;
   private boolean skipNexrad = true;
   private String[] nexrad = new String[] {"nexrad/level3", "nexrad/level2", "terminal/level3"};
@@ -76,7 +76,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   private boolean checkUnknown = true;
   private boolean checkGroups = true;
 
-  TestMotherlodeDatasets(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
+  TestMotherlodeDatasets(String name, String catURL, CatalogCrawler.Type type, boolean skipDatasetScan) throws IOException {
     this.catUrl = catURL;
     this.type = type;
     this.skipDatasetScan = skipDatasetScan;
@@ -98,7 +98,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   private class FilterDataset implements CatalogCrawler.Filter {
 
     @Override
-    public boolean skipChildren(InvDataset ds) {
+    public boolean skipAll(InvDataset ds) {
       if (skipDatasetScan && (ds instanceof InvCatalogRef) && ds.findProperty("DatasetScan") != null) return true;
       if (skipNexrad) {
         String cat = ds.getCatalogUrl();
@@ -281,7 +281,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
     //TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL_DIRECT, false);
-    TestMotherlodeDatasets job = new TestMotherlodeDatasets("dev", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeDatasets job = new TestMotherlodeDatasets("dev", server+catalog, CatalogCrawler.Type.random_direct, false);
 
     frame.getContentPane().add(main);
     frame.pack();
