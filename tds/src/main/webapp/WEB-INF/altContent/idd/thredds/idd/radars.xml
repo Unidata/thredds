@@ -459,7 +459,7 @@
       </datasetScan>
 
       <datasetScan name="Unidata NEXRAD Composites (GINI)" collectionType="TimeSeries" harvest="true"
-                   ID="NWS/NEXRAD/NationalComposite/Unidata" path="nexrad/composite/gini"
+                   ID="Unidata/NEXRAD/NationalComposite/GINI" path="nexrad/composite/gini"
                    location="/data/ldm/pub/native/radar/composite/gini/">
         <metadata inherited="true">
           <serviceName>grids</serviceName>
@@ -519,7 +519,7 @@
                          startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="5 minutes"/>
       </datasetScan>
 
-      <dataset name="Unidata NEXRAD Composite Reflectivity (GRIB2)" harvest="true">
+      <dataset name="Unidata NEXRAD Composite Reflectivity (GRIB2)" harvest="true" ID="Unidata/NEXRAD/NationalComposite/GRIB2">
         <metadata inherited="true">
           <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">NEXRAD Radar National Composites of Level 3 Base Reflectivity. 1 km resolution.
