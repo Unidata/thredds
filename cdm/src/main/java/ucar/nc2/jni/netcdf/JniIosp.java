@@ -1350,7 +1350,7 @@ public class JniIosp extends AbstractIOServiceProvider {
       System.setProperty("jna.library.path", dir);
 
       //System.load("libnetcdf.a");
-      System.load(dir + "libnetcdf.a");
+      System.load(dir + "libnetcdf-7.dll");
 
       Native.setProtected(true);
       nc4 = (NCLibrary) Native.loadLibrary("netcdf", NCLibrary.class);
@@ -1406,6 +1406,7 @@ public class JniIosp extends AbstractIOServiceProvider {
 
   public static void main(String args[]) throws Exception {
     JniIosp iosp = new JniIosp();
+
     NetcdfFile ncfile = iosp.open("C:/data/test2.nc");
     System.out.println("" + ncfile);
   }
