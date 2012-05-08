@@ -120,7 +120,7 @@ public class TemporalSpaceSubsettingTest {
 		gridDataController.setGridDataset(gds);
 		
 		List<String> var = new ArrayList<String>();
-		var.add("Pressure");
+		//var.add("Pressure");
 		var.add("Temperature");				
 		params.setVar(var);
 				

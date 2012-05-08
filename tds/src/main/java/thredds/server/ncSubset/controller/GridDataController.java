@@ -123,7 +123,7 @@ class GridDataController extends AbstractNcssController{
 		Double minx = params.getMinx();
 		Double maxx = params.getMaxx();
 		Double miny = params.getMiny();
-		Double maxy = params.getMaxx();
+		Double maxy = params.getMaxy();
 		
 		int contValid =0;
 		if(minx!= null) contValid++;

@@ -97,8 +97,8 @@ public class VariableSpaceSubsettingTest {
 				{ new int[][]{ {1,65,93}, {1,65,93} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0)}, //No vertical levels 
 				{ new int[][]{ {1,1,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1)}, //Same vertical level (one level)
 				{ new int[][]{ {1,29,65,93}, {1,29,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2)}, //Same vertical level (multiple level)
-				{ new int[][]{ {1,65,93}, {1,29,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3)}, //No vertical levels and vertical levels
-				{ new int[][]{ {1,1,65,93}, {1,29,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4)}, //Different vertical levels
+				//{ new int[][]{ {1,65,93}, {1,29,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3)}, //No vertical levels and vertical levels
+				//{ new int[][]{ {1,1,65,93}, {1,29,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4)}, //Different vertical levels
 								
 			});
 	}

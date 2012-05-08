@@ -61,12 +61,9 @@ import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
 
 /**
  * @author mhermida
@@ -102,6 +99,7 @@ public class AllVariablesSubsettingTest {
 		response = new MockHttpServletResponse();
 	}
 	
+	@Ignore
 	@Test
 	public void shoudGetAllVariables() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, UnsupportedOperationException{
 				
