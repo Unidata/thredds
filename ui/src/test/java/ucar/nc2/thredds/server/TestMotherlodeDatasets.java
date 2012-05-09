@@ -262,8 +262,8 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     String problemCat = "http://motherlode.ucar.edu:9080/thredds/grib/NCDC/CFSR/catalog.xml";
 
     String server = "http://motherlode.ucar.edu:9080/thredds";
-    //String catalog = "/catalog.xml";
-    String catalog = "/idd/radars.xml";
+    String catalog = "/catalog.xml";
+    //String catalog = "/idd/radars.xml";
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 
