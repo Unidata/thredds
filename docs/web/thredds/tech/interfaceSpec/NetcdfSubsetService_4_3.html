@@ -22,19 +22,11 @@ span.bold {
 </head>
 <body>
 	<h1>
-		<img src="../images/THREDDSlogo.jpg" height="54" width="67">
-		NetCDF Subset Service Reference
-	</h1>
-	<hr>
-	<h3>Please note that the interface described here is still a
+		<img src="../images/unidataLogo.png" height="90" width="89">
+		NetCDF Subset Service Reference (TDS 4.3)	</h1>
+    <h3>Please note that the interface described here is still a
 		prototype, and subject to change.</h3>
-	<p>
-		<em>Please send comments to the <a
-			href="mailto:thredds@unidata.ucar.edu">THREDDS email group</a>
-			(preferred) or to <a href="mailto:caron@unidata.ucar.edu">John
-				Caron</a></em>
-	</p>
-	<h3>
+<h3>
 		<strong>Contents:</strong>
 	</h3>
 	<ol>
@@ -50,10 +42,9 @@ span.bold {
 				<li><a href="#Variables">Single variable requests</a></li>
 			</ol></li>
 		<li><a href="#Reference">Reference</a></li>
-		<li><a href="#REST">REST Design</a></li>
-	</ol>
+</ol>
 
-	<h2>
+<h2>
 		<a name="Overview"></a>Overview
 	</h2>
 	<p>
@@ -546,8 +537,9 @@ span.bold {
 		</table>
 	</div>
 
+    <hr>
     <h2><a name="Reference"></a>Reference</h2>
-    <h3>W3C Time Duration<a name="W3Cduration"></a> </h3>
+<h3>W3C Time Duration<a name="W3Cduration"></a> </h3>
     <p> The lexical representation for <b>duration</b> is the</a><a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a> extended format P<em>n</em>Y<em>n</em> M<em>n</em>DT<em>n</em>H <em>n</em>M<em>n</em>S, where <em>n</em>Y represents the number of years, <em>n</em>M the number of months, <em>n</em>D the number of days, 'T' is the date/time separator, <em>n</em>H the number of hours, <em>n</em>M the number of minutes and <em>n</em>S the number of seconds. The number of seconds can include decimal digits to arbitrary precision.</p>
     <p> The values of the Year, Month, Day, Hour and Minutes components are not restricted but allow an arbitrary unsigned integer, i.e., an integer that conforms to the pattern <code>[0-9]+</code>.. Similarly, the value of the Seconds component allows an arbitrary unsigned decimal. Following <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>, at least one digit must follow the decimal point if it appears. That is, the value of the Seconds component must conform to the pattern <code>[0-9]+(\.[0-9]+)?</code>. Thus, the lexical representation of <b>duration</b> does not follow the alternative format of &sect; 5.5.3.2.1 of <a href="http://www.w3.org/TR/xmlschema-2/#ISO8601">[ISO 8601]</a>.</p>
     <p> An optional preceding minus sign ('-') is allowed, to indicate a negative duration. If the sign is omitted a positive duration is indicated. See also <a href="http://www.w3.org/TR/xmlschema-2/#isoformats">ISO 8601 Date and Time Formats (&sect;D)</a>. </p>
@@ -579,117 +571,11 @@ span.bold {
     </ul>
     <p> For example, 2002-10-10T12:00:00-05:00 (noon on 10 October 2002, Central Daylight Savings Time as well as Eastern Standard Time in the U.S.) is 2002-10-10T17:00:00Z, five hours later than 2002-10-10T12:00:00Z. </p>
     <p>A <strong>date</strong> is the same as a dateTime without the time part : <code>'-'? yyyy '-' mm '-' dd zzzzzz?</code></p>
-  </div>
-  <p>See XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a> and <a href="http://www.w3.org/TR/xmlschema-2/#date">date</a> for full details </p>
-  <hr>
-  
-  
-  <h2><a name="REST"></a>REST Design </h2>
-  <h3>1. What are the resources/URIs?</h3>
-  <p>The resources are THREDDS datasets. The resource URIs can be discovered in a <a href="../TDS.html#Catalogs">THREDDS catalog</a>, by looking for datasets that use the <strong>NetcdfSubset</strong> Service type. Generally these resource URLs look like: </p>
-  <blockquote>  
-    <p><strong> http://servername:8080/thredds/ncss/{path/dataset}</strong> </p>
-    <p><strong>http://servername:8080/thredds/ncss/grid/{path/dataset}</strong></p>
-  </blockquote>
-  <p>Typically the user wants a <a href="#subset">subset</a> of the dataset.This is considered a <em>view</em> of a resource, rather than a separate resource: </p>
-  <blockquote>
-    <p><strong> http://servername:8080/thredds/ncss/{path/dataset}?{subset}</strong></p>
-  </blockquote>
-  <p>A desired <em><a href="#representation">representation</a></em> of the resource is specified using the <strong>accept</strong> parameter. Again, different representations are not considered separate resources. Following the <strong>Accept</strong> HTTP header, accept takes a comma delimited list of mime-types (or aliases), but does not allow wild cards (*) or q parameters. </p>
-  <blockquote>
-    <p><strong> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;accept={mime-type}</strong></p>
-  </blockquote>
-  <h3><strong>2. What's the format/representation?</strong></h3>
-  <p>The dataset itself has two representations: </p>
-  <ul>
-    <li> an XML file describing the dataset, called the <a href="#DatasetDescription">Dataset Description</a>
-        <ul>
-          <li><strong>http://servername:8080/thredds/ncss/{path/dataset}/dataset.xml</strong></li>
-        </ul>
-    </li>
-    <li> An HTML form to allow interactive user input:</li>
-    <ul>
-      <li><strong>http://servername:8080/thredds/ncss/{path/dataset}/dataset.html</strong></li>
-    </ul>
-  </ul>
-  <p>Results of a subset request can be: </p>
-  <ul>
-    <li> <strong>a netCDF binary file</strong>
-        <ul>
-          <li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=application/x-netcdf</strong></li>
-        </ul>
-    </li>
-    <li> <strong>an XML document </strong>
-        <ul>
-          <li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=application/xml</strong></li>
-        </ul>
-    </li>
-    <li> <strong>ASCII text </strong>
-        <ul>
-          <li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=text/plain</strong></li>
-        </ul>
-    </li>
-    <li> <strong>Excel CSV (comma separated values) </strong>
-        <ul>
-          <li> http://servername:8080/thredds/ncss/{path/dataset}?{subset}&amp;<strong>accept=text/csv</strong></li>
-        </ul>
-    </li>
-  </ul>
-  <ol>
-    <li>The netCDF binary file will be encoded using <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/">CF conventions</a> when possible, and when not possible, the encoding will be submitted to CF for approval.</li>
-    <li>The XML, ASCII, and CSV files are intended for use only for small extractions of data, and are generally missing some or all of the metadata of the dataset. </li>
-    <li>Multiple accept values can be specified, eg <strong>accept=xml,csv </strong>(comma delimited, no spaces). The server will select from that list. </li>
-  </ol>
-  <p><strong>Representation types</strong></p>
-  <table width="600" border="1">
-    <tr>
-      <th width="227" scope="col">Mime Type </th>
-      <th width="357" scope="col">Synonyms</th>
-    </tr>
-    <tr>
-      <td>text/plain</td>
-      <td>raw, ascii </td>
-    </tr>
-    <tr>
-      <td>application/xml</td>
-      <td>xml</td>
-    </tr>
-    <tr>
-      <td>text/csv</td>
-      <td>csv</td>
-    </tr>
-    <tr>
-      <td>text/html</td>
-      <td>html</td>
-    </tr>
-    <tr>
-      <td>application/x-netcdf</td>
-      <td>netcdf</td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <h3>3. What are the Methods?</h3>
-  <blockquote>
-    <p>Only the GET method is allowed. </p>
-  </blockquote>
-  <h3>4. What Status codes can be returned?</h3>
-  <ul>
-    <li>200 : success</li>
-    <li>307 : redirect to an authorization challenge</li>
-    <li>400 : malformed request</li>
-    <li>401 : authorization challenge</li>
-    <li>404 : unknown resource</li>
-    <li>501 : request requires too much server resources / data result would be too large </li>
-  </ul>
-  <h3>REST Resources:</h3>
-  <ul>
-    <li><a href="http://www.xml.com/pub/a/2004/08/11/rest.html">Implementing REST Web Services: Best Practices and Guidelines
-    </a></li>
-  </ul>
-<p> </p>
+    <p>See XML Schema <a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a> and <a href="http://www.w3.org/TR/xmlschema-2/#date">date</a> for full details </p>
+    <p> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on March, 2012
+<img src="../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:mhermida@unidata.ucar.edu">Marcos Hermida</a> and was last updated  May, 2012
 </address>
 <p>&nbsp;</p>  
 </body>
