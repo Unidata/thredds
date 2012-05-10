@@ -77,7 +77,7 @@ public class TestFmrc {
       doOne(TestDir.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8);
 
       // catalog
-      doOne("catalog:http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/GFS/Hawaii_160km/files/catalog.xml", 15, 8, 11, 6, "Temperature", -1, 21, -1);
+      //doOne("catalog:http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/GFS/Hawaii_160km/files/catalog.xml", 15, 8, 11, 6, "Temperature", -1, 21, -1);
 
       // from an ncml aggregation
       doOne(datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 10);

@@ -111,6 +111,9 @@ public class TestDcm extends TestCase {
   boolean touch(String who) {
     File file = new File(who);
     assert file.exists();
-    return file.setLastModified(System.currentTimeMillis()); // touch
+    boolean ok = file.setLastModified(System.currentTimeMillis()); // touch
+    if (!ok)
+      System.out.printf("**Cant touch %s%n", who);
+    return ok;
   }
 }
