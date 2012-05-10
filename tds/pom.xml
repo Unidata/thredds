@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.10-SNAPSHOT</version>
+    <version>4.3.10</version>
   </parent>
 
 
@@ -381,17 +379,17 @@
             <phase>deploy</phase>
             <configuration>
               <tasks>
-                <property name="ftp.dir" value="V:/pub/thredds/v4.3/4.3.10"/>
-                <echo message="ftp.dir: ${ftp.dir}"/>
+                <property name="ftp.dir" value="V:/pub/thredds/v4.3/4.3.10" />
+                <echo message="ftp.dir: ${ftp.dir}" />
 
                 <copy todir="${ftp.dir}" overwrite="true">
-                  <fileset dir="./target" includes="thredds.war"/>
-                  <fileset dir="." includes="CHANGES.txt"/>
+                  <fileset dir="./target" includes="thredds.war" />
+                  <fileset dir="." includes="CHANGES.txt" />
                 </copy>
 
                 <checksum>
                   <fileset dir="${ftp.dir}">
-                    <include name="*.war"/>
+                    <include name="*.war" />
                   </fileset>
                 </checksum>
 
