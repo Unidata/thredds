@@ -14,34 +14,13 @@
             Module Description
         =========================================================== -->
    <!-- groupId>edu.ucar</groupId-->
-   <artifactId>wmoTables</artifactId>
+   <artifactId>cdmvalidator</artifactId>
    <packaging>war</packaging>
-   <name>WMO tables webapp</name>
+   <name>CDM validator webapp</name>
     <description>
       WMO tables for the NetCDF library.
     </description>
     <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
-
-  <developers>
-    <developer>
-      <name>John Caron</name>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>oxelson</id>
-      <name>Jennifer Ganter Oxelson</name>
-      <email>oxelson@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-  </developers>
 
   <!-- ===========================================================
            Dependencies
@@ -141,7 +120,7 @@
   </dependencies>
 
   <build>
-    <finalName>wmotables</finalName>
+    <finalName>cdmvalidator</finalName>
     <plugins>
 
       <plugin>

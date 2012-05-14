@@ -512,6 +512,21 @@
         <!-- scope>provided</scope-->
       </dependency>
 
+      <!-- webapps -->
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>wmoTables</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cdmvalidator</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+
       <!-- test -->
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -519,13 +534,6 @@
         <scope>test</scope>
         <type>test-jar</type>
         <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>wmoTables</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
       </dependency>
 
     </dependencies>
@@ -677,6 +685,7 @@
     <module>ui</module>
     <module>tds</module>
     <module>wmoTables</module>
+    <module>cdmvalidator</module>
     <module>cdm-test</module>
     <module>it</module>
   </modules>
