@@ -573,7 +573,7 @@ public class ServletUtil {
    *
    * @param req request
    * @param res response
-   * @param file must exists and not be a directory
+   * @param file must exist and not be a directory
    * @param contentType must not be null
    * @throws IOException or error
    */
@@ -607,10 +607,12 @@ public class ServletUtil {
       contentLength = endPos - startPos;
     }
 
+    // when compression is turned on, ContentLength has to be overridden
+    // this is also true for HEAD, since this must be the same as GET without the body
     if (contentLength > Integer.MAX_VALUE)
       res.addHeader("Content-Length", Long.toString(contentLength));  // allow content length > MAX_INT
     else
-      res.setContentLength( (int) contentLength); // note HEAD only allows this
+      res.setContentLength( (int) contentLength);
 
     String filename = file.getPath();
     boolean debugRequest = Debug.isSet("returnFile");

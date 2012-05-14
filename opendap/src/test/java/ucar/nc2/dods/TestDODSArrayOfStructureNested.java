@@ -32,7 +32,9 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -56,23 +58,22 @@ import java.io.*;
 } WackyArray02;
  */
 
-public class TestDODSArrayOfStructureNested extends TestCase {
-  private boolean debug = false;
+public class TestDODSArrayOfStructureNested {
+  private static DODSNetcdfFile dodsfile;
 
-  public TestDODSArrayOfStructureNested( String name) {
-    super(name);
-  }
-
-  private DODSNetcdfFile dodsfile;
-  protected void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     DODSNetcdfFile.setPreload(false);
     dodsfile = TestDODSRead.open("test.53");
     DODSNetcdfFile.setPreload(true);
   }
-  protected void tearDown() throws Exception {
+
+  @AfterClass
+  public static void tearDown() throws Exception {
     dodsfile.close();
   }
 
+  @Test
   public void testScalarReadByte() throws IOException {
 
     Variable v = null;
@@ -93,14 +94,15 @@ public class TestDODSArrayOfStructureNested extends TestCase {
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.FLOAT;
     a = v.read();
-    assert a.getRank() == 0;
-    assert a.getSize() == 1;
+    assert a.getRank() == 1;
+    assert a.getSize() == 10;
     assert a.getElementType() == float.class;
-    assert a instanceof ArrayFloat.D0;
+    assert a instanceof ArrayFloat.D1;
     float val = a.getFloat( a.getIndex());
     assert (val == 0.0);
   }
 
+  @Test
   public void testReadScalarMemberVariable() throws IOException {
 
     Variable v = dodsfile.findVariable("types.ss.ui16");
@@ -112,8 +114,8 @@ public class TestDODSArrayOfStructureNested extends TestCase {
     
     Array a = v.read();
     Index ima = a.getIndex();
-    assert a.getRank() == 1;
-    assert a.getSize() == 10;
+    assert a.getRank() == 2;
+    assert a.getSize() == 100;
     assert a.getInt( ima) == 0;
 
     v = dodsfile.findVariable("types.ss.s");
@@ -122,13 +124,14 @@ public class TestDODSArrayOfStructureNested extends TestCase {
     assert v.getDataType() == DataType.STRING : v.getDataType();
 
     a = v.read();
-    assert a.getRank() == 0;
-    assert a instanceof ArrayObject.D0 : a.getClass().getName();
+    assert a.getRank() == 1;
+    assert a instanceof ArrayObject.D1 : a.getClass().getName();
 
-    ArrayObject.D0 a0 = (ArrayObject.D0) a;
-    assert a0.get().equals("This is a data test string (pass 0).");
+    ArrayObject.D1 a0 = (ArrayObject.D1) a;
+    assert a0.get(0).equals("This is a data test string (pass 0).");
   }
 
+  @Test
   public void testReadArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;
@@ -148,6 +151,7 @@ public class TestDODSArrayOfStructureNested extends TestCase {
     }
   }
 
+  @Test
   public void testRead1DArrayOfStructs() throws IOException, InvalidRangeException {
     Variable v = dodsfile.findVariable("types");
     assert v != null;

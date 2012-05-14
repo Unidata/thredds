@@ -7,7 +7,7 @@
   </head>
   <body>
 
-   <h1>TDS Tutorial: Getting Started</h1>    
+   <h1>TDS 4.3 Tutorial: Getting Started</h1>    
    <div id="section">
     <h2><a name="install">Installing Java and Tomcat</a></h2>
 
@@ -18,12 +18,11 @@
       <div id="note" class="info">
        <h4>Installation help</h4>
        <p>Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to reference the <a href="http://www.unidata.ucar.edu/mailing_lists/archives/thredds/">THREDDS mailing list</a> for installation help.</p>
-       <p>Note: TDS version 4.3 will require the use of Tomcat 7.</p>
-      </div> 
+       </div> 
 
        <ul>        
         <li>Sun Java 1.6 or 1.7 (latest version)</li>       
-        <li>Apache Tomcat 5.5 or above (we recommend the latest version of Tomcat 6.0)</li>  
+        <li>Apache Tomcat 7.x</li>  
        </ul>
        <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <i>Sun Java</i> and the <i>Apache Tomcat</i> servlet container.</p>
      </div> <!-- end subsection -->
@@ -92,9 +91,9 @@ drwxr-xr-x 10 tds Unidata     4096 Jul 11 17:35 jdk1.6.0_26
      <div id="subsection">
       <h3>Installing Tomcat</h3>
       <ol>
-       <li><a href="http://tomcat.apache.org/">Download</a> current version of the Tomcat servlet container.</li>
-        <p>At the time of this workshop, that is version <i>6.0.32</i>. We will be using the core binary tar.gz file:</p>
-        <p><code>apache-tomcat-6.0.32.tar.gz</code></p>
+       <li><a href="http://tomcat.apache.org/download-70.cgi">Download</a> current version of the Tomcat 7 servlet container.</li>
+        <p>At the time of this workshop, that is version <i>7.0.27</i>. We will be using the core binary tar.gz file:</p>
+        <p><code>apache-tomcat-7-0-27.tar.gz</code></p>
        <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/setup.html">installation instructions</a>.</li>
         <p>Copy the binary tar.gz file to the installation directory (<code><small>~/GettingStarted</small></code> is the installation directory in this example):</p>
 
@@ -102,16 +101,16 @@ drwxr-xr-x 10 tds Unidata     4096 Jul 11 17:35 jdk1.6.0_26
 <b>$</b> pwd
 /home/tds/GettingStarted
 
-<b>$</b> cp ~/Downloads/apache-tomcat-6.0.32.tar.gz . 
+<b>$</b> cp ~/Downloads/apache-tomcat-7-0-27.tar.gz . 
 </pre>
 
         <p>Unpack the archive to create Tomcat directory:</p>  
 
 <pre>
-<b>$</b> tar xvzf apache-tomcat-6.0.32.tar.gz
+<b>$</b> tar xvzf apache-tomcat-7-0-27.tar.gz
 
-<b>$</b> ls -ld apache-tomcat-6.0.32
-drwxr-xr-x 9 tds Unidata 4096 Jul 11 17:47 apache-tomcat-6.0.32
+<b>$</b> ls -ld apache-tomcat-7-0-27
+drwxr-xr-x 9 tds Unidata 4096 Jul 11 17:47 apache-tomcat-7-0-27
 </pre>
       </ol>
      </div> <!-- end subsection -->
@@ -147,7 +146,7 @@ drwxr-xr-x 9 tds Unidata 4096 Jul 11 17:47 apache-tomcat-6.0.32
        <li>Examine the Tomcat directory structure, aka <code>$CATALINA_HOME</code> (also can be called <code>$TOMCAT_HOME</code>). </li>
         <p>Move into <code><small>$CATALINA_HOME</small></code> and do a long listing:</p>
 <pre>
-<b>$</b> cd apache-tomcat-6.0.32
+<b>$</b> cd apache-tomcat-7-0-27
 <b>$</b> ls -l 
 total 92
 drwxr-xr-x 2 tds Unidata  4096 Jul 11 17:47 bin
@@ -214,7 +213,7 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
         <p>Run the <code><small>startup.sh</small></code> script in the Tomcat <code><small>bin/</small></code> directory:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-6.0.32
+/home/tds/GettingStarted/apache-tomcat-7-0-27
 
 <b>$</b> bin/startup.sh
 </pre>
@@ -224,7 +223,7 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-tds      27049     1  2 17:50 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-6.0.32/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-6.0.32/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-6.0.32/bin/bootstrap.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-6.0.32 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-6.0.32 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-6.0.32/temp org.apache.catalina.startup.Bootstrap start
+tds      27049     1  2 17:50 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-7-0-27/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-7.0.27/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-7.0.27/bin/bootstrap.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-7.0.27 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-7.0.27 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-7.0.27/temp org.apache.catalina.startup.Bootstrap start
 </pre>
 
         <p>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</p>
@@ -281,7 +280,7 @@ tds      27049     1  2 17:50 pts/1    00:00:02 /usr/bin/java -Djava.util.loggin
 
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-6.0.32
+/home/tds/GettingStarted/apache-tomcat-7.0.27
 
 <b>$</b> cd bin
 <b>$</b> vi setenv.sh
@@ -299,7 +298,7 @@ export JAVA_HOME
 JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs"
 export JAVA_OPTS
 
-CATALINA_HOME="/home/tds/GettingStarted/apache-tomcat-6.0.32"
+CATALINA_HOME="/home/tds/GettingStarted/apache-tomcat-7.0.27"
 export CATALINA_HOME
 </pre>
 
@@ -327,11 +326,11 @@ export CATALINA_HOME
         <p>Restart Tomcat and examine the output generated to the terminal window by the startup script:</p>
 <pre>
 <b>$</b> ./startup.sh
-Using CATALINA_BASE:   /home/tds/GettingStarted/apache-tomcat-6.0.32
-Using CATALINA_HOME:   /home/tds/GettingStarted/apache-tomcat-6.0.32
-Using CATALINA_TMPDIR: /home/tds/GettingStarted/apache-tomcat-6.0.32/temp
+Using CATALINA_BASE:   /home/tds/GettingStarted/apache-tomcat-7.0.27
+Using CATALINA_HOME:   /home/tds/GettingStarted/apache-tomcat-7.0.27
+Using CATALINA_TMPDIR: /home/tds/GettingStarted/apache-tomcat-7.0.27/temp
 Using JRE_HOME:        /home/tds/GettingStarted/jdk1.6.0_26
-Using CLASSPATH:       /home/tds/GettingStarted/apache-tomcat-6.0.32/bin/bootstrap.jar
+Using CLASSPATH:       /home/tds/GettingStarted/apache-tomcat-7.0.27/bin/bootstrap.jar
 </pre>
       <div id="expanded" class="question">
        <p>Did you notice any difference in the what is being reported to <code><small>STDOUT</small></code> during startup?</p>
@@ -341,7 +340,7 @@ Using CLASSPATH:       /home/tds/GettingStarted/apache-tomcat-6.0.32/bin/bootstr
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-tds       2697     1  7 17:59 pts/1    00:00:03 /home/tds/GettingStarted/jdk1.6.0_26/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-6.0.32/conf/logging.properties <b>-Xmx1500m -Xms512m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-6.0.32/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-6.0.32/bin/bootstrap.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-6.0.32 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-6.0.32 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-6.0.32/temp org.apache.catalina.startup.Bootstrap start
+tds       2697     1  7 17:59 pts/1    00:00:03 /home/tds/GettingStarted/jdk1.6.0_26/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-7.0.27/conf/logging.properties <b>-Xmx1500m -Xms512m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-7.0.27/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-7.0.27/bin/bootstrap.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-7.0.27 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-7.0.27 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-7.0.27/temp org.apache.catalina.startup.Bootstrap start
 </pre>
 
       <div id="expanded" class="question">
@@ -415,7 +414,7 @@ Incompatible minimum and maximum heap sizes specified
 
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-6.0.32/bin
+/home/tds/GettingStarted/apache-tomcat-7.0.27/bin
 <b>$</b> cd ../webapps
 
 <b>$</b> cp ~/Downloads/thredds.war .
@@ -468,7 +467,7 @@ drwxr-xr-x  6 tds Unidata     4096 Jul 11 18:02 thredds
        <ol>
         <li>Deploy the TDS in your newly-installed Tomcat.</li>
         <li>Once deployed, browse the test catalogs & datasets that come with the distribution.</li>
-        <li>Look at the directory contents of the main Tomcat directory <code><small>~/GettingStarted/apache-tomcat-6.0.32</small></code> (aka <code><small>$TOMCAT_HOME</small></code>).</li>
+        <li>Look at the directory contents of the main Tomcat directory <code><small>~/GettingStarted/apache-tomcat-7.0.27</small></code> (aka <code><small>$TOMCAT_HOME</small></code>).</li>
          <div class="exercise_question">
           <p>Do you notice anything new?</p>
          </div>
@@ -494,7 +493,7 @@ drwxr-xr-x  6 tds Unidata     4096 Jul 11 18:02 thredds
 
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-6.0.32/webapps
+/home/tds/GettingStarted/apache-tomcat-7.0.27/webapps
 <b>$</b> cd ../logs
 
 <b>$</b> ls -l
@@ -519,7 +518,7 @@ total 20
        <li>Examining <code>catalina.out</code>.</li>
         <p>Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:</p>
 <pre>
-<b>$</b> tail -f /home/tds/GettingStarted/apache-tomcat-6.0.32/logs/catalina.out
+<b>$</b> tail -f /home/tds/GettingStarted/apache-tomcat-7.0.27/logs/catalina.out
 </pre>
 <p>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</p>
       <div id="expanded" class="question">
@@ -584,7 +583,7 @@ total 20
          <p>Move into the Tomcat <code><small>conf/</small></code> directory and examine the <code><small>server.xml</small></code> file:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-6.0.32/logs
+/home/tds/GettingStarted/apache-tomcat-7.0.27/logs
 <b>$</b> cd ../conf
 
 <b>$</b> less server.xml
@@ -760,7 +759,7 @@ total 20
          <p>Open the <code><small>tomcat-users.xml</small></code> file:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-6.0.32/conf
+/home/tds/GettingStarted/apache-tomcat-7.0.27/conf
 
 <b>$</b> less tomcat-users.xml
 </pre>  
@@ -945,7 +944,7 @@ total 20
         <p>List the contents of the Tomcat <code><small>webapps/</small></code> directory to verify that both <code><small>thredds.war</small></code> and the unpacked <code><small>thredds/</small></code> directory have been removed:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-6.0.32/conf
+/home/tds/GettingStarted/apache-tomcat-7.0.27/conf
 <b>$</b> cd ../webapps
 
 <b>$</b> ls -l

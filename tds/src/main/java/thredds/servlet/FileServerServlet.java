@@ -50,7 +50,7 @@ public class FileServerServlet extends HttpServlet {
 
   public void init() throws ServletException {
     super.init();
-    log = org.slf4j.LoggerFactory.getLogger(getClass());
+    log = org.slf4j.LoggerFactory.getLogger(FileServerServlet.class);
   }
 
   protected long getLastModified(HttpServletRequest req) {
