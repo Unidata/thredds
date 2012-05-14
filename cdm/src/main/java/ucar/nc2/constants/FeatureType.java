@@ -74,6 +74,8 @@ public enum FeatureType {
   ANY,
   /** Gridded Data */
   GRID,
+  /** Unstructured Data */
+  UGRID,
   /** Radial data */
   RADIAL,
   /** Swath Data */
@@ -129,6 +131,10 @@ public enum FeatureType {
 
   public boolean isGridFeatureType() {
     return (this == FeatureType.GRID) || (this == FeatureType.FMRC);
+  }
+  
+  public boolean isUnstructuredGridFeatureType() {
+    return this == FeatureType.UGRID;
   }
 
 }
