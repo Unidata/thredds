@@ -1,3 +1,0 @@
-GRIB2 5.2.0  2010-07-17/GRIB2_5_2_0_xml/GRIB2_5_2_0_Templates_E.xml
-GRIB2 6.0.1  2011-03-01/GRIB2_6_0_1_xml/GRIB2_6_0_1_template_E.xml
-GRIB2 7.0.0  2011-05-04/GRIB2_7_0_0_xml/GRIB2_7_0_0_Temp_E.xml
