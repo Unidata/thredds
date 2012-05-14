@@ -58,6 +58,7 @@ import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import javax.imageio.spi.ServiceRegistry;
 
 /**
  * HI TOM!
@@ -528,6 +529,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     if (N3header.isValidFile(raf)) {
       return true;
     } else {
+      Iterator<IOServiceProvider> iterator = ServiceRegistry.lookupProviders(ucar.nc2.iosp.IOServiceProvider.class);
+      while(iterator.hasNext()) {
+          if (iterator.next().isValidFile(raf)) {
+              return true;
+          }
+      }
       for (IOServiceProvider registeredSpi : registeredProviders) {
         if (registeredSpi.isValidFile(raf))
           return true;
@@ -836,6 +843,22 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       // spi = new ucar.nc2.iosp.hdf5.H5iosp();
 
     } else {
+      Iterator<IOServiceProvider> iterator = ServiceRegistry.lookupProviders(IOServiceProvider.class);
+      while(iterator.hasNext()) {
+          IOServiceProvider currentSpi = iterator.next();
+          if (currentSpi.isValidFile(raf)) {
+             Class c = currentSpi.getClass();
+            try {
+                spi = (IOServiceProvider) c.newInstance();
+            } catch (InstantiationException e) {
+                throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor."); // shouldnt happen
+            } catch (IllegalAccessException e) {
+                throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage()); // shouldnt happen
+            }
+            break;
+          }
+      }
+
       // look for registered providers
       for (IOServiceProvider registeredSpi : registeredProviders) {
         if (debugSPI) System.out.println(" try iosp = " + registeredSpi.getClass().getName());
