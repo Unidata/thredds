@@ -32,20 +32,18 @@
  */
 package ucar.nc2.dods;
 
-import junit.framework.*;
+import org.junit.Test;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.util.Misc;
 
 import java.io.*;
 
 /** Test nc2 dods in the JUnit framework. */
 
-public class TestDODSSubset extends TestCase {
+public class TestDODSSubset {
 
-  public TestDODSSubset( String name) {
-    super(name);
-  }
-
+  @Test
   public void testArraySubset() throws IOException {
     DODSNetcdfFile dodsfile = TestDODSRead.open("test.02?i32[1:10],f64[2:2:10]");
 
@@ -60,14 +58,14 @@ public class TestDODSSubset extends TestCase {
     assert v.getDataType() == DataType.INT;
     a = v.read();
     assert a.getRank() == 1;
-    assert a.getSize() == 10;
+    assert a.getSize() == 25;
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D1;
 
     ArrayInt.D1 ai = (ArrayInt.D1) a;
     for (int i=0; i<10; i++) {
       int val = ai.get(i);
-      assert (val == (i+1) * 2048) : val +" != "+(i+1) * 2048;
+      assert (val == i * 2048) : val +" != "+(i * 2048);
     }
 
     // uint16
@@ -83,7 +81,7 @@ public class TestDODSSubset extends TestCase {
     assert v.getDataType() == DataType.DOUBLE : v.getDataType();
     a = v.read();
     assert a.getRank() == 1;
-    assert a.getSize() == 5;
+    assert a.getSize() == 25;
     assert a.getElementType() == double.class;
     assert a instanceof ArrayDouble.D1;
     ArrayDouble.D1 ad = (ArrayDouble.D1) a;
@@ -97,14 +95,16 @@ public class TestDODSSubset extends TestCase {
 
     for (int i=0; i<5; i++) {
       double val = ad.get(i);
-      assertEquals(val, tFloat64[2+2*i], 1.0e-9);
+      assert Misc.closeEnough(val, tFloat64[i], 1.0e-9);
     }
+
+    dodsfile.close();
   }
 
 
-  private DODSNetcdfFile dodsfile;
+  @Test
   public void testSubset() throws IOException {
-    dodsfile = TestDODSRead.open("test.05?types.integers");
+    DODSNetcdfFile dodsfile = TestDODSRead.open("test.05?types.integers");
 
     Variable v = null;
     Array a = null;
@@ -132,6 +132,8 @@ public class TestDODSSubset extends TestCase {
     // uint32
     assert null != (v = dodsfile.findVariable("types.integers.ui32"));
     CheckUint32( v);
+
+    dodsfile.close();
   }
 
 
@@ -197,16 +199,16 @@ public class TestDODSSubset extends TestCase {
     //assert v.getName().equals("types.integers.ui32");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.LONG : v.getDataType();
+    assert v.getDataType() == DataType.INT : v.getDataType();
     CheckUint32Value(v.read());
   }
 
   void CheckUint32Value( Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
-    assert a.getElementType() == long.class;
-    assert a instanceof ArrayLong.D0;
-    long vall = ((ArrayLong.D0)a).get();
+    assert a.getElementType() == int.class;
+    assert a instanceof ArrayInt.D0;
+    long vall = ((ArrayInt.D0)a).get();
     assert (vall == 0);
   }
 
@@ -217,16 +219,16 @@ public class TestDODSSubset extends TestCase {
     //assert v.getName().equals("types.integers.ui16");
     assert v.getRank() == 0;
     assert v.getSize() == 1;
-    assert v.getDataType() == DataType.INT : v.getDataType();
+    assert v.getDataType() == DataType.SHORT : v.getDataType();
      CheckUInt16Value(v.read());
   }
 
   void CheckUInt16Value( Array a) {
     assert a.getRank() == 0;
     assert a.getSize() == 1;
-    assert a.getElementType() == int.class;
-    assert a instanceof ArrayInt.D0;
-    int vali = ((ArrayInt.D0)a).get();
+    assert a.getElementType() == short.class;
+    assert a instanceof ArrayShort.D0;
+    int vali = ((ArrayShort.D0)a).get();
     assert (vali == 0);
   }
 

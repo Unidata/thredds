@@ -51,7 +51,7 @@ public class TestDODSStructureForSequence extends TestCase
     super(name);
   }
 
-  public void testConstrainedAccess()
+  public void utestConstrainedAccess()
   {
     // URL for the JPL QuikSCAT DODS File Server (DFS).
     String dfsURL = "http://dods.jpl.nasa.gov/dods-bin/nph-dods/catalogs/quikscat/L2B/quikscat_L2.dat";

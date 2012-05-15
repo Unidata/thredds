@@ -14,34 +14,13 @@
             Module Description
         =========================================================== -->
    <!-- groupId>edu.ucar</groupId-->
-   <artifactId>wmoTables</artifactId>
+   <artifactId>cdmvalidator</artifactId>
    <packaging>war</packaging>
-   <name>WMO tables webapp</name>
+   <name>CDM validator webapp</name>
     <description>
       WMO tables for the NetCDF library.
     </description>
     <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
-
-  <developers>
-    <developer>
-      <name>John Caron</name>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>oxelson</id>
-      <name>Jennifer Ganter Oxelson</name>
-      <email>oxelson@unidata.ucar.edu</email>
-      <organization>UCAR/UNIDATA</organization>
-      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
-      <roles>
-        <role>Java Developer</role>
-      </roles>
-    </developer>
-  </developers>
 
   <!-- ===========================================================
            Dependencies
@@ -59,20 +38,55 @@
        <groupId>edu.ucar</groupId>
        <artifactId>grib</artifactId>
      </dependency>
+     <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>udunits</artifactId>
+     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>opendap</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>visadCdm</artifactId>
+      <artifactId>tds</artifactId>
+      <type>war</type>
     </dependency>
 
+     <dependency>
+       <groupId>commons-httpclient</groupId>
+       <artifactId>commons-httpclient</artifactId>
+     </dependency>
      <dependency>
        <groupId>commons-fileupload</groupId>
        <artifactId>commons-fileupload</artifactId>
      </dependency>
 
+     <dependency>
+       <groupId>org.jdom</groupId>
+       <artifactId>jdom</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>joda-time</groupId>
+       <artifactId>joda-time</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>org.quartz-scheduler</groupId>
+       <artifactId>quartz</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>com.google.protobuf</groupId>
+       <artifactId>protobuf-java</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>net.sf.ehcache</groupId>
+       <artifactId>ehcache</artifactId>
+       <scope>runtime</scope>
+     </dependency>
+     <dependency>
+       <artifactId>je</artifactId>
+       <groupId>com.sleepycat</groupId>
+     </dependency>
+
+     <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-api</artifactId>
+     </dependency>
      <dependency>
        <groupId>org.slf4j</groupId>
        <artifactId>slf4j-log4j12</artifactId>
@@ -81,6 +95,11 @@
      <dependency>
        <groupId>log4j</groupId>
        <artifactId>log4j</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>jcl-over-slf4j</artifactId>
+       <scope>runtime</scope>
      </dependency>
 
      <dependency>
@@ -106,7 +125,7 @@
   </dependencies>
 
   <build>
-    <finalName>wmotables</finalName>
+    <finalName>cdmvalidator</finalName>
     <plugins>
 
       <plugin>

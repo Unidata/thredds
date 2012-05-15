@@ -2,7 +2,8 @@
 <!-- ======================================================================= 
 		Parent Maven Configuration File for UCAR NetCDF library 
 	======================================================================= -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- prerequisites> <maven>2.0.9</maven> </prerequisites -->
@@ -242,7 +243,7 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>udunits</artifactId>
-        <version>4.3.11-SNAPSHOT</version>
+        <version>0.2</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -511,6 +512,21 @@
         <!-- scope>provided</scope-->
       </dependency>
 
+      <!-- webapps -->
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>wmoTables</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>cdmvalidator</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+
       <!-- test -->
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -668,6 +684,8 @@
     <module>visad</module>
     <module>ui</module>
     <module>tds</module>
+    <module>wmoTables</module>
+    <module>cdmvalidator</module>
     <module>cdm-test</module>
     <module>it</module>
   </modules>

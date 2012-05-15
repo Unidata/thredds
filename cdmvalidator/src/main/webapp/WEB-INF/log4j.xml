@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+  <!--
+    Example:
+    2005-04-18T11:33:43 -0600 [    359843 -        395] DEBUG - thredds.util.TdsPathUtils - extractPath():
+  -->
+  <appender name="cdmValidator" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${cdmValidator.root}/WEB-INF/logs/cdmValidator.log"/>
+    <param name="MaxFileSize" value="10MB"/>
+    <param name="MaxBackupIndex" value="10"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
+    </layout>
+  </appender>
+
+  <!-- keep track of Cache messages in a seperate file. -->
+  <appender name="cacheLog" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${cdmValidator.root}/WEB-INF/logs/cache.log"/>
+    <param name="MaxFileSize" value="100KB"/>
+    <param name="MaxBackupIndex" value="2"/>
+    <param name="Append" value="false"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %m%n"/>
+    </layout>
+  </appender>
+
+  <!-- special loggers -->
+  <logger name="cacheLogger" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="cacheLog"/>
+  </logger>
+
+  <!-- All normal logging messages go to threddsServlet.log -->
+  <logger name="thredds">
+    <level value="INFO"/>
+  </logger>
+
+  <logger name="ucar">
+    <level value="INFO"/>
+  </logger>
+
+  <logger name="org.springframework">
+    <level value="INFO"/>
+  </logger>
+
+  <root>
+    <level value="INFO"/>
+    <appender-ref ref="cdmValidator"/>
+  </root>
+
+</log4j:configuration>

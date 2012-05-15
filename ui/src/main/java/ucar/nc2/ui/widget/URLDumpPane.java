@@ -65,13 +65,9 @@ public class URLDumpPane extends TextHistoryPane {
     Commons, java
   }
 
-  ;
-
   private enum Command {
     GET, PUT, HEAD, OPTIONS
   }
-
-  ;
 
   private ComboBox cb;
   private JComboBox implCB;

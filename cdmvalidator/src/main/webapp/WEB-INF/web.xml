@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+  <display-name>CDM Validator</display-name>
+  <description>CDM Validator</description>
+
+  <!-- Provide the context path at init time (otherwise, not available till a request is made). -->
+  <!-- Servlet 2.5 spec provides ServletContext.getContextPath().-->
+  <context-param>
+    <param-name>ContextPath</param-name>
+    <param-value>cdmvalidator</param-value>
+  </context-param>
+
+  <filter>
+    <filter-name>RequestQueryFilter</filter-name>
+    <filter-class>thredds.servlet.filter.RequestQueryFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <url-pattern>/validate</url-pattern>
+  </filter-mapping>
+
+  <!--
+    Location of the Log4J config file, for initialization.
+    Applied by Log4jConfigListener.
+  -->
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j.xml</param-value>
+  </context-param>
+
+  <!--
+    Tell Log4jConfigListener what key to use for the webapp root directory.
+    In log4j.xml can use "${cdmValidator.root}/WEB-INF/logs/cdmValidator.log"
+    to indicate the location of log files.
+  -->
+  <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>cdmValidator.root</param-value>
+  </context-param>
+
+  <!-- Spring Listener to setup Log4j configuration.
+       Should be listed before any Spring listeners.
+   -->
+  <listener>
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+
+  <!--
+   * Spring listener to bootstrap Spring WebApplicationContext. Used to
+   * handle Spring bean configuration outside of SpringMVC configuration.
+   * -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/applicationContext-cdmValidatorConfig.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>thredds.server.cdmvalidator.CdmValidatorConfigContextListener</listener-class>
+  </listener>
+
+  <servlet>
+    <servlet-name>cdmvalidator</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <!--servlet-class>thredds.servlet.CoordSysValidatorServlet</servlet-class-->
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>cdmvalidator</servlet-name>
+    <url-pattern>/validate.html</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>cdmvalidator</servlet-name>
+    <url-pattern>/validate</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>cdmvalidator</servlet-name>
+    <url-pattern>/validateHelp.html</url-pattern>
+  </servlet-mapping>
+
+  <!-- ++++++++++ Setup security restrictions ++++++++++ -->
+
+</web-app>

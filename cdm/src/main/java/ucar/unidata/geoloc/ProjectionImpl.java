@@ -41,16 +41,9 @@ import java.util.*;
  * Superclass for our implementations of geoloc.Projection.
  * <p/>
  * <p>All subclasses must: <ul>
- * <li> override clone() if they have non primitive fields
  * <li> override equals() and return true when all parameters are equal
  * <li> create "atts" list of parameters as string-valued Attribute pairs
  * <li> implement abstract methods
- * <li> follow bean conventions:
- * <ol>
- * <li> must have a default constructor with no arguments (use default
- * values for the paramters)
- * <li> all parameters should have getXXXX() and setXXXX() bean property methods.
- * </ol>
  * </ul>
  * <p/>
  * If possible, set defaultmapArea to some reasonable world coord bounding box
@@ -116,9 +109,9 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
   ///////////////////////////////////////////////////////////////////////
 
   /**
-   * name of this projection
+   * name of this projection.
    */
-  protected final String name;
+  protected String name;  // LOOK should be final, IDV needs setName()
 
   /**
    * flag for latlon
@@ -247,6 +240,10 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     return name;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
   /**
    * Get parameters as list of ucar.unidata.util.Parameter
    *
@@ -301,29 +298,19 @@ public abstract class ProjectionImpl implements Projection, java.io.Serializable
     return isLatLon;
   }
 
-  // all of this is to get a human readable string with nice formatting
-
-  /**
-   * header
-   */
-  private static String header = null;
-
   /**
    * Get a header for display.
    *
    * @return human readable header for display
    */
   public static String getHeader() {
-    if (header == null) {
-      StringBuilder headerB = new StringBuilder(60);
-      headerB.append("Name");
-      Format.tab(headerB, 20, true);
-      headerB.append("Class");
-      Format.tab(headerB, 40, true);
-      headerB.append("Parameters");
-      header = headerB.toString();
-    }
-    return header;
+    StringBuilder headerB = new StringBuilder(60);
+    headerB.append("Name");
+    Format.tab(headerB, 20, true);
+    headerB.append("Class");
+    Format.tab(headerB, 40, true);
+    headerB.append("Parameters");
+    return headerB.toString();
   }
 
   /**

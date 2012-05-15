@@ -171,6 +171,17 @@ public class InvService {
     return (result == null) ? null : result.getValue();
   }
 
+  public InvService findNestedService(String name) {
+    for (InvService s : nestedServices) {
+      if (s.getName().equals(name)) return s;
+      if (s.type == ServiceType.COMPOUND) {
+        InvService result = s.findNestedService(name);
+        if (result != null) return result;
+      }
+    }
+    return null;
+  }
+
   /**
    * string representation
    */
