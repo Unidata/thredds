@@ -100,7 +100,6 @@ public class AllVariablesSubsettingTest {
 		response = new MockHttpServletResponse();
 	}
 	
-	@Ignore
 	@Test
 	public void shoudGetAllVariables() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, UnsupportedOperationException{
 				

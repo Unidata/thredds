@@ -1,8 +1,41 @@
+/*
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package thredds.server.ncSubset.controller;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -28,6 +61,8 @@ import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
+import thredds.server.ncSubset.params.RequestParamsBean;
+import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.UsageLog;
 import ucar.ma2.InvalidRangeException;
@@ -42,12 +77,11 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 
 @Controller
 @RequestMapping(value="/ncss/grid/")
-class GridDataController extends AbstractNcssController{
+class GridDataController extends  AbstratNcssDataRequestController{
 
 	static private final Logger log = LoggerFactory.getLogger(GridDataController.class);
 	
@@ -62,8 +96,8 @@ class GridDataController extends AbstractNcssController{
 			handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult );			
 		}else{
 			//Only netcdf format is supported for Grid subssetting
-			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.GRID_REQUEST  );
-		
+			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.GRID_REQUEST  );		
+				
 			checkRequestedVars(gridDataset,  params);
 			
 			if( isSpatialSubset(params) ){
@@ -77,11 +111,9 @@ class GridDataController extends AbstractNcssController{
 			IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);			
 			response.flushBuffer();
 			response.getOutputStream().close();
-			response.setStatus(HttpServletResponse.SC_OK);
-		
+			response.setStatus(HttpServletResponse.SC_OK);		
 			log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));			
-		}		
-		
+		}				
 	}
 	
 	private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response )throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException,VariableNotContainedInDatasetException, InvalidBBOXException{
@@ -94,8 +126,7 @@ class GridDataController extends AbstractNcssController{
                 !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLongitude(), maxBB.getUpperRightPoint().getLongitude()) ||
                 !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLongitude(), maxBB.getLowerLeftPoint().getLongitude()); 
 
-		if(checkBB(maxBB, requestedBB)){
-        																			
+		if(checkBB(maxBB, requestedBB)){        																	
 			Range zRange = null;
 			//Request with zRange --> adds a limitation: only variables with the same vertical level???
 			if(params.getVertCoord()!=null)
@@ -142,11 +173,8 @@ class GridDataController extends AbstractNcssController{
 		}else{
 			throw new InvalidBBOXException("Invalid bbox. All params minx, maxx. miny, maxy must be provided");
 		}
-		
-		
-		ProjectionRect rect =new ProjectionRect( minx, miny , maxx, maxy );
 				
-		
+		ProjectionRect rect =new ProjectionRect( minx, miny , maxx, maxy );						
 		Range zRange = null;
 		//Request with zRange --> adds a limitation: only variables with the same vertical level???
 		if(params.getVertCoord()!=null)
@@ -164,7 +192,6 @@ class GridDataController extends AbstractNcssController{
 			}
 		}		
 		
-	    //String filename = req.getRequestURI();
 		String filename = gridDataset.getLocationURI();
 	    int pos = filename.lastIndexOf("/");
 	    filename = filename.substring(pos + 1);
@@ -173,23 +200,58 @@ class GridDataController extends AbstractNcssController{
 
 	    Random random = new Random(System.currentTimeMillis());
 	    int randomInt = random.nextInt();
-
 	    String pathname = Integer.toString(randomInt) + "/" + filename;
 	    File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
-	    String cacheFilename = ncFile.getPath();
-	    
-	    String url = buildCacheUrl(pathname);
-	    
+	    String cacheFilename = ncFile.getPath();	    
+	    String url = buildCacheUrl(pathname);	    
     	httpHeaders.set("Content-Location", url );
-    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");		
-		
-		writer.makeFile(cacheFilename, gridDataset, params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, 1, params.isAddLatLon());
-		
-		netcdfResult = new File(cacheFilename);
-		
-
-		
-		
+    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");				
+		writer.makeFile(cacheFilename, gridDataset, params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, 1, params.isAddLatLon());		
+		netcdfResult = new File(cacheFilename);						
+	}	
+	
+	protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException, UnsupportedOperationException{
+		//Check vars
+		//if var = all--> all variables requested 
+		if(params.getVar().get(0).equals("all")){
+			params.setVar(NcssRequestUtils.getAllVarsAsList(getGridDataset()));					
+		}		
+	
+		//Only check vertical levels if we the request has vertCoord --> we allow request for variables with different vertical levels if vertCoord!=null for grid requests
+		boolean checkVertLevels = (params.getVertCoord() != null);		
+		//Check not only all vars are contained in the grid, also they have the same vertical coords
+		Iterator<String> it = params.getVar().iterator();
+		String varName = it.next();
+		GridDatatype grid = gds.findGridByShortName(varName);
+		if(grid == null) 
+			throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
+	
+		CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
+		CoordinateAxis1D newVertAxis = null;
+		boolean sameVertCoord = true;
+	
+		while(sameVertCoord && it.hasNext()){
+			varName = it.next();
+			grid = gds.findGridByShortName(varName);
+			if(grid == null) 
+				throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
+			
+			if(checkVertLevels){
+				newVertAxis = grid.getCoordinateSystem().getVerticalAxis();		
+				if( vertAxis != null ){
+					if( vertAxis.equals(newVertAxis)){
+						vertAxis = newVertAxis;
+					}else{
+						sameVertCoord = false;
+					}
+				}else{
+					if(newVertAxis != null) sameVertCoord = false;
+				}
+			}
+		}
+	
+	if(!sameVertCoord)
+		throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");		
 	}	
 	
 	private boolean isSpatialSubset(GridDataRequestParamsBean params) throws InvalidBBOXException{
@@ -216,8 +278,7 @@ class GridDataController extends AbstractNcssController{
 				if( params.getMaxx()==null && params.getMinx()==null && params.getMaxy() == null && params.getMiny()==null )
 					spatialSubset =true;
 			}
-		}	
-			
+		}				
 		return spatialSubset;
 	}
 	
@@ -229,8 +290,7 @@ class GridDataController extends AbstractNcssController{
 		if(intersect == null) 
 			throw new OutOfBoundariesException("Request Bounding Box does not intersect the Data. Data Bounding Box = " + maxBB.toString2() );
 		
-		return isInBB;
-		
+		return isInBB;		
 	}
 	
 	private LatLonRect setBBForRequest(GridDataRequestParamsBean params, GridDataset gds ) throws InvalidBBOXException{
@@ -238,11 +298,7 @@ class GridDataController extends AbstractNcssController{
 		if( params.getNorth()==null && params.getSouth()==null && params.getWest()==null && params.getEast()==null )
 			return gds.getBoundingBox();
 		
-		
-		return new LatLonRect( new LatLonPointImpl(params.getSouth(), params.getWest()),  new LatLonPointImpl(params.getNorth(), params.getEast()));
-		
-		
-												
+		return new LatLonRect( new LatLonPointImpl(params.getSouth(), params.getWest()),  new LatLonPointImpl(params.getNorth(), params.getEast()));														
 	}
 	
 	private Range getZRange(GridDataset gds, Double verticalCoord, List<String> vars) throws OutOfBoundariesException{
@@ -348,6 +404,5 @@ class GridDataController extends AbstractNcssController{
 		log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
 		return "Invalid Range Exception handled (Invalid Lat/Lon or Time Range): "+ire.getMessage();
 	}	
-	
-	
+		
 }

@@ -48,6 +48,7 @@ import org.springframework.validation.BindingResult;
 
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
+import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
 import ucar.nc2.dt.GridDataset;
@@ -63,8 +64,8 @@ public class GridRequestsExeceptionTest {
 	@Autowired
 	private GridDataController gridDataController;
 	
-	private GridDataRequestParamsBean params;	
-	private BindingResult validationResult;
+	//private GridDataRequestParamsBean params;	
+	//private BindingResult validationResult;
 	private MockHttpServletResponse response ;
 	private String pathInfo="testFeatureCollection/Test_Feature_Collection_best.ncd";
 	
@@ -73,23 +74,36 @@ public class GridRequestsExeceptionTest {
 
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		gridDataController.setGridDataset(gds);
-		params = new GridDataRequestParamsBean();
-		params.setTemporal("all");
-		List<String> vars = new ArrayList<String>();
-		vars.add("Relative_humidity");
-		vars.add("Temperature");
-		params.setVar(vars);
-		validationResult = new BeanPropertyBindingResult(params, "params");
 		response = new MockHttpServletResponse();
 	}
 	
 	@Test(expected=RequestTooLargeException.class)
 	public void testRequestTooLargeException() throws Exception{
-		
-		
+		GridDataRequestParamsBean params;
+		BindingResult validationResult;
+		params = new GridDataRequestParamsBean();		
+		params.setTemporal("all");
+		List<String> vars = new ArrayList<String>();
+		vars.add("Relative_humidity");
+		vars.add("Temperature");
+		params.setVar(vars);		
+		validationResult = new BeanPropertyBindingResult(params, "params");
 		gridDataController.getGridSubset(params, validationResult, response);
 		
 	}
+	
+	@Test(expected=UnsupportedOperationException.class)
+	public void testUnsupportedOperationException() throws Exception{
+		GridDataRequestParamsBean params;
+		BindingResult validationResult;
+		params = new GridDataRequestParamsBean();		
+		List<String> vars = new ArrayList<String>();
+		vars.add("all");
+		params.setVar(vars);
+		params.setVertCoord(200.);
+		validationResult = new BeanPropertyBindingResult(params, "params");
+		gridDataController.getGridSubset(params, validationResult, response);		
+	}	
 	
 	@After
 	public void tearDown() throws IOException{

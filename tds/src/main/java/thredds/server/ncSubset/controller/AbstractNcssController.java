@@ -1,3 +1,34 @@
+/*
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package thredds.server.ncSubset.controller;
 
 import java.io.File;
@@ -21,9 +52,10 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.mvc.LastModified;
 
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
+import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
+import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DataRootHandler;
@@ -38,7 +70,7 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 
-public class AbstractNcssController implements LastModified{
+public abstract class AbstractNcssController implements LastModified{
 	
 	static private final Logger log = LoggerFactory.getLogger(AbstractNcssController.class);
 	
@@ -203,63 +235,6 @@ public class AbstractNcssController implements LastModified{
 		}
 		
 		return sf;		
-	}
-	
-	/**
-	 * Checks all requested variables are in the dataset for a Ncss requests. 
-	 * 
-	 * @param gds
-	 * @param params
-	 * @throws VariableNotContainedInDatasetException
-	 * @throws UnsupportedOperationException 
-	 */
-	protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException, UnsupportedOperationException{
-		//Check vars
-		//if var = all--> all variables requested
-		if(params.getVar().get(0).equals("all")){
-			params.setVar(NcssRequestUtils.getAllVarsAsList(getGridDataset()));
-		}/*else{ //all the requested are in dataset
-			for(String var : params.getVar()){						
-				GridDatatype grid = getGridDataset().findGridDatatype(var);
-				if(grid == null) 
-					throw new VariableNotContainedInDatasetException("Variable: "+var+" is not contained in the requested dataset"); 
-			}
-		}*/
-		
-		//Check not only all vars are contained in the grid, also they have the same vertical coords
-		Iterator<String> it = params.getVar().iterator();
-		String varName = it.next();
-		GridDatatype grid = gds.findGridByShortName(varName);
-		if(grid == null) 
-			throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
-		
-		CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
-		CoordinateAxis1D newVertAxis = null;
-		boolean sameVertCoord = true;
-		
-		while(sameVertCoord && it.hasNext()){
-			varName = it.next();
-			grid = gds.findGridByShortName(varName);
-			if(grid == null) 
-				throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
-			
-			newVertAxis = grid.getCoordinateSystem().getVerticalAxis();
-			
-			if( vertAxis != null ){
-				if( vertAxis.equals(newVertAxis)){
-					vertAxis = newVertAxis;
-				}else{
-					sameVertCoord = false;
-				}
-			}else{
-				if(newVertAxis != null) sameVertCoord = false;
-			}	
-		}
-		
-		if(!sameVertCoord)
-			throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Only requests on variables with same vertical levels are supported.");
-		
-		
 	}
 	
 	

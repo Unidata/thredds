@@ -25,7 +25,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
+import thredds.server.ncSubset.params.RequestParamsBean;
+import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.server.ncSubset.view.PointDataStream;
 import thredds.servlet.UsageLog;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -38,7 +41,7 @@ import ucar.unidata.geoloc.ProjectionPoint;
 
 @Controller
 @RequestMapping(value="/ncss/grid/**")
-class PointDataController extends AbstractNcssController{ 
+class PointDataController extends AbstratNcssDataRequestController{ 
 
 	static private final Logger log = LoggerFactory.getLogger(PointDataController.class);
 
@@ -89,7 +92,47 @@ class PointDataController extends AbstractNcssController{
 		}	
 	}
 	
-
+	protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException, UnsupportedOperationException{
+	//Check vars
+	//if var = all--> all variables requested
+	if(params.getVar().get(0).equals("all")){
+		params.setVar(NcssRequestUtils.getAllVarsAsList(getGridDataset()));					
+	}		
+	
+	//Check not only all vars are contained in the grid, also they have the same vertical coords
+	Iterator<String> it = params.getVar().iterator();
+	String varName = it.next();
+	GridDatatype grid = gds.findGridByShortName(varName);
+	if(grid == null) 
+		throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
+	
+	CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
+	CoordinateAxis1D newVertAxis = null;
+	boolean sameVertCoord = true;
+	
+	while(sameVertCoord && it.hasNext()){
+		varName = it.next();
+		grid = gds.findGridByShortName(varName);
+		if(grid == null) 
+			throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
+		
+		newVertAxis = grid.getCoordinateSystem().getVerticalAxis();
+		
+		if( vertAxis != null ){
+			if( vertAxis.equals(newVertAxis)){
+				vertAxis = newVertAxis;
+			}else{
+				sameVertCoord = false;
+			}
+		}else{
+			if(newVertAxis != null) sameVertCoord = false;
+		}	
+	}
+	
+	if(!sameVertCoord)
+		throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Only Grid as point requests on variables with same vertical levels are supported.");
+		
+	}
 	
 	private boolean isPointWithinBoundaries(LatLonPoint point, Map<String, List<String>> groupVars){	
 		//LatLonRect bbox = gds.getBoundingBox();
