@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -152,6 +153,16 @@ public class CoordinateSpaceSubsettingTest {
 		
 		assertArrayEquals(expectedShapes, shapes);
 		
-	}	
+	}
+	
+	@After
+	public void tearDown() throws IOException{
+		
+		GridDataset gds = gridDataController.getGridDataset();
+		gds.close();
+		gds = null;
+		gridDataController =null;
+		
+	}
 	
 }

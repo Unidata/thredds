@@ -39,6 +39,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -114,4 +115,15 @@ public class AllVariablesSubsettingTest {
 		assertEquals(7, gdsDataset.getDataVariables().size());
 		
 	}
+	
+	@After
+	public void tearDown() throws IOException{
+		
+		GridDataset gds = gridDataController.getGridDataset();
+		gds.close();
+		gds = null;
+		gridDataController =null;
+		
+	}	
+	
 }

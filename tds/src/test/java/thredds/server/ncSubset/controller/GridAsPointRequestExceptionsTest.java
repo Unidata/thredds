@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,10 +24,11 @@ import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
+import ucar.nc2.dt.GridDataset;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-public class CatchingExceptionsTest {
+public class GridAsPointRequestExceptionsTest {
 	
 	@Autowired
 	PointDataController pointDataController;
@@ -49,7 +51,7 @@ public class CatchingExceptionsTest {
 		
 	}
 	
-	public CatchingExceptionsTest(String pathInfo){
+	public GridAsPointRequestExceptionsTest(String pathInfo){
 		
 		this.pathInfo = pathInfo;
 	}
@@ -143,6 +145,16 @@ public class CatchingExceptionsTest {
 		
 		pointDataController.getPointData(params, result, new MockHttpServletResponse());
 
+	}
+	
+	@After
+	public void tearDown() throws IOException{
+		
+		GridDataset gds = pointDataController.getGridDataset();
+		gds.close();		
+		gds = null;
+		pointDataController =null;
+		
 	}	
 
 }

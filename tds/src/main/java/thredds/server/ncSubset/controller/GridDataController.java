@@ -53,7 +53,7 @@ class GridDataController extends AbstractNcssController{
 	
 	private HttpHeaders httpHeaders = new HttpHeaders(); 
 	private File netcdfResult;
-	private long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
+	private long maxFileDownloadSize = -1L; 
 	
 	@RequestMapping(value = "**", params = { "!latitude","!longitude", "var"})
 	void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response )throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException, UnsupportedOperationException{
@@ -105,7 +105,7 @@ class GridDataController extends AbstractNcssController{
 				CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get( wantedDates.size()-1 ));
 				
 				NetcdfCFWriter writer = new NetcdfCFWriter();
-    		        	
+				maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);   				
 				if(maxFileDownloadSize > 0){    		
 					long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon() );
 					if(estimatedSize > maxFileDownloadSize ){
@@ -156,7 +156,7 @@ class GridDataController extends AbstractNcssController{
 		CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get( wantedDates.size()-1 ));
 		
 		NetcdfCFWriter writer = new NetcdfCFWriter();
-		
+		maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
 		if(maxFileDownloadSize > 0){    		
 			long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon() );
 			if(estimatedSize > maxFileDownloadSize ){
