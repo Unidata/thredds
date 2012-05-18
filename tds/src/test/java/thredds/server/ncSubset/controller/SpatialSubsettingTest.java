@@ -31,7 +31,6 @@
  */
 package thredds.server.ncSubset.controller;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -66,18 +65,19 @@ import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 
 /**
- * @author mhermida
+ * @author marcos
  *
  */
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext-tdsConfig.xml" }, loader = MockTdsContextLoader.class)
-public class CoordinateSpaceSubsettingTest {
-	
+public class SpatialSubsettingTest {
+
 	@Autowired
 	private GridDataController gridDataController;
 	
@@ -86,28 +86,27 @@ public class CoordinateSpaceSubsettingTest {
 	private MockHttpServletResponse response ;	
 	
 	private String pathInfo;
-	private int[][] expectedShapes;
-	private List<String> vars; 
-	private double[] projectionRectParams;
+	private List<String> vars;
+	private double[] latlonRectParams;
+	private LatLonRect requestedBBOX;
+	private LatLonRect datasetBBOX;
 	
 	@Parameters
 	public static Collection<Object[]> getTestParameters(){
 				
 		return Arrays.asList( new Object[][]{
-				{ new int[][]{ {1,2,2}, {1,2,2} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getProjectionRect().get(0) }, //No vertical levels 
-				{ new int[][]{ {1,1,16,15}, {1,1,16,15} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
-				{ new int[][]{ {1,29,2,93}, {1,29,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), GridDataParameters.getProjectionRect().get(2) }, //Same vertical level (multiple level)
-				{ new int[][]{ {1,2,93}, {1,29,2,93}, {1,1,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(2)}, //No vertical levels and vertical levels
-				{ new int[][]{ {1,1,2,93}, {1,29,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(2)} //Different vertical levels							
-			});	
-	
+				{ PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
+				{ PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
+				//{ PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(2) } //bounding box that contains data but doesn't intersect the declared bbox
+								
+			});
 	}
 	
-	public CoordinateSpaceSubsettingTest(int[][] result, String pathInfo, List<String> vars, double[] projectionRectParams){
-		this.expectedShapes= result;
+	public SpatialSubsettingTest( String pathInfo, List<String> vars, double[] latlonRectParams){
+
 		this.pathInfo = pathInfo;
 		this.vars = vars;
-		this.projectionRectParams=projectionRectParams;
+		this.latlonRectParams = latlonRectParams;
 	}
 	
 	@Before
@@ -118,17 +117,18 @@ public class CoordinateSpaceSubsettingTest {
 		params = new GridDataRequestParamsBean(); 
 		params.setVar(vars);
 		
-		params.setMinx(projectionRectParams[0]);
-		params.setMiny(projectionRectParams[1]);
-		params.setMaxx(projectionRectParams[2]);
-		params.setMaxy(projectionRectParams[3]);
-		
+		params.setWest(latlonRectParams[0]);
+		params.setSouth(latlonRectParams[1]);
+		params.setEast(latlonRectParams[2]);
+		params.setNorth(latlonRectParams[3]);
+		requestedBBOX = new LatLonRect(new LatLonPointImpl(latlonRectParams[1], latlonRectParams[0]), new LatLonPointImpl(latlonRectParams[3], latlonRectParams[2]) );
+		datasetBBOX = gds.getBoundingBox();
 		validationResult = new BeanPropertyBindingResult(params, "params");
 		response = new MockHttpServletResponse();
 	}
 	
 	@Test
-	public void shoudSubsetGrid() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, UnsupportedOperationException{
+	public void shoudGetVariablesSubset() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, UnsupportedOperationException{
 				
 		gridDataController.getGridSubset(params, validationResult, response);
 		
@@ -136,33 +136,21 @@ public class CoordinateSpaceSubsettingTest {
 		//Open the binary response in memory
 		NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", response.getContentAsByteArray() );	
 		
-		ucar.nc2.dt.grid.GridDataset gdsDataset =new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));		
-		assertTrue( gdsDataset.getCalendarDateRange().isPoint());		
-		//assertEquals(expectedValue, Integer.valueOf( gdsDataset.getDataVariables().size()));
-		
-		List<VariableSimpleIF> vars = gdsDataset.getDataVariables();
-		int[][] shapes = new int[vars.size()][];
-		int cont = 0;
-		for(VariableSimpleIF var : vars){
-			//int[] shape =var.getShape();
-			shapes[cont] = var.getShape();
-			cont++;
-			//String dimensions =var.getDimensions().toString();
-			//int rank =var.getRank();
-		}
-		
-		assertArrayEquals(expectedShapes, shapes);
+		ucar.nc2.dt.grid.GridDataset gdsDataset =new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));
+		LatLonRect responseBBox= gdsDataset.getBoundingBox();		
+
+		assertTrue( responseBBox.intersect((datasetBBOX))!= null &&  responseBBox.intersect((requestedBBOX))!= null);
+		assertTrue( !responseBBox.equals(datasetBBOX));
 		
 	}
 	
 	@After
 	public void tearDown() throws IOException{
 		
-		GridDataset gds = gridDataController.getGridDataset();
+		GridDataset gds =gridDataController.getGridDataset();
 		gds.close();
-		gds = null;
-		gridDataController =null;
+		gds =null;
+		gridDataController.setGridDataset(null);
 		
 	}
-	
 }

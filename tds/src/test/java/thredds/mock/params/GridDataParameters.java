@@ -43,6 +43,8 @@ public class GridDataParameters {
 	
 	private static  List<List<String>> vars;
 	
+	private static List<double[]> latlonRect; //Arrays containing west, south, east, north
+	
 	private static List<double[]> projectionRect; //Arrays containing minx, miny, maxx, maxy
 	
 	private GridDataParameters(){}
@@ -67,7 +69,11 @@ public class GridDataParameters {
 		projectionRect.add(new double[]{-4226.106971141345, -832.6983183345455, -4126.106971141345, -732.6983183345455 }); //2x2
 		projectionRect.add(new double[]{-600, -600, 600, 600 });//15x16
 		projectionRect.add(new double[]{-4226.106971141345, 4268.6456816654545, 3250.825028858655, 4368.6456816654545 });//2x93
-
+		
+		latlonRect = new ArrayList<double[]>();
+		latlonRect.add(new double[]{-153.5889, 11.7476, -48.5984,57.4843 });
+		latlonRect.add(new double[]{-160.5889, 40.7476, -106.93, 64.65 });
+		latlonRect.add(new double[]{-99.171226, 57.659579, -94.967505, 61.196857 });
 	}
 	
 	public static List<List<String>>  getVars(){
@@ -77,5 +83,9 @@ public class GridDataParameters {
 	public static List<double[]> getProjectionRect(){
 		return projectionRect;
 	}
+	
+	public static List<double[]> getLatLonRect(){
+		return latlonRect;
+	}	
 
 }
