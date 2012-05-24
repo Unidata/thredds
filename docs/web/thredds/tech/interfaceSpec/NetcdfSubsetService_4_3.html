@@ -63,9 +63,15 @@ span.bold {
 		and <a href="http://www.w3.org/TR/xmlschema-2/">W3C XML Schema Datatypes</a> when applicable.
 	</p>	
 	<p>
-	    Currently the service support two kinds of subsetting requests:	grid requests and grid as point requests. Default is grid request and if no bounding box or point is provided in the request the whole grid
-		is returned in the response. If a point is specified with the parameters latitude and longitude the request will be a grid as point request and point features are extracted from the grid.</p>
-
+	    Currently the service support two kinds of subsetting requests:</p>
+		<ul>
+			<li>
+				<span class="bold">Grid requests: </span>Is the default behavior. This requests return a grid result of subsetting the original dataset. If no spatial subset is specified in the query string the whole grid is returned. 
+			</li>
+			<li>
+				<span class="bold">Grid As Point requests: </span>If a point is specified with the parameters latitude and longitude the request will be a grid as point request and point features are extracted from the grid.
+			</li>			
+		</ul>
 	<hr>
 		
 	<!-- 
@@ -114,16 +120,14 @@ span.bold {
 			<tr>
 				<td>var</td>
 				<td>yes</td>
-				<td>Variables must be in the dataset description.<span
-					class="bold">Only requests on variables with same vertical
-						levels are supported</span></td>
-				<td><span>Name of variables, separated by ',' (comma).</span></td>
+				<td>Variables must be in the dataset description.<br /><span class="bold">Variables on Grid requests for a particular vertical level must have the same vertical axis.<br /> On Grid as point requests only requests on variables with the same vertical level are supported</span></td>
+				<td><span>Name of variables, separated by ',' (comma) or "all" to request all variables</span></td>
 				<td>&nbsp;</td>
 			</tr>
 			<tr>
 				<td>latitude</td>
 				<td>no</td>
-				<td><span>Must be within the data(*). If latitude is provided longitude must be provided too(*).</span></td>
+				<td><span>Must be within the data(*). If latitude is provided longitude must be provided too.</span></td>
 				<td><span>In Grid As Point requests latitude of the
 						point.</span></td>
 				<td>&nbsp;</td>
@@ -287,13 +291,18 @@ span.bold {
 				<td>1</td>
 			</tr>
 			<tr>
+				<td>vertStride</td>
+				<td>no</td>
+				<td>Only for grid requests. If the param vertCoord is provided vertStride does not have effect.</td>
+				<td>Take only every nth level on the vertical axis.</td>
+				<td>1</td>
+			</tr>			
+			<tr>
 				<td>vertCoord</td>
 				<td>no</td>
-				<td>Requested variables must have the same vertical levels.
-				</td>
+				<td>On requests with vertCoord all requested variables must have the same vertical levels.</td>
 				<td>&nbsp;</td>
-				<td>If the requested variables have vertical levels, all the
-					vertical levels will be returned</td>
+				<td>If the requested variables have vertical levels, all the vertical levels will be returned</td>
 			</tr>
 			<tr>
 				<td>accept</td>

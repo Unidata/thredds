@@ -129,8 +129,8 @@ class GridDataController extends  AbstratNcssDataRequestController{
 		if(checkBB(maxBB, requestedBB)){        																	
 			Range zRange = null;
 			//Request with zRange --> adds a limitation: only variables with the same vertical level???
-			if(params.getVertCoord()!=null)
-				zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVar());
+			if(params.getVertCoord()!=null || params.getVertStride() > 1)
+				zRange = getZRange(getGridDataset(), params.getVertCoord(),  params.getVertStride(), params.getVar());
 				
 				List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
 				CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get( wantedDates.size()-1 ));
@@ -177,8 +177,8 @@ class GridDataController extends  AbstratNcssDataRequestController{
 		ProjectionRect rect =new ProjectionRect( minx, miny , maxx, maxy );						
 		Range zRange = null;
 		//Request with zRange --> adds a limitation: only variables with the same vertical level???
-		if(params.getVertCoord()!=null)
-			zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVar());
+		if(params.getVertCoord()!=null ||params.getVertStride() > 1 )
+			zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVertStride(), params.getVar());
 		
 		List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
 		CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get( wantedDates.size()-1 ));
@@ -301,7 +301,7 @@ class GridDataController extends  AbstratNcssDataRequestController{
 		return new LatLonRect( new LatLonPointImpl(params.getSouth(), params.getWest()),  new LatLonPointImpl(params.getNorth(), params.getEast()));														
 	}
 	
-	private Range getZRange(GridDataset gds, Double verticalCoord, List<String> vars) throws OutOfBoundariesException{
+	private Range getZRange(GridDataset gds, Double verticalCoord, Integer vertStride, List<String> vars) throws OutOfBoundariesException{
 		
 		boolean hasVerticalCoord = false;
 		Range zRange = null;
@@ -331,9 +331,30 @@ class GridDataController extends  AbstratNcssDataRequestController{
 	    	  }catch(InvalidRangeException ire){
 	    		  throw new OutOfBoundariesException( "Invalid vertical level: " + ire.getMessage());
 	    	  }	  
-	        // theres also a vertStride, but not needed since only 1D slice is allowed
+	        // there's also a vertStride, but not needed since only 1D slice is allowed
 	      }		
+		}else{//No vertical range was provided, we get the zRange with the zStride (1 by default)
+			
+			if(vertStride >1){
+		    	  try{
+		    		zRange = new Range(0,  0, vertStride); 
+		    		for (String varName : vars) {
+		    			  GridDatatype grid = gds.findGridDatatype(varName);
+		    			  GridCoordSystem gcs = grid.getCoordinateSystem();
+		    			  CoordinateAxis1D vaxis = gcs.getVerticalAxis();
+		    			  if( vaxis != null ){
+		    				  //Range vRange = new Range(0,  (int)vaxis.getSize()-1, 1);		    				  
+		    				  zRange = new Range( zRange.first(), zRange.last() > vaxis.getSize() ?  zRange.last() : (int)vaxis.getSize()-1, vertStride);
+		    			  } 
+		    		  }
+		    	  }catch(InvalidRangeException ire){
+		    		  throw new OutOfBoundariesException( "Invalid vertical stride: " + ire.getMessage());
+		    	  }				
+				
+				
+			}
 		}
+		
 	    return zRange;
 	}
 	

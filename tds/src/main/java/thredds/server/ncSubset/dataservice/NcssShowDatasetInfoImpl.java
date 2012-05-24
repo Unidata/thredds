@@ -50,9 +50,9 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 	    		
 	    		InputStream xslt = getXSLT(isPoint ? "/WEB-INF/xsl/ncssGridAsPoint.xsl" : "/WEB-INF/xsl/ncssGrid.xsl");
 	    		Document doc = writer.makeGridForm();
-	    		Element root = doc.getRootElement();
-	    		root.setAttribute("location", datsetUrlPath);	    		
 	    		
+	    		Element root = doc.getRootElement();
+	    		root.setAttribute("location", datsetUrlPath);	    			    		
 	    		Transformer xslTransformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslt));
 	    		String context= servletContext.getContextPath();
 	    		xslTransformer.setParameter("tdsContext", context);
@@ -61,10 +61,9 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 	    		xslTransformer.transform(in, out);  		
 	    		Document html =out.getDocument();
 	    		
-	    		//XSLTransformer transformer = new XSLTransformer(xslt);
-	    		//Document html = transformer.transform(doc);
 	    		XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
 	    		infoString = fmt.outputString(html);
+
 
 	      }catch(IOException ioe){
 		        log.error("IO error opening xsl", ioe);
@@ -72,6 +71,7 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 	      }catch (Throwable e) {
 	        log.error("ForecastModelRunServlet internal error", e);
 	        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+	        
 	        //if (!res.isCommitted())
 	        //  res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
 	        //return;

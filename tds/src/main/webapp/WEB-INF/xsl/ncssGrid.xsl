@@ -124,11 +124,11 @@
 
               <td>
                 <h3>Choose Spatial Subset:</h3>
-                <input type="radio" name="spatial" value="all" checked="checked">
+                <!-- input type="radio" name="spatial" value="all" checked="checked">
                   <b>All</b>
-                </input>
+                </input-->
                 <br/>
-                <input type="radio" name="spatial" value="bb">
+                <input type="radio" name="spatial" value="bb" checked="checked">
                   <b>Bounding Box (decimal degrees):</b>
                   <blockquote>
                     <blockquote>
@@ -154,11 +154,11 @@
                 <br/>
 
                 <h3>Choose Time Subset:</h3>
-                <input type="radio" name="temporal" value="all" checked="checked">
+                <!-- input type="radio" name="temporal" value="all" checked="checked">
                   <b>All</b>
-                </input>
+                </input-->
                 <br/>
-                <input type="radio" name="temporal" value="range">
+                <input type="radio" name="temporal" value="range" checked="checked">
                   <b>Time Range:</b>
                   <blockquote>Starting:
                     <input type="text" name="time_start" size="20" value="{gridForm/TimeSpan/begin}"/>
@@ -179,8 +179,10 @@
                   <input type="text" name="vertCoord" size="10"/>
                   <br/>
                 </blockquote>
-                <br/>
-
+                <strong>Vertical Stride:</strong>
+                <input type="text" name="vertStride" size="5" value="1"/>
+                <br/>                
+				<br/>
                 <strong>Add 2D Lat/Lon to file (if needed for CF compliance)</strong>
                 <br/>
                 <input type="checkbox" name="addLatLon" value="true"/>Add Lat/Lon variables
