@@ -53,6 +53,7 @@ import org.springframework.validation.BindingResult;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.InvalidBBOXException;
+import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
@@ -94,21 +95,24 @@ public class TemporalSpaceSubsettingTest {
 		
 		
 		return Arrays.asList( new Object[][]{
-				{ 1, PathInfoParams.getPatInfo().get(4), null , null, null, null, null }, //No time subset provided
-				{ 6, PathInfoParams.getPatInfo().get(3), "all", null, null, null, null }, //Requesting all
-				{ 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T12:00:00.000Z", null, null, null }, //Single time on singleDatase				
-				{ 6, PathInfoParams.getPatInfo().get(3), ""   , null, "2012-04-18T12:00:00.000Z", "2012-04-19T18:00:00.000Z", null }, //Time series on Best time series
-				{ 5, PathInfoParams.getPatInfo().get(3), ""   , null, "2012-04-18T12:00:00.000Z", null, "PT24H" } //Time series on Best time series
+				{ 1, PathInfoParams.getPatInfo().get(4), null , null, null, null, null, null }, //No time subset provided
+				{ 6, PathInfoParams.getPatInfo().get(3), "all", null, null, null, null, null }, //Requesting all
+				{ 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T12:00:00.000Z", null, null, null, null }, //Single time on singleDataset
+				{ 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T15:30:00.000Z", "PT3H", null, null, null }, //Single time in range with time_window 
+				{ 6, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", "2012-04-19T18:00:00.000Z", null }, //Time series on Best time series
+				{ 5, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", null, "PT24H" } //Time series on Best time series
 				
 			});
 	}
 	
-	public TemporalSpaceSubsettingTest(int expectedLengthTimeDim, String pathInfoForTest,String temporal, String time, String time_start, String time_end, String time_duration){
+	public TemporalSpaceSubsettingTest(int expectedLengthTimeDim, String pathInfoForTest,String temporal, String time, String time_window, String time_start, String time_end, String time_duration){
 		lengthTimeDim = expectedLengthTimeDim;
 		pathInfo = pathInfoForTest;		
 		params = new GridDataRequestParamsBean();
 		params.setTemporal(temporal);
 		params.setTime(time);
+		params.setTime_window(time_window);
+		params.setTime_duration(time_duration);
 		params.setTime_start(time_start);
 		params.setTime_end(time_end);
 		params.setTime_duration(time_duration);
@@ -130,7 +134,7 @@ public class TemporalSpaceSubsettingTest {
 	}
 	
 	@Test
-	public void shouldGetTimeRange() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, UnsupportedOperationException{
+	public void shouldGetTimeRange() throws NcssException, InvalidRangeException, ParseException, IOException{
 		
 		gridDataController.getGridSubset(params, validationResult, response);
 		

@@ -1,7 +1,5 @@
 package thredds.server.ncSubset.validation;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -30,18 +28,34 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 		
 		constraintValidatorContext.disableDefaultConstraintViolation();
 		
-		boolean isValid =false;
+		boolean isValid =true;
 		String time = params.getTime();
+		String time_window = params.getTime_window();
 		
 		if( time !=null ){
 			
-		
-			return validateISOString( time,"{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.parseerror.param.time}", constraintValidatorContext);
+			if( time_window != null){
+				try{
+					TimeDuration tdTime_window;
+					tdTime_window =new TimeDuration(time_window);
+					
+				}catch(ParseException pe){
+					isValid = false;
+					constraintValidatorContext
+					.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.parseerror.param.time_window}")
+					.addConstraintViolation();					
+				}	
+			}			
+			
+			return isValid && validateISOString( time,"{thredds.server.ncSubset.validation.ncsstimeparamsvalidator.message.parseerror.param.time}", constraintValidatorContext);
+			
+			
 		}
 		
 		String time_start = params.getTime_start();
 		String time_end = params.getTime_end();
 		String time_duration = params.getTime_duration();
+		
 		
 		//if all of them are null --> returns the whole time series
 		//so all null are valid parameters
@@ -74,7 +88,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 					.addConstraintViolation();					
 				}	
 			}
-			
+									
 			//check time_start < time_end
 			if( isValid && time_start != null && time_end != null  ){
 				Date start = isoString2Date(time_start);
@@ -124,8 +138,7 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 	  }
 	  
 	  private boolean validateISOString(String isoString, String msg, ConstraintValidatorContext constraintValidatorContext){
-		    		  	
-		  	
+		    		  		  	
 		  	if("present".equals(isoString)) return true;
 		  	
 		  	boolean isValid = true;
@@ -140,27 +153,13 @@ public class TimeParamsValidator implements ConstraintValidator<TimeParamsConstr
 				constraintValidatorContext
 				.buildConstraintViolationWithTemplate(msg)
 				.addConstraintViolation();				
-			}
-		  	
-			/*Date date = isoString2Date(isoString);
-			if(date != null){
-				isValid = true;
-				
-			}else{
-				//Invalid format for param time!!!
-				constraintValidatorContext
-				.buildConstraintViolationWithTemplate(msg)
-				.addConstraintViolation();				
-			}*/
-		  	
+			}		  			  
 		  	return isValid;  
 	  }
 	  
 	  private Date isoString2Date(String isoString){
 		  
 		  if("present".equals(isoString)) return new Date();
-		  
-		  //return CalendarDateFormatter.parseISODate(isoString);
 		  return CalendarDateFormatter.isoStringToDate(isoString);
 	  }
 }

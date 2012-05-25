@@ -52,16 +52,12 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.mvc.LastModified;
 
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
+import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
-import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DataRootHandler;
-import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -109,11 +105,17 @@ public abstract class AbstractNcssController implements LastModified{
 	 * @return
 	 * @throws OutOfBoundariesException
 	 * @throws ParseException
+	 * @throws TimeOutOfWindowException 
 	 */
-	protected List<CalendarDate> getRequestedDates(GridDataset gds, RequestParamsBean params) throws OutOfBoundariesException, ParseException{
+	protected List<CalendarDate> getRequestedDates(GridDataset gds, RequestParamsBean params) throws OutOfBoundariesException, ParseException, TimeOutOfWindowException{
 		
 		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds, params.getVar());
-		
+		long time_window =0;
+		if( params.getTime_window() != null ){
+			TimeDuration dTW = new TimeDuration(params.getTime_window());
+			time_window = (long)dTW.getValueInSeconds()*1000;
+		}		
+				
 		//Check param temporal=all (ignore any other value) --> returns all dates
 		if(params.getTemporal()!= null && params.getTemporal().equals("all") ){			
 			return gap.getDates();			
@@ -121,28 +123,40 @@ public abstract class AbstractNcssController implements LastModified{
 			if(params.getTime()==null && params.getTime_start()==null && params.getTime_end()==null && params.getTime_duration()==null ){
 				//Closest to present
 				List<CalendarDate> closestToPresent = new ArrayList<CalendarDate>();
+				
 				CalendarDate now = CalendarDate.of(new Date());
 				CalendarDate start = gap.getDates().get(0);
 				CalendarDate end  = gap.getDates().get(gap.getDates().size()-1);
 				if( now.isBefore(start) ){ 
-					closestToPresent.add(start);
-					return closestToPresent;
+					//now = start;
+					if( time_window <= 0 || Math.abs(now.getDifferenceInMsecs(start)) < time_window ){
+						closestToPresent.add(start);					
+						return closestToPresent;
+					}else{
+						throw new TimeOutOfWindowException("There is not time within the provided time window");
+					}	
 				}
-				if( now.isAfter(end) ){ 
-					closestToPresent.add(end);
-					return closestToPresent;
+				if( now.isAfter(end) ){
+					//now = end;
+					if( time_window <=0 || Math.abs(now.getDifferenceInMsecs(end)) < time_window ){
+						closestToPresent.add(end);
+						return closestToPresent;
+					}else{
+						throw new TimeOutOfWindowException("There is not time within the provided time window");
+					}	
 				}
-				//now is in range				
-				return  NcssRequestUtils.wantedDates(gap, CalendarDateRange.of(now,now));				
+								
+				return  NcssRequestUtils.wantedDates(gap, CalendarDateRange.of(now,now), time_window);				
 				
 				}
 			}
 		//We should have a time or a timeRange...
+		if(params.getTime_window()!=null && params.getTime()!=null){
+			DateRange dr = new DateRange( new DateType(params.getTime(), null, null ), null, new TimeDuration(params.getTime_window()), null );
+			time_window = CalendarDateRange.of(dr).getDurationInSecs()*1000;			
+		}
 		CalendarDateRange dates = getRequestedDateRange(params);		
-		return NcssRequestUtils.wantedDates(gap, dates );
-				
-
-		
+		return NcssRequestUtils.wantedDates(gap, dates, time_window );
 	}
 	
 	/** 
@@ -153,28 +167,15 @@ public abstract class AbstractNcssController implements LastModified{
 	 */
 	CalendarDateRange getRequestedDateRange(RequestParamsBean params) throws ParseException{
 						
-		if(params.getTime()!=null){
-			
-			CalendarDate date=null;
-			
+		if(params.getTime()!=null){			
+			CalendarDate date=null;			
 			if( params.getTime().equalsIgnoreCase("present") ){
 				date =CalendarDate.of(new Date());
 			}else{
-				
-				//DateTime dt = new DateTime(params.getTime());
 				date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );				
-			}
-						
-			return CalendarDateRange.of(date,date);
-		
-		}/*else{
-			if (params.getTime_start()==null && params.getTime_end()==null && params.getTime_duration()==null) {
-				//No param times were provided --> closest time to present
-				CalendarDate date= CalendarDate.of(new Date());
-				return CalendarDateRange.of(date,date);			
-			}
-		}*/
-	
+			}						
+			return CalendarDateRange.of(date,date);		
+		}	
 		//We should have valid params here...
 		CalendarDateRange dates=null;
 		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null), new DateType(params.getTime_end(), null, null), new TimeDuration(params.getTime_duration()), null );		

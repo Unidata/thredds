@@ -32,6 +32,9 @@ public class RequestParamsBean {
 	@Valid
 	private String time_duration;
 	
+	@Valid
+	private String time_window;
+	
 	private String time;
 	
 	private String temporal;
@@ -70,6 +73,14 @@ public class RequestParamsBean {
 	public String getTime(){
 		return this.time;
 	}
+
+	public void setTime_window(String time_window){
+		this.time_window = time_window;
+	}
+	
+	public String getTime_window(){
+		return this.time_window;
+	}	
 	
 	public void setTemporal(String temporal){
 		this.temporal = temporal;

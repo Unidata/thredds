@@ -79,7 +79,7 @@ public class StationCollectionStreamTest {
 		int start = Math.min(randInt, randIntNext);
 		int end = Math.max(randInt, randIntNext);
 		CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));
-		wantedDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range);				
+		wantedDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range,0);				
 	
 	}
 	

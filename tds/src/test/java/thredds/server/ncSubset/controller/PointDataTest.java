@@ -81,13 +81,14 @@ public class PointDataTest {
 		int randInt =     rand.nextInt( dates.size());
 		int randIntNext = rand.nextInt(dates.size());
 		int start = Math.min(randInt, randIntNext);
-		int end = Math.max(randInt, randIntNext);		
-		
+		int end = Math.max(randInt, randIntNext);				
 		String startDate= dates.get(start).toString();
 		params.setTime_start(startDate);	
 		String endDate= dates.get(end).toString();
 		params.setTime_end(endDate);
-		params.setPoint(true);
+		params.setPoint(true);		
+		
+	
 		params.setAccept("csv");
 		//params.setVertCoord(300.0);
 		result = new BeanPropertyBindingResult(params, "params");

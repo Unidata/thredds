@@ -57,6 +57,7 @@ import thredds.server.ncSubset.exception.InvalidBBOXException;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
+import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
@@ -90,7 +91,7 @@ class GridDataController extends  AbstratNcssDataRequestController{
 	private long maxFileDownloadSize = -1L; 
 	
 	@RequestMapping(value = "**", params = { "!latitude","!longitude", "var"})
-	void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response )throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException, UnsupportedOperationException{
+	void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response )throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException, UnsupportedOperationException, TimeOutOfWindowException{
 		
 		if( validationResult.hasErrors() ){			
 			handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult );			
@@ -116,7 +117,7 @@ class GridDataController extends  AbstratNcssDataRequestController{
 		}				
 	}
 	
-	private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response )throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException,VariableNotContainedInDatasetException, InvalidBBOXException{
+	private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response )throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException,VariableNotContainedInDatasetException, InvalidBBOXException, TimeOutOfWindowException{
 		
 		LatLonRect maxBB = getGridDataset().getBoundingBox();
 		LatLonRect requestedBB = setBBForRequest(params,  gridDataset);			
@@ -148,7 +149,7 @@ class GridDataController extends  AbstratNcssDataRequestController{
 	}
 	
 
-	private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response ) throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException, InvalidBBOXException{
+	private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response ) throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException, InvalidBBOXException, TimeOutOfWindowException{
 		
 		//Check coordinate params: maxx, maxy, minx, miny
 		Double minx = params.getMinx();

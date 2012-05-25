@@ -48,6 +48,7 @@ import org.springframework.validation.BindingResult;
 
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncSubset.exception.RequestTooLargeException;
+import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
@@ -101,6 +102,20 @@ public class GridRequestsExeceptionTest {
 		vars.add("all");
 		params.setVar(vars);
 		params.setVertCoord(200.);
+		validationResult = new BeanPropertyBindingResult(params, "params");
+		gridDataController.getGridSubset(params, validationResult, response);		
+	}
+	
+	@Test(expected=TimeOutOfWindowException.class)
+	public void testTimeOutOfWindowException() throws Exception{
+		GridDataRequestParamsBean params;
+		BindingResult validationResult;
+		params = new GridDataRequestParamsBean();		
+		List<String> vars = new ArrayList<String>();
+		vars.add("all");
+		params.setVar(vars);
+		params.setTime("2012-04-18T15:00:00Z");
+		params.setTime_window("PT1H");
 		validationResult = new BeanPropertyBindingResult(params, "params");
 		gridDataController.getGridSubset(params, validationResult, response);		
 	}	
