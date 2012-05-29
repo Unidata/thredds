@@ -37,6 +37,8 @@ public class GridDataRequestParamsBean extends RequestParamsBean {
 	//default
 	//@NotNull(message="timeStride param may not be null")
 	private Integer timeStride = 1;
+	
+	private Integer vertStride=1;
 
 	public Double getNorth() {
 		return north;
@@ -125,6 +127,14 @@ public class GridDataRequestParamsBean extends RequestParamsBean {
 	public void setTimeStride(Integer timeStride) {
 		this.timeStride = timeStride;
 	}
+	
+	public Integer getVertStride() {
+		return vertStride;
+	}
+
+	public void setVertStride(Integer vertStride) {
+		this.vertStride = vertStride;
+	}	
 	
 	/*public LatLonRect getBB(){
 		return new LatLonRect(new LatLonPointImpl(getSouth(), getWest()), new LatLonPointImpl(getNorth(), getEast()));

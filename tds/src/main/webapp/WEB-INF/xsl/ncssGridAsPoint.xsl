@@ -145,9 +145,9 @@
                   <br/>
                   
                   <h3>Choose Time Subset:</h3>
-                  <input type="radio" name="temporal" value="all" checked="checked"> <b>All</b></input>
+                  <!-- input type="radio" name="temporal" value="all" checked="checked"> <b>All</b></input-->
                   <br/>
-                  <input type="radio" name="temporal" value="range"> 
+                  <input type="radio" name="temporal" value="range" checked="checked"> 
                     <b>Time Range:</b>
                     <blockquote>
                       Starting:

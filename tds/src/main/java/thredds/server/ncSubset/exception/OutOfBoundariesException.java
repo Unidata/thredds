@@ -22,9 +22,9 @@ public class OutOfBoundariesException extends NcssException{
 	 * Wraps an exception into an OutOfBoundariesException with a specific message 
 	 * @param message
 	 */		
-	//public OutOfBoundariesException(String message, Exception cause){
-	//	super(message, cause);
-	//}
+	public OutOfBoundariesException(String message, Exception cause){
+		super(message, cause);
+	}
 	
 
 }

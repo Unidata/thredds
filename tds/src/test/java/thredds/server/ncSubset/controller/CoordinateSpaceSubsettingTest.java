@@ -54,12 +54,7 @@ import org.springframework.validation.BindingResult;
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.exception.InvalidBBOXException;
-import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import thredds.server.ncSubset.exception.RequestTooLargeException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
-import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
@@ -97,8 +92,8 @@ public class CoordinateSpaceSubsettingTest {
 				{ new int[][]{ {1,2,2}, {1,2,2} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getProjectionRect().get(0) }, //No vertical levels 
 				{ new int[][]{ {1,1,16,15}, {1,1,16,15} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
 				{ new int[][]{ {1,29,2,93}, {1,29,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), GridDataParameters.getProjectionRect().get(2) }, //Same vertical level (multiple level)
-				//{ new int[][]{ {1,6,5}, {1,29,6,5}, {1,1,6,5} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(0)}, //No vertical levels and vertical levels
-				//{ new int[][]{ {1,1,6,5}, {1,29,6,5} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(0)}, //Different vertical levels							
+				{ new int[][]{ {1,2,93}, {1,29,2,93}, {1,1,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(2)}, //No vertical levels and vertical levels
+				{ new int[][]{ {1,1,2,93}, {1,29,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(2)} //Different vertical levels							
 			});	
 	
 	}
@@ -128,7 +123,7 @@ public class CoordinateSpaceSubsettingTest {
 	}
 	
 	@Test
-	public void shoudSubsetGrid() throws RequestTooLargeException, OutOfBoundariesException, UnsupportedResponseFormatException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, UnsupportedOperationException{
+	public void shoudSubsetGrid() throws NcssException, InvalidRangeException, ParseException, IOException{
 				
 		gridDataController.getGridSubset(params, validationResult, response);
 		

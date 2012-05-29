@@ -191,7 +191,13 @@ public class NetcdfCFWriter {
 //        timeRange = new Range(startIndex, endIndex, stride_time);
 //      }
 
-      Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
+      Range zRangeUse= makeVerticalRange(zRange, vertAxis);
+      /*Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
+      
+      if(zRangeUse !=null){
+    	  zRangeUse=makeVerticalRange(vertAxis, zRangeUse.stride() );
+      }*/
+      
       if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
         grid = grid.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
       }
@@ -395,7 +401,12 @@ public class NetcdfCFWriter {
       }            
       Range x_range = new Range( minxCoord, maxxCoord, horizStride );
             
-      Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
+      Range zRangeUse= makeVerticalRange(zRange, vertAxis);
+      /*Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
+      
+      if(zRangeUse !=null){
+    	  zRangeUse=makeVerticalRange(vertAxis, zRangeUse.stride() );
+      }*/
       
       if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
     	  grid = grid.subset(timeRange, zRangeUse, y_range, x_range);
@@ -511,6 +522,17 @@ public class NetcdfCFWriter {
 
     varList.add(latVar);
     varList.add(lonVar);
+  }
+  
+  private Range makeVerticalRange(Range zRange, CoordinateAxis1D vertAxis) throws InvalidRangeException{
+	  
+      Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
+
+      if(zRangeUse !=null){
+    	  zRangeUse=new Range(0, (int)vertAxis.getSize(), zRangeUse.stride() );
+      }	  
+	  	  
+	  return zRangeUse;
   }
   
   private Range makeTimeRange(CalendarDateRange dateRange, CoordinateAxis1DTime timeAxis, int stride_time  ) throws InvalidRangeException{

@@ -94,7 +94,7 @@ public class PointDataWriterTest {
 		int start = Math.min(randInt, randIntNext);
 		int end = Math.max(randInt, randIntNext);
 		CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));		
-		wDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range);
+		wDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range,0);
 		
 		date = dates.get(randInt);
 		//zAxis = gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();

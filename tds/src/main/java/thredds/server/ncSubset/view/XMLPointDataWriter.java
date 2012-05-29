@@ -111,9 +111,7 @@ class XMLPointDataWriter implements PointDataWriter {
 			while (itVars.hasNext()) {
 				String varName = itVars.next();
 				GridDatatype grid = gridDataset.findGridDatatype(varName);
-				
-				
-
+								
 				if (gap.hasTime(grid, date) && gap.hasVert(grid, targetLevel)) {
 					GridAsPointDataset.Point p = gap.readData(grid, date, targetLevel, point.getLatitude(),	point.getLongitude());
 					if (contVars == 0) {

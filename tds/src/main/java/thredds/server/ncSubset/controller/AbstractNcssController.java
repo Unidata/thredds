@@ -1,3 +1,34 @@
+/*
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package thredds.server.ncSubset.controller;
 
 import java.io.File;
@@ -21,15 +52,12 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.mvc.LastModified;
 
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
+import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DataRootHandler;
-import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -38,7 +66,7 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 
-public class AbstractNcssController implements LastModified{
+public abstract class AbstractNcssController implements LastModified{
 	
 	static private final Logger log = LoggerFactory.getLogger(AbstractNcssController.class);
 	
@@ -77,11 +105,17 @@ public class AbstractNcssController implements LastModified{
 	 * @return
 	 * @throws OutOfBoundariesException
 	 * @throws ParseException
+	 * @throws TimeOutOfWindowException 
 	 */
-	protected List<CalendarDate> getRequestedDates(GridDataset gds, RequestParamsBean params) throws OutOfBoundariesException, ParseException{
+	protected List<CalendarDate> getRequestedDates(GridDataset gds, RequestParamsBean params) throws OutOfBoundariesException, ParseException, TimeOutOfWindowException{
 		
 		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds, params.getVar());
-		
+		long time_window =0;
+		if( params.getTime_window() != null ){
+			TimeDuration dTW = new TimeDuration(params.getTime_window());
+			time_window = (long)dTW.getValueInSeconds()*1000;
+		}		
+				
 		//Check param temporal=all (ignore any other value) --> returns all dates
 		if(params.getTemporal()!= null && params.getTemporal().equals("all") ){			
 			return gap.getDates();			
@@ -89,28 +123,40 @@ public class AbstractNcssController implements LastModified{
 			if(params.getTime()==null && params.getTime_start()==null && params.getTime_end()==null && params.getTime_duration()==null ){
 				//Closest to present
 				List<CalendarDate> closestToPresent = new ArrayList<CalendarDate>();
+				
 				CalendarDate now = CalendarDate.of(new Date());
 				CalendarDate start = gap.getDates().get(0);
 				CalendarDate end  = gap.getDates().get(gap.getDates().size()-1);
 				if( now.isBefore(start) ){ 
-					closestToPresent.add(start);
-					return closestToPresent;
+					//now = start;
+					if( time_window <= 0 || Math.abs(now.getDifferenceInMsecs(start)) < time_window ){
+						closestToPresent.add(start);					
+						return closestToPresent;
+					}else{
+						throw new TimeOutOfWindowException("There is not time within the provided time window");
+					}	
 				}
-				if( now.isAfter(end) ){ 
-					closestToPresent.add(end);
-					return closestToPresent;
+				if( now.isAfter(end) ){
+					//now = end;
+					if( time_window <=0 || Math.abs(now.getDifferenceInMsecs(end)) < time_window ){
+						closestToPresent.add(end);
+						return closestToPresent;
+					}else{
+						throw new TimeOutOfWindowException("There is not time within the provided time window");
+					}	
 				}
-				//now is in range				
-				return  NcssRequestUtils.wantedDates(gap, CalendarDateRange.of(now,now));				
+								
+				return  NcssRequestUtils.wantedDates(gap, CalendarDateRange.of(now,now), time_window);				
 				
 				}
 			}
 		//We should have a time or a timeRange...
+		if(params.getTime_window()!=null && params.getTime()!=null){
+			DateRange dr = new DateRange( new DateType(params.getTime(), null, null ), null, new TimeDuration(params.getTime_window()), null );
+			time_window = CalendarDateRange.of(dr).getDurationInSecs()*1000;			
+		}
 		CalendarDateRange dates = getRequestedDateRange(params);		
-		return NcssRequestUtils.wantedDates(gap, dates );
-				
-
-		
+		return NcssRequestUtils.wantedDates(gap, dates, time_window );
 	}
 	
 	/** 
@@ -121,28 +167,15 @@ public class AbstractNcssController implements LastModified{
 	 */
 	CalendarDateRange getRequestedDateRange(RequestParamsBean params) throws ParseException{
 						
-		if(params.getTime()!=null){
-			
-			CalendarDate date=null;
-			
+		if(params.getTime()!=null){			
+			CalendarDate date=null;			
 			if( params.getTime().equalsIgnoreCase("present") ){
 				date =CalendarDate.of(new Date());
 			}else{
-				
-				//DateTime dt = new DateTime(params.getTime());
 				date = CalendarDate.of( CalendarDateFormatter.isoStringToDate(params.getTime())  );				
-			}
-						
-			return CalendarDateRange.of(date,date);
-		
-		}/*else{
-			if (params.getTime_start()==null && params.getTime_end()==null && params.getTime_duration()==null) {
-				//No param times were provided --> closest time to present
-				CalendarDate date= CalendarDate.of(new Date());
-				return CalendarDateRange.of(date,date);			
-			}
-		}*/
-	
+			}						
+			return CalendarDateRange.of(date,date);		
+		}	
 		//We should have valid params here...
 		CalendarDateRange dates=null;
 		DateRange dr = new DateRange( new DateType(params.getTime_start() , null, null), new DateType(params.getTime_end(), null, null), new TimeDuration(params.getTime_duration()), null );		
@@ -203,63 +236,6 @@ public class AbstractNcssController implements LastModified{
 		}
 		
 		return sf;		
-	}
-	
-	/**
-	 * Checks all requested variables are in the dataset for a Ncss requests. 
-	 * 
-	 * @param gds
-	 * @param params
-	 * @throws VariableNotContainedInDatasetException
-	 * @throws UnsupportedOperationException 
-	 */
-	protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException, UnsupportedOperationException{
-		//Check vars
-		//if var = all--> all variables requested
-		if(params.getVar().get(0).equals("all")){
-			params.setVar(NcssRequestUtils.getAllVarsAsList(getGridDataset()));
-		}/*else{ //all the requested are in dataset
-			for(String var : params.getVar()){						
-				GridDatatype grid = getGridDataset().findGridDatatype(var);
-				if(grid == null) 
-					throw new VariableNotContainedInDatasetException("Variable: "+var+" is not contained in the requested dataset"); 
-			}
-		}*/
-		
-		//Check not only all vars are contained in the grid, also they have the same vertical coords
-		Iterator<String> it = params.getVar().iterator();
-		String varName = it.next();
-		GridDatatype grid = gds.findGridByShortName(varName);
-		if(grid == null) 
-			throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
-		
-		CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
-		CoordinateAxis1D newVertAxis = null;
-		boolean sameVertCoord = true;
-		
-		while(sameVertCoord && it.hasNext()){
-			varName = it.next();
-			grid = gds.findGridByShortName(varName);
-			if(grid == null) 
-				throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
-			
-			newVertAxis = grid.getCoordinateSystem().getVerticalAxis();
-			
-			if( vertAxis != null ){
-				if( vertAxis.equals(newVertAxis)){
-					vertAxis = newVertAxis;
-				}else{
-					sameVertCoord = false;
-				}
-			}else{
-				if(newVertAxis != null) sameVertCoord = false;
-			}	
-		}
-		
-		if(!sameVertCoord)
-			throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Only requests on variables with same vertical levels are supported.");
-		
-		
 	}
 	
 	

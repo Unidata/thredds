@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import thredds.server.config.TdsContext;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import ucar.nc2.Dimension;
+import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -57,7 +57,7 @@ public final class NcssRequestUtils implements ApplicationContextAware{
 	
 	
 
-	public static List<CalendarDate> wantedDates(GridAsPointDataset gap, CalendarDateRange dates) throws OutOfBoundariesException{
+	public static List<CalendarDate> wantedDates(GridAsPointDataset gap, CalendarDateRange dates, long timeWindow) throws TimeOutOfWindowException, OutOfBoundariesException{
 
 		CalendarDate start = dates.getStart();
 		CalendarDate end = dates.getEnd();
@@ -70,7 +70,6 @@ public final class NcssRequestUtils implements ApplicationContextAware{
 		
 		List<CalendarDate> wantDates = new ArrayList<CalendarDate>();
 		
-		
 		if(dates.isPoint()){
 	      int best_index = 0;
 	      long best_diff = Long.MAX_VALUE;
@@ -82,6 +81,10 @@ public final class NcssRequestUtils implements ApplicationContextAware{
 	          best_diff = diff;
 	        }
 	      }
+	      if( timeWindow > 0 && best_diff > timeWindow) //Best time is out of our acceptable timeWindow
+	    	  throw new TimeOutOfWindowException("There is not time within the provided time window"); 
+	    	  
+	    	  
 	      wantDates.add(gdsDates.get(best_index));		
 		}else{				
 			for (CalendarDate date : gdsDates) {
