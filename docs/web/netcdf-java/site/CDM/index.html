@@ -9,7 +9,6 @@ pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
-.style1 {font-weight: bold}
 </style>
 </head>
 
@@ -100,6 +99,39 @@ each of the CoordinateAxis in the CoordinateSystem. </p>
   of georeferencing coordinate systems. <em>Time</em> refers to the real date/time of the dataset. <em>Latitude</em> and <em>Longitude</em> identify standard horizontal coordinates. <em>Height</em> and <em>Pressure</em> identify the vertical coordinate.<em> GeoX</em> and <em>GeoY</em> are used in 
   transfomations (eg projections) to <em>Latitude</em>, <em>Longitude</em>. <em>GeoZ</em> is used in vertical transformations to vertical <em>Height</em> or <em>Pressure</em>. <em>RadialAzimuth</em>, <em>RadialElevation</em> and <em>RadialDistance</em> designate polar coordinates and are used for Radial DataTypes. <em>RunTime</em> and <em>Ensemble</em> are used in forecast model output data. Often much more detailed information is required (geoid reference, projection 
   parameters, etc), so these enumerations are quite minimal. </p>
+<h3>Restrictions on CoordinateAxes</h3>
+<p>These are the rules which restrict which Variables can be used as Coordinate Axes:</p>
+<ol>
+  <li><strong>Shared Dimensions</strong>: All dimensions used by a Coordinate Axis must be shared with the data variable. When a variable is part of a Structure, the dimensions used by the parent Structure(s) are considered to be part of the nested Variable. Exceptions to this rule:
+    <ol>
+      <li> String  valued Coordinate Axes may be represented by  variables of type char with a non-shared dimension representing the string length.</li>
+      <li>DSG joins.</li>
+    </ol>
+  </li>
+  <li><strong>Structures and nested Structures</strong>: When a variable is part of a Structure, the dimensions used by the parent Structure(s) are considered to be part of the nested Variable. Therefore, all dimensions used by the parent Structure(s) of a Coordinate Axis must be shared with the data variable.</li>
+  <li><strong>Variable length dimensions and Sequences</strong>: A variable length dimension is always a private (non-shared) dimension, and therefore cannot be used by a Coordinate Axis, except when  the data variable and coordinate variable are in the same Structure. For example, a Sequence is a variable length array of Structures, and the following examples are legitimate uses of coordinate axes.</li>
+</ol>
+<blockquote>
+  <pre>
+Structure {
+  float lat;
+  float lon;
+  float data;
+    data:coordinates = &quot;lat lon&quot;;
+} sample(*)</pre>
+  <pre>
+Structure {
+  float lat;
+  float lon; 
+  
+  Structure {
+    float altitude;
+    float data;
+      data:coordinates = &quot;lat lon altitude&quot;;
+  } profile(*)
+
+} station(*)</pre>
+</blockquote>
 <p>Formally, a Variable is thought of as a sampled function whose domain is an 
   index range; each CoordinateAxis is a scalar valued function on the same range; 
   each CoordinateSystem is therefore a vector-valued function on the same range 
@@ -141,13 +173,13 @@ With these Feature Types objects, mapping into other data models like ISO/OGC be
 <ul>
   <li><a href="../reference/FeatureDatasets/Overview.html">FeatureDataset APIs</a></li>
   <li><a href="../reference/FeatureDatasets/PointFeatures.html">Point Feature APIs</a></li>
-  <li>CF Discrete Sampling Geometries conventions (final) <a href="http://www.unidata.ucar.edu/staff/caron/public/CFch9-may10.pdf">pdf</a> (May 2011) </li>
+  <li>CF Discrete Sampling Geometries conventions (final) <a href="http://www.unidata.ucar.edu/staff/caron/public/CFch9-may10.pdf">pdf</a> (May 2012) </li>
   <li>CDM Feature Types <em> draft </em><a href="../archive/CDMfeatures.doc">doc</a></li>
   <li>CDM Point Feature Types <em> draft </em><a href="../archive/CDMpoints.doc">doc</a></li>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated May 2011
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated May 2012
 </address>
 <p>&nbsp;</p>
 </body>
