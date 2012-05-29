@@ -79,6 +79,8 @@ public class FeatureDatasetFactoryManager {
     registerFactory(FeatureType.RADIAL, RadialDatasetStandardFactory.class);
     registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
 
+    registerFactory(FeatureType.UGRID, "ucar.nc2.ft.ugrid.UGridDatasetStandardFactory");
+
     // further calls to registerFactory are by the user
     userMode = true;
   }
@@ -87,13 +89,20 @@ public class FeatureDatasetFactoryManager {
   /**
    * Register a class that implements a FeatureDatasetFactory.
    *
-   * @param className name of class that implements FeatureDatasetFactory.
    * @param datatype  scientific data type
-   * @throws ClassNotFoundException if loading error
+   * @param className name of class that implements FeatureDatasetFactory.
+   * @return true if successfully loaded
    */
-  static public void registerFactory(FeatureType datatype, String className) throws ClassNotFoundException {
-    Class c = Class.forName(className);
-    registerFactory(datatype, c);
+  static public boolean registerFactory(FeatureType datatype, String className) {
+    try {
+      Class c = Class.forName(className);
+      registerFactory(datatype, c);
+      return true;
+
+    } catch (ClassNotFoundException e) {
+      // ok - these are optional
+      return false;
+    }
   }
 
   /**
@@ -352,6 +361,10 @@ public class FeatureDatasetFactoryManager {
 
     if (want == FeatureType.GRID) {
       return facType.isGridFeatureType();
+    }
+
+    if (want == FeatureType.UGRID) {
+      return facType.isUnstructuredGridFeatureType();
     }
 
     return false;
