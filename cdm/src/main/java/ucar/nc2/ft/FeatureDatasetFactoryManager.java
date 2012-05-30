@@ -190,6 +190,14 @@ public class FeatureDatasetFactoryManager {
       this.c = c;
       this.factory = factory;
     }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("featureType=").append(featureType);
+      sb.append(", factory=").append(factory.getClass());
+      return sb.toString();
+    }
   }
 
   /**
@@ -282,7 +290,7 @@ public class FeatureDatasetFactoryManager {
     if (ft != null)
       return wrap(ft, ncd, task, errlog);
 
-    // analyse the coordsys rank
+    // grids dont usually have a FeatureType attribute, so check these fist
     if (isGrid(ncd.getCoordinateSystems())) {
       ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset(ncd);
       if (gds.getGrids().size() > 0) {
@@ -305,7 +313,7 @@ public class FeatureDatasetFactoryManager {
       }
     }
 
-    // Factory not found
+    // try again as a Grid
     if (null == useFactory) {
       // if no datatype was requested, give em a GridDataset only if some Grids are found.
       ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset(ncd);
@@ -313,8 +321,9 @@ public class FeatureDatasetFactoryManager {
         return gds;
     }
 
+    // Fail
     if (null == useFactory) {
-      // errlog.format("**Failed to find Datatype Factory for= %s\n", ncd.getLocation());
+      errlog.format("Failed (wrapUnknown) to find Datatype Factory for= %s\n", ncd.getLocation());
       return null;
     }
 

@@ -125,8 +125,10 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
   private class StandardProfileFeature extends ProfileFeatureImpl {
     Cursor cursor;
     StandardProfileFeature( Cursor cursor, double time) {
-      super( timeUnit.makeStandardDateString(time), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
+      super( ft.getFeatureName(cursor), ft.getLatitude(cursor), ft.getLongitude(cursor), time, -1);
       this.cursor = cursor;
+      if (name.equalsIgnoreCase("unknown"))
+        name = timeUnit.makeStandardDateString(time); // use time as the name
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time
         try {

@@ -112,8 +112,9 @@ public class FeatureScan {
 
         } else if (prev != null) {
 
-          if (name.endsWith(".ncml") && prev.getName().equals(stem + ".nc")) {
-            files2.remove(prev);
+          if (name.endsWith(".ncml")) {
+            if (prev.getName().equals(stem) || prev.getName().equals(stem + ".nc"))
+               files2.remove(prev);
           } else if (name.endsWith(".bz2")) {
             if (prev.getName().equals(stem)) files2.remove(f);
           } else if (name.endsWith(".gz")) {
