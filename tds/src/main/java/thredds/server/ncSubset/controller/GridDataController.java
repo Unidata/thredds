@@ -376,6 +376,8 @@ class GridDataController extends  AbstratNcssDataRequestController{
 	    
 	    String url = buildCacheUrl(pathname);
 	    
+	    //httpHeaders.set("Content-Type", "application/octet-stream" );
+	    httpHeaders.set("Content-Type", "application/x-netcdf" );	    
     	httpHeaders.set("Content-Location", url );
     	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");	    
 
