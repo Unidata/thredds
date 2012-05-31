@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -227,7 +228,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     thredds.inventory.bdb.MetadataManager.closeAll();
     CollectionUpdater.INSTANCE.shutdown();
     startupLog.info("CdmInit shutdown");
-   
+    MDC.clear();
   }
 
   private class CacheScourTask extends TimerTask {

@@ -227,7 +227,14 @@ private   static String unescapeQueryDecoder(String urlString) {
     if (baseDir == null) return filepath;
     File file = new File(filepath);
     if (file.isAbsolute()) return filepath;
-    return baseDir + filepath;
+
+    if (baseDir.startsWith("file:"))
+      baseDir = baseDir.substring(5);
+
+    File base = new File(baseDir);
+    if (!base.isDirectory())
+      base = base.getParentFile();
+    return base.getAbsolutePath() + "/" + filepath;
   }
 
   ///////////////////////////////////////////////////////////////////

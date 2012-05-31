@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ncml;
 
+import thredds.filesystem.MFileOS;
 import thredds.inventory.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -554,7 +555,8 @@ public abstract class Aggregation {
    * Encapsolates a NetcdfFile that is a component of the aggregation.
    */
   public class Dataset implements Comparable {
-    protected final String location; // location attribute on the netcdf element
+    MFile mfile;
+    // protected final String location; // location attribute on the netcdf element
     protected String id; // id attribute on the netcdf element
 
     // deferred opening
@@ -564,18 +566,18 @@ public abstract class Aggregation {
 
     protected Object extraInfo;
 
-    /**
+    /*
      * For subclasses.
      *
      * @param location location attribute on the netcdf element
-     */
+     *
     protected Dataset(String location) {
       this.location = (location == null) ? null : StringUtil2.substitute(location, "\\", "/");
-    }
+    }  */
 
     protected Dataset(MFile mfile) {
-      this( mfile.getPath());
-      this.cacheLocation = location;
+      this.mfile = mfile;
+      this.cacheLocation = mfile.getPath();
       this.enhance = (Set<NetcdfDataset.Enhance>) mfile.getAuxInfo();
     }
 
@@ -591,10 +593,10 @@ public abstract class Aggregation {
      * @param reader    factory for reading this netcdf dataset; if null, use NetcdfDataset.open( location)
      */
     protected Dataset(String cacheLocation, String location, String id, EnumSet<NetcdfDataset.Enhance> enhance, ucar.nc2.util.cache.FileFactory reader) {
-      this(location);
+      this.mfile = MFileOS.getExistingFile(location);
       this.cacheLocation = cacheLocation;
       this.id = id;
-      //this.enhance = enhance;
+      //this.enhance = enhance;  // LOOK why ??
       this.reader = reader;
     }
 
@@ -604,7 +606,15 @@ public abstract class Aggregation {
      * @return the location of this Dataset
      */
     public String getLocation() {
-      return location;
+      return (mfile == null) ? cacheLocation : mfile.getPath();
+    }
+
+    /**
+     *
+     * @return MFile or null
+     */
+    public MFile getMFile() {
+      return mfile;
     }
 
     public String getCacheLocation() {
@@ -613,7 +623,7 @@ public abstract class Aggregation {
 
     public String getId() {
       if (id != null) return id;
-      if (location != null) return location;
+      if (mfile != null) return mfile.getPath();
       return Integer.toString(this.hashCode());
     }
 
@@ -655,7 +665,7 @@ public abstract class Aggregation {
     }
 
     public void show(Formatter f) {
-      f.format("   %s%n", location);
+      f.format("   %s%n", mfile.getPath());
     }
 
     protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {
@@ -721,18 +731,16 @@ public abstract class Aggregation {
       if (this == oo) return true;
       if (!(oo instanceof Dataset)) return false;
       Dataset other = (Dataset) oo;
-      if (location != null)
-        return location.equals(other.location);
-      return super.equals(oo);
+      return getLocation().equals(other.getLocation());
     }
 
     public int hashCode() {
-      return (location != null) ? location.hashCode() : super.hashCode();
+      return getLocation().hashCode();
     }
 
     public int compareTo(Object o) {
       Dataset other = (Dataset) o;
-      return location.compareTo( other.location);
+      return getLocation().compareTo( other.getLocation());
     }
   } // class Dataset
 

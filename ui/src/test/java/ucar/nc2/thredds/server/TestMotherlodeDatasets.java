@@ -258,8 +258,8 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     HTTPSession.setGlobalUserAgent("TestMotherlodeModels");
 
     //String problemCat = "http://localhost:8080/thredds/catalog/NOAA/CFSR/timeseries/catalog.xml";
-    //String problemCat = "http://localhost:8080/thredds/catalog/grib/CFSR/catalog.xml";
-    String problemCat = "http://motherlode.ucar.edu:9080/thredds/grib/NCDC/CFSR/catalog.xml";
+    String problemCat = "http://localhost:8080/thredds/enhancedCatalog.xml";
+    //String problemCat = "http://motherlode.ucar.edu:9080/thredds/grib/NCDC/CFSR/catalog.xml";
 
     String server = "http://motherlode.ucar.edu:9080/thredds";
     String catalog = "/catalog.xml";
@@ -267,7 +267,6 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 
-    // HEY LOOK
     //ucar.nc2.dods.DODSNetcdfFile.setAllowSessions( true);
 
     JFrame frame = new JFrame("TestTDS");
@@ -280,8 +279,8 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    //TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL_DIRECT, false);
-    TestMotherlodeDatasets job = new TestMotherlodeDatasets("dev", server+catalog, CatalogCrawler.Type.random_direct, false);
+    TestMotherlodeDatasets job = new TestMotherlodeDatasets("problem", problemCat, CatalogCrawler.Type.all_direct, false);
+    // TestMotherlodeDatasets job = new TestMotherlodeDatasets("dev", server+catalog, CatalogCrawler.Type.random_direct, false);
 
     frame.getContentPane().add(main);
     frame.pack();

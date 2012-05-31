@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.servlet;
+package thredds.servlet.tomcat;
 
 import org.apache.catalina.servlets.WebdavServlet;
 import org.apache.catalina.Globals;

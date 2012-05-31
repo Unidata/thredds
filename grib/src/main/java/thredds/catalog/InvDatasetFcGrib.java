@@ -162,7 +162,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     needsProto.set(true);
 
     // no actual work, wait until next call to updateCollection (??)
-    // not sure proto is used in GC
+    // not sure proto is used in GribFc
   }
 
   @Override
@@ -179,7 +179,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           return (StateGrib) state;
       }
 
-     // if this is the TDS, and its using the TDM, then your not allowed to update
+     // if this is the TDS, and its using the TDM, then you are not allowed to update
       boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
 
       // update local copy of state, then switch all at once
@@ -218,9 +218,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   @Override
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {
     //logger.debug("{}: make catalog for {} {}", name, match, baseURI);
-    StateGrib localState = null;
+    StateGrib localState;
     try {
-      localState = (StateGrib) checkState();
+      localState = checkState();
     } catch (IOException e) {
       logger.error("Error in checkState", e);
       return null;
@@ -238,8 +238,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       if (localState.timePartition == null) {
         String[] path = match.split("/");
-        if (path.length < 2) return null;
-        GribCollection.GroupHcs group = localState.gribCollection.findGroupById(path[0]);
+        GribCollection.GroupHcs group;
+        if ((path.length == 1) && (path[0].equals(FILES))) { // single group case
+          group = localState.gribCollection.getGroup(0);
+        } else {
+          if (path.length < 2) return null;
+          group = localState.gribCollection.findGroupById(path[0]);
+        }
         if (group != null) {
           return makeFilesCatalog(localState.gribCollection, group, baseURI, localState);
         }
@@ -301,13 +306,24 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(localState.gribCollection.getGroups());
       Collections.sort(groups);
+      boolean isSingleGroup = (groups.size() == 1);
+
       for (GribCollection.GroupHcs group : groups) {
+        InvDatasetImpl ds;
         String groupId = group.getId();
-        InvDatasetImpl ds = new InvDatasetImpl(this, group.getDescription());
-        //groupId = StringUtil2.replace(groupId, ' ', "_");
-        ds.setUrlPath(this.path + "/" + groupId);
-        ds.setID(id + "/" + groupId);
-        addFileDatasets(ds, groupId);
+
+        if (isSingleGroup) {
+          ds = new InvDatasetImpl(this, getName()+ "-" + COLLECTION);
+          ds.setUrlPath(this.path + "/" + COLLECTION);
+          ds.setID(id + "/" + COLLECTION);
+          addFileDatasets(ds, null);
+
+        } else {
+          ds = new InvDatasetImpl(this, group.getDescription());
+          ds.setUrlPath(this.path + "/" + groupId);
+          ds.setID(id + "/" + groupId);
+          addFileDatasets(ds, groupId);
+        }
 
         // metadata is specific to each group
         ds.tmi.addVariableMapLink( makeMetadataLink( this.path, groupId, VARIABLES));
@@ -450,9 +466,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   // file datasets of the partition catalog are InvCatalogRef pointing to "FileCatalogs"
   private void addFileDatasets(InvDatasetImpl parent, String prefix) {
-    String name = prefix + "/" + FILES;
+    String name = (prefix == null) ? FILES : prefix + "/" + FILES;
     InvCatalogRef ds = new InvCatalogRef(this, FILES, getCatalogHref(name));
-    // ds.setUrlPath(this.path + "/" + FILES);
     ds.finish();
     parent.addDataset(ds);
   }
@@ -486,7 +501,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     for (String f : group.getFilenames()) {
       if (!f.startsWith(topDirectory))
-        System.out.println("HEY");
+        logger.warn("File {} doesnt start with topDir {}", f, topDirectory);
       String fname = f.substring(topDirectory.length() + 1);
       String path = FILES + "/" + fname;
       InvDatasetImpl ds = new InvDatasetImpl(this, fname);
@@ -529,7 +544,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String filename = paths.length == 2 ? paths[1] : null;
 
     if (localState.timePartition == null) {
-      return localState.gribCollection.getGridDataset(paths[0], filename, gribConfig);
+      String groupName=  (paths[0].equals(COLLECTION)) ?  localState.gribCollection.getGroup(0).getId(): paths[0];
+      return localState.gribCollection.getGridDataset(groupName, filename, gribConfig);
 
     } else {
       if (paths.length < 2) return null;

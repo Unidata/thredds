@@ -171,7 +171,7 @@
     <!-- tomcat -->
     <dependency>
       <groupId>org.apache.tomcat</groupId>
-      <artifactId>catalina</artifactId>
+      <artifactId>tomcat-catalina</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -276,6 +276,7 @@
         </includes>
       </testResource>
     </testResources>
+
     <plugins>
 
       <plugin>
@@ -285,6 +286,7 @@
           <skip>${skipTests}</skip>
           <excludes>
             <exclude>thredds/cataloggen/**</exclude>
+            <exclude>thredds/servlet/tomcat/**</exclude>
           </excludes>
         </configuration>
       </plugin>

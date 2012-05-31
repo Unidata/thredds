@@ -14,7 +14,7 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /ncml/**=ncmlController  
+        /ncml/**=ncmlController
         /uddc/**=uddcController  
         /iso/**=isoController
       </value>     
