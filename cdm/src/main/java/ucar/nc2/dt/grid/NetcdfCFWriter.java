@@ -527,10 +527,6 @@ public class NetcdfCFWriter {
   private Range makeVerticalRange(Range zRange, CoordinateAxis1D vertAxis) throws InvalidRangeException{
 	  
       Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
-
-      if(zRangeUse !=null){
-    	  zRangeUse=new Range(0, (int)vertAxis.getSize(), zRangeUse.stride() );
-      }	  
 	  	  
 	  return zRangeUse;
   }
