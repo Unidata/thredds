@@ -140,8 +140,8 @@ where:<br /> VAR_%d-%d-%d = discipline-category-paramNo
 </pre>
 </blockquote>
 <p>See<strong> ucar.nc2.grib.grib1.Grib1Record.cdmVariableHash()</strong> and <strong>ucar.nc2.grib.grib2.Grib2Record.cdmVariableHash()</strong> for complete details.</p>
-<h2>GDS Hashcode<a name="gds" id="gds"></a></h2>
-<p>The CDM creates a different group for each differrent GDS used in the collection. It identifies the GDS by creating a hashcode for it, and then groups on the hashcode. Unfortunately, in some cases, GRIB records have GDS that differ in the fifth decimal place in the starting x and/or y coordinate. Its clear that these are minor defects in the writing of the GRIB records. If desired, the user can fix these problems through NcML.</p>
+<h2>GDS Hashcode<a name="gdsHash" id="gdsHash"></a></h2>
+<p>The CDM creates a different group for each different GDS used in the collection. It identifies the GDS by creating a hashcode for it, and then groups on the hashcode. Unfortunately, in some cases, GRIB records have GDS that differ in the fifth decimal place in the starting x and/or y coordinate. Its clear that these are minor defects in the writing of the GRIB records. If desired, the user can fix these problems through NcML.</p>
 <p>First, one must find the GDS hashcodes by using ToolsUI. In the IOSP/GRIB1(2)/GribCollection tab, enter the file name to show the records in the file. Select the GDS (at the bottom) right click for the context menu and choose: compare GDS. This will show the differences in the GDS and the coresponding hashcodes. If you verify that they are, in fact, the same GDS, then you can use NcML (or TDS) to fix this problem, for example:</p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; location=&quot;E:/ncep/NDFD_CONUS_5km_conduit_20120119_1800.grib2&quot;&gt;
@@ -150,9 +150,9 @@ where:<br /> VAR_%d-%d-%d = discipline-category-paramNo
  &lt;/iospParam&gt;
 &lt;/netcdf&gt;</pre>
 <p>This changes those variables using GDS hashcode =&quot;-2121584860&quot; to use &quot;28944332&quot;, which then eliminates the spurious group in the resulting ncx file. In order for this to work, you must first delete the ncx file so it will get recreated when the NcML is read. After that, you can open the ncx file directly or the NcML file.</p>
-<h2>Time Interval Coordinates<a name="timeIntervals" id="timeIntervals"></a></h2>
-<p>GRIB makes extensive use of time intervals as coordinates. In <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries">CF</a>, time interval coordinates use an auxiliary  coordinate to describe the intervals, for example a coordinate named<em> time1(30) </em>will have an auxiliary coordinate <em>time1_bounds(30,2)</em> containing the lower and upper bounds of the time interval for each coordinate. Currently, the CDM places all intervals in the same variable (rather than create seperate variables for each interval size). WHen all intervals have the same size, the interval size is added to the variable name. Otherwise the phrase &quot;mixedd intervals&quot; is added to the variable name.</p>
-<p>Generally, the CDM places the coordinate value at the end of the interval, for example the time interval (0,6) will have a coordinate value 6. The CDM looks for unique intervals in constructing the variable. This implies that the coordinate values are not always unique, but the coordinate bounds are always unique. Application code needs to understand this to handle this situation correctly, by checking <em>CoordinateAxis1D.isInterval()</em>.</p>
+<h2>Time Interval Coordinates<a name="intvFilter" id="intvFilter"></a></h2>
+<p>GRIB makes extensive use of time intervals as coordinates. In <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries">CF</a>, time interval coordinates use an auxiliary  coordinate to describe the intervals, for example a coordinate named<em> time1(30) </em>will have an auxiliary coordinate <em>time1_bounds(30,2)</em> containing the lower and upper bounds of the time interval for each coordinate. Currently, the CDM places all intervals in the same variable (rather than create seperate variables for each interval size). When all intervals have the same size, the interval size is added to the variable name. Otherwise the phrase &quot;mixed_intervals&quot; is added to the variable name.</p>
+<p>Generally, the CDM places the coordinate value at the end of the interval, for example the time interval (0,6) will have a coordinate value 6. The CDM looks for unique intervals in constructing the variable. This implies that the coordinate values are not always unique, but the coordinate bounds pair are always unique. Application code needs to understand this to handle this situation correctly, by checking <em>CoordinateAxis1D.isInterval()</em>.</p>
 <p>NCEP GRIB2 model output, at least, has some issues that we are slowing learning how best to deal with. Currently there are two situations which the user can  fix in NcML (or the TDS):</p>
 <ol>
   <li>One can choose to ignore (0,0) intervals.</li>
@@ -166,11 +166,11 @@ where:<br /> VAR_%d-%d-%d = discipline-category-paramNo
 &lt;/netcdf&gt;</pre>
 <ol>
   <li>Exclude intervals that have (0,0) bounds.</li>
-  <li>Only include the 3 hour intervals for parameters 0-1-8 and 0-1-10, defining the parameter using <em>discipline-category-number </em>notation.</li>
+  <li>Only include the 3 hour intervals for parameters 0-1-8 and 0-1-10, defining the parameter using <em>discipline-category-number </em>(GRIB-2) or <em>center-subcenter-version-param</em> (GRIB-1).</li>
 </ol>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated April 2012
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated June 2012
 </address>
 </body>
 </html>

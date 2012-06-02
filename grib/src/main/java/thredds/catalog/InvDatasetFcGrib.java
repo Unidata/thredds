@@ -61,6 +61,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Implement FeatureCollection GRIB - a collection of Grib1 or Grib2 files that are served as Grids.
  *
+ * Dataset naming
+ * <ol>
+ *   <li>Single group in collection
+ *   <pre>
+ *     $collectionName-collection
+ *   </pre>
+ *   </li>
+ * </ol>
+ *
+ *
  * @author caron
  * @since 4/15/11
  */
@@ -277,10 +287,16 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         // otherwise of form <partition>/<hcs>/files eg 200808/LatLon-181X360/files
         tpp = localState.timePartition.getPartitionByName(path[0]);
         if (tpp != null) {
+          InvCatalogImpl result;
           GribCollection gc = tpp.getGribCollection();
-          GribCollection.GroupHcs group = gc.findGroupById(path[1]);
-          if (group == null) return null;
-          InvCatalogImpl result =  makeFilesCatalog(gc, group, baseURI, localState);
+          if (path[1].equals(FILES)) {
+            GribCollection.GroupHcs group = gc.getGroup(0);
+            result =  makeFilesCatalog(gc, group, baseURI, localState);
+          } else {
+            GribCollection.GroupHcs group = gc.findGroupById(path[1]);
+            if (group == null) return null;
+            result =  makeFilesCatalog(gc, group, baseURI, localState);
+          }
           gc.close();
           return result;
         }
@@ -295,7 +311,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /////////////////////////////////////////////////////////////////////////
 
-  // datasets of the top catalog are InvCatalogRef pointing to "PartitionCatalogs"
   private void makeTopDatasets(StateGrib localState) {
     List<InvDataset> datasets = new ArrayList<InvDataset>();
 
@@ -366,45 +381,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     finish();
   }
 
-  private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupHcs group) {
-    GdsHorizCoordSys gdsCoordSys = group.hcs; // .gds.makeHorizCoordSys();
-    LatLonRect llbb = GridCoordSys.getLatLonBoundingBox(gdsCoordSys.proj, gdsCoordSys.getStartX(), gdsCoordSys.getStartY(),
-            gdsCoordSys.getEndX(), gdsCoordSys.getEndY());
-
-    ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
-    if (llbb != null)
-      gc.setBoundingBox(llbb);
-
-    if (group.hcs.isLatLon()) {
-      gc.setLonResolution(gdsCoordSys.dx);
-      gc.setLatResolution(gdsCoordSys.dy);
-    }
-
-    return gc;
-  }
-
-  private CalendarDateRange extractCalendarDateRange(GribCollection.GroupHcs group) {
-    TimeCoord max = null;
-
-    for (TimeCoord tc : group.timeCoords) {
-      if (!tc.isInterval()) {
-        if ((max == null) || (max.getSize() < tc.getSize()))
-          max = tc;
-      }
-    }
-
-    if (max == null) {
-      for (TimeCoord tc : group.timeCoords) {
-        if (tc.isInterval()) {
-          if ((max == null) || (max.getSize() < tc.getSize()))
-            max = tc;
-        }
-      }
-    }
-
-    return (max == null) ? null : max.getCalendarRange();
-  }
-
   // each partition gets its own catalog, showing the different groups (horiz coord sys)
   private InvCatalogImpl makeGribCollectionCatalog(GribCollection gribCollection, URI baseURI, State localState) throws IOException {
 
@@ -434,12 +410,31 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     List<GribCollection.GroupHcs> groups = new ArrayList<GribCollection.GroupHcs>(gribCollection.getGroups());
     Collections.sort(groups);
+    boolean isSingleGroup = (groups.size() == 1);
+
     for (GribCollection.GroupHcs group : groups) {
+      InvDatasetImpl ds;
       String groupId = group.getId();
-      InvDatasetImpl ds = new InvDatasetImpl(this, groupId + "_" + COLLECTION);
+
+      //InvDatasetImpl ds = new InvDatasetImpl(this, groupId + "_" + COLLECTION);
       //groupId = StringUtil2.replace(groupId, ' ', "_");
-      ds.setUrlPath(this.path + "/" + collectionName + "/" + groupId);
-      ds.setID(id + "/" + collectionName + "/" + groupId);
+      //ds.setUrlPath(this.path + "/" + collectionName + "/" + groupId);
+      //ds.setID(id + "/" + collectionName + "/" + groupId);
+
+      if (isSingleGroup) {
+        ds = new InvDatasetImpl(this, collectionName);
+        ds.setUrlPath(this.path + "/" + collectionName);
+        ds.setID(id + "/" + collectionName);
+        if (!(gribCollection instanceof TimePartition)) // dont add files for collection dataset
+          addFileDatasets(ds, collectionName);
+
+      } else {
+        ds = new InvDatasetImpl(this, group.getDescription());
+        ds.setUrlPath(this.path + "/" + collectionName + "/" + groupId);
+        ds.setID(id + "/" + collectionName + "/" + groupId);
+        if (!(gribCollection instanceof TimePartition)) // dont add files for collection dataset
+          addFileDatasets(ds, collectionName + "/" + groupId);
+      }
 
       // metadata is specific to each group
       ds.tmi.addVariableMapLink( makeMetadataLink( this.path + "/" + collectionName, groupId, VARIABLES));
@@ -447,14 +442,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       CalendarDateRange cdr = extractCalendarDateRange(group);
       if (cdr != null) ds.tmi.setTimeCoverage(cdr);
 
-      //ThreddsMetadata tm = ds.getLocalMetadata();
-      //tm.addDocumentation("summary", "Best time series, taking the data from the latest file.");
-      //tm.setGeospatialCoverage(group.getGeospatialCoverage());
-      //tm.setTimeCoverage(group.getTimeCoverage());
-      //tm.addVariables(group.getVariables());
-
-      if (!(gribCollection instanceof TimePartition)) // dont add files for collection dataset
-        addFileDatasets(ds, collectionName + "/" + groupId);
       ds.finish();
       top.addDataset(ds);
     }
@@ -523,6 +510,47 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   private String makeMetadataLink(String path, String dataset, String metadata) {
     return dataset + metadata;
   }
+
+  private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupHcs group) {
+    GdsHorizCoordSys gdsCoordSys = group.hcs; // .gds.makeHorizCoordSys();
+    LatLonRect llbb = GridCoordSys.getLatLonBoundingBox(gdsCoordSys.proj, gdsCoordSys.getStartX(), gdsCoordSys.getStartY(),
+            gdsCoordSys.getEndX(), gdsCoordSys.getEndY());
+
+    ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
+    if (llbb != null)
+      gc.setBoundingBox(llbb);
+
+    if (group.hcs.isLatLon()) {
+      gc.setLonResolution(gdsCoordSys.dx);
+      gc.setLatResolution(gdsCoordSys.dy);
+    }
+
+    return gc;
+  }
+
+  private CalendarDateRange extractCalendarDateRange(GribCollection.GroupHcs group) {
+    TimeCoord max = null;
+
+    for (TimeCoord tc : group.timeCoords) {
+      if (!tc.isInterval()) {
+        if ((max == null) || (max.getSize() < tc.getSize()))
+          max = tc;
+      }
+    }
+
+    if (max == null) {
+      for (TimeCoord tc : group.timeCoords) {
+        if (tc.isInterval()) {
+          if ((max == null) || (max.getSize() < tc.getSize()))
+            max = tc;
+        }
+      }
+    }
+
+    return (max == null) ? null : max.getCalendarRange();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
 
   @Override
   public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {

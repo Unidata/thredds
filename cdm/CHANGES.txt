@@ -4,6 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  11:
+  Grib1Collection : implement tinvFilter
+  AggExisting: check for changing files
+  Aggregation.Dataset: use MFile
+  InvFcGrib: eliminate group name when only one group
   CFpoint: allow pressure coordinates; profile uses id;
   fix TDS-193
   Change grib collection groups names to use underscore instead of dash

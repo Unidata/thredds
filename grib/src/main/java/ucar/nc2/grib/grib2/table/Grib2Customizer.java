@@ -289,6 +289,11 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return fac * range;
   }
 
+  /**
+   * If this has a time interval coordinate, get time interval
+   * @param gr from this record
+   * @return time interval in units of pds.getTimeUnit(), or null if not a time interval
+   */
   public int[] getForecastTimeIntervalOffset(Grib2Record gr) {
     TimeCoord.TinvDate tinvd = getForecastTimeInterval(gr);
     if (tinvd == null) return null;
