@@ -36,7 +36,7 @@ import org.joda.time.chrono.ISOChronology;
 
 /**
  * Utility methods for dealing with dates and times
- * TODO Does this belong in the cdm package?  It's UDUNITS specific.
+ * @todo Does this belong in the cdm package?  It's UDUNITS specific.
  * @author Jon
  */
 public final class TimeUtils

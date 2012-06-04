@@ -158,7 +158,13 @@ class ThreddsVectorLayer implements VectorLayer, ThreddsLayer {
         return this.layerSettings.isAllowFeatureInfo();
     }
 
-    @Override
+  @Override
+  public boolean isIntervalTime()
+  {
+    return false;  // TODO this.layerSettings.isIntervalTime();
+  }
+
+  @Override
     public Range<Float> getApproxValueRange() {
         return this.layerSettings.getDefaultColorScaleRange();
     }

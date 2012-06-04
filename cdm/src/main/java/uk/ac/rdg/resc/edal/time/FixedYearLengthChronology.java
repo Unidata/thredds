@@ -56,7 +56,7 @@ import org.joda.time.field.ZeroIsMaxDateTimeField;
  * <p><i>Note: Much of this code was copied from the package-private
  * BasicChronology.</i></p>
  * @author Jon Blower
- * @see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/cf-conventions.html#calendar"
+ * @see http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/cf-conventions.html#calendar
  */
 abstract class FixedYearLengthChronology extends BaseChronology {
 
