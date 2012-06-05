@@ -555,6 +555,7 @@
   </servlet-mapping>
 
   <!-- Metadata services (ncISO) from NGDC -->
+  <!-- 
   <servlet-mapping>
     <servlet-name>metadata</servlet-name>
     <url-pattern>/ncml/*</url-pattern>
@@ -567,6 +568,7 @@
     <servlet-name>metadata</servlet-name>
     <url-pattern>/iso/*</url-pattern>
   </servlet-mapping>
+   -->
 
   <!-- old debug, content handling -->
   <servlet-mapping>
