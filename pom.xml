@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ======================================================================= 
-		Parent Maven Configuration File for UCAR NetCDF library 
+<!-- =======================================================================
+		Parent Maven Configuration File for UCAR NetCDF library
 	======================================================================= -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
   <!-- prerequisites> <maven>2.0.9</maven> </prerequisites -->
 
@@ -706,7 +706,7 @@
     <visad.version>2.0-20120411</visad.version>
     <!-- was 2010-08-09, other options 2011-05-12 or 2011-08-22 -->
     <edu.wisc.version>2011-08-22</edu.wisc.version>
-    <uk.ac.rdg.resc.version>1.0.tds.4.3.20120223.2315</uk.ac.rdg.resc.version>
+    <uk.ac.rdg.resc.version>1.0.tds.4.3-20120605.2335</uk.ac.rdg.resc.version>
     <org.geotoolkit.version>3.17</org.geotoolkit.version>
     <eds.threddsIso.version>2.0.2</eds.threddsIso.version>
 
