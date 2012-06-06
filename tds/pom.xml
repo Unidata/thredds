@@ -163,10 +163,10 @@
       <artifactId>jfreechart</artifactId>
     </dependency>
 
-    <dependency>
+    <!-- dependency>
       <groupId>atg.taglib.json</groupId>
       <artifactId>json-taglib</artifactId>
-    </dependency>
+    </dependency-->
 
     <!-- tomcat -->
     <dependency>
@@ -229,19 +229,11 @@
   <!--     Maven repository is implicit and doesn't need to be specified. -->
   <!-- ================================================================== -->
   <repositories>
-
     <repository>
       <id>geotoolkit</id>
       <name>Geotk repository</name>
       <url>http://maven.geotoolkit.org</url>
-    </repository>
-
-    <!-- json-taglib  ( for ncWMS ) -->
-    <repository>
-      <id>escidoc</id>
-      <name>escidoc</name>
-      <url>https://www.escidoc.org/artifactory/maven.jahia.org-cache/</url>
-    </repository>
+    </repository>      
   </repositories>
 
 
@@ -371,7 +363,6 @@
           <skip>${skipTests}</skip>
         </configuration>
       </plugin -->
-
       <plugin>  <!-- release kludge for now -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>

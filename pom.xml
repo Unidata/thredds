@@ -199,10 +199,11 @@
     </repository>
     <!-- json-taglib  ( for ncWMS ) -->
     <repository>
-      <id>escidoc</id>
-      <name>escidoc</name>
-      <url>https://www.escidoc.org/artifactory/maven.jahia.org-cache/</url>
-    </repository>
+      <id>mvmsearch</id>
+      <name>mvmsearch</name>
+      <url>http://www.mvnsearch.org/maven2/</url>
+    </repository>    
+    
   </repositories>
 
   <!-- ===========================================================
@@ -455,12 +456,13 @@
         <artifactId>standard</artifactId>
         <version>${taglibs.version}</version>
       </dependency>
-      <dependency>
+      
+      <!-- dependency>
         <groupId>atg.taglib.json</groupId>
         <artifactId>json-taglib</artifactId>
         <version>${atg.taglib.json.version}</version>
         <scope>runtime</scope>
-      </dependency>
+      </dependency-->
 
       <dependency>
         <groupId>jaxen</groupId>
