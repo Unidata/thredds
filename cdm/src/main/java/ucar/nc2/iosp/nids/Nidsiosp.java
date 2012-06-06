@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.nids;
 
+import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -83,11 +84,11 @@ public class Nidsiosp extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
-    return "NEXRAD-3";
+    return DataFormatType.NIDS.toString();
   }
 
   public String getFileTypeDescription() {
-    return "NEXRAD Level-III Products";
+    return "NEXRAD Level-III (NIDS) Products";
   }
 
   /**

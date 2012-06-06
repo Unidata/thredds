@@ -97,6 +97,8 @@ public abstract class GribCollection implements FileCacheable {
   public static int calcIndex(int timeIdx, int ensIdx, int vertIdx, int nens, int nverts) {
     if (nens == 0) nens = 1;
     if (nverts == 0) nverts = 1;
+    //if (ensIdx >= nens || vertIdx >= nverts) // the case when there are missing levels or ensembles
+    //  return -1;                             // LOOK
     return vertIdx + ensIdx * nverts + timeIdx * nverts * nens;
   }
 

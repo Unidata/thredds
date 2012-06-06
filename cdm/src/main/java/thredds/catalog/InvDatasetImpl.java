@@ -1204,7 +1204,9 @@ public class InvDatasetImpl extends InvDataset {
             buff.append(" <li><strong>").append(StringUtil2.quoteHtmlContent(v.getName() + units)).append("</strong> = ");
             String desc = (v.getDescription() == null) ? "" : " <i>" + StringUtil2.quoteHtmlContent(v.getDescription()) + "</i> = ";
             buff.append(desc);
-            buff.append(StringUtil2.quoteHtmlContent(v.getVocabularyName())).append("\n");
+            if (v.getVocabularyName() != null)
+              buff.append(StringUtil2.quoteHtmlContent(v.getVocabularyName()));
+            buff.append("\n");
           }
           buff.append(" </ul>\n");
         }

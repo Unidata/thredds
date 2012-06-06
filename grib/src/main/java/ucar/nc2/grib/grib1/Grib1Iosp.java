@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import thredds.catalog.DataFormatType;
 import thredds.inventory.CollectionManager;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -98,7 +99,7 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public String getFileTypeId() {
-    return "GRIB1collection";
+    return DataFormatType.GRIB1.toString();
   }
 
   @Override

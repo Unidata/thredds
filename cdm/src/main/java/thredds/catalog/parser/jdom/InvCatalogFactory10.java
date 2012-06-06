@@ -70,9 +70,10 @@ import ucar.nc2.units.DateType;
 
 public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConverterIF  {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InvCatalogFactory10.class);
-  static private final Namespace defNS = Namespace.getNamespace(XMLEntityResolver.CATALOG_NAMESPACE_10);
-  static private final Namespace xlinkNS = Namespace.getNamespace("xlink", XMLEntityResolver.XLINK_NAMESPACE);
-  static private final Namespace ncmlNS = Namespace.getNamespace("ncml", XMLEntityResolver.NJ22_NAMESPACE);
+
+  static public final Namespace defNS = Namespace.getNamespace(XMLEntityResolver.CATALOG_NAMESPACE_10);
+  static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XMLEntityResolver.XLINK_NAMESPACE);
+  static public final Namespace ncmlNS = Namespace.getNamespace("ncml", XMLEntityResolver.NJ22_NAMESPACE);
 
   static private boolean useBytesForDataSize = false;
   static public void useBytesForDataSize( boolean b) {

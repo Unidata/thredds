@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
+import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
@@ -901,7 +902,9 @@ public String NC_check_name(String name) {
     return super.sendIospMessage(message);
   }
 
-  public String getFileTypeId() { return "netCDF"; }
+  public String getFileTypeId() {
+    return DataFormatType.NETCDF.toString();
+  }
 
   public String getFileTypeDescription()  { return "NetCDF classic format"; }
 

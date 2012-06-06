@@ -279,8 +279,8 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    TestMotherlodeDatasets job = new TestMotherlodeDatasets("problem", problemCat, CatalogCrawler.Type.all_direct, false);
-    // TestMotherlodeDatasets job = new TestMotherlodeDatasets("dev", server+catalog, CatalogCrawler.Type.random_direct, false);
+    //TestMotherlodeDatasets job = new TestMotherlodeDatasets("problem", problemCat, CatalogCrawler.Type.all_direct, false);
+    TestMotherlodeDatasets job = new TestMotherlodeDatasets("dev", server+catalog, CatalogCrawler.Type.random_direct, false);
 
     frame.getContentPane().add(main);
     frame.pack();

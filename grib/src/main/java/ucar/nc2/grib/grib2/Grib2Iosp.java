@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import thredds.catalog.DataFormatType;
 import thredds.inventory.CollectionManager;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -278,7 +279,7 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   public String getFileTypeId() {
-    return "GRIB2collection";
+    return DataFormatType.GRIB2.toString();
   }
 
   @Override
@@ -762,6 +763,7 @@ public class Grib2Iosp extends GribIosp {
         for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
 
           // where does this record go in the result ??
+          // LOOK: could we tolerate missing levels, ens values in this partition, and return null ?
           int resultIndex = GribCollection.calcIndex(timeRange.index(timeIdx), ensRange.index(ensIdx), levRange.index(levelIdx),
                   ensRange.length(), levRange.length());
 

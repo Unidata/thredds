@@ -4,7 +4,7 @@ Build Date = ${build.timestamp}
 
 Release Details 4.3:
  4.3.11
-
+ Metadata contoller for variable maps
  NCSS: allow grid subsetting by (single) vertical level
  GribCollections: tdsTrigger role to allow tdm triggers
 

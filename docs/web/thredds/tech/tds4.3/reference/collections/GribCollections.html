@@ -306,8 +306,8 @@ or, simplifying:
   </tr>
   <tr>
     <td>overall collection for group</td>
-    <td>groupName</td>
-    <td>path/groupName</td>
+    <td>groupName-<em>collection</em></td>
+    <td>path/groupName/<em>collection</em></td>
   </tr>
   <tr>
     <td>collection for group and partition</td>
@@ -370,18 +370,20 @@ or, simplifying:
 7)&lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;
 &lt;/xsd:complexType&gt;
   </pre>
-  <h4>1) gdsHash: Fix errors in GDS encoding</h4>
+  <h4>1) gdsHash<a name="gdsHash" id="gdsHash"></a>: Fix errors in GDS encoding</h4>
   <blockquote>
-    <p>See <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#gdsHash">CDM docs</a>. In this example, any GDS hash that equals &quot;1450218978&quot; is changed to &quot;1450192070&quot; :</p>
+    <p>The CDM creates a different group for each different GDS used in the GRIB collection. It identifies the GDS by creating a hashcode for it, and then creates a separate group for each unique hashcode. Unfortunately, in some cases, GRIB records have GDSs that differ inminor ways, such as the fifth decimal place in the starting x and/or y coordinate. Its clear that these are minor defects in the writing of the GRIB records. If desired, the user can fix these problems through NcML or in the TDS gribConfig element</p>
+    <p>First, one must find the GDS hashcodes by using ToolsUI. In the IOSP/GRIB1(2)/GribCollection tab, enter the file name to show the records in the file. Select the GDS (at the bottom) right click for the context menu and choose: compare GDS. This will show the differences in the GDS and the corresponding hashcodes. If you confirm that they are, in fact, the same GDS, then you can  fix this problem, for example:</p>
     <pre>&lt;gribConfig&gt;
    &lt;gdsHash from=&quot;1450218978&quot; to=&quot;1450192070&quot;/&gt;
 
 &lt;/gribConfig&gt;</pre>
+    <p>This changes those variables using GDS hashcode =&quot;1450218978&quot; to use &quot;1450192070&quot;, which then eliminates the spurious group in the resulting ncx file. Note that for this to work, you must first delete the ncx file so it will get recreated when the file is read. After that, you can open the ncx file directly or the NcML file. Also see <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#gdsHash">CDM docs</a>. </p>
   </blockquote>
   <h4>2) gdsName: Set group names</h4>
   <blockquote>
-    <p>When a datset has multiple groups, the groups are automatically named by the projection used and the horizontal dimension size, eg </p>
-    <p>A user can set group names manually in the TDS configuration catalog. To do so, find the group hash as in the <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#gdsHash">gdsHash example</a>. Then use the gdsName element like this:</p>
+    <p>When a daatset has multiple groups, the groups are automatically named by the projection used and the horizontal dimension size, eg<strong> LatLon-360x720</strong>.</p>
+    <p>A user can set group names manually in the TDS configuration catalog. To do so, find the group hash as in the gdsHash example above. Then use the gdsName element like this:</p>
     <pre>&lt;gribConfig&gt;
   &lt;gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/&gt;
   &lt;gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/&gt;
@@ -390,10 +392,26 @@ or, simplifying:
 &lt;/gribConfig&gt;</pre>
   </blockquote>
   <h4>3) groupNamer: Not available yet</h4>
-  <h4>4) useGenType: Not available yet</h4>
+  <h4>4) useGenType: Use generating type in variable hash (Not available yet)</h4>
+  <blockquote>
+    <p>When there are different variables that differ only in the generating type (octet in GRIB2), one must explicitly tell the system to include this field.</p>
+    <pre> &lt;gribConfig&gt;
+   &lt;useGenType/&gt;
+ &lt;/gribConfig&gt;</pre>
+  </blockquote>
   <h4>5) intvFilter: Interval Time Coordinate filters</h4>
   <blockquote>
-    <p>See <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#intvFilter">CDM docs</a>. </p>
+    <p>GRIB makes extensive use of time intervals as coordinates. In <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries">CF</a>, time interval coordinates use an auxiliary  coordinate to describe the intervals, for example a coordinate named<em> time1(30) </em>will have an auxiliary coordinate <em>time1_bounds(30,2)</em> containing the lower and upper bounds of the time interval for each coordinate. Currently, the CDM places all intervals in the same variable (rather than create seperate variables for each interval size). When all intervals have the same size, the interval size is added to the variable name. Otherwise the phrase &quot;mixed_intervals&quot; is added to the variable name.</p>
+    <p>Generally, the CDM places the coordinate value at the end of the interval, for example the time interval (0,6) will have a coordinate value 6. The CDM looks for unique intervals in constructing the variable. This implies that the coordinate values are not always unique, but the coordinate bounds pair are always unique. Application code needs to understand this to handle this situation correctly, by checking <em>CoordinateAxis1D.isInterval()</em>.</p>
+    <p>NCEP GRIB2 model output, at least, has some issues that we are slowing learning how best to deal with. Currently there are two situations which the user can  fix in NcML (or the TDS):</p>
+    <ol>
+      <li>One can choose to ignore (0,0) intervals.</li>
+      <li>One can choose that certain parameters use only selected intervals.  This is helpful when the parameter has redundant mixed levels, which can be derived from  the set of intervals of a fixed size . For example, the 3 hour intervals (0,3), (3, 6), (6,9), (9,12) intervals are all present, and so other intervals (0,6), (0, 9), (0,12) can be ignored.</li>
+    </ol>
+    <p>One uses the same process as in the &quot;GDS Hashcode&quot; section above to configure this. Here are examples using NcML:</p>
+    <pre>  &lt;gribConfig&gt;<br /><strong>1)</strong> &lt;intvFilter excludeZero=&quot;true&quot;/&gt;<br /><strong>2)</strong> &lt;intvFilter intvLength=&quot;3&quot;&gt;<br />     &lt;variable id=&quot;0-1-8&quot;/&gt;<br />     &lt;variable id=&quot;0-1-10&quot;/&gt;<br />   &lt;/intvFilter&gt;<br /> &lt;/gribConfig&gt;
+</pre>
+    <p>Also see  <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#intvFilter">CDM docs</a>. </p>
   </blockquote>
   <h4>6) timeUnitConvert: Not available yet</h4>
   <h4>7) datasetTypes: Define which 

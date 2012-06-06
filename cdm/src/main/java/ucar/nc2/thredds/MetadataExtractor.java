@@ -33,6 +33,7 @@
 
 package ucar.nc2.thredds;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.FeatureType;
 import thredds.catalog.ThreddsMetadata;
 import thredds.catalog.InvDatasetImpl;
@@ -169,7 +170,8 @@ public class MetadataExtractor {
           v.setUnits( vs.getUnitsString());
 
           ucar.nc2.Attribute att = vs.findAttributeIgnoreCase("standard_name");
-          v.setVocabularyName( (att != null) ? att.getStringValue() : "N/A");
+          if (att != null)
+            v.setVocabularyName(att.getStringValue());
         }
         vars.sort();
         return vars;
@@ -188,10 +190,11 @@ public class MetadataExtractor {
   }
 
   static public ThreddsMetadata.Variables extractVariables(InvDatasetImpl threddsDataset, GridDataset gridDataset) {
+    return extractVariables( threddsDataset.getDataFormatType(), gridDataset);
+  }
 
-    thredds.catalog.DataFormatType fileFormat = threddsDataset.getDataFormatType();
-    if ((fileFormat != null) &&
-        (fileFormat.equals(DataFormatType.GRIB1) || fileFormat.equals(DataFormatType.GRIB2))) {
+  static public ThreddsMetadata.Variables extractVariables(thredds.catalog.DataFormatType fileFormat, GridDataset gridDataset) {
+    if ((fileFormat != null) && (fileFormat.equals(DataFormatType.GRIB1) || fileFormat.equals(DataFormatType.GRIB2))) {
       boolean isGrib1 = fileFormat.equals(DataFormatType.GRIB1);
       boolean isGrib2 = fileFormat.equals(DataFormatType.GRIB2);
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat.toString());
@@ -201,17 +204,13 @@ public class MetadataExtractor {
         v.setDescription(grid.getDescription());
         v.setUnits(grid.getUnitsString());
 
-        //ucar.nc2.Attribute att = grid.findAttributeIgnoreCase("GRIB_param_number");
-        //String paramNumber = (att != null) ? att.getNumericValue().toString() : null;
-        if (isGrib1) {
-          // v.setVocabularyName(grid.findAttValueIgnoreCase("GRIB_param_name", "ERROR"));
-          v.setVocabularyId(grid.findAttributeIgnoreCase("Grib_Parameter"));
-        } else if (isGrib2) {
-          /* String paramDisc = grid.findAttValueIgnoreCase("GRIB_param_discipline", "");
-          String paramCategory = grid.findAttValueIgnoreCase("GRIB_param_category", "");
-          String paramName = grid.findAttValueIgnoreCase("GRIB_param_name", "");
-          v.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName); */
-          v.setVocabularyId(grid.findAttributeIgnoreCase("Grib_Parameter"));
+        Attribute att = grid.findAttributeIgnoreCase("Grib_Variable_Id");
+        if (att != null) {
+          v.setVocabularyId(att.getStringValue());
+          v.setVocabularyName(att.getStringValue());
+        } else {
+          att = grid.findAttributeIgnoreCase("Grib_Parameter");
+          v.setVocabularyId(att);
         }
         vars.addVariable(v);
       }
@@ -229,7 +228,8 @@ public class MetadataExtractor {
         v.setUnits(grid.getUnitsString());
 
         ucar.nc2.Attribute att = grid.findAttributeIgnoreCase("standard_name");
-        v.setVocabularyName((att != null) ? att.getStringValue() : "N/A");
+        if (att != null)
+          v.setVocabularyName(att.getStringValue());
       }
       vars.sort();
       return vars;
@@ -288,8 +288,9 @@ public class MetadataExtractor {
       tv.setUnits(v.getUnitsString());
 
       ucar.nc2.Attribute att = v.findAttributeIgnoreCase("standard_name");
-      tv.setVocabularyName((att != null) ? att.getStringValue() : "N/A");
-      }
+      if (att != null)
+         tv.setVocabularyName(att.getStringValue());
+    }
     vars.sort();
     return vars;
   }

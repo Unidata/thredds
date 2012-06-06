@@ -48,7 +48,6 @@ import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.UsageLog;
 
 @Controller
-//class DatasetInfoController extends AbstractNcssController{
 class DatasetInfoController extends AbstractNcssController{
 	
 	static private final Logger log = LoggerFactory.getLogger(DatasetInfoController.class);

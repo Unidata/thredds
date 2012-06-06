@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 11:
+ 11: (2012-06-05)
   Grib1Collection : implement tinvFilter
   AggExisting: check for changing files
   Aggregation.Dataset: use MFile

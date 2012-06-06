@@ -79,6 +79,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
   static private final String VARIABLES = "?metadata=variableMap";
+  static private final boolean addLatest = false;  // not ready for use
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -331,17 +332,18 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           ds = new InvDatasetImpl(this, getName()+ "-" + COLLECTION);
           ds.setUrlPath(this.path + "/" + COLLECTION);
           ds.setID(id + "/" + COLLECTION);
+          ds.tmi.addVariableMapLink(makeMetadataLink(this.path + "/" + COLLECTION, VARIABLES));
           addFileDatasets(ds, null);
 
         } else {
           ds = new InvDatasetImpl(this, group.getDescription());
           ds.setUrlPath(this.path + "/" + groupId);
           ds.setID(id + "/" + groupId);
+          ds.tmi.addVariableMapLink(makeMetadataLink(this.path + "/" + groupId, VARIABLES));
           addFileDatasets(ds, groupId);
         }
 
         // metadata is specific to each group
-        ds.tmi.addVariableMapLink( makeMetadataLink( this.path, groupId, VARIABLES));
         ds.tmi.setGeospatialCoverage(extractGeospatial(group));
         CalendarDateRange cdr = extractCalendarDateRange(group);
         if (cdr != null) ds.tmi.setTimeCoverage(cdr);
@@ -365,7 +367,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         dname = StringUtil2.replace(dname, ' ', "_");
         ds.setUrlPath(this.path + "/" + dname);
         ds.setID(id + "/" + dname);
-        ds.tmi.addVariableMapLink(makeMetadataLink( this.path, dname, VARIABLES));
+        ds.tmi.addVariableMapLink(makeMetadataLink( this.path + "/" + dname, VARIABLES));
         //ThreddsMetadata tm = ds.getLocalMetadata();
         //tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
         //ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
@@ -423,10 +425,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       if (isSingleGroup) {
         ds = new InvDatasetImpl(this, collectionName);
-        ds.setUrlPath(this.path + "/" + collectionName);
-        ds.setID(id + "/" + collectionName);
+        ds.setUrlPath(this.path + "/" + collectionName +" /" + COLLECTION);
+        ds.setID(id + "/" + collectionName +" /" + COLLECTION);
         if (!(gribCollection instanceof TimePartition)) // dont add files for collection dataset
           addFileDatasets(ds, collectionName);
+        ds.tmi.addVariableMapLink( makeMetadataLink( this.path + "/" + collectionName +" /" + COLLECTION, VARIABLES));
 
       } else {
         ds = new InvDatasetImpl(this, group.getDescription());
@@ -434,10 +437,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         ds.setID(id + "/" + collectionName + "/" + groupId);
         if (!(gribCollection instanceof TimePartition)) // dont add files for collection dataset
           addFileDatasets(ds, collectionName + "/" + groupId);
+        ds.tmi.addVariableMapLink( makeMetadataLink( this.path + "/" + collectionName + "/" + groupId, VARIABLES));
       }
 
       // metadata is specific to each group
-      ds.tmi.addVariableMapLink( makeMetadataLink( this.path + "/" + collectionName, groupId, VARIABLES));
       ds.tmi.setGeospatialCoverage(extractGeospatial(group));
       CalendarDateRange cdr = extractCalendarDateRange(group);
       if (cdr != null) ds.tmi.setTimeCoverage(cdr);
@@ -486,15 +489,25 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     String id = getID();
     if (id == null) id = getPath();
 
+    if (addLatest) {
+      InvDatasetImpl ds = new InvDatasetImpl(this, LATEST_DATASET_NAME);
+      ds.setUrlPath(this.path + "/" + FILES + "/" + LATEST_DATASET);
+      ds.setID(id + "/" + FILES + "/" + LATEST_DATASET);
+      ds.setServiceName(LATEST_SERVICE);
+      ds.finish();
+      top.addDataset(ds);
+    }
+
     for (String f : group.getFilenames()) {
       if (!f.startsWith(topDirectory))
         logger.warn("File {} doesnt start with topDir {}", f, topDirectory);
+
       String fname = f.substring(topDirectory.length() + 1);
       String path = FILES + "/" + fname;
       InvDatasetImpl ds = new InvDatasetImpl(this, fname);
       ds.setUrlPath(this.path + "/" + path);
       ds.setID(id + "/" + path);
-      ds.tmi.addVariableMapLink( makeMetadataLink( this.path, fname, VARIABLES));
+      ds.tmi.addVariableMapLink( makeMetadataLink( this.path + "/" + path, VARIABLES));
       File file = new File(f);
       ds.tm.setDataSize(file.length());
       ds.finish();
@@ -507,8 +520,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   ///////////////////////////////////////////////////////////////////////////
 
-  private String makeMetadataLink(String path, String dataset, String metadata) {
-    return dataset + metadata;
+  private String makeMetadataLink(String datasetName, String metadata) {
+    String result =  context + "/medadata/"+ datasetName + metadata;
+    return result;
   }
 
   private ThreddsMetadata.GeospatialCoverage extractGeospatial(GribCollection.GroupHcs group) {
@@ -566,31 +580,18 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return null;
     }
 
-    if ((matchPath == null) || (matchPath.length() == 0)) return null;
-    String[] paths = matchPath.split("/");
-    if (paths.length < 1) return null;
-    String filename = paths.length == 2 ? paths[1] : null;
+    DatasetParse dp = parse(matchPath, localState);
+    if (dp == null) return null;
 
     if (localState.timePartition == null) {
-      String groupName=  (paths[0].equals(COLLECTION)) ?  localState.gribCollection.getGroup(0).getId(): paths[0];
-      return localState.gribCollection.getGridDataset(groupName, filename, gribConfig);
+      return localState.gribCollection.getGridDataset(dp.group, dp.filename, gribConfig);
 
     } else {
-      if (paths.length < 2) return null;
-
-      if (paths[0].equals(localState.timePartition.getName()))
-        return localState.timePartition.getGridDataset(paths[1], null, gribConfig);
-
-      TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
-      if (tpp != null) {
-        GribCollection gc =  tpp.getGribCollection();
-        result = gc.getGridDataset(paths[1], filename, gribConfig);
-        // LOOK WRONG gc.close();
-        return result;
-      }
+      if (dp.partition != null)
+        return dp.partition.getGribCollection().getGridDataset(dp.group, dp.filename, gribConfig);
+      else
+        return localState.timePartition.getGridDataset(dp.group, dp.filename, gribConfig);
     }
-
-    return null;
   }
 
   @Override
@@ -607,36 +608,89 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return null;
     }
 
+    DatasetParse dp = parse(matchPath, localState);
+    if (dp == null) return null;
+
+    if (localState.timePartition == null) {
+      return localState.gribCollection.getNetcdfDataset(dp.group, dp.filename, gribConfig);
+
+    } else {
+      if (dp.partition != null)
+        return dp.partition.getGribCollection().getNetcdfDataset(dp.group, dp.filename, gribConfig);
+      else
+        return localState.timePartition.getNetcdfDataset(dp.group, dp.filename, gribConfig);
+    }
+  }
+
+  /* possible forms of dataset:
+    regular:
+      1. COLLECTION   single group
+      2. groupName    multiple groups
+
+   time partition:
+      7. COLLECTION                   overall collection for group0
+      3. groupName/COLLECTION         overall collection for group
+      4. partitionName                single group
+      5. partitionName/groupName
+
+   both:
+      6. FILES/filename
+  */
+  private DatasetParse parse(String matchPath, StateGrib localState) {
     if ((matchPath == null) || (matchPath.length() == 0)) return null;
     String[] paths = matchPath.split("/");
     if (paths.length < 1) return null;
 
-    if (localState.timePartition == null) {
-      int n = paths.length;
-      if (n >= 2) { // files
-        String group = paths[n - 2];
-        String filename = paths[n - 1];
-        return localState.gribCollection.getNetcdfDataset(group, filename, gribConfig);
-      } else {
-        return localState.gribCollection.getNetcdfDataset(paths[0], null, gribConfig);
-      }
+    if (paths.length == 2 && paths[0].equals(FILES))
+      return new DatasetParse(paths[1]); // case 6
 
-    } else {
-      if (paths.length < 2) return null;
+     if (localState.timePartition == null) {
+       boolean isCollection = paths[0].equals(COLLECTION);
+       String groupName=  isCollection ?  localState.gribCollection.getGroup(0).getId(): paths[0];
+       return new DatasetParse(null, groupName, isCollection); // case 1 and 2
 
-      if (paths[0].equals(localState.timePartition.getName()))
-        return localState.timePartition.getNetcdfDataset(paths[1], null, gribConfig);
+     } else {
+       TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
 
-      TimePartition.Partition dcm = localState.timePartition.getPartitionByName(paths[0]);
-      if (dcm != null) {
-        String filename = paths.length > 2 ? paths[2] : null;
-        return dcm.getGribCollection().getNetcdfDataset(paths[1], filename, gribConfig);
-      }
+       if (paths.length == 2) {
+         boolean isCollection = paths[1].equals(COLLECTION);
+         if (isCollection)
+           return new DatasetParse(null, paths[0], true); // case 3
+         else if (tpp != null)
+           return new DatasetParse(tpp, paths[1], false); // case 5
+
+       } else {
+         boolean isCollection = paths[0].equals(COLLECTION);
+         if (isCollection) {
+           String groupName = localState.timePartition.getGroup(0).getId();
+           return new DatasetParse(null, groupName, true); // case 7
+         }
+         else if (tpp != null)
+           return new DatasetParse(tpp, null, false); // case 4
+        }
+     }
+
+     return null;
+   }
+
+  private class DatasetParse {
+    TimePartition.Partition partition; // missing for collection level
+    String group;
+    String filename; // only for isFile
+    boolean isCollection, isFile;
+
+    private DatasetParse(TimePartition.Partition tpp, String group, boolean collection) {
+      this.partition = tpp;
+      this.group = group;
+      isCollection = collection;
     }
 
-    return null;
-  }
+    private DatasetParse(String filename) {
+      this.filename = filename;
+      this.isFile = true;
+    }
 
+  }
   ///////////////////////////
 
   private ThreddsMetadata.Variables extractThreddsVariables(GribCollection gribCollection, GribCollection.GroupHcs group) {

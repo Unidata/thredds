@@ -272,10 +272,10 @@
   <logger name="thredds.dqc"/>
   <logger name="thredds.servlet"/>
 
-  <!-- dennis opendap testing (??) -->
-  <logger name="opendap.servlet.LogStream" additivity="false">
-    <level value="info" />
-    <appender-ref ref="logcdm"/>
+  <!-- spring debug -->
+  <logger name="org.springframework" additivity="false">
+    <level value="DEBUG" />
+    <appender-ref ref="consoleLogger"/>
   </logger>
 
   <root>

@@ -69,9 +69,12 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
 
   static protected final String FILES = "files";
+  static protected final String LATEST_DATASET = "latest.xml";
+  static protected final String LATEST_DATASET_NAME = "latest";
+  static protected final String LATEST_SERVICE = "latest";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
 
-  static private String context = "/thredds";
+  static protected String context = "/thredds";
   static public void setContext( String c ) {
     context = c;
   }
