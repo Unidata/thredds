@@ -710,7 +710,7 @@
     <edu.wisc.version>2011-08-22</edu.wisc.version>
     <uk.ac.rdg.resc.version>1.0.tds.4.3-20120605.2335</uk.ac.rdg.resc.version>
     <org.geotoolkit.version>3.17</org.geotoolkit.version>
-    <eds.threddsIso.version>2.0.2</eds.threddsIso.version>
+    <eds.threddsIso.version>2.2.2-SNAPSHOT</eds.threddsIso.version>
 
     <atg.taglib.json.version>0.4.1</atg.taglib.json.version>
     <cas.version>2.1.1</cas.version>

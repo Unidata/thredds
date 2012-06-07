@@ -84,10 +84,14 @@
     <url-pattern>/restrictedAccess/*</url-pattern>
   </filter-mapping -->
 
-  <!-- filter-mapping>
+  <filter-mapping>
     <filter-name>RequestBracketingLogMessageFilter</filter-name>
-    <servlet-name>metadata</servlet-name>
-  </filter-mapping -->
+    <!-- servlet-name>metadata</servlet-name-->
+    <url-pattern>/iso/*</url-pattern>
+    <url-pattern>/ncml/*</url-pattern>
+    <url-pattern>/uddc/*</url-pattern>
+  </filter-mapping>
+
   <!--
   Filter:
    - the request URL path
@@ -116,10 +120,14 @@
     <servlet-name>catalogService</servlet-name>
   </filter-mapping>
   <!-- Metadata services (ncISO) from NGDC -->
-  <!-- filter-mapping>
+  <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>metadata</servlet-name>
-  </filter-mapping -->
+    <!-- servlet-name>metadata</servlet-name-->
+    <url-pattern>/iso/*</url-pattern>
+    <url-pattern>/ncml/*</url-pattern>
+    <url-pattern>/uddc/*</url-pattern>
+  </filter-mapping>
+
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>admin</servlet-name>
@@ -343,7 +351,11 @@
     <servlet-name>metadata</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
+<<<<<<< HEAD
   </servlet -->
+=======
+  </servlet-->
+>>>>>>> 3efefd1... Changed dependency on threddsIso from 2.0.2 to 2.2.2-SNAPSHOT that works
 
   <servlet>
     <servlet-name>admin</servlet-name>
