@@ -351,11 +351,8 @@
     <servlet-name>metadata</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-<<<<<<< HEAD
   </servlet -->
-=======
-  </servlet-->
->>>>>>> 3efefd1... Changed dependency on threddsIso from 2.0.2 to 2.2.2-SNAPSHOT that works
+
 
   <servlet>
     <servlet-name>admin</servlet-name>
