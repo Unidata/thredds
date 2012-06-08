@@ -466,9 +466,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   // cant use InvDatasetScan because we might have multiple hcs
   private InvCatalogImpl makeFilesCatalog(GribCollection gc, GribCollection.GroupHcs group, URI baseURI, State localState) throws IOException {
 
-    String collectionName = gc.getName();
+    //String collectionName = gc.getName();
     InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-    URI myURI = baseURI.resolve(getCatalogHref(collectionName));
+    //URI myURI = baseURI.resolve(getCatalogHref(collectionName));
+    URI myURI = baseURI.resolve(getCatalogHref(FILES));
     InvCatalogImpl result = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);
