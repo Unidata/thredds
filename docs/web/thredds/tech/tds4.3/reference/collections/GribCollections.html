@@ -41,7 +41,7 @@ dl {margin: 10px 5px 5px 15px;}
 6)   &lt;gribConfig datasetTypes=&quot;collection Files&quot; /&gt;
    &lt;/featureCollection&gt;</pre>
 <ol>
-  <li>A featureCollection must have a <em>name</em> and a <em>path</em> (recommend that you not specify an <em>ID</em>, which will then default to the  <em>path)</em>. The <em>featureType</em> attribute is set to <em>GRIB</em>. </li>
+  <li>A featureCollection must have a <em>name</em> and a <em>path</em> (do not set an <em>ID</em> attribute<em>)</em>. The <em>featureType</em> attribute is set to <em>GRIB</em>. Its best to avaoid the words <em>collection</em> and <em>files</em> in the name.</li>
   <li>A featureCollection is a InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
   <li>The collection must consist of either GRIB-1 or GRIB-2 files. You must set the dataFormat element to indicate which.</li>
   <li>The <a href="CollectionSpecification.html">collection specification</a> defines the collection of files that are in this dataset.</li>
@@ -49,13 +49,13 @@ dl {margin: 10px 5px 5px 15px;}
   <li>See <a href="#gribConfig">below</a>.</li>
 </ol>
 <h3>Resulting Datasets:</h3>
-<p>The above example generates one collection dataset, and one dataset for each individual file in the collection, which we represent as nested datasets:</p>
-<pre>&lt;dataset name=&quot;GFS-Puerto_Rico_191km-collection&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt;
+<p>The above example generates one collection dataset, and one dataset for each individual file in the collection:, which become nested datasets in the catalog:</p>
+<pre>&lt;dataset name=&quot;GFS-Puerto_Rico_191km&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt;
    &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_191km/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
 &lt;/dataset&gt;
 </pre>
 or, simplifying:
-<pre>1) &lt;dataset name=&quot;GFS-Puerto_Rico_191km-collection&quot;  urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt; 
+<pre>1) &lt;dataset name=&quot;GFS-Puerto_Rico_191km&quot;  urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt; 
 2)   &lt;dataset name=&quot;GFS_Puerto_Rico_191km_20111122_0000.grib1&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/files/GFS_Puerto_Rico_191km_20111122_0000.grib1&quot;/&gt;
      &lt;dataset name=&quot;GFS_Puerto_Rico_191km_20111121_0000.grib1&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/files/GFS_Puerto_Rico_191km_20111121_0000.grib1&quot;/&gt;
       ...
@@ -65,19 +65,22 @@ or, simplifying:
   <li>The individual files in the collection</li>
 </ol>
 <p>So the datasets that are generated from a Grib Collection with  <strong>name</strong> and <strong>path</strong> :</p>
-<table width="435" border="1">
+<table width="546" border="1">
   <tr>
     <th width="129" scope="col">dataset</th>
+    <th width="105" scope="col">catalogRef</th>
     <th width="105" scope="col">name</th>
     <th width="179" scope="col">path</th>
   </tr>
   <tr>
     <td>collection</td>
-    <td>name-<em>collection</em></td>
+    <td>&nbsp;</td>
+    <td>name</td>
     <td>path/<em>collection</em></td>
   </tr>
   <tr>
     <td>individual files</td>
+    <td>path/<em>files/catalog.xml</em></td>
     <td>filename</td>
     <td>path/<em>files</em>/filename</td>
   </tr>
@@ -101,24 +104,24 @@ or, simplifying:
 <h3>Resulting Datasets:</h3>
 <p>A time partition generates one collection dataset,  one dataset for each partition, and one dataset for each individual file in the collection:</p>
 <pre>&lt;dataset name=&quot;NAM-Polar90&quot; ID=&quot;grib/NCEP/NAM/Polar90&quot;&gt;    
-  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/collection/catalog.xml&quot; xlink:title=&quot;collection&quot; ID=&quot;grib/NCEP/NAM/Polar90/collection&quot; name=&quot;&quot; /&gt;
-  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/catalog.xml&quot; xlink:title=&quot;NAM-Polar90_20110301&quot; ID=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110301&quot; name=&quot;&quot;&gt;
-    &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
+  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/collection/catalog.xml&quot; xlink:title=&quot;collection&quot;/&gt;
+  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/catalog.xml&quot; xlink:title=&quot;NAM-Polar90_20110301&quot;&gt;
+    &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/files/catalog.xml&quot; xlink:title=&quot;files&quot; /&gt;
   &lt;/catalogRef&gt;
-  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110302/catalog.xml&quot; xlink:title=&quot;NAM-Polar90_20110302&quot; ID=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110302&quot; name=&quot;&quot;&gt;
+  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110302/catalog.xml&quot; xlink:title=&quot;NAM-Polar90_20110302&quot;&gt;
     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110302/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
   &lt;/catalogRef&gt;
   ...
 &lt;/dataset&gt;
 </pre>
-or, simplifying:
+de-referencing the catalogRefs, and simplifying:
 <pre>&lt;dataset name=&quot;NAM-Polar90&quot; ID=&quot;grib/NCEP/NAM/Polar90&quot;&gt;
 1)&lt;dataset name=&quot;NAM-Polar90-collection&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/collection&quot;&gt; 
-2)&lt;dataset name=&quot;NAM-Polar90_20110301&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110301&quot;&gt;    
+2)&lt;dataset name=&quot;NAM-Polar90_20110301&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/collection&quot;&gt;    
 3)  &lt;dataset name=&quot;NAM_Polar_90km_20110301_0000.grib2&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110301_0000.grib2&quot;/&gt;    <br />
     &lt;dataset name=&quot;NAM_Polar_90km_20110301_0600.grib2&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110301_0600.grib2&quot;/&gt;
     ...
-  &lt;/dataset&gt;    <br />4)&lt;dataset name=&quot;NAM-Polar90_20110302-collection&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/collection&quot;&gt;   
+  &lt;/dataset&gt;    <br />4)&lt;dataset name=&quot;NAM-Polar90_20110302-collection&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110302/collection&quot;&gt;   
     &lt;dataset name=&quot;NAM_Polar_90km_20110302_0000.grib2&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110302_0000.grib2&quot;/&gt;    <br />
     &lt;dataset name=&quot;NAM_Polar_90km_20110302_0600.grib2&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110302_0600.grib2&quot;/&gt;
     ...
@@ -128,29 +131,33 @@ or, simplifying:
 </pre>
 <ol>
   <li>The overall collection dataset</li>
-  <li>The first partition collection</li>
+  <li>The first partition collection, with a partitionName = name<strong>_startingTime</strong></li>
   <li>The files in the first partition</li>
   <li>The second partition collection, etc</li>
 </ol>
 <p>So the datasets that are generated from a Time Partition with <strong>name</strong>, <strong>path</strong>, and <strong>partitionName</strong>:</p>
-<table width="579" border="1">
+<table width="793" border="1">
   <tr>
     <th width="129" scope="col">dataset</th>
-    <th width="208" scope="col">name</th>
+    <th width="259" scope="col">catalogRef</th>
+    <th width="157" scope="col">name</th>
     <th width="220" scope="col">path</th>
   </tr>
   <tr>
     <td>collection</td>
-    <td>name-<em>collection</em></td>
+    <td>path/<em>collection/catalog.xml</em></td>
+    <td>name</td>
     <td>path/<em>collection</em></td>
   </tr>
   <tr>
     <td>partitions</td>
+    <td>path/partitionName<em>/catalog.xml</em></td>
     <td>partitionName</td>
-    <td>path/partitionName</td>
+    <td>path/partitionName/<em>collection</em></td>
   </tr>
   <tr>
     <td>individual files</td>
+    <td>path/partitionName/<em>files/catalog.xml</em></td>
     <td>filename</td>
     <td>path/<em>files</em>/filename</td>
   </tr>
@@ -176,24 +183,24 @@ or, simplifying:
 <h3>Resulting Datasets:</h3>
 <p>For each group, this generates one collection dataset, and one dataset for each individual file in the group:</p>
 <pre>&lt;catalog&gt;
-  &lt;dataset name=&quot;KALR:Southeast RFC&quot; ID=&quot;grib/NPVU/RFC/KALR-Southeast-RFC&quot; urlPath=&quot;grib/NPVU/RFC/KALR-Southeast-RFC&quot;&gt;
+  &lt;dataset name=&quot;KALR:Southeast RFC&quot; urlPath=&quot;grib/NPVU/RFC/KALR-Southeast-RFC/collection&quot;&gt;
     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NPVU/RFC/KALR-Southeast-RFC/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
   &lt;/dataset&gt;
-  &lt;dataset name=&quot;KFWR:West Gulf RFC&quot; ID=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC&quot; urlPath=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC&quot;&gt;
+  &lt;dataset name=&quot;KFWR:West Gulf RFC&quot; urlPath=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC/collection&quot;&gt;
     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NPVU/RFC/KFWR-West-Gulf-RFC/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
   &lt;/dataset&gt;
   ...
 &lt;/catalog&gt; </pre>
-Note that the groups are sorted by name. Simplifying:
+Note that the groups are sorted by name, and that there is no overall collection for the dataset. Simplifying:
 
 <pre>
 &lt;catalog&gt;
-1)&lt;dataset name=&quot;KALR:Southeast RFC&quot; ID=&quot;grib/NPVU/RFC/KALR-Southeast-RFC&quot; urlPath=&quot;grib/NPVU/RFC/KALR-Southeast-RFC&quot;&gt; 
+1)&lt;dataset name=&quot;KALR:Southeast RFC&quot; urlPath=&quot;grib/NPVU/RFC/KALR-Southeast-RFC/collection&quot;&gt; 
 2)  &lt;dataset name=&quot;ZETA_KALR_NWS_152_20120111.grib1&quot; urlPath=&quot;grib/NPVU/RFC/files/ZETA_KALR_NWS_152_20120111.grib1&quot;/&gt;
     &lt;dataset name=&quot;ZETA_KALR_NWS_160_20120111.grib1&quot; urlPath=&quot;grib/NPVU/RFC/files/ZETA_KALR_NWS_160_20120111.grib1&quot;/&gt;
     ...
   &lt;/dataset&gt;
-3)&lt;dataset name=&quot;KFWR:West Gulf RFC&quot; ID=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC&quot; urlPath=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC&quot;&gt;
+3)&lt;dataset name=&quot;KFWR:West Gulf RFC&quot; urlPath=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC/collection&quot;&gt;
     &lt;dataset name=&quot;ZETA_KFWR_NWS_152_20120111.grib1&quot; urlPath=&quot;grib/NPVU/RFC/files/ZETA_KFWR_NWS_152_20120111.grib1&quot;/&gt;
     &lt;dataset name=&quot;ZETA_KFWR_NWS_161_20120110.grib1&quot; urlPath=&quot;grib/NPVU/RFC/files/ZETA_KFWR_NWS_161_20120110.grib1&quot;/&gt;
     ...
@@ -206,19 +213,22 @@ Note that the groups are sorted by name. Simplifying:
   <li>The second group collection dataset, etc</li>
 </ol>
 <p>So the datasets that are generated from a Grib Collection with <strong>groupName</strong> and <strong>path</strong> :</p>
-<table width="634" border="1">
+<table width="795" border="1">
   <tr>
-    <th width="148" scope="col">dataset</th>
-    <th width="155" scope="col">name</th>
-    <th width="309" scope="col">path</th>
+    <th width="131" scope="col">dataset</th>
+    <th width="229" scope="col">catalogRef</th>
+    <th width="122" scope="col">name</th>
+    <th width="285" scope="col">path</th>
   </tr>
   <tr>
     <td>group collection</td>
+    <td>&nbsp;</td>
     <td>groupName<em></em></td>
-    <td>path/groupName</td>
+    <td>path/groupName/<em>collection</em></td>
   </tr>
   <tr>
     <td>individual files</td>
+    <td>path/groupName/<em>files/catalog.xml</em></td>
     <td>filename</td>
     <td>path/<em>files</em>/filename</td>
   </tr>
@@ -254,13 +264,13 @@ Note that the groups are sorted by name. Simplifying:
 <p>A time partition with multiple groups generates an<em> overall collection dataset</em> for each group,  a collection dataset for each group in each partition, and a dataset for each individual file:</p>
 <pre>
 &lt;dataset name=&quot;NCDC-CFSR&quot; ID=&quot;grib/NCDC/CFSR&quot;&gt; 
-1) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/collection/catalog.xml&quot; xlink:title=&quot;collection&quot; ID=&quot;grib/NCDC/CFSR/collection&quot; name=&quot;&quot; /&gt;
-4) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200808/catalog.xml&quot; xlink:title=&quot;200808&quot; ID=&quot;grib/NCDC/CFSR/200808&quot; name=&quot;&quot; /&gt;
-8) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200809/catalog.xml&quot; xlink:title=&quot;200809&quot; ID=&quot;grib/NCDC/CFSR/200809&quot; name=&quot;&quot; /&gt;
+1) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/collection/catalog.xml&quot; xlink:title=&quot;collection&quot; name=&quot;&quot; /&gt;
+4) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200808/catalog.xml&quot; xlink:title=&quot;200808&quot; name=&quot;&quot; /&gt;
+8) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200809/catalog.xml&quot; xlink:title=&quot;200809&quot; name=&quot;&quot; /&gt;
    ...
 &lt;/dataset&gt;
 </pre>
-or, simplifying:
+de-referencing the catalogRefs, and simplifying:
 <pre>&lt;dataset name=&quot;NCDC-CFSR&quot; ID=&quot;grib/NCDC/CFSR&quot;&gt;
 
 1)&lt;dataset name=&quot;NCDC-CFSR&quot;&gt; 
@@ -271,22 +281,18 @@ or, simplifying:
 
 4)&lt;dataset name=&quot;200808&quot; &gt;
 5)  &lt;dataset name=&quot;FLX GaussianT382&quot; urlPath=&quot;grib/NCDC/CFSR/200808/FLX-GaussianT382&quot;&gt;
-6)    &lt;dataset name=&quot;200808/soilt1.gdas.200808.grb2&quot; urlPath=&quot;grib/NCDC/CFSR/files/200808/soilt1.gdas.200808.grb2&quot;&gt;
-      &lt;dataset name=&quot;200808/swe.gdas.200808.grb2&quot; urlPath=&quot;grib/NCDC/CFSR/files/200808/swe.gdas.200808.grb2&quot;&gt;
-      ...
+6)     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT382/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;    
+
     &lt;/dataset&gt;
-7)  &lt;dataset name=&quot;FLX GaussianT62&quot; urlPath=&quot;grib/NCDC/CFSR/200808/FLX-GaussianT62&quot;&gt;
-      &lt;dataset name=&quot;200808/soilt1.gdas.200808.grb2&quot; urlPath=&quot;grib/NCDC/CFSR/files/200808/soilt1.gdas.200808.grb2&quot;&gt;
-      &lt;dataset name=&quot;200808/swe.gdas.200808.grb2&quot; urlPath=&quot;grib/NCDC/CFSR/files/200808/swe.gdas.200808.grb2&quot;&gt;
-      ...
-   &lt;/dataset&gt;
+7)  &lt;dataset name=&quot;FLX GaussianT62&quot; urlPath=&quot;grib/NCDC/CFSR/200808/FLX-GaussianT62&quot;&gt; 
+	     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT62/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt; 
+    &lt;/dataset&gt;
     ... 
   &lt;/dataset&gt;
 8)&lt;dataset name=&quot;200809&quot; &gt;
   ... 
 
-&lt;/dataset&gt;
-</pre>
+&lt;/dataset&gt;</pre>
 <ol>
   <li>Container for the  overall collection datasets</li>
   <li>The overall collection for the first group</li>
@@ -298,25 +304,29 @@ or, simplifying:
   <li>Container for the second partition, etc</li>
 </ol>
 <p>So the datasets that are generated from a Time Partition with <strong>name</strong>, <strong>path</strong>, <strong>groupName</strong>, and <strong>partitionName</strong>:</p>
-<table width="726" border="1">
+<table width="937" border="1">
   <tr>
-    <th width="227" scope="col">dataset</th>
-    <th width="189" scope="col">name</th>
-    <th width="288" scope="col">path</th>
+    <th width="215" scope="col">dataset</th>
+    <th width="302" scope="col">catalogRef</th>
+    <th width="188" scope="col">name</th>
+    <th width="204" scope="col">path</th>
   </tr>
   <tr>
     <td>overall collection for group</td>
-    <td>groupName-<em>collection</em></td>
-    <td>path/groupName/<em>collection</em></td>
+    <td>path/groupName/<em>collection/catalog.xml</em></td>
+    <td>groupName</td>
+    <td>path/name/groupName</td>
   </tr>
   <tr>
-    <td>collection for group and partition</td>
-    <td>partitionName/groupName</td>
+    <td>collection for partition and group</td>
+    <td>path/partitionName<em>/catalog.xml</em></td>
+    <td>groupName</td>
     <td>path/partitionName/groupName</td>
   </tr>
   <tr>
     <td>individual files</td>
-    <td>filename</td>
+    <td>path/partitionName/groupName/<em>files/catalog.xml</em></td>
+    <td>partitionName/filename</td>
     <td>path/<em>files</em>/filename</td>
   </tr>
 </table>

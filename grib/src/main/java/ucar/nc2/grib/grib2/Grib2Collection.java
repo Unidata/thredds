@@ -88,7 +88,7 @@ public class Grib2Collection extends ucar.nc2.grib.GribCollection {
 
     if (filename == null) { // LOOK thread-safety : sharing this, raf
       Grib2Iosp iosp = new Grib2Iosp(want);
-      NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath(), null);
+      NetcdfFile ncfile = new GcNetcdfFile(iosp, null, getIndexFile().getPath()+"#"+groupName, null);
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
 
