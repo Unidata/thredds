@@ -135,18 +135,50 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @throws IOException on I/O error
    */
   private NetcdfFileWriteable(String location, boolean fill, boolean isExisting) throws IOException {
+    this(null, null, location, fill, isExisting);
+  }
+
+  /**
+   * Used to hold the IOSP for deferred use in create() while allowing @spi
+   * and @spiw to remain unset while in define mode.
+   */
+  private ucar.nc2.iosp.IOServiceProviderWriter cached_spiw = null;
+
+  /**
+   * Open or create a new Netcdf file, put it into define mode to allow
+   * writing using the provided IOSP and RAF.
+   *
+   * If @iospw is null then netCDF-3 is assumed to retain the current
+   * expected behavior.
+   *
+   * @param iospw IO service provider to use
+   * @param raf Random access file to use
+   * @param location open a new file at this location
+   * @param fill set fill mode
+   * @param isExisting true if file already exists
+   * @throws IOException on I/O error
+   */
+  protected NetcdfFileWriteable(IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
+          String location, boolean fill,  boolean isExisting) throws IOException {
     super();
     this.location = location;
     this.fill = fill;
 
     if (isExisting) {
-      ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
-      spi = SPFactory.getServiceProvider();
-      spiw = (IOServiceProviderWriter) spi;
+      if (iospw == null) {
+        raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
+        spi = SPFactory.getServiceProvider();
+        spiw = (IOServiceProviderWriter) spi;
+      } else {
+        spiw = iospw;
+        spi = (ucar.nc2.iosp.IOServiceProvider)spiw;
+      }
       spiw.open(raf, this, null);
       spiw.setFill( fill);
 
     } else {
+      /* save for use later in create() */
+      cached_spiw = iospw;
       defineMode = true;
       isNewFile = true;
     }
@@ -599,8 +631,13 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
-    spi = SPFactory.getServiceProvider();
-    spiw = (IOServiceProviderWriter) spi;
+    if (cached_spiw == null) {
+      spi = SPFactory.getServiceProvider();
+      spiw = (IOServiceProviderWriter) spi;
+    } else {
+      spiw = cached_spiw;
+      spi = (ucar.nc2.iosp.IOServiceProvider)spiw;
+    }
     spiw.setFill( fill);
     spiw.create(location, this, extraHeader, preallocateSize, isLargeFile);
 
