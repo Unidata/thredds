@@ -15,11 +15,9 @@
   <li>TDS log files:</li>
   <ul>
     <li><a href="#threddsServlet.log">threddsServlet.log</a></li>
-    <li><a href="#serverStartup.log">serverStartup.log</a></li>
-    <li><a href="#models.log">models.log</a></li>
-    <li><a href="#cache.log">cache.log</a></li>
+    <li><a href="#serverStartup.log">Other log files</a></li>
   </ul>
-  <li><a href="#Log4J">Log4j configuration</a></li>
+  <li><a href="#Log4J">Log configuration</a></li>
 </ul>
 
 <hr style="width: 100%; height: 2px;">
@@ -83,34 +81,31 @@ access log will probably either log a 400 (Not Found) or a 500
 matches in all messages; 2) the ERROR message contains a stack trace;
 and 3) the status code in the end of transaction message is<strong> 500</strong> (Internal Server Error).</p>
 
-<h2><a name="serverStartup.log"></a>serverStartup.log</h2>
+<h2><a name="serverStartup.log"></a>Other Log files</h2>
 
-<p>The <code>serverStartup.log</code> log file contains log messages from the initialization of the TDS.</p>
-
-<h2><a name="models.log"></a>models.log</h2>
-
-<p>The <code>models.log</code> log file contains log messages specific to gridded model data, especially GRIB data.</p>
-
-<h2><a name="cache.log"></a>cache.log</h2>
-
-<p>The <code>cache.log</code> log file contains log messages related to TDS object and file caching.</p>
-
+<ul>
+  <li>The <strong>serverStartup.log</strong>  file contains  messages from the initialization of the TDS. Helpful for debugging when TDS is failing to start.</li>
+  <li>The <strong>catalogInit.log </strong>file  contains  messages from reading the configuration catalogs. Always look here for problems after you have modified any configuration catalogs.</li>
+  <li>The <strong>featureCollectionScan.log</strong> file shows messages from feature collections. You should examine this for errors periodically.</li>
+  <li>The <strong>cache.log</strong> file shows cache initialization and scouring messages. Usually you dont need to look at these.</li>
+  <li>The <strong>models.log</strong> log file is no longer used.</li>
+</ul>
 <hr style="width: 100%; height: 2px;">
 
 <h2><a name="Log4J"></a>Log4J</h2>
-<p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">Log4J </a> library, currently contained in the NLOG4J library which implements the <a href="http://www.slf4j.org/">SLF4J</a>
-logging facade, which the Netcdf-Java library uses. Users of the TDS
-can ignore the SLF4J facade, and need only deal with log4j. </p>
-<p>The <a href="log4j.xml.txt">default log4j configuration file</a>  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You
+<p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">Log4J </a> library, and the <a href="http://www.slf4j.org/">SLF4J</a>
+logging facade to route all log messages to Log4J. (Users of the TDS
+can ignore the SLF4J facade,).</p>
+<p>The <a href="log4j.xml.txt">default log4j configuration file</a>  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/classes/log4j.xml. </strong>You
 can modify this if you want and restart the TDS to have it take
 efffect. However, it will be overwritten when you install an updated
 thredds.war file.</p>
-<p>You can change the location of the  log4j configuration file with the <em>log4j-init-file</em> context parameter in the thredds configuration file <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml.</strong> file. For example:</p>
+<p>You can change the location of the  log4j configuration file with the <em>log4j-init-file</em> context parameter in the TDS war configuration file: <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml.</strong> file. For example:</p>
 <pre> &lt;context-param&gt;<br>   &lt;param-name&gt;<strong>log4j-init-file</strong>&lt;/param-name&gt;<br>   &lt;param-value&gt;<strong>/data/mylog4j.xml</strong>&lt;/param-value&gt;<br> &lt;/context-param&gt; <br></pre>
 <p>The value should be the absolute path to the log4j configuration
 file. Remember that web.xml gets overwritten when the thredds.war file
 is updated.</p>
-
+<p>For debugging log4j, add "-Dlog4j.debug" on the JVM startup of Tomcat.</p>
 <h2>ThreddsServlet logfile</h2>
 <p>The  ThreddsServlet logs roll over every 10MB, keeping the last 10 files. The log4j entry looks like: </p>
 <pre>  &lt;appender name="threddsServlet" class="org.apache.log4j.RollingFileAppender"&gt;<br>    &lt;param name="File" value="${logdir}/threddsServlet.log"/&gt;<br>    &lt;param name="MaxFileSize" value="10MB"/&gt;<br>    &lt;param name="MaxBackupIndex" value="10"/&gt;<br>    &lt;layout class="org.apache.log4j.PatternLayout"&gt;<br>      &lt;param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/&gt;<br>    &lt;/layout&gt;<br>  &lt;/appender&gt;</pre>
@@ -194,7 +189,7 @@ is updated.</p>
 </tbody></table><br><hr width="100%">
 <address>
 <img src="../../images/thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated June 2009.
+  This document is maintained by Unidata and was last updated June 2012.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 

@@ -302,7 +302,9 @@
           <attachClasses>true</attachClasses>
           <packagingExcludes>
             WEB-INF/lib/commons-logging*.jar,
+            WEB-INF/lib/javax.servlet*.jar,
             WEB-INF/lib/jdom-1.0.jar,
+            WEB-INF/lib/slf4j-jdk14*.jar,
             WEB-INF/lib/visad-*.jar
           </packagingExcludes>
           <archive>
