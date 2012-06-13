@@ -53,7 +53,7 @@ public class ParseMetadataTest
   {
       String docBaseUriString = "http://cat2.stax.ParseMetadataTest/parseDataFormat.xml";
 
-      String mdXml = "<dataFormat>NEXRAD2</dataFormat>";
+      String mdXml = "<dataFormat>NEXRAD-2</dataFormat>";
 
       parseDataFormatHelper( docBaseUriString, mdXml);
   }
@@ -64,7 +64,7 @@ public class ParseMetadataTest
                    ThreddsXmlParserException
     {
         String docBaseUriString = "http://cat2.stax.ParseMetadataTest/parseDataFormatWrapped.xml";
-        String mdXml = "<metadata><dataFormat>NEXRAD2</dataFormat></metadata>";
+        String mdXml = "<metadata><dataFormat>NEXRAD-2</dataFormat></metadata>";
 
         parseDataFormatHelper( docBaseUriString, mdXml);
     }
@@ -75,7 +75,7 @@ public class ParseMetadataTest
                    ThreddsXmlParserException
     {
         String docBaseUriString = "http://cat2.stax.ParseMetadataTest/parseDataFormatInherited.xml";
-        String mdXml = "<metadata inherited='true'><dataFormat>NEXRAD2</dataFormat></metadata>";
+        String mdXml = "<metadata inherited='true'><dataFormat>NEXRAD-2</dataFormat></metadata>";
 
         parseDataFormatHelper( docBaseUriString, mdXml);
     }

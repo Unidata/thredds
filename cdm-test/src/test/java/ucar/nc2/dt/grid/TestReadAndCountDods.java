@@ -75,10 +75,10 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Alaska_191km/files/latest.xml", 22, 10, 12, 7); //
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/CONUS_80km/files/latest.xml", 31, 12, 15, 8);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/CONUS_95km/files/latest.xml", 30, 10, 12, 8);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/CONUS_191km/files/latest.xml", 20, 8, 10, 7);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.xml", 127, 22, 23, 17);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Global_onedeg/files/latest.xml", 127, 22, 23, 17);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Global_2p5deg/files/latest.xml", 127, 20, 21, 17);
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/CONUS_191km/files/latest.xml", 20, 8, 10, 7);    
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.xml", 133, 26, 27, 21);    
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Global_onedeg/files/latest.xml", 133, 26, 27, 21);
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Global_2p5deg/files/latest.xml", 133, 24, 25, 21);    
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Hawaii_160km/files/latest.xml", 15, 8, 10, 6);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/N_Hemisphere_381km/files/latest.xml", 23, 9, 11, 6);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Puerto_Rico_191km/files/latest.xml", 15, 8, 10, 6);
@@ -96,12 +96,15 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_80km/files/latest.xml", 41, 11, 13, 8);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);
 
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_13km/files/latest.xml", 52, 13, 15, 9);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/files/latest.xml", 74, 15, 17, 11); // now Rapid refresh 5/4/2012
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/pressure/files/latest.xml", -1, 12, 14, 9);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/files/latest.xml", 55, 10, 12, 8);
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RAP/CONUS_13km/files/latest.xml", 52, 13, 15, 9);
+    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_13km/files/latest.xml", 52, 13, 15, 9);        
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RAP/CONUS_20km/files/latest.xml", 74, 15, 17, 11);
+    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/files/latest.xml", 74, 15, 17, 11); // now Rapid refresh 5/4/2012
+    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/pressure/files/latest.xml", -1, 12, 14, 9);
+    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/files/latest.xml", 55, 10, 12, 8);
+    
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_40km/files/latest.xml", 48, -1, -1, 10);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC/CONUS_80km/files/latest.xml", 31, 9, 11, 5);  // */
+    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC/CONUS_80km/files/latest.xml", 31, 9, 11, 5);  // */
 
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/DGEX/CONUS_12km/files/latest.xml", 23, 11, 13, 8);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/DGEX/Alaska_12km/files/latest.xml", 23, 11, 13, 8);
