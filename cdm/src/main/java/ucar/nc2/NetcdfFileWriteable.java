@@ -61,18 +61,6 @@ public class NetcdfFileWriteable extends NetcdfFile {
   static private Set<DataType> valid = EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT,
           DataType.DOUBLE, DataType.FLOAT);
 
-  private IOServiceProviderWriter spiw;
-
-  // modes
-  private boolean defineMode;
-
-  // state
-  private boolean isNewFile;
-  private boolean isLargeFile;
-  private boolean fill;
-  private int extraHeader;
-  private long preallocateSize;
-
   /**
    * Open an existing Netcdf file for writing data. Fill mode is true.
    * Cannot add new objects, you can only read/write data to existing Variables.
@@ -126,6 +114,20 @@ public class NetcdfFileWriteable extends NetcdfFile {
     return new NetcdfFileWriteable(location, fill, false);
   }
 
+  ////////////////////////////////////////////////////////////////////////////////
+  private IOServiceProviderWriter spiw;
+  private IOServiceProviderWriter cached_spiw = null; // Hold the IOSP for deferred use in create()
+
+  // modes
+  private boolean defineMode;
+
+  // state
+  private boolean isNewFile;
+  private boolean isLargeFile;
+  private boolean fill;
+  private int extraHeader;
+  private long preallocateSize;
+
   /**
    * Open or create a new Netcdf file, put it into define mode to allow writing.
    *
@@ -135,18 +137,40 @@ public class NetcdfFileWriteable extends NetcdfFile {
    * @throws IOException on I/O error
    */
   private NetcdfFileWriteable(String location, boolean fill, boolean isExisting) throws IOException {
+    this(null, null, location, fill, isExisting);
+  }
+
+  /**
+   * Open or create a new Netcdf file, put it into define mode to allow
+   * writing, using the provided IOSP and RAF.
+   *
+   * @param iospw IO service provider to use, if null use standard
+   * @param raf Random access file to use, may be null if iospw is
+   * @param location open a new file at this location
+   * @param fill set fill mode
+   * @param isExisting true if file already exists
+   * @throws IOException on I/O error
+   */
+  protected NetcdfFileWriteable(IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
+          String location, boolean fill, boolean isExisting) throws IOException {
     super();
     this.location = location;
     this.fill = fill;
 
     if (isExisting) {
-      ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
-      spi = SPFactory.getServiceProvider();
-      spiw = (IOServiceProviderWriter) spi;
+      if (iospw == null) {
+        raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
+        spi = SPFactory.getServiceProvider();
+        spiw = (IOServiceProviderWriter) spi;
+      } else {
+        spiw = iospw;
+        spi = spiw;
+      }
       spiw.open(raf, this, null);
       spiw.setFill( fill);
 
     } else {
+      cached_spiw = iospw; // save for use later in create()
       defineMode = true;
       isNewFile = true;
     }
@@ -177,7 +201,6 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
     this.preallocateSize = size;
   }
-
 
   /**
    * Set if this should be a "large file" (64-bit offset) format.
@@ -599,8 +622,13 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
-    spi = SPFactory.getServiceProvider();
-    spiw = (IOServiceProviderWriter) spi;
+    if (cached_spiw == null) {
+      spi = SPFactory.getServiceProvider();
+      spiw = (IOServiceProviderWriter) spi;
+    } else {
+      spiw = cached_spiw;
+      spi = spiw;
+    }
     spiw.setFill( fill);
     spiw.create(location, this, extraHeader, preallocateSize, isLargeFile);
 
@@ -684,7 +712,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
       if (oldVar != null)
         oldList.add(oldVar);
     }
-    FileWriter.copyVarData(this, oldList, recordVar, 0);
+    FileWriter.copyVarData(this, oldList, recordVar, null);
     flush();
 
     // delete old
