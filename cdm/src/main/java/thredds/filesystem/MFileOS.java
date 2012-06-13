@@ -53,6 +53,7 @@ public class MFileOS implements MFile {
    * @return MFileOS or null
    */
   static public MFileOS getExistingFile(String filename) {
+    if (filename == null) return null;
     File file = new File(filename);
     if (file.exists()) return new MFileOS(file);
     return null;

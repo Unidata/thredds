@@ -145,7 +145,18 @@
     <dependency>
       <groupId>uk.ac.rdg.resc</groupId>
       <artifactId>ncwms</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-jdk14</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>

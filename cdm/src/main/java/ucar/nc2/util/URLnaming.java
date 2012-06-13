@@ -225,6 +225,7 @@ private   static String unescapeQueryDecoder(String urlString) {
 
   public static String resolveFile(String baseDir, String filepath) {
     if (baseDir == null) return filepath;
+    if (filepath == null) return filepath;
     File file = new File(filepath);
     if (file.isAbsolute()) return filepath;
 
