@@ -156,15 +156,17 @@
         </exclusion>
       </exclusions>
     </dependency>
-
+    
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
     </dependency>
-    <dependency>
+    
+    <!-- dependency>
       <groupId>org.geotoolkit</groupId>
       <artifactId>geotk-referencing</artifactId>
-    </dependency>
+    </dependency-->
+    
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
@@ -185,15 +187,17 @@
       <artifactId>tomcat-catalina</artifactId>
       <scope>provided</scope>
     </dependency>
+    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
+    <!-- dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
-    </dependency>
+    </dependency-->
+    
     <dependency>
       <groupId>taglibs</groupId>
       <artifactId>standard</artifactId>
@@ -239,13 +243,13 @@
   <!--     Repositories. This is where Maven looks for dependencies. The  -->
   <!--     Maven repository is implicit and doesn't need to be specified. -->
   <!-- ================================================================== -->
-  <repositories>
+  <!-- repositories>
     <repository>
       <id>geotoolkit</id>
       <name>Geotk repository</name>
       <url>http://maven.geotoolkit.org</url>
     </repository>      
-  </repositories>
+  </repositories-->
 
 
   <!-- ===========================================================

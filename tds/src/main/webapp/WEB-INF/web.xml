@@ -290,14 +290,16 @@
     <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
   </context-param>
   
+  
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
   <!-- TDS context configuration listener. -->
-  <!-- listener>
+  <listener>
     <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
-  </listener-->
+  </listener>
+
 
   <listener>
     <listener-class>thredds.server.opendap.OpendapSessionAttributeListener</listener-class>
