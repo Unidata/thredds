@@ -258,11 +258,11 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     HTTPSession.setGlobalUserAgent("TestMotherlodeModels");
 
     //String problemCat = "http://localhost:8080/thredds/catalog/NOAA/CFSR/timeseries/catalog.xml";
-    String problemCat = "http://localhost:8080/thredds/enhancedCatalog.xml";
+    //String problemCat = "http://localhost:8080/thredds/enhancedCatalog.xml";
     //String problemCat = "http://motherlode.ucar.edu:9080/thredds/grib/NCDC/CFSR/catalog.xml";
 
     String server = "http://motherlode.ucar.edu:9080/thredds";
-    String catalog = "/catalog.xml";
+    String catalog = "/idd/modelsNcep.xml";
     //String catalog = "/idd/radars.xml";
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"

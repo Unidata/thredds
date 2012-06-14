@@ -120,7 +120,7 @@ public interface CollectionManager {
 
   /**
    * If isScanNeeded(), do a scan.
-   * @return true is scan was done, and anything changed.
+   * @return true if scan was done, and anything changed.
    * @throws IOException on io error
    */
   public boolean scanIfNeeded() throws IOException;

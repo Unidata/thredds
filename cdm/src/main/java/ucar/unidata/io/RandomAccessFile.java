@@ -1723,9 +1723,10 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
    * @return a string representation of the state of the object.
    */
   public String toString() {
-    return "fp=" + filePosition + ", bs=" + bufferStart + ", de="
+    return location;
+    /* return "fp=" + filePosition + ", bs=" + bufferStart + ", de="
             + dataEnd + ", ds=" + dataSize + ", bl=" + buffer.length
-            + ", readonly=" + readonly + ", bm=" + bufferModified;
+            + ", readonly=" + readonly + ", bm=" + bufferModified; */
   }
 
   /////////////////////////////////////////////////

@@ -365,9 +365,8 @@ the file permissions of the Tomcat user. </p>
 is false, TDS will first look for the temporary file in the same
 directory as the original file, and if not found, then will look in the
 cache.</p>
- <p>Every <strong>scour</strong> amount of time, the largest items in the cache will be deleted, until the directory has less than <strong>maxSize</strong> bytes. Note that the directory will sometimes exceed <strong>maxSize</strong>, and will only be knocked back to <strong>maxSize</strong> when the scour thread runs.</p>
+ <p>Every <strong>scour</strong> amount of time, the largest items in the cache will be deleted, until the directory has less than <strong>maxSize</strong> bytes. Note that the directory will sometimes exceed <strong>maxSize</strong>, and will only be knocked back to <strong>maxSize</strong> when the scour thread runs. To turn off scouring, set the scour time to 0 (eg &quot;0 secs&quot;).</p>
  <p>If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/cdm</strong> directory. We recommend that you use this default, by not specifying the DiskCache.dir.</p>
- <p>&nbsp;</p>
 <h3>Aggregation Cache<a name="AggregationCache"></a> </h3>
 <p><em>since version 4.1</em></p>
 <pre>  &lt;<strong>AggregationCache</strong>&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/acache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;24 hours&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;90 days&lt;/maxAge&gt;<br>  &lt;/AggregationCache&gt;</pre>

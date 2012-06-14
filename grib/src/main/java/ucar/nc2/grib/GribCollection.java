@@ -166,6 +166,10 @@ public abstract class GribCollection implements FileCacheable {
 
   private File indexFile;
 
+  /**
+   * get index file; may not exist
+   * @return File, but may not exist
+   */
   public File getIndexFile() {
     if (indexFile == null) {
       File f = new File(directory, name + IDX_EXT);
@@ -175,8 +179,10 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   public File makeNewIndexFile() {
-    if (indexFile != null && indexFile.exists())
-      indexFile.delete();
+    if (indexFile != null && indexFile.exists())  {
+      if (!indexFile.delete())
+        logger.warn("Failed to delete {}", indexFile.getPath());
+    }
     indexFile = null;
     return getIndexFile();
   }

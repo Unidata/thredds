@@ -48,7 +48,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Build a GribCollection object for Grib-1 files. Manage grib collection index.
+ * Build a GribCollection object for Grib-1 files. Manage grib collection index (ncx).
  * Covers GribCollectionProto, which serializes and deserializes.
  * Rectilyse means to turn the collection into a multidimensional variable.
  *
