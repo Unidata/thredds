@@ -32,7 +32,6 @@
 
 package thredds.inventory;
 
-import junit.framework.TestCase;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
@@ -48,11 +47,9 @@ import java.util.List;
  * @author caron
  * @since 6/20/11
  */
-public class TestDcm extends TestCase {
-  public TestDcm( String name) {
-    super(name);
-  }
+public class TestDcm {
 
+  //@Test
   public void testScan() throws IOException {
     // count scanned files
     Formatter f = new Formatter(System.out);
@@ -70,6 +67,7 @@ public class TestDcm extends TestCase {
     }
   }
 
+  //@Test
   public void testScanOlderThan() throws IOException, InterruptedException {
     Formatter f = new Formatter(System.out);
     MFileCollectionManager dcm = MFileCollectionManager.open(TestDir.cdmUnitTestDir + "agg/updating/.*nc$", null, f);
@@ -89,6 +87,7 @@ public class TestDcm extends TestCase {
     }
   }
 
+  //@Test
   public void testScanFromConfig() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", TestDir.cdmUnitTestDir + "agg/updating/.*nc$",
             null, "10 sec", null, null, null, null);
@@ -116,4 +115,5 @@ public class TestDcm extends TestCase {
       System.out.printf("**Cant touch %s%n", who);
     return ok;
   }
+
 }

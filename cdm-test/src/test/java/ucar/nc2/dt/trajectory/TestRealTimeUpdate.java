@@ -50,8 +50,6 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- * _more_
- *
  * @author edavis
  * @since Feb 7, 2006 10:10:45 AM
  */
@@ -63,7 +61,7 @@ public class TestRealTimeUpdate
   /**
    * Test ...
    */
-  @Test
+  //@Test
   public void testMuckWithNcfSynchExtend()
   {
     NetcdfFile ncf = null;
@@ -142,7 +140,7 @@ public class TestRealTimeUpdate
       System.out.println( "Lat var not the same." );
   }
 
-  @Test
+  //@Test
   public void testTwo()
   {
     TrajectoryObsDataset trajDs;

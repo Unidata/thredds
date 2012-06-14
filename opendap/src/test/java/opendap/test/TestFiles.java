@@ -54,6 +54,11 @@ public class TestFiles extends UnitTestCommon
     DAS, DDS, DATADDS;
   }
 
+  // suppress "no test failure warning message */
+  public void testFake() throws Exception {
+    assert true;
+  }
+
   // List all the base names from testdata1
   static String partext(TestPart part) {
     switch (part) {
