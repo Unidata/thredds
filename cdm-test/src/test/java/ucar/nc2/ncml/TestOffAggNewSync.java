@@ -54,7 +54,7 @@ public class TestOffAggNewSync {
             "  </aggregation>\n" +
             "</netcdf>";
 
-  //@Test
+  @Test
   public void testMove() throws IOException, InterruptedException {
     String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
     if (!move(fname))
@@ -73,7 +73,7 @@ public class TestOffAggNewSync {
     System.out.printf("ok testMove%n");
   }
 
-  //@Test
+  @Test
   public void testRemove() throws IOException, InterruptedException {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 8);
@@ -92,7 +92,7 @@ public class TestOffAggNewSync {
     System.out.printf("ok testRemove%n");
   }
 
-  //@Test
+  @Test
   public void testSync() throws IOException, InterruptedException {
     String fname = dataDir + "SUPER-NATIONAL_8km_WV_20051128_2100.gini";
     if (!move(fname))
@@ -112,7 +112,7 @@ public class TestOffAggNewSync {
     System.out.printf("ok testSync%n");
   }
 
-  //@Test
+  @Test
   public void testSyncRemove() throws IOException, InterruptedException {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(aggExistingSync), "aggExistingSync", null);
     testAggCoordVar(ncfile, 8);
@@ -127,7 +127,8 @@ public class TestOffAggNewSync {
     testAggCoordVar(ncfile, nfiles);
     ncfile.close();
 
-    if (!moveBack(dataDir + fname))
+    //if (!moveBack(dataDir + fname ))
+    if (!moveBack(fname ))
       System.out.printf("Move back failed on %s%n", fname);
     else
       System.out.printf("ok testSyncRemove %n");
