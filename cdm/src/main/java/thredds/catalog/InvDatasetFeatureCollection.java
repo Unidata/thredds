@@ -58,8 +58,9 @@ import java.util.regex.Pattern;
  * This is a InvCatalogRef subclass. So the reference is placed in the parent, but
  * the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
  *       match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
- *
- * Generate anew each call; use object caching if needed to improve efficiency
+ * <p/>
+ * The InvDatasetFeatureCollection object is created once and held in the DataRootHandler's collection
+ * of DataRoots.
  *
  * @author caron
  * @since Mar 3, 2010

@@ -185,20 +185,19 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
   <li>If a variable does not appears in the prototype dataset, it will not appear in the feature collection dataset, even if it appeats in other datasets.</li>
 </ol>
 <h3>update element</h3>
-<p>For collections that change, the <strong>update</strong> element provides options to update the collection, either synchronously (while a user request waits) or aynchronously (in a background task, so that requests do not wait).</p>
+<p>For collections that change, the <strong>update</strong> element provides options to update the collection, either synchronously (while a user request waits) or aynchronously (in a background task, so that requests do not wait). If there is no update element, then the dataset is considered <em>static</em>, and  the indexes are never updated by the TDS. To force updated indices, delete the collection index, ususally<strong> &lt;collection root directory&gt; / &lt;dataset name&gt;.ncx</strong>.</p>
 <pre>&lt;update startup=&quot;true&quot; rescan=&quot;cron expr&quot;<strong> </strong>trigger=&quot;allow&quot; <strong></strong>/&gt;
 
 &lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;</pre>
 The XML Schema definition for the update element:
 <pre>
    &lt;xsd:complexType name=&quot;updateType&quot;&gt;<br /> 1)  &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:boolean&quot;/&gt;<br /> 2)  &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
- 3)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br /> 4)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br /> 5)  &lt;xsd:attribute name=&quot;deleteAfter&quot; type=&quot;xsd:string&quot;/&gt;<br />&lt;/xsd:complexType&gt;<br />
-</pre>
+ 3)  &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;<br /> 4)  &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;<br /> 5)  &lt;xsd:attribute name=&quot;deleteAfter&quot; type=&quot;xsd:string&quot;/&gt;<br />&lt;/xsd:complexType&gt;<br /></pre>
 
 <p> where: </p>
 <ol>
   <li><strong>startup</strong>:  If true,  the collection is rescanned on server startup.</li>
-  <li><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed), and so is called  <em>synchronous updating</em> . <em><strong>This option will be ignored if you are using  the rescan attribute</strong>.</em></li>
+  <li><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed), and so is called  <em>synchronous updating</em>. <em><strong>This option will be ignored if you are using  the rescan attribute</strong>.</em></li>
   <li><strong>rescan</strong>:  uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task. This is called  <em>asynchronous updating</em>.</li>
   <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated by an external program (or person) sending an explicit &quot;trigger&quot; URL to the server. 
     This URL is protected by HTTPS, so you must <a href="http://www.unidata.ucar.edu/staff/caron/bufr/">enable remote access</a> for this to work.<ol>
@@ -221,22 +220,23 @@ The XML Schema definition for the update element:
 </blockquote>
 <hr />
 <h2><a name="changing" id="changing"></a>Static vs. changing datasets</h2>
-<p>There are two way to update a feature collection when it changes, without having to restart the TDS:</p>
+<p>There are two way to update a feature collection when it changes:</p>
 <ol>
-  <li><strong>recheckAfter</strong><strong> </strong>attribute on the <strong>collection</strong> element<strong>: </strong> causes a directory scan whenever a request comes in and the specified time has elapsed since the last scan. The request  waits until the scan is finished and a new collection is built.</li>
-  <li><strong>update</strong> element : uses a background thread to keep the collection updated, so that requests never wait.</li>
+  <li><strong>recheckAfter</strong><strong> </strong>attribute on the <strong>collection</strong> element<strong>: </strong> causes a directory scan whenever a request comes in and the specified time has elapsed since the last scan. The request  waits until the scan is finished and a new collection is built. This is called <em>synchronous updating</em>.</li>
+  <li><strong>update</strong> element : uses a background thread to keep the collection updated, so that requests never wait. This is called <em>asynchronous updating</em>.</li>
 </ol>
 <h3>Static Datasets</h3>
-<p>If you have a collection that doesnt change, do not use the<strong> recheckAfter</strong> or the <strong>rescan</strong> atribute. Instead, use: </p>
-<pre>&lt;update startup =&quot;nocheck&quot; /&gt;</pre>
-<p>which assumes that the collection has <u>not</u> changed since the last time the TDS was run. This saves a lot of processing on  large collections that you know dont change.</p>
+<p>If you have a collection that doesnt change, do not use the<strong> recheckAfter</strong> on the <strong>collection</strong> element or include an <strong>update</strong> element. This tells the TDS that the collection does not change, and the TDS will attempt to minimize the amount of processing (like directory scanning) that is done.</p>
+
 <p>If you want the collection to be tested at startup to see if it has changed since  the last time the TDS was run, use:</p>
-<pre>&lt;update startup =&quot;true&quot; /&gt;</pre>
+<blockquote>
+  <pre>&lt;update startup =&quot;true&quot; /&gt;</pre>
+</blockquote>
 <p>Otherwise the collection will be checked for changes and created when the first request for it comes in. </p>
 <h3>Changing Collection - Small or rarely used</h3>
 <p>For collections that change but are rarely used, use the <strong>recheckAfter</strong><strong> </strong>attribute on the <strong>collection</strong> element<strong>.</strong> This minimizes unneeded processing for lightly used collections. This is also a good strategy for small collections which don't take very long to build.</p>
 <h3><strong>Changing Collection - Fast response</strong></h3>
-<p>When you want to ensure that requests are answered as quick as possible, update the collection in the background using the <strong>rescan</strong> attribute of the <strong>update</strong> element.</p>
+<p>When you want to ensure that requests are answered as quick as possible, update the collection in the background using the <strong>scan</strong> attribute of the <strong>update</strong> element.</p>
 <h3><strong>Sporadically changing Collection</strong></h3>
 <p>To externally control when a collection is updated, use:</p>
 <pre><strong>&lt;update trigger =&quot;allow&quot; /&gt;</strong></pre>
@@ -301,7 +301,7 @@ The XML Schema definition for the update element:
 <p></p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Jan 11, 2012 
+<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  June 2012 
 </address>
 </body>
 </html>

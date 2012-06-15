@@ -190,11 +190,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
 
       // if this is the TDS, and its using the TDM, then you are not allowed to update
+      // if there is no update config, assume static, and try to skip checking for changes. got that?
       boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
+      CollectionManager.Force ff = (tdsUsingTdm || config.updateConfig.isStatic()) ? CollectionManager.Force.nocheck : CollectionManager.Force.test;
 
       // update local copy of state, then switch all at once
       StateGrib localState = new StateGrib((StateGrib) state);
-      updateCollection(localState, tdsUsingTdm ? CollectionManager.Force.nocheck : CollectionManager.Force.test);
+      updateCollection(localState, ff);
 
       makeTopDatasets(localState);
       localState.lastInvChange = System.currentTimeMillis();

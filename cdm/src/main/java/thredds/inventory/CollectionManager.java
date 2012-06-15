@@ -136,6 +136,11 @@ public interface CollectionManager {
    */
   public boolean scan(boolean sendEvent) throws IOException;
 
+  /**
+   * send event TriggerType.updateNocheck, which calls
+   * call InvDatasetFeatureCollection.update(CollectionManager.Force.nocheck)
+   * @throws IOException
+   */
   public void updateNocheck() throws IOException;
 
   /**
@@ -205,7 +210,7 @@ public interface CollectionManager {
   public void setChangeChecker(ChangeChecker strat);
 
   ////////////////////////////////////////////////////
-  // ability to pass arbitrary information through. kind of a kludge
+  // ability to pass arbitrary information to users of the collection manager. kind of a kludge
 
   public Object getAuxInfo(String key);
 

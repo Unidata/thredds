@@ -135,7 +135,7 @@
       <metadata inherited="true">
         <serviceName>radial</serviceName>
         <dataType>Radial</dataType>
-        <dataFormat>NIDS</dataFormat>
+        <dataFormat>NEXRAD-3</dataFormat>
       </metadata>
       <filter>
         <include wildcard="Level3*.nids" atomic="true" collection="false"/>
@@ -282,7 +282,7 @@
       <metadata inherited="true">
         <serviceName>radial</serviceName>
         <dataType>Radial</dataType>
-        <dataFormat>NIDS</dataFormat>
+        <dataFormat>NEXRAD-3</dataFormat>
       </metadata>
       <filter>
         <include wildcard="Level3*.nids" atomic="true" collection="false"/>
@@ -360,7 +360,7 @@
       <metadata inherited="true">
         <serviceName>radial</serviceName>
         <dataType>Radial</dataType>
-        <dataFormat>NEXRAD2</dataFormat>
+        <dataFormat>NEXRAD-2</dataFormat>
         <documentation type="summary">NEXRAD Level II Radar WSR-88D. These are the "raw" fields: Reflectivity, Velocity,
           Spectrum Width. Sent every 5 minutes.
         </documentation>

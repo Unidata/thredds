@@ -65,8 +65,9 @@ public abstract class GribIndex {
     public boolean hasChangedSince(MFile file, long when) {
       File idxFile = getIndexFile(file.getPath());
       if (!idxFile.exists()) return true;
-      if (idxFile.lastModified() < file.getLastModified()) return true;
-      if (0 < when && when < idxFile.lastModified()) return true;
+      long idxLastModified =  idxFile.lastModified();
+      if (idxLastModified < file.getLastModified()) return true;
+      if (0 < when && when < idxLastModified) return true;
       return false;
     }
     public boolean hasntChangedSince(MFile file, long when) {

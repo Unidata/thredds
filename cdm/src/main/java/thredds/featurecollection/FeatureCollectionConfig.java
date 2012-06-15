@@ -146,6 +146,10 @@ public class FeatureCollectionConfig {
         this.triggerOk = triggerS.equalsIgnoreCase("allow");
     }
 
+    public boolean isStatic() {
+      return (recheckAfter == null) && (rescan == null) &&  (deleteAfter == null)  && !triggerOk && !startup;
+    }
+
     @Override
     public String toString() {
       return "UpdateConfig{" +
