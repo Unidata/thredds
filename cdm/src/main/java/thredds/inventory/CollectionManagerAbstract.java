@@ -57,7 +57,7 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
 
   protected CollectionManagerAbstract( String collectionName) {
-    this.collectionName = collectionName;
+    this.collectionName = collectionName; // +"-" + Integer.toHexString(hashCode()); // make sure name is unique
   }
 
   public boolean isStatic() {

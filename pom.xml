@@ -690,6 +690,7 @@
     <module>visad</module>
     <module>ui</module>
     <module>tds</module>
+    <module>tdm</module>
     <module>wmoTables</module>
     <module>cdmvalidator</module>
     <module>cdm-test</module>

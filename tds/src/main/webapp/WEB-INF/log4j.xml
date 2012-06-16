@@ -178,6 +178,11 @@
     <appender-ref ref="fcScan"/>
   </logger>
 
+  <logger name="thredds.server.root.CollectionController" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
   <logger name="ucar.nc2.grib" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
@@ -189,6 +194,11 @@
   </logger>
 
   <logger name="thredds.catalog.InvDatasetFcGrib" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="org.quartz" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
@@ -259,21 +269,15 @@
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <logger name="org.springframework" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger>
-
   <logger name="thredds.server.metadata" additivity="false">
     <level value="WARN"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <!-- temp debug -->
-  <!-- logger name="thredds.server.cdmremote.CdmRemoteController" additivity="false">
-    <level value="DEBUG"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger -->
+  <logger name="org.springframework" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="serverStartupAppender"/>
+  </logger>
 
   <root>
     <level value="INFO"/>

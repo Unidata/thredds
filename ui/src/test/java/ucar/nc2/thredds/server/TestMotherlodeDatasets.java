@@ -144,11 +144,11 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     }
   }
 
-  public void getDataset(InvDataset ds, Object context) {
-    System.out.printf("%s%n", ds.getName());
+  public void getDataset3(InvDataset ds, Object context) {
+    System.out.printf("getDataset callback on dataset= %s%n", ds.getName());
   }
 
-  public void getDataset3(InvDataset ds, Object context) {
+  public void getDataset(InvDataset ds, Object context) {
     countDatasets++;
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
