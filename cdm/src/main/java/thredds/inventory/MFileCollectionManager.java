@@ -511,7 +511,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
       Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);
       if (iter == null) {
-        logger.error(collectionName + ": DatasetCollectionManager Invalid collection= " + mc);
+        logger.error(collectionName + ": Invalid collection= " + mc);
         continue;
       }
 
@@ -520,6 +520,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
         mfile.setAuxInfo(mc.getAuxInfo());
         map.put(mfile.getPath(), mfile);
       }
+      logger.info(collectionName + ": was scanned " + mc);
     }
 
   }

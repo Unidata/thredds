@@ -199,11 +199,14 @@ The XML Schema definition for the update element:
   <li><strong>startup</strong>:  If true,  the collection is rescanned on server startup.</li>
   <li><strong>recheckAfter</strong>: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed), and so is called  <em>synchronous updating</em>. <em><strong>This option will be ignored if you are using  the rescan attribute</strong>.</em></li>
   <li><strong>rescan</strong>:  uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task. This is called  <em>asynchronous updating</em>.</li>
-  <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated by an external program (or person) sending an explicit &quot;trigger&quot; URL to the server. 
-    This URL is protected by HTTPS, so you must <a href="http://www.unidata.ucar.edu/staff/caron/bufr/">enable remote access</a> for this to work.<ol>
+  <li><strong><a name="trigger" id="trigger"></a>trigger</strong>: if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated by an external program (or person using a browser) sending an explicit &quot;trigger&quot; URL to the server. 
+    This URL is protected by HTTPS, so you must <a href="../RemoteManagement.html">enable remote access</a> for this to work.
+    <ol>
+      <li>You must give the role &quot;tdsTrigger&quot; to any user who you want to have the right to send a trigger.</li>
       <li>You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page <strong>https://server:port/thredds/admin/debug?Collections/showCollection</strong></li>
-      <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;</strong>, where <em>name</em> is the collection name.</li>
-      </ol>
+      <li>The URL for the actual trigger is <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;</strong>, where <em>name</em> is the collection name. This does a rescan, and updates if anything has changed.</li>
+      <li>The TDM uses the trigger  <strong>https://server:port/thredds/admin/collection/trigger?collection=&lt;<em>name</em>&gt;&amp;nocheck</strong> . This does not rescan the directory, it simply recreates the dataset using the current index.</li>
+    </ol>
   </li>
   <li><strong>deleteAfter</strong>: ONLY FOR TDM. Delete any files that are older than this.</li>
 </ol>

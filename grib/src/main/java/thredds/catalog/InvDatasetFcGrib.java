@@ -138,14 +138,14 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
     }
 
-    if (force == CollectionManager.Force.nocheck) {
+    /* if (force == CollectionManager.Force.nocheck) {
       // we need to update the dcm without triggering an index rewrite
       try {
         dcm.scan(false);
       } catch (IOException e) {
         logger.error("Error on scan " + dcm, e);
       }
-    }
+    } */
 
     // do the update in a local object
     StateGrib localState = new StateGrib((StateGrib) state);
@@ -214,14 +214,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       localState.timePartition = TimePartition.factory(format == DataFormatType.GRIB1, (TimePartitionCollection) this.dcm, force, new Formatter());
       localState.gribCollection = null;
       if (previous != null) previous.close(); // LOOK thread safety
+      logger.debug("{}: TimePartition object was recreated", getName());
 
     } else {
       GribCollection previous = localState.gribCollection;
       localState.gribCollection = GribCollection.factory(format == DataFormatType.GRIB1, dcm, force, new Formatter());
       localState.timePartition = null;
       if (previous != null) previous.close(); // LOOK thread safety
+      logger.debug("{}: GribCollection object was recreated", getName());
     }
-    logger.debug("{}: Collection was recreated", getName());
   }
 
   /////////////////////////////////////////////////////////////////////////

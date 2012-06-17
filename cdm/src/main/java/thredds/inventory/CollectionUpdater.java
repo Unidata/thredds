@@ -157,7 +157,8 @@ public enum CollectionUpdater {
     FeatureCollectionConfig.UpdateConfig updateConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
     if (updateConfig == null) return;
 
-    String jobName = config.name + "-" + Integer.toHexString(config.hashCode());
+    //String jobName = config.name + "-" + Integer.toHexString(config.hashCode());
+    String jobName = manager.getCollectionName();
 
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();

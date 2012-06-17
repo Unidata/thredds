@@ -207,7 +207,7 @@ public interface CollectionManager {
     boolean hasntChangedSince(MFile file, long when);
   }
 
-  public void setChangeChecker(ChangeChecker strat);
+  public void setChangeChecker(ChangeChecker strategy);
 
   ////////////////////////////////////////////////////
   // ability to pass arbitrary information to users of the collection manager. kind of a kludge
@@ -261,6 +261,5 @@ public interface CollectionManager {
                '}';
      }
    }
-
 
 }

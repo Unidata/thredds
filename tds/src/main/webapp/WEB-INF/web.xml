@@ -723,7 +723,7 @@
 
   <security-constraint>
     <web-resource-collection>
-      <web-resource-name>sensitive read access</web-resource-name>
+      <web-resource-name>allow feature collection rescan to be triggered externally</web-resource-name>
       <url-pattern>/admin/collection/trigger</url-pattern>
       <http-method>GET</http-method>
     </web-resource-collection>

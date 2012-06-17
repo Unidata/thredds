@@ -188,6 +188,16 @@
     <appender-ref ref="fcScan"/>
   </logger>
 
+  <logger name="ucar.nc2.grib.grib1.Grib1CollectionBuilder" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="ucar.nc2.grib.grib2.Grib2CollectionBuilder" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
   <logger name="thredds.catalog.InvDatasetFeatureCollection" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
