@@ -632,7 +632,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       2. groupName/COLLECTION     multiple groups
 
    time partition, single group:
-      3. COLLECTION                   overall collection for all partitions
+      3. name/COLLECTION              overall collection for all partitions
       4. partitionName/COLLECTION     one partition
 
    time partition, multiple groups:
@@ -657,20 +657,23 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
     } else { // is a time partition
 
-      if (paths.length == 1) {
+      /* if (paths.length == 1) {
         boolean isCollection = paths[0].equals(COLLECTION);
         if (isCollection) {
           String groupName = localState.timePartition.getGroup(0).getId();
           return new DatasetParse(null, groupName, true); // case 3
         }
-      }
+      } */
 
       if (paths.length == 2) {
         boolean isCollection = paths[1].equals(COLLECTION);
         TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
+        String name = localState.timePartition.getName();
         if (isCollection) {
           if (tpp != null)
             return new DatasetParse(tpp, localState.timePartition.getGroup(0).getId(), true); // case 4 :  overall collection for partition, one group
+          else if (paths[0].equals(name))
+            return new DatasetParse(null, localState.timePartition.getGroup(0).getId(), true); // case 3 :  overall collection for partition, one group
 
         } else {
           if (tpp != null)

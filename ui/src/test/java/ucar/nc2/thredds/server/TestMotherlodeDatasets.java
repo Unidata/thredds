@@ -73,7 +73,7 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
   private int countDatasets, countNoAccess, countNoOpen;
   private boolean verbose = true;
   private boolean compareCdm = false;
-  private boolean checkUnknown = true;
+  private boolean checkUnknown = false;
   private boolean checkGroups = true;
 
   TestMotherlodeDatasets(String name, String catURL, CatalogCrawler.Type type, boolean skipDatasetScan) throws IOException {
@@ -262,8 +262,8 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     //String problemCat = "http://motherlode.ucar.edu:9080/thredds/grib/NCDC/CFSR/catalog.xml";
 
     String server = "http://motherlode.ucar.edu:9080/thredds";
-    String catalog = "/idd/modelsNcep.xml";
-    //String catalog = "/idd/radars.xml";
+    //String catalog = "/idd/modelsNcep.xml";
+    String catalog = "/catalog/grib/NCEP/RAP/CONUS_13km/RAP-CONUS_13km_20120618/catalog.xml";
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 

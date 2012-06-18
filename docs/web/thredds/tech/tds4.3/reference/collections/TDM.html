@@ -3,19 +3,68 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>TDM</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;}
+</style>
 </head>
 
 <body>
-<h1><img src="../../../images/unidataLogo.png" alt="" width="73" height="75" align="absbottom" /> THREDDS DATA MANAGER</h1>
+<h1><img src="../../../images/unidataLogo.png" alt="" width="73" height="75" align="absbottom" /> THREDDS Data Manager (TDM)</h1>
 <hr />
 <h2>Overview</h2>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+<p>The TDM creates indexes for GRIB featureCollections,  independently of the TDS.</p>
+<ol>
+  <li>For static datasets, create indexes once, then start the TDS.</li>
+  <li>For dynamic datasets, monitor changes, and create indexes in background, and send message to TDS when an index was recreated.</li>
+</ol>
+<p>Currently runs with 4 threads (change in /resources/application-config.xml)</p>
+<h2>Running</h2>
+<p>Create a shell script to run the TDM, for example  <strong>runTdm.sh</strong>:</p>
+<pre>&lt;JAVA&gt; &lt;JVM options&gt; -catalog &lt;CATALOG&gt;
+
+
+&quot;C:/Program Files/Java/jdk1.6.0_22/bin/java&quot; -Xmx8g -server -jar tdm-4.3.jar -catalog C:/dev/github/thredds/tds/content/thredds/enhancedCatalog.xml</pre>
+<p>Notes:</p>
+<ol>
+  <li>Large collections need a lot of memory, so use a 64-bit JVM and give it 8 Gbytes memory (for example) if possible.</li>
+  <li>&lt;catalog&gt; points to the catalog that contains GRIB featureCollections elements that you want to index in the background. It will follow catalog references, loking for these elements.</li>
+  <li>For each featureCollections, a log file is create in the current working directory</li>
+</ol>
+<h2>Catalog Configuration</h2>
+<h3>Static dataset:</h3>
+<pre>&lt;featureCollection name=&quot;NOMADS-cfsrr-timeseries&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NOMADS/cfsrr/timeseries&quot;&gt;<br />  &lt;metadata inherited=&quot;true&quot;&gt;      
+    &lt;dataType&gt;GRID&lt;/dataType&gt;
+    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
+  &lt;/metadata&gt;
+  &lt;collection name=&quot;NOMADS-cfsrr-timeseries&quot; spec=&quot;/san4/work/jcaron/cfsrr/**/.*grb2$&quot;<br />                   dateFormatMark=&quot;#cfsrr/#yyyyMM&quot; timePartition=&quot;directory&quot;/&gt;<br />  <strong>&lt;tdm startup=&quot;true&quot;/&gt;</strong><br />&lt;/featureCollection&gt;</pre>
+<ul>
+  <li><strong>startup=&quot;true&quot;</strong> tells the TDM to index this dataset upon TDM startup. </li>
+  <li>A log file will be written to <em>NOMADS-cfsrr-timeseries.log</em></li>
+  <li>The TDS just uses the existing indexes, it does not monitor any changes in the dataset.</li>
+</ul>
+<h3>Dynamic dataset:</h3>
+<pre>&lt;featureCollection name=&quot;DGEX-Alaska_12km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/DGEX/Alaska_12km&quot;&gt;
+  &lt;metadata inherited=&quot;true&quot;&gt;      
+     &lt;dataType&gt;GRID&lt;/dataType&gt;
+     &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;
+  &lt;/metadata&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/.*grib2$&quot;
+   dateFormatMark=&quot;#DGEX_Alaska_12km_#yyyyMMdd_HHmm&quot;
+   olderThan=&quot;5 min&quot;/&gt;
+  <strong>&lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;</strong>
+&lt;/featureCollection&gt;</pre>
+
+<ul>
+  <li><strong>startup=&quot;true&quot;</strong> tells the TDM to index this dataset upon TDM startup. </li>
+  <li><strong>rescan=&quot;0 0/15 * * * ? *&quot; </strong>rescan directories every 15 minutes.</li>
+  <li><strong>trigger=&quot;allow&quot;</strong> send a message to TDS when the dataset index was recreated.</li>
+  <li>When the TDS gets a trigger, it rereads the index for that dataset, it does not monitor any changes in the dataset.</li>
+</ul>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  May 2011
+<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated June 2012
 </address>
 </body>
 </html>
