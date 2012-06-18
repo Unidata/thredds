@@ -14,15 +14,15 @@
  <ul>
    <li>Follow these <a href="TDSMonitoringAndDebugging.html#access">directions</a>.</li>
    <li>Generate some requests so there is something in the log files (eg browse around <a href="http://localhost:8080/thredds/catalog.html">localhost</a>).</li>
-   <li>Access logs live in files named <strong>$TOMCAT_HOME/logs/access*.log</strong> in case you want to check.</li>
+   <li>Access logs live in files named <strong>${tomcat_home}/logs/access*.log</strong> in case you want to check.</li>
  </ul>
  <h3>2. Make sure you have servlet logging turned on</h3>
  <ul>
    <li>This is turned on by default in the log4j.xml file.</li>
-   <li>Servlet logs live in files named <strong>$TOMCAT_HOME/content/thredds/logs/threddsServlet*.log</strong> in case you want to check.</li>
+   <li>Servlet logs live in files named <strong>${tomcat_home}/content/thredds/logs/threddsServlet*.log</strong> in case you want to check.</li>
 </ul>
  <h3>3. Give yourself the tdsMonitor role</h3>
- <p>	Modify $TOMCAT_HOME/conf/tomcat-users.xml to add   a new role with the rolename attribute of <strong>tdsMonitor</strong>, and add this role to your list of roles:</p>
+ <p>	Modify ${tomcat_home}/conf/tomcat-users.xml to add   a new role with the rolename attribute of <strong>tdsMonitor</strong>, and add this role to your list of roles:</p>
  <PRE>&lt;tomcat-users&gt;      
   &lt;role rolename="manager"/&gt;
   &lt;role rolename="tdsConfig"/&gt;      

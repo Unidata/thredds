@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: java3d:vecmath:1.5.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/java3d/vecmath/1.5.2/vecmath-1.5.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/java3d/vecmath/1.5.2/vecmath-1.5.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/java3d/vecmath/1.5.2/vecmath-1.5.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

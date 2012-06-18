@@ -19,7 +19,7 @@
     <p>Out of the box, the TDS distribution will have WCS, WMS, and ncISO disabled. They
       must be explicitly allowed in the <code>threddsConfig.xml</code> file. The default
       <code>threddsConfig.xml</code> file (which should now be in your
-      <code>${TOMCAT_HOME}/content/thredds</code> directory) contains commented out sections for
+      <code>${tomcat_home}/content/thredds</code> directory) contains commented out sections for
       each of these services.
     </p>
 
@@ -122,7 +122,7 @@
       <li>Edit the TDS configuration file and allow WCS and
         WMS services as discussed above
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds
 <strong>[thredds@workshop00 ~]$</strong> vi threddsConfig.xml
 </pre>
         and add/replace the WCS and WMS elements (as described above)
@@ -144,7 +144,7 @@
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
 <strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
 <strong>[thredds@workshop00 ~]$</strong> ./startup.sh
 </pre>
@@ -182,7 +182,7 @@
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
   <pre>
-  <strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+  <strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
   <strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
   <strong>[thredds@workshop00 ~]$</strong> ./startup.sh
   </pre>
@@ -254,7 +254,7 @@
           WMS Detailed Configuration</a>" page in your browser.</li>
       <li>Edit the wmsConfig.xml file
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds
 <strong>[thredds@workshop00 ~]$</strong> vi wmsConfig.xml
 </pre>
         and change the color scale range for the target parameter in the NAM datasets.

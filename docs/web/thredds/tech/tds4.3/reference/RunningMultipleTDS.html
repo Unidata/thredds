@@ -46,14 +46,14 @@
     this section), changing it to <code>thredds2.war</code> will result in the
     following:
     <ul>
-      <li>The .war file will be unpacked in the <code>${TOMCAT_HOME}/webapps/thredds2/</code>
+      <li>The .war file will be unpacked in the <code>${tomcat_home}/webapps/thredds2/</code>
         directory.</li>
       <li>The main URL for that TDS will be:
         <code>http://server:port/thredds2/catalog.html</code>
       </li>
     </ul>
   </li>
-  <li>In <code>${TOMCAT_HOME}/webapps/thredds2/WEB-INF/web.xml</code>, change the value
+  <li>In <code>${tomcat_home}/webapps/thredds2/WEB-INF/web.xml</code>, change the value
     of the "<code>ContextPath</code>" context parameter from "<code>thredds</code>" to
     "<code>thredds2</code>".</li>
 </ol>
@@ -62,7 +62,7 @@
 
 <p><strong>For TDS 4.1.2 and above</strong>:</p>
 <ol start="3">
-  <li>In <code>${TOMCAT_HOME}/webapps/thredds2/WEB-INF/classes/thredds/server/tds.properties</code>,
+  <li>In <code>${tomcat_home}/webapps/thredds2/WEB-INF/classes/thredds/server/tds.properties</code>,
     change the value of "<code>tds.content.path</code>" from "<code>thredds</code>" to
     "<code>thredds2</code>".
   </li>
@@ -70,7 +70,7 @@
 
 <p><strong>For TDS 4.0 through 4.1.1</strong>:</p>
 <ol start="3">
-  <li>In <code>${TOMCAT_HOME}/webapps/thredds2/WEB-INF/web.xml</code>, add the following:
+  <li>In <code>${tomcat_home}/webapps/thredds2/WEB-INF/web.xml</code>, add the following:
     <pre>
 &lt;context-param&gt;
   &lt;param-name&gt;log4jExposeWebAppRoot&lt;/param-name&gt;
@@ -78,7 +78,7 @@
 &lt;/context-param&gt;
     </pre>
   </li>
-  <li>In <code>${TOMCAT_HOME}/webapps/thredds2/WEB-INF/classes/thredds/server/tds.properties</code>,
+  <li>In <code>${tomcat_home}/webapps/thredds2/WEB-INF/classes/thredds/server/tds.properties</code>,
     change the value of "<code>tds.content.path</code>" from "<code>thredds</code>" to
     "<code>thredds2</code>".
   </li>

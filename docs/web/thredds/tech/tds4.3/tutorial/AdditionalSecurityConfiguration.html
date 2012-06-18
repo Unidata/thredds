@@ -59,13 +59,13 @@
     <dl>
 
     <dt><h3><a name="removeApps"></a>Removing the default Tomcat web applications</h3></dt>
-     <p>It is generally good practice to remove any un-used web applications out of <code>$TOMCAT_HOME/webapps</code>.  Tomcat ships with several default web applications, that you may want to consider removing if they are not being utilized:</p>
+     <p>It is generally good practice to remove any un-used web applications out of <code>${tomcat_home}/webapps</code>.  Tomcat ships with several default web applications, that you may want to consider removing if they are not being utilized:</p>
      <ul>
       <li>The <code>ROOT</code> application is Tomcat's <code>DocumentRoot</code> and contains the server's main web page.  Give thought tot he content that is placed in <code>ROOT/</code>, as it will be readily available.  (Note: if you want to utilize a <code>robots.txt</code> file to restrict crawler activity, <code>ROOT/</code> is the place it will go.)</li>
       <li>The <code>manager</code> application is used for remote management of web applications. To use this application, you must add a user with role of <code>manager</code> in <code>tomcat-users.xml</code>.  Obviously, if you are not planning to use the <code>manager</code> application, it should be removed.</li>
       <li>The <code>host-manager</code> application is used for management of virtual hosts. To use this application, you must add a user with role of <code>host-manager</code> in <code>tomcat-users.xml</code>.  If you are not planning to do a lot of virtual hosting in Tomcat this application should be removed.</li>
       <li>The <code>examples</code> application should probably be removed from a production server to minimize security exposure.</li>
-      <li>The <code>docs</code> are a copy of the <a href="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat documentation found online</a>.  Unless you have need for a local copy, removing <code>docs</code>  would help to tidy-up <code>$TOMCAT_HOME/webapps</code>.</li>
+      <li>The <code>docs</code> are a copy of the <a href="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat documentation found online</a>.  Unless you have need for a local copy, removing <code>docs</code>  would help to tidy-up <code>${tomcat_home}/webapps</code>.</li>
       </ul>
    </dl>
   <dl>
@@ -112,7 +112,7 @@
      <p>Use a <code>robots.txt</code> file to prevent crawlers from indexing content.</p>
      <p>The TDS provides a basic and very restrictive <code>robots.txt</code> file for you to use:</p>
 <pre>
-<b>-bash-3.2$</b> less $TOMCAT_HOME/webapps/thredds/WEB-INF/initialContent/root/robots.txt
+<b>-bash-3.2$</b> less ${tomcat_home}/webapps/thredds/WEB-INF/initialContent/root/robots.txt
 # disallow everything
 User-agent: *
 Disallow: /
@@ -121,8 +121,8 @@ Disallow: /
    <p>To active the <code>robots.txt</code> file, you will need to move it to Tomcat's <code>DocumentRoot</code>: </p>
 
 <pre>
-<b>-bash-3.2$</b> cd  $TOMCAT_HOME/webapps/ROOT
-<b>-bash-3.2$</b> cp $TOMCAT_HOME/webapps/thredds/WEB-INF/initialContent/root/robots.txt .
+<b>-bash-3.2$</b> cd  ${tomcat_home}/webapps/ROOT
+<b>-bash-3.2$</b> cp ${tomcat_home}/webapps/thredds/WEB-INF/initialContent/root/robots.txt .
 </pre>
 
 
@@ -145,9 +145,9 @@ Disallow: /
 # useradd -g tomcat -d /opt/tomcat tomcat
 # passwd tomcat
 </pre>
-      <li>Changing permission in <code>$TOMCAT_HOME</code> for the new user:</li>
+      <li>Changing permission in <code>${tomcat_home}</code> for the new user:</li>
 <pre>
-# cd $TOMCAT_HOME/../
+# cd ${tomcat_home}/../
 # chown -R tomcat:tomcat apache-tomcat-6.0.18
 # ls -l  apache-tomcat-6.0.18
 total 92
@@ -164,7 +164,7 @@ drwxr-xr-x 2 tomcat tomcat  4096 2008-10-28 16:45 temp
 drwxr-xr-x 7 tomcat tomcat  4096 2008-10-31 11:45 webapps
 drwxr-xr-x 3 tomcat tomcat  4096 2008-10-28 16:47 work
 </pre>
-<p class="note"><i>Note</i>: the <code>tomcat</code> user and group should not have permission to write or execute in other directories outside of <code>$TOMCAT_HOME</code>.</p>
+<p class="note"><i>Note</i>: the <code>tomcat</code> user and group should not have permission to write or execute in other directories outside of <code>${tomcat_home}</code>.</p>
 
 
       <li>Modify any scripts you have for server <code>init</code> processes to invoke the <code>tomcat</code> user:</li>

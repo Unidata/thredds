@@ -268,7 +268,7 @@ etc. We will go into more detail on this later.</p>
 
     <p>
       All TDS configuration information is stored in the TDS configuration directory.
-      Its default location is <code>${TOMCAT_HOME}/content/thredds</code> and it is
+      Its default location is <code>${tomcat_home}/content/thredds</code> and it is
       created and populated with default files the first time the TDS is deployed.
       It is persistent even when a TDS
       installation is upgraded or re-deployed. All your configuration, modifications,
@@ -281,7 +281,7 @@ etc. We will go into more detail on this later.</p>
     </p>
 
     <ul>
-      <li><code>${TOMCAT_HOME}/</code><code>content/thredds/</code>
+      <li><code>${tomcat_home}/</code><code>content/thredds/</code>
         <ul>
           <li><code>catalog.xml </code> - the main TDS configuration catalog
             (root catalog for TDS configuration)
@@ -320,7 +320,7 @@ etc. We will go into more detail on this later.</p>
 
   <div id="subsection"><h3><a name="exampleCatalog"></a>TDS Root Catalog</h3>
 
-    <p>The main TDS configuration catalog is at <code>${TOMCAT_HOME}/content/thredds/catalog.xml</code>.
+    <p>The main TDS configuration catalog is at <code>${tomcat_home}/content/thredds/catalog.xml</code>.
       We ship a simple test catalog:</p>
 
 <pre>
@@ -383,7 +383,7 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
       </li>
       <li>Edit the main TDS configuration catalog:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds
 <strong>[thredds@workshop00 ~]$</strong> vi catalog.xml         <var>// Use the editor of your choice</var>
 </pre>
       </li>
@@ -401,7 +401,7 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
 <strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
 <strong>[thredds@workshop00 ~]$</strong> ./startup.sh
 </pre>
@@ -420,13 +420,13 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
     <ol>
       <li>Take a look at the catalogInit.log:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds/logs
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds/logs
 <strong>[thredds@workshop00 ~]$</strong> more catalogInit.log
 </pre>
       </li>
       <li>Take a look at the threddsServlet.log:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds/logs
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds/logs
 <strong>[thredds@workshop00 ~]$</strong> more threddsServlet.log
 </pre>
       </li>

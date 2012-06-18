@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: edu.wisc.ssec:visad:2.0-20120411">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/edu/wisc/ssec/visad/2.0-20120411/visad-2.0-20120411.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/edu/wisc/ssec/visad/2.0-20120411/visad-2.0-20120411-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/edu/wisc/ssec/visad/2.0-20120411/visad-2.0-20120411-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

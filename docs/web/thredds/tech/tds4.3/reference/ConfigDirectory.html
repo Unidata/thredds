@@ -15,7 +15,7 @@
   The default location for the TDS configuration directory is
 </p>
 
-<pre>${TOMCAT_HOME}/content/thredds</pre>
+<pre>${tomcat_home}/content/thredds</pre>
 
 <p>The TDS configuration directory is created and populated with default files the first time the
   TDS is deployed. It is persistent even when a TDS installation is upgraded or re-deployed. All
@@ -28,7 +28,7 @@
     When the TDS is first deployed, the TDS configuration directory looks like:
   </p>
   <ul>
-    <li><code>${TOMCAT_HOME}/content/thredds/</code>
+    <li><code>${tomcat_home}/content/thredds/</code>
       <ul>
         <li><code>catalog.xml </code> - the main TDS configuration catalog
           (root catalog for TDS configuration)
@@ -69,7 +69,7 @@
 
 <ul>
   <li>The <strong>easiest way</strong> to change the location of the TDS configuration directory is by creating
-    <code>${TOMCAT_HOME}/content</code> as a symbolic link to the desired location.
+    <code>${tomcat_home}/content</code> as a symbolic link to the desired location.
   </li>
 
   <li>
@@ -94,7 +94,7 @@
   "tds.content.root.path" property with a "-D..." Java option as discussed above, you will need
   to edit the TDS default properties file:
 </p>
-<pre>${TOMCAT_HOME}/webapps/thredds2/WEB-INF/classes/thredds/server/tds.properties</pre>
+<pre>${tomcat_home}/webapps/thredds2/WEB-INF/classes/thredds/server/tds.properties</pre>
 <p>
   and change the value of "<code>tds.content.root.path</code>" there.
 </p>

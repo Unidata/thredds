@@ -6,7 +6,7 @@
 <style type="text/css">
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;)
+dl {margin: 10px 5px 5px 15px;}
 .style1 {font-style: italic}
 </style>
 </head>
@@ -24,9 +24,9 @@ dl {margin: 10px 5px 5px 15px;)
 <ol>
   <li>Create a user named <em>tomcat</em>, who does not have root privileges. <em>Do all your work as user tomcat.</em></li>
     <br/>
-  <li>Download and install the latest version of Tomcat 6.</li>
+  <li>Download and install the latest version of Tomcat 7.</li>
     <br/>
-  <li>In  $TOMCAT_HOME/bin
+  <li>In  ${tomcat_home}/bin
     <ol>
       <li><a href="GettingStarted.html#makeSetenv">Create a setenv.sh</a> shell script, and set the Tomcat startup options, with max memory (1500m) for 32-bit systems, and 4096m or more for 64-bit systems:</li>
       <ul>
@@ -36,7 +36,7 @@ dl {margin: 10px 5px 5px 15px;)
       <li>If you are using WMS, <a href="http://en.wikipedia.org/wiki/Certificate_authority">clean up java.util.prefs messages:</a>
         <ol>
           <li> Add this option to JAVA_OPTS: &quot;-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs&quot;</li>
-          <li>Create a directory at $TOMCAT_HOME/content/thredds/javaUtilPrefs/.systemPrefs and make it writeable by the tomcat user</li>
+          <li>Create a directory at ${tomcat_home}/content/thredds/javaUtilPrefs/.systemPrefs and make it writeable by the tomcat user</li>
         </ol>
       </li>
     </ol>
@@ -44,30 +44,30 @@ dl {margin: 10px 5px 5px 15px;)
   <br/>
   <li>Buy a real certificate from a <a href="http://en.wikipedia.org/wiki/Certificate_authority">certificate authority</a>, so  browsers won't say things like &quot;this is not a legitimate business&quot; when users come to your web site.</li>
   <ol>
-    <li>Otherwise, <a href="BasicTomcatAndTDSSecurity.html#createCert">create a self-signed certificate</a> with <strong>$JAVA_HOME/bin//keytool -genkey -alias tomcat -keyalg RSA -keystore $TOMCAT_HOME/conf/keystore</strong></li>
+    <li>Otherwise, <a href="BasicTomcatAndTDSSecurity.html#createCert">create a self-signed certificate</a> with <strong>$JAVA_HOME/bin//keytool -genkey -alias tomcat -keyalg RSA -keystore ${tomcat_home}/conf/keystore</strong></li>
   </ol>
     <br/>
-  <li>Modify  $TOMCAT_HOME/conf/server.xml
+  <li>Modify  ${tomcat_home}/conf/server.xml
     <ol>
       <li><a href="BasicTomcatAndTDSSecurity.html#useDigest">Use digest</a> passwords by adding <b>&lt;Realm className=&quot;org.apache.catalina.realm.MemoryRealm&quot; 
       digest=&quot;SHA&quot; /&gt;</b> inside the Host element.</li>
-      <li><a href="BasicTomcatAndTDSSecurity.html#enableSSL">Enable SSL</a> by uncommenting the <code><small>SSL Connector</small></code> listening on port 8443, and adding <b>keystoreFile=&quot;<strong>$TOMCAT_HOME/conf/keystore</strong>&quot;</b></li>
+      <li><a href="BasicTomcatAndTDSSecurity.html#enableSSL">Enable SSL</a> by uncommenting the <code><small>SSL Connector</small></code> listening on port 8443, and adding <b>keystoreFile=&quot;<strong>${tomcat_home}/conf/keystore</strong>&quot;</b></li>
       <li><a href="../reference/Performance.html#enableCompression">Enable compression</a> by adding                <strong>compression=&quot;1000&quot;
       compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-stream&quot;</strong>  to 8080 Connector.</li>
       <li><a href="TDSMonitoringAndDebugging.html#access">Enable access logging</a> by uncommenting the <code><small>AccessLogValve</small></code> and change the <em>prefix</em> and <em>suffix</em> and <em>pattern</em> attributes.</li>
     </ol>
   </li>
   <br/>
-  <li><a href="BasicTomcatAndTDSSecurity.html#makeDigest">Create a  password digest</a> for yourself with <strong>$TOMCAT_HOME/bin/digest.sh -a SHA yrPassword</strong></li>
+  <li><a href="BasicTomcatAndTDSSecurity.html#makeDigest">Create a  password digest</a> for yourself with <strong>${tomcat_home}/bin/digest.sh -a SHA yrPassword</strong></li>
   <br/>
-  <li>Modify  $TOMCAT_HOME/conf/tomcat-users.xml
+  <li>Modify  ${tomcat_home}/conf/tomcat-users.xml
     <ol>
       <li>Add roles &quot;manager&quot;, &quot;tdsConfig&quot; and &quot;tdsMonitor&quot;.</li>
       <li><a href="BasicTomcatAndTDSSecurity.html#grantAccess">Add yourself as a user</a> with those three roles, using your password digest.</li>
     </ol>
   </li>
   <br/>
-  <li>Modify $TOMCAT_HOME/webapps/manager/WEB-INF/web.xml
+  <li>Modify ${tomcat_home}/webapps/manager/WEB-INF/web.xml
     <ol>
       <li>Make sure the manager is only<a href="BasicTomcatAndTDSSecurity.html#managerSSL"> run under SSL</a> by adding     <b> &lt;user-data-constraint&gt;
         &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
@@ -79,10 +79,10 @@ dl {margin: 10px 5px 5px 15px;)
 </ol>
 <h2>TDS Install</h2>
 <ol>
-  <li>Download the latest thredds.war file, and put it into $TOMCAT_HOME/webapps.</li>
+  <li>Download the latest thredds.war file, and put it into ${tomcat_home}/webapps.</li>
   <li>Start/restart Tomcat so that it has a chance to create initial files. <em>Make sure you run as  user tomcat.</em></li>
-  <li>Modify $TOMCAT_HOME/content/thredds/catalog.xml for your site, as in this <a href="BasicConfig.html#exampleCatalog">example</a>.</li>
-  <li>Modify  $TOMCAT_HOME/content/thredds/threddsConfig.xml for your site
+  <li>Modify ${tomcat_home}/content/thredds/catalog.xml for your site, as in this <a href="BasicConfig.html#exampleCatalog">example</a>.</li>
+  <li>Modify  ${tomcat_home}/content/thredds/threddsConfig.xml for your site
     <ol>
       <li><a href="Basic-threddsConfig_xml.html#serverInfo">Add the Server Information</a></li>
       <li>Most common other thing needed is to enable optional services like WMS.</li>

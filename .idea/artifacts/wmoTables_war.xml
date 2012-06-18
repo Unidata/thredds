@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="wmoTables:war">
+    <output-path>$PROJECT_DIR$/wmoTables/target</output-path>
+    <root id="archive" name="wmotables.war">
+      <element id="artifact" artifact-name="wmoTables:war exploded" />
+    </root>
+  </artifact>
+</component>

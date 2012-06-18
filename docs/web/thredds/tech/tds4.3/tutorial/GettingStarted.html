@@ -143,7 +143,7 @@ drwxr-xr-x 9 tds Unidata 4096 Jul 11 17:47 apache-tomcat-7-0-27
      <div id="subsection">
       <h3>Exploring the Tomcat directory structure</h3>
       <ol>
-       <li>Examine the Tomcat directory structure, aka <code>$CATALINA_HOME</code> (also can be called <code>$TOMCAT_HOME</code>). </li>
+       <li>Examine the Tomcat directory structure, aka <code>$CATALINA_HOME</code> (also can be called <code>${tomcat_home}</code>). </li>
         <p>Move into <code><small>$CATALINA_HOME</small></code> and do a long listing:</p>
 <pre>
 <b>$</b> cd apache-tomcat-7-0-27
@@ -467,7 +467,7 @@ drwxr-xr-x  6 tds Unidata     4096 Jul 11 18:02 thredds
        <ol>
         <li>Deploy the TDS in your newly-installed Tomcat.</li>
         <li>Once deployed, browse the test catalogs & datasets that come with the distribution.</li>
-        <li>Look at the directory contents of the main Tomcat directory <code><small>~/GettingStarted/apache-tomcat-7.0.27</small></code> (aka <code><small>$TOMCAT_HOME</small></code>).</li>
+        <li>Look at the directory contents of the main Tomcat directory <code><small>~/GettingStarted/apache-tomcat-7.0.27</small></code> (aka <code><small>${tomcat_home}</small></code>).</li>
          <div class="exercise_question">
           <p>Do you notice anything new?</p>
          </div>
@@ -875,7 +875,7 @@ total 20
 
        <ol>
         <li>Modify <code>tomcat-users.xml</code> to add <code>role</code> and <code>user</code> elements.</li>
-         <p>Using your favorite editor, open <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code>:</p>
+         <p>Using your favorite editor, open <code><small>${tomcat_home}/conf/tomcat-users.xml</small></code>:</p>
 <pre>
 <b>$</b> vi tomcat-users.xml
 </pre>   
@@ -991,7 +991,7 @@ drwxr-xr-x  3 tds Unidata 4096 Jul 11 17:47 ROOT
       <ul>
         <li><b>The issue: </b> The "PermGen" error happens when the JVM runs out of memory in the permanent generation. (Default PermGen size differs among Sun JDK versions, but the upper limit is typically 64MB.)</li>
         <li><b>The cause: </b> Objects in the permanent generation are never garbage collected.  When redeploying your web application using the Tomcat <code><small>manager</small></code>  application, your WAR file is unpacked and parts of the class file definition are loaded into PermGen space, like string constants.</li>
-        <li><b>The symptom:</b> The PermGen error will manifest itself in a sluggish Tomcat <code><small>manager</small></code>  application that never completes a task, and the <code><small>java.lang.OutOfMemoryError: PermGen space failure</small></code>  error being displayed in <code><small>$TOMCAT_HOME/logs/catalina.out</small></code> </li>
+        <li><b>The symptom:</b> The PermGen error will manifest itself in a sluggish Tomcat <code><small>manager</small></code>  application that never completes a task, and the <code><small>java.lang.OutOfMemoryError: PermGen space failure</small></code>  error being displayed in <code><small>${tomcat_home}/logs/catalina.out</small></code> </li>
          <li><b>A temporary fix:</b> You can add the <code><small>-XX:MaxPermSize</small></code>  switch to <code><small>$JAVA_OPTS</small></code>  to increase the amount of memory allocated for the permanent generation,  However this is only postponed the inevitable, as even an increased memory in permanent generation will eventually fill up.  When this happens, you will need to stop/start Tomcat at this point. For this reason, you may want to restart Tomcat whenever you redeploy TDS or another webapp.</li>
        </ul>
 

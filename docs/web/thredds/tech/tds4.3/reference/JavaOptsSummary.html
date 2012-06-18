@@ -21,7 +21,7 @@
 
 <hr>
 
-<p>You can set JAVA_OPTS in the <code>${TOMCAT_HOME}/bin/setenv.sh</code> file. The options
+<p>You can set JAVA_OPTS in the <code>${tomcat_home}/bin/setenv.sh</code> file. The options
   discussed below are the ones we set on our production server.
 </p>
 
@@ -50,7 +50,7 @@ export JAVA_OPT
 
 <p>The Java JVM can optimize a number of things for server environments. [Since Java 5, the launcher
   tries to detect whether it is running on a "server-class" machine and set this for you (more on
-  this <a href="http://java.sun.com/javase/6/docs/technotes/guides/vm/server-class.html">here</a>).
+  this <a href="http://java.sun.com/javase/7/docs/technotes/guides/vm/server-class.html">here</a>).
   But ...] You can explicitly select the Java HotSpot Server VM with the <code>-server</code> option.
 </p>
 
