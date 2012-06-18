@@ -552,9 +552,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
       if ((type == Type.joinNew) || (type == Type.joinExistingOne) || (type == Type.forecastModelRunCollection)) {
         if (coordValueS == null) {
-          String loc = this.getLocation();
-          int pos = loc.lastIndexOf('/');
-          this.coordValue = (pos < 0) ? loc : loc.substring(pos + 1);
+          this.coordValue = extractCoordNameFromFilename(this.getLocation());
           this.isStringValued = true;
         } else {
           try {
@@ -572,6 +570,14 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       }
     }
 
+    private String extractCoordNameFromFilename(String loc) {
+      int pos = loc.lastIndexOf('/');
+      String result = (pos < 0) ? loc : loc.substring(pos + 1);
+      pos = result.lastIndexOf('#');
+      if (pos > 0) result = result.substring(0, pos);
+      return result;
+    }
+
     DatasetOuterDimension(MFile cd) {
       super(cd);
 
@@ -582,9 +588,8 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       // default is that the coordinates are just the filenames
       // this can be overriden by an explicit declaration, which will replace the variable afte ther agg is processed in NcMLReader
       if ((type == Type.joinNew) || (type == Type.joinExistingOne) || (type == Type.forecastModelRunCollection)) {
-        String loc = this.getLocation();
-        int pos = loc.lastIndexOf('/');
-        this.coordValue = (pos < 0) ? loc : loc.substring(pos + 1);
+        this.coordValue = extractCoordNameFromFilename(this.getLocation());
+        this.isStringValued = true;
         this.isStringValued = true;
       }
 

@@ -144,11 +144,11 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     }
   }
 
-  public void getDataset(InvDataset ds, Object context) {
-    System.out.printf("%s%n", ds.getName());
+  public void getDataset3(InvDataset ds, Object context) {
+    System.out.printf("getDataset callback on dataset= %s%n", ds.getName());
   }
 
-  public void getDataset3(InvDataset ds, Object context) {
+  public void getDataset(InvDataset ds, Object context) {
     countDatasets++;
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
@@ -258,11 +258,11 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     HTTPSession.setGlobalUserAgent("TestMotherlodeModels");
 
     //String problemCat = "http://localhost:8080/thredds/catalog/NOAA/CFSR/timeseries/catalog.xml";
-    String problemCat = "http://localhost:8080/thredds/enhancedCatalog.xml";
+    //String problemCat = "http://localhost:8080/thredds/enhancedCatalog.xml";
     //String problemCat = "http://motherlode.ucar.edu:9080/thredds/grib/NCDC/CFSR/catalog.xml";
 
     String server = "http://motherlode.ucar.edu:9080/thredds";
-    String catalog = "/catalog.xml";
+    String catalog = "/idd/modelsNcep.xml";
     //String catalog = "/idd/radars.xml";
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
@@ -279,8 +279,8 @@ public class TestMotherlodeDatasets implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    TestMotherlodeDatasets job = new TestMotherlodeDatasets("problem", problemCat, CatalogCrawler.Type.all_direct, false);
-    // TestMotherlodeDatasets job = new TestMotherlodeDatasets("dev", server+catalog, CatalogCrawler.Type.random_direct, false);
+    //TestMotherlodeDatasets job = new TestMotherlodeDatasets("problem", problemCat, CatalogCrawler.Type.all_direct, false);
+    TestMotherlodeDatasets job = new TestMotherlodeDatasets("dev", server+catalog, CatalogCrawler.Type.random_direct, false);
 
     frame.getContentPane().add(main);
     frame.pack();

@@ -130,6 +130,7 @@ public class ThreddsMetadata {
     if (dataSize == 0.0) dataSize = tmd.getDataSize();
     if (dataFormat == null) dataFormat = tmd.getDataFormatType();
     if (authorityName == null) authorityName = tmd.getAuthority();
+    if (variableMapLink == null) variableMapLink = tmd.getVariableMap();
   }
 
   /**

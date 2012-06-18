@@ -158,4 +158,9 @@ public class TestSources extends UnitTestCommon
     testdir = testprefix + "/" + TESTDATA1DIR;
   }
 
+      // suppress "no test failure warning message */
+  public void testFake() throws Exception {
+    assert true;
+  }
+
 }

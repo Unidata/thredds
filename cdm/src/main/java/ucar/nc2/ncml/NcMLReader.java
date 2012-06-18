@@ -1332,7 +1332,8 @@ public class NcMLReader {
 
       // must always open through a NcML reader, in case the netcdf element modifies the dataset
       NcmlElementReader reader = new NcmlElementReader(ncmlLocation, location, netcdfElemNested);
-      String cacheName = ncmlLocation + "#" + Integer.toString(netcdfElemNested.hashCode());
+      String cacheName = (location != null) ? location : ncmlLocation;
+      cacheName += "#" + Integer.toString(netcdfElemNested.hashCode()); // need a unique name, in case file has been modified by ncml
 
       String realLocation = URLnaming.resolveFile(ncmlLocation, location);
       agg.addExplicitDataset(cacheName, realLocation, id, ncoords, coordValueS, sectionSpec, reader);

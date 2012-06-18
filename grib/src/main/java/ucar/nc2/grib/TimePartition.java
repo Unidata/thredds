@@ -32,6 +32,7 @@
 
 package ucar.nc2.grib;
 
+import com.sleepycat.je.rep.impl.GroupService;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.TimePartitionCollection;
@@ -56,6 +57,8 @@ import java.util.*;
  */
 public abstract class TimePartition extends GribCollection {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimePartition.class);
+  static public final byte VERT_COORDS_DIFFER = 1;
+  static public final byte ENS_COORDS_DIFFER = 2;
 
   //////////////////////////////////////////////////////////
   // object cache for index files - these are opened only as GribCollection
@@ -170,7 +173,7 @@ public abstract class TimePartition extends GribCollection {
   }
 
   public class VariableIndexPartitioned extends GribCollection.VariableIndex {
-    public int[] groupno, varno;
+    public int[] groupno, varno, flag;
 
     public VariableIndexPartitioned(GribCollection.GroupHcs g, int discipline, int category, int parameter, int levelType, boolean isLayer,
                                     int intvType, String intvName, int ensDerivedType, int probType, String probabilityName,
@@ -181,9 +184,10 @@ public abstract class TimePartition extends GribCollection {
               genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
     }
 
-    public void setPartitionIndex(int partno, int groupIdx, int varIdx) {
-      groupno[partno] = groupIdx;
-      varno[partno] = varIdx;
+    public void setPartitionIndex(int partno, int groupIdx, int varIdx, int flag) {
+      this.groupno[partno] = groupIdx;
+      this.varno[partno] = varIdx;
+      this.flag[partno] = flag;
     }
 
     public GribCollection.VariableIndex getVindex(int partno) throws IOException {
@@ -208,6 +212,9 @@ public abstract class TimePartition extends GribCollection {
       sb.append("\n varno=").append(varno == null ? "null" : "");
       for (int i = 0; varno != null && i < varno.length; ++i)
         sb.append(i == 0 ? "" : ", ").append(varno[i]);
+      sb.append("\n flags=").append(flag == null ? "null" : "");
+      for (int i = 0; flag != null && i < flag.length; ++i)
+        sb.append(i == 0 ? "" : ", ").append(flag[i]);
       sb.append("}\n");
       sb.append(super.toStringComplete());
       return sb.toString();
@@ -269,12 +276,13 @@ public abstract class TimePartition extends GribCollection {
     throw new UnsupportedOperationException();
   }
 
+  // read from index
   public GribCollection.VariableIndex makeVariableIndex(GroupHcs group, int tableVersion,
                                                  int discipline, int category, int parameter, int levelType, boolean isLayer, int intvType,
                                                  String intvName, int ensDerivedType, int probType, String probabilityName,
                                                  int genProcessType,
                                                  int cdmHash, int timeIdx, int vertIdx, int ensIdx, long recordsPos, int recordsLen,
-                                                 List<Integer> groupnoList, List<Integer> varnoList) {
+                                                 List<Integer> groupnoList, List<Integer> varnoList, List<Integer> flagList) {
 
     VariableIndexPartitioned vip = new VariableIndexPartitioned(group, discipline, category, parameter, levelType, isLayer, intvType,
             intvName, ensDerivedType, probType, probabilityName, genProcessType, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen);
@@ -282,13 +290,16 @@ public abstract class TimePartition extends GribCollection {
     int nparts = varnoList.size();
     vip.groupno = new int[nparts];
     vip.varno = new int[nparts];
+    vip.flag = new int[nparts];
     for (int i = 0; i < nparts; i++) {
       vip.groupno[i] = groupnoList.get(i);
       vip.varno[i] = varnoList.get(i);
+      vip.flag[i] = flagList.get(i);
     }
     return vip;
   }
 
+  // construct - going to write index
   public VariableIndexPartitioned makeVariableIndexPartitioned(GribCollection.VariableIndex vi, int nparts) {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(vi.group, vi.discipline, vi.category, vi.parameter, vi.levelType,
             vi.isLayer, vi.intvType, vi.intvName, vi.ensDerivedType, vi.probType, vi.probabilityName,
@@ -296,6 +307,7 @@ public abstract class TimePartition extends GribCollection {
 
     vip.groupno = new int[nparts];
     vip.varno = new int[nparts];
+    vip.flag = new int[nparts];
     for (int i = 0; i < nparts; i++) {
       vip.groupno[i] = -1;
       vip.varno[i] = -1;
@@ -324,6 +336,17 @@ public abstract class TimePartition extends GribCollection {
     for (Partition p : plist)
       f.format("  %s%n", p);
     f.format("%n");
+
+    for (GroupHcs g :groups)  {
+      for (VariableIndex v : g.varIndex) {
+        VariableIndexPartitioned vp = (VariableIndexPartitioned) v;
+        for (int i = 0; i< vp.flag.length; i++) {
+          if (vp.flag[i] != 0) {
+            f.format("  %s has missing (%d) on partition %d%n", v.id(), vp.flag[i], i);
+          }
+        }
+      }
+    }
 
     super.showIndex(f);
   }

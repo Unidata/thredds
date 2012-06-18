@@ -41,11 +41,11 @@ import org.joda.time.DurationField;
  * <p>There is no concept of an era in this calendar, so all durations and fields
  * relating to this concept are not supported.  Additionally, the concept of a
  * "weekyear" (the year that "owns" a given week) is not implemented.</p>
- * <p>Instances of this class can only be created in UTC
+ * <p>Instances of this class can only be created in {@link DateTimeZone#UTC}.
  * (Support for time zones makes little sense in this chronology).</p>
  * <p>Instances of this class are immutable.</p>
  * @author Jon Blower
- * @see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/cf-conventions.html#calendar"
+ * @see http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/cf-conventions.html#calendar
  * @author Jon
  */
 public class FixedYearVariableMonthChronology extends FixedYearLengthChronology {
@@ -107,7 +107,7 @@ public class FixedYearVariableMonthChronology extends FixedYearLengthChronology 
     /**
      * Gets the length of each month in days.  Returns a new array with each
      * invocation to maintain integrity of internal data.
-     * TODO return an immutable List
+     * @todo return an immutable List
      */
     public int[] getMonthLengths() {
         return this.monthLengths.clone(); // Defensive copy

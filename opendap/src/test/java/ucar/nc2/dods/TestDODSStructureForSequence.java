@@ -51,6 +51,11 @@ public class TestDODSStructureForSequence extends TestCase
     super(name);
   }
 
+    // suppress "no test failure warning message */
+  public void testFake() throws Exception {
+    assert true;
+  }
+
   public void utestConstrainedAccess()
   {
     // URL for the JPL QuikSCAT DODS File Server (DFS).

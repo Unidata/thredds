@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -377,7 +378,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
-    return "BUFR";
+    return DataFormatType.BUFR.toString();
   }
 
   public String getFileTypeDescription() {

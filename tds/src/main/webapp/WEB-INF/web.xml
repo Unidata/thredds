@@ -86,8 +86,12 @@
 
   <filter-mapping>
     <filter-name>RequestBracketingLogMessageFilter</filter-name>
-    <servlet-name>metadata</servlet-name>
+    <!-- servlet-name>metadata</servlet-name-->
+    <url-pattern>/iso/*</url-pattern>
+    <url-pattern>/ncml/*</url-pattern>
+    <url-pattern>/uddc/*</url-pattern>
   </filter-mapping>
+
   <!--
   Filter:
    - the request URL path
@@ -118,8 +122,12 @@
   <!-- Metadata services (ncISO) from NGDC -->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>metadata</servlet-name>
+    <!-- servlet-name>metadata</servlet-name-->
+    <url-pattern>/iso/*</url-pattern>
+    <url-pattern>/ncml/*</url-pattern>
+    <url-pattern>/uddc/*</url-pattern>
   </filter-mapping>
+
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>admin</servlet-name>
@@ -282,14 +290,16 @@
     <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
   </context-param>
   
+  
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
   <!-- TDS context configuration listener. -->
-  <!-- listener>
+  <listener>
     <listener-class>thredds.server.config.TdsConfigContextListener</listener-class>
-  </listener-->
+  </listener>
+
 
   <listener>
     <listener-class>thredds.server.opendap.OpendapSessionAttributeListener</listener-class>
@@ -339,11 +349,12 @@
   </servlet>
 
   <!-- Metadata services (ncISO) from NGDC -->
-  <servlet>
+  <!-- servlet>
     <servlet-name>metadata</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
+  </servlet -->
+
 
   <servlet>
     <servlet-name>admin</servlet-name>
@@ -712,7 +723,7 @@
 
   <security-constraint>
     <web-resource-collection>
-      <web-resource-name>sensitive read access</web-resource-name>
+      <web-resource-name>allow feature collection rescan to be triggered externally</web-resource-name>
       <url-pattern>/admin/collection/trigger</url-pattern>
       <http-method>GET</http-method>
     </web-resource-collection>

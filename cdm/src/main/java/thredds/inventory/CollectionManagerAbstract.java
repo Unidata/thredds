@@ -54,9 +54,18 @@ public abstract class CollectionManagerAbstract implements CollectionManager {
 
   protected Map<String, Object> auxInfo; // lazy init
   private ListenerManager lm; // lazy init
+  private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
 
   protected CollectionManagerAbstract( String collectionName) {
-    this.collectionName = collectionName;
+    this.collectionName = collectionName; // +"-" + Integer.toHexString(hashCode()); // make sure name is unique
+  }
+
+  public boolean isStatic() {
+    return isStatic;
+  }
+
+  public void setStatic(boolean aStatic) {
+    isStatic = aStatic;
   }
 
   @Override

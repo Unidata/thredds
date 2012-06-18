@@ -12,7 +12,6 @@ import java.util.Formatter;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
-
 public class TestNetcdfStream {
   String serverRoot = TestDir.cdmUnitTestDir + "formats";
 

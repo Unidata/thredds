@@ -52,10 +52,10 @@ public final class DataFormatType {
     public final static DataFormatType GRIB2 = new DataFormatType("GRIB-2");
     public final static DataFormatType HDF4 = new DataFormatType("HDF4");
     public final static DataFormatType HDF5 = new DataFormatType("HDF5");
-    public final static DataFormatType NETCDF = new DataFormatType("NetCDF");
-    public final static DataFormatType NEXRAD2 = new DataFormatType("NEXRAD2");
+    public final static DataFormatType NETCDF = new DataFormatType("netCDF");
+    public final static DataFormatType NEXRAD2 = new DataFormatType("NEXRAD-2");
     public final static DataFormatType NCML = new DataFormatType("NcML");
-    public final static DataFormatType NIDS = new DataFormatType("NIDS");
+    public final static DataFormatType NIDS = new DataFormatType("NEXRAD-3");
     public final static DataFormatType MCIDAS_AREA = new DataFormatType("McIDAS-AREA");
 
     public final static DataFormatType GIF = new DataFormatType("image/gif");

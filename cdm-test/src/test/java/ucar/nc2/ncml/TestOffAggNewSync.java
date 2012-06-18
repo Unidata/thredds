@@ -127,7 +127,8 @@ public class TestOffAggNewSync {
     testAggCoordVar(ncfile, nfiles);
     ncfile.close();
 
-    if (!moveBack(dataDir + fname))
+    //if (!moveBack(dataDir + fname ))
+    if (!moveBack(fname ))
       System.out.printf("Move back failed on %s%n", fname);
     else
       System.out.printf("ok testSyncRemove %n");

@@ -48,7 +48,7 @@ public class TestCFPointWriter {
 
   @Test
   public void testProblem() throws IOException {
-    assert 50 ==  writeDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
+    assert 13 ==  writeDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
   }
 
 

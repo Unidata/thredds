@@ -100,6 +100,50 @@ public abstract class GribCollection implements FileCacheable {
     return vertIdx + ensIdx * nverts + timeIdx * nverts * nens;
   }
 
+  /**
+   * Find index in partition dataset when vert and/or ens coordinates dont match with proto
+   * @param timeIdx time index in this partition
+   * @param ensIdx  ensemble index in proto dataset
+   * @param vertIdx vert index in proto dataset
+   * @param flag    TimePartition.VERT_COORDS_DIFFER and/or TimePartition.ENS_COORDS_DIFFER
+   * @param ec      ensemble coord in partition dataset
+   * @param vc      vert coord in partition dataset
+   * @param ecp     ensemble coord in proto dataset
+   * @param vcp     vert coord in proto dataset
+   * @return index in partition dataset
+   */
+  public static int calcIndex(int timeIdx, int ensIdx, int vertIdx, int flag, EnsCoord ec, VertCoord vc, EnsCoord ecp, VertCoord vcp) {
+    int want_ensIdx = ensIdx;
+    if ((flag & TimePartition.ENS_COORDS_DIFFER) != 0) {
+      want_ensIdx =  findEnsIndex(ensIdx, ec.getCoords(), ecp.getCoords());
+      if (want_ensIdx == -1) return -1;
+    }
+    int want_vertIdx = vertIdx;
+    if ((flag & TimePartition.VERT_COORDS_DIFFER) != 0) {
+      want_vertIdx =  findVertIndex(vertIdx, vc.getCoords(), vcp.getCoords());
+      if (want_vertIdx == -1) return -1;
+    }
+    return calcIndex(timeIdx, want_ensIdx, want_vertIdx, (ec == null) ? 0 : ec.getSize(), (vc == null) ? 0 : vc.getSize());
+  }
+
+  private static int findEnsIndex(int indexp, List<EnsCoord.Coord> coords, List<EnsCoord.Coord> coordsp) {
+    EnsCoord.Coord want = coordsp.get(indexp);
+    for (int i=0; i<coords.size(); i++) {
+      EnsCoord.Coord have = coords.get(i);
+      if (have.equals(want)) return i;
+    }
+    return -1;
+  }
+
+  private static int findVertIndex(int indexp, List<VertCoord.Level> coords, List<VertCoord.Level> coordsp) {
+    VertCoord.Level want = coordsp.get(indexp);
+    for (int i=0; i<coords.size(); i++) {
+      VertCoord.Level have = coords.get(i);
+      if (have.equals(want)) return i;
+    }
+    return -1;
+  }
+
   static public File getIndexFile(CollectionManager dcm) {
     return new File(new File(dcm.getRoot()), dcm.getCollectionName() + IDX_EXT);
   }
@@ -164,6 +208,10 @@ public abstract class GribCollection implements FileCacheable {
 
   private File indexFile;
 
+  /**
+   * get index file; may not exist
+   * @return File, but may not exist
+   */
   public File getIndexFile() {
     if (indexFile == null) {
       File f = new File(directory, name + IDX_EXT);
@@ -173,8 +221,10 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   public File makeNewIndexFile() {
-    if (indexFile != null && indexFile.exists())
-      indexFile.delete();
+    if (indexFile != null && indexFile.exists())  {
+      if (!indexFile.delete())
+        logger.warn("Failed to delete {}", indexFile.getPath());
+    }
     indexFile = null;
     return getIndexFile();
   }
@@ -567,6 +617,10 @@ public abstract class GribCollection implements FileCacheable {
 
     public EnsCoord getEnsCoord() {
       return ensIdx < 0 ? null : group.ensCoords.get(ensIdx);
+    }
+
+    public String id() {
+      return discipline+"-"+category+"-"+parameter;
     }
 
     @Override

@@ -145,15 +145,28 @@
     <dependency>
       <groupId>uk.ac.rdg.resc</groupId>
       <artifactId>ncwms</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-jdk14</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+    
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
     </dependency>
-    <dependency>
+    
+    <!-- dependency>
       <groupId>org.geotoolkit</groupId>
       <artifactId>geotk-referencing</artifactId>
-    </dependency>
+    </dependency-->
+    
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
@@ -163,10 +176,10 @@
       <artifactId>jfreechart</artifactId>
     </dependency>
 
-    <dependency>
+    <!-- dependency>
       <groupId>atg.taglib.json</groupId>
       <artifactId>json-taglib</artifactId>
-    </dependency>
+    </dependency-->
 
     <!-- tomcat -->
     <dependency>
@@ -174,15 +187,17 @@
       <artifactId>tomcat-catalina</artifactId>
       <scope>provided</scope>
     </dependency>
+    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
+    <!-- dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
-    </dependency>
+    </dependency-->
+    
     <dependency>
       <groupId>taglibs</groupId>
       <artifactId>standard</artifactId>
@@ -228,21 +243,13 @@
   <!--     Repositories. This is where Maven looks for dependencies. The  -->
   <!--     Maven repository is implicit and doesn't need to be specified. -->
   <!-- ================================================================== -->
-  <repositories>
-
+  <!-- repositories>
     <repository>
       <id>geotoolkit</id>
       <name>Geotk repository</name>
       <url>http://maven.geotoolkit.org</url>
-    </repository>
-
-    <!-- json-taglib  ( for ncWMS ) -->
-    <repository>
-      <id>escidoc</id>
-      <name>escidoc</name>
-      <url>https://www.escidoc.org/artifactory/maven.jahia.org-cache/</url>
-    </repository>
-  </repositories>
+    </repository>      
+  </repositories-->
 
 
   <!-- ===========================================================
@@ -299,7 +306,9 @@
           <attachClasses>true</attachClasses>
           <packagingExcludes>
             WEB-INF/lib/commons-logging*.jar,
+            WEB-INF/lib/javax.servlet*.jar,
             WEB-INF/lib/jdom-1.0.jar,
+            WEB-INF/lib/slf4j-jdk14*.jar,
             WEB-INF/lib/visad-*.jar
           </packagingExcludes>
           <archive>
@@ -371,7 +380,6 @@
           <skip>${skipTests}</skip>
         </configuration>
       </plugin -->
-
       <plugin>  <!-- release kludge for now -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>

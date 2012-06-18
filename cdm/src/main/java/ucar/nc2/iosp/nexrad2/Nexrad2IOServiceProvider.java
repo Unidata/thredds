@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.nexrad2;
 
+import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.*;
@@ -615,7 +616,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
-    return "NEXRAD-2";
+    return DataFormatType.NEXRAD2.toString();
   }
 
   public String getFileTypeDescription() {

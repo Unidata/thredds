@@ -125,7 +125,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skip>${skipTests}</skip>
-        	<testFailureIgnore>true</testFailureIgnore>
+        	<!-- testFailureIgnore>true</testFailureIgnore-->
+        	<failIfNoTests>true</failIfNoTests>
           <includes>
             <include>opendap/test/Test*.java</include>
             <include>ucar/nc2/dods/Test*.java</include>

@@ -18,6 +18,7 @@
 
   <appender name="threddsServlet" class="org.apache.log4j.DailyRollingFileAppender">
     <param name="File" value="${tds.log.dir}/threddsServlet.log"/>
+    <!-- param name="File" value="threddsServlet.log"/-->
     <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
@@ -28,6 +29,7 @@
   <!-- keep track of Cache messages in a seperate file. -->
   <appender name="cacheLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${tds.log.dir}/cache.log"/>
+    <!-- param name="File" value="logs/thredds/cache.log"/-->
     <param name="MaxFileSize" value="100KB"/>
     <param name="MaxBackupIndex" value="2"/>
     <param name="Append" value="false"/>
@@ -39,6 +41,7 @@
   <!-- keep track of feature collection scanning messages in a seperate file. -->
   <appender name="fcScan" class="org.apache.log4j.FileAppender">
     <param name="File" value="${tds.log.dir}/featureCollectionScan.log"/>
+    <!-- param name="File" value="logs/thredds/featureCollectionScan.log"/-->
     <!-- param name="MaxFileSize" value="10MB"/>
     <param name="MaxBackupIndex" value="10"/ -->
     <param name="Append" value="false"/>
@@ -50,6 +53,7 @@
   <!-- serverStartup.log is recreated each time Tomcat is started -->
   <appender name="serverStartupAppender" class="org.apache.log4j.FileAppender">
     <param name="File" value="${tds.log.dir}/serverStartup.log"/>
+    <!-- param name="File" value="logs/thredds/serverStartup.log"/-->
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %c: %m%n"/>
@@ -59,7 +63,8 @@
 
   <!-- catalogInit.log is recreated each time Tomcat is started -->
   <appender name="catalogInit" class="org.apache.log4j.FileAppender">
-    <param name="File" value="${tds.log.dir}/catalogInit.log"/>
+  	<param name="File" value="${tds.log.dir}/catalogInit.log"/>
+    <!-- param name="File" value="logs/thredds/catalogInit.log"/-->
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%m%n"/>
@@ -69,6 +74,7 @@
   <!-- cataloggen.log is recreated each time Tomcat is started -->
   <appender name="catalogGen" class="org.apache.log4j.FileAppender">
     <param name="File" value="${tds.log.dir}/cataloggen.log"/>
+    <!-- param name="File" value="logs/thredds/cataloggen.log"/-->
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
@@ -78,6 +84,7 @@
   <!-- special log for old grib processing -->
   <appender name="modelLog" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${tds.log.dir}/models.log"/>
+    <!-- param name="File" value="logs/thredds/models.log"/-->
     <param name="MaxFileSize" value="5MB"/>
     <param name="MaxBackupIndex" value="5"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -88,6 +95,7 @@
   <!-- Separate log for LogStream -->
   <appender name="logcdm" class="org.apache.log4j.DailyRollingFileAppender">
     <param name="File" value="${tds.log.dir}/cdm.log"/>
+    <!-- param name="File" value="logs/thredds/cdm.log"/-->
     <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd' 'HH:mm:ss.SSS} %-5p - %c%n%m%n"/>
@@ -170,8 +178,23 @@
     <appender-ref ref="fcScan"/>
   </logger>
 
+  <logger name="thredds.server.root.CollectionController" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
   <logger name="ucar.nc2.grib" additivity="false">
     <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="ucar.nc2.grib.grib1.Grib1CollectionBuilder" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="ucar.nc2.grib.grib2.Grib2CollectionBuilder" additivity="false">
+    <level value="DEBUG"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
@@ -181,6 +204,11 @@
   </logger>
 
   <logger name="thredds.catalog.InvDatasetFcGrib" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="org.quartz" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
@@ -251,31 +279,14 @@
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <logger name="org.springframework" additivity="false">
-    <level value="WARN"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger>
-
   <logger name="thredds.server.metadata" additivity="false">
     <level value="WARN"/>
     <appender-ref ref="threddsServlet"/>
   </logger>
 
-  <!-- temp debug -->
-  <!-- logger name="thredds.server.cdmremote.CdmRemoteController" additivity="false">
-    <level value="DEBUG"/>
-    <appender-ref ref="threddsServlet"/>
-  </logger -->
-
-  <!-- Initialize a few loggers to make the servlet debug web interface more convenient. -->
-  <logger name="thredds.catalog"/>
-  <logger name="thredds.dqc"/>
-  <logger name="thredds.servlet"/>
-
-  <!-- dennis opendap testing (??) -->
-  <logger name="opendap.servlet.LogStream" additivity="false">
-    <level value="info" />
-    <appender-ref ref="logcdm"/>
+  <logger name="org.springframework" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="serverStartupAppender"/>
   </logger>
 
   <root>

@@ -150,6 +150,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     this.recheck = makeRecheck(config.updateConfig.recheckAfter);
     protoChoice = config.protoConfig.choice;
+
+    if (config.updateConfig.isStatic()) // no update - assume its static
+      setStatic(true);
   }
 
 
@@ -310,7 +313,8 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   @Override
   public boolean scanIfNeeded() throws IOException {
-    return (map == null || isScanNeeded()) && scan(true);
+    if (map == null && !isStatic()) return true;
+    return isScanNeeded() && scan(true);
   }
 
   protected boolean hasScans() {
@@ -335,7 +339,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       return false;
     }
 
-    if (map == null) {
+    if (map == null && !isStatic()) {
       logger.debug("{}: scan needed, never scanned", collectionName);
       return true;
     }
@@ -431,7 +435,14 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   @Override
   public Iterable<MFile> getFiles() {
-    if (map == null) return Collections.emptyList(); // never scanned
+    if (map == null)
+      try {
+        scanFirstTime(); // never scanned
+      } catch (IOException e) {
+        e.printStackTrace();
+        return Collections.emptyList();
+      }
+
     List<MFile> result = new ArrayList<MFile>(map.values());
     if (hasDateExtractor()) {
       Collections.sort(result, new DateSorter());
@@ -500,7 +511,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
       Iterator<MFile> iter = (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true);
       if (iter == null) {
-        logger.error(collectionName + ": DatasetCollectionManager Invalid collection= " + mc);
+        logger.error(collectionName + ": Invalid collection= " + mc);
         continue;
       }
 
@@ -509,6 +520,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
         mfile.setAuxInfo(mc.getAuxInfo());
         map.put(mfile.getPath(), mfile);
       }
+      logger.info(collectionName + ": was scanned " + mc);
     }
 
   }

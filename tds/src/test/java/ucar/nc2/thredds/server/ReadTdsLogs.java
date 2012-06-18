@@ -62,7 +62,7 @@ public class ReadTdsLogs {
 
   ///////////////////////////////////////////////////////
   // multithreading
-  final int nthreads = 3;
+  final int nthreads = 1;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;
@@ -373,7 +373,7 @@ public class ReadTdsLogs {
 
   static private int total_submit = 0;
   static private int skip_submit = -1;
-  static private int max_submit = Integer.MAX_VALUE;
+  static private int max_submit = 1000; // Integer.MAX_VALUE;
 
   void sendRequests(String filename, int max) throws IOException {
     int submit = 0;

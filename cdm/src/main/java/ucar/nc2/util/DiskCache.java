@@ -42,6 +42,7 @@ import java.util.*;
  * This is a general purpose utility for determining a place to write files and cache them, eg for
  * uncompressing files. This class does not scour itself.
  * <p/>
+ * Note that when a file in the cache is accessed, ist lastModified date is set, which is used for the LRU scouring.
  * <p> The cdm library sometimes needs to write files, eg
  * to uncompress them, or for grib index files, etc. The first choice is to write these files
  * in the same directory that the original file lives in. However, that directory may not be

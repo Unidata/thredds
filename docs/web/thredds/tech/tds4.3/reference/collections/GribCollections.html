@@ -11,7 +11,8 @@ dl {margin: 10px 5px 5px 15px;}
 </head>
 
 <body>
-<h1>GRIB Feature Collections</h1>
+<h1><img src="../../../images/unidataLogo.png" alt="" width="73" height="75" align="absbottom" /> GRIB Feature Collections</h1>
+<hr />
 <p>GRIB datasets are collections of GRIB records, which consist of gridded data typically from numeric model output. Because of the complexity of how GRIB data is  written and stored, the TDS has developed specialized handling of GRIB datasets, as of version 4.3, called <em><strong>GRIB Feature Collections</strong></em>. Version 4.3 is a complete rewrite of the GRIB IOSP, table handling,  indexing, and server functionality. One can expect significant differences from earlier versions of the TDS in variable naming, as well as time and spatial coordinate handling. Previous versions are not longer supported, and it is strongly recommended that  users  switch ASAP to version 4.3 or greater. As of June 2012, this code is considered  beta.</p>
 <p>Some of the new capabilities in version 4.3 are:</p>
 <ul>
@@ -21,6 +22,13 @@ dl {margin: 10px 5px 5px 15px;}
   <li>Interval time coordinates are fully supported.</li>
   <li>Collection level datasets are automatically created. These correspond to the FMRC <em>best</em> dataset.</li>
   <li>All individual files are also made available.</li>
+</ul>
+<p>Implementation notes:</p>
+<ul>
+  <li>For each grib file, a <em>grib index</em> is written in the same directory, named <strong>&lt;grib filename&gt;.gbx9</strong>. Once written, this never has to be rewritten.</li>
+  <li>For each grib file, a <em>cdm index</em> is written in the same directory, named <strong>&lt;grib filename&gt;.ncx</strong>. This occasionally has to be rewritten when new CDM versions are released, or if you modify your grib confiuration.</li>
+  <li>For each collection, a <em>grib collection index</em>  is written in the <em>collection root directory, </em>named <strong>&lt;collection name&gt;.ncx</strong>. This must be rewritten if any of the collection files change.</li>
+  <li>Do not use CDM disk caching for any of these indices. Let the TDS or TDM write the indices in the same directory as the data files.</li>
 </ul>
 <p>For background, please read:</p>
 <ul>
@@ -41,7 +49,7 @@ dl {margin: 10px 5px 5px 15px;}
 6)   &lt;gribConfig datasetTypes=&quot;collection Files&quot; /&gt;
    &lt;/featureCollection&gt;</pre>
 <ol>
-  <li>A featureCollection must have a <em>name</em> and a <em>path</em> (recommend that you not specify an <em>ID</em>, which will then default to the  <em>path)</em>. The <em>featureType</em> attribute is set to <em>GRIB</em>. </li>
+  <li>A featureCollection must have a <em>name</em> and a <em>path</em> (do not set an <em>ID</em> attribute<em>)</em>. The <em>featureType</em> attribute is set to <em>GRIB</em>. Its best to avaoid the words <em>collection</em> and <em>files</em> in the name.</li>
   <li>A featureCollection is a InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
   <li>The collection must consist of either GRIB-1 or GRIB-2 files. You must set the dataFormat element to indicate which.</li>
   <li>The <a href="CollectionSpecification.html">collection specification</a> defines the collection of files that are in this dataset.</li>
@@ -49,13 +57,13 @@ dl {margin: 10px 5px 5px 15px;}
   <li>See <a href="#gribConfig">below</a>.</li>
 </ol>
 <h3>Resulting Datasets:</h3>
-<p>The above example generates one collection dataset, and one dataset for each individual file in the collection, which we represent as nested datasets:</p>
-<pre>&lt;dataset name=&quot;GFS-Puerto_Rico_191km-collection&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt;
+<p>The above example generates one collection dataset, and one dataset for each individual file in the collection:, which become nested datasets in the catalog:</p>
+<pre>&lt;dataset name=&quot;GFS-Puerto_Rico_191km&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt;
    &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_191km/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
 &lt;/dataset&gt;
 </pre>
 or, simplifying:
-<pre>1) &lt;dataset name=&quot;GFS-Puerto_Rico_191km-collection&quot;  urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt; 
+<pre>1) &lt;dataset name=&quot;GFS-Puerto_Rico_191km&quot;  urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/collection&quot;&gt; 
 2)   &lt;dataset name=&quot;GFS_Puerto_Rico_191km_20111122_0000.grib1&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/files/GFS_Puerto_Rico_191km_20111122_0000.grib1&quot;/&gt;
      &lt;dataset name=&quot;GFS_Puerto_Rico_191km_20111121_0000.grib1&quot; urlPath=&quot;grib/NCEP/GFS/Puerto_Rico_191km/files/GFS_Puerto_Rico_191km_20111121_0000.grib1&quot;/&gt;
       ...
@@ -65,19 +73,22 @@ or, simplifying:
   <li>The individual files in the collection</li>
 </ol>
 <p>So the datasets that are generated from a Grib Collection with  <strong>name</strong> and <strong>path</strong> :</p>
-<table width="435" border="1">
+<table width="546" border="1">
   <tr>
     <th width="129" scope="col">dataset</th>
+    <th width="105" scope="col">catalogRef</th>
     <th width="105" scope="col">name</th>
     <th width="179" scope="col">path</th>
   </tr>
   <tr>
     <td>collection</td>
-    <td>name-<em>collection</em></td>
+    <td>&nbsp;</td>
+    <td>name</td>
     <td>path/<em>collection</em></td>
   </tr>
   <tr>
     <td>individual files</td>
+    <td>path/<em>files/catalog.xml</em></td>
     <td>filename</td>
     <td>path/<em>files</em>/filename</td>
   </tr>
@@ -101,24 +112,24 @@ or, simplifying:
 <h3>Resulting Datasets:</h3>
 <p>A time partition generates one collection dataset,  one dataset for each partition, and one dataset for each individual file in the collection:</p>
 <pre>&lt;dataset name=&quot;NAM-Polar90&quot; ID=&quot;grib/NCEP/NAM/Polar90&quot;&gt;    
-  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/collection/catalog.xml&quot; xlink:title=&quot;collection&quot; ID=&quot;grib/NCEP/NAM/Polar90/collection&quot; name=&quot;&quot; /&gt;
-  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/catalog.xml&quot; xlink:title=&quot;NAM-Polar90_20110301&quot; ID=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110301&quot; name=&quot;&quot;&gt;
-    &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
+  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/collection/catalog.xml&quot; xlink:title=&quot;collection&quot;/&gt;
+  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/catalog.xml&quot; xlink:title=&quot;NAM-Polar90_20110301&quot;&gt;
+    &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/files/catalog.xml&quot; xlink:title=&quot;files&quot; /&gt;
   &lt;/catalogRef&gt;
-  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110302/catalog.xml&quot; xlink:title=&quot;NAM-Polar90_20110302&quot; ID=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110302&quot; name=&quot;&quot;&gt;
+  &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110302/catalog.xml&quot; xlink:title=&quot;NAM-Polar90_20110302&quot;&gt;
     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCEP/NAM/Polar90/NAM-Polar90_20110302/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
   &lt;/catalogRef&gt;
   ...
 &lt;/dataset&gt;
 </pre>
-or, simplifying:
+de-referencing the catalogRefs, and simplifying:
 <pre>&lt;dataset name=&quot;NAM-Polar90&quot; ID=&quot;grib/NCEP/NAM/Polar90&quot;&gt;
 1)&lt;dataset name=&quot;NAM-Polar90-collection&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/collection&quot;&gt; 
-2)&lt;dataset name=&quot;NAM-Polar90_20110301&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110301&quot;&gt;    
+2)&lt;dataset name=&quot;NAM-Polar90_20110301&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110301/collection&quot;&gt;    
 3)  &lt;dataset name=&quot;NAM_Polar_90km_20110301_0000.grib2&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110301_0000.grib2&quot;/&gt;    <br />
     &lt;dataset name=&quot;NAM_Polar_90km_20110301_0600.grib2&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110301_0600.grib2&quot;/&gt;
     ...
-  &lt;/dataset&gt;    <br />4)&lt;dataset name=&quot;NAM-Polar90_20110302-collection&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/collection&quot;&gt;   
+  &lt;/dataset&gt;    <br />4)&lt;dataset name=&quot;NAM-Polar90_20110302-collection&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/NAM-Polar90_20110302/collection&quot;&gt;   
     &lt;dataset name=&quot;NAM_Polar_90km_20110302_0000.grib2&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110302_0000.grib2&quot;/&gt;    <br />
     &lt;dataset name=&quot;NAM_Polar_90km_20110302_0600.grib2&quot; urlPath=&quot;grib/NCEP/NAM/Polar90/files/NAM_Polar_90km_20110302_0600.grib2&quot;/&gt;
     ...
@@ -128,29 +139,33 @@ or, simplifying:
 </pre>
 <ol>
   <li>The overall collection dataset</li>
-  <li>The first partition collection</li>
+  <li>The first partition collection, with a partitionName = name<strong>_startingTime</strong></li>
   <li>The files in the first partition</li>
   <li>The second partition collection, etc</li>
 </ol>
 <p>So the datasets that are generated from a Time Partition with <strong>name</strong>, <strong>path</strong>, and <strong>partitionName</strong>:</p>
-<table width="579" border="1">
+<table width="793" border="1">
   <tr>
     <th width="129" scope="col">dataset</th>
-    <th width="208" scope="col">name</th>
+    <th width="259" scope="col">catalogRef</th>
+    <th width="157" scope="col">name</th>
     <th width="220" scope="col">path</th>
   </tr>
   <tr>
     <td>collection</td>
-    <td>name-<em>collection</em></td>
+    <td>path/<em>collection/catalog.xml</em></td>
+    <td>name</td>
     <td>path/<em>collection</em></td>
   </tr>
   <tr>
     <td>partitions</td>
+    <td>path/partitionName<em>/catalog.xml</em></td>
     <td>partitionName</td>
-    <td>path/partitionName</td>
+    <td>path/partitionName/<em>collection</em></td>
   </tr>
   <tr>
     <td>individual files</td>
+    <td>path/partitionName/<em>files/catalog.xml</em></td>
     <td>filename</td>
     <td>path/<em>files</em>/filename</td>
   </tr>
@@ -176,24 +191,24 @@ or, simplifying:
 <h3>Resulting Datasets:</h3>
 <p>For each group, this generates one collection dataset, and one dataset for each individual file in the group:</p>
 <pre>&lt;catalog&gt;
-  &lt;dataset name=&quot;KALR:Southeast RFC&quot; ID=&quot;grib/NPVU/RFC/KALR-Southeast-RFC&quot; urlPath=&quot;grib/NPVU/RFC/KALR-Southeast-RFC&quot;&gt;
+  &lt;dataset name=&quot;KALR:Southeast RFC&quot; urlPath=&quot;grib/NPVU/RFC/KALR-Southeast-RFC/collection&quot;&gt;
     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NPVU/RFC/KALR-Southeast-RFC/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
   &lt;/dataset&gt;
-  &lt;dataset name=&quot;KFWR:West Gulf RFC&quot; ID=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC&quot; urlPath=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC&quot;&gt;
+  &lt;dataset name=&quot;KFWR:West Gulf RFC&quot; urlPath=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC/collection&quot;&gt;
     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NPVU/RFC/KFWR-West-Gulf-RFC/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;
   &lt;/dataset&gt;
   ...
 &lt;/catalog&gt; </pre>
-Note that the groups are sorted by name. Simplifying:
+Note that the groups are sorted by name, and that there is no overall collection for the dataset. Simplifying:
 
 <pre>
 &lt;catalog&gt;
-1)&lt;dataset name=&quot;KALR:Southeast RFC&quot; ID=&quot;grib/NPVU/RFC/KALR-Southeast-RFC&quot; urlPath=&quot;grib/NPVU/RFC/KALR-Southeast-RFC&quot;&gt; 
+1)&lt;dataset name=&quot;KALR:Southeast RFC&quot; urlPath=&quot;grib/NPVU/RFC/KALR-Southeast-RFC/collection&quot;&gt; 
 2)  &lt;dataset name=&quot;ZETA_KALR_NWS_152_20120111.grib1&quot; urlPath=&quot;grib/NPVU/RFC/files/ZETA_KALR_NWS_152_20120111.grib1&quot;/&gt;
     &lt;dataset name=&quot;ZETA_KALR_NWS_160_20120111.grib1&quot; urlPath=&quot;grib/NPVU/RFC/files/ZETA_KALR_NWS_160_20120111.grib1&quot;/&gt;
     ...
   &lt;/dataset&gt;
-3)&lt;dataset name=&quot;KFWR:West Gulf RFC&quot; ID=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC&quot; urlPath=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC&quot;&gt;
+3)&lt;dataset name=&quot;KFWR:West Gulf RFC&quot; urlPath=&quot;grib/NPVU/RFC/KFWR-West-Gulf-RFC/collection&quot;&gt;
     &lt;dataset name=&quot;ZETA_KFWR_NWS_152_20120111.grib1&quot; urlPath=&quot;grib/NPVU/RFC/files/ZETA_KFWR_NWS_152_20120111.grib1&quot;/&gt;
     &lt;dataset name=&quot;ZETA_KFWR_NWS_161_20120110.grib1&quot; urlPath=&quot;grib/NPVU/RFC/files/ZETA_KFWR_NWS_161_20120110.grib1&quot;/&gt;
     ...
@@ -206,19 +221,22 @@ Note that the groups are sorted by name. Simplifying:
   <li>The second group collection dataset, etc</li>
 </ol>
 <p>So the datasets that are generated from a Grib Collection with <strong>groupName</strong> and <strong>path</strong> :</p>
-<table width="634" border="1">
+<table width="795" border="1">
   <tr>
-    <th width="148" scope="col">dataset</th>
-    <th width="155" scope="col">name</th>
-    <th width="309" scope="col">path</th>
+    <th width="131" scope="col">dataset</th>
+    <th width="229" scope="col">catalogRef</th>
+    <th width="122" scope="col">name</th>
+    <th width="285" scope="col">path</th>
   </tr>
   <tr>
     <td>group collection</td>
+    <td>&nbsp;</td>
     <td>groupName<em></em></td>
-    <td>path/groupName</td>
+    <td>path/groupName/<em>collection</em></td>
   </tr>
   <tr>
     <td>individual files</td>
+    <td>path/groupName/<em>files/catalog.xml</em></td>
     <td>filename</td>
     <td>path/<em>files</em>/filename</td>
   </tr>
@@ -254,13 +272,13 @@ Note that the groups are sorted by name. Simplifying:
 <p>A time partition with multiple groups generates an<em> overall collection dataset</em> for each group,  a collection dataset for each group in each partition, and a dataset for each individual file:</p>
 <pre>
 &lt;dataset name=&quot;NCDC-CFSR&quot; ID=&quot;grib/NCDC/CFSR&quot;&gt; 
-1) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/collection/catalog.xml&quot; xlink:title=&quot;collection&quot; ID=&quot;grib/NCDC/CFSR/collection&quot; name=&quot;&quot; /&gt;
-4) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200808/catalog.xml&quot; xlink:title=&quot;200808&quot; ID=&quot;grib/NCDC/CFSR/200808&quot; name=&quot;&quot; /&gt;
-8) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200809/catalog.xml&quot; xlink:title=&quot;200809&quot; ID=&quot;grib/NCDC/CFSR/200809&quot; name=&quot;&quot; /&gt;
+1) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/collection/catalog.xml&quot; xlink:title=&quot;collection&quot; name=&quot;&quot; /&gt;
+4) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200808/catalog.xml&quot; xlink:title=&quot;200808&quot; name=&quot;&quot; /&gt;
+8) &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200809/catalog.xml&quot; xlink:title=&quot;200809&quot; name=&quot;&quot; /&gt;
    ...
 &lt;/dataset&gt;
 </pre>
-or, simplifying:
+de-referencing the catalogRefs, and simplifying:
 <pre>&lt;dataset name=&quot;NCDC-CFSR&quot; ID=&quot;grib/NCDC/CFSR&quot;&gt;
 
 1)&lt;dataset name=&quot;NCDC-CFSR&quot;&gt; 
@@ -271,22 +289,18 @@ or, simplifying:
 
 4)&lt;dataset name=&quot;200808&quot; &gt;
 5)  &lt;dataset name=&quot;FLX GaussianT382&quot; urlPath=&quot;grib/NCDC/CFSR/200808/FLX-GaussianT382&quot;&gt;
-6)    &lt;dataset name=&quot;200808/soilt1.gdas.200808.grb2&quot; urlPath=&quot;grib/NCDC/CFSR/files/200808/soilt1.gdas.200808.grb2&quot;&gt;
-      &lt;dataset name=&quot;200808/swe.gdas.200808.grb2&quot; urlPath=&quot;grib/NCDC/CFSR/files/200808/swe.gdas.200808.grb2&quot;&gt;
-      ...
+6)     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT382/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt;    
+
     &lt;/dataset&gt;
-7)  &lt;dataset name=&quot;FLX GaussianT62&quot; urlPath=&quot;grib/NCDC/CFSR/200808/FLX-GaussianT62&quot;&gt;
-      &lt;dataset name=&quot;200808/soilt1.gdas.200808.grb2&quot; urlPath=&quot;grib/NCDC/CFSR/files/200808/soilt1.gdas.200808.grb2&quot;&gt;
-      &lt;dataset name=&quot;200808/swe.gdas.200808.grb2&quot; urlPath=&quot;grib/NCDC/CFSR/files/200808/swe.gdas.200808.grb2&quot;&gt;
-      ...
-   &lt;/dataset&gt;
+7)  &lt;dataset name=&quot;FLX GaussianT62&quot; urlPath=&quot;grib/NCDC/CFSR/200808/FLX-GaussianT62&quot;&gt; 
+	     &lt;catalogRef xlink:href=&quot;/thredds/catalog/grib/NCDC/CFSR/200808/FLX-GaussianT62/files/catalog.xml&quot; xlink:title=&quot;files&quot; name=&quot;&quot; /&gt; 
+    &lt;/dataset&gt;
     ... 
   &lt;/dataset&gt;
 8)&lt;dataset name=&quot;200809&quot; &gt;
   ... 
 
-&lt;/dataset&gt;
-</pre>
+&lt;/dataset&gt;</pre>
 <ol>
   <li>Container for the  overall collection datasets</li>
   <li>The overall collection for the first group</li>
@@ -298,25 +312,29 @@ or, simplifying:
   <li>Container for the second partition, etc</li>
 </ol>
 <p>So the datasets that are generated from a Time Partition with <strong>name</strong>, <strong>path</strong>, <strong>groupName</strong>, and <strong>partitionName</strong>:</p>
-<table width="726" border="1">
+<table width="937" border="1">
   <tr>
-    <th width="227" scope="col">dataset</th>
-    <th width="189" scope="col">name</th>
-    <th width="288" scope="col">path</th>
+    <th width="215" scope="col">dataset</th>
+    <th width="302" scope="col">catalogRef</th>
+    <th width="188" scope="col">name</th>
+    <th width="204" scope="col">path</th>
   </tr>
   <tr>
     <td>overall collection for group</td>
+    <td>path/groupName/<em>collection/catalog.xml</em></td>
     <td>groupName</td>
-    <td>path/groupName</td>
+    <td>path/name/groupName</td>
   </tr>
   <tr>
-    <td>collection for group and partition</td>
-    <td>partitionName/groupName</td>
+    <td>collection for partition and group</td>
+    <td>path/partitionName<em>/catalog.xml</em></td>
+    <td>groupName</td>
     <td>path/partitionName/groupName</td>
   </tr>
   <tr>
     <td>individual files</td>
-    <td>filename</td>
+    <td>path/partitionName/groupName/<em>files/catalog.xml</em></td>
+    <td>partitionName/filename</td>
     <td>path/<em>files</em>/filename</td>
   </tr>
 </table>
@@ -370,18 +388,20 @@ or, simplifying:
 7)&lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;
 &lt;/xsd:complexType&gt;
   </pre>
-  <h4>1) gdsHash: Fix errors in GDS encoding</h4>
+  <h4>1) gdsHash<a name="gdsHash" id="gdsHash"></a>: Fix errors in GDS encoding</h4>
   <blockquote>
-    <p>See <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#gdsHash">CDM docs</a>. In this example, any GDS hash that equals &quot;1450218978&quot; is changed to &quot;1450192070&quot; :</p>
+    <p>The CDM creates a different group for each different GDS used in the GRIB collection. It identifies the GDS by creating a hashcode for it, and then creates a separate group for each unique hashcode. Unfortunately, in some cases, GRIB records have GDSs that differ inminor ways, such as the fifth decimal place in the starting x and/or y coordinate. Its clear that these are minor defects in the writing of the GRIB records. If desired, the user can fix these problems through NcML or in the TDS gribConfig element</p>
+    <p>First, one must find the GDS hashcodes by using ToolsUI. In the IOSP/GRIB1(2)/GribCollection tab, enter the file name to show the records in the file. Select the GDS (at the bottom) right click for the context menu and choose: compare GDS. This will show the differences in the GDS and the corresponding hashcodes. If you confirm that they are, in fact, the same GDS, then you can  fix this problem, for example:</p>
     <pre>&lt;gribConfig&gt;
    &lt;gdsHash from=&quot;1450218978&quot; to=&quot;1450192070&quot;/&gt;
 
 &lt;/gribConfig&gt;</pre>
+    <p>This changes those variables using GDS hashcode =&quot;1450218978&quot; to use &quot;1450192070&quot;, which then eliminates the spurious group in the resulting ncx file. Note that for this to work, you must first delete the ncx file so it will get recreated when the file is read. After that, you can open the ncx file directly or the NcML file. Also see <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#gdsHash">CDM docs</a>. </p>
   </blockquote>
   <h4>2) gdsName: Set group names</h4>
   <blockquote>
-    <p>When a datset has multiple groups, the groups are automatically named by the projection used and the horizontal dimension size, eg </p>
-    <p>A user can set group names manually in the TDS configuration catalog. To do so, find the group hash as in the <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#gdsHash">gdsHash example</a>. Then use the gdsName element like this:</p>
+    <p>When a daatset has multiple groups, the groups are automatically named by the projection used and the horizontal dimension size, eg<strong> LatLon-360x720</strong>.</p>
+    <p>A user can set group names manually in the TDS configuration catalog. To do so, find the group hash as in the gdsHash example above. Then use the gdsName element like this:</p>
     <pre>&lt;gribConfig&gt;
   &lt;gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/&gt;
   &lt;gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/&gt;
@@ -390,10 +410,26 @@ or, simplifying:
 &lt;/gribConfig&gt;</pre>
   </blockquote>
   <h4>3) groupNamer: Not available yet</h4>
-  <h4>4) useGenType: Not available yet</h4>
+  <h4>4) useGenType: Use generating type in variable hash (Not available yet)</h4>
+  <blockquote>
+    <p>When there are different variables that differ only in the generating type (octet in GRIB2), one must explicitly tell the system to include this field.</p>
+    <pre> &lt;gribConfig&gt;
+   &lt;useGenType/&gt;
+ &lt;/gribConfig&gt;</pre>
+  </blockquote>
   <h4>5) intvFilter: Interval Time Coordinate filters</h4>
   <blockquote>
-    <p>See <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#intvFilter">CDM docs</a>. </p>
+    <p>GRIB makes extensive use of time intervals as coordinates. In <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries">CF</a>, time interval coordinates use an auxiliary  coordinate to describe the intervals, for example a coordinate named<em> time1(30) </em>will have an auxiliary coordinate <em>time1_bounds(30,2)</em> containing the lower and upper bounds of the time interval for each coordinate. Currently, the CDM places all intervals in the same variable (rather than create seperate variables for each interval size). When all intervals have the same size, the interval size is added to the variable name. Otherwise the phrase &quot;mixed_intervals&quot; is added to the variable name.</p>
+    <p>Generally, the CDM places the coordinate value at the end of the interval, for example the time interval (0,6) will have a coordinate value 6. The CDM looks for unique intervals in constructing the variable. This implies that the coordinate values are not always unique, but the coordinate bounds pair are always unique. Application code needs to understand this to handle this situation correctly, by checking <em>CoordinateAxis1D.isInterval()</em>.</p>
+    <p>NCEP GRIB2 model output, at least, has some issues that we are slowing learning how best to deal with. Currently there are two situations which the user can  fix in NcML (or the TDS):</p>
+    <ol>
+      <li>One can choose to ignore (0,0) intervals.</li>
+      <li>One can choose that certain parameters use only selected intervals.  This is helpful when the parameter has redundant mixed levels, which can be derived from  the set of intervals of a fixed size . For example, the 3 hour intervals (0,3), (3, 6), (6,9), (9,12) intervals are all present, and so other intervals (0,6), (0, 9), (0,12) can be ignored.</li>
+    </ol>
+    <p>One uses the same process as in the &quot;GDS Hashcode&quot; section above to configure this. Here are examples using NcML:</p>
+    <pre>  &lt;gribConfig&gt;<br /><strong>1)</strong> &lt;intvFilter excludeZero=&quot;true&quot;/&gt;<br /><strong>2)</strong> &lt;intvFilter intvLength=&quot;3&quot;&gt;<br />     &lt;variable id=&quot;0-1-8&quot;/&gt;<br />     &lt;variable id=&quot;0-1-10&quot;/&gt;<br />   &lt;/intvFilter&gt;<br /> &lt;/gribConfig&gt;
+</pre>
+    <p>Also see  <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html#intvFilter">CDM docs</a>. </p>
   </blockquote>
   <h4>6) timeUnitConvert: Not available yet</h4>
   <h4>7) datasetTypes: Define which 
@@ -404,70 +440,8 @@ or, simplifying:
       each physical file
       is exposed as a seperate dataset.</li>
   </ol>
+  <p>If you make changes to these parameters (except <strong>datasetTypes</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
 </blockquote>
-<hr />
-<hr />
-<h2>Implementation Notes</h2>
-<h3>Index</h3>
-<p>Example 1. GFS global half degree - 45 day archive</p>
-<pre>
- Rectilyser: nvars=117 records unique=132684 total=3637805 dups=3505121 (0.963526)
- createIndex for /data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg.ncx
- write RecordMaps: bytes = 1265209 record = 132684 bytesPerRecord=9
- write GribCollectionIndex= 35929 bytes</pre>
-<p>There are a total of 3.6M grib records, but only 132K are unique and used in the collection dataset. This is typical when making a collection of forecast model runs, where the forecast times heavily overlap.</p>
-<p>When opening the collection dataset, only 36K has to be read in. The remaining bytes of the 1.26M collection index are the record lookup section, and are read in only when a variable's data is requested.</p>
-<p>In this example, computing the collection index takes around 60 sec,  with 4Gb heap space, but 30 minutes with 2Gb heap. That probaby means that the index took just under 2Gb heap and was doing excessive GC. So one needs large heap sizes to compute these large collections.</p>
-<h3>Assumptions on the GRIB encoding</h3>
-<p>The collection of GRIB records is not arbitrary, but must be coherent (eg come all from the same model) such that the following assumptions are valid:</p>
-<ol>
-  <li>All Grib records are assumed to have the same center, subcenter, and master and local table versions. This is used for determiing which GRIB code and template tables to use.</li>
-  <li>Grib records can be distributed arbitrarily among the collection of files.</li>
-  <li>Unique variables are created by hashing the<em> GDS, PDS template, discipline, category, parameter, </em> <em>level type</em>, and <em>level layer flag</em>. Also, if they apply, the<em> statistical process type</em> (code table 4.10), and the <em>ensemble derived type</em>  (table 4.7).</li>
-  <li>The collection of GRIB records for each unique variable is turned into a multidimensional grid, by taking the cartesion product of<strong><em> time X ens X vert </em></strong>coordinates. Where there are missing records, the library will return missing data. Where there are duplicate records, later records replace earlier records, where later means later in one file, or in a later file where the file collection is sorted lexigraphically.</li>
-  <li>If there are multiple GDS (Grid Definition Section) in the collection, each unique GDS and the variables that use it becomes a seperate <em>Group</em>. GDS uniqueness is based on a hashcode. Unfortunately, there may be roundoff errors and/or minor variations in GDS encodings. The CDM tries to allow for this in <em>Grib2Gds.hashcode()</em>. If you see variables unexpectedly split into different groups with apparently the same projection, likely the hashcode for that projection type needs to be modified.</li>
-  <li>All of the  time, ensemble, and vertical coordinates for each variable in one group are compared, and where they are identical, are shared between variables.</li>
-</ol>
-<h3>RAF Caching</h3>
-<pre>    // GribCollection : default is allow 100 - 200 open files, cleanup every 15 minutes<br />    min = ThreddsConfig.getInt(&quot;GribCollection.minFiles&quot;, 100);<br />    max = ThreddsConfig.getInt(&quot;GribCollection.maxFiles&quot;, 200);<br />    secs = ThreddsConfig.getSeconds(&quot;GribCollection.scour&quot;, 15 * 60);<br />    if (max &gt; 0) {<br />      GribCollection.initFileCache(min, max, secs);<br />      startupLog.info(&quot;CdmInit: GribCollection.initFileCache= [&quot;+min+&quot;,&quot;+max+&quot;] scour = &quot;+secs);<br />    }</pre>
-<p>&nbsp;</p>
-<h2>Time Partitions</h2>
-<p>&nbsp;</p>
-<pre>// date matcher part of spec - #date# - can only be in name
-// time partition by directory
-
-&lt;collection spec=&quot;G:/nomads/cfsr/timeseries/**/.*grb2$&quot; dateFormatMark=&quot;#timeseries/#yyyyMM&quot; name=&quot;CFSR-timeseries&quot; timePartition=&quot;directory&quot; /&gt;
-
-      
-// dateFormatMark in seperate attribute - #match literal# - works on the path
-// time partition by day
-        &lt;collection<br />            spec=&quot;/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod_biasc/.*grib2$&quot;<br />            name=&quot;SREF_CONUS_40km_ensprod_biasc&quot;<br />            dateFormatMark=&quot;#SREF_CONUS_40km_ensprod_biasc_#yyyyMMdd_HHmm&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;
-
-
-
-
-
-
-// date matcher part of spec - #date# - can only be in name
-
-  &lt;collection<br />            spec=&quot;/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/pgrb_biasc/SREF_CONUS_40km_pgrb_biasc_[a-z]*_#yyyyMMdd_HHmm#.grib2$&quot;<br />            name=&quot;SREF_CONUS_40km_ensprod_biasc&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;
-
-        &lt;collection<br />            spec=&quot;/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/pgrb_biasc/.*grib2$&quot;<br />            name=&quot;SREF_CONUS_40km_ensprod_biasc&quot;<br />            dateFormatMark=&quot;yyyyMMdd_HHmm#.grib2#&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;<br />
- </pre>
-<p>&nbsp;</p>
-<p>cannot mix ensembles and vertical levels across the partition.</p>
-<p> for each variable, create union of times: for each time track (value, partition, localIndex). merge time coords with same {value}. store {partition, localIndex} cmmon case is that variables will share  {partition, localIndex}, but is it worth merging?</p>
-<p>dont need proto change; its reselected when index is rebuilt</p>
-<h2>check for changes</h2>
-<p>handled by DCM, looking only at underlying collection.</p>
-<h3>GribCollection</h3>
-<ol>
-  <li>look for new or deleted files</li>
-  <li>look if newFile.lastModified()  &gt; oldFile.lastModified() </li>
-  <li>look if index (gbx9) file doesnt exist, or has lastModified date   &lt; oldFile.lastModified() </li>
-</ol>
-<p>&nbsp;</p>
-<p>cant examine all files to see whats changed - too mant files. only examine each partition. maybe examine the latest?? maybe not - use manual rescan ??</p>
 <hr width="100%" />
 <address>
 <img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated June 2012

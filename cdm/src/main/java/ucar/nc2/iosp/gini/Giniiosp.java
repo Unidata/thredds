@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.gini;
 
+import thredds.catalog.DataFormatType;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
@@ -496,13 +497,12 @@ public class Giniiosp extends AbstractIOServiceProvider {
   }
 
   public String getFileTypeId() {
-    return "GINI";
+    return DataFormatType.GINI.toString();
   }
 
   public String getFileTypeDescription() {
     return "GOES Ingest and NOAAPORT Interface";
   }
-
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
     //String fileIn = "/home/yuanho/dev/netcdf-java-2.2/src/ucar/nc2/n0r_20040823_2215";    // uncompressed
