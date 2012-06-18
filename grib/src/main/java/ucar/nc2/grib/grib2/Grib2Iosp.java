@@ -738,7 +738,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   private Array readDataFromPartition(Variable v2, Section section) throws IOException, InvalidRangeException {
-    TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject();
+    TimePartition.VariableIndexPartitioned vindexP = (TimePartition.VariableIndexPartitioned) v2.getSPobject(); // the variable in the tp collection
 
     // canonical order: time, ens, z, y, x
     int rangeIdx = 0;
@@ -757,23 +757,31 @@ public class Grib2Iosp extends GribIosp {
     for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
 
       TimeCoordUnion.Val val = timeCoordP.getVal(timeIdx);
-      GribCollection.VariableIndex vindex = vindexP.getVindex(val.getPartition());
+      int partno = val.getPartition();
+      GribCollection.VariableIndex vindex = vindexP.getVindex(partno); // the variable in this partition
 
       for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
         for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
 
           // where does this record go in the result ??
-          // LOOK: could we tolerate missing levels, ens values in this partition, and return null ?
           int resultIndex = GribCollection.calcIndex(timeRange.index(timeIdx), ensRange.index(ensIdx), levRange.index(levelIdx),
                   ensRange.length(), levRange.length());
 
-          // get the record from the partition
-          int recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
-          // System.out.printf(" GribCollection.Record == %d (%d, %d, %d) %n", recordIndex, timeIdx, ensIdx, levIdx);
-          GribCollection.Record record = vindex.records[recordIndex];
+          // where does this record come from ??
+          int recordIndex = -1;
 
-          // add this record to be read
-          dataReader.addRecord(vindex, val.getPartition(), record.fileno, record.pos, resultIndex);
+          int flag = vindexP.flag[partno]; // see if theres a mismatch with vert or ens coordinates
+          if (flag == 0) { // no problem
+            recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, vindex.nens, vindex.nverts);
+          } else {  // problem - must match coordinates
+            recordIndex = GribCollection.calcIndex(val.getIndex(), ensIdx, levelIdx, flag, vindex.getEnsCoord(), vindex.getVertCoord(),
+                    vindexP.getEnsCoord(), vindexP.getVertCoord());
+          }
+
+          if (recordIndex >= 0)  {
+            GribCollection.Record record = vindex.records[recordIndex];
+            dataReader.addRecord(vindex, partno, record.fileno, record.pos, resultIndex);  // add this record to be read
+          }
         }
       }
     }

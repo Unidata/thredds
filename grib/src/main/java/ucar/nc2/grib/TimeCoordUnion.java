@@ -40,6 +40,7 @@ import java.util.*;
 /**
  * A union of TimeCoords that tracks where each coord came from in the original List<TimeCoord>.
  * Unique by CalendarDate or Tinv.
+ * Used only by Time Partitions
  *
  * @author caron
  * @since 6/16/11
@@ -72,7 +73,6 @@ public class TimeCoordUnion  extends TimeCoord {
         int offset = TimeCoord.getOffset(getRunDate(), val.val, getTimeUnit());
         this.coords.add(offset);
       }
-
     }
 
   }
@@ -83,7 +83,7 @@ public class TimeCoordUnion  extends TimeCoord {
 
     values = new ArrayList<Val>(partition.length);
     for (int i=0; i<partition.length; i++) {
-      values.add(new Val((CalendarDate) null, partition[i], index[i])); // LOOK null coord
+      values.add( new Val((CalendarDate) null, partition[i], index[i])); // LOOK null coord
     }
   }
 
@@ -189,8 +189,8 @@ public class TimeCoordUnion  extends TimeCoord {
   }
 
   public class Val implements Comparable<Val> {
-    TimeCoord.Tinv tinv; // not availble on read
-    CalendarDate val;// not availble on read
+    TimeCoord.Tinv tinv; // not available on read
+    CalendarDate val;// not available on read
 
     int partition;
     int index;
@@ -219,6 +219,10 @@ public class TimeCoordUnion  extends TimeCoord {
       return partition;
     }
 
+    /**
+     * Get time index in this partition
+     * @return time index in this partition
+     */
     public int getIndex() {
       return index;
     }

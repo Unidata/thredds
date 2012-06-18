@@ -272,13 +272,13 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
         for (int varIdx = 0; varIdx < group.varIndex.size(); varIdx++) {
           GribCollection.VariableIndex vi2 = group.varIndex.get(varIdx);
           if (trace) f.format(" Check variable %s%n",  vi2);
+          int flag = 0;
 
           GribCollection.VariableIndex vi1 = check.get(vi2.cdmHash); // compare with proto variable
           if (vi1 == null) {
             f.format("   WARN Cant find variable %s from %s in proto - ignoring that variable%n",  vi2, tpp.getName());
             continue; // we can tolerate this
           }
-          ((TimePartition.VariableIndexPartitioned)vi1).setPartitionIndex(partno, groupIdx, varIdx);
 
           //compare vert coordinates
           VertCoord vc1 = vi1.getVertCoord();
@@ -290,10 +290,10 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
             ok = false;
 
           } else if ((vc1 != null) && !vc1.equalsData(vc2)) {
-            f.format("   ERR Vert coordinates values on variable %s in %s dont match%n",  vi2, tpp.getName());
+            f.format("   WARN Vert coordinates values on variable %s in %s dont match%n",  vi2, tpp.getName());
             f.format("    canon vc = %s%n", vc1);
             f.format("    this vc = %s%n", vc2);
-            ok = false;
+            flag |= TimePartition.VERT_COORDS_DIFFER;
           }
 
           //compare ens coordinates
@@ -303,12 +303,13 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
             f.format("   ERR Ensemble coordinates existence on variable %s in %s doesnt match%n",  vi2, tpp.getName());
             ok = false;
           } else if ((ec1 != null) && !ec1.equalsData(ec2)) {
-            f.format("   ERR Ensemble coordinates values on variable %s in %s dont match%n",  vi2, tpp.getName());
+            f.format("   WARN Ensemble coordinates values on variable %s in %s dont match%n",  vi2, tpp.getName());
             f.format("    canon ec = %s%n", ec1);
             f.format("    this ec = %s%n", ec2);
-            ok = false;
+            flag |= TimePartition.ENS_COORDS_DIFFER;
           }
 
+          ((TimePartition.VariableIndexPartitioned)vi1).setPartitionIndex(partno, groupIdx, varIdx, flag);
         } // loop over variable
       } // loop over partition
     } // loop over group
@@ -514,6 +515,8 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
       b.addGroupno(idx);
     for (int idx : v.varno)
       b.addVarno(idx);
+    for (int idx : v.flag)
+      b.addFlag(idx);
 
     return b.build();
   }
@@ -616,10 +619,11 @@ public class Grib2TimePartitionBuilder extends Grib2CollectionBuilder {
     int tableVersion = pv.getTableVersion();
     List<Integer> groupnoList = pv.getGroupnoList();
     List<Integer> varnoList = pv.getVarnoList();
+    List<Integer> flagList = pv.getFlagList();
 
     return tp.makeVariableIndex(group, tableVersion, discipline, category, param, levelType, isLayer, intvType, intvName,
             ensDerivedType, probType, probabilityName, -1, cdmHash, timeIdx, vertIdx, ensIdx, recordsPos, recordsLen,
-            groupnoList, varnoList);
+            groupnoList, varnoList, flagList);
   }
 
   public static void main(String[] args) throws IOException {
