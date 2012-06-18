@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="cdmvalidator:war">
-    <output-path>$PROJECT_DIR$/cdmvalidator/target</output-path>
-    <root id="archive" name="cdmvalidator.war">
-      <element id="artifact" artifact-name="cdmvalidator:war exploded" />
-    </root>
-  </artifact>
-</component>
