@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: uk.ac.rdg.resc:ncwms:1.0.tds.4.3.20120223.2315">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/uk/ac/rdg/resc/ncwms/1.0.tds.4.3.20120223.2315/ncwms-1.0.tds.4.3.20120223.2315.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/uk/ac/rdg/resc/ncwms/1.0.tds.4.3.20120223.2315/ncwms-1.0.tds.4.3.20120223.2315-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/uk/ac/rdg/resc/ncwms/1.0.tds.4.3.20120223.2315/ncwms-1.0.tds.4.3.20120223.2315-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

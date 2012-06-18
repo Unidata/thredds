@@ -98,7 +98,7 @@
        <p>The TDS uses the value of the "ContextPath" context parameter (as defined in the TDS  <code><small>web.xml</small></code> file) when generating TDS URLs in certain situations. To make sure all   generated URLs are consistent, you must change the value of the "ContextPath" parameter to match   the desired context path.</p>
       <p> (Changing the value of "ContextPath" will no longer be necessary in a future release once  we require Tomcat 6.0 (Servlet 2.5).</p>
 
-       <p> The TDS <code><small>web.xml</small></code> file is located in <code><small>$TOMCAT_HOME/webapps/&lt;contextPath&gt;/WEB-INF/web.xml</small></code>, where <code><small>&lt;contextPath&gt;</small></code> is the value of the desired context path. The "ContextPath" context parameter is defined in the <code><small>web.xml</small></code> file (starting at line 12):</p>
+       <p> The TDS <code><small>web.xml</small></code> file is located in <code><small>${tomcat_home}/webapps/&lt;contextPath&gt;/WEB-INF/web.xml</small></code>, where <code><small>&lt;contextPath&gt;</small></code> is the value of the desired context path. The "ContextPath" context parameter is defined in the <code><small>web.xml</small></code> file (starting at line 12):</p>
 <pre>
 &lt;context-param&gt;
   &lt;param-name&gt;ContextPath&lt;/param-name&gt;

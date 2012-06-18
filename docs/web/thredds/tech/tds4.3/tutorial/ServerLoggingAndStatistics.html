@@ -38,7 +38,7 @@
     <dt><h3>Introducing the access log</h3></dt>
     <ul>
      <li>The access log records all requests processed by the server.</li>
-     <li>Information it contains is different from other logs in <code>$TOMCAT_HOME/logs</code></li>
+     <li>Information it contains is different from other logs in <code>${tomcat_home}/logs</code></li>
      <li>Used for monitoring who is using your server and as a way of obtaining "feedback" about the activity and performance of the server.</li>
      </ul>
     </dl>
@@ -56,7 +56,7 @@
      <ol>
       <li><a name="accesslogvalve"></a>Modify <code>server.xml</code> to enable the <code>AccessLogValve</code>.</li>
       <ul>
-      <li>Using your favorite editor open <code>$TOMCAT_HOME/conf/server.xml</code>:</li>
+      <li>Using your favorite editor open <code>${tomcat_home}/conf/server.xml</code>:</li>
 <pre>
 <b>-bash-3.2$</b> vi server.xml
 </pre>  
@@ -110,7 +110,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
 </pre> 
       </ul>
      </ul>
-       <li><a name="restart"></a>Restart Tomcat and verify an access log with a name of  <code>access.2008-11-06.log</code> has been generated in the $TOMCAT_HOME/logs directory:</li>
+       <li><a name="restart"></a>Restart Tomcat and verify an access log with a name of  <code>access.2008-11-06.log</code> has been generated in the ${tomcat_home}/logs directory:</li>
 <pre>
 <b>-bash-3.2$</b> ls -l /home/thredds/apache-tomcat-6.0.18/logs/access*
 -rw-rw-r--   1 thredds   Unidata   236 2008-11-06 20:16  access.2008-11-06.log

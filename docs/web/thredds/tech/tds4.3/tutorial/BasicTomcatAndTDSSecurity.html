@@ -60,7 +60,7 @@
 
        <ol>
         <li>Modify <code>tomcat-users.xml</code> to add <code>role</code> and <code>user</code> elements.</li>
-         <p>Using your favorite editor, open <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code>:</p>
+         <p>Using your favorite editor, open <code><small>${tomcat_home}/conf/tomcat-users.xml</small></code>:</p>
 <pre>
 <b>$</b> vi tomcat-users.xml
 </pre>   
@@ -128,7 +128,7 @@
       <ul>
         <li><b>The issue: </b> The "PermGen" error happens when the JVM runs out of memory in the permanent generation. (Default PermGen size differs among Sun JDK versions, but the upper limit is typically 64MB.)</li>
         <li><b>The cause: </b> Objects in the permanent generation are never garbage collected.  When redeploying your web application using the Tomcat <code><small>manager</small></code>  application, your WAR file is unpacked and parts of the class file definition are loaded into PermGen space, like string constants.</li>
-        <li><b>The symptom:</b> The PermGen error will manifest itself in a sluggish Tomcat <code><small>manager</small></code>  application that never completes a task, and the <code><small>java.lang.OutOfMemoryError: PermGen space failure</small></code>  error being displayed in <code><small>$TOMCAT_HOME/logs/catalina.out</small></code> </li>
+        <li><b>The symptom:</b> The PermGen error will manifest itself in a sluggish Tomcat <code><small>manager</small></code>  application that never completes a task, and the <code><small>java.lang.OutOfMemoryError: PermGen space failure</small></code>  error being displayed in <code><small>${tomcat_home}/logs/catalina.out</small></code> </li>
          <li><b>A temporary fix:</b> You can add the <code><small>-XX:MaxPermSize</small></code>  switch to <code><small>$JAVA_OPTS</small></code>  to increase the amount of memory allocated for the permanent generation,  However this is only postponed the inevitable, as even an increased memory in permanent generation will eventually fill up.  When this happens, you will need to stop/start Tomcat at this point. For this reason, you may want to restart Tomcat whenever you redeploy TDS or another webapp.</li>
        </ul>
 
@@ -249,7 +249,7 @@
                  digest="SHA" /&gt;</b>
 </pre>  
     <li><a name="makeDigest"></a>Create a SHA encrypted version of your password.</li>
-     <p>Tomcat provides a script (<code><small>$TOMCAT_HOME/bin/digest.sh</small></code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself previously:</p>
+     <p>Tomcat provides a script (<code><small>${tomcat_home}/bin/digest.sh</small></code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself previously:</p>
 
 <pre>
 <b>$</b> /home/tds/apache-tomcat-6.0.32/bin/digest.sh -a SHA secret
@@ -344,9 +344,9 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
     
        <li><a name="enableSSL"></a>Configure Tomcat to enable SSL and use the self-signed certificate.</li>
        <div id="expanded" class="question">
-        <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf</small></code> should we edit to to enable SSL?</p>
+        <p>Based on what we know about Tomcat configuration, which file in <code><small>${tomcat_home}/conf</small></code> should we edit to to enable SSL?</p>
        </div>
-        <p>Open <code><small>$TOMCAT_HOME/conf/server.xml</small></code> with your favorite editor:</p>
+        <p>Open <code><small>${tomcat_home}/conf/server.xml</small></code> with your favorite editor:</p>
 
 <pre>
 <b>$</b> vi server.xml
@@ -389,8 +389,8 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
         <p>Restart Tomcat:</p>
 <pre>
-<b>$</b> $TOMCAT_HOME/bin/shutdown.sh
-<b>$</b> $TOMCAT_HOME/bin/startup.sh
+<b>$</b> ${tomcat_home}/bin/shutdown.sh
+<b>$</b> ${tomcat_home}/bin/startup.sh
 </pre>
 
         <p>Verify Tomcat is listening on port 8443 by running the <code><small>netstat</small></code> command:</p>
@@ -436,7 +436,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
        <h3>Exercise Four: <a name="grantAccess"></a>Grant yourself access to the TDS remote management tool</h3>
        <ol>
         <li>Using the steps outlined above, create a self-signed certificate and enable SSL in Tomcat.</li>
-        <li>Modify <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code> to add a new role with the rolename attribute of <code><small>tdsConfig</small></code>, and add this role to your list of roles:</li>
+        <li>Modify <code><small>${tomcat_home}/conf/tomcat-users.xml</small></code> to add a new role with the rolename attribute of <code><small>tdsConfig</small></code>, and add this role to your list of roles:</li>
 <pre>
 &lt;tomcat-users&gt;
     &lt;role rolename="manager"/&gt;
@@ -456,7 +456,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
        <p>How did Tomcat know to use SSL for the TDS remote management tool?</p>
       </div>
       <div id="expanded" class="question">
-       <p>Where, in any of the configuration changes you made to <code><small>$TOMCAT_HOME/conf/server.xml</small></code> or <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code>, did you explicitly specify that TDS remote management tool <i>must</i> be accessed via SSL?</p>       
+       <p>Where, in any of the configuration changes you made to <code><small>${tomcat_home}/conf/server.xml</small></code> or <code><small>${tomcat_home}/conf/tomcat-users.xml</small></code>, did you explicitly specify that TDS remote management tool <i>must</i> be accessed via SSL?</p>
       </div>
      </div> <!-- end subsection -->
 
@@ -479,7 +479,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
  
         <ol>
          <li>Have a look at the deployment descriptor that comes with the TDS.</li>
-          <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>$TOMCAT_HOME/webapps</small></code>, and view the file: </p>
+          <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>${tomcat_home}/webapps</small></code>, and view the file: </p>
 <pre>
 <b>$</b> cd /home/tds/tds/apache-tomcat-6.0.32/webapps/thredds
 <b>$</b> less WEB-INF/web.xml

@@ -271,7 +271,7 @@
 
     <p>At startup, the TDS reads the root catalog</p>
 
-    <pre>${TOMCAT_HOME}/content/thredds/catalog.xml</pre>
+    <pre>${tomcat_home}/content/thredds/catalog.xml</pre>
     <p>and recursively all configuration catalogs that are linked to it through a relative
       <code>catalogRef</code> element . The resulting tree of catalogs are used as the
       top-level catalogs served by the TDS. In the case of our distributed root catalog,
@@ -282,7 +282,7 @@
     <h4>Additional Root Catalogs</h4>
 
     <p>Additional root configuration catalogs can be defined in </p>
-    <pre>${TOMCAT_HOME}/content/thredds/<strong>threddsConfig.xml</strong> </pre>
+    <pre>${tomcat_home}/content/thredds/<strong>threddsConfig.xml</strong> </pre>
     <p>file. For instance, to add a test catalog add the following line:</p>
     <pre>&lt;catalogRoot&gt;myTestCatalog.xml&lt;/catalogRoot&gt;<br></pre>
     <p>Each additional root configuration catalog can be the root of another tree of configuration catalogs.</p>
@@ -290,7 +290,7 @@
     <h4>Tools to Manage Configuration Catalogs </h4>
 
     <p>First, the TDS catalog initialization log</p>
-    <pre>${TOMCAT_HOME}/content/thredds/logs/catalogInit.log </pre>
+    <pre>${tomcat_home}/content/thredds/logs/catalogInit.log </pre>
 
     <p>contains all warning and error messages from parsing the
       configuration catalogs. As such, it is a great place to look for
@@ -442,7 +442,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       </li>
       <li>Edit the main TDS configuration catalog:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds
 <strong>[thredds@workshop00 ~]$</strong> vi catalog.xml     <var>// Use the editor of your choice</var>
 </pre>
       </li>
@@ -460,7 +460,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       <li>And similarly for MADIS and Suomi data</li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
 <strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
 <strong>[thredds@workshop00 ~]$</strong> ./startup.sh
 </pre>
@@ -510,13 +510,13 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
         path attribute matches the one for the NAM_12km <code>datasetScan</code>
         element.
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds
 <strong>[thredds@workshop00 ~]$</strong> vi catalog.xml     <var>// Use the editor of your choice</var>
 </pre>
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
 <strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
 <strong>[thredds@workshop00 ~]$</strong> ./startup.sh
 </pre>
@@ -599,7 +599,7 @@ Error {
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
 <strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
 <strong>[thredds@workshop00 ~]$</strong> ./startup.sh
 </pre>
@@ -622,7 +622,7 @@ Error {
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
 <strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
 <strong>[thredds@workshop00 ~]$</strong> ./startup.sh
 </pre>

@@ -6,7 +6,7 @@
   <title>THREDDS and Metadata</title><style type="text/css">
   pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
   code {font-size: 11pt;}
-  dl {margin: 10px 5px 5px 15px;)
+  dl {margin: 10px 5px 5px 15px;}
   </style></head>
 <body>
 <h1><img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67">THREDDS and Metadata</h1>
@@ -44,14 +44,14 @@
 <h2>Exercise: Add Metadata to NAM, FSL, MODIS, or Suomi data</h2>
 <ol>
   <li>Edit the main TDS configuration catalog as desired:
-    <pre style="margin-left: 40px;"><strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/content/thredds<br><strong>-bash-3.2$</strong> vi catalog.xml                     <var>// Use the editor of your choice</var></pre>
+    <pre style="margin-left: 40px;"><strong>-bash-3.2$</strong> cd ${tomcat_home}/content/thredds<br><strong>-bash-3.2$</strong> vi catalog.xml                     <var>// Use the editor of your choice</var></pre>
   </li>
   <li>Add metadata to one or more of the <code>datasetScan</code> elements. Perhaps some items similar to the following:
     <pre style="margin-left: 40px;">&lt;metadata xlink:title="some XML metadata"<br>          xlink:href="http://motherlode.ucar.edu:8080/thredds/catalog.xml" /&gt;<br>&lt;documentation xlink:title="some html info" xlink:href="http://motherlode.ucar.edu:8080/thredds/catalog.html" /&gt;<br>&lt;keyword&gt;good stuff&lt;/keyword&gt;<br>&lt;publisher&gt;&lt;name&gt;you&lt;/name&gt;&lt;/publisher&gt;<br>&lt;variables&gt;<br>    &lt;variable name="Z" units="gp m"&gt;Geopotential Height&lt;/variable&gt;<br>&lt;/variables&gt;</pre>
   </li>
   <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/bin
+<strong>-bash-3.2$</strong> cd ${tomcat_home}/bin
 <strong>-bash-3.2$</strong> ./shutdown.sh
 <strong>-bash-3.2$</strong> ./startup.sh
 </pre>

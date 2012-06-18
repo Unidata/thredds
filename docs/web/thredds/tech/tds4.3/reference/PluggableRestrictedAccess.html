@@ -13,7 +13,7 @@
 <p>By default, we use Tomcat <em><strong>container-managed security</strong></em> which handles authentication and authorization using standard HTTP mechanisms. You can use your own Authentication by implementing <strong>thredds.servlet.restrict.Authorizer </strong>and plugging it into the <strong>RestrictedDataset</strong> servlet in the TDS web.xml. </p>
 <p>We have tested this with the following systems:</p>
 <ol>
-  <li> <a href="http://www.ja-sig.org/products/cas/">CAS</a> Single Sign On (SSO) 3.0.6 server. The CAS/Yale 2.1.1 client code ships with thredds.war, and we have an example configuration that you can try. To add a CAS server, just drop the cas.war file into <strong>${tomcat_home}/webapps</strong>. Or you may want to run it on a seperate, publically accessible, server. </li>
+  <li> <a href="http://www.jasig.org/cas/">CAS</a> Single Sign On (SSO) 3.0.6 server. The CAS/Yale 2.1.1 client code ships with thredds.war, and we have an example configuration that you can try. To add a CAS server, just drop the cas.war file into <strong>${tomcat_home}/webapps</strong>. Or you may want to run it on a seperate, publically accessible, server. </li>
   <li><a href="http://www.cafesoft.com/">CAMS</a> server 2.1.33 and their Tomcat servlet filter 2.1.13. CAMS is a commercial SSO provider.</li>
 </ol>
 <p>You should follow the steps to get <a href="RestrictedAccess.html">default restricted datasets</a> working, then follow the steps below to plug in your own code.</p>
@@ -134,9 +134,12 @@ Notes on ESG and TDS Security  </h2>
 </p>
 <pre>&nbsp;
 </pre>
-<hr>
+<hr width="100%">
 <address>
-<img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on April, 2010
+    <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
+    This document is maintained by Unidata and was last updated April 2010.
+    Send comments to
+    <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 <p>&nbsp; </p>
 </body>

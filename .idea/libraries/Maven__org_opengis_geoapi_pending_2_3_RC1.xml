@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.opengis:geoapi-pending:2.3-RC1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opengis/geoapi-pending/2.3-RC1/geoapi-pending-2.3-RC1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opengis/geoapi-pending/2.3-RC1/geoapi-pending-2.3-RC1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/opengis/geoapi-pending/2.3-RC1/geoapi-pending-2.3-RC1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

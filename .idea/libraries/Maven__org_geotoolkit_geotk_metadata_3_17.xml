@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.geotoolkit:geotk-metadata:3.17">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotoolkit/geotk-metadata/3.17/geotk-metadata-3.17.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotoolkit/geotk-metadata/3.17/geotk-metadata-3.17-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotoolkit/geotk-metadata/3.17/geotk-metadata-3.17-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

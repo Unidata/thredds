@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="thredds:war">
+    <output-path>$PROJECT_DIR$/tds/target</output-path>
+    <root id="archive" name="thredds.war">
+      <element id="artifact" artifact-name="thredds:war exploded" />
+    </root>
+  </artifact>
+</component>

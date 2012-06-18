@@ -48,7 +48,8 @@
     <li>-XX:+HeapDumpOnOutOfMemoryError triggers a heap dump when you run out of memory. We recommend the <a href="http://www.eclipse.org/mat/">Memory Analyser</a> from Eclipse to explore heap dumps.</li>
     <li>-Djava.awt.headless=true tells the system that there is not a graphics console being used, which avaois some arcane errors from third party libraries.</li>
   </ul>
-  <p>We recommend the latest version of JDK 1.6, which has typically a 20% performance improvement or more over 1.5, especially with the <em><strong>-server</strong></em> option. We have not yet had a chance to compare performance of 32-bit vs 64-bit JVMs. However, 64-bit JVMs  allow the use of much larger memory heaps, which will help for highly loaded systems.</p>
+  <p>We recommend the latest version of JDK 1.6, which has typically a 20% performance improvement or more over 1.5, especially with the <em><strong>-server</strong></em> option. We have not yet had a chance to compare performance of 32-bit vs 64-bit JVMs. However, 64-bit JVMs  allow the use of much larger memory heaps, which will help for highly loaded systems.
+    JDK 1.7 will be required with version 4.4 of the TDS.</p>
 <h4> Resources</h4>
 <ul>
   <li><a href="http://www.javaperformancetuning.com/">Java Performance Tuning</a> website with tuning tips</li>
@@ -57,12 +58,12 @@
 </ul>
 <h2>Tomcat</h2>
 <h3>Version</h3>
-<p>We recommend the latest stable version of Tomcat 6, which  has better stability and performance than Tomcat 5.x. This requires JDK 1.5 or above. </p>
+<p>We recommend the latest stable version of Tomcat 7. This requires JDK 1.6 or above. </p>
 <h3><a name="enableCompression"></a>Compression</h3>
 <p>Tomcat can be configured to automatically compress the responses, whenever the client allows that. Compression is usually a big win, especially for bandwidth-limited sites. Deciding when and what to compress depends on a lot of factors, however. We use the following settings in  <strong>server.xml</strong>:</p>
 <pre>    &lt;!-- non-SSL HTTP/1.1 Connector on port 8080 --&gt;<br>    &lt;Connector port=&quot;8080&quot;<br>               protocol=&quot;HTTP/1.1&quot;<br>               maxThreads=&quot;50&quot;<br>               connectionTimeout=&quot;20000&quot;<br>               redirectPort=&quot;8443&quot;<br>               <strong>compression=&quot;1000&quot;<br>               compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-stream&quot;</strong> /&gt;
 <br></pre>
-<p>This says to compress (gzip or deflate) when the number of bytes is &gt;= 1000, for the named mime-types. See Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/http.html">HTTP Connector reference</a> page for more details.</p>
+<p>This says to compress (gzip or deflate) when the number of bytes is &gt;= 1000, for the named mime-types. See Tomcat <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/http.html">HTTP Connector reference</a> page for more details.</p>
 <h3>Automatic Startup </h3>
 <p>In a production environment, Tomcat should be automatically restarted when the machine starts. How to do this depends on what OS you are running. This <a href="http://wiki.apache.org/jakarta-tomcat/HowTo">FAQ</a> has a bit of info. </p>
 <h3>Miscellaneous</h3>
@@ -92,9 +93,12 @@
 <h3>Pre-indexing GRIB files</h3>
 <p>If you are serving GRIB files through any of the subsetting services (OPENDAP, WCS, etc), the CDM must write an index the first time it tries to read it. This can take several minutes for very large GRIB files. By indexing GRIB files before they are accessed, users get much faster response time.</p>
 <p>&nbsp;</p>
-<hr WIDTH="100%">
+<hr width="100%">
 <address>
-<img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Nov  2010
+    <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
+    This document is maintained by Unidata and was last updated November 2010.
+    Send comments to
+    <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 <h3>&nbsp;</h3>
 </body>

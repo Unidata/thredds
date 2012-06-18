@@ -197,9 +197,9 @@ WARNING: Couldn't flush system prefs: java.util.prefs.BackingStoreException: /et
     system property to a location that is writable by the user that Tomcat runs under.  </p>
   <p>Here is what we do on our servers:</p>
   <ul>
-    <li>Create a directory at <code>${TOMCAT_HOME}/content/thredds/javaUtilPrefs/.systemPrefs</code>, e.g.,
+    <li>Create a directory at <code>${tomcat_home}/content/thredds/javaUtilPrefs/.systemPrefs</code>, e.g.,
 <pre>
-cd $TOMCAT_HOME/content/thredds
+cd ${tomcat_home}/content/thredds
 mkdir javaUtilPrefs
 mkdir javaUtilPrefs/.systemPrefs
 </pre>
@@ -208,7 +208,7 @@ mkdir javaUtilPrefs/.systemPrefs
       Tomcat runs</li>
     <li>
       Add the following to <code>JAVA_OPTS</code>
-      in the <code>${TOMCAT_HOME}/bin/setenv.sh</code> file:
+      in the <code>${tomcat_home}/bin/setenv.sh</code> file:
       <pre>-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs</pre>
     </li>
   </ul>
@@ -327,7 +327,7 @@ mkdir javaUtilPrefs/.systemPrefs
   <p>The Tomcat installation provided with RedHat 5 and 6 (and with yum) is run from <code>/usr/share/tomcat5</code>
     which contains symbolic links that point into <code>/var/lib/tomcat5</code>. The permissions
     are such that the TDS cannot write the content/thredds directory in the standard location,
-    <code>${TOMCAT_HOME}/content/thredds</code> (in this case
+    <code>${tomcat_home}/content/thredds</code> (in this case
     <code>/usr/share/tomcat5/content/thredds</code>). The error message in
     <code>catalina.out</code> looks something like this:
   </p>
