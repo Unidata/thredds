@@ -1,19 +1,16 @@
+# Ignore all target directories
 target/
-/bufr/target/
-/cdm/target/
-/grib/target/
-/opendap/target/
-/tds/target/
-/tds/content/
-ui/target/
-visad/target/
-wmoTables/target/
+
+# Ignore possible THREDDS content directories
+tds/content/
 
 # Ignore unwanted IntelliJ IDEA project files
-intelliJ/maven/
-intelliJ/thredds/
-intelliJ/threddsFull/
+/intelliJ/
+/intellij/
+*.ipr
+*.iml
 *.iws
+.idea/
 atlassian-ide-plugin.xml
 
 # Ignore Dreamweaver balogna
@@ -23,16 +20,13 @@ _notes
 .classpath
 .project
 .settings/
-**/.classpath
-**/.project
-**/.settings/
-**/bin/
+bin/
 *~
 
 # Ignore default content directory for mock servlets
-/tds/src/content/
+tds/src/content/
 
 #More testing stuff
-/tds/src/test/data/thredds/cataloggen/config/
-/tds/src/test/data/thredds/logs/
-/opendap/src/test/data/test.*.*
+tds/src/test/data/thredds/cataloggen/config/
+tds/src/test/data/thredds/logs/
+opendap/src/test/data/test.*.*
