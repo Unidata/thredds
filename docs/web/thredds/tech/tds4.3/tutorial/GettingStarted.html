@@ -33,7 +33,7 @@
       <h3>Installing Java</h3>
       <ol>
        <li><a href="http://java.sun.com/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun. You can use the latest 1.6 or 1.7 version of the JDK.</li>
-        <p>At the time of this workshop, that is version <i>1.6.0_26</i>.  We will be using the Linux x64-bit, <i>non-rpm</i>, self-extracting file:</p>
+        <p>At the time of this writing, that is version <i>1.6.0_26</i>.  We will be using the Linux x64-bit, <i>non-rpm</i>, self-extracting file:</p>
         <p><code>jdk-6u26-linux-x64.bin</code></p>
        <li>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>
         <p>Copy the self-extracting file to the installation directory (<code><small>~/GettingStarted</small></code> is the installation directory in this example):</p>
@@ -92,7 +92,7 @@ drwxr-xr-x 10 tds Unidata     4096 Jul 11 17:35 jdk1.6.0_26
       <h3>Installing Tomcat</h3>
       <ol>
        <li><a href="http://tomcat.apache.org/download-70.cgi">Download</a> current version of the Tomcat 7 servlet container.</li>
-        <p>At the time of this workshop, that is version <i>7.0.27</i>. We will be using the core binary tar.gz file:</p>
+        <p>At the time of this writing, that is version <i>7.0.27</i>. We will be using the core binary tar.gz file:</p>
         <p><code>apache-tomcat-7-0-27.tar.gz</code></p>
        <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/setup.html">installation instructions</a>.</li>
         <p>Copy the binary tar.gz file to the installation directory (<code><small>~/GettingStarted</small></code> is the installation directory in this example):</p>
@@ -874,26 +874,21 @@ total 20
       <h3>Granting access to the <code>manager</code> application</h3>
 
        <ol>
-        <li>Modify <code>tomcat-users.xml</code> to add <code>role</code> and <code>user</code> elements.</li>
+        <li>Modify <code>tomcat-users.xml</code> to add a <code>user</code> element.</li>
          <p>Using your favorite editor, open <code><small>${tomcat_home}/conf/tomcat-users.xml</small></code>:</p>
 <pre>
 <b>$</b> vi tomcat-users.xml
-</pre>   
-        <p>Between the <code><small>&lt;tomcat-users&gt;</small></code> tags, add a <code><small>role</small></code> element and specify the <code><small>rolename</small></code> attribute as <code><small>manager</small></code>:</p>
-          
-<pre>
-&lt;tomcat-users&gt;
-    &lt;role rolename="manager-gui"/&gt;
-&lt;/tomcat-users&gt;
-</pre>  
-          <p>Now add a new user by adding a <code><small>user</small></code> element. Create a <code><small>username</small></code> and <code><small>password</small></code> for the new user and specify <code><small>manager-gui</small></code> as one of the <code><small>roles</small></code> (in this example we are creating a user called 'admin' with a corresponding password of 'secret'):</p>
+</pre>
+           <p>The roles of &quot;manager-gui&quot;, &quot;manager-status&quot;, &quot;manager-script&quot;, and &quot;manager-jmx&quot; are pre-defined in Tomcat 7.</p>
+
+           <p>Now add a new user by adding a <code><small>user</small></code> element. Create a <code><small>username</small></code> and <code><small>password</small></code> for the new user and specify <code><small>manager-gui</small></code> as one of the <code><small>roles</small></code> (in this example we are creating a user called 'admin' with a corresponding password of 'secret'):</p>
 <pre>
 &lt;tomcat-users&gt;
     &lt;role rolename="manager-gui"/&gt;
     &lt;user username="admin" password="secret" roles="manager-gui"/&gt;   
 &lt;/tomcat-users&gt;
-</pre>  
-        <li>Restart Tomcat and log into the <code>manager</code> application.</li>
+</pre>
+           <li>Restart Tomcat and log into the <code>manager</code> application.</li>
 
       <div id="note" class="reminder">
        <h4>Keep in mind</h4>
@@ -1037,7 +1032,12 @@ drwxr-xr-x  3 tds Unidata 4096 Jul 11 17:47 ROOT
 
 
 
-   <p><img src="../../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
+   <p>
+   <hr width="100%">
+   <address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
+       Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+   </address>
+   </p>
 
    
 

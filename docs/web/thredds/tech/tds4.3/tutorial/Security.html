@@ -171,7 +171,7 @@ drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
         <li>The <code><small>manager</small></code> application is used for remote management of web applications. To use this application, you must add a user with role of <code><small>manager-gui</small></code> in <code><small>tomcat-users.xml</small></code>.  Obviously, if you are not planning to use the <code><small>manager</small></code> application, it should be removed.</li>
         <li>The <code><small>host-manager</small></code> application is used for management of virtual hosts. To use this application, you must add a user with role of <code><small>admin-gui</small></code> in <code><small>tomcat-users.xml</small></code>.  If you are not planning to do a lot of virtual hosting in Tomcat this application should be removed.</li>
         <li>The <code><small>examples</small></code> application should probably be removed from a production server to minimize security exposure.</li>
-        <li>The <code><small>docs</small></code> are a copy of the <a href="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat documentation found online</a>.  Unless you have need for a local copy, removing <code><small>docs</small></code>  would help to tidy-up <code><small>$CATALINA_HOME/webapps</small></code>.</li>
+        <li>The <code><small>docs</small></code> are a copy of the <a href="http://tomcat.apache.org/tomcat-7.0-doc/">Tomcat documentation found online</a>.  Unless you have need for a local copy, removing <code><small>docs</small></code>  would help to tidy-up <code><small>$CATALINA_HOME/webapps</small></code>.</li>
         </ul>
        </ul>
      </div> <!-- end Rationale subsection -->
@@ -188,7 +188,7 @@ drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
 
       <div id="note" class="info">
        <h4>Tomcat Realms</h4>
-       <p>A <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">realm</a> element represents a "database" of usernames, passwords, and roles (similar to Unix groups) assigned to those users.  </p>
+       <p>A <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html">realm</a> element represents a "database" of usernames, passwords, and roles (similar to Unix groups) assigned to those users.  </p>
       </div>
 
        <ul>
@@ -207,7 +207,7 @@ drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
 <ol>
         <li>First we need to enable digest passwords support in Tomcat by modifying a couple of Tomcat Realms in the <code>server.xml</code> file in the Tomcat <code>conf/</code> directory. </li> 
 
-          <p>A <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">Tomcat Realm</a> represents a "database" of usernames, passwords, and roles assigned to tomcat users.</p>
+          <p>A <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html">Tomcat Realm</a> represents a "database" of usernames, passwords, and roles assigned to tomcat users.</p>
 
           <table>
            <tr>
@@ -383,7 +383,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
       <h3>Certificate <code>keystore</code> file</h3>
       <ul>
        <li>A <code>keystore</code> file stores the details of the SSL certificate necessary to make the protocol secured. </li>
-       <li>The Tomcat documentation includes a section on <a href="http://tomcat.apache.org/tomcat-6.0-doc/ssl-howto.html#Prepare_the_Certificate_Keystore">importing your certificate into a keystore</a> file.</li>
+       <li>The Tomcat documentation includes a section on <a href="http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html#Prepare_the_Certificate_Keystore">importing your certificate into a keystore</a> file.</li>
        <li>Tomcat uses the <code>keystore</code> file for SSL transactions.</li>
       <ul>
      </div> <!-- end subsection -->
@@ -992,7 +992,7 @@ tcp        0      0 0.0.0.0:<b>8443</b>               0.0.0.0:*                 
    <div id="subsection">
       <h3>Resources</h3>
       <ul>
-       <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/ssl-howto.html">SSL Configuration HOW-TO</a><br>      The Apache Tomcat document detailing how to enable SSL.</li>
+       <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html">SSL Configuration HOW-TO</a><br>      The Apache Tomcat document detailing how to enable SSL.</li>
        <li><a href="http://tomcat.apache.org/migration.html#Manager_application">Tomcat Migration Guide</a><br>      A document detailing the various changes between Tomcat versions.</li>
        <li><a href="http://www.sslshopper.com/article-when-are-self-signed-certificates-acceptable.html">When are self-signed certificates acceptable?</a><br>      A compelling argument as to why self-signed certificates should not be used in a production environment.</li>
       </ul>
@@ -1074,7 +1074,7 @@ Escape character is '^]'.
 
       <div id="note" class="info">
        <h4>Tomcat Valves</h4>
-       <p>A <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html">valve</a> element represents a component that will be inserted into the request processing pipeline for the associated Catalina container. </p>
+       <p>A <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html">valve</a> element represents a component that will be inserted into the request processing pipeline for the associated Catalina container. </p>
       </div>
 
      <h3>Rationale</h3>
@@ -1125,7 +1125,7 @@ Escape character is '^]'.
      <div id="subsection">
       <h3>Resources</h3>
       <ul>
-       <li><a href=http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html">The Valve Component</a><br>      Tomcat documentation about the various <code>valve</code> components available for use.</li>
+       <li><a href=http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html>The Valve Component</a><br>      Tomcat documentation about the various <code>valve</code> components available for use.</li>
       </ul>
 
      </div> <!-- end Resources subsection -->
@@ -1156,7 +1156,7 @@ Escape character is '^]'.
      <div id="subsection">
       <h3>Resources</h3>
       <ul>
-       <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/manager-howto.html">Manager App HOW-TO</a><br>      The Apache Tomcat document referencing how to use and configure the <code>manager</code> application.</li>
+       <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Manager App HOW-TO</a><br>      The Apache Tomcat document referencing how to use and configure the <code>manager</code> application.</li>
        <li><a href="http://tomcat.apache.org/migration.html#Manager_application">Tomcat Migration Guide</a><br>      A document detailing the various changes between Tomcat versions contains a section dedicated to the  <code>manager</code> application.</li>
       </ul>
 
@@ -1204,7 +1204,7 @@ Escape character is '^]'.
      <div id="subsection">
       <h3>Resources</h3>
       <ul>
-       <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/security-manager-howto.html">Security Manager HOW-TO</a><br>      Information on the default settings of the Java Security Manager and instructions on how to make changes to these settings.</li>
+       <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/security-manager-howto.html">Security Manager HOW-TO</a><br>      Information on the default settings of the Java Security Manager and instructions on how to make changes to these settings.</li>
       </ul>
 
      </div> <!-- end Resources subsection -->
@@ -1253,7 +1253,12 @@ Escape character is '^]'.
    </div> <!-- end  section -->
 
 
-   <p><img src="../../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
+   <p>
+   <hr width="100%">
+   <address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
+       Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+   </address>
+   </p>
 
    
   </body>

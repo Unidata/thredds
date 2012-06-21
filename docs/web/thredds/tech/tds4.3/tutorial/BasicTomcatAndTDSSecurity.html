@@ -22,7 +22,7 @@
       <h3>About the <code>manager</code> application</h3>
       <div id="note" class="info">
        <h4>More about <code>manager</code></h4>
-       <p>For more information about the Tomcat <code><small>manager</small></code> application, see the Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/manager-howto.html">Manager App HOW-TO</a> documentation.</p>
+       <p>For more information about the Tomcat <code><small>manager</small></code> application, see the Tomcat <a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Manager App HOW-TO</a> documentation.</p>
       </div>
 
 
@@ -59,18 +59,13 @@
       <h3>Granting access to the <code>manager</code> application</h3>
 
        <ol>
-        <li>Modify <code>tomcat-users.xml</code> to add <code>role</code> and <code>user</code> elements.</li>
+        <li>Modify <code>tomcat-users.xml</code> to add a <code>user</code> element.</li>
          <p>Using your favorite editor, open <code><small>${tomcat_home}/conf/tomcat-users.xml</small></code>:</p>
 <pre>
 <b>$</b> vi tomcat-users.xml
 </pre>   
-        <p>Between the <code><small>&lt;tomcat-users&gt;</small></code> tags, add a <code><small>role</small></code> element and specify the <code><small>rolename</small></code> attribute as <code><small>manager</small></code>:</p>
+        <p>The roles of &quot;manager-gui&quot;, &quot;manager-status&quot;, &quot;manager-script&quot;, and &quot;manager-jmx&quot; are pre-defined in Tomcat 7.</p>
           
-<pre>
-&lt;tomcat-users&gt;
-    &lt;role rolename="manager-gui"/&gt;
-&lt;/tomcat-users&gt;
-</pre>  
           <p>Now add a new user by adding a <code><small>user</small></code> element. Create a <code><small>username</small></code> and <code><small>password</small></code> for the new user and specify <code><small>manager-gui</small></code> as one of the <code><small>roles</small></code> (in this example we are creating a user called 'admin' with a corresponding password of 'secret'):</p>
 <pre>
 &lt;tomcat-users&gt;
@@ -151,7 +146,7 @@
 
       <div id="note" class="info">
        <h4>Tomcat Realms</h4>
-       <p>The Tomcat documentation contains a wealth of information about the different <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">Tomcat Realms</a>.</p>
+       <p>The Tomcat documentation contains a wealth of information about the different <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html">Tomcat Realms</a>.</p>
       </div>
 
        <ul>
@@ -170,7 +165,7 @@
 <ol>
         <li>First we need to enable digest passwords support in Tomcat by modifying a couple of Tomcat Realms in the <code>server.xml</code> file in the Tomcat <code>conf/</code> directory. </li> 
 
-          <p>A <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">Tomcat Realm</a> represents a "database" of usernames, passwords, and roles assigned to tomcat users.</p>
+          <p>A <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html">Tomcat Realm</a> represents a "database" of usernames, passwords, and roles assigned to tomcat users.</p>
 
           <table>
            <tr>
@@ -646,7 +641,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 
      <div id="subsection">
       <h3>Additional resources</h3>
-     <p>We have compiled a list of a few <a href="AdditionalSecurityConfiguration.html">additional step</a> you should take to help secure Tomcat and your TDS server. This is not a complete laundry list of security fixes! Please use it as a starting point when securing your server.</p>
+     <p>We have compiled a list of a few <a href="AdditionalSecurityConfiguration.html">additional steps</a> you should take to help secure Tomcat and your TDS server. This is not a complete laundry list of security fixes! Please use it as a starting point when securing your server.</p>
   </div> <!-- end subsection -->
    </div> <!-- end Additional Resources section -->
 
@@ -657,12 +652,12 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 
 
 
-   <p><img src="../../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
+   <p>
+   <hr width="100%">
+   <address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
+       Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+   </address>
 
-   
-<script language="JavaScript" type="text/JavaScript">
-    document.write(date_modified);
-</script> 
   </body>
  </html>   
 
