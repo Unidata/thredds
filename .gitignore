@@ -5,9 +5,8 @@ target/
 tds/content/
 
 # Ignore unwanted IntelliJ IDEA project files
-intelliJ/maven/
-intelliJ/thredds/
-intelliJ/threddsFull/
+/intelliJ/
+/intellij/
 *.ipr
 *.iml
 *.iws
