@@ -1,4 +1,3 @@
-// $Id: DbaseFile.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -45,7 +44,6 @@ import java.io.FileInputStream;
  *
  * @author  Kirk Waters, NOAA Coastal Services Center, 1997.
  * @author  Russ Rew, modified to restrict access to read-only
- * @version $Id: DbaseFile.java 50 2006-07-12 16:30:06Z caron $
  */
 public class DbaseFile extends Object {
 
@@ -415,31 +413,3 @@ public class DbaseFile extends Object {
         }
     }
 }
-
-/* Change History:
-   $Log: DbaseFile.java,v $
-   Revision 1.2  2004/09/24 03:26:38  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:50  caron
-   import sources
-
-   Revision 1.4  2000/08/18 04:15:27  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.3  1999/06/03 01:43:56  caron
-   remove the damn controlMs
-
-   Revision 1.2  1999/06/03 01:26:23  caron
-   another reorg
-
-   Revision 1.1.1.1  1999/05/21 17:33:42  caron
-   startAgain
-
-# Revision 1.2  1998/12/14  17:11:05  russ
-# Add comment for accumulating change histories.
-#
-*/

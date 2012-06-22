@@ -353,8 +353,8 @@ public class TransverseMercator extends ProjectionImpl {
 
     double x = (fromX - falseEasting) / scale;
     double d = (fromY - falseNorthing) / scale + lat0;
-    toLon = Math.toDegrees(lon0 + Math.atan2(SpecialMathFunction.sinh(x), Math.cos(d)));
-    toLat = Math.toDegrees(Math.asin(Math.sin(d) / SpecialMathFunction.cosh(x)));
+    toLon = Math.toDegrees(lon0 + Math.atan2(Math.sinh(x), Math.cos(d)));
+    toLat = Math.toDegrees(Math.asin(Math.sin(d) / Math.cosh(x)));
 
     result.setLatitude(toLat);
     result.setLongitude(toLon);
@@ -431,8 +431,8 @@ public class TransverseMercator extends ProjectionImpl {
 
       double x = (fromX - falseEasting) / scale;
       double d = (fromY - falseNorthing) / scale + lat0;
-      toLon = Math.toDegrees(lon0 + Math.atan2(SpecialMathFunction.sinh(x), Math.cos(d)));
-      toLat = Math.toDegrees(Math.asin(Math.sin(d) / SpecialMathFunction.cosh(x)));
+      toLon = Math.toDegrees(lon0 + Math.atan2(Math.sinh(x), Math.cos(d)));
+      toLat = Math.toDegrees(Math.asin(Math.sin(d) / Math.cosh(x)));
 
       toLatA[i] = (float) toLat;
       toLonA[i] = (float) toLon;
@@ -510,8 +510,8 @@ public class TransverseMercator extends ProjectionImpl {
 
       double x = (fromX - falseEasting) / scale;
       double d = (fromY - falseNorthing) / scale + lat0;
-      toLon = Math.toDegrees(lon0 + Math.atan2(SpecialMathFunction.sinh(x), Math.cos(d)));
-      toLat = Math.toDegrees(Math.asin(Math.sin(d) / SpecialMathFunction.cosh(x)));
+      toLon = Math.toDegrees(lon0 + Math.atan2(Math.sinh(x), Math.cos(d)));
+      toLat = Math.toDegrees(Math.asin(Math.sin(d) / Math.cosh(x)));
 
       toLatA[i] = (double) toLat;
       toLonA[i] = (double) toLon;

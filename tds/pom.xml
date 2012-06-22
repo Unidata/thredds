@@ -389,7 +389,7 @@
             <phase>deploy</phase>
             <configuration>
               <tasks>
-                <property name="ftp.dir" value="V:/pub/thredds/v4.3/4.3.10" />
+                <property name="ftp.dir" value="V:/pub/thredds/v4.3/4.3.11" />
                 <echo message="ftp.dir: ${ftp.dir}" />
 
                 <copy todir="${ftp.dir}" overwrite="true">

@@ -197,13 +197,13 @@ public class OceanS extends VerticalTransformImpl {
     ArrayDouble.D1 c = new ArrayDouble.D1(nz);
 
     double fac1 = 1.0 - b;
-    double denom1 = 1.0 / SpecialMathFunction.sinh(a);
-    double denom2 = 1.0 / (2.0 * SpecialMathFunction.tanh(0.5 * a));
+    double denom1 = 1.0 / Math.sinh(a);
+    double denom2 = 1.0 / (2.0 * Math.tanh(0.5 * a));
 
     for (int i = 0; i < nz; i++) {
       double sz = s.getDouble(sIndex.set(i));
-      double term1 = fac1 * SpecialMathFunction.sinh(a * sz) * denom1;
-      double term2 = b * (SpecialMathFunction.tanh(a * (sz + 0.5))
+      double term1 = fac1 * Math.sinh(a * sz) * denom1;
+      double term2 = b * (Math.tanh(a * (sz + 0.5))
           * denom2 - 0.5);
       c.set(i, term1 + term2);
     }
