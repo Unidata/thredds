@@ -51,7 +51,7 @@ public class TestH5read extends TestCase {
     super(name);
   }
 
-  String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/pytables/test";
+  String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
 
 
  public void testH5data() throws IOException {

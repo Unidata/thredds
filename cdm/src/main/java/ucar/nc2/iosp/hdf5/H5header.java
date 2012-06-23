@@ -4596,7 +4596,7 @@ public class H5header {
     HeapIdentifier(long address) throws IOException {
       // header information is in le byte order
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
-      raf.seek(getFileOffset(address));
+      raf.seek(address); // raf.seek(getFileOffset(address)); apparently HeapIdentifier addresses are not shifted by superblock offset (!)
 
       nelems = raf.readInt();
       heapAddress = readOffset();

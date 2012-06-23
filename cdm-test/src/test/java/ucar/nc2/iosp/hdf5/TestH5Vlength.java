@@ -197,4 +197,14 @@ public class TestH5Vlength extends TestCase {
     ncfile.close();
   }
 
+  // file that is offset 2048 bytes - NPP!
+  public void testSuperblockIsOffset() throws IOException {
+    NetcdfFile ncfile = TestH5.openH5("superblockIsOffsetNPP.h5");
+
+    Variable v = ncfile.findVariable("BeamTime");
+    System.out.printf("%s%n", v);
+
+    ncfile.close();
+  }
+
 }
