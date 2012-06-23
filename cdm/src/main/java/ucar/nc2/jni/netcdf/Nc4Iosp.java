@@ -2,6 +2,7 @@ package ucar.nc2.jni.netcdf;
 
 import com.sun.jna.Native;
 import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.LongByReference;
 import ucar.nc2.NetcdfFile;
 
 import java.io.IOException;
@@ -21,15 +22,21 @@ public class Nc4Iosp {
       String dir = "C:/cdev/lib/";
       System.setProperty("jna.library.path", dir);
 
-      System.load(dir + "zlib.dll");
+      /* System.load(dir + "zlib.dll");
       System.load(dir + "szip.dll");
       System.load(dir + "hdf5dll.dll");
       System.load(dir + "hdf5_hldll.dll");
-      System.load(dir + "netcdf-7.dll");
+      System.load(dir + "netcdf-7.dll"); */
 
-      Native.setProtected(true);
+      //Native.setProtected(true);
       nc4 = (NC4) Native.loadLibrary("netcdf-7", NC4.class);
-      System.out.printf(" Netcdf nc_inq_libvers=%s isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
+      System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
+
+      /* for (int i=0; i<1000; i++) {
+        String s = nc4.nc_strerror(i);
+        if (!s.startsWith("Unknown"))
+          System.out.printf("%d == %s%n", i, s);
+      } */
     }
 
     return nc4;
@@ -40,7 +47,7 @@ public class Nc4Iosp {
     IntByReference ncidp = new IntByReference();
     int ret = nc4.nc_open(location, 0, ncidp);
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
-    return ncidp.getValue();
+    return (int) ncidp.getValue();
   }
 
   public static void main(String args[]) throws Exception {
