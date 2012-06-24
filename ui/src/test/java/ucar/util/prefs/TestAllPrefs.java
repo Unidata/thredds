@@ -54,7 +54,7 @@ public class TestAllPrefs {
     TestSuite suite = new TestSuite();
 
     suite.addTest(new TestSuite(TestBasic.class));
-    suite.addTest(new TestSuite(TestInputMunger.class));
+    // suite.addTest(new TestSuite(TestInputMunger.class));
     suite.addTest(new TestSuite(TestEvents.class));
     suite.addTest(new TestSuite(TestXMLStore.class));
     // suite.addTest(new TestSuite(TestXMLStoreChains.class));  chainn.xml files are lost

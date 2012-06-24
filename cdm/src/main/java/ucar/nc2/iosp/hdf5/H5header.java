@@ -3252,7 +3252,7 @@ public class H5header {
     }
   }
 
-  // Message Type 12/0xC "Attribute" : define an Atribute
+  // Message Type 12/0xC "Attribute" : define an Attribute
   public class MessageAttribute implements Named {
     byte version;
     //short typeSize, spaceSize;

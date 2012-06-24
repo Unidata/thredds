@@ -34,28 +34,15 @@
 
 package ucar.util.prefs;
 
-import junit.framework.*;
+import org.junit.Test;
+import ucar.nc2.util.Misc;
 
 import java.io.*;
 import java.util.prefs.Preferences;
 
-public class TestBasic extends TestCase {
+public class TestBasic {
 
-  private boolean debug = false;
-
-  public TestBasic( String name) {
-    super(name);
-  }
-
-  public void testWho() {
-    System.out.println("***TestBasic");
-
-        // this makes PreferencesExt the SPI
-    Preferences userRoot = Preferences.userRoot();
-    assert userRoot instanceof PreferencesExt : "Factory not set = "+userRoot.getClass().getName();
-    //assert false : "assert is on";
-  }
-
+  @Test
   public void testPutGet() {
     try {
 
@@ -63,11 +50,11 @@ public class TestBasic extends TestCase {
 
       userRoot.putDouble("testD", 3.14157);
       double d = userRoot.getDouble("testD", 0.0);
-      assert closeD(d, 3.14157) : "double failed";
+      assert Misc.closeEnough(d, 3.14157) : "double failed";
 
       userRoot.putFloat("testF", 1.23456F);
       float f = userRoot.getFloat("testF", 0.0F);
-      assert closeF(f, 1.23456F) : "float failed";
+      assert Misc.closeEnough(f, 1.23456F) : "float failed";
 
       userRoot.putLong("testL", 12345678900L);
       long ll = userRoot.getLong("testL", 0);
@@ -101,6 +88,7 @@ public class TestBasic extends TestCase {
     }
   }
 
+  @Test
   public void testSubnode() {
     try {
 
@@ -114,7 +102,7 @@ public class TestBasic extends TestCase {
       }
 
       float f = subNode.getFloat("testF", 0.0F);
-      assert closeF(f, 1.23456F) : "float failed";
+      assert Misc.closeEnough(f, 1.23456F) : "float failed";
 
       long ll = subNode.getLong("testL", 0);
       assert ll == 12345678900L : "long failed";
@@ -145,6 +133,7 @@ public class TestBasic extends TestCase {
   }
 
 
+  @Test
   public void testExport() {
       Preferences userRoot = Preferences.userRoot();
       Preferences fromNode = userRoot.node("SemperUbi");
@@ -163,6 +152,7 @@ public class TestBasic extends TestCase {
       }
   }
 
+  @Test
   public void testRemove() {
       Preferences userRoot = Preferences.userRoot();
       Preferences subNode = userRoot.node("SemperUbi");
@@ -177,6 +167,7 @@ public class TestBasic extends TestCase {
       assert ll == 12345678900L : "long failed 2";
   }
 
+  @Test
   public void testRemoveNode() {
     try {
       Preferences userRoot = Preferences.userRoot();
@@ -222,9 +213,5 @@ public class TestBasic extends TestCase {
 
     return s;
   }
-
-
-  boolean closeD( double d1, double d2) { return (Math.abs(d1-d2) / d1) < 1.0E-7; }
-  boolean closeF( float d1, float d2) { return (Math.abs(d1-d2) / d1) < 1.0E-7; }
 
 }

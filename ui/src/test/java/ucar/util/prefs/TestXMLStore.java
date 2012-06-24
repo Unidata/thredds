@@ -33,20 +33,20 @@
  */
 package ucar.util.prefs;
 
-import junit.framework.*;
+import org.junit.Before;
+import org.junit.Test;
+import ucar.nc2.util.Misc;
 
 import java.util.prefs.Preferences;
 
-public class TestXMLStore extends TestCase {
+public class TestXMLStore {
 
   private boolean debug = false;
   private String storeFile = TestAllPrefs.dir+"TestXMLStore.xml";
   private String storeFile2 = TestAllPrefs.dir+"TestXMLStore2.xml";
 
-  public TestXMLStore( String name) {
-    super(name);
-  }
-
+  @Before
+  @Test
   public void testMake() {
     System.out.println("***TestXMLStore");
     try {
@@ -86,7 +86,7 @@ public class TestXMLStore extends TestCase {
     }
   }
 
-
+  @Test
   public void testPersistence() {
     try {
       XMLStore store = XMLStore.createFromFile(storeFile, null);
@@ -95,10 +95,10 @@ public class TestXMLStore extends TestCase {
       PreferencesExt prefs = store.getPreferences();
 
       double d = prefs.getDouble("testD", 0.0);
-      assert closeD(d, 3.14157) : "double failed " + d;
+      assert Misc.closeEnough(d, 3.14157) : "double failed " + d;
 
       float f = prefs.getFloat("testF", 0.0F);
-      assert closeF(f, 1.23456F) : "float failed";
+      assert Misc.closeEnough(f, 1.23456F) : "float failed";
 
       long ll = prefs.getLong("testL", 0);
       assert ll == 12345678900L : "long failed";
@@ -127,16 +127,17 @@ public class TestXMLStore extends TestCase {
     }
   }
 
+  @Test
   public void testPersistenceSubnode() {
     try {
       XMLStore store = XMLStore.createFromFile(storeFile, null);
       Preferences prefs = store.getPreferences().node("SemperUbi");
 
       double d = prefs.getDouble("testD", 0.0);
-      assert closeD(d, 3.14158) : "double failed";
+      assert Misc.closeEnough(d, 3.14158) : "double failed";
 
       float f = prefs.getFloat("testF", 0.0F);
-      assert closeF(f, 1.23457F) : "float failed";
+      assert Misc.closeEnough(f, 1.23457F) : "float failed";
 
       long ll = prefs.getLong("testL", 0);
       assert ll == 12345678901L : "long failed";
@@ -165,7 +166,7 @@ public class TestXMLStore extends TestCase {
     }
   }
 
-
+  @Test
   public void testPersistenceChange() {
     try {
       XMLStore store = XMLStore.createFromFile(storeFile, null);
@@ -199,6 +200,7 @@ public class TestXMLStore extends TestCase {
   }
 
 
+  @Test
   public void testPersistenceAddRemove() {
     try {
       XMLStore store = XMLStore.createFromFile(storeFile, null);
@@ -231,7 +233,7 @@ public class TestXMLStore extends TestCase {
     }
   }
 
-
+  @Test
   public void testPersistenceDefaults() {
     try {
       XMLStore store = XMLStore.createFromFile(storeFile, null);
@@ -250,6 +252,7 @@ public class TestXMLStore extends TestCase {
     }
   }
 
+  @Test
   public void testPersistenceAddRemoveNode() {
     try {
       XMLStore store = XMLStore.createFromFile(storeFile, null);
@@ -282,24 +285,7 @@ public class TestXMLStore extends TestCase {
     }
   }
 
-  public void testRoots() {
-    System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
-
-    try {
-      XMLStore store = XMLStore.createFromFile(storeFile, null);
-      Preferences prefs = store.getPreferences();
-      PreferencesExt.setUserRoot( (PreferencesExt) prefs);
-      Preferences defPrefs = Preferences.userRoot();
-
-      assert (prefs == defPrefs) : "testRoots ";
-
-    } catch (Exception e) {
-      System.out.println(e);
-      e.printStackTrace();
-    }
-
-  }
-
+  @Test
   public void testXMLencoding() {
     String bad = "><';&\r\"\n";
     try {
@@ -322,10 +308,6 @@ public class TestXMLStore extends TestCase {
       e.printStackTrace();
     }
   }
-
-  boolean closeD( double d1, double d2) { return (Math.abs(d1-d2) / d1) < 1.0E-7; }
-  boolean closeF( float d1, float d2) { return (Math.abs(d1-d2) / d1) < 1.0E-7; }
-
 
 }
 /* Change History:
