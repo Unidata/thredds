@@ -52,7 +52,7 @@ import java.util.ArrayList;
 
 public class Dimension implements Comparable {
   /** A variable-length dimension: the length is not known until the data is read. */
-  static public Dimension VLEN = new Dimension( "*", -1, true, false, true).setImmutable(); // for Sequences, HDF5 VarLength
+  static public Dimension VLEN = new Dimension( "*", -1, false, false, true).setImmutable(); // for Sequences, HDF5 VarLength
 
   static public String makeDimensionList(List<Dimension> dimList) {
     StringBuilder out = new StringBuilder();
@@ -215,6 +215,8 @@ public class Dimension implements Comparable {
     this.isShared = isShared;
     this.isUnlimited = isUnlimited;
     this.isVariableLength = isVariableLength;
+    if (isVariableLength && (isUnlimited || isShared))
+      throw new IllegalArgumentException("variable length dimension cannot be shared or unlimited") ;
     setLength(length);
     assert (this.name != null) || !this.isShared;
   }
@@ -249,6 +251,10 @@ public class Dimension implements Comparable {
   public void setVariableLength( boolean b) {
     if (immutable) throw new IllegalStateException("Cant modify");
     this.isVariableLength = b;
+    if (b) {
+      this.isShared = false;
+      this.isUnlimited = false;
+    }
     setLength(this.length); // check legal
   }
   /** Set whether this is shared.

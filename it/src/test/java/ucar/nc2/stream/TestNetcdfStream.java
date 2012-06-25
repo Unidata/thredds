@@ -16,7 +16,7 @@ public class TestNetcdfStream {
   String serverRoot = TestDir.cdmUnitTestDir + "formats";
 
   @Test
-  public void testProblem() throws IOException {
+  public void utestProblem() throws IOException {
     doOne(serverRoot+"/netcdf4/vlenBigEndian.nc");
   }
 

@@ -45,8 +45,9 @@ public class Convert2Version2 {
     }
 
     Element root = doc.getRootElement();
-    // show(doc.getRootElement(), new Indent(2));
+    check(root, new Indent(2));
 
+    /*
     org.jdom.Document convertDoc = new Document();
     Element convertRoot = new Element("java");
     convertRoot.setAttribute("version", "1.4.1_01");
@@ -59,7 +60,7 @@ public class Convert2Version2 {
       XMLOutputter xmlOut = new XMLOutputter();
       xmlOut.setFormat(Format.getPrettyFormat());
       System.out.println("***Convert2Version2 converted = \n" + xmlOut.outputString(convertDoc) + "\n*******");
-    }
+    }  */
   }
 
   void add(Element elem, Element parent) {
@@ -104,6 +105,22 @@ public class Convert2Version2 {
       indent.decr();
     }
   }
+
+  void check(Element e, Indent indent) {
+    String name = e.getName();
+    if (name.equals("beanObject")) {
+      String key = e.getAttributeValue("key");
+      Element obj = e.getChild("object");
+      assert obj != null;
+      String c = obj.getAttributeValue("class");
+      System.out.printf("%s%s key=%s class=%s%n", indent, name, key, c);
+
+    }
+
+      for (Object co : e.getChildren())
+        check((Element)co,indent);
+  }
+
 
   /** testing */
   public static void main(String args[]) throws IOException {

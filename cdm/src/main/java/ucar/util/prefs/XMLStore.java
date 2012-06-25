@@ -275,8 +275,10 @@ public class XMLStore {
   }
 
   private void add(Element elem, Element parent) {
-    if (elem.getName().equals("object"))
+    if (elem.getName().equals("object")) {
       parent.addContent( (Element) elem.clone());
+      return;
+    }
 
     for (Object child : elem.getChildren()) {
       add((Element) child, parent);
@@ -465,6 +467,14 @@ public class XMLStore {
 
     private void endBeanCollection( ) { currentBeanCollection = null; }
     private void endNode( ) { current = (PreferencesExt) stack.pop(); }
+  }
+
+  String findAttribute(Attributes atts, String what) {
+    for (int i=0; i< atts.getLength(); i++) {
+      if (atts.getLocalName(i).equals(what))
+        return atts.getValue(i);
+    }
+    return null;
   }
 
   /* Filter out the prefs stuff, add the header and trailer.
@@ -674,7 +684,7 @@ public class XMLStore {
             out.printf("/>%n");
 
           } else { // not a String or Bean
-            out.printf("%s  <beanObject key='%s' >", indent, keys[i]);
+            out.printf("%s  <beanObject key='%s' >%n", indent, keys[i]);
             out.flush();
             bos.enterBeanStream();
             try {

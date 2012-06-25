@@ -217,9 +217,9 @@
         <configuration>
           <skip>${skipTests}</skip>
           <testFailureIgnore>true</testFailureIgnore>
-          <includes>
+          <!-- includes>
             <include>ucar.util.prefs.TestAllPrefs.java</include>
-          </includes>
+          </includes -->
         </configuration>
       </plugin>      
 
