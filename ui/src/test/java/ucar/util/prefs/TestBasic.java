@@ -42,6 +42,17 @@ import java.util.prefs.Preferences;
 
 public class TestBasic {
 
+  // only works if System.setProperty called before anything else
+  public void testWho() {
+    System.out.println("***TestBasic");
+    System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+
+        // this makes PreferencesExt the SPI
+    Preferences userRoot = Preferences.userRoot();
+    assert userRoot instanceof PreferencesExt : "Factory not set = "+userRoot.getClass().getName();
+    //assert false : "assert is on";
+  }
+
   @Test
   public void testPutGet() {
     try {
