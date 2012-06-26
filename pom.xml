@@ -2,8 +2,7 @@
 <!-- =======================================================================
 		Parent Maven Configuration File for UCAR NetCDF library
 	======================================================================= -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
   <!-- prerequisites> <maven>2.0.9</maven> </prerequisites -->
@@ -14,7 +13,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>thredds-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.3.11-SNAPSHOT</version>
+  <version>4.3.11</version>
   <name>Parent THREDDS and CDM modules</name>
   <description>
     The Unidata THREDDS project includes the netCDF-Java library (aka CDM) and
