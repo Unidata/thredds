@@ -31,17 +31,16 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package ucar.unidata.geoloc.ogc;
-
 
 import ucar.nc2.units.SimpleUnit;
 
+import ucar.nc2.util.IO;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.*;
 
+import java.io.IOException;
 import java.text.ParseException;
-
 
 /**
  * This class parses OGC WKT Spatial Reference Text.
@@ -670,6 +669,9 @@ public class WKTParser {
         falseNorthing *= scalef;
       }
 
+      if (srp.getProjName().contains("UTM_Zone_"))
+        return processUTM(srp);
+
       if ("Transverse_Mercator".equals(projectionType)) {
         double lat0 = srp.getParameter("Latitude_Of_Origin");
         double scale = srp.getParameter("Scale_Factor");
@@ -714,5 +716,30 @@ public class WKTParser {
       return proj;
     }
 
+  }
+
+  static ProjectionImpl processUTM(WKTParser srp) {
+  // NAD_1983_UTM_Zone_12N
+      String name = srp.getProjName();
+      int pos = name.indexOf("UTM_Zone_");
+      String zoneS = name.substring(pos + 9);
+      char lastC;
+      int zone = Integer.parseInt(zoneS.substring(0, zoneS.length()-1));
+      lastC = zoneS.charAt(zoneS.length()-1);
+      boolean isNorth = (lastC =='N');
+
+      return new UtmProjection(zone, isNorth);
+  }
+
+  public static void main(String[] args) throws IOException, ParseException {
+    String testFile = "E:/work/yuan/shapefile/SkiAreaBoundaries.prj";
+    //String filename = ( args != args[0] == null)  ? testFile : args[0];
+
+    String contents = IO.readFile(testFile);
+    System.out.printf("%s%n", contents);
+
+    WKTParser p = new WKTParser(contents);
+    ProjectionImpl proj = convertWKTToProjection(p);
+    System.out.printf("%s%n", proj);
   }
 }

@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.iosp.hdf5.H5diag;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -59,7 +60,7 @@ import java.util.*;
  *
  * @author caron
  */
-public class Hdf5Table extends JPanel {
+public class Hdf5ObjectTable extends JPanel {
   private PreferencesExt prefs;
 
   private ucar.util.prefs.ui.BeanTableSorted objectTable, messTable, attTable;
@@ -68,8 +69,9 @@ public class Hdf5Table extends JPanel {
   private TextHistoryPane dumpTA, infoTA;
   private IndependentWindow infoWindow;
 
-  public Hdf5Table(PreferencesExt prefs) {
+  public Hdf5ObjectTable(PreferencesExt prefs) {
     this.prefs = prefs;
+    PopupMenu varPopup;
 
     objectTable = new BeanTableSorted(ObjectBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject", "Level 2A data object header");
     objectTable.addListSelectionListener(new ListSelectionListener() {
@@ -99,20 +101,16 @@ public class Hdf5Table extends JPanel {
       }
     });
 
-    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(messTable.getJTable(), "Options");
+    varPopup = new ucar.nc2.ui.widget.PopupMenu(messTable.getJTable(), "Options");
     varPopup.addAction("Show FractalHeap", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messTable.getSelectedBean();
-
-        if (infoTA == null) {
-          infoTA = new TextHistoryPane();
-          infoWindow = new IndependentWindow("Extra", BAMutil.getImage("netcdfUI"), infoTA);
-          infoWindow.setBounds(new Rectangle(300, 300, 500, 800));
-        }
+        if (mb == null) return;
+        if (infoTA == null) makeInfoWindow();
         infoTA.clear();
         Formatter f = new Formatter();
-        mb.m.showFractalHeap(f);
 
+        mb.m.showFractalHeap(f);
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
         infoWindow.show();
@@ -153,6 +151,12 @@ public class Hdf5Table extends JPanel {
     prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 
+  private void makeInfoWindow() {
+    infoTA = new TextHistoryPane();
+    infoWindow = new IndependentWindow("Extra", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow.setBounds(new Rectangle(300, 300, 500, 800));
+  }
+
   private H5iosp iosp;
   private String location;
 
@@ -169,7 +173,7 @@ public class Hdf5Table extends JPanel {
     java.util.List<ObjectBean> beanList = new ArrayList<ObjectBean>();
 
     iosp = new H5iosp();
-    NetcdfFile ncfile = new MyNetcdfFile(iosp);
+    NetcdfFile ncfile = new MyNetcdfFile(iosp, location);
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
@@ -200,10 +204,18 @@ public class Hdf5Table extends JPanel {
     f.format("%s", ff.toString());
   }
 
+  public void showCompressInfo(Formatter f) throws IOException {
+    if (iosp == null) return;
+
+    H5diag header = new H5diag(iosp);
+    header.showCompress(f);
+  }
+
   private class MyNetcdfFile extends NetcdfFile {
-    private MyNetcdfFile(H5iosp iosp) {
+    private MyNetcdfFile(H5iosp iosp, String location) {
       super();
       spi = iosp;
+      this.location = location;
     }
   }
 

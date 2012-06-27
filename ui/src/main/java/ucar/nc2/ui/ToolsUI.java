@@ -148,7 +148,8 @@ public class ToolsUI extends JPanel {
   private Grib1TablePanel grib1TablePanel;
   private Grib2TablePanel grib2TablePanel;
   private GribRenamePanel gribVariableRenamePanel;
-  private Hdf5Panel hdf5Panel;
+  private Hdf5ObjectPanel hdf5ObjectPanel;
+  private Hdf5DataPanel hdf5DataPanel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
   private NCdumpPanel ncdumpPanel;
@@ -165,7 +166,7 @@ public class ToolsUI extends JPanel {
   private WmsPanel wmsPanel;
 
   private JTabbedPane tabbedPane;
-  private JTabbedPane iospTabPane, bufrTabPane, grib2TabPane, grib1TabPane;
+  private JTabbedPane iospTabPane, bufrTabPane, grib2TabPane, grib1TabPane, hdf5TabPane;
   private JTabbedPane ftTabPane;
   private JTabbedPane fmrcTabPane;
   private JTabbedPane ncmlTabPane;
@@ -204,6 +205,7 @@ public class ToolsUI extends JPanel {
     bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
     ftTabPane = new JTabbedPane(JTabbedPane.TOP);
     fmrcTabPane = new JTabbedPane(JTabbedPane.TOP);
+    hdf5TabPane = new JTabbedPane(JTabbedPane.TOP);
     ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
 
     // the widgets in the top level tabbed pane
@@ -240,7 +242,7 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("BUFR", bufrTabPane);
     iospTabPane.addTab("GRIB2", grib2TabPane);
     iospTabPane.addTab("GRIB1", grib1TabPane);
-    iospTabPane.addTab("HDF5", new JLabel("HDF5"));
+    iospTabPane.addTab("HDF5", hdf5TabPane);
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addTab("NCS", new JLabel("NCS"));
     iospTabPane.addChangeListener(new ChangeListener() {
@@ -290,7 +292,7 @@ public class ToolsUI extends JPanel {
       }
     });
 
-    // nested-2 tab - grib new
+    // nested-2 tab - grib-2
     grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2collection"));
     grib2TabPane.addTab("GRIBindex", new JLabel("GRIBindex"));
     grib2TabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
@@ -320,10 +322,8 @@ public class ToolsUI extends JPanel {
       }
     });
 
-    // nested-2 tab - grib old
-    //griboTabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
+    // nested-2 tab - grib-1
     grib1TabPane.addTab("GRIB1collection", new JLabel("GRIB1collection"));
-    //grib1TabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
     grib1TabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
     grib1TabPane.addTab("GRIB1-REPORT", new JLabel("GRIB1-REPORT"));
     grib1TabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
@@ -344,6 +344,30 @@ public class ToolsUI extends JPanel {
           int idx = grib1TabPane.getSelectedIndex();
           String title = grib1TabPane.getTitleAt(idx);
           makeComponent(grib1TabPane, title);
+        }
+      }
+    });
+
+    // nested-2 tab - hdf5
+    hdf5TabPane.addTab("HDF5-Objects", new JLabel("HDF5-Objects"));
+    hdf5TabPane.addTab("HDF5-Data", new JLabel("HDF5-Data"));
+    hdf5TabPane.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        Component c = hdf5TabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = hdf5TabPane.getSelectedIndex();
+          String title = hdf5TabPane.getTitleAt(idx);
+          makeComponent(hdf5TabPane, title);
+        }
+      }
+    });
+    hdf5TabPane.addComponentListener(new ComponentAdapter() {
+      public void componentShown(ComponentEvent e) {
+        Component c = hdf5TabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = hdf5TabPane.getSelectedIndex();
+          String title = hdf5TabPane.getTitleAt(idx);
+          makeComponent(hdf5TabPane, title);
         }
       }
     });
@@ -534,10 +558,6 @@ public class ToolsUI extends JPanel {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
       c = coordSysPanel;
 
-      /* } else if (title.equals("FmrcImpl")) {
-  fmrcImplPanel = new FmrcImplPanel((PreferencesExt) mainPrefs.node("fmrcImpl"));
-  c = fmrcImplPanel;  */
-
     } else if (title.equals("FeatureScan")) {
       ftPanel = new FeatureScanPanel((PreferencesExt) mainPrefs.node("ftPanel"));
       c = ftPanel;
@@ -550,9 +570,13 @@ public class ToolsUI extends JPanel {
       gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
       c = gridPanel;
 
-    } else if (title.equals("HDF5")) {
-      hdf5Panel = new Hdf5Panel((PreferencesExt) mainPrefs.node("hdf5"));
-      c = hdf5Panel;
+    } else if (title.equals("HDF5-Objects")) {
+      hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"));
+      c = hdf5ObjectPanel;
+
+    } else if (title.equals("HDF5-Data")) {
+      hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"));
+      c = hdf5DataPanel;
 
     } else if (title.equals("HDF4")) {
       hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"));
@@ -570,25 +594,13 @@ public class ToolsUI extends JPanel {
       collectionPanel = new CollectionPanel((PreferencesExt) mainPrefs.node("collections"));
       c = collectionPanel;
 
-      /* } else if (title.equals("Inventory")) {
-  fmrcInvPanel = new FmrcInvPanel((PreferencesExt) mainPrefs.node("fmrc"));
-  c = fmrcInvPanel;  */
-
     } else if (title.equals("NCDump")) {
       ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
       c = ncdumpPanel;
 
-      //} else if (title.equals("NcML")) {
-      // ncmlPanel = new NcmlPanel((PreferencesExt) mainPrefs.node("NcML"));
-      // c = ncmlPanel;
-
     } else if (title.equals("NcmlEditor")) {
       ncmlEditorPanel = new NcmlEditorPanel((PreferencesExt) mainPrefs.node("NcmlEditor"));
       c = ncmlEditorPanel;
-
-      /* } else if (title.equals("PointObs")) {
-   pointObsPanel = new PointObsPanel((PreferencesExt) mainPrefs.node("points"));
-   c = pointObsPanel; */
 
     } else if (title.equals("PointFeature")) {
       pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
@@ -598,17 +610,9 @@ public class ToolsUI extends JPanel {
       radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
       c = radialPanel;
 
-      /* } else if (title.equals("StationObs")) {
-   stationObsPanel = new StationObsPanel((PreferencesExt) mainPrefs.node("stations"));
-   c = stationObsPanel; */
-
     } else if (title.equals("StationRadial")) {
       stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
       c = stationRadialPanel;
-
-      /* } else if (title.equals("Trajectory")) {
-  trajTablePanel = new TrajectoryTablePanel((PreferencesExt) mainPrefs.node("trajectory"));
-  c = trajTablePanel;  */
 
     } else if (title.equals("THREDDS")) {
       threddsUI = new ThreddsUI(ToolsUI.this.parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
@@ -1011,7 +1015,8 @@ public class ToolsUI extends JPanel {
     if (grib2TablePanel != null) grib2TablePanel.save();
     if (gribVariableRenamePanel != null) gribVariableRenamePanel.save();
     if (gridPanel != null) gridPanel.save();
-    if (hdf5Panel != null) hdf5Panel.save();
+    if (hdf5ObjectPanel != null) hdf5ObjectPanel.save();
+    if (hdf5DataPanel != null) hdf5DataPanel.save();
     if (hdf4Panel != null) hdf4Panel.save();
     if (imagePanel != null) imagePanel.save();
     if (ncdumpPanel != null) ncdumpPanel.save();
@@ -3199,19 +3204,18 @@ public class ToolsUI extends JPanel {
 
   }
 
-
   /////////////////////////////////////////////////////////////////////
-  private class Hdf5Panel extends OpPanel {
+  private class Hdf5ObjectPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
-    Hdf5Table hdf5Table;
+    Hdf5ObjectTable hdf5Table;
 
     void closeOpenFiles() throws IOException {
       hdf5Table.closeOpenFiles();
     }
 
-    Hdf5Panel(PreferencesExt p) {
+    Hdf5ObjectPanel(PreferencesExt p) {
       super(p, "file:", true, false);
-      hdf5Table = new Hdf5Table(prefs);
+      hdf5Table = new Hdf5ObjectTable(prefs);
       add(hdf5Table, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
@@ -3220,6 +3224,7 @@ public class ToolsUI extends JPanel {
           Formatter f = new Formatter();
           try {
             hdf5Table.showInfo(f);
+
           } catch (IOException ioe) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
             ioe.printStackTrace(new PrintStream(bos));
@@ -3248,7 +3253,76 @@ public class ToolsUI extends JPanel {
         hdf5Table.setHdf5File(raf);
 
       } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        JOptionPane.showMessageDialog(null, "Hdf5ObjectTable cant open " + command + "\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      hdf5Table.save();
+      super.save();
+    }
+
+  }
+
+    /////////////////////////////////////////////////////////////////////
+  private class Hdf5DataPanel extends OpPanel {
+    ucar.unidata.io.RandomAccessFile raf = null;
+    Hdf5DataTable hdf5Table;
+
+    void closeOpenFiles() throws IOException {
+      hdf5Table.closeOpenFiles();
+    }
+
+    Hdf5DataPanel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      hdf5Table = new Hdf5DataTable(prefs, buttPanel);
+      add(hdf5Table, BorderLayout.CENTER);
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            hdf5Table.showInfo(f);
+
+          } catch (IOException ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace(new PrintStream(bos));
+            detailTA.setText(bos.toString());
+            detailWindow.show();
+            return;
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        if (raf != null)
+          raf.close();
+        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+
+        hdf5Table.setHdf5File(raf);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "Hdf5DataTable cant open " + command + "\n" + ioe.getMessage());
         err = true;
 
       } catch (Exception e) {

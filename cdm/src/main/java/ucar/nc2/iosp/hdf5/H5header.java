@@ -119,7 +119,7 @@ public class H5header {
   ////////////////////////////////////////////////////////////////////////////////
 
   private RandomAccessFile raf;
-  private ucar.nc2.NetcdfFile ncfile;
+  ucar.nc2.NetcdfFile ncfile;
   private H5iosp h5iosp;
 
   private long baseAddress;
@@ -1372,7 +1372,7 @@ public class H5header {
   }
 
   // Holder of all H5 specific information for a Variable, needed to do IO.
-  class Vinfo {
+  public class Vinfo {
     Variable owner; // debugging
     DataObjectFacade facade; // debugging
 
@@ -1395,7 +1395,47 @@ public class H5header {
     boolean useFillValue = false;
     byte[] fillValue;
 
-    // Map<Integer, String> enumMap;
+    public String getCompression() {
+      if (mfp == null) return null;
+      Formatter f = new Formatter();
+      for (Filter filt : mfp.filters) {
+        f.format("%s ", filt.name);
+      }
+      return f.toString();
+    }
+
+    public int[] getChunking() {
+      return storageSize;
+    }
+
+    public boolean isChunked() {
+      return isChunked;
+    }
+
+    public boolean useFillValue() {
+      return useFillValue;
+    }
+
+    public long[] countStorageSize() throws IOException {
+      long[] result = new long[2];
+      if (btree == null || useFillValue) {
+        return result;
+      }
+
+      int count = 0;
+      long total = 0;
+      H5header.DataBTree.DataChunkIterator iter = btree.getDataChunkIterator(null);
+      while (iter.hasNext()) {
+        H5header.DataBTree.DataChunk dc = iter.next();
+        total += dc.size;
+        count++;
+      }
+
+      result[0] = total;
+      result[1] = count;
+      return result;
+    }
+
 
     /**
      * Constructor
@@ -1706,7 +1746,7 @@ public class H5header {
     return null;
   }
 
-  class TypeInfo {
+  public class TypeInfo {
     int hdfType, byteSize;
     DataType dataType;
     int endian = -1; // 1 = RandomAccessFile.LITTLE_ENDIAN || 0 = RandomAccessFile.BIG_ENDIAN
@@ -2432,9 +2472,22 @@ public class H5header {
       return "  type = " + mtype + "; " + messData;
     }
 
+    // debugging
     public void showFractalHeap(Formatter f) {
       if (mtype !=  H5header.MessageType.AttributeInfo) {
-        f.format("No fractal heap");return;
+        f.format("No fractal heap");
+        return;
+      }
+
+      MessageAttributeInfo info = (MessageAttributeInfo) messData;
+      info.showFractalHeap(f);
+    }
+
+    // debugging
+    public void showCompression(Formatter f) {
+      if (mtype !=  H5header.MessageType.AttributeInfo) {
+        f.format("No fractal heap");
+        return;
       }
 
       MessageAttributeInfo info = (MessageAttributeInfo) messData;
@@ -3065,7 +3118,7 @@ public class H5header {
   }
 
   // Message Type 8 "Data Storage Layout" : regular (contiguous), chunked, or compact (stored with the message)
-  private class MessageLayout implements Named {
+  class MessageLayout implements Named {
     byte type; // 0 = Compact, 1 = Contiguous, 2 = Chunked
     long dataAddress = -1; // -1 means "not allocated"
     long contiguousSize; // size of data allocated contiguous

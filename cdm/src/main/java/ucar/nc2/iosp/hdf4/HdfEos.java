@@ -142,7 +142,7 @@ public class HdfEos {
       for (Element elemSwath : swaths) {
         Element swathNameElem = elemSwath.getChild("SwathName");
         if (swathNameElem == null) {
-          log.warn("No SwathName element in " + elemSwath.getName());
+          log.warn("No SwathName element in {} {} ", elemSwath.getName(), ncfile.getLocation());
           continue;
         }
         String swathName = swathNameElem.getText();
@@ -153,7 +153,7 @@ public class HdfEos {
         if (swathGroup != null) {
           featureType = amendSwath(ncfile, elemSwath, swathGroup);
         } else {
-          log.warn("Cant find swath group " + swathName);
+          log.warn("Cant find swath group {} {}", swathName, ncfile.getLocation());
         }
       }
     }
@@ -165,7 +165,7 @@ public class HdfEos {
       for (Element elemGrid : grids) {
         Element gridNameElem = elemGrid.getChild("GridName");
         if (gridNameElem == null) {
-          log.warn("Ne GridName element in " + elemGrid.getName());
+          log.warn("Ne GridName element in {} {} ", elemGrid.getName(), ncfile.getLocation());
           continue;
         }
         String gridName = gridNameElem.getText();
@@ -173,9 +173,9 @@ public class HdfEos {
         //if (gridGroup == null)
         //  gridGroup = findGroupNested(rootg, H4header.createValidObjectName(gridName));
         if (gridGroup != null) {
-          featureType = amendGrid(elemGrid, gridGroup);
+          featureType = amendGrid(elemGrid, gridGroup, ncfile.getLocation());
         } else {
-          log.warn("Cant find Grid group " + gridName);
+          log.warn("Cant find Grid group {} {}", gridName, ncfile.getLocation());
         }
       }
     }
@@ -187,7 +187,7 @@ public class HdfEos {
       for (Element elem : pts) {
         Element nameElem = elem.getChild("PointName");
         if (nameElem == null) {
-          log.warn("No PointName element in " + elem.getName());
+          log.warn("No PointName element in {} {}", elem.getName(), ncfile.getLocation());
           continue;
         }
         String name = nameElem.getText();
@@ -197,7 +197,7 @@ public class HdfEos {
         if (ptGroup != null) {
           featureType = FeatureType.POINT;
         } else {
-          log.warn("Cant find Point group " + name);
+          log.warn("Cant find Point group {} {}", name, ncfile.getLocation());
         }
       }
     }
@@ -228,7 +228,7 @@ public class HdfEos {
         Dimension dim = parent.findDimensionLocal(name);
         if (dim != null) {                 // already added - may be dimension scale ?
           if (dim.getLength() != length) { // ok as long as it matches
-            log.error("Conflicting Dimensions = {} "+dim);
+            log.error("Conflicting Dimensions = {} {}", dim, ncfile.getLocation());
             throw new IllegalStateException("Conflicting Dimensions = "+name);
           }
         } else {
@@ -237,7 +237,7 @@ public class HdfEos {
             System.out.printf(" Add dimension %s %n",dim);
         }
       } else {
-        log.warn("Dimension "+name+" has size "+sizeS);
+        log.warn("Dimension "+name+" has size "+sizeS, ncfile.getLocation());
         Dimension udim = new Dimension(name, 1);
         udim.setGroup(parent);
         unknownDims.add( udim);
@@ -289,7 +289,7 @@ public class HdfEos {
 
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims);
+        setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
         if (showWork) System.out.printf(" set coordinate %s %n", v);
       }
       if ((latAxis != null) && (lonAxis != null)) {
@@ -313,13 +313,13 @@ public class HdfEos {
         //if (v == null)
         //  v = dataG.findVariable( H4header.createValidObjectName(varname));
         if (v == null) {
-          log.error("Cant find variable "+varname);
+          log.error("Cant find variable {} {}", varname, ncfile.getLocation());
           continue;
         }
 
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims);
+        setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
       }
     }
 
@@ -358,7 +358,7 @@ public class HdfEos {
   }
 
 
-  private FeatureType amendGrid(Element gridElem, Group parent) {
+  private FeatureType amendGrid(Element gridElem, Group parent, String location) {
     List<Dimension> unknownDims = new ArrayList<Dimension>();
 
     // always has x and y dimension
@@ -387,7 +387,7 @@ public class HdfEos {
           if (parent.addDimensionIfNotExists(dim) && showWork)
             System.out.printf(" Add dimension %s %n", dim);
         } else {
-          log.warn("Dimension "+name+" has size "+sizeS);
+          log.warn("Dimension {} has size {} {} ", new Object[] {sizeS, name, location});
           Dimension udim = new Dimension(name, 1);
           udim.setGroup(parent);
           unknownDims.add( udim);
@@ -412,7 +412,7 @@ public class HdfEos {
 
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims);
+        setSharedDimensions( v, values, unknownDims, location);
       }
     }
 
@@ -433,7 +433,7 @@ public class HdfEos {
 
         Element dimList = elem.getChild("DimList");
         List<Element> values = (List<Element>) dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims);
+        setSharedDimensions( v, values, unknownDims, location);
       }
     }
 
@@ -460,7 +460,7 @@ public class HdfEos {
   }
 
   // convert to shared dimensions
-  private void setSharedDimensions(Variable v, List<Element> values, List<Dimension> unknownDims) {
+  private void setSharedDimensions(Variable v, List<Element> values, List<Dimension> unknownDims, String location) {
     if (values.size() == 0)
       return;
 
@@ -476,7 +476,7 @@ public class HdfEos {
     // gotta have same number of dimensions
     List<Dimension> oldDims = v.getDimensions();
     if (oldDims.size() != values.size()) {
-      log.error("Different number of dimensions for "+ v);
+      log.error("Different number of dimensions for {} {}", v, location);
       return;
     }
 
@@ -491,15 +491,15 @@ public class HdfEos {
       Dimension dim = group.findDimension(dimName);
       Dimension oldDim = oldDims.get(i);
       if (dim == null)
-        dim = checkUnknownDims(dimName, unknownDims, oldDim);
+        dim = checkUnknownDims(dimName, unknownDims, oldDim, location);
 
       if (dim == null) {
-        log.error("Unknown Dimension= "+dimName+" for variable = "+v.getFullName());
+        log.error("Unknown Dimension= {} for variable = {} {} ", new Object[] {dimName, v.getFullName(), location});
         return;
       }
       if (dim.getLength() != oldDim.getLength()) {
         log.error("Shared dimension ("+dim.getName()+") has different length than data dimension ("+oldDim.getName()+
-            ") shared="+ dim.getLength() + " org=" + oldDim.getLength() + " for "+ v);
+            ") shared="+ dim.getLength() + " org=" + oldDim.getLength() + " for "+ v+" "+location);
         return;
       }
       newDims.add(dim);
@@ -509,7 +509,7 @@ public class HdfEos {
   }
 
   // look if the wanted dimension is in the  unknownDims list.
-  private Dimension checkUnknownDims(String wantDim, List<Dimension> unknownDims, Dimension oldDim) {
+  private Dimension checkUnknownDims(String wantDim, List<Dimension> unknownDims, Dimension oldDim, String location) {
     for (Dimension dim : unknownDims) {
       if (dim.getName().equals(wantDim)) {
         int len = oldDim.getLength();
@@ -519,7 +519,7 @@ public class HdfEos {
         Group parent = dim.getGroup();
         parent.addDimensionIfNotExists(dim);  // add to the parent
         unknownDims.remove(dim); // remove from list LOOK is this ok?
-        log.warn("unknownDim " + wantDim+" length set to "+oldDim.getLength());
+        log.warn("unknownDim {} length set to {}{}", new Object[] {wantDim, oldDim.getLength(), location});
         return dim;
       }
     }
