@@ -79,6 +79,8 @@ public class FeatureDatasetFactoryManager {
     registerFactory(FeatureType.RADIAL, RadialDatasetStandardFactory.class);
     registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
 
+    registerFactory(FeatureType.UGRID, "ucar.nc2.ft.ugrid.UGridDatasetStandardFactory");
+
     // further calls to registerFactory are by the user
     userMode = true;
   }
@@ -87,13 +89,20 @@ public class FeatureDatasetFactoryManager {
   /**
    * Register a class that implements a FeatureDatasetFactory.
    *
-   * @param className name of class that implements FeatureDatasetFactory.
    * @param datatype  scientific data type
-   * @throws ClassNotFoundException if loading error
+   * @param className name of class that implements FeatureDatasetFactory.
+   * @return true if successfully loaded
    */
-  static public void registerFactory(FeatureType datatype, String className) throws ClassNotFoundException {
-    Class c = Class.forName(className);
-    registerFactory(datatype, c);
+  static public boolean registerFactory(FeatureType datatype, String className) {
+    try {
+      Class c = Class.forName(className);
+      registerFactory(datatype, c);
+      return true;
+
+    } catch (ClassNotFoundException e) {
+      // ok - these are optional
+      return false;
+    }
   }
 
   /**
@@ -180,6 +189,14 @@ public class FeatureDatasetFactoryManager {
       this.featureType = featureType;
       this.c = c;
       this.factory = factory;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("featureType=").append(featureType);
+      sb.append(", factory=").append(factory.getClass());
+      return sb.toString();
     }
   }
 
@@ -273,7 +290,7 @@ public class FeatureDatasetFactoryManager {
     if (ft != null)
       return wrap(ft, ncd, task, errlog);
 
-    // analyse the coordsys rank
+    // grids dont usually have a FeatureType attribute, so check these fist
     if (isGrid(ncd.getCoordinateSystems())) {
       ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset(ncd);
       if (gds.getGrids().size() > 0) {
@@ -296,7 +313,7 @@ public class FeatureDatasetFactoryManager {
       }
     }
 
-    // Factory not found
+    // try again as a Grid
     if (null == useFactory) {
       // if no datatype was requested, give em a GridDataset only if some Grids are found.
       ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset(ncd);
@@ -304,8 +321,9 @@ public class FeatureDatasetFactoryManager {
         return gds;
     }
 
+    // Fail
     if (null == useFactory) {
-      // errlog.format("**Failed to find Datatype Factory for= %s\n", ncd.getLocation());
+      errlog.format("Failed (wrapUnknown) to find Datatype Factory for= %s\n", ncd.getLocation());
       return null;
     }
 
@@ -352,6 +370,10 @@ public class FeatureDatasetFactoryManager {
 
     if (want == FeatureType.GRID) {
       return facType.isGridFeatureType();
+    }
+
+    if (want == FeatureType.UGRID) {
+      return facType.isUnstructuredGridFeatureType();
     }
 
     return false;

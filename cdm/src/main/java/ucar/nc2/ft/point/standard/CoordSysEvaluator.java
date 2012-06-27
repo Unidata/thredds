@@ -79,6 +79,8 @@ public class CoordSysEvaluator {
         nt.time = axis.getShortName();
       else if (axis.getAxisType() == AxisType.Height)
         nt.elev = axis.getShortName();
+      else if (axis.getAxisType() == AxisType.Pressure)
+        nt.elev = axis.getShortName();
     }
   }
 
@@ -97,6 +99,8 @@ public class CoordSysEvaluator {
       else if (axis.getAxisType() == AxisType.Time)
         nt.time = axis.getShortName();
       else if (axis.getAxisType() == AxisType.Height)
+        nt.elev = axis.getShortName();
+      else if (axis.getAxisType() == AxisType.Pressure)
         nt.elev = axis.getShortName();
     }
   }

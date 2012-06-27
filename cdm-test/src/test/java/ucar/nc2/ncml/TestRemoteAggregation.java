@@ -32,24 +32,21 @@
  */
 package ucar.nc2.ncml;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 
+import org.junit.Test;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.util.IO;
 import ucar.unidata.test.util.TestDir;
 
-public class TestRemoteAggregation extends TestCase {
-
-  public TestRemoteAggregation( String name) {
-    super(name);
-  }
+public class TestRemoteAggregation {
 
   public void testAggExisting() throws IOException {
-    String filename = "file:"+ TestDir.cdmUnitTestDir + "ncml/remote.ncml";
+    String filename = TestDir.cdmUnitTestDir + "ncml/remote.ncml";
 
-    System.out.println(" testAggExisting.try "+ filename);
+    System.out.printf(" testAggExisting: read %s%n%n%s", filename, IO.readFile(filename));
+
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
     System.out.println(" testAggExisting.open "+ ncd);
 

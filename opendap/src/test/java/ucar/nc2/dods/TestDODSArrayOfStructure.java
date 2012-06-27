@@ -35,6 +35,7 @@ package ucar.nc2.dods;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.util.DebugFlagsImpl;
 
 import java.io.*;
 
@@ -68,6 +69,7 @@ public class TestDODSArrayOfStructure extends TestCase {
     DODSNetcdfFile.setPreload(false);
     dodsfile = TestDODSRead.open("test.50");
     DODSNetcdfFile.setPreload(true);
+    DODSNetcdfFile.setDebugFlags(new DebugFlagsImpl("DODS/serverCall"));
   }
 
   protected void tearDown() throws Exception {
@@ -88,12 +90,14 @@ public class TestDODSArrayOfStructure extends TestCase {
     assert v.getRank() == 0;
     assert v.getSize() == 1;
     assert v.getDataType() == DataType.BYTE;
+
+    // note this reads all 10 bytes
     a = v.read();
-    assert a.getRank() == 0;
-    assert a.getSize() == 1;
+    assert a.getRank() == 1;
+    assert a.getSize() == 10;
     assert a.getElementType() == byte.class;
-    assert a instanceof ArrayByte.D0;
-    byte valb = ((ArrayByte.D0) a).get();
+    assert a instanceof ArrayByte.D1;
+    byte valb = ((ArrayByte.D1) a).get(0);
     assert (valb == 0);
   }
 
@@ -106,9 +110,9 @@ public class TestDODSArrayOfStructure extends TestCase {
 
     Array a = v.read();
     Index ima = a.getIndex();
-    assert a.getRank() == 0;
-    assert a.getInt(ima) == 1;
-    assert a instanceof ArrayInt.D0;
+    assert a.getRank() == 1;
+    assert a.getInt(ima) == 1 : a.getInt(ima);
+    assert a instanceof ArrayInt.D1;
 
     v = dodsfile.findVariable("types.s");
     assert v != null;
@@ -116,11 +120,11 @@ public class TestDODSArrayOfStructure extends TestCase {
     assert v.getDataType() == DataType.STRING : v.getDataType();
 
     a = v.read();
-    assert a.getRank() == 0;
-    assert a instanceof ArrayObject.D0;
+    assert a.getRank() == 1;
+    assert a instanceof ArrayObject.D1;
 
-    ArrayObject.D0 a0 = (ArrayObject.D0) a;
-    assert a0.get().equals("This is a data test string (pass 0).");
+    ArrayObject.D1 a0 = (ArrayObject.D1) a;
+    assert a0.get(0).equals("This is a data test string (pass 0).");
   }
 
   public void testReadArrayOfStructs() throws IOException, InvalidRangeException {
@@ -176,79 +180,4 @@ public class TestDODSArrayOfStructure extends TestCase {
     }
   }
 
-  public void testMemberReadNoFlatten() throws IOException, InvalidRangeException {
-    Array a = dodsfile.read("types(1).b", false);
-
-    assert a.getRank() == 1;
-    assert a.getSize() == 1;
-    assert a.getElementType() == StructureData.class : a.getElementType();
-    assert a instanceof ArrayStructure;
-
-    StructureData sd = (StructureData) a.getObject(a.getIndex());
-    StructureMembers.Member m = sd.findMember("b");
-    assert m != null;
-    Array data = sd.getArray(m);
-    assert data != null;
-    assert data.getRank() == 0;
-    assert data.getSize() == 1;
-    assert data.getElementType() == byte.class;
-    assert data instanceof ArrayByte.D0;
-
-    ArrayByte.D0 b = (ArrayByte.D0) data;
-    assert (b.get() == 0);
-  }
-
-  public void testArrayReadNoFlatten() throws IOException, InvalidRangeException {
-    Array a = dodsfile.read("types(1:7).b", false);
-
-    assert a.getRank() == 1;
-    assert a.getSize() == 7;
-    assert a.getElementType() == StructureData.class : a.getElementType();
-    assert a instanceof ArrayStructure;
-
-    StructureData sd = (StructureData) a.getObject(a.getIndex());
-    StructureMembers.Member m = sd.findMember("b");
-    assert m != null;
-    Array data = sd.getArray(m);
-    assert data != null;
-    assert data.getRank() == 0;
-    assert data.getSize() == 1;
-    assert data.getElementType() == byte.class;
-    assert data instanceof ArrayByte.D0;
-
-    ArrayByte.D0 b = (ArrayByte.D0) data;
-    assert (b.get() == 0) : b.get();
-  }
-
-  public void testArrayReadFlatten() throws IOException, InvalidRangeException {
-    Array a = dodsfile.read("types(1:7).b", true);
-
-    assert a.getRank() == 1;
-    assert a.getSize() == 7;
-    assert a.getElementType() == byte.class;
-    assert a instanceof ArrayByte.D1;
-
-    ArrayByte.D1 b1 = (ArrayByte.D1) a;
-    assert (b1.get(0) == 0);
-    assert (b1.get(6) == 6);
-  }
-
-
-  /* void checkS1( Variable v) throws IOException {
-
-   // string
-   assert v.getRank() == 1;
-   assert v.getDataType() == DataType.STRING : v.getDataType();
-
-   Array a = v.read();
-   assert a.getRank() == 1;
-   assert a.getElementType() == String.class;
-   assert a instanceof ArrayObject.D2;
-
-   int[] shape = a.getShape();
-   for (int i=0; i<shape[0]; i++) {
-     String str = ((ArrayChar)a).getString(i);
-     assert str.equals("This is a data test string (pass "+i+").");
-   }
- } */
 }

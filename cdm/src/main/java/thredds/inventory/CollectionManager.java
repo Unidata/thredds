@@ -120,7 +120,7 @@ public interface CollectionManager {
 
   /**
    * If isScanNeeded(), do a scan.
-   * @return true is scan was done, and anything changed.
+   * @return true if scan was done, and anything changed.
    * @throws IOException on io error
    */
   public boolean scanIfNeeded() throws IOException;
@@ -136,6 +136,11 @@ public interface CollectionManager {
    */
   public boolean scan(boolean sendEvent) throws IOException;
 
+  /**
+   * send event TriggerType.updateNocheck, which calls
+   * call InvDatasetFeatureCollection.update(CollectionManager.Force.nocheck)
+   * @throws IOException
+   */
   public void updateNocheck() throws IOException;
 
   /**
@@ -202,10 +207,10 @@ public interface CollectionManager {
     boolean hasntChangedSince(MFile file, long when);
   }
 
-  public void setChangeChecker(ChangeChecker strat);
+  public void setChangeChecker(ChangeChecker strategy);
 
   ////////////////////////////////////////////////////
-  // ability to pass arbitrary information through. kind of a kludge
+  // ability to pass arbitrary information to users of the collection manager. kind of a kludge
 
   public Object getAuxInfo(String key);
 
@@ -256,6 +261,5 @@ public interface CollectionManager {
                '}';
      }
    }
-
 
 }

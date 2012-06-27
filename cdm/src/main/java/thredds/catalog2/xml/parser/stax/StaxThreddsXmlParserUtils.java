@@ -37,10 +37,7 @@ import thredds.catalog2.xml.parser.ThreddsXmlParserIssue;
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
 
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.Location;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.*;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.StartElement;
 import javax.xml.namespace.QName;
@@ -52,7 +49,7 @@ import java.util.ArrayList;
 import java.net.URI;
 
 /**
- * _more_
+ * Utility methods for using StAX parser for THREDDS catalogs.
  *
  * @author edavis
  * @since 4.0
@@ -202,15 +199,23 @@ class StaxThreddsXmlParserUtils
     return new ThreddsXmlParserIssue( severity, msg, null, null );
   }
 
+  /**
+   * Parse an element and all its contents and write it as XML to a String. The XMLEventReader's
+   * current event must be the StartElement event for the desired element; once completed the
+   * current event will be the event following that elements EndElement event.
+   *
+   * @param xmlEventReader the XMLEventReader from which to read the element.
+   * @return the XML element and content written as a string
+   * @throws ThreddsXmlParserException if any problems with the XMLEventReader or the XML element
+   */
   static String consumeElementAndConvertToXmlString( XMLEventReader xmlEventReader )
           throws ThreddsXmlParserException
   {
     if ( xmlEventReader == null )
       throw new IllegalArgumentException( "XMLEventReader may not be null." );
 
-    // ToDo Capture as valid XML since writeAsEncodedUnicode() isn't impl-ed in Sun's JDK 6u14.
-    StringWriter writerUsingWriteAsEncodedUnicode = new StringWriter();
-    StringWriter writerUsingToString = new StringWriter();
+    StringWriter writer = new StringWriter();
+    String resultString;
     Location startLocation = null;
     try
     {
@@ -218,6 +223,12 @@ class StaxThreddsXmlParserUtils
       if ( ! event.isStartElement() )
         throw new IllegalArgumentException( "Next event in reader must be start element." );
       startLocation = event.getLocation();
+
+      XMLOutputFactory oFactory = XMLOutputFactory.newFactory();
+      oFactory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE);
+      if ( oFactory.isPropertySupported( "javax.xml.stream.isPrefixDefaulting" ))
+        oFactory.setProperty( "javax.xml.stream.isPrefixDefaulting", Boolean.TRUE );
+      XMLEventWriter eventWriter = oFactory.createXMLEventWriter( writer );
 
       // Track start and end elements so know when done.
       // Use name list as FILO, push on name of start element and pop off matching name of end element.
@@ -244,22 +255,18 @@ class StaxThreddsXmlParserUtils
           }
         }
 
-        event.writeAsEncodedUnicode( writerUsingWriteAsEncodedUnicode );
-        writerUsingToString.write( event.toString());
+        eventWriter.add( event );
         if ( nameList.isEmpty() )
           break;
       }
+      eventWriter.flush();
+      eventWriter.close();
+      resultString = writer.toString();
     }
-    catch ( XMLStreamException e )
-    {
+    catch ( XMLStreamException e ) {
       throw new ThreddsXmlParserException( "Problem reading unknown element [" + startLocation + "]. Underlying cause: " + e.getMessage(), e );
     }
-
-    String result = writerUsingWriteAsEncodedUnicode.toString();
-    if ( result == null || result.length() == 0)
-      result = writerUsingToString.toString();
-
-    return result;
+    return resultString;
   }
 
   /**

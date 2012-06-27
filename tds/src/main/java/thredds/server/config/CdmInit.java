@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.slf4j.MDC;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -209,10 +210,12 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     DiskCache.setCachePolicy(alwaysUse);
     startupLog.info("CdmInit:  CdmCache= "+dir+" scour = "+scourSecs+" maxSize = "+maxSize);
 
-    Calendar c = Calendar.getInstance(); // contains current startup time
-    c.add(Calendar.SECOND, scourSecs / 2); // starting in half the scour time
-    timer = new Timer("CdmDiskCache");
-    timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
+    if (scourSecs > 0) {
+      Calendar c = Calendar.getInstance(); // contains current startup time
+      c.add(Calendar.SECOND, scourSecs / 2); // starting in half the scour time
+      timer = new Timer("CdmDiskCache");
+      timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
+    }
 
     startupLog.info("CdmInit complete");
   }
@@ -227,7 +230,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     thredds.inventory.bdb.MetadataManager.closeAll();
     CollectionUpdater.INSTANCE.shutdown();
     startupLog.info("CdmInit shutdown");
-   
+    MDC.clear();
   }
 
   private class CacheScourTask extends TimerTask {

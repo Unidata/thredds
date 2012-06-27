@@ -31,6 +31,7 @@ import java.util.*;
 	super(factory);
 	this.yylexer = new Celex(this);
 	super.lexstate = (Celex)this.yylexer;
+	this.yyDebugStream = System.out;
     }
 
 
@@ -269,7 +270,7 @@ ident:  word
 	;
 
 word:  SCAN_WORD
-	    {$$ = $1;}
+	    {$$=unescapeDAPName($1);}
 	;
 
 number:  SCAN_NUMBERCONST

@@ -31,8 +31,8 @@
       </publisher>
     </metadata>
 
-    <featureCollection name="NMM Primary Domain" featureType="GRIB" harvest="true" path="grib/Unidata/NMM/Primary">
-      <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm.GrbF.*" olderThan="5 min"/>
+    <featureCollection name="NMM_Primary_Domain" featureType="GRIB" harvest="true" path="grib/Unidata/NMM/Primary">
+      <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm.GrbF.*00" olderThan="5 min"/>
       <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
     </featureCollection>
 
@@ -55,8 +55,8 @@
       </netcdf>
     </datasetFmrc -->
 
-    <featureCollection name="NMM Secondary Domain" featureType="GRIB" harvest="true" path="grib/Unidata/NMM/Secondary">
-      <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm_alt1\.GrbF.*" olderThan="5 min"/>
+    <featureCollection name="NMM_Secondary_Domain" featureType="GRIB" harvest="true" path="grib/Unidata/NMM/Secondary">
+      <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm_alt1\.GrbF.*00" olderThan="5 min"/>
       <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
     </featureCollection>
 

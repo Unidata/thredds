@@ -200,6 +200,13 @@ public final class ThreddsWmsController extends AbstractWmsController
       else if ( request.equals( "GetTransect" ) )
       {
         modelAndView = getTransect( params, layerFactory, httpServletResponse, usageLogEntry );
+      }else if( request.equals("GetVerticalProfile"))
+      {
+    	modelAndView = getVerticalProfile(params, layerFactory, httpServletResponse, usageLogEntry);  
+      }
+      else if(request.equals("GetVerticalSection"))
+      {
+    	modelAndView = getVerticalSection(params, layerFactory, httpServletResponse, usageLogEntry);
       }
       else
       {

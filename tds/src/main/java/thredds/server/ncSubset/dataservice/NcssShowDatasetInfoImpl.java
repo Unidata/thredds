@@ -5,11 +5,17 @@ import java.io.InputStream;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.jdom.transform.JDOMResult;
+import org.jdom.transform.JDOMSource;
 import org.jdom.transform.XSLTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,16 +46,24 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 
 	    } else {
 	    	
-	    	try {	
+	    	try {
+	    		
 	    		InputStream xslt = getXSLT(isPoint ? "/WEB-INF/xsl/ncssGridAsPoint.xsl" : "/WEB-INF/xsl/ncssGrid.xsl");
 	    		Document doc = writer.makeGridForm();
+	    		
 	    		Element root = doc.getRootElement();
-	    		root.setAttribute("location", datsetUrlPath);
-	      
-	    		XSLTransformer transformer = new XSLTransformer(xslt);
-	    		Document html = transformer.transform(doc);
+	    		root.setAttribute("location", datsetUrlPath);	    			    		
+	    		Transformer xslTransformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xslt));
+	    		String context= servletContext.getContextPath();
+	    		xslTransformer.setParameter("tdsContext", context);
+	    		JDOMSource in = new JDOMSource(doc);
+	    		JDOMResult out = new JDOMResult();
+	    		xslTransformer.transform(in, out);  		
+	    		Document html =out.getDocument();
+	    		
 	    		XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
 	    		infoString = fmt.outputString(html);
+
 
 	      }catch(IOException ioe){
 		        log.error("IO error opening xsl", ioe);
@@ -57,6 +71,7 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 	      }catch (Throwable e) {
 	        log.error("ForecastModelRunServlet internal error", e);
 	        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+	        
 	        //if (!res.isCommitted())
 	        //  res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
 	        //return;

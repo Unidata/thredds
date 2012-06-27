@@ -56,7 +56,7 @@ dl {margin: 10px 5px 5px 15px;)
       <li> Each profile has almost the same number of vertical coordinates and the values may be different:  you may use CF <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8360656">H.3.2</a></li>
       <li>Each profile has a different number of vertical coordinates and you want to keep file size as small as possible:
         <ol>
-              <li>you have all the data already, and you want to optimize reading all the data for one station: you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8367584">H.3.4</a></li>
+              <li>you have all the data already, and you want to optimize reading all the data for one profile: you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8367584">H.3.4</a></li>
           <li>you want to write the data as it arrives, in any order: you may use <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8372832">H.3.5</a></li>
         </ol>
       </li>
@@ -233,6 +233,8 @@ The CDM uses the axis attribute to choose the correct coordinate. However, it pr
     <td><div align="center"></div></td>
   </tr>
 </table>
+<h3>H.3.5. Indexed ragged array representation of profiles</h3>
+<p>Example only shows <em><strong>double time(profile) </strong></em>but  <em><strong>double time(obs) </strong></em>is also possible, when the observation varies by time.</p>
 <h3>H.5.1. Multidimensional array representations of time series profiles</h3>
 <p>Specificaton says &quot;The pressure(i,p,o), temperature(i,p,o), and humidity(i,p,o) data for element o of profile p at station i are associated with the coordinate values time(i,p), z(i,p,o), lat(i), and lon(i). Any of the three dimensions could be the netCDF unlimited dimension, if it might be useful to be able enlarge it.&quot;</p>
 <p>Since CDM currently only allows dimensions to be in the order (station, profile, z), then only the station dimension could be unlimited in the multidimensional representation. <br />

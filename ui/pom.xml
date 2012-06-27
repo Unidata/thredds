@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.9-SNAPSHOT</version>
+    <version>4.3.11</version>
   </parent>
 
   <!-- ===========================================================
@@ -96,7 +94,6 @@
       <scope>test</scope>
     </dependency>
 
-
   </dependencies>
 
   <build>
@@ -141,7 +138,7 @@
                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                   <resource>META-INF/spring.schemas</resource>
                 </transformer>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
               </transformers>
             </configuration>
           </execution>
@@ -166,9 +163,45 @@
                   <exclude>lucene:lucene</exclude>
                   <exclude>org.springframework:*</exclude>
                   <exclude>org.bounce:*</exclude>
-                  <exclude>org.slf4j:slf4j-jdk14</exclude>
                 </excludes>
               </artifactSet>
+
+            </configuration>
+
+          </execution>
+
+          <execution>
+            <id>build-ncIdv</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedArtifactId>wth</shadedArtifactId>
+              <finalName>ncIdv-4.3</finalName>
+
+              <artifactSet>
+                <excludes>
+                  <exclude>edu.ucar:ui</exclude>
+                  <exclude>aopalliance:aopalliance</exclude>
+                  <exclude>com.jgoodies:forms</exclude>
+                  <exclude>commons-logging:commons-logging</exclude>
+                  <exclude>jfree:*</exclude>
+                  <exclude>lucene:lucene</exclude>
+                  <exclude>org.springframework:*</exclude>
+                  <exclude>org.bounce:*</exclude>
+                </excludes>
+              </artifactSet>
+
+              <filters>
+                <filter>
+                  <artifact>edu.ucar:visadCdm</artifact>
+                  <excludes>
+                    <exclude>visad/**</exclude>
+                    <exclude>edu/wisc/**</exclude>
+                  </excludes>
+                </filter>
+              </filters>
 
             </configuration>
 
@@ -177,16 +210,20 @@
         </executions>
 
       </plugin>
-
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
+        <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>true</skip>
+          <skip>${skipTests}</skip>
+          <testFailureIgnore>true</testFailureIgnore>
+          <!-- includes>
+            <include>ucar.util.prefs.TestAllPrefs.java</include>
+          </includes -->
         </configuration>
-      </plugin>
+      </plugin>      
 
-      <plugin>
+      <!-- plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <executions>
@@ -210,7 +247,7 @@
         </executions>
       </plugin>
 
-      <plugin>  <!-- release kludge for now -->
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
@@ -219,30 +256,30 @@
             <phase>deploy</phase>
             <configuration>
               <tasks>
-                <property name="ftp.dir" value="V:/pub/netcdf-java/v4.3/"/>
-                <property name="web.dir" value="W:/content/software/netcdf-java/v4.3/"/>
-                <echo message="ftp.dir: ${ftp.dir}"/>
-                <echo message="web.dir: ${web.dir}"/>
+                <property name="ftp.dir" value="V:/pub/netcdf-java/v4.3/" />
+                <property name="web.dir" value="W:/content/software/netcdf-java/v4.3/" />
+                <echo message="ftp.dir: ${ftp.dir}" />
+                <echo message="web.dir: ${web.dir}" />
 
                 <copy todir="${ftp.dir}" overwrite="true">
-                  <fileset dir="./target" includes="netcdfAll-4.3.jar"/>
-                  <fileset dir="./target" includes="toolsUI-4.3.jar"/>
-                  <fileset dir="../cdm" includes="CHANGES"/>
+                  <fileset dir="./target" includes="netcdfAll-4.3.jar" />
+                  <fileset dir="./target" includes="toolsUI-4.3.jar" />
+                  <fileset dir="../cdm" includes="CHANGES" />
                 </copy>
 
                 <checksum>
                   <fileset dir="${ftp.dir}">
-                    <include name="*.jar"/>
+                    <include name="*.jar" />
                   </fileset>
                 </checksum>
 
                 <copy todir="${web.dir}" overwrite="true">
-                  <fileset dir="../cdm" includes="CHANGES.txt"/>
-                  <fileset dir="../cdm" includes="README"/>
+                  <fileset dir="../cdm" includes="CHANGES.txt" />
+                  <fileset dir="../cdm" includes="README" />
                 </copy>
 
                 <copy todir="${web.dir}/javadoc" overwrite="true">
-                  <fileset dir="./target/site/apidocs"/>
+                  <fileset dir="./target/site/apidocs" />
                 </copy>
 
               </tasks>
@@ -252,7 +289,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin -->
 
     </plugins>
 

@@ -12,13 +12,12 @@ import java.util.Formatter;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.util.StringUtil2;
 
-
 public class TestNetcdfStream {
   String serverRoot = TestDir.cdmUnitTestDir + "formats";
 
   @Test
-  public void testProblem() throws IOException {
-    doOne(serverRoot+"/netcdf4/tst/tst_enums.nc");
+  public void utestProblem() throws IOException {
+    doOne(serverRoot+"/netcdf4/vlenBigEndian.nc");
   }
 
   @Test
@@ -26,6 +25,11 @@ public class TestNetcdfStream {
     /*    */
     scanDir(serverRoot+"/netcdf3/", ".nc");
     scanDir(serverRoot+"/netcdf4/", ".nc");
+    /*scanDir(serverRoot+"/netcdf4/", new FileFilter(){
+    	public boolean accept(File pathName){
+    		return  !pathName.getPath().contains("vlen") && pathName.getPath().endsWith(".nc");
+    	}
+    });*/    
     scanDir(serverRoot+"/hdf5/",  new FileFilter() {
       public boolean accept(File pathname) {
         return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
@@ -44,7 +48,7 @@ public class TestNetcdfStream {
      });
      scanDir(serverRoot+"/gini/", ".gini");
      scanDir(serverRoot+"/gempak/", ".gem");
-     scanDir(serverRoot+"/gempak/", ".gem");
+     //scanDir(serverRoot+"/gempak/", ".gem");
      scanDir(serverRoot+"/gnexrad2empak/", ".ar2v"); // */
   }
 
@@ -67,13 +71,13 @@ public class TestNetcdfStream {
 
   void doOne(String filename) throws IOException {
     String name = StringUtil2.substitute(filename.substring(serverRoot.length()), "\\", "/");
-    String remote = "http://localhost:8080/thredds/cdmremote/testCdmremote" + name;
-    System.out.printf("%s%n", filename);
+    String remote = "http://localhost:8081/thredds/cdmremote/testCdmremote" + name;
+    System.out.printf("---------------------------\n");
+    System.out.printf("TEST %s and %s%n", filename, remote);
     compare(filename, remote);
   }
 
   void compare(String file, String remote) throws IOException {
-    System.out.printf("---------------------------\n");
     NetcdfFile ncfile = NetcdfDataset.openFile(file, null);
     NetcdfFile ncfileRemote = new CdmRemote(remote);
 
@@ -121,7 +125,7 @@ public class TestNetcdfStream {
 
   public static void main2(String[] args) {
     try {
-      String remote = "http://localhost:8080/thredds/cdmremote/testCdmremote/netcdf3/testWrite.nc";
+      String remote = "http://localhost:8081/thredds/cdmremote/testCdmremote/netcdf3/testWrite.nc";
       CdmRemote ncfileRemote = new CdmRemote(remote);
 
       String fileOut = "C:/temp/out2.ncs";

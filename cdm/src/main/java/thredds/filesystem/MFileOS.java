@@ -46,10 +46,23 @@ import java.io.File;
  */
 @ThreadSafe
 public class MFileOS implements MFile {
+
+  /**
+   * Make MFileOS if file exists, otherwise return null
+   * @param filename
+   * @return MFileOS or null
+   */
+  static public MFileOS getExistingFile(String filename) {
+    if (filename == null) return null;
+    File file = new File(filename);
+    if (file.exists()) return new MFileOS(file);
+    return null;
+  }
+
   private final java.io.File file;
   private final long lastModified;
   private Object auxInfo;
-  
+
   public MFileOS(java.io.File file) {
     this.file = file;
     this.lastModified = file.lastModified();

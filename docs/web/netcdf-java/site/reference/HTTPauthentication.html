@@ -27,6 +27,13 @@ The HttpClientManager API will be kept as backwards compatible as possible.
 One way to do this is to set them on the command line:
 <pre>java -D<strong>http.proxyHost</strong>=hostname -D<strong>http.proxyPort</strong>=80 -classpath ...
 </pre>
+<p>
+Alternatively, one can set the proxy host and port programmatically
+using this procedure.
+<pre>
+HTTPSession.setGlobalProxy(String host, int port)
+</pre>
+
 <h2>HTTP Authentication </h2>
 <h3>Overview</h3>
 <p>When dataset access must be restricted to authorized
@@ -141,13 +148,14 @@ interface, which has one method:
 <pre>public <a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/Credentials.html" title="interface in org.apache.commons.httpclient">Credentials</a> <b>getCredentials</b>(<a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/auth/AuthScheme.html" title="interface in org.apache.commons.httpclient.auth">AuthScheme</a>&nbsp;scheme,
                            String&nbsp;host,
                            int&nbsp;port,
-                           boolean&nbsp;proxy)
+                           boolean&nbsp;isproxy)
                            throws <a href="http://jakarta.apache.org/commons/httpclient/apidocs/org/apache/commons/httpclient/auth/CredentialsNotAvailableException.html" title="class in org.apache.commons.httpclient.auth">CredentialsNotAvailableException</a>
 </pre>
 <p>You can write your own, or, for GUI programs, use the <strong>thredds.ui.UrlAuthenticatorDialog</strong> class, which pops up a Dialog Box, similar to how FireFox and other browsers work.
 <p>
-You can set the credentials provider globally, or for a specific situation.
-Globally means that the credentials provider will be used for all instances
+You can set the credentials provider globally for all requests
+or for a requests to specific urls.
+Globally for all requests means that the credentials provider will be used for all instances
 of <i>HTTPSession</i>. An example of this would be as follows.
 <pre>
 CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);

@@ -46,7 +46,8 @@ import java.io.IOException;
 
 /**
  * Write a CF "Discrete Sample" profile collection file.
- * Example H.3.5. Indexed ragged array representation of profiles.
+ * Example H.3.5. Indexed ragged array representation of profiles
+ * LOOK: better to use contiguous, H.3.4
  *
  * <p/>
  * <pre>
@@ -55,19 +56,18 @@ import java.io.IOException;
  *   finish()
  * </pre>
  *
- * @see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#time-series-data"
+ * @see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8372832"
  * @author caron
- * @since Aug 19, 2009
+ * @since April, 2012
  */
 public class WriterCFProfileCollection extends CFPointWriter {
   private static final String profileDimName = "profile";
-  private static final String idName = "profile_id";
+  private static final String idName = "profileId";
   private static final String profileIndexName = "profileIndex";
+  private static final String zName = "z";
   private static final boolean debug = false;
 
   private int name_strlen = 1;
-
-  private List<Dimension> profileDims = new ArrayList<Dimension>(1);
 
   public WriterCFProfileCollection(String fileOut, List<Attribute> atts) throws IOException {
     super(fileOut, atts);
@@ -75,14 +75,15 @@ public class WriterCFProfileCollection extends CFPointWriter {
     ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name());
   }
 
-  public void writeHeader(List<String> profileNames, List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits) throws IOException {
+  public void writeHeader(List<String> profileNames, List<VariableSimpleIF> dataVars, DateUnit timeUnit, String altUnits) throws IOException {
     this.altUnits = altUnits;
     
     createProfiles(profileNames);
     createObsVariables(timeUnit);
-    createDataVariables(vars);
+    createDataVariables(dataVars);
 
     ncfile.create(); // done with define mode
+    System.out.printf("%s%n", ncfile);
 
     writeProfileData(profileNames); // write out the profile info
 
@@ -118,6 +119,8 @@ public class WriterCFProfileCollection extends CFPointWriter {
 
     // add the dimensions
     ncfile.addUnlimitedDimension(recordDimName);
+
+    List<Dimension> profileDims = new ArrayList<Dimension>(1);
     Dimension profileDim = ncfile.addDimension(profileDimName, nprofiles);
     profileDims.add(profileDim);
 
@@ -133,18 +136,25 @@ public class WriterCFProfileCollection extends CFPointWriter {
     v = ncfile.addVariable(lonName, DataType.DOUBLE, profileDimName);
     ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "degrees_east"));
     ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile longitude"));
+
+    if (altUnits != null) {
+      v = ncfile.addVariable(altName, DataType.DOUBLE, profileDimName);
+      ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, altUnits));
+      ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile altitude"));
+    }
   }
 
   private void createObsVariables(DateUnit timeUnit) throws IOException {
-    // time variable
+
+    // time variable LOOK could also be time(profile)
     Variable timeVar = ncfile.addVariable(timeName, DataType.DOUBLE, recordDimName);
     ncfile.addVariableAttribute(timeVar, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
     ncfile.addVariableAttribute(timeVar, new Attribute(CDM.LONG_NAME, "time of measurement"));
 
     /*
-    v = ncfile.addVariable(altName, DataType.DOUBLE, profileDimName);
-    ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, altUnits));
-    ncfile.addVariableAttribute(v, new Attribute(CF.POSITIVE, CF.POSITIVE_UP)); */
+    Variable zVar = ncfile.addVariable(zName, DataType.DOUBLE, recordDimName);
+    ncfile.addVariableAttribute(timeVar, new Attribute(CDM.UNITS, zUnit));
+    ncfile.addVariableAttribute(timeVar, new Attribute(CDM.LONG_NAME, "time of measurement")); */
 
     Variable v = ncfile.addVariable(profileIndexName, DataType.INT, recordDimName);
     ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile index for this observation record"));
@@ -152,9 +162,10 @@ public class WriterCFProfileCollection extends CFPointWriter {
   }
 
   private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
-    String coordNames = latName + " " + lonName + " " + altName + " " + timeName;
+    String coordNames = latName + " " + lonName  + " " + timeName;
+    if (altUnits != null) coordNames += " " + altName;
 
-    // find all dimensions needed by the data variables
+    /* find all dimensions needed by the data variables
     for (VariableSimpleIF var : dataVars) {
       List<Dimension> dims = var.getDimensions();
       dimSet.addAll(dims);
@@ -164,37 +175,37 @@ public class WriterCFProfileCollection extends CFPointWriter {
     for (Dimension d : dimSet) {
       if (!d.isUnlimited())
         ncfile.addDimension(d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength());
-    }
+    } */
     
     // find all variables already in use 
-    List<VariableSimpleIF> useDataVars = new ArrayList<VariableSimpleIF>(dataVars.size());
+    List<VariableSimpleIF> useDataVars = new ArrayList<VariableSimpleIF>(dataVars.size()); // LOOK doesnt make sense - must eliminate non data vars in calling routine
     for (VariableSimpleIF var : dataVars) {
       if (ncfile.findVariable(var.getShortName()) == null) useDataVars.add(var);
     }
 
     // add the data variables all using the record dimension
     for (VariableSimpleIF oldVar : useDataVars) {
-      List<Dimension> dims = oldVar.getDimensions();
+      /* List<Dimension> dims = oldVar.getDimensions();  // LOOK missing vectors - must be able to eliminate the z dimension
       StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
         if (!d.isUnlimited())
           dimNames.append(" ").append(d.getName());
-      }
-      Variable newVar = ncfile.addVariable(oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
+      } */
 
+      Variable newVar = ncfile.addVariable(oldVar.getShortName(), oldVar.getDataType(), recordDimName);
       List<Attribute> atts = oldVar.getAttributes();
-      for (Attribute att : atts) {
+      for (Attribute att : atts) {  // LOOK filter ??
         newVar.addAttribute(att);
       }
       newVar.addAttribute(new Attribute(CF.COORDINATES, coordNames));
     }
   }
 
-  private HashMap<String, Integer> stationMap;
+  private HashMap<String, Integer> profileMap;
 
   private void writeProfileData(List<String> profiles) throws IOException {
     int nprofiles = profiles.size();
-    stationMap = new HashMap<String, Integer>(2 * nprofiles);
+    profileMap = new HashMap<String, Integer>(2 * nprofiles);
     if (debug) System.out.println("stationMap created");
 
     // now write the profile data
@@ -202,7 +213,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
 
     for (int i = 0; i < profiles.size(); i++) {
       String name = profiles.get(i);
-      stationMap.put(name, i);
+      profileMap.put(name, i);
       idArray.set(i, name);
     }
 
@@ -230,7 +241,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
   public void writeRecord(String profileName, double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata) throws IOException {
     trackBB(loc, obsDate);
 
-    Integer parentIndex = stationMap.get(profileName);
+    Integer parentIndex = profileMap.get(profileName);
     if (parentIndex == null)
       throw new RuntimeException("Cant find profile " + profileName);
 

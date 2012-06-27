@@ -42,7 +42,10 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
+import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.ma2.InvalidRangeException;
 
@@ -96,11 +99,6 @@ public class TestProjections extends TestCase {
         "Temperature_isobaric",
         Mercator.class);
 
-    p = test(testDir+ "rotatedPole/snow.DMI.ecctrl.nc",
-        "rotated_pole",
-        "snow",
-        RotatedPole.class);
-
     p = test(testDir+ "Eumetsat.VerticalPerspective.grb",
         "SpaceViewPerspective_Projection",
         "Pixel_scene_type",
@@ -136,6 +134,29 @@ public class TestProjections extends TestCase {
             "snow",
             RotatedPole.class);
   }
+
+  public void testLCEA() throws IOException, InvalidRangeException {
+    ProjectionImpl p = (ProjectionImpl) test(testDir + "melb-small_LCEA.nc",
+        "lambert_cylindrical_equal_area",
+        "Band1",
+         CylindricalEqualAreaProjection.class);
+
+    LatLonPointImpl llpt = new LatLonPointImpl(0, 145.0);
+    ProjectionPoint pt = p.latLonToProj(llpt);
+    System.out.printf("%s -> %s%n", llpt, pt);
+  }
+
+  public void testAZE() throws IOException, InvalidRangeException {
+    ProjectionImpl p = (ProjectionImpl) test(testDir + "melb-small_AZE.nc",
+        "azimuthal_equidistant",
+        "Band1",
+         EquidistantAzimuthalProjection.class);
+
+    LatLonPointImpl llpt = new LatLonPointImpl(-37, 145.0);
+    ProjectionPoint pt = p.latLonToProj(llpt);
+    System.out.printf("%s -> %s%n", llpt, pt);
+  }
+
 
   private Projection test(String filename, String ctvName, String varName, Class projClass) throws IOException, InvalidRangeException {
     System.out.printf("Open= %s%n", filename);

@@ -3,8 +3,8 @@
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
   <appender name="logcdm" class="org.apache.log4j.DailyRollingFileAppender">
-<!-- LOGFILE = logs/cdm.log | ${tds.log.dir}/cdm.log -->
-    <param name="File" value="LOGFILE"/>
+<!-- logs/cdm.log = logs/cdm.log | ${tds.log.dir}/cdm.log -->
+    <param name="File" value="webapps/dts/cdm.log"/>
     <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd' 'HH:mm:ss.SSS} %-5p - %c%n%m%n"/>
@@ -18,12 +18,12 @@
   </appender>
 
   <logger name="opendap.servlet.DTSLog" additivity="false">
-    <level value="debug" />
+    <level value="INFO" />
     <appender-ref ref="logcdm"/>
   </logger>
 
   <logger name="opendap.servlet.LogStream" additivity="false">
-    <level value="debug"/>
+    <level value="INFO"/>
     <appender-ref ref="logcdm"/>
   </logger>
 

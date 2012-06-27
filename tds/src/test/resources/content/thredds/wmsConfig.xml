@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Detailed configuration of the WMS service.  This config file can be used to
+set default styling parameters for each dataset/variable, and to enable or disable
+the GetFeatureInfo operation.
+
+See http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration
+for more information.
+-->
+<!DOCTYPE wmsConfig [
+
+<!ELEMENT wmsConfig (global, overrides?)>
+
+<!ELEMENT global (defaults, standardNames?)>
+
+<!ELEMENT defaults (allowFeatureInfo, defaultColorScaleRange, defaultPaletteName, defaultNumColorBands, logScaling)>
+
+<!ELEMENT standardNames (standardName*)>
+
+<!ELEMENT standardName (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+<!ATTLIST standardName name CDATA #REQUIRED>
+<!ATTLIST standardName units CDATA #REQUIRED>
+
+<!ELEMENT overrides (datasetPath*)>
+
+<!ELEMENT datasetPath (pathDefaults?, variables?)>
+<!ATTLIST datasetPath pathSpec CDATA #REQUIRED>
+
+<!ELEMENT pathDefaults (allowFeatureInfo?, defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+
+<!ELEMENT variables (variable*)>
+
+<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+<!ATTLIST variable id CDATA #REQUIRED>
+
+<!ELEMENT allowFeatureInfo (#PCDATA)>
+<!ELEMENT defaultColorScaleRange (#PCDATA)>
+<!ELEMENT defaultPaletteName (#PCDATA)>
+<!ELEMENT defaultNumColorBands (#PCDATA)>
+<!ELEMENT logScaling (#PCDATA)>
+]>
+<wmsConfig>
+
+    <global>
+        <!-- These settings apply to all datasets unless overridden below -->
+
+        <defaults>
+            <!-- The global defaults. All elements are mandatory -->
+            <allowFeatureInfo>true</allowFeatureInfo>
+            <defaultColorScaleRange>-50 50</defaultColorScaleRange>
+            <defaultPaletteName>rainbow</defaultPaletteName>
+            <defaultNumColorBands>20</defaultNumColorBands>
+            <logScaling>false</logScaling>
+        </defaults>
+
+        <standardNames>
+            <!-- Use this section to set defaults per standard name -->
+            <!-- Units must come from the UDUNITS vocabulary -->
+            <standardName name="sea_water_potential_temperature" units="K">
+                <defaultColorScaleRange>268 308</defaultColorScaleRange>
+            </standardName>
+            <standardName name="sea_water_temperature" units="K">
+                <defaultColorScaleRange>268 308</defaultColorScaleRange>
+            </standardName>
+            <standardName name="mass_concentration_of_chlorophyll_in_sea_water" units="kg m-3">
+                <logScaling>true</logScaling>
+            </standardName>
+            <!-- TODO: how about allowing "*fraction" to map to 0:1? -->
+            <!-- TODO: how about allowing multiple standard names to map to the same settings,
+                 either through a glob expression or through a list? -->
+        </standardNames>
+    </global>
+
+    <overrides>
+        
+        <datasetPath pathSpec="testAll/*eta_211.nc">
+            <!-- Will apply to all paths that match the path spec above -->
+            <pathDefaults>
+                <!-- These will apply to all variables in this path unless overridden below -->
+                <allowFeatureInfo>false</allowFeatureInfo>
+                <defaultPaletteName>occam</defaultPaletteName>
+            </pathDefaults>
+
+            <variables>
+                <!-- Configure variables individually according to their internal ID.
+                     This is the most specific setting and will override any others -->
+                <variable id="Z_sfc">
+                    <defaultColorScaleRange>10 20</defaultColorScaleRange>
+                </variable>
+            </variables>
+        </datasetPath>
+        
+    </overrides>
+
+</wmsConfig>

@@ -1,0 +1,30 @@
+# Eumetsat Table B created on: Tue Oct 28 15:18:09 MDT 2008
+#
+# BUFR table ../original/2008-12-02-B
+#
+# Elements that differ between tables ../original/2008-12-02-B and ../../wmo/edited/B4M-000-013-B
+#
+0; 7; 190; 1; -1024; 12; M; HEIGHT INCREMENT
+0; 7; 193; 1; -1800; 12; Degree; Sun to satellite azimuth difference
+0; 8; 200; 0; 0; 8; Numeric; Number of observations
+0; 11; 35; 2; -8192; 14; M/S**2; VERTICAL GUST ACCELERATION
+0; 12; 72; 6; 0; 31; W/M**2*STER*M**(-1); RADIANCE
+0; 12; 75; -3; 0; 16; W/M**2*STER*M**(-1); SPECTRAL RADIANCE
+0; 12; 76; 3; 0; 16; W/M**2*STER; RADIANCE
+0; 12; 197; 0; -30; 8; K; K index
+0; 12; 198; 0; -30; 8; K; KO index
+0; 12; 199; 0; -20; 6; K; Parcel lifted index (to 500 hPa) (see Notes 3 and 4)
+0; 12; 200; 0; -30; 8; K; Maximum buoyancy
+0; 14; 17; -3; -2048; 12; J/M**2; INSTANTANEOUS LONG-WAVE RADIATION
+0; 14; 18; -3; -2048; 12; J/M**2; INSTANTANEOUS SHORT-WAVE RADIATION
+0; 15; 11; 3; 14000; 13; LOG(1/M**2); LOG 10 OF INTEGRATED ELECTRON DENSITY
+0; 22; 39; 3; -5000; 12; M; METEOROLOGICAL RESIDUAL TIDAL ELEVATION(SURGE OF OFFSET)
+0; 22; 62; 3; 0; 14; %.; SALINITY
+0; 31; 31; 0; 0; 1; NUMERIC; DATA PRESENT INDICATOR
+0; 33; 24; 0; 0; 2; CODE TABLE  33024; STATION ELEVATION QUALITY MARK  (FOR MOBILE STATION)
+0; 48; 1; 0; 0; 6; Code table; scene type within a pixel
+0; 48; 2; 0; 0; 7; %; Amount of segment covered by scene
+0; 48; 3; 0; 0; 2; Code table; Sun-glint indicator
+0; 48; 4; 0; 0; 8; Code table; Cloud index
+0; 48; 5; 0; 0; 2; Code table; Semi-transparency indicator
+0; 48; 6; 0; 0; 3; Code table; Cloud phase

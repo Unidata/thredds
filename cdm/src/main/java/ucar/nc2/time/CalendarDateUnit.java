@@ -1,14 +1,8 @@
 package ucar.nc2.time;
 
 import net.jcip.annotations.Immutable;
-import org.joda.time.Chronology;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.chrono.ISOChronology;
-
 import java.util.Date;
 import java.util.Formatter;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +43,8 @@ There’s an alternative proposition, in which the new units of calendar_month a
 public class CalendarDateUnit {
   private static final String byCalendarString = "calendar ";
   //                                                  1                     2             3    4             5
-  private static final String udunitPatternString = "(\\w*)\\s*since\\s*"+"([\\+\\-\\d]+)([ t]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
+  private static final String udunitPatternString = "(\\w*)\\s*since\\s*"+CalendarDateFormatter.isodatePatternString;
+  //                                                                     "([\\+\\-\\d]+)([ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing
   private static final Pattern udunitPattern = Pattern.compile(udunitPatternString);
 
   /**
@@ -105,11 +100,15 @@ public class CalendarDateUnit {
 
     unitString = m.group(1);
     periodField = CalendarPeriod.fromUnitString(unitString);
-    DateTime dt = parseUdunitsTimeString(dateUnitString, m.group(2), m.group(4), m.group(5));
-    baseDate = CalendarDate.of(cal, dt);
+
+    int pos = dateUnitString.indexOf("since");
+    String iso = dateUnitString.substring(pos + 5);
+    baseDate = CalendarDateFormatter.isoStringToCalendarDate(cal, iso);
+    //DateTime dt = parseUdunitsTimeString(dateUnitString, m.group(2), m.group(4), m.group(5));
+    //baseDate = CalendarDate.of(cal, dt);
   }
 
-  private DateTime parseUdunitsTimeString(String dateUnitString, String dateString, String timeString, String zoneString) {
+  /* private DateTime parseUdunitsTimeString(String dateUnitString, String dateString, String timeString, String zoneString) {
     // Set the defaults for any values that are not specified
     int year = 0;
     int month = 1;
@@ -177,111 +176,7 @@ public class CalendarDateUnit {
     } catch (Exception e) {
       throw new IllegalArgumentException("Illegal base time specification: '" + dateUnitString+"'", e);
     }
-  }
-
-  /*
-  possible forms for W3C profile of ISO 8601
-     Year:
-      YYYY (eg 1997)
-   Year and month:
-      YYYY-MM (eg 1997-07)
-   Complete date:
-      YYYY-MM-DD (eg 1997-07-16)
-   Complete date plus hours and minutes:
-      YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-   Complete date plus hours, minutes and seconds:
-      YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
-   Complete date plus hours, minutes, seconds and a decimal fraction of a second
-      YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
-
-where:
-     YYYY = four-digit year
-     MM   = two-digit month (01=January, etc.)
-     DD   = two-digit day of month (01 through 31)
-     hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
-     mm   = two digits of minute (00 through 59)
-     ss   = two digits of second (00 through 59)
-     s    = one or more digits representing a decimal fraction of a second
-     TZD  = time zone designator (Z or +hh:mm or -hh:mm)
-except:
-    You may use a space instead of the 'T'
-    The year may be preceeded by a '+' (ignored) or a '-' (makes the date BCE)
-    The date part uses a '-' delimiter instead of a fixed number of digits for each field
-    The time part uses a ':' delimiter instead of a fixed number of digits for each field
-   */
-  //                                                   1                  2            3
-  private static final String isodatePatternString = "([\\+\\-\\d]*)[ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?$";
-  private static final Pattern isodatePattern = Pattern.compile(isodatePatternString);
-
-  private DateTime parseIsoTimeString(Chronology chronology, String dateString, String timeString, String zoneString) {
-    // Set the defaults for any values that are not specified
-    int year = 0;
-    int month = 1;
-    int day = 1;
-    int hour = 0;
-    int minute = 0;
-    double second = 0.0;
-
-    try {
-      boolean isMinus = false;
-      if (dateString.startsWith("-")) {
-         isMinus = true;
-         dateString = dateString.substring(1);
-       } else if (dateString.startsWith("+")) {
-         dateString = dateString.substring(1);
-       }
-
-      StringTokenizer dateTokenizer = new StringTokenizer(dateString, "-");
-      if (dateTokenizer.hasMoreTokens()) year = Integer.parseInt(dateTokenizer.nextToken());
-      if (dateTokenizer.hasMoreTokens()) month = Integer.parseInt(dateTokenizer.nextToken());
-      if (dateTokenizer.hasMoreTokens()) day = Integer.parseInt(dateTokenizer.nextToken());
-
-      // Parse the time if present
-      if (timeString != null && timeString.length() > 0) {
-        StringTokenizer timeTokenizer = new StringTokenizer(timeString, ":");
-        if (timeTokenizer.hasMoreTokens()) hour = Integer.parseInt(timeTokenizer.nextToken());
-        if (timeTokenizer.hasMoreTokens()) minute = Integer.parseInt(timeTokenizer.nextToken());
-        if (timeTokenizer.hasMoreTokens()) second = Double.parseDouble(timeTokenizer.nextToken());
-      }
-
-      if (isMinus) year = -year;
-
-      // Get a DateTime object in this Chronology
-      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0, chronology);
-      // Add the seconds
-      dt = dt.plus((long) (1000 * second));
-
-      // Parse the time zone if present
-      if (zoneString != null) {
-        zoneString = zoneString.trim();
-        if (zoneString.length() > 0 && !zoneString.equals("Z") && !zoneString.equals("UTC") && !zoneString.equals("GMT")) {
-          isMinus = false;
-          if (zoneString.startsWith("-")) {
-             isMinus = true;
-             zoneString = zoneString.substring(1);
-           } else if (zoneString.startsWith("+")) {
-             zoneString = zoneString.substring(1);
-           }
-
-          StringTokenizer zoneTokenizer = new StringTokenizer(zoneString, ":");
-          int hourOffset = zoneTokenizer.hasMoreTokens() ? Integer.parseInt(zoneTokenizer.nextToken()) : 0;
-          int minuteOffset = zoneTokenizer.hasMoreTokens() ? Integer.parseInt(zoneTokenizer.nextToken()) : 0;
-          if (isMinus) hourOffset = -hourOffset;
-          DateTimeZone dtz = DateTimeZone.forOffsetHoursMinutes(hourOffset, minuteOffset);
-
-          // Apply the time zone offset, retaining the field values.  This
-          // manipulates the millisecond instance.
-          dt = dt.withZoneRetainFields(dtz);
-          // Now convert to the UTC time zone, retaining the millisecond instant
-          dt = dt.withZone(DateTimeZone.UTC);
-        }
-      }
-
-      return dt;
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Illegal base time specification: '" + dateString+"' "+e.getMessage());
-    }
-  }
+  } */
 
   public CalendarDate makeCalendarDate(double value) {
     if (isCalendarField)

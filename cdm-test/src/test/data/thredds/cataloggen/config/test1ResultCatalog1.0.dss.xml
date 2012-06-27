@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+      xmlns:xlink="http://www.w3.org/1999/xlink"> <!-- name="NCEP Eta 80km CONUS model data"-->
+  <service name="myServer" serviceType="DODS" base="/dods/" />
+  <dataset name="model">
+    <metadata inherited="true">
+      <serviceName>myServer</serviceName>
+    </metadata>
+    <dataset name="2004050300_eta_211.nc"
+          urlPath="testData/model/2004050300_eta_211.nc" />
+    <dataset name="2004050312_eta_211.nc"
+          urlPath="testData/model/2004050312_eta_211.nc" />
+    <dataset name="2004050400_eta_211.nc"
+          urlPath="testData/model/2004050400_eta_211.nc" />
+    <dataset name="2004050412_eta_211.nc"
+          urlPath="testData/model/2004050412_eta_211.nc" />
+  </dataset>
+</catalog>

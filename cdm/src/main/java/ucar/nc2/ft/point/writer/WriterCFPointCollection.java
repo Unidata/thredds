@@ -53,6 +53,7 @@ import java.io.IOException;
  *   finish()
  * </pre>
  *
+ * @see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8294224"
  * @author caron
  * @since Nov 23, 2010
  */

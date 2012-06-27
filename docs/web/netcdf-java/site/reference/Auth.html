@@ -15,8 +15,10 @@ Revised: September 15, 2011</h2>
 <h2><a name="HTTPAuthStore"><u>HTTPAuthStore</u></a></h2>
 New classes are introduced to the package ucar.nc2.util.net
 to support a variety of authorization mechanisms.
-These mechanisms currently are Http BASIC and DIGEST, Proxy,
+These mechanisms currently are Http BASIC and DIGEST,
 and client side keys for SSL connections.
+Note that for outgoing firewalls that require authentication,
+the BASIC or DIGEST schemes will be used as a rule.
 <p>
 Most of these classes are invisible to the user. The user
 indirectly accesses them through the HTTPSession interface.
@@ -36,33 +38,51 @@ The approach is to provide various kinds of authorization
 credentials (broadly construed) to servers by clients.
 <p>
 Before reading this document, the reader should have read the
-<a href="./Session.html">Session.html</a> document to
+<a href="./Session.html">Session.html</a> 
+and the
+<a href="../HTTPauthentication.html">HTTPauthentication.html</a>
+documents to
 understand the context in which the authorization mechanisms
 operate.  The section <a href="#Status">Status</a> should
 also be read to get important information about the current
-state of this code.  <p> The authorization schemes currently
-supported are as follows.  <ol> <li> HTTP Basic <li> HTTP
-Digest <li> HTTP Proxy <li> Client-side keys using java
-keystores and truststores.  (initially for ESG
-credentialling).  </ol> <p> <h3>Global and Per-Connection
-Credentials</h3> There is an additional factor.  It is
+state of this code. 
+<p>
+The authorization schemes currently
+supported are as follows. 
+<ol>
+<li> HTTP Basic
+<li> HTTP Digest
+<li>Client-side keys using java
+keystores and truststores.
+</ol>
+<p>
+<h3>Global and Per-Connection Credentials</h3>
+There is an additional factor.  It is
 desirable to support both "global" and "per-session"
-authorization.  <ul> <li>Global &mdash; this means that a
+authorization. 
+<ul>
+<li>Global &mdash; this means that a
 single set of credentials is set globally and is adequate
 for all code running within a single program (i.e. linux or
-windows process).  <p> <li>Per-session &mdash; this means
+windows process). 
+<p>
+<li>Per-session &mdash; this means
 that each session (HTTPSession instance) may have a separate
 set of credentials. Further, it must be guaranteed that no
 connection is re-used to avoid inadvertent access to some
-other set of credentials.  </ul> <h3>Delegation</h3>
+other set of credentials. 
+</ul>
+
+<h3>Delegation</h3>
 Finally, there is the "delegation" problem.  This is when a
 client program (or a server program acting as a client)
 wants to masquerade as some user and utilize the
 authorizations provided for that user.  Of course, this
 requires that the program be sufficiently trusted so that is
-will handle the delegation responsibly.  <p> Delegation is
-likely to be most common on the server-side because a server
-will be handling multiple clients and may have to access
+will handle the delegation responsibly. 
+<p>
+Delegation is likely to be most common on the server-side because a
+server will be handling multiple clients and may have to access
 additional information on behalf of various clients.
 
 <h2>Approach</h2>
@@ -77,17 +97,21 @@ This database is kept as class level object consisting of a set
 of row instances of type <i>HTTPAuthStore.Entry</i>.
 The <u>columns</u> of each entry are as follows.
 <ol>
- <li> <u>scheme</u> of type <i>HTTPAuthScheme</i>
-      (with a special instance acting as the wildcard ANY_SCHEME).
- <p>   
- <li> <u>url</u> of type <i>String</i>
-      (with a special instance acting as the wildcard ANY_URL).
- <p>   
- <li> <u>creds</u> of type
-      <i>org.apache.commons.httpclient.auth.CredentialsProvider</i>.
+<li>
+<u>scheme</u> of type <i>HTTPAuthScheme</i>
+(with a special instance acting as the wildcard ANY_SCHEME).
+<p>
+<li>
+<u>url</u> of type <i>String</i>
+(with a special instance acting as the wildcard ANY_URL).
+<p>
+<li>
+<u>creds</u> of type
+<i>org.apache.commons.httpclient.auth.CredentialsProvider</i>.
 </ol>
 <p>
-The <i>HTTPAuthStore</i> <a href="#HTTPAuthStore.API">API</a>
+The <i>HTTPAuthStore</i>
+<a href="#HTTPAuthStore.API">API</a>
 itself provides operations to insert and delete rows, and to search
 for rows matching specified criteria.
 
@@ -119,7 +143,6 @@ The elements of the enum are as follows:
 <li> BASIC
 <li> DIGEST
 <li> SSL
-<li> PROXY
 <li> ANY
 </ul>
 <p>
@@ -127,9 +150,7 @@ BASIC and DIGEST operate essentially the same and require as
 credentials a principal and a password. The SSL scheme
 is to accomodate client-side key authentication. It requires
 information about a keystore and truststore and their
-associated passwords.  The PROXY scheme requires as
-credentials a principal and password.
-The ANY value serves as a wildcard.
+associated passwords. The ANY value serves as a wildcard.
 
 <h3><a name="HTTPAuthProvider">HTTPAuthProvider</a></h3>
 The <i>HTTPAuthProvider</i> class implements the

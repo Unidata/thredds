@@ -155,7 +155,7 @@ public class OpendapServlet extends AbstractServlet
     log.info("doGet(): " + UsageLog.setupRequestContext(request));
     // System.out.printf("opendap doGet: req=%s%n%s%n", ServletUtil.getRequest(request), ServletUtil.showRequestDetail(this, request));
 
-    log.info("doGet(): User-Agent = "+request.getHeader("User-Agent"));
+    log.debug("doGet(): User-Agent = "+request.getHeader("User-Agent"));
 
     String path = null;
 
@@ -784,7 +784,7 @@ public class OpendapServlet extends AbstractServlet
       String query = request.getQueryString();
       query = EscapeStrings.unescapeURLQuery(query);
 
-      log.info(String.format("OpendapServlet: nominal url: %s?%s",baseurl,query));
+      log.debug(String.format("OpendapServlet: nominal url: %s?%s",baseurl,query));
 
       try {
         rs = new ReqState(request, response, this, getServerName(), baseurl, query);

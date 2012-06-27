@@ -52,8 +52,8 @@ public class HTTPSession
 // Convenience
 static final public HTTPAuthScheme BASIC = HTTPAuthScheme.BASIC;
 static final public HTTPAuthScheme DIGEST = HTTPAuthScheme.DIGEST;
+static final public HTTPAuthScheme NTLM = HTTPAuthScheme.NTLM;
 static final public HTTPAuthScheme SSL = HTTPAuthScheme.SSL;
-static final public HTTPAuthScheme PROXY = HTTPAuthScheme.PROXY;
 
 static public int SC_NOT_FOUND = HttpStatus.SC_NOT_FOUND;
 static public int SC_UNAUTHORIZED = HttpStatus.SC_UNAUTHORIZED;
@@ -84,7 +84,15 @@ static public String WAIT_FOR_CONTINUE = "<undefined>";
 static int DFALTTHREADCOUNT = 50;
 static int DFALTTIMEOUT = 5*60*1000; // 5 minutes (300000 milliseconds)
 
-// ////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+// Define a local class to hold firewall info.
+
+static class Proxy {
+    String host = null;
+    int port = -1;
+};
+
+//////////////////////////////////////////////////////////////////////////
 
 static enum Methods
 {
@@ -226,6 +234,18 @@ getProtocol(String protocol,int port)
     return p;
 }
 
+static String
+getUserinfo(String surl)
+{
+    try {
+        URL url = new URL(surl);
+	return url.getUserInfo();
+    } catch (MalformedURLException mue) {
+	return null;
+    }
+}
+
+
 ////////////////////////////////////////////////////////////////////////
 // Static fields and initializer
 static MultiThreadedHttpConnectionManager connmgr;
@@ -234,11 +254,9 @@ static String globalAgent = "/NetcdfJava/HttpClient3";
 static int threadcount = DFALTTHREADCOUNT;
 static List<HTTPSession> sessionList; // List of all HTTPSession instances
 static boolean globalauthpreemptive = false;
-static CredentialsProvider globalProvider = null;
 static int globalSoTimeout = 0;
 static int globalConnectionTimeout = 0;
-static String globalsimpleproxyhost = null;
-static int globalsimpleproxyport = 0;
+static Proxy globalproxy = null;
 static List<ProtocolEntry> registry;
 
 static {
@@ -259,11 +277,12 @@ static {
     sessionList = new ArrayList<HTTPSession>(); // see kill function
     setGlobalConnectionTimeout(DFALTTIMEOUT);
     setGlobalSoTimeout(DFALTTIMEOUT);
-    setGlobalSimpleProxy();
+    getGlobalProxyD(); // get info from -D if possible
     setGlobalKeyStore();
 }
 
 //////////////////////////////////////////////////
+// Instance variables
 
 HttpClient sessionClient = null;
 List<ucar.nc2.util.net.HTTPMethod> methodList = new Vector<HTTPMethod>();
@@ -271,7 +290,6 @@ HttpState context = null;
 boolean closed = false;
 String identifier = "Session";
 String useragent = null;
-CredentialsProvider sessionProvider = null;
 String legalurl = null;
 
 /**
@@ -325,7 +343,8 @@ public HTTPSession()
     construct(null);
 }
 
-protected void construct(String legalurl)
+protected void
+construct(String legalurl)
     throws HTTPException
 {
     this.legalurl = legalurl;
@@ -348,12 +367,12 @@ protected void construct(String legalurl)
 
         setAuthenticationPreemptive(globalauthpreemptive);
 
-        setSimpleProxy();
+        setProxy();
 
         sessionList.add(this);
 
     } catch (Exception e) {
-        throw new HTTPException(e);
+        throw new HTTPException("url="+legalurl,e);
     }
 }
 
@@ -442,6 +461,7 @@ public void clearState()
 {
     sessionClient.getState().clearCookies();
     sessionClient.getState().clearCredentials();
+
 }
 
 
@@ -476,30 +496,18 @@ static public String canonicalpath(String path)
 static public String
 removeprincipal(String u)
 {
-    return setPrincipal(u,"");
-}
-
-static public String
-setPrincipal(String u, String p)
-{
-
+    // Must be a simpler way
     String newurl = null;
     try {
+	int index;
         URL url = new URL(u);
-        String protocol = url.getProtocol();
-        String principal = (p == null ? url.getUserInfo() : p);
+        String protocol = url.getProtocol() + "://";
         String host = url.getHost();
         int port = url.getPort();
         String path = url.getPath();
         String query = url.getQuery();
         String ref = url.getRef();
-        if(principal != null && principal.length() == 0) principal = null;
-        if(path != null && path.length() == 0) path = null;
-        if(query != null && query.length() == 0) query = null;
-        if(ref != null && ref.length() == 0) ref = null;
 
-        protocol = protocol + "://";
-        principal = (principal == null ? "" : (principal + "@"));
         String sport = (port <= 0 ? "" : (":"+port));
         path = (path ==  null ? "" : path);
         query = (query == null ? "" : "?" + query);
@@ -507,7 +515,8 @@ setPrincipal(String u, String p)
 
         // rebuild the url
         // (and leaving encoding in place)
-        newurl =   protocol + principal + host + sport + path + query + ref;
+        newurl =   protocol + host + sport + path + query + ref;
+
     } catch (MalformedURLException use) {newurl=u;}
     return newurl;
 }
@@ -558,55 +567,76 @@ static public void setGlobalSoTimeout(int timeout)
 
 
 //////////////////////////////////////////////////
-// Simple (not authenticating proxy support)
+// Possibly authenticating proxy
+
+// All proxy activity goes thru here
+void
+setProxy(Proxy proxy)
+{
+    if(sessionClient == null) return;
+    if(proxy != null && proxy.host != null)
+        sessionClient.getHostConfiguration().setProxy(proxy.host, proxy.port);
+}
 
 // For backward compatibility, provide
 // programmatic access for setting proxy info
-
 // Extract proxy info from command line -D parameters
+// extended 5/7/2012 to get NTLM domain
 // H/T: nick.bower@metoceanengineers.com
 static void
-setGlobalSimpleProxy()
+getGlobalProxyD()
 {
+    Proxy proxy = new Proxy();
     String host = System.getProperty("http.proxyHost");
     String port = System.getProperty("http.proxyPort");
-    if(host != null && port != null) {
+    int portno = -1;
+    
+    if(host != null) {
         host = host.trim();
         if(host.length() == 0) host = null;
-        int portno = 0;
-        if(port != null) {
-            port = port.trim();
-            if(port.length() > 0) {
-                try {
-                    portno = Integer.parseInt(port);
-                } catch (NumberFormatException nfe) {portno = 0;}
-            }
+    }
+    if(port != null) {
+        port = port.trim();
+        if(port.length() > 0) {
+            try {
+                portno = Integer.parseInt(port);
+            } catch (NumberFormatException nfe) {portno = -1;}
         }
-        setGlobalSimpleProxy(host,portno);
+    }
+
+    if(host != null) {
+        proxy.host = host;
+        proxy.port = portno;
+        globalproxy = proxy;
     }
 }
 
 void
-setSimpleProxy()
+setProxy()
 {
-    if(globalsimpleproxyhost == null) return;
-    setSimpleProxy(globalsimpleproxyhost,globalsimpleproxyport);
+    if(globalproxy == null) return;
+    setProxy(globalproxy);
 }
 
 // These are externally visible
 
 static synchronized public void
-setGlobalSimpleProxy(String proxyhost, int proxyport)
+setGlobalProxy(String host, int port)
 {
-    globalsimpleproxyhost = proxyhost;
-    globalsimpleproxyport = proxyport;
+    if(globalproxy == null) {
+	globalproxy = new Proxy();
+    globalproxy.host = host;
+    globalproxy.port = port;
+    }
 }
 
 public void
-setSimpleProxy(String host, int port)
+setProxy(String host, int port)
 {
-    if(sessionClient == null) return;
-    sessionClient.getHostConfiguration().setProxy(host, port);
+    Proxy proxy = new Proxy();
+    proxy.host = host;
+    proxy.port = port;
+    setProxy(proxy);
 }
 
 //////////////////////////////////////////////////
@@ -642,7 +672,6 @@ setAnyCredentialsProvider(HTTPAuthScheme scheme, String url, CredentialsProvider
 static public void
 setGlobalCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
 {
-  globalProvider = provider;
   setAnyCredentialsProvider(scheme,HTTPAuthStore.ANY_URL,provider);
 }
 
@@ -652,12 +681,30 @@ setGlobalCredentialsProvider(CredentialsProvider provider)
     setGlobalCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME,provider);
 }
 
+// Assumes that user info exists in the url and we can
+// use it to build a simple UsernamePasswordCredentials as our provider.
+static public void
+setGlobalCredentialsProvider(String url)
+{
+    // Try to extract user info
+    String userinfo = getUserinfo(url);
+    if(userinfo != null) {
+        int index = userinfo.indexOf(':');
+        String user = userinfo.substring(index);
+        String pwd = userinfo.substring(index+1,userinfo.length());
+        if(user != null && pwd != null) {
+            // Create a non-interactive user+pwd handler
+            HTTPBasicProvider bp = new HTTPBasicProvider(user,pwd);
+                setGlobalCredentialsProvider(HTTPAuthScheme.BASIC,bp);
+        }
+    }
+}
+
 // per-session versions
 
 public void
 setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
 {
-  sessionProvider = provider;
   defineCredentialsProvider(scheme,legalurl,provider);
 }
 
@@ -665,6 +712,42 @@ public void
 setCredentialsProvider(CredentialsProvider provider)
 {
    setCredentialsProvider(HTTPAuthStore.DEFAULT_SCHEME,provider);
+}
+
+// Assumes that user info exists in the url and we can
+// use it to build a simple UsernamePasswordCredentials as our provider.
+// Also assume this is a compatible url to the Session url
+public void
+setCredentialsProvider(String url)
+{
+    // Try to extract user info
+    String userinfo = getUserinfo(url);
+    if(userinfo != null) {
+        int index = userinfo.indexOf(':');
+        String user = userinfo.substring(index);
+        String pwd = userinfo.substring(index+1,userinfo.length());
+        if(user != null && pwd != null) {
+            // Create a non-interactive user+pwd handler
+            CredentialsProvider bp = new HTTPBasicProvider(user,pwd);
+            setCredentialsProvider(HTTPAuthScheme.BASIC,bp);
+        }
+    }
+}
+
+// It is convenient to be able to directly set the Credentials
+// (not the provider) when those credentials are fixed.
+static public void
+setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds)
+{
+  CredentialsProvider provider = new HTTPCredsProvider(creds);
+  defineCredentialsProvider(scheme,HTTPAuthStore.ANY_URL,provider);
+}
+
+public void
+setCredentials(HTTPAuthScheme scheme, Credentials creds)
+{
+  CredentialsProvider provider = new HTTPCredsProvider(creds);
+  defineCredentialsProvider(scheme,legalurl,provider);
 }
 
 // Provide for backward compatibility

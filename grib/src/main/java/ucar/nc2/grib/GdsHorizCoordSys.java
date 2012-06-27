@@ -102,11 +102,11 @@ public class GdsHorizCoordSys {
   }
 
   public String makeDescription() {
-    return name + "-" + ny + "X" + nx+" (Center "+getCenterLatLon()+")";
+    return name + "_" + ny + "X" + nx+" (Center "+getCenterLatLon()+")";
   }
 
   public String makeId() {
-    StringBuilder result = new StringBuilder(name + "-" + ny + "X" + nx+"-"+getCenterLatLon());
+    StringBuilder result = new StringBuilder(name + "_" + ny + "X" + nx+"-"+getCenterLatLon());
     StringUtil2.replace(result, ". ","p-");
     return result.toString();
   }

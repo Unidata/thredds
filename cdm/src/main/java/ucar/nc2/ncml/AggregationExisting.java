@@ -33,6 +33,7 @@
 
 package ucar.nc2.ncml;
 
+import thredds.inventory.MFile;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -310,7 +311,11 @@ public class AggregationExisting extends AggregationOuterDimension {
       out.print("</aggregation>\n");
       out.close(); // this also closes the  channel and releases the lock
 
-      cacheFile.setLastModified( datasetManager.getLastScanned());
+      long time = datasetManager.getLastScanned();
+      if (time == 0) time = System.currentTimeMillis(); // no scans (eg all static) will have a 0
+
+      if (!cacheFile.setLastModified( time))
+        logger.warn("FAIL to set lastModified on {}", cacheFile.getPath());
       cacheDirty = false;
 
       if (logger.isDebugEnabled())
@@ -331,9 +336,9 @@ public class AggregationExisting extends AggregationOuterDimension {
     File cacheFile = diskCache2.getCacheFile(cacheName);
     if (!cacheFile.exists())
       return;
+    long lastWritten = cacheFile.lastModified();
 
-    if (logger.isDebugEnabled())
-              logger.debug(" Try to Read cache " + cacheFile.getPath());
+    if (logger.isDebugEnabled()) logger.debug(" Try to Read cache {} " + cacheFile.getPath());
 
     Element aggElem;
     try {
@@ -359,54 +364,55 @@ public class AggregationExisting extends AggregationOuterDimension {
 
       if (null == dod) {
         // this should mean that the dataset has been deleted. so not a problem
-        if (logger.isDebugEnabled())
-              logger.debug(" have cache but no dataset= " + id);
-        // logger.warn(" have cache but no dataset= " + id);
+        if (logger.isDebugEnabled()) logger.debug(" have cache but no dataset= {}", id);
+        continue;
+      }
+      if (logger.isDebugEnabled()) logger.debug(" use cache for dataset= {}", id);
 
-      } else {
+      MFile mfile = dod.getMFile();
+      if (mfile != null && mfile.getLastModified() > lastWritten)  {  // skip datasets that have changed
+        if (logger.isDebugEnabled()) logger.debug(" dataset was changed= {}", mfile);
+        continue;
+      }
 
-        if (logger.isDebugEnabled())
-              logger.debug(" use cache for dataset= " + id);
-        if (dod.ncoord == 0) {
-          String ncoordsS = netcdfElemNested.getAttributeValue("ncoords");
-          try {
-            dod.ncoord = Integer.parseInt(ncoordsS);
-            if (logger.isDebugEnabled())
-              logger.debug(" Read the cache; ncoords = " + dod.ncoord);
-          } catch (NumberFormatException e) {
-            logger.error("bad ncoord attribute on dataset=" + id);
-          }
+      if (dod.ncoord == 0) {
+        String ncoordsS = netcdfElemNested.getAttributeValue("ncoords");
+        try {
+          dod.ncoord = Integer.parseInt(ncoordsS);
+          if (logger.isDebugEnabled()) logger.debug(" Read the cache; ncoords = {}", dod.ncoord);
+        } catch (NumberFormatException e) {
+          logger.error("bad ncoord attribute on dataset=" + id);
         }
+      }
 
-        // if (dod.coordValue != null) continue; // allow ncml to override
+      // if (dod.coordValue != null) continue; // allow ncml to override
 
-        List<Element> cacheElemList = netcdfElemNested.getChildren("cache", NcMLReader.ncNS);
-        for (Element cacheElemNested : cacheElemList) {
-          String varName = cacheElemNested.getAttributeValue("varName");
-          CacheVar pv = findCacheVariable(varName);
-          if (pv != null) {
-            String sdata = cacheElemNested.getText();
-            if (sdata.length() == 0) continue;
-            if (logger.isDebugEnabled())
-              logger.debug(" read data for var = " + varName + " size= "+sdata.length());
-            
-            //long start = System.nanoTime();
-            String[] vals = sdata.split(" ");
-            //double took = .001 * .001 * .001 * (System.nanoTime() - start);
-            //if (debugPersist) System.out.println("  split took = " + took + " sec; ");
+      List<Element> cacheElemList = netcdfElemNested.getChildren("cache", NcMLReader.ncNS);
+      for (Element cacheElemNested : cacheElemList) {
+        String varName = cacheElemNested.getAttributeValue("varName");
+        CacheVar pv = findCacheVariable(varName);
+        if (pv != null) {
+          String sdata = cacheElemNested.getText();
+          if (sdata.length() == 0) continue;
+          if (logger.isDebugEnabled()) logger.debug(" read data for var = " + varName + " size= "+sdata.length());
 
-            try {
-              //start = System.nanoTime();
-              Array data = Array.makeArray(pv.dtype, vals);
-              //took = .001 * .001 * .001 * (System.nanoTime() - start);
-              //if (debugPersist) System.out.println("  makeArray took = " + took + " sec nelems= "+data.getSize());
-              pv.putData(id, data);
-            } catch (Exception e) {
-              logger.warn("Error reading cached data ",e);
-            }
+          //long start = System.nanoTime();
+          String[] vals = sdata.split(" ");
+          //double took = .001 * .001 * .001 * (System.nanoTime() - start);
+          //if (debugPersist) System.out.println("  split took = " + took + " sec; ");
 
-          } else
-            logger.warn("not a cache var=" + varName);
+          try {
+            //start = System.nanoTime();
+            Array data = Array.makeArray(pv.dtype, vals);
+            //took = .001 * .001 * .001 * (System.nanoTime() - start);
+            //if (debugPersist) System.out.println("  makeArray took = " + took + " sec nelems= "+data.getSize());
+            pv.putData(id, data);
+          } catch (Exception e) {
+            logger.warn("Error reading cached data ",e);
+          }
+
+        } else {
+          logger.warn("not a cache var=" + varName);
         }
       }
     }

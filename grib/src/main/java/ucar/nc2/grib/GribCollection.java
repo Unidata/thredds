@@ -57,6 +57,7 @@ import java.util.*;
  * A collection of grib files as a single logical dataset.
  * Concrete classes are for Grib1 and Grib2.
  * Note that there is no dependence on GRIB tables here.
+ * Handles .ncx files
  *
  * @author caron
  * @since 4/6/11
@@ -97,6 +98,50 @@ public abstract class GribCollection implements FileCacheable {
     if (nens == 0) nens = 1;
     if (nverts == 0) nverts = 1;
     return vertIdx + ensIdx * nverts + timeIdx * nverts * nens;
+  }
+
+  /**
+   * Find index in partition dataset when vert and/or ens coordinates dont match with proto
+   * @param timeIdx time index in this partition
+   * @param ensIdx  ensemble index in proto dataset
+   * @param vertIdx vert index in proto dataset
+   * @param flag    TimePartition.VERT_COORDS_DIFFER and/or TimePartition.ENS_COORDS_DIFFER
+   * @param ec      ensemble coord in partition dataset
+   * @param vc      vert coord in partition dataset
+   * @param ecp     ensemble coord in proto dataset
+   * @param vcp     vert coord in proto dataset
+   * @return index in partition dataset
+   */
+  public static int calcIndex(int timeIdx, int ensIdx, int vertIdx, int flag, EnsCoord ec, VertCoord vc, EnsCoord ecp, VertCoord vcp) {
+    int want_ensIdx = ensIdx;
+    if ((flag & TimePartition.ENS_COORDS_DIFFER) != 0) {
+      want_ensIdx =  findEnsIndex(ensIdx, ec.getCoords(), ecp.getCoords());
+      if (want_ensIdx == -1) return -1;
+    }
+    int want_vertIdx = vertIdx;
+    if ((flag & TimePartition.VERT_COORDS_DIFFER) != 0) {
+      want_vertIdx =  findVertIndex(vertIdx, vc.getCoords(), vcp.getCoords());
+      if (want_vertIdx == -1) return -1;
+    }
+    return calcIndex(timeIdx, want_ensIdx, want_vertIdx, (ec == null) ? 0 : ec.getSize(), (vc == null) ? 0 : vc.getSize());
+  }
+
+  private static int findEnsIndex(int indexp, List<EnsCoord.Coord> coords, List<EnsCoord.Coord> coordsp) {
+    EnsCoord.Coord want = coordsp.get(indexp);
+    for (int i=0; i<coords.size(); i++) {
+      EnsCoord.Coord have = coords.get(i);
+      if (have.equals(want)) return i;
+    }
+    return -1;
+  }
+
+  private static int findVertIndex(int indexp, List<VertCoord.Level> coords, List<VertCoord.Level> coordsp) {
+    VertCoord.Level want = coordsp.get(indexp);
+    for (int i=0; i<coords.size(); i++) {
+      VertCoord.Level have = coords.get(i);
+      if (have.equals(want)) return i;
+    }
+    return -1;
   }
 
   static public File getIndexFile(CollectionManager dcm) {
@@ -163,6 +208,10 @@ public abstract class GribCollection implements FileCacheable {
 
   private File indexFile;
 
+  /**
+   * get index file; may not exist
+   * @return File, but may not exist
+   */
   public File getIndexFile() {
     if (indexFile == null) {
       File f = new File(directory, name + IDX_EXT);
@@ -172,8 +221,10 @@ public abstract class GribCollection implements FileCacheable {
   }
 
   public File makeNewIndexFile() {
-    if (indexFile != null && indexFile.exists())
-      indexFile.delete();
+    if (indexFile != null && indexFile.exists())  {
+      if (!indexFile.delete())
+        logger.warn("Failed to delete {}", indexFile.getPath());
+    }
     indexFile = null;
     return getIndexFile();
   }
@@ -257,13 +308,33 @@ public abstract class GribCollection implements FileCacheable {
   // stuff for Iosp
 
   public RandomAccessFile getDataRaf(int fileno) throws IOException {
+    // absolute location
     String filename = filenames.get(fileno);
-    RandomAccessFile want = getDataRaf(filename);
+    File dataFile = new File(filename);
+ 
+    // check reletive location - eg may be /upc/share instead of Q:
+    if (!dataFile.exists()) {
+      if (filenames.size() == 1) {
+        dataFile =  new File(directory, name); // single file case
+      } else {
+        dataFile =  new File(directory, dataFile.getName()); // must be in same directory as the ncx file
+      }
+    }
+
+       
+    // data file not here
+    if (!dataFile.exists()) {
+      throw new FileNotFoundException("data file not found = " + filename);
+    }
+
+    RandomAccessFile want = getDataRaf(dataFile.getPath());
     want.order(RandomAccessFile.BIG_ENDIAN);
     return want;
   }
 
   private RandomAccessFile getDataRaf(String location) throws IOException {
+
+
     if (dataRafCache != null) {
       return (RandomAccessFile) dataRafCache.acquire(dataRafFactory, location, null);
     } else {
@@ -546,6 +617,10 @@ public abstract class GribCollection implements FileCacheable {
 
     public EnsCoord getEnsCoord() {
       return ensIdx < 0 ? null : group.ensCoords.get(ensIdx);
+    }
+
+    public String id() {
+      return discipline+"-"+category+"-"+parameter;
     }
 
     @Override

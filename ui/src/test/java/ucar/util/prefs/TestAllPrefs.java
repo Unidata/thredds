@@ -34,6 +34,7 @@
 
 package ucar.util.prefs;
 
+import ucar.unidata.test.util.TestDir;
 import ucar.util.prefs.ui.*;
 import junit.framework.*;
 
@@ -44,31 +45,31 @@ import java.io.*;
  */
 public class TestAllPrefs {
   public static boolean show = false;
-  public static String dir = "test/data/";
+  public static String dir = TestDir.temporaryLocalDataDir;
 
-  public static junit.framework.Test suite() {
-    // needed in TestBasis testWho
+  /* public static junit.framework.Test suite() {
+    // needed in TestBasic testWho
     System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
 
     TestSuite suite = new TestSuite();
 
     suite.addTest(new TestSuite(TestBasic.class));
-    suite.addTest(new TestSuite(TestInputMunger.class));
+    // suite.addTest(new TestSuite(TestInputMunger.class));
     suite.addTest(new TestSuite(TestEvents.class));
     suite.addTest(new TestSuite(TestXMLStore.class));
-    suite.addTest(new TestSuite(TestXMLStoreChains.class));
+    // suite.addTest(new TestSuite(TestXMLStoreChains.class));  chain.xml files are lost
     suite.addTest(new TestSuite(TestBeans.class));
 
     // test ui classes
     suite.addTest(new TestSuite(TestDebug.class)); //
     suite.addTest(new TestSuite(TestPanel.class));
     suite.addTest(new TestSuite(TestPanel2.class)); //
-    suite.addTest(new TestSuite(TestPanelStore.class)); // */
+    suite.addTest(new TestSuite(TestPanelStore.class)); //
     suite.addTest(new TestSuite(TestField.class));
-    suite.addTest(new TestSuite(TestFieldInput.class)); // */
+    suite.addTest(new TestSuite(TestFieldInput.class)); //
 
     return suite;
-  }
+  }     */
 
   /**
    * copy all bytes from in to out.

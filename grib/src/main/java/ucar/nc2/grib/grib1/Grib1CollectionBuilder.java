@@ -39,6 +39,7 @@ import thredds.inventory.CollectionManagerSingleFile;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -47,7 +48,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Build a GribCollection object for Grib-1 files. Manage grib collection index.
+ * Build a GribCollection object for Grib-1 files. Manage grib collection index (ncx).
  * Covers GribCollectionProto, which serializes and deserializes.
  * Rectilyse means to turn the collection into a multidimensional variable.
  *
@@ -433,7 +434,7 @@ public class Grib1CollectionBuilder {
   public List<Group> makeAggregatedGroups(ArrayList<String> filenames, Formatter f) throws IOException {
     Map<Integer, Group> gdsMap = new HashMap<Integer, Group>();
     Map<Integer, Integer> gdsConvert = null;
-    Grib1Rectilyser.Counter c = new Grib1Rectilyser.Counter();
+    Grib1Rectilyser.Counter stats = new Grib1Rectilyser.Counter();
     boolean intvMerge = intvMergeDefault;
 
     f.format("GribCollection %s: makeAggregatedGroups%n", gc.getName());
@@ -443,6 +444,7 @@ public class Grib1CollectionBuilder {
       f.format(" dcm= %s%n", dcm);
       FeatureCollectionConfig.GribConfig config = (FeatureCollectionConfig.GribConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_GRIB_CONFIG);
       if (config != null) gdsConvert = config.gdsHash;
+      FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ?  config.intvFilter : null;
       intvMerge = (config == null) || (config.intvMerge == null) ? intvMergeDefault : config.intvMerge;
 
       for (MFile mfile : dcm.getFiles()) {
@@ -463,11 +465,15 @@ public class Grib1CollectionBuilder {
           gr.setFile(fileno); // each record tracks which file it belongs to
           int gdsHash = gr.getGDSsection().getGDS().hashCode();  // use GDS hash code to group records
           if (gdsConvert != null && gdsConvert.get(gdsHash) != null) // allow external config to muck with gdsHash. Why? because of error in encoding
-            gdsHash = (Integer) gdsConvert.get(gdsHash);               // and we need exact hash matching
+            gdsHash = gdsConvert.get(gdsHash);               // and we need exact hash matching
           if (cust == null)
             cust = Grib1Customizer.factory(gr, null);
           if (config != null)
             cust.setTimeUnitConverter(config.getTimeUnitConverter()); // LOOK doesnt work with multiple collections
+          if (intvMap != null && filterOut(gr, intvMap, f)) {
+            stats.filter++;
+            continue; // skip
+          }
 
           Group g = gdsMap.get(gdsHash);
           if (g == null) {
@@ -479,18 +485,51 @@ public class Grib1CollectionBuilder {
           total++;
         }
         fileno++;
-        c.recordsTotal += index.getRecords().size();
+        stats.recordsTotal += index.getRecords().size();
       }
     }
     List<Group> result = new ArrayList<Group>(gdsMap.values());
     for (Group g : result) {
       g.rect = new Grib1Rectilyser(cust, g.records, g.gdsHash, intvMerge);
-      g.rect.make(c);
+      g.rect.make(stats);
     }
 
-    c.show(f);
+    stats.show(f);
     return result;
   }
+
+    // true means remove
+  private boolean filterOut(Grib1Record gr, FeatureCollectionConfig.GribIntvFilter intvFilter, Formatter f) {
+    Grib1SectionProductDefinition pdss = gr.getPDSsection();
+    Grib1ParamTime ptime = pdss.getParamTime(cust);
+    if (!ptime.isInterval()) return false;
+
+    int[] intv = ptime.getInterval();
+    if (intv == null) return false;
+    int haveLength = intv[1] - intv[0];
+
+    // HACK
+    if (haveLength == 0 && intvFilter.isZeroExcluded()) {  // discard 0,0
+      if ((intv[0] == 0) && (intv[1] == 0)) {
+        //f.format(" FILTER INTV [0, 0] %s%n", gr);
+        return true;
+      }
+      return false;
+
+    } else if (intvFilter.hasFilter()) {
+      int center = pdss.getCenter();
+      int subcenter = pdss.getSubCenter();
+      int version = pdss.getTableVersion();
+      int param = pdss.getParameterNumber();
+      int id = (center << 8) + (subcenter << 16) + (version << 24) + param;
+
+      return intvFilter.filterOut(id, haveLength, Integer.MIN_VALUE);
+    }
+    return false;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////
+
   public String getMagicStart() {
     return MAGIC_START;
   }

@@ -1,0 +1,25 @@
+#
+# B2L-058-001-D.001 - Local BUFR Table D (Lists of Common Sequences)
+# for Center 058 (FNMOC), Minor Local Version 1
+#
+# Descriptor sequences are terminated with -1
+#
+# Sequences do not need to appear in any order.  Sequence A
+# which includes sequence B, may appear before sequence B
+# is defined.
+#
+
+# Phony local descriptor for debugging purposes
+#
+#3	5	1
+#	0	2	102		# Antenna height above tower base (8 bits)
+#	0	2	104		# Antenna polarization            (4 bits)
+#	0	2	113		# Number of azimuth looks         (4 bits)
+#	-1
+#
+3	5	1
+	0	2	 11		# Radiosonde type                 (8 bits)
+	0	2	 22		# Satellite DP technique used     (8 bits)
+	0	2	102		# Antenna height above tower base (8 bits)
+	-1
+

@@ -32,7 +32,7 @@
  */
 package ucar.unidata.test.util;
 
-import junit.framework.*;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,14 +63,18 @@ public class TestFileDirUtils
    *
    * @throws IllegalArgumentException if the prefix is null or shorter than three characters or if the directory is null, does not exist, or is not a directory.
    */
-  public static File createTempDirectory( String prefix, File directory )
+  public static File createTempDirectory( String prefix, File directory ) {
+    return createTempDirectory( prefix, directory, -1 );
+  }
+
+  public static File createTempDirectory( String prefix, File directory, long lastModTime )
   {
     if ( prefix == null )
       throw new IllegalArgumentException( "Prefix may not be null.");
     if ( prefix.length() < 3 )
       throw new IllegalArgumentException( "Prefix must be at least three characters.");
     if ( directory == null || ! directory.exists() || ! directory.isDirectory() )
-      throw new IllegalArgumentException( "Given directory must exist and be a directory.");
+      throw new IllegalArgumentException( "Given directory [" + directory.getPath() + "] must exist and be a directory.");
 
     File newDir = null;
     Random rand = new Random();
@@ -79,8 +83,7 @@ public class TestFileDirUtils
     while ( numTries < 5 )
     {
       newDir = new File( directory, prefix + "." + rand.nextInt( 1000000) );
-      if ( newDir.mkdir())
-      {
+      if ( newDir.mkdir()) {
         success = true;
         break;
       }
@@ -88,6 +91,10 @@ public class TestFileDirUtils
     }
     if ( ! success )
       return null;
+
+    if ( lastModTime > 0 )
+      assertTrue( "Failed to set lastModified time on directory [" + newDir.getPath() + "].",
+                  newDir.setLastModified( lastModTime ));
 
     newDir.deleteOnExit();
     return newDir;
@@ -100,15 +107,22 @@ public class TestFileDirUtils
    * @param dirPath the path of the directory to create.
    * @return the java.io.File which represents the newly created directory.
    */
-  public static File createDirectory( String dirPath )
+  public static File createDirectory( String dirPath ) {
+    return createDirectory( dirPath, -1 );
+  }
+
+  public static File createDirectory( String dirPath, long lastModTime )
   {
     File dirFile = new File( dirPath );
-    Assert.assertFalse( "Directory [" + dirFile.getAbsolutePath() + "] already exists.",
-                        dirFile.exists());
+    assertFalse( "Directory [" + dirFile.getAbsolutePath() + "] already exists.",
+                 dirFile.exists());
 
-    Assert.assertTrue( "Failed to make directory [" + dirFile.getAbsolutePath() + "].",
-                       dirFile.mkdirs() );
+    assertTrue( "Failed to make directory [" + dirFile.getAbsolutePath() + "].",
+                dirFile.mkdirs() );
 
+    if ( lastModTime > 0 )
+      assertTrue( "Failed to set lastModified time on directory [" + dirFile.getPath() + "].",
+                  dirFile.setLastModified( lastModTime ));
     return dirFile;
   }
 
@@ -121,22 +135,30 @@ public class TestFileDirUtils
    * @param dirName the directory path to create
    * @return the java.io.File that represents the created directory.
    */
-  public static File addDirectory( File parentDir, String dirName )
+  public static File addDirectory( File parentDir, String dirName ) {
+    return addDirectory( parentDir, dirName, -1 );
+  }
+
+  public static File addDirectory( File parentDir, String dirName, long lastModTime )
   {
     // Check that the parent directory already exists and is a directory.
-    Assert.assertTrue( "Parent file does not exist <" + parentDir.getPath() + ">.",
-                       parentDir.exists() );
-    Assert.assertTrue( "Parent file not a directory <" + parentDir.getPath() + ">.",
-                       parentDir.isDirectory() );
+    assertTrue( "Parent file does not exist <" + parentDir.getPath() + ">.",
+                parentDir.exists() );
+    assertTrue( "Parent file not a directory <" + parentDir.getPath() + ">.",
+                parentDir.isDirectory() );
 
     File newDir = new File( parentDir, dirName );
 
-    Assert.assertFalse( "New directory already exists [" + newDir.getPath() + "].",
-                        newDir.exists() );
+    assertFalse( "New directory already exists [" + newDir.getPath() + "].",
+                 newDir.exists() );
 
     // Create the new directory (including any necessary but nonexistent parent directories).
-    Assert.assertTrue( "Failed to create the new directory [" + newDir.getAbsolutePath() + "].",
-                       newDir.mkdirs() );
+    assertTrue( "Failed to create the new directory [" + newDir.getAbsolutePath() + "].",
+                newDir.mkdirs() );
+
+    if ( lastModTime > 0 )
+      assertTrue( "Failed to set lastModified time on directory [" + newDir.getPath() + "].",
+                  newDir.setLastModified( lastModTime ));
 
     return newDir;
   }
@@ -150,33 +172,36 @@ public class TestFileDirUtils
    * @param fileName the name of the file to create (may not contain multiple path segments).
    * @return the java.io.File that represents the created file.
    */
-  public static File addFile( File parentDir, String fileName )
+  public static File addFile( File parentDir, String fileName ) {
+    return addFile( parentDir, fileName, -1 );
+  }
+
+  public static File addFile( File parentDir, String fileName, long lastModTime )
   {
     // Check that the parent directory already exists and is a directory.
-    Assert.assertTrue( "Parent file does not exist <" + parentDir.getPath() + ">.",
-                       parentDir.exists() );
-    Assert.assertTrue( "Parent file not a directory <" + parentDir.getPath() + ">.",
-                       parentDir.isDirectory() );
+    assertTrue( "Parent file does not exist <" + parentDir.getPath() + ">.",
+                parentDir.exists() );
+    assertTrue( "Parent file not a directory <" + parentDir.getPath() + ">.",
+                parentDir.isDirectory() );
 
     File newFile = new File( parentDir, fileName );
 
-    Assert.assertFalse( "New file [" + newFile.getAbsolutePath() + "] already exists.",
-                        newFile.exists());
+    assertFalse( "New file [" + newFile.getAbsolutePath() + "] already exists.",
+                 newFile.exists());
 
     // Make sure the new file is directly contained in the parent directory, not a subdirectory.
-    Assert.assertTrue( "Multiple levels not allowed in file name <" + fileName + ">.",
-                       newFile.getParentFile().equals( parentDir ) );
+    assertTrue( "Multiple levels not allowed in file name <" + fileName + ">.",
+                newFile.getParentFile().equals( parentDir ) );
 
-    try
-    {
-      Assert.assertTrue( "Failed to create new file [" + newFile.getAbsolutePath() + "].",
-                         newFile.createNewFile());
+    try {
+      assertTrue( "Failed to create new file [" + newFile.getAbsolutePath() + "].",
+                  newFile.createNewFile());
+    } catch ( IOException e ) {
+      fail( "Failed to create new file <" + newFile.getAbsolutePath() + ">: " + e.getMessage() );
     }
-    catch ( IOException e )
-    {
-      Assert.assertTrue( "Failed to create new file <" + newFile.getAbsolutePath() + ">: " + e.getMessage(),
-                         false );
-    }
+    if ( lastModTime > 0 )
+      assertTrue( "Failed to set lastModified time on file [" + newFile.getPath() + "].",
+                  newFile.setLastModified( lastModTime ));
 
     return newFile;
   }
@@ -200,27 +225,21 @@ public class TestFileDirUtils
     for ( int i = 0; i < files.length; i++ )
     {
       File curFile = files[i];
-      if ( curFile.isDirectory() )
-      {
+      if ( curFile.isDirectory() ) {
         removeAll &= deleteDirectoryAndContent( curFile );
-      }
-      else
-      {
-        if ( !curFile.delete() )
-        {
+      } else {
+        if ( !curFile.delete() ) {
           System.out.println( "**ERROR: Failed to delete file <" + curFile.getAbsolutePath() + ">" );
           removeAll = false;
         }
       }
     }
 
-    if ( !directory.delete() )
-    {
+    if ( !directory.delete() ) {
       System.out.println( "**ERROR: Failed to delete directory <" + directory.getAbsolutePath() + ">" );
       removeAll = false;
     }
 
     return removeAll;
   }
-
 }

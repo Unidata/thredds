@@ -34,10 +34,13 @@ public class MapMath {
 	public final static double HALFPI = Math.PI/2.0;
 	public final static double QUARTERPI = Math.PI/4.0;
 	public final static double TWOPI = Math.PI*2.0;
-	public final static double RTD = 180.0/Math.PI;
-	public final static double DTR = Math.PI/180.0;
+
 	public final static Rectangle2D WORLD_BOUNDS_RAD = new Rectangle2D.Double(-Math.PI, -Math.PI/2, Math.PI*2, Math.PI);
 	public final static Rectangle2D WORLD_BOUNDS = new Rectangle2D.Double(-180, -90, 360, 180);
+
+  public final static double EPS10 = 1e-10;
+  public final static double RTD = 180.0 / Math.PI;
+  public final static double DTR = Math.PI / 180.0;
 
 	/**
 	 * Degree versions of trigonometric functions

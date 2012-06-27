@@ -127,7 +127,8 @@ public class NcStream {
     dimBuilder.setName(dim.getName() == null ? "" : dim.getName());
     dimBuilder.setLength(dim.getLength());
     if (!dim.isShared()) dimBuilder.setIsPrivate(true);
-    if (dim.isVariableLength()) dimBuilder.setIsVlen(true);
+    if (dim.isVariableLength())
+      dimBuilder.setIsVlen(true);
     if (dim.isUnlimited()) dimBuilder.setIsUnlimited(true);
     return dimBuilder;
   }

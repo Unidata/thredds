@@ -521,10 +521,6 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     protected boolean isStringValued = false;
     private int aggStart = 0, aggEnd = 0; // index in aggregated dataset; aggStart <= i < aggEnd
 
-    protected DatasetOuterDimension(String location) {
-      super(location);
-    }
-
     /**
      * Dataset constructor.
      * With this constructor, the actual opening of the dataset is deferred, and done by the reader.
@@ -556,8 +552,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
       if ((type == Type.joinNew) || (type == Type.joinExistingOne) || (type == Type.forecastModelRunCollection)) {
         if (coordValueS == null) {
-          int pos = this.location.lastIndexOf('/');
-          this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
+          this.coordValue = extractCoordNameFromFilename(this.getLocation());
           this.isStringValued = true;
         } else {
           try {
@@ -575,6 +570,14 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       }
     }
 
+    private String extractCoordNameFromFilename(String loc) {
+      int pos = loc.lastIndexOf('/');
+      String result = (pos < 0) ? loc : loc.substring(pos + 1);
+      pos = result.lastIndexOf('#');
+      if (pos > 0) result = result.substring(0, pos);
+      return result;
+    }
+
     DatasetOuterDimension(MFile cd) {
       super(cd);
 
@@ -585,8 +588,8 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       // default is that the coordinates are just the filenames
       // this can be overriden by an explicit declaration, which will replace the variable afte ther agg is processed in NcMLReader
       if ((type == Type.joinNew) || (type == Type.joinExistingOne) || (type == Type.forecastModelRunCollection)) {
-        int pos = this.location.lastIndexOf('/');
-        this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
+        this.coordValue = extractCoordNameFromFilename(this.getLocation());
+        this.isStringValued = true;
         this.isStringValued = true;
       }
 
@@ -623,7 +626,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     }
 
     public void show(Formatter f) {
-      f.format("   %s", location);
+      f.format("   %s", getLocation());
       if (coordValue != null)
         f.format(" coordValue='%s'", coordValue);
       if (coordValueDate != null)

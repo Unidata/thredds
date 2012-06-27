@@ -1341,26 +1341,42 @@ public class JniIosp extends AbstractIOServiceProvider {
 
   private static NCLibrary nc4;
 
-  private NCLibrary load() {
+  private NCLibrary load1() {
     if (nc4 == null) {
-      //String dir = "C:/cdev/libpath/";
-      //String dir = "C:/dev/tds/thredds/lib/binary/win32/";
-      //String dir = "C:/cdev/netcdf-4.1.3-win-dev/bin/x32/"; // -Djava.library.path3="c:/program files/python2.7.1/lib/site-packages/"
       String dir = "S:/wfisher/";
       System.setProperty("jna.library.path", dir);
 
-      //System.load("libnetcdf.a");
-      System.load(dir + "libnetcdf.a");
+      System.load(dir + "libnetcdf-7.dll");
 
       Native.setProtected(true);
-      nc4 = (NCLibrary) Native.loadLibrary("netcdf", NCLibrary.class);
-      System.out.printf(" Netcdf nc_inq_libvers=%s isProtecetd=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
+      nc4 = (NCLibrary) Native.loadLibrary("netcdf-7", NCLibrary.class);
+      System.out.printf(" Netcdf nc_inq_libvers=%s isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
     }
 
     return nc4;
   }
 
-  private NCLibrary load2() {
+  private NCLibrary load() {
+  if (nc4 == null) {
+    String dir = "C:/cdev/lib/";
+    System.setProperty("jna.library.path", dir);
+
+    System.load(dir + "zlib.dll");
+    System.load(dir + "szip.dll");
+    System.load(dir + "hdf5dll.dll");
+    System.load(dir + "hdf5_hldll.dll");
+    System.load(dir + "netcdf-7.dll");
+
+
+    Native.setProtected(true);
+    nc4 = (NCLibrary) Native.loadLibrary("netcdf-7", NCLibrary.class);
+    System.out.printf(" Netcdf nc_inq_libvers=%s isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
+  }
+
+  return nc4;
+}
+
+  private NCLibrary load3() {
     if (nc4 == null) {
       //String dir = "C:/cdev/libpath/";
       //String dir = "C:/dev/tds/thredds/lib/binary/win32/";
@@ -1406,7 +1422,8 @@ public class JniIosp extends AbstractIOServiceProvider {
 
   public static void main(String args[]) throws Exception {
     JniIosp iosp = new JniIosp();
-    NetcdfFile ncfile = iosp.open("C:/data/test2.nc");
+
+    NetcdfFile ncfile = iosp.open("Q:\\cdmUnitTest\\formats\\netcdf4/nc4-classic/nctest_netcdf4.nc");
     System.out.println("" + ncfile);
   }
 

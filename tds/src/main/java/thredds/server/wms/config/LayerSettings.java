@@ -30,8 +30,8 @@ package thredds.server.wms.config;
 
 import org.jdom.Element;
 import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
-import uk.ac.rdg.resc.ncwms.util.Range;
-import uk.ac.rdg.resc.ncwms.util.Ranges;
+import uk.ac.rdg.resc.edal.util.Range;
+import uk.ac.rdg.resc.edal.util.Ranges;
 
 /**
  * Simple Java bean encapsulating the settings (allowFeatureInfo,

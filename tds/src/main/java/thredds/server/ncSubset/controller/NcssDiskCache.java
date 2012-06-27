@@ -15,7 +15,8 @@ public final class NcssDiskCache {
 	private static NcssDiskCache INSTANCE;
 	
 	private NcssDiskCache(){
-				
+		
+			
 	    //maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
 	    String cache = ThreddsConfig.get("NetcdfSubsetService.dir", ServletUtil.getContentPath() + AbstractNcssController.servletCachePath);
 	    File cacheDir = new File(cache);
@@ -47,7 +48,7 @@ public final class NcssDiskCache {
 	public static NcssDiskCache getInstance(){
 		
 		if(INSTANCE == null){
-			return new NcssDiskCache();
+			INSTANCE = new NcssDiskCache();			
 		}
 		
 		return INSTANCE;

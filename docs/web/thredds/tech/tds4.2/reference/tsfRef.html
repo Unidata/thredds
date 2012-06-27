@@ -160,7 +160,7 @@ directory (or subdirectory).<br>
   <li>HtmlWriter2</li>
   <li>DebugHandler</li>
   <li>Debug</li>
-  <li>DataServiceProvider</li>
+  <li>DataServiceProvider -- <strong>DataServiceProvider removed in TDS 4.2.9</strong></li>
 </ul>
 <p>Details of the API are given below.<br>
 </p>
@@ -359,7 +359,8 @@ if it is a recognized type of dataset service request. Then depending on the typ
 true if the request path matches a data root, false otherwise. A
 successful match means that the request is either for a dynamic catalog
 or a dataset (or a bad request).<br>
-</dd><dt><code>DataRootHandler.handleRequestForDataset( ... )</code></dt>
+</dd><dt><code>DataRootHandler.handleRequestForDataset( ... )</code> -- <strong>DataServiceProvider removed in TDS
+  4.2.9</strong></dt>
   <dd>Uses
 the given thredds.servlet.DataServiceProvider to determine if the
 request is recognized as a dataset request. Then find the requested
@@ -368,22 +369,26 @@ dataset and handle the request.</dd>
 requests, the following methods are available in the
 thredds.servlet.DataServiceProvider interface:<br>
 <dl>
-<dt><code>DataServiceProvider.getRecognizedDatasetRequest( ... )</code></dt><dd>Return
+<dt><code>DataServiceProvider.getRecognizedDatasetRequest( ... )</code> -- <strong>DataServiceProvider removed in TDS
+  4.2.9</strong></dt><dd>Return
 a DatasetRequest object if this request is recognized as a dataset
 request this DataSErviceProvider knows how to handle. Otherwise, return
 null.<br>
-</dd><dt><code>DataServiceProvider.handleRequestForDataset( ... )</code></dt>
+</dd><dt><code>DataServiceProvider.handleRequestForDataset( ... )</code> -- <strong>DataServiceProvider removed in TDS
+  4.2.9</strong></dt>
   <dd>Handle a dataset request (the response is committed by this method).<br>
 </dd>
-  <dt><code>DataServiceProvider.handleUnrecognizedRequest( ... )</code></dt>
+  <dt><code>DataServiceProvider.handleUnrecognizedRequest( ... )</code> -- <strong>DataServiceProvider removed in TDS
+    4.2.9</strong>dt>
   <dd>Handle a request that was not recognized by this DataServiceProvider and where the CrawlableDataset is not a collection (the response is committed by this method).</dd>
-  <dt><code>DataServiceProvider.handleUnrecognizedRequestForCollection( ... )</code></dt>
+  <dt><code>DataServiceProvider.handleUnrecognizedRequestForCollection( ... )</code> -- <strong>DataServiceProvider
+    removed in TDS 4.2.9</strong></dt>
   <dd>Handle
 a request that was not recognized by this DataServiceProvider and where
 the CrawlableDataset is a collection (the response is committed by this
 method).</dd></dl>
 
-<p>To provide access to data service provider specific information on
+<p><strong>DataServiceProvider removed in TDS 4.2.9</strong> provide access to data service provider specific information on
 the dataset request, the
 thredds.servlet.DataServiceProvider.DatasetRequest interface is
 provided:<br>

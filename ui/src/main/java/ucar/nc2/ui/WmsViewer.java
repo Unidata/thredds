@@ -104,10 +104,9 @@ public class WmsViewer extends JPanel {
     chooserPanel.add(levelChooser);
 
     // allow time looping
-    timeChooser.addActionValueListener( new ActionValueListener() {
+    timeChooser.addActionValueListener(new ActionValueListener() {
       public void actionPerformed(ActionValueEvent e) {
         if (null == timeChooser.getSelectedObject()) return;
-        System.out.printf("%s\n", e);
         LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
         getMap(ftb);
       }
@@ -306,10 +305,10 @@ public class WmsViewer extends JPanel {
 
       Header h = method.getResponseHeader("Content-Type");
       String mimeType = (h == null) ? "" : h.getValue();
-      info.append(" mimeType = " + mimeType+ "\n");
+      info.append(" mimeType = " + mimeType + "\n");
 
       byte[] contents = IO.readContentsToByteArray(method.getResponseBodyAsStream());
-      info.append(" content len = " + contents.length+ "\n");
+      info.append(" content len = " + contents.length + "\n");
 
       ByteArrayInputStream is = new ByteArrayInputStream(contents);
 
@@ -319,16 +318,16 @@ public class WmsViewer extends JPanel {
       if (img == null) {
         info.append("getMap:\n\n");
         if (mimeType.equals("application/vnd.google-earth.kmz")) {
-          File temp = File.createTempFile("Temp",  ".kmz");
+          File temp = File.createTempFile("Temp", ".kmz");
           // File temp = new File("C:/temp/temp.kmz");
           IO.writeToFile(contents, temp);
           contents = null;
 
-          ZipFile zfile = new ZipFile( temp);
+          ZipFile zfile = new ZipFile(temp);
           Enumeration entries = zfile.entries();
           while (entries.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) entries.nextElement();
-            info.append( " entry="+entry+ "\n");
+            info.append(" entry=" + entry + "\n");
             if (entry.getName().endsWith(".kml")) {
               InputStream kml = zfile.getInputStream(entry);
               contents = IO.readContentsToByteArray(kml);
@@ -337,7 +336,7 @@ public class WmsViewer extends JPanel {
         }
 
         if (contents != null)
-          info.append(new String(contents)+ "\n");
+          info.append(new String(contents) + "\n");
       }
 
     } catch (Exception e) {
@@ -400,7 +399,6 @@ public class WmsViewer extends JPanel {
 
       for (Element elem : (java.util.List<Element>) layer3Elem.getChildren("Dimension", wmsNamespace)) {
         String name = elem.getAttributeValue("name");
-        // System.out.println("Dimension name= " + name);
         if (name.equals("time")) {
           String[] st = elem.getText().split(",");
           for (String s : st) times.add(StringUtil2.removeWhitespace(s));

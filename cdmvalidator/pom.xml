@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>edu.ucar</groupId>
+    <artifactId>thredds-parent</artifactId>
+    <version>4.3.11</version>
+  </parent>
+
+  <!-- ===========================================================
+            Module Description
+        =========================================================== -->
+   <!-- groupId>edu.ucar</groupId-->
+   <artifactId>cdmvalidator</artifactId>
+   <packaging>war</packaging>
+   <name>CDM validator webapp</name>
+    <description>
+      WMO tables for the NetCDF library.
+    </description>
+    <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
+
+  <!-- ===========================================================
+           Dependencies
+       =========================================================== -->
+  <dependencies>
+    <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>netcdf</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>bufr</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>grib</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>udunits</artifactId>
+     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>tds</artifactId>
+      <type>war</type>
+    </dependency>
+
+     <dependency>
+       <groupId>commons-httpclient</groupId>
+       <artifactId>commons-httpclient</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>commons-fileupload</groupId>
+       <artifactId>commons-fileupload</artifactId>
+     </dependency>
+
+     <dependency>
+       <groupId>org.jdom</groupId>
+       <artifactId>jdom</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>joda-time</groupId>
+       <artifactId>joda-time</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>org.quartz-scheduler</groupId>
+       <artifactId>quartz</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>com.google.protobuf</groupId>
+       <artifactId>protobuf-java</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>net.sf.ehcache</groupId>
+       <artifactId>ehcache</artifactId>
+       <scope>runtime</scope>
+     </dependency>
+     <dependency>
+       <artifactId>je</artifactId>
+       <groupId>com.sleepycat</groupId>
+     </dependency>
+
+     <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-api</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-log4j12</artifactId>
+       <scope>runtime</scope>
+     </dependency>
+     <dependency>
+       <groupId>log4j</groupId>
+       <artifactId>log4j</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>jcl-over-slf4j</artifactId>
+       <scope>runtime</scope>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-webmvc</artifactId>
+     </dependency>
+
+    <!-- tomcat -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency -->
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <finalName>cdmvalidator</finalName>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.1.1</version>
+        <configuration>
+          <attachClasses>true</attachClasses>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Built-On>${maven.build.timestamp}</Built-On>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

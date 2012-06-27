@@ -94,16 +94,16 @@ public class DateTypeParserTest
     if ( type != null )
       attributes.put( "type", type );
 
-    return StaxParserUtils.wrapContentXmlInXmlDocRootElement( dateElementName, attributes, dateString );
+    return StaxParserTestUtils.wrapContentXmlInXmlDocRootElement( dateElementName, attributes, dateString );
   }
 
   private void assertDateTypeXmlAsExpected( QName elemName, String date, String format, String type, String xml )
           throws XMLStreamException, ThreddsXmlParserException
   {
-    XMLEventReader reader = StaxParserUtils.createXmlEventReaderOnXmlString( xml, "http://test.catalog2.thredds/DateTypeParserTest/someTest.xml" );
+    XMLEventReader reader = StaxParserTestUtils.createXmlEventReaderOnXmlString( xml, "http://test.catalog2.thredds/DateTypeParserTest/someTest.xml" );
 
     DateTypeParser.Factory fac = new DateTypeParser.Factory( elemName );
-    StaxParserUtils.advanceReaderToFirstStartElement( reader );
+    StaxParserTestUtils.advanceReaderToFirstStartElement( reader );
     assertTrue( fac.isEventMyStartElement( reader.peek() ));
 
     DateTypeParser dateTypeParser = fac.getNewDateTypeParser();

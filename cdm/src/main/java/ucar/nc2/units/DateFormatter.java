@@ -84,7 +84,11 @@ public class DateFormatter {
    * @param text parse this text
    * @return equivalent Date or null if failure
    * @see <a href="http://www.w3.org/TR/NOTE-datetime">W3C profile of ISO 8601</a>
+   * 
+   * @deprecated As of netCDF-JAVA 4.3.10. Use {@link ucar.nc2.time.CalendarDateFormatter#isoStringToDate(String)  } instead
+   * 
    */
+  @Deprecated
   public Date getISODate(String text) {
     Date result;
 

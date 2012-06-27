@@ -34,14 +34,16 @@ package opendap.test;
 
 import org.junit.Test;
 import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.Diff;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestDuplicates extends ucar.nc2.util.TestCommon {
-  static final String DFALTTESTSERVER = "motherlode.ucar.edu:8080";
+public class TestDuplicates extends UnitTestCommon
+{
+  static final String DFALTTESTSERVER = "motherlode.ucar.edu:8081";
 
   public TestDuplicates() {
     setTitle("DAP duplicate names tests");
@@ -129,7 +131,7 @@ public class TestDuplicates extends ucar.nc2.util.TestCommon {
     }
     System.out.flush();
     System.err.flush();
-    junit.framework.Assert.assertTrue("Testing " + getTitle(), pass);
+    assertTrue("Testing " + getTitle(), pass);
   }
 
 

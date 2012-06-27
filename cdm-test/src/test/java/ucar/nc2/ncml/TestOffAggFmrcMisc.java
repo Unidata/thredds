@@ -31,12 +31,12 @@
  */
 package ucar.nc2.ncml;
 
-import junit.framework.TestCase;
-import ucar.ma2.InvalidRangeException;
+import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.StringReader;
 
@@ -48,20 +48,18 @@ import java.io.StringReader;
  */
 
 
-public class TestOffAggFmrcMisc extends TestCase {
+public class TestOffAggFmrcMisc {
+  String location = TestDir.cdmUnitTestDir +"ft/fmrc/efine/";
 
-  public TestOffAggFmrcMisc( String name) {
-    super(name);
-  }
-
+  @Test
   public void testScaling() throws Exception {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' enhance='true' >\n" +
       "  <aggregation dimName='runtime' type='forecastModelRunCollection' timeUnitsChange='true'>\n" +
-      "    <scan location='D:/work/signell/efine' suffix='.nc' dateFormatMark='#yyyyMMddHH' enhance='true' />" +
+      "    <scan location='"+location+"' suffix='.nc' dateFormatMark='#yyyyMMddHH' enhance='true' />" +
       "  </aggregation>\n" +
       "</netcdf>";
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcScaling", null);
+    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), location, null);
 
     // make sure that scaling is applied
     VariableDS vs = (VariableDS) ncfile.findVariable("hs");
@@ -76,8 +74,9 @@ public class TestOffAggFmrcMisc extends TestCase {
     ncfile.close();
   }
 
+  @Test
   public void testScaling2() throws Exception {
-    NetcdfFile ncfile = NetcdfDataset.acquireFile("file:D:/work/signell/efine/fine.ncml", null);
+    NetcdfFile ncfile = NetcdfDataset.acquireFile(location+"fine.ncml", null);
 
     // make sure that scaling is applied
     VariableDS vs = (VariableDS) ncfile.findVariable("hs");

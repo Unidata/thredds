@@ -89,6 +89,8 @@ public interface Netcd4Clibrary extends Library {
 
   // Find all dimids for a location. This finds all dimensions in a group, or any of it's parents.
   int nc_inq_dimids(int ncid, IntByReference ndims, int[] dimids, int include_parents);
+  // nc_inq_dimids(int ncid, int *ndims, int *dimids, int include_parents);
+
 
   // Find all user-defined types for a location. This finds all user-defined types in a group.
   int nc_inq_typeids(int ncid, IntByReference ntypes, int[] typeids);

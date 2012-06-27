@@ -32,7 +32,10 @@
  */
 package thredds.cataloggen.config;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
+
 import thredds.catalog.*;
 
 import java.io.*;
@@ -45,7 +48,7 @@ import java.util.List;
  * Date: May 19, 2004
  * Time: 3:44:33 PM
  */
-public class TestCatGenConfigMetadataFactory extends TestCase
+public class TestCatGenConfigMetadataFactory
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestCatGenConfigMetadataFactory.class);
 
@@ -69,12 +72,8 @@ public class TestCatGenConfigMetadataFactory extends TestCase
 
   private InvCatalogFactory factory = null;
 
-  public TestCatGenConfigMetadataFactory( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
+  @Before
+  public void setUp()
   {
     log.debug( "setUp(): starting." );
 
@@ -87,9 +86,7 @@ public class TestCatGenConfigMetadataFactory extends TestCase
                                             catGenConfMdataFactory );
   }
 
-  /**
-   * Test parsing of InvCatalog 1.0 catalog.
-   */
+  @Test
   public void testParse_1_0() throws IOException
   {
     String catalogFileName = resultServiceAccessPointHeader + "config/" + catGenConf_1_0_ResourceName;

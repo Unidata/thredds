@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Gridded Data">
+  <service name="thisDODS" serviceType="DODS" base="/thredds/dodsC/" />
+  <dataset name="Test rejectFilter">
+    <metadata inherited="true">
+      <dataType>Grid</dataType>
+    </metadata>
+    <dataset name="gfs_211">
+      <metadata inherited="true">
+        <serviceName>thisDODS</serviceName>
+      </metadata>
+      <dataset name="2004050318_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050318_gfs_211.nc" />
+      <dataset name="2004050312_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050312_gfs_211.nc" />
+      <dataset name="2004050306_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050306_gfs_211.nc" />
+      <dataset name="2004050300_gfs_211.nc" urlPath="testData/modelNotFlat/gfs_211/2004050300_gfs_211.nc" />
+    </dataset>
+  </dataset>
+</catalog>

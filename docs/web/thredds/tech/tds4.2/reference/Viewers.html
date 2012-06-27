@@ -222,51 +222,10 @@ reason to write an implementation of Viewer and use is JNLP is if the
 viewer has requirements for the datsets it can handle. Looking at the
 IDV implementation above we see it enforces two requirements:</p><ol><li>the dataset must have an OPeNDAP (aka DODS) access URL and</li><li>the dataset must be gridded data.</li></ol>
 <hr width="100%">
-<h2>Embedding the ToolsUI viewers on your web page<a name="embedding"></a></h2>
-<p>To call the ToolsUI application webstart application from your webpage, return this JNLP file:</p>
-<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-&lt;jnlp spec=&quot;1.0+&quot; codebase=&quot;http://www.unidata.ucar.edu/software/netcdf-java/current/webstart&quot;&gt;
-    
-   &lt;information&gt;
-     &lt;title&gt;NetCDF Tools UI&lt;/title&gt;
-     &lt;vendor&gt;Unidata&lt;/vendor&gt;
-     &lt;homepage href=&quot;http://www.unidata.ucar.edu/software/netcdf-java/&quot;/&gt;
-     &lt;description kind=&quot;short&quot;&gt;GUI interface to netCDF-Java / Common Data Model&lt;/description&gt;
-     &lt;icon href=&quot;nc.gif&quot;/&gt;
-     &lt;offline-allowed/&gt;
-   &lt;/information&gt;
-    
-   &lt;security&gt;
-     &lt;all-permissions/&gt;
-   &lt;/security&gt;
-   
-   &lt;resources&gt;
-     &lt;j2se version=&quot;1.6+&quot; max-heap-size=&quot;1024m&quot;/&gt;
-     &lt;jar href=&quot;netcdfUI.jar&quot;/&gt;
-     &lt;extension name=&quot;netcdfUI Extra&quot; href=&quot;netCDFtoolsExtraJars.jnlp&quot;/&gt;
-   &lt;/resources&gt;
-   
-   &lt;application-desc main-class=&quot;ucar.nc2.ui.ToolsUI&quot;&gt;
-     &lt;argument&gt;<strong>{catalog}#{dataset}</strong>&lt;/argument&gt;
-   &lt;/application-desc&gt;
-&lt;/jnlp&gt;
-</pre>
-<p>where</p>
-<ol>
-  <li>Replace {catalog} with the absolute URL of the THREDDS catalog </li>
-  <li>Replace {dataset} with the ID of the dataset you want the ToolsUI to view.</li>
-</ol>
-<p>for example:</p>
-<pre> 
-  &lt;application-desc main-class=&quot;ucar.nc2.ui.ToolsUI&quot;&gt;
-      &lt;argument&gt;http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/GFS/CONUS_95km/files/catalog.xml#fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20120414_0000.grib1&lt;/argument&gt;
- &lt;/application-desc&gt;</pre>
-<p>If you dont specify the &lt;argument&gt;, ToolsUI will still startup normally, and not jump the THREDDS catalog tab..</p>
-<hr width="100%">
 <address>
   <img src="../../images/thread.png" height="108" width="110">
   This document is maintained by Unidata and was last updated
-  April 2012. Send comments to
+  August 2009. Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body></html>

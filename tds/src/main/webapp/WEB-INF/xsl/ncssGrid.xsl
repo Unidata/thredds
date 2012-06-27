@@ -1,20 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-
   <xsl:output method="html"/>
 
-  <xsl:template match="/">
+  <!-- Gets the tds context as a xslt parameter -->   
+  <xsl:param name="tdsContext"></xsl:param>
+  
+  <!-- Sets the paths that depends on the tdsContext -->
+  <xsl:variable name="cssPath">
+  	<xsl:value-of select="concat($tdsContext,'/upc.css')"></xsl:value-of>
+  </xsl:variable>
+  <xsl:variable name="logoPath">
+  	<xsl:value-of select="concat($tdsContext,'/unidataLogo.gif')"></xsl:value-of>
+  </xsl:variable>  
+    
+  <xsl:template match="/">  	
     <html>
       <head>
         <title>NetCDF Subset Service for Grids</title>
       </head>
       <body bgcolor="#FFFFFF">
 
-        <LINK REL="StyleSheet" HREF="/thredds/upc.css" TYPE="text/css"/>
+        <!-- LINK REL="StyleSheet" HREF="/thredds/upc.css" TYPE="text/css"/-->
+        <xsl:element name="link">
+        	<xsl:attribute name="rel">StyleSheet</xsl:attribute>
+        	<xsl:attribute name="type">text/css</xsl:attribute>
+        	<xsl:attribute name="href">
+        		<xsl:value-of select="$cssPath"></xsl:value-of>	
+			</xsl:attribute>
+        </xsl:element>
         <table width="100%">
           <tr>
             <td width="95" height="95" align="left">
-              <img src="/thredds/unidataLogo.gif" width="95" height="93"/>
+              <!-- img src="/thredds/unidataLogo.gif" width="95" height="93"/-->
+        	  <xsl:element name="img">
+        		<xsl:attribute name="src">
+        			<xsl:value-of select="$logoPath"></xsl:value-of>	
+				</xsl:attribute>        	  
+        	  	<xsl:attribute name="width">95</xsl:attribute>
+        		<xsl:attribute name="height">93</xsl:attribute>
+        	  </xsl:element>                            
             </td>
             <td width="701" align="left" valign="top">
               <table width="303">
@@ -100,11 +124,11 @@
 
               <td>
                 <h3>Choose Spatial Subset:</h3>
-                <input type="radio" name="spatial" value="all" checked="checked">
+                <!-- input type="radio" name="spatial" value="all" checked="checked">
                   <b>All</b>
-                </input>
+                </input-->
                 <br/>
-                <input type="radio" name="spatial" value="bb">
+                <input type="radio" name="spatial" value="bb" checked="checked">
                   <b>Bounding Box (decimal degrees):</b>
                   <blockquote>
                     <blockquote>
@@ -130,11 +154,11 @@
                 <br/>
 
                 <h3>Choose Time Subset:</h3>
-                <input type="radio" name="temporal" value="all" checked="checked">
+                <!-- input type="radio" name="temporal" value="all" checked="checked">
                   <b>All</b>
-                </input>
+                </input-->
                 <br/>
-                <input type="radio" name="temporal" value="range">
+                <input type="radio" name="temporal" value="range" checked="checked">
                   <b>Time Range:</b>
                   <blockquote>Starting:
                     <input type="text" name="time_start" size="20" value="{gridForm/TimeSpan/begin}"/>
@@ -155,8 +179,10 @@
                   <input type="text" name="vertCoord" size="10"/>
                   <br/>
                 </blockquote>
-                <br/>
-
+                <strong>Vertical Stride:</strong>
+                <input type="text" name="vertStride" size="5" value="1"/>
+                <br/>                
+				<br/>
                 <strong>Add 2D Lat/Lon to file (if needed for CF compliance)</strong>
                 <br/>
                 <input type="checkbox" name="addLatLon" value="true"/>Add Lat/Lon variables

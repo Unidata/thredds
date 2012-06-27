@@ -243,12 +243,9 @@ the HTTP Basic scheme based on clear-text user name and password.
 <b>Digest</b>:
 the HTTP digest scheme based on encrypted user name and password.
 <p>
-<b>Proxy</b>:
-a scheme for accessing a proxy server
-based on clear-text user name and password.
-Note that there is an alternate <a href="#simpleproxy">simple proxy"</a>
-that does not involve authentication, but only
-requires a host name and a port number.
+<b>NTLM</b>:
+the NTLM scheme is a Microsoft specific scheme. Support is provided,
+but has never been tested.
 <p>
 <b>SSL</b>:
 a scheme that uses a client-side key to authenticate
@@ -269,8 +266,9 @@ is used in a non-standard way and it contains the following information.
 The last two items are optional. If missing, then the client will
 accept any certificate sent to it by the server. This includes,
 specifically, self-signed certificates.
+
 <h4>Setting Credentials</h4>
-There are three  primary credentialling methods in
+There are four  primary credentialling methods in
 <i>HTTPSession</i>:
 <ol>
 <li> Insert an arbitrary entry into the auth store.
@@ -289,6 +287,22 @@ defined for that session.
 Its signature is as follows.
 <pre>
 public void setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
+</pre>
+<li> Set the credentials on a per-session basis, using a client provided
+instance of <i>Credentials</i>. This is only useful when the credentials
+are unchanging.
+Its signature is as follows.
+<pre>
+public void setCredentials(HTTPAuthScheme scheme, Credentials creds);
+</pre>
+
+<li> Set the credentials for all sessions
+using a client provided
+instance of <i>Credentials</i>. This is only useful when the credentials
+are unchanging.
+Its signature is as follows.
+<pre>
+public void setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds);
 </pre>
 </ol>
 <p>
@@ -325,6 +339,45 @@ insert(new Entry(HTTPAuthScheme.SSL,ANY_URL,
                                      truststore,trustpassword)));
 </pre>
 
+<h3><a name="Proxy"><u>Proxy Support</u></a></h2>
+There are two kinds of proxy support: authenticating and
+simple (i.e. not authenticating).
+Both kinds of proxies require the specification of a host name
+and a port. In addition, authenticating proxies require the
+specification of some form of credentials/credentialsprovider.
+The authenticating proxy usually occurs as a corporate or
+governmental firewall controlling access to the "outside world".
+<p>
+Specifying the host plus port can be done in either of two ways.
+<ol>
+<li> Programmatically by called the procedure
+<a href="#setGlobalProxy>HTTPSession.setGlobalProxy()</a>.
+<p>
+<li> Global command line parameters: 
+"-Dhttp.proxyHost" and "-Dhttp.proxyPort"; note that this is
+equivalent to calling <a href="#setGlobalProxy>setGlobalProxy()</a>
+with the values of the
+http.proxyhost 
+and the 
+http.proxyport
+command line parameters
+</ol>
+<p>
+For authentication, the authentication database is consulted to try
+to locate the proper credentials for the proxy machine.
+<p>
+Also note that one can set the username and password into
+the url used to establish an HTTPSession instance.
+Note that one should not use the url of the proxy
+but rather the url of the target server from which one is
+trying to obtain information.
+<pre>
+http://username@pwd:server.com/...
+</pre>
+This will only work if the proxy is authenticating using BASIC
+authentication. If it uses, for example, NTLM, then you will
+need to set the authentication programmatically.
+
 <h2><a name="Misc"><u>Miscellaneous Changes</u></a></h2>
 As a side effect of the insertion of the auth mechanisms,
 a number of miscellaneous changes also occurred.
@@ -360,8 +413,8 @@ should be referenced to see any modifications.
      <li> Specifies that all HTTPSession instances should use global preemption
      </ul>
 <li>
-<a name="setGlobalSimpleProxy">
-static void setGlobalSimpleProxy(String host, int port)
+<a name="setGlobalProxy">
+static void setGlobalProxy(String host, int port)
 </a>
      <ul>
      <li> Force use of a proxy at host:port
@@ -408,6 +461,20 @@ static void setCredentialsProvider(CredentialsProvider)
           using the specified credentials provider and the Basic scheme.
      <li> throws HTTPException
      </ul>
+<li>
+public void setCredentials(HTTPAuthScheme scheme, Credentials creds)
+     <ul>
+     <li> Set the credentials on a per-session basis, using the url
+          defined for that session.
+     <li> throws HTTPException
+     </ul>
+<li>
+static void setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds)
+     <ul>
+     <li> Set the credentials for all session, using the url
+          defined for that session.
+     <li> throws HTTPException
+     </ul>
 </ul
 
 ><h4>Constructor(s)</h4>
@@ -427,14 +494,14 @@ Note that in both cases, selected command line parameters
 (specified by the java -D flag) are used for initialization.
 There are two such cases.
 <ol>
-<li> <a name="simpleproxy">Simple Proxy</a>:
+<li> <a name="simpleproxy">Simple Proxies</a>:
 If defined, the values of the flags "-Dhttp.proxyHost" and "-Dhttp.proxyPort"
 are used as arguments to the
-<a href="#setGlobalSimpleProxy>setGlobalSimpleProxy()</a>
-method to establish a global simple proxy.
-Again, the simple proxy does not authentication
-and is distinct from the authenticating proxy information.
-<p> <a name="simpleproxy">SSL</a>:
+<a href="#setGlobalProxy>setGlobalProxy()</a>
+method to establish a global, simple (i.e. non-authenticating) proxy.
+<p>
+<li>
+<a name="SSL">SSL</a>:
 If defined, the values of the flags
 "-Dkeystore", "-Dkeystorepassword"
 and "-Dtruststore", "-Dtruststorepassword"
@@ -442,7 +509,6 @@ are converted to an HTTPSSLProvider object
 that in turn is used as an argument to the
 <a href="#setGlobalCredentialsProvider#>setGlobalCredentialsProvider</a>
 method to establish client side key support.
-<li>
 </ol>
 
 <h4>Instance Get/Set Methods</h4>
@@ -455,7 +521,7 @@ method to establish client side key support.
 <li>Cookie[] getCookies()
 <li>void setContext(HttpState cxt)
 <li>HttpState getContext()
-<li>void setSimpleProxy(String host, int port)
+<li>void setProxy(String host, int port)
      <ul>
      <li> Force use of a proxy at host:port
     </ul>

@@ -146,6 +146,10 @@ public class FeatureCollectionConfig {
         this.triggerOk = triggerS.equalsIgnoreCase("allow");
     }
 
+    public boolean isStatic() {
+      return (recheckAfter == null) && (rescan == null) &&  (deleteAfter == null)  && !triggerOk && !startup;
+    }
+
     @Override
     public String toString() {
       return "UpdateConfig{" +
@@ -435,6 +439,7 @@ public class FeatureCollectionConfig {
       this.prob = prob;
     }
   }
+
   static public class GribIntvFilter {
     List<GribIntvFilterParam> filter;
     boolean isZeroExcluded;
@@ -464,7 +469,8 @@ public class FeatureCollectionConfig {
         boolean hasProb = (prob != Integer.MIN_VALUE); // record has prob
         boolean isMine = !needProb || hasProb && (param.prob == prob);
         if (param.id == id && isMine) { // first match in the filter list is used
-          if (param.intvLength != hasLength) return true; // remove the ones whose intervals dont match
+          if (param.intvLength != hasLength)
+            return true; // remove the ones whose intervals dont match
           return false;
         }
       }
@@ -478,16 +484,25 @@ public class FeatureCollectionConfig {
       }
 
       String[] s = idS.split("-");
-      if (s.length != 3) {
-        log.warn("Error on intvFilter: id attribute must be of format 'discipline-category-number'");
+      if (s.length != 3 && s.length != 4) {
+        log.warn("Error on intvFilter: id attribute must be of format 'discipline-category-number' (GRIB2) or 'center-subcenter-version-param' (GRIB1)");
         return;
       }
 
       try {
-        int discipline = Integer.parseInt(s[0]);
-        int category = Integer.parseInt(s[1]);
-        int number = Integer.parseInt(s[2]);
-        int id = (discipline << 16) + (category << 8) + number;
+        int id;
+        if (s.length == 3) {
+          int discipline = Integer.parseInt(s[0]);
+          int category = Integer.parseInt(s[1]);
+          int number = Integer.parseInt(s[2]);
+          id = (discipline << 16) + (category << 8) + number;
+        } else {
+          int center = Integer.parseInt(s[0]);
+          int subcenter = Integer.parseInt(s[1]);
+          int version = Integer.parseInt(s[2]);
+          int param = Integer.parseInt(s[3]);
+          id = (center << 8) + (subcenter << 16) + (version << 24) + param;
+        }
 
         int prob = (probS == null) ? Integer.MIN_VALUE : Integer.parseInt(probS);
 

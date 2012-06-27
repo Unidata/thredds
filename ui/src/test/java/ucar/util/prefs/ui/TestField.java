@@ -106,6 +106,7 @@ public class TestField extends TestCase {
     try {
       xstore.save();
     } catch (java.io.IOException ioe) {
+      ioe.printStackTrace();
       assert false;
     }
   }

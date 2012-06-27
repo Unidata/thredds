@@ -32,7 +32,9 @@
  */
 package thredds.crawlabledataset;
 
-import junit.framework.*;
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -47,19 +49,13 @@ import thredds.crawlabledataset.filter.*;
  * @author edavis
  * @since Nov 4, 2005 10:09:07 PM
  */
-public class TestCrawlableDatasetFilter extends TestCase
+public class TestCrawlableDatasetFilter
 {
-
-
   private List resultsNcNoCVS;
   private List resultsAll;
 
-  public TestCrawlableDatasetFilter( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
+  @Before
+  public void setUp()
   {
     resultsNcNoCVS = new ArrayList();
     resultsNcNoCVS.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050300_gfs_211.nc" );
@@ -71,9 +67,7 @@ public class TestCrawlableDatasetFilter extends TestCase
     resultsAll.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/CVS" );
   }
 
-  /**
-   * Test ...
-   */
+  @Test
   public void testRegExpIncludeAll()
   {
     String path = "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
@@ -100,8 +94,9 @@ public class TestCrawlableDatasetFilter extends TestCase
       return;
     }
 
-    assertTrue( "Number of datasets <" + list.size() + "> not as expected <2>.",
-                list.size() == 5 );
+    int expectedNumDs = 4;
+    assertTrue( "Number of datasets <" + list.size() + "> not as expected <" + expectedNumDs + ">.",
+                list.size() == expectedNumDs );
     for ( Iterator it = list.iterator(); it.hasNext(); )
     {
       CrawlableDataset curCd = (CrawlableDataset) it.next();
@@ -111,6 +106,7 @@ public class TestCrawlableDatasetFilter extends TestCase
 
   }
 
+  @Test
   public void testRegExpIncludeNcExcludeCVS()
   {
     String path = "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
@@ -135,7 +131,7 @@ public class TestCrawlableDatasetFilter extends TestCase
     {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
-    assertTrue( "Number of datasets <" + list.size() + "> not as expected <2>.",
+    assertTrue( "Number of datasets <" + list.size() + "> not as expected <4>.",
                 list.size() == 4 );
     for ( Iterator it = list.iterator(); it.hasNext(); )
     {
@@ -145,6 +141,7 @@ public class TestCrawlableDatasetFilter extends TestCase
     }
   }
 
+  @Test
   public void testWildcardIncludeNcExcludeCVS()
   {
     String path = "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";

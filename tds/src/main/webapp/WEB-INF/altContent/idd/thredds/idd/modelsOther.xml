@@ -158,7 +158,7 @@
         <collection spec="/data/thredds/ncdc/cfsr/timeseries/**/.*grb2$"
                     timePartition="directory"
                     dateFormatMark="#timeseries/#yyyyMM"/>
-        <update startup="true" trigger="allow"/>
+        <tdm trigger="allow"/>
         <gribConfig>
           <gdsHash from="1450218978" to="1450192070"/>
           <gdsName hash='1450192070' groupName='FLX GaussianT382'/>

@@ -1,6 +1,4 @@
 /*
- * $Id: Swap.java 64 2006-07-12 22:30:50Z edavis $
- * 
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
@@ -36,14 +34,12 @@
 package ucar.unidata.io;
 
 
-
 /**
  * The Swap class provides static methods for swapping the bytes of chars,
  * shorts, ints, longs, floats, and doubles.
  *
  * @author  Kirk Waters
  * @author  Russ Rew, 1998, added documentation
- * @version $Id: Swap.java 64 2006-07-12 22:30:50Z edavis $
  */
 
 public class Swap {
@@ -261,35 +257,6 @@ public class Swap {
         return b;
     }
 }
-
-/* Change History:
-   $Log: Swap.java,v $
-   Revision 1.6  2005/05/13 18:31:26  jeffmc
-   Clean up the odd copyright symbols
-
-   Revision 1.5  2004/01/29 17:37:02  jeffmc
-   A big sweeping checkin after a big sweeping reformatting
-   using the new jindent.
-
-   jindent adds in javadoc templates and reformats existing javadocs. In the new javadoc
-   templates there is a '_more_' to remind us to fill these in.
-
-   Revision 1.4  2000/08/18 04:15:43  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.3  1999/06/03 01:44:02  caron
-   remove the damn controlMs
-
-   Revision 1.2  1999/06/03 01:26:29  caron
-   another reorg
-
-   Revision 1.1.1.1  1999/05/21 17:33:47  caron
-   startAgain
-
-# Revision 1.2  1998/12/14  17:11:32  russ
-# Add comment for accumulating change histories.
-#
-*/
 
 
 

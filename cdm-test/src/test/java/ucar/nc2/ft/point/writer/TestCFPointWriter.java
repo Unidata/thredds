@@ -22,16 +22,16 @@ public class TestCFPointWriter {
 
   @Test
   public void testWrite() throws IOException {
-    //writePointDataset(TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc");
+    writeDataset(TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, true);
 
-    //writeDataset(TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, true);
+    writeDataset(TestDir.cdmUnitTestDir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, true);
 
     writeDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, true);
   }
 
   // synthetic variants
   @Test
-  public void testWriteVariants() throws IOException {
+  public void testWriteProfileVariants() throws IOException {
     assert 13 ==  writeDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
     assert 12 ==  writeDataset(CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, false);
     assert 50 ==  writeDataset(CFpointObs_topdir + "profileMultidim.ncml", FeatureType.PROFILE, false);
@@ -45,6 +45,12 @@ public class TestCFPointWriter {
     assert 22 ==  writeDataset(CFpointObs_topdir + "profileRaggedIndex.ncml", FeatureType.PROFILE, false);
     assert 22 ==  writeDataset(CFpointObs_topdir + "profileRaggedIndexTimeJoin.ncml", FeatureType.PROFILE, false);
   }
+
+  @Test
+  public void testProblem() throws IOException {
+    assert 13 ==  writeDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
+  }
+
 
   int writeDataset(String location, FeatureType ftype, boolean show) throws IOException {
     File fileIn = new File(location);

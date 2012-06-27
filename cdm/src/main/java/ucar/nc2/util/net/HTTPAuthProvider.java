@@ -44,7 +44,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.auth.*;
 
 /**
- * HTTPAuthCreds contains the necessary information to support a given
+ * HTTPAuthProvider contains the necessary information to support a given
  * authorization scheme in the context of HTTPSession.
  * <p/>
  * It is intended to be thread safe using, currently,
@@ -124,10 +124,7 @@ getCredentials(AuthScheme authscheme,
     HTTPAuthScheme scheme;
     Credentials credentials = null;
 
-    if(isproxy)
-	scheme = HTTPAuthScheme.PROXY;
-    else
-	scheme = HTTPAuthScheme.schemeForName(authscheme.getSchemeName());
+    scheme = HTTPAuthScheme.schemeForName(authscheme.getSchemeName());
 
     if(scheme == null) {
         LOG.error("HTTPAuthProvider: unsupported scheme: "+authscheme.getSchemeName());

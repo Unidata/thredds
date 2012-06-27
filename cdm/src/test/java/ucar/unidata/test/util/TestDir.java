@@ -23,7 +23,7 @@ import java.util.Properties;
 public class TestDir {
 
   /**
-   * New test data directory. do not put temprory files in here. migrate all test data here eventually
+   * New test data directory. do not put temporary files in here. migrate all test data here eventually
    * Unidata "//fileserver/data/testdata2/cdmUnitTest" directory.
    */
   public static String cdmUnitTestDir = null;

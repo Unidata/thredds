@@ -9,17 +9,17 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-  <context:component-scan base-package="thredds.server.metadata.controller"/>
+  <!-- context:component-scan base-package="thredds.server.metadata.controller"/>
 
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /ncml/**=ncmlController  
+        /ncml/**=ncmlController
         /uddc/**=uddcController  
         /iso/**=isoController
       </value>     
     </property>
     <property name="alwaysUseFullPath" value="true"/>
-  </bean>
+  </bean-->
 
 </beans>

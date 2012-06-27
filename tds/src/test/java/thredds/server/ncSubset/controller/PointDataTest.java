@@ -1,6 +1,5 @@
 package thredds.server.ncSubset.controller;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -18,8 +17,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
+import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.PointDataParameters;
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
@@ -50,8 +49,9 @@ public class PointDataTest {
 		
 		return Arrays.asList(new Object[][]{  
 				{PointDataParameters.getVars().get(0) , PointDataParameters.getPathInfo().get(0), PointDataParameters.getPoints().get(0), PointDataParameters.getVerticalLevels().get(0) },
-				{PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
-				{PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }
+				//{PointDataParameters.getVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) },
+				//{PointDataParameters.getVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				//{PointDataParameters.getVars().get(3) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }
 
 		});				
 	}
@@ -81,14 +81,16 @@ public class PointDataTest {
 		int randInt =     rand.nextInt( dates.size());
 		int randIntNext = rand.nextInt(dates.size());
 		int start = Math.min(randInt, randIntNext);
-		int end = Math.max(randInt, randIntNext);		
-		
+		int end = Math.max(randInt, randIntNext);				
 		String startDate= dates.get(start).toString();
 		params.setTime_start(startDate);	
 		String endDate= dates.get(end).toString();
 		params.setTime_end(endDate);
-		params.setPoint(true);
-		params.setAccept("xml");
+		params.setPoint(true);		
+		
+	
+		params.setAccept("csv");
+		//params.setVertCoord(300.0);
 		result = new BeanPropertyBindingResult(params, "params");
 	}
 	
@@ -109,5 +111,7 @@ public class PointDataTest {
 		pointDataController.getPointData(params, result, response);
 		assertEquals(200, response.getStatus());
 	}
+	
+	
 	
 }

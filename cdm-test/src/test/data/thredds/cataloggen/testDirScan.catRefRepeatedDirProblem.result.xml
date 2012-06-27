@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="ncdods" serviceType="DODS" base="http://localhost:8080/thredds/dodsC/"/>
+  <dataset name="aircraft">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+    <dataset name="uw_kingair-2005-01-19-113957.nc" urlPath="trajectory/aircraft/uw_kingair-2005-01-19-113957.nc"/>
+    <dataset name="WMI_Lear-2003-05-28-212817.nc" urlPath="trajectory/aircraft/WMI_Lear-2003-05-28-212817.nc"/>
+    <catalogRef xlink:href=".svn/catalog.xml" xlink:title=".svn" name=""/>
+  </dataset>
+</catalog>
+

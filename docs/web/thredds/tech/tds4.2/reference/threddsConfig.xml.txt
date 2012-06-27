@@ -81,6 +81,8 @@
     <coordSysBuilder convention="foo" class="test.Foo"/>
     <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
     <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
+    <table type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/>
+    <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/>
   </nj22Config>
   -->
 

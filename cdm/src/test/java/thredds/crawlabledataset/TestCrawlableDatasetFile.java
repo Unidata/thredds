@@ -32,13 +32,15 @@
  */
 package thredds.crawlabledataset;
 
-import junit.framework.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import thredds.catalog.TestCatalogAll;
+import ucar.unidata.test.util.TestDir;
+import ucar.unidata.test.util.TestFileDirUtils;
 
 /**
  * _more_
@@ -46,17 +48,25 @@ import thredds.catalog.TestCatalogAll;
  * @author edavis
  * @since 4.0
  */
-public class TestCrawlableDatasetFile extends TestCase
+public class TestCrawlableDatasetFile
 {
-  public TestCrawlableDatasetFile( String name )
-  {
-    super( name );
-  }
 
+  // ToDo Not sure what this test is trying to test. Perhaps things that are no longer the case.
+  //@Test
   public void testUnreadableDir_Level2()
   {
-    File topDir = new File( new File( TestCatalogAll.tmpDir ), "TestCrawlableDatasetFile"); // was TestDir.cdmUnitTestDir
-    File testDir = new File( topDir, "testUnreadableDir"); 
+    File tmpDataRootDir = new File( TestDir.temporaryLocalDataDir);
+    assertTrue( tmpDataRootDir.exists() );
+    assertTrue( tmpDataRootDir.canRead() );
+    assertTrue( tmpDataRootDir.canWrite() );
+    File tmpDataDir = TestFileDirUtils.createTempDirectory( "TestCrawlableDatasetFile.testUnreadableDir_Level2", tmpDataRootDir );
+    assertNotNull( tmpDataDir );
+
+    CrawlableDatasetFile tmpDataDirCrDs = new CrawlableDatasetFile( tmpDataDir );
+    assertTrue( tmpDataDirCrDs.exists() );
+    assertTrue( tmpDataDirCrDs.isCollection() );
+
+    File testDir = new File( tmpDataDir, "testUnreadableDir");
     CrawlableDatasetFile crDs = new CrawlableDatasetFile( testDir);
     assertTrue( crDs.exists());
     assertTrue( crDs.isCollection());

@@ -62,8 +62,7 @@ import ucar.nc2.util.DiskCache;
  */
 public class CdmValidatorContext
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( TdsContext.class );
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( CdmValidatorContext.class );
 
   private String webappName;
   private String webappVersion;

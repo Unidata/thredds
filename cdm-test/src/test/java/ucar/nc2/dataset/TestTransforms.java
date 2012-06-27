@@ -86,7 +86,6 @@ public class TestTransforms extends TestCase {
 
   public void testHybridSigmaPressure3() throws IOException, InvalidRangeException {
     String filename = testDir +  "HIRLAMhybrid.ncml";
-    //String filename =   "/local/robb/data/grib/hybrid/HIRLAMhybrid.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VerticalTransform vt = test(ncd, "hybrid",
             "Relative_humidity_hybrid",

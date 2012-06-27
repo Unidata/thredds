@@ -26,8 +26,7 @@ import ucar.nc2.util.cache.FileCache;
 public class MockTdsContextLoader extends AbstractContextLoader {
 
 	private TdsContentRootPath tdsContentRootPath;
-	
-	@Override
+
 	public ApplicationContext loadContext(MergedContextConfiguration mcc) throws Exception {
 
 		return loadContext( mcc.getLocations() );

@@ -58,8 +58,9 @@ import java.util.regex.Pattern;
  * This is a InvCatalogRef subclass. So the reference is placed in the parent, but
  * the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
  *       match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
- *
- * Generate anew each call; use object caching if needed to improve efficiency
+ * <p/>
+ * The InvDatasetFeatureCollection object is created once and held in the DataRootHandler's collection
+ * of DataRoots.
  *
  * @author caron
  * @since Mar 3, 2010
@@ -69,9 +70,12 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
 
   static protected final String FILES = "files";
+  static protected final String LATEST_DATASET = "latest.xml";
+  static protected final String LATEST_DATASET_NAME = "latest";
+  static protected final String LATEST_SERVICE = "latest";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
 
-  static private String context = "/thredds";
+  static protected String context = "/thredds";
   static public void setContext( String c ) {
     context = c;
   }
@@ -209,7 +213,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   @Override
   // DatasetCollectionManager was changed asynchronously
   public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
-    // if this is the TDS, and its using the TDM, then your not allowed to update
+    // if this is the TDS, and its using the TDM, then you're not allowed to update
     boolean tdsUsingTdm = !CollectionUpdater.INSTANCE.isTdm() && config.tdmConfig != null;
 
     if (event.getType() == CollectionManager.TriggerType.updateNocheck)

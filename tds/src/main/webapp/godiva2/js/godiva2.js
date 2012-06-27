@@ -75,13 +75,20 @@ window.onload = function()
         line = line.substring(11, line.length - 1);
         // Load an image of the transect
         var server = activeLayer.server == '' ? 'wms' : activeLayer.server;
+        var logscale = $('scaleSpacing').value == 'logarithmic';
         var transectUrl = server + '?REQUEST=GetTransect' +
             '&LAYER=' + activeLayer.id +
             '&CRS=' + map.baseLayer.projection.toString() +
             '&ELEVATION=' + getZValue() +
             '&TIME=' + isoTValue +
             '&LINESTRING=' + line +
-            '&FORMAT=image/png';
+            '&FORMAT=image/png'+
+            // Styling parameters are needed if we create a vertical section plot
+            '&COLORSCALERANGE=' + scaleMinVal + ',' + scaleMaxVal +
+            '&NUMCOLORBANDS=' + $('numColorBands').value +
+            '&LOGSCALE=' + logscale +
+            '&PALETTE=' + paletteName +
+            '&VERSION=1.1.1';        
         popUp(transectUrl, 450, 350);
     });
 
@@ -482,8 +489,10 @@ function getFeatureInfo(e)
         var params = {
             REQUEST: "GetFeatureInfo",
             BBOX: map.getExtent().toBBOX(),
-            I: e.xy.x,
-            J: e.xy.y,
+            //I: e.xy.x,
+            X: e.xy.x,
+            //J: e.xy.y,
+            Y: e.xy.y,
             INFO_FORMAT: 'text/xml',
             QUERY_LAYERS: ncwms.params.LAYERS,
             WIDTH: map.size.w,
@@ -529,6 +538,22 @@ function getFeatureInfo(e)
                         "title='Sets the maximum of the colour scale to " + truncVal + "'>" +
                         "Set colour max</a>";
                 }
+                if (activeLayer.zaxis != null && activeLayer.zaxis.values != null &&
+                        activeLayer.zaxis.values.length > 1) {
+                        // This layer has a vertical axis with > 1 values
+                        // TODO Construct the URL of the vertical profile plot
+                        var profilePlotURL = activeLayer.server == '' ? 'wms' : activeLayer.server;
+                        profilePlotURL += '?REQUEST=GetVerticalProfile' +
+                                          '&LAYER=' + activeLayer.id +
+                                          '&CRS=CRS:84' + // We frame the request in lon/lat coordinates
+                                          '&TIME=' + isoTValue +
+                                          '&POINT=' + lon + '%20' + lat +
+                                          '&FORMAT=image/png';
+
+                        html += "<br /><a href='#' onclick=popUp('" + profilePlotURL + "',550,450)"
+                             + " title='Creates a vertical profile plot at this point'>"
+                             + "Create vertical profile plot</a>";
+                    }                
                 if (timeSeriesSelected()) {
                     // Construct a GetFeatureInfo request for the timeseries plot
                     var serverAndParams = featureInfoUrl.split('?');
@@ -621,35 +646,41 @@ function layerSelected(layerDetails)
         ? getZValue()
         : parseFloat(autoLoad.zValue);
 
-    // clear the list of z values
-    $('zValues').options.length = 0;
+        // clear the list of z values
+        $('zValues').options.length = 0;
 
-    var zAxis = layerDetails.zaxis;
-    if (zAxis == null) {
-        $('zAxis').innerHTML = ''
-        $('zValues').style.visibility = 'hidden';
-    } else {
-        var axisLabel = zAxis.positive ? 'Elevation' : 'Depth';
-        $('zAxis').innerHTML = '<b>' + axisLabel + ' (' + zAxis.units + '): </b>';
-        // Populate the drop-down list of z values
-        // Make z range selector invisible if there are no z values
-        var zValues = zAxis.values;
-        var zDiff = 1e10; // Set to some ridiculously-high value
-        var nearestIndex = 0;
-        for (var j = 0; j < zValues.length; j++) {
-            // Create an item in the drop-down list for this z level
-            var zLabel = zAxis.positive ? zValues[j] : -zValues[j];
-            $('zValues').options[j] = new Option(zLabel, zValues[j]);
-            // Find the nearest value to the currently-selected
-            // depth level
-            var diff = Math.abs(parseFloat(zValues[j]) - zValue);
-            if (diff < zDiff) {
-                zDiff = diff;
-                nearestIndex = j;
+        var zAxis = layerDetails.zaxis;
+        if (zAxis == null) {
+            $('zAxis').style.visibility = 'hidden';
+            $('zValues').style.visibility = 'hidden';
+        } else {
+            var zAxisLabel = getZAxisLabel(zAxis);
+            var isDepth = zAxisLabel == 'Depth';
+            $('zAxisLabel').innerHTML = zAxisLabel;
+            $('zAxisUnits').innerHTML = zAxis.units;
+            $('zAxis').style.visibility = 'visible';
+            $('zValues').style.visibility = 'visible';
+            // Populate the drop-down list of z values
+            // Make z range selector invisible if there are no z values
+            var zValues = zAxis.values;
+            var zDiff = 1e10; // Set to some ridiculously-high value
+            var nearestIndex = 0;
+            for (var j = 0; j < zValues.length; j++) {
+                // Create an item in the drop-down list for this z level
+                // If this is a depth axis we reverse the sign of the displayed values.
+                // See getZAxisLabel
+                var zLabel = isDepth ? -zValues[j] : zValues[j];
+                $('zValues').options[j] = new Option(zLabel, zValues[j]);
+                // Find the nearest value to the currently-selected
+                // depth level
+                var diff = Math.abs(parseFloat(zValues[j]) - zValue);
+                if (diff < zDiff) {
+                    zDiff = diff;
+                    nearestIndex = j;
+                }
             }
+            $('zValues').selectedIndex = nearestIndex;
         }
-        $('zValues').selectedIndex = nearestIndex;
-    }
     
     // Only show the scale bar if the data are coming from an ncWMS server
     var scaleVisibility = isNcWMS ? 'visible' : 'hidden';
@@ -825,6 +856,26 @@ function layerSelected(layerDetails)
             loadTimesteps(makeIsoDate(selectedDate));
         }
     }
+}
+
+//Gets the string to use as the z axis label
+function getZAxisLabel(zAxis)
+{
+    // Check for units of pressure: see http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/cf-conventions.html#id2982284
+    if (['Pa', 'hPa', 'bar', 'millibar', 'decibar', 'atmosphere', 'atm', 'pascal'].indexOf(zAxis.units) >= 0) {
+        return 'Pressure';
+    }
+    // This will be a normal elevation (e.g. in metres).  Check to see if all
+    // values are negative: if so we'll call this a depth axis
+    var allNegative = true;
+    var zVals = zAxis.values;
+    for (var i = 0; i < zVals.length; i++) {
+        if (zVals[i] >= 0) {
+            allNegative = false;
+            break;
+        }
+    }
+    return allNegative ? 'Depth' : 'Height';
 }
 
 // Function that is used by the calendar to see whether a date should be disabled
@@ -1297,12 +1348,14 @@ function updateMap()
     if (ncwms == null) {
         // Buffer is set to 1 to avoid loading a large halo of tiles outside the
         // current viewport
-        ncwms_tiled = new OpenLayers.Layer.WMS1_3("ncWMS",
+        //ncwms_tiled = new OpenLayers.Layer.WMS1_3("ncWMS",
+    	ncwms_tiled = new OpenLayers.Layer.WMS("ncWMS",
             activeLayer.server == '' ? 'wms' : activeLayer.server, 
             params,
             {buffer: 1, wrapDateLine: map.baseLayer.projection == 'EPSG:4326'}
         );
-        ncwms_untiled = new OpenLayers.Layer.WMS1_3("ncWMS",
+        //ncwms_untiled = new OpenLayers.Layer.WMS1_3("ncWMS",
+    	ncwms_untiled = new OpenLayers.Layer.WMS("ncWMS",
             activeLayer.server == '' ? 'wms' : activeLayer.server, 
             params,
             {buffer: 1, ratio: 1.5, singleTile: true, wrapDateLine: map.baseLayer.projection == 'EPSG:4326'}

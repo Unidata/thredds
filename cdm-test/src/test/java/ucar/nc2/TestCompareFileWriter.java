@@ -48,7 +48,7 @@ public class TestCompareFileWriter extends TestCase {
 
   public ArrayList files;
   public void testCompare() throws IOException {
-    doOne(TestDir.cdmUnitTestDir +"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2100.gini", TestDir.temporaryLocalDataDir +"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
+    doOne(TestDir.cdmUnitTestDir +"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2200.gini", TestDir.temporaryLocalDataDir +"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
   }
 
   public void utestCompareAll() throws IOException {
@@ -77,6 +77,12 @@ public class TestCompareFileWriter extends TestCase {
   }
 
   private void doOne(String datasetIn, String filenameOut) throws IOException {
+    File fin = new File(datasetIn);
+    File fout = new File(filenameOut);
+    System.out.printf("Write %s %n   to %s (%s %s)%n", fin.getAbsolutePath(), fout.getAbsolutePath(), fout.exists(), fout.getParentFile().exists());
+    File tempDir = new File(TestDir.temporaryLocalDataDir);
+    System.out.printf("Temp dir %s (%s)%n", tempDir.getAbsolutePath(), tempDir.exists());
+
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     NetcdfFile ncfileOut = FileWriter.writeToFile( ncfileIn, filenameOut);
     ucar.unidata.test.util.CompareNetcdf.compareFiles(ncfileIn, ncfileOut);

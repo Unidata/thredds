@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.9-SNAPSHOT</version>
+    <version>4.3.11</version>
   </parent>
 
   <!-- ===========================================================
@@ -90,6 +88,22 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+    	<groupId>org.jdom</groupId>
+    	<artifactId>jdom</artifactId>
+    </dependency>
+    
+    <dependency>
+    	<groupId>jaxen</groupId>
+    	<artifactId>jaxen</artifactId>
+    </dependency>    
+    
+    <dependency>
+    	<groupId>com.restfuse</groupId>
+    	<artifactId>com.eclipsesource.restfuse</artifactId>
+    	<version>1.0.0</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -126,17 +140,17 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>true</skip>
+          <skip>${skipTests}</skip>
           <testFailureIgnore>true</testFailureIgnore>
         </configuration>
         <executions>
-          <execution>
+          <!-- execution>
             <id>default-test</id>
             <phase>test</phase>
             <goals>
               <goal>test</goal>
             </goals>
-          </execution>
+          </execution-->
           <execution>
             <phase>integration-test</phase>
             <goals>
@@ -173,15 +187,14 @@
           </execution>
         </executions>
         <configuration>
-          <skip>true</skip>
+          <skip>${skipTests}</skip>
           <wait>false</wait>
           <timeout>20000</timeout>
           <container>
             <timeout>300000</timeout>
             <containerId>tomcat7x</containerId>
             <zipUrlInstaller>
-              <!-- url>http://www.carfab.com/apachesoftware/tomcat/tomcat-7/v7.0.25/bin/apache-tomcat-7.0.25.zip</url-->
-              <url>http://ftp.wayne.edu/apache/tomcat/tomcat-7/v7.0.26/bin/apache-tomcat-7.0.26.zip</url>
+              <url>http://newverhost.com/pub/tomcat/tomcat-7/v7.0.27/bin/apache-tomcat-7.0.27.zip</url>
               <downloadDir>${project.build.directory}/downloads</downloadDir>
               <extractDir>${project.build.directory}/extracts</extractDir>
             </zipUrlInstaller>

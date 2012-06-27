@@ -63,7 +63,7 @@ public class TestMotherlode {
     ping("/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/dataset.html");
     ping("/ncss/grid/fmrc/NCEP/NAM/CONUS_80km/NCEP-NAM-CONUS_80km_best.ncd/dataset.xml");
 
-    TestMotherlodeModels.main(args);
+    TestMotherlodeDatasets.main(args);
     TestIDVdatasets.main(args);
   }
 

@@ -95,7 +95,7 @@ public class TestDConnect2 extends TestSources {
     testpart(TestPart.DDS, ce);
     if (constrained) testpart(TestPart.DATADDS, ce);
     if (!pass)
-      junit.framework.Assert.assertTrue(testname, pass);
+      assertTrue(testname, pass);
 
   }
 

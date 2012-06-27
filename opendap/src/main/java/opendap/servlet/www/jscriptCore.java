@@ -151,7 +151,7 @@ public class jscriptCore {
             + "\"as you select and/or constrain variables. The URL in this field can be \" +\n"
             + "\"cut and pasted in various DODS clients such as the Matlab and IDL \" +\n"
             + "\"command extensions. See the <a \" +\n"
-            + "\"href=\\\"http://unidata.ucar.edu/packages/dods/\\\" target=\\\"DODS\\\"> \" +\n"
+            + "\"href=\\\"http://www.unidata.ucar.edu/packages/dods/\\\" target=\\\"DODS\\\"> \" +\n"
             + "\"DODS home page</a> for \" +\n"
             + "\"information about those clients. \" +\n"
             + "\"<p><hr><p> \" + \n"

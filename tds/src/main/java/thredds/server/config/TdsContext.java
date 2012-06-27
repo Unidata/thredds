@@ -79,7 +79,7 @@ import ucar.unidata.util.StringUtil2;
  * @since 4.0
  */
 @Component
-public final class TdsContext implements ServletContextAware, InitializingBean{
+public final class TdsContext implements ServletContextAware, InitializingBean {
 
 //  ToDo Once Log4j config is called by Spring listener instead of ours, use this logger instead of System.out.println.
 //  private org.slf4j.Logger logServerStartup =
@@ -334,11 +334,12 @@ public final class TdsContext implements ServletContextAware, InitializingBean{
     }
     String loggingDirectory = StringUtil2.substitute(logDir.getPath(), "\\", "/");
     System.setProperty( "tds.log.dir", loggingDirectory); // variable substitution
-    
+
+    // LOOK Remove log4j init JC 6/13/2012
     // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
-    //logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: " + UsageLog.setupNonRequestContext() );    
-    logServerStartup.info( "TdsContext.init()  intializating logging..." + UsageLog.setupNonRequestContext() );    
+    logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "TdsContext.init()  intializating logging..." + UsageLog.setupNonRequestContext() );
     
 
     // read in persistent user-defined params from threddsConfig.xml

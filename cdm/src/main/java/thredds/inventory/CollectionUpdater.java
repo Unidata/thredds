@@ -154,16 +154,17 @@ public enum CollectionUpdater {
   public void scheduleTasks(FeatureCollectionConfig config, CollectionManager manager) {
     if (disabled || failed) return;
 
-    FeatureCollectionConfig.UpdateConfig useConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
-    if (useConfig == null) return;
-    //if (!useConfig.startup && (useConfig.rescan == null) && (config.protoConfig.change == null))
-    //  return;
+    FeatureCollectionConfig.UpdateConfig updateConfig = (isTdm) ? config.tdmConfig : config.updateConfig;
+    if (updateConfig == null) return;
+
+    //String jobName = config.name + "-" + Integer.toHexString(config.hashCode());
+    String jobName = manager.getCollectionName();
 
     // Job to update the collection
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(DCM_NAME, manager);
     JobDetail updateJob = JobBuilder.newJob(UpdateCollectionJob.class)
-            .withIdentity(config.name, "UpdateCollection")
+            .withIdentity(jobName, "UpdateCollection")
             .storeDurably()
             .usingJobData(map)
             .build();
@@ -175,11 +176,10 @@ public enum CollectionUpdater {
       return;
     }
 
-    if (useConfig.startup) {
-      // wait 30 secs to trigger
-      Date runTime = new Date(new Date().getTime() + startupWait);
+    if (updateConfig.startup) {
+      Date runTime = new Date(new Date().getTime() + startupWait); // wait startupWait before trigger
       SimpleTrigger startupTrigger = (SimpleTrigger) TriggerBuilder.newTrigger()
-              .withIdentity(config.name, "startup")
+              .withIdentity(jobName, "startup")
               .startAt(runTime)
               .forJob(updateJob)
               .build();
@@ -193,16 +193,16 @@ public enum CollectionUpdater {
       }
     }
 
-    if (useConfig.rescan != null) {
+    if (updateConfig.rescan != null) {
         CronTrigger rescanTrigger = TriggerBuilder.newTrigger()
-                .withIdentity(config.name, "rescan")
-                .withSchedule(CronScheduleBuilder.cronSchedule(useConfig.rescan))
+                .withIdentity(jobName, "rescan")
+                .withSchedule(CronScheduleBuilder.cronSchedule(updateConfig.rescan))
                 .forJob(updateJob)
                 .build();
 
       try {
         scheduler.scheduleJob(rescanTrigger);
-        logger.info("Schedule recurring scan for {} cronExpr={}", config.spec, useConfig.rescan);
+        logger.info("Schedule recurring scan for {} cronExpr={}", config.spec, updateConfig.rescan);
 
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule cron Job", e);
@@ -216,18 +216,18 @@ public enum CollectionUpdater {
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
       map.put(DCM_NAME, manager);
       JobDetail protoJob = JobBuilder.newJob(ChangeProtoJob.class)
-              .withIdentity(config.name, "UpdateProto")
+              .withIdentity(jobName, "UpdateProto")
               .usingJobData(pmap)
               .storeDurably()
               .build();
 
       try {
         CronTrigger protoTrigger = TriggerBuilder.newTrigger()
-                .withIdentity(config.name, "rereadProto")
+                .withIdentity(jobName, "rereadProto")
                 .withSchedule(CronScheduleBuilder.cronSchedule(pconfig.change))
                 .build();
         scheduler.scheduleJob(protoJob, protoTrigger);
-        logger.info("Schedule Reread Proto for {}", config.name);
+        logger.info("Schedule Reread Proto for {}",jobName);
 
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule RereadProtoJob", e);
@@ -276,7 +276,7 @@ public enum CollectionUpdater {
         logger.debug("Update for {} trigger = {}", manager.getCollectionName(), context.getTrigger().getKey());
         String groupName = context.getTrigger().getKey().getGroup();
         if (groupName.equals("nocheck")) {
-          manager.updateNocheck();
+          manager.updateNocheck(); // update(CollectionManager.Force.nocheck)
         } else {
           manager.scan(true);
         }

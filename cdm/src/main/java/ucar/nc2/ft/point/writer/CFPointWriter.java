@@ -123,7 +123,7 @@ public class CFPointWriter {
       while (profile.hasNext()) {
         ucar.nc2.ft.PointFeature pf = profile.next();
         if (count == 0) {
-          writer.writeHeader(profiles, fdpoint.getDataVariables(), pf.getTimeUnit(), "m");
+          writer.writeHeader(profiles, fdpoint.getDataVariables(), pf.getTimeUnit(), null); // LOOK altitude units ??
         }
 
         writer.writeRecord(profile.getName(), pf, pf.getData());
@@ -140,18 +140,20 @@ public class CFPointWriter {
   }
 
   /////////////////////////////////////////////////
-  private static final String[] reservedAtts = new String[] {CDM.CONVENTIONS, CDM.LAT_MIN, CDM.LAT_MAX, CDM.LON_MIN, CDM.LON_MAX, 
-          CDM.TIME_START, CDM.TIME_END, _Coordinate._CoordSysBuilder} ;
+  private static final String[] reservedAtts = new String[] {CDM.CONVENTIONS,
+          CDM.LAT_MIN, CDM.LAT_MAX, CDM.LON_MIN, CDM.LON_MAX, CDM.TIME_START, CDM.TIME_END,
+          _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3} ;
+
   private static final List<String> reservedAttsList = Arrays.asList(reservedAtts);
           
-  protected static final String recordDimName = "record";
+  protected static final String recordDimName = "obs";
   protected static final String latName = "latitude";
   protected static final String lonName = "longitude";
   protected static final String altName = "altitude";
   protected static final String timeName = "time";
 
   protected NetcdfFileWriteable ncfile;
-  protected String altUnits;
+  protected String altUnits = null;
   protected LatLonRect llbb = null;
 
   protected Set<Dimension> dimSet = new HashSet<Dimension>(20);

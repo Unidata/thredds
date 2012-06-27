@@ -32,14 +32,17 @@
  */
 package thredds.cataloggen.config;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.junit.Before;
+import static org.junit.Assert.*;
+
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.ServiceType;
 
 /**
  *
  */
-public class TestDatasetNamer extends TestCase
+public class TestDatasetNamer
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestDatasetNamer.class);
 
@@ -81,12 +84,8 @@ public class TestDatasetNamer extends TestCase
 
   private ResultService resService1 = null;
 
-  public TestDatasetNamer( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
+  @Before
+  public void setUp()
   {
     parentDsName1 = "parent dataset 1";
     parentDsName2 = "parent dataset 2";
@@ -140,6 +139,7 @@ public class TestDatasetNamer extends TestCase
             "access Point 1", resService1 );
   }
 
+  @Test
   public void testGetters()
   {
     DatasetNamer dsNamer = new DatasetNamer( parentDs1, name1, addLevel1,
@@ -160,6 +160,7 @@ public class TestDatasetNamer extends TestCase
     assertEquals( attribName2, dsNamer.getAttribName() );
   }
 
+  @Test
   public void testVariousValidityConstraints()
   {
     StringBuilder stringBuilder = new StringBuilder();
@@ -244,6 +245,7 @@ public class TestDatasetNamer extends TestCase
     assertTrue( stringBuilder.toString(), isValid );
   }
 
+  @Test
   public void testNameDataset()
   {
     // Test for REGULAR_EXPRESSION type namers:

@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>GRIB Feature Collections (Internal docs)</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;}
+</style>
+</head>
+
+<body>
+<h2>Grib Collection Implementation Notes</h2>
+<p>6/15/2012</p>
+<h3>Index</h3>
+<p>Example 1. GFS global half degree - 45 day archive</p>
+<pre>
+ Rectilyser: nvars=117 records unique=132684 total=3637805 dups=3505121 (0.963526)
+ createIndex for /data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg.ncx
+ write RecordMaps: bytes = 1265209 record = 132684 bytesPerRecord=9
+ write GribCollectionIndex= 35929 bytes</pre>
+<p>There are a total of 3.6M grib records, but only 132K are unique and used in the collection dataset. This is typical when making a collection of forecast model runs, where the forecast times heavily overlap.</p>
+<p>When opening the collection dataset, only 36K has to be read in. The remaining bytes of the 1.26M collection index are the record lookup section, and are read in only when a variable's data is requested.</p>
+<p>In this example, computing the collection index takes around 60 sec,  with 4Gb heap space, but 30 minutes with 2Gb heap. That probaby means that the index took just under 2Gb heap and was doing excessive GC. So one needs large heap sizes to compute these large collections.</p>
+<h3>Assumptions on the GRIB encoding</h3>
+<p>The collection of GRIB records is not arbitrary, but must be coherent (eg come all from the same model) such that the following assumptions are valid:</p>
+<ol>
+  <li>All Grib records are assumed to have the same center, subcenter, and master and local table versions. This is used for determiing which GRIB code and template tables to use.</li>
+  <li>Grib records can be distributed arbitrarily among the collection of files.</li>
+  <li>Unique variables are created by hashing the<em> GDS, PDS template, discipline, category, parameter, </em> <em>level type</em>, and <em>level layer flag</em>. Also, if they apply, the<em> statistical process type</em> (code table 4.10), and the <em>ensemble derived type</em>  (table 4.7).</li>
+  <li>The collection of GRIB records for each unique variable is turned into a multidimensional grid, by taking the cartesion product of<strong><em> time X ens X vert </em></strong>coordinates. Where there are missing records, the library will return missing data. Where there are duplicate records, later records replace earlier records, where later means later in one file, or in a later file where the file collection is sorted lexigraphically.</li>
+  <li>If there are multiple GDS (Grid Definition Section) in the collection, each unique GDS and the variables that use it becomes a seperate <em>Group</em>. GDS uniqueness is based on a hashcode. Unfortunately, there may be roundoff errors and/or minor variations in GDS encodings. The CDM tries to allow for this in <em>Grib2Gds.hashcode()</em>. If you see variables unexpectedly split into different groups with apparently the same projection, likely the hashcode for that projection type needs to be modified.</li>
+  <li>All of the  time, ensemble, and vertical coordinates for each variable in one group are compared, and where they are identical, are shared between variables.</li>
+</ol>
+<h3>RAF Caching</h3>
+<pre>    // GribCollection : default is allow 100 - 200 open files, cleanup every 15 minutes<br />    min = ThreddsConfig.getInt(&quot;GribCollection.minFiles&quot;, 100);<br />    max = ThreddsConfig.getInt(&quot;GribCollection.maxFiles&quot;, 200);<br />    secs = ThreddsConfig.getSeconds(&quot;GribCollection.scour&quot;, 15 * 60);<br />    if (max &gt; 0) {<br />      GribCollection.initFileCache(min, max, secs);<br />      startupLog.info(&quot;CdmInit: GribCollection.initFileCache= [&quot;+min+&quot;,&quot;+max+&quot;] scour = &quot;+secs);<br />    }</pre>
+<h2>Time Partitions</h2>
+<pre>// date matcher part of spec - #date# - can only be in name
+// time partition by directory
+
+&lt;collection spec=&quot;G:/nomads/cfsr/timeseries/**/.*grb2$&quot; dateFormatMark=&quot;#timeseries/#yyyyMM&quot; name=&quot;CFSR-timeseries&quot; timePartition=&quot;directory&quot; /&gt;
+
+      
+// dateFormatMark in seperate attribute - #match literal# - works on the path
+// time partition by day
+        &lt;collection<br />            spec=&quot;/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod_biasc/.*grib2$&quot;<br />            name=&quot;SREF_CONUS_40km_ensprod_biasc&quot;<br />            dateFormatMark=&quot;#SREF_CONUS_40km_ensprod_biasc_#yyyyMMdd_HHmm&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;
+
+
+
+
+
+
+// date matcher part of spec - #date# - can only be in name
+
+  &lt;collection<br />            spec=&quot;/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/pgrb_biasc/SREF_CONUS_40km_pgrb_biasc_[a-z]*_#yyyyMMdd_HHmm#.grib2$&quot;<br />            name=&quot;SREF_CONUS_40km_ensprod_biasc&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;
+
+        &lt;collection<br />            spec=&quot;/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/pgrb_biasc/.*grib2$&quot;<br />            name=&quot;SREF_CONUS_40km_ensprod_biasc&quot;<br />            dateFormatMark=&quot;yyyyMMdd_HHmm#.grib2#&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;<br />
+ </pre>
+<p>&nbsp;</p>
+<p>cannot mix ensembles and vertical levels across the partition.</p>
+<p> for each variable, create union of times: for each time track (value, partition, localIndex). merge time coords with same {value}. store {partition, localIndex} cmmon case is that variables will share  {partition, localIndex}, but is it worth merging?</p>
+<p>dont need proto change; its reselected when index is rebuilt</p>
+<h2>check for changes</h2>
+<p>handled by DCM, looking only at underlying collection.</p>
+<h3>GribCollection</h3>
+<ol>
+  <li>look for new or deleted files</li>
+  <li>look if newFile.lastModified()  &gt; oldFile.lastModified() </li>
+  <li>look if index (gbx9) file doesnt exist, or has lastModified date   &lt; oldFile.lastModified() </li>
+</ol>
+<p>&nbsp;</p>
+<p>cant examine all files to see whats changed - too mant files. only examine each partition. maybe examine the latest?? maybe not - use manual rescan ??</p>
+<hr />
+<h2>Grib Collection Index File</h2>
+<p>A Grib Collection index file (ncx) stores the CDM header information, plus stores which GRIB records  the data is in.</p>
+<p>The index file layout:</p>
+<ul>
+  <li><strong>header</strong> = &quot;Grib1CollectionIndex&quot; | &quot;Grib2CollectionIndex&quot; | &quot;Grib1Partition0Index&quot; | &quot;Grib2Partition0Index&quot;</li>
+  <li><strong>version</strong> = 4 byte integer (big endian)</li>
+  <li><strong>length</strong> of VariableRecords section = 8 byte integer  (big endian)</li>
+  <li><strong>VariableRecords</strong>[] = protobuf serialized objects</li>
+  <li><strong>length</strong> of GribCollectionIndex section = variable length integer (vint)</li>
+  <li><strong>GribCollectionIndex</strong> = protobuf serialized object </li>
+</ul>
+<p>Each variable has a <strong>VariableRecords</strong> object that keeps track of the GRIB record used for that variable:</p>
+<pre>message VariableRecords {
+ required fixed32 cdmHash = 1; // which variable
+ repeated Record records = 2;  // Record[ntimes*nvert*nens]
+}
+
+message Record {
+ required uint32 fileno = 1;  // index into GribCollectionIndex.files
+ required uint64 pos = 2;     // offset in Grib file of the start of drs (grib2) or entire message (grib1)
+ optional bool missing = 3 [default = false]; // record is missing
+}
+</pre>
+<p>The <strong>GribCollectionIndex</strong> object has all the rest of the info. The <strong>GribCollection</strong> is a collection of <strong>Groups</strong>:</p>
+<pre>message GribCollectionIndex {
+  required string name = 1;       // must be unique - index filename is name.ncx
+  repeated string files = 2;      // list of grib files 
+  repeated Group groups = 3;      // separate groups for each GDS
+  repeated Parameter params = 4;  // global attributes
+  required int32 center = 5;      // these 4 fields are to get a GribTable object
+  required int32 subcenter = 6;
+  required int32 master = 7;
+  required int32 local = 8;       // grib1 table Version
+  optional int32 genProcessType = 10;
+  optional int32 genProcessId = 11;
+  optional int32 backProcessId = 12;
+
+
+  repeated Partition partitions = 13;  // for time partitions only
+}
+</pre>
+A <strong>Group</strong> is a collection of variables and coordinates. All the variables use the same GDS:
+<pre>
+message Group {
+  optional int32 predefinedGds = 1;   // predefined GDS code, defined by center
+  optional bytes gds = 2;             // all variables in the group use the same GDS
+  repeated Variable variables = 3;    // list of variables
+  repeated Coord timeCoords = 4; 	// list of time coordinates
+  repeated Coord vertCoords = 5; 	// list of vert coordinates
+  repeated Coord ensCoords = 6;  	// list of ens coordinates
+  repeated Parameter params = 7; 	// group attributes
+  repeated int32 fileno = 8;     	// this is so we can show just the component files that are in this group
+
+
+  repeated TimeCoordUnion timeCoordUnions = 9; // for time partitions only
+  optional string name = 10;       // only when user overrides default name
+  optional sint32 gdsHash = 11 [default = 0];
+} </pre>
+<p><strong>Variable</strong> object:</p>
+<pre>
+message Variable {
+ required int32 discipline = 1;  
+ required int32 category = 2;
+ required int32 parameter = 3;
+ required int32 levelType = 4;                     // table 4.5 (grib2); table 3 (grib1)
+ optional int32 intervalType = 5 [default = -1];   // table 4.10 (grib2); table 5 (grib1)
+ required fixed32 cdmHash = 6;
+
+
+ required uint64 recordsPos = 7;  // offset of VariableRecords message for this Variable
+ required uint32 recordsLen = 8;  // size of VariableRecords message for this Variable 
+
+
+ required uint32 timeIdx = 9;     // index into GribCollectionIndex.timeCoords
+ optional int32 vertIdx = 10 [default = -1];   // index into GribCollectionIndex.vertCoords
+ optional int32 ensIdx = 11 [default = -1];    // index into GribCollectionIndex.ensCoords
+
+
+ // only one of 12, or 13 (and 11?)
+ optional int32 ensDerivedType = 12 [default = -1];             // table 4.7
+ optional string probabilityName = 13;
+ optional int32 probabilityType = 14  [default = -1];           // table 4.9
+ optional bool isLayer = 15 [default = false];
+ 
+ repeated uint32 groupno = 16;  // only for partitions
+ repeated uint32 varno = 17;
+ repeated int32 flag = 21; <br /> 
+ // in case different from the GribCollectionIndex
+ optional uint32 tableVersion = 18;      // grib1 table Version, grib2 local
+ optional string intvName = 19;
+ optional int32 genProcessType = 20  [default = -1];    // if set, then the generating process type was used
+}</pre>
+<p>The <strong>VariableRecords</strong> object for this variable is at <strong>recordsPos</strong> in the ncx file, with <strong>recordsLen</strong> number of bytes.</p>
+<p>The coordinates for the variable is represented by the <strong>Coord</strong> object in the <strong>Group</strong>, and are shared whenever possible. Each variable has an index in the array of time, vert, and ensemble coordinate. Each coordinate is an array of values, and optionally bounds. The size of the variable is found by looking at its coordinates.</p>
+<pre>message Coord {<br />  required int32 code = 1;<br />  required string unit = 2;<br />  repeated float values = 3;<br />  repeated float bound = 4; 					// only used if interval, then = (value, bound)<br />  optional int32 index = 5  [default = -1];  // safety check<br />}</pre>
+<hr />
+<h2>Time Partition  Index File</h2>
+<p>A Time Partition divides the dataset into disjoint partitions of time. Each Time Partition is just a Grib Collection. The overall time partition index file has the following special features:</p>
+<ol>
+  <li>The <strong>VariableRecords</strong> section is missing, delegated to the individual grib collections.</li>
+  <li>Each Variable tracks, for each partition, which group/variable its using, i.e: groupno[partition], varno[partition] indexes.</li>
+  <li>It uses  extended time coordinates, which have [start, end) for each partition:
+    <pre>message TimeCoordUnion extends Coord {
+   repeated int32 partition = 5; // starting index, inclusive
+   repeated int32 index = 6; // ending index, exclusive
+ }
+</pre>
+</li>
+<li>It keeps track of the partition names:
+  <pre>message Partition {
+  required string name = 1;       // name is used in TDS - eg the subdirectory when generated by TimePartitionCollections
+  required string filename = 2;   // the gribCollection.ncx file
+}</pre>
+</li>
+</ol>
+<p>Currently we assume that, for each variable, its vertical coordinates and ensemble coordinates are identical across partitions. These are taken from the prototype dataset.</p>
+<ol>
+  <li>If we passed in the vert, ens coord value, we could match for each partition, returning missing values when needed.</li>
+  <li>We could precompute the mapping when the overall index is constructed.</li>
+  <li>We could always use the vert, ens coordinates from prototype when constructing each GribCollection partition. But we'd have to recompute when proto changed.</li>
+  <li>We could throw out that variable, or split in pieces.</li>
+</ol>
+<p>Thi isnt a problem for GribCOllection, since all the records from all the files a re thrown into the bag and rectilyser turns them into a rectangular array with missing values if needed. It occurs because we want to compute each Time Partition independent of the others, for scalability.</p>
+</body>
+</html>

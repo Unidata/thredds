@@ -75,7 +75,7 @@ The functional relationship is (scheme,url)=>creds.
 static public class Entry implements Serializable, Comparable
 {
     public HTTPAuthScheme scheme;
-    public String url;
+    public String url; // possibly including user info
     public CredentialsProvider creds;
 
     public Entry()

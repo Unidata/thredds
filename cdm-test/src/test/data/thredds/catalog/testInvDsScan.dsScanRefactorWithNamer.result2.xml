@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.1">
+  <service name="ncdods" serviceType="OPENDAP" base=""/>
+  <dataset name="NCEP GFS model data" ID="myGridDataID/NCEP/GFS">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+    </metadata>
+    <catalogRef xlink:href="Alaska_191km/catalog.xml" xlink:title="NCEP GFS 191km Alaska model data"
+                ID="myGridDataID/NCEP/GFS/Alaska_191km" name=""/>
+  </dataset>
+</catalog>

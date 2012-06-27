@@ -1,30 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>thredds-parent</artifactId>
-    <version>4.3.8-SNAPSHOT</version>
+    <version>4.3.11</version>
   </parent>
 
   <!-- ===========================================================
-           Module Description
-       =========================================================== -->
-  <groupId>edu.ucar</groupId>
-  <artifactId>wmoTables</artifactId>
-  <packaging>war</packaging>
-  <name>WMO tables</name>
-  <description>
-    WMO tables for the NetCDF library.
-  </description>
-  <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
+            Module Description
+        =========================================================== -->
+   <!-- groupId>edu.ucar</groupId-->
+   <artifactId>wmoTables</artifactId>
+   <packaging>war</packaging>
+   <name>WMO tables webapp</name>
+    <description>
+      WMO tables for the NetCDF library.
+    </description>
+    <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
   <developers>
     <developer>
       <name>John Caron</name>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>oxelson</id>
+      <name>Jennifer Ganter Oxelson</name>
+      <email>oxelson@unidata.ucar.edu</email>
       <organization>UCAR/UNIDATA</organization>
       <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
       <roles>
@@ -38,25 +46,71 @@
        =========================================================== -->
   <dependencies>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+       <groupId>edu.ucar</groupId>
+       <artifactId>netcdf</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>bufr</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>edu.ucar</groupId>
+       <artifactId>grib</artifactId>
+     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>opendap</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>visadCdm</artifactId>
+    </dependency>
+
+     <dependency>
+       <groupId>commons-fileupload</groupId>
+       <artifactId>commons-fileupload</artifactId>
+     </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+
+     <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-log4j12</artifactId>
+       <scope>runtime</scope>
+     </dependency>
+     <dependency>
+       <groupId>log4j</groupId>
+       <artifactId>log4j</artifactId>
+     </dependency>
+
+     <dependency>
+       <groupId>org.springframework</groupId>
+       <artifactId>spring-webmvc</artifactId>
+     </dependency>
+
+    <!-- tomcat -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency -->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>runtime</scope>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
     </dependency>
+
   </dependencies>
 
   <build>
     <finalName>wmotables</finalName>
-    <testSourceDirectory>void</testSourceDirectory>
     <plugins>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -73,23 +127,7 @@
           </archive>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.cargo</groupId>
-        <artifactId>cargo-maven2-plugin</artifactId>
-        <version>1.1.1</version>
-        <configuration>
-          <container>
-            <containerId>${cargo.containerId}</containerId>
-            <type>remote</type>
-          </container>
-          <configuration>
-            <type>runtime</type>
-            <properties>
-              <cargo.server.settings>${cargo.server.settings}</cargo.server.settings>
-            </properties>
-          </configuration>
-        </configuration>
-      </plugin>
+
     </plugins>
   </build>
 

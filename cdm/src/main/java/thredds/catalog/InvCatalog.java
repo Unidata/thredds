@@ -167,8 +167,9 @@ public abstract class InvCatalog {
       if (name.equals(s.getName())) return s;
 
       // look for nested servers
-      for (InvService nested : s.getServices()) {
-        if (name.equals(nested.getName())) return nested;
+      if (s.getServiceType() == ServiceType.COMPOUND) {
+        InvService result = s.findNestedService(name);
+        if (result != null) return result;
       }
     }
 

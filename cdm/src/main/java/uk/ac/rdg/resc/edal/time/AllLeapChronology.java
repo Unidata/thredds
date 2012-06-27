@@ -43,7 +43,7 @@ import org.joda.time.DateTimeZone;
  * (Support for time zones makes little sense in this chronology).</p>
  * <p>Instances of this class are immutable.</p>
  * @author Jon Blower
- * @see "http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/cf-conventions.html#calendar"
+ * @see http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.4/cf-conventions.html#calendar
  */
 public final class AllLeapChronology extends FixedYearVariableMonthChronology {
 

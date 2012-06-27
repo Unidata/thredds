@@ -203,7 +203,7 @@ public class TestDapParser extends TestFiles {
       baserdr.close();
       resultrdr.close();
       if (!pass) {
-        junit.framework.Assert.assertTrue(testname, pass);
+        assertTrue(testname, pass);
       }
     } catch (IOException ioe) {
       System.err.println("Close failure");

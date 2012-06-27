@@ -2,6 +2,7 @@ package thredds.server.ncSubset.view;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
+import thredds.server.ncSubset.exception.OutOfBoundariesException;
+import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -39,9 +42,9 @@ class XMLPointDataWriter implements PointDataWriter {
 		return new XMLPointDataWriter(os);
 	}
 	
-	@Override
-	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, CoordinateAxis1D zAxis) {
-
+	//@Override
+	//public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, CoordinateAxis1D zAxis) {
+	public boolean header(Map<String, List<String>> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point) {
 		boolean headerWritten = false;
 		try {
 			xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
@@ -57,12 +60,44 @@ class XMLPointDataWriter implements PointDataWriter {
 	}
 	
 	@Override
-	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point) {
-		return header(vars, gridDataset, wDates, dateUnit, point, null);
-	}
+	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
+		
+		boolean allDone = true;
+		
+		List<String> keys =new ArrayList<String>(groupedVars.keySet());
+		//loop over variable groups
+		for(String key : keys){
+			//get wanted vertCoords for group (all if vertCoord==null just one otherwise)
+			List<String> varsGroup = groupedVars.get(key);
+			GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset,	varsGroup);			
+			CoordinateAxis1D verticalAxisForGroup = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();
+			if(verticalAxisForGroup ==null){
+				//Read and write vars--> time, point
+				allDone = allDone && write(varsGroup, gridDataset, gap, date, point);
+			}else{
+				//read and write time, verCoord for each variable in group
+				if(targetLevel != null){
+					Double vertCoord = NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, targetLevel);
+					allDone = write(varsGroup, gridDataset, gap, date, point, vertCoord, verticalAxisForGroup.getUnitsString() );
+				}else{//All levels
+					for(Double vertCoord : verticalAxisForGroup.getCoordValues() ){
+						/////Fix axis!!!!
+						if(verticalAxisForGroup.getCoordValues().length ==1  )
+							vertCoord =NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, vertCoord);
+						
+						allDone = allDone && write(varsGroup, gridDataset, gap, date, point, vertCoord, verticalAxisForGroup.getUnitsString() );
+						
+					}
+				}				
+				
+			}			
+			
+		}
+		return allDone;
+	}	
+	
 
-	@Override
-	public boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits) {
+	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits) {
 
 		Iterator<String> itVars = vars.iterator();
 		boolean pointDone=false;
@@ -76,7 +111,7 @@ class XMLPointDataWriter implements PointDataWriter {
 			while (itVars.hasNext()) {
 				String varName = itVars.next();
 				GridDatatype grid = gridDataset.findGridDatatype(varName);
-
+								
 				if (gap.hasTime(grid, date) && gap.hasVert(grid, targetLevel)) {
 					GridAsPointDataset.Point p = gap.readData(grid, date, targetLevel, point.getLatitude(),	point.getLongitude());
 					if (contVars == 0) {
@@ -114,8 +149,7 @@ class XMLPointDataWriter implements PointDataWriter {
 		return pointDone;
 	}
 	
-	@Override
-	public boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point){
+	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point){
 		
 		Iterator<String> itVars = vars.iterator();
 		boolean pointDone=false;
@@ -232,5 +266,7 @@ class XMLPointDataWriter implements PointDataWriter {
 		attributes.clear();
 
 	}
+
+
 
 }

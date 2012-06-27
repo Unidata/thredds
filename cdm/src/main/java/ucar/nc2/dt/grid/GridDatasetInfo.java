@@ -33,28 +33,35 @@
 
 package ucar.nc2.dt.grid;
 
-import ucar.ma2.DataType;
-import ucar.nc2.Dimension;
-import ucar.nc2.Attribute;
-import ucar.nc2.constants.AxisType;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import ucar.nc2.dataset.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.dt.*;
-import ucar.nc2.dt.GridDataset;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPoint;
-
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
 import org.jdom.Document;
 import org.jdom.Element;
-import ucar.unidata.util.Parameter;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
-import java.util.*;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.FileOutputStream;
+import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.time.CalendarDate;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.util.Parameter;
 
 /**
  * A helper class to GridDataset; creates a GridDataset XML document.
@@ -422,9 +429,26 @@ public class GridDatasetInfo {
 
   private Element writeGridSet(GridDataset.Gridset gridset) {
     Element csElem = new Element("gridSet");
-    GridCoordSystem cs = gridset.getGeoCoordSystem();
-
+    GridCoordSystem cs = gridset.getGeoCoordSystem();          
     csElem.setAttribute("name", cs.getName());
+    
+    ProjectionRect rect = cs.getBoundingBox();
+    Element projBBOX =new Element("projectionBox");
+    Element minx = new Element("minx");
+    minx.addContent( Double.valueOf(rect.getMinX()).toString() );
+    projBBOX.addContent(minx);
+    Element maxx = new Element("maxx");
+    maxx.addContent( Double.valueOf(rect.getMaxX()).toString() );
+    projBBOX.addContent(maxx);
+    Element miny = new Element("miny");
+    miny.addContent( Double.valueOf(rect.getMinY()).toString() );
+    projBBOX.addContent(miny);
+    Element maxy = new Element("maxy");    
+    maxy.addContent( Double.valueOf(rect.getMaxY()).toString() );
+    projBBOX.addContent(maxy);
+    
+    csElem.addContent(projBBOX);
+    
     for (CoordinateAxis axis : cs.getCoordinateAxes()) {
       Element axisElem = new Element("axisRef");
       axisElem.setAttribute("name", axis.getFullName());

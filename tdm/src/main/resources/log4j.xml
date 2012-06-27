@@ -55,6 +55,17 @@
     <appender-ref ref="fileLogger" />
   </logger>
 
+  <logger name="ucar.nc2.grib.grib1.Grib1CollectionBuilder" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="fileLogger" />
+  </logger>
+
+  <logger name="ucar.nc2.grib.grib2.Grib2CollectionBuilder" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="fileLogger" />
+  </logger>
+
+
   <root>
     <level value="WARN"/>
     <appender-ref ref="consoleLogger"/>

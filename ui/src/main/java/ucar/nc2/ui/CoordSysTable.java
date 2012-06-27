@@ -33,6 +33,8 @@
 
 package ucar.nc2.ui;
 
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayObject;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.time.*;
@@ -240,7 +242,7 @@ public class CoordSysTable extends JPanel {
 
         try {
           infoTA.appendLine(units);
-          if (axis.getDataType().isNumeric()) {  // 2D
+          if (axis.getDataType().isNumeric()) {  
             if (!(axis instanceof CoordinateAxis1D)) {
               showDates2D(axis, units);
 
@@ -268,6 +270,23 @@ public class CoordSysTable extends JPanel {
                 }
               }
             }
+          } else { // must be iso dates
+            Array data = axis.read();
+            Formatter f= new Formatter();
+            if (data instanceof ArrayChar) {
+              ArrayChar dataS = (ArrayChar) data;
+              ArrayChar.StringIterator iter = dataS.getStringIterator();
+              while (iter.hasNext())
+                f.format(" %s%n", iter.next());
+              infoTA.appendLine(f.toString());
+
+            } else if (data instanceof ArrayObject) {
+              IndexIterator iter = data.getIndexIterator();
+              while (iter.hasNext())
+                f.format(" %s%n", iter.next());
+              infoTA.appendLine(f.toString());
+            }
+            
           }
         } catch (Exception ex) {
           ex.printStackTrace();

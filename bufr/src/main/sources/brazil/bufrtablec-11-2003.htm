@@ -1,0 +1,289 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+<META NAME="Generator" CONTENT="Microsoft Word 97">
+<TITLE>BUFR Table C - Data description operators (Edition 3, Version 11-05/11/2003)</TITLE>
+</HEAD>
+<BODY>
+
+<FONT FACE="Courier New" SIZE=2><P>BUFR Table C - Data description operators (Edition 3, Version 11-05/11/2003)</P>
+
+<P>&#9;</P></FONT>
+<TABLE BORDER CELLSPACING=1 CELLPADDING=4 WIDTH=658>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>F</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>X</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Y</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>OPERATOR NAME</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>OPERATION DEFINITION</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>01</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Y</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Change data width</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Add (Y-128) bits to the data width given for each data element in Table B, other than CCITT IA5 (character) data, code or flag tables</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>02</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Y</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Change scale</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Add Y-128 to scale in Table B for elements which are not code or flag tables</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>03</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Y</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Change reference values</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Subsequent element descriptors define new reference values for corresponding Table B entries.  Each new reference value is represented by Y bits in the Data section.  Definition of new reference values is concluded by coding this operator with Y = 255.  Negative reference values shall be rep resented by a positive integer with the left-most bit (bit 1) set to 1</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>04</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Y</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Add associated field</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Precede each data element with Y bits of information.  This operation associates a data field (e.g. quality control information) of Y bits with each data element</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>05</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Y</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Signify character</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Y characters (CCITT International Alphabet No. 5) are inserted as a data field of Y x 8 bits in length</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>06</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Y</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Signify data width for the immediately following local descriptor</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Y bits of data are described by the immediately following descriptor</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>21</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>YYY</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Data not present</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Data values present in Section 4 (Data section) corresponding to the following YYY descriptors shall be limited to data from classes 1-9, and class 31</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>22</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>000</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Quality information follows</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>The values of class 33 elements which follow relate to the data defined by the data present bit-map</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>23</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>000</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Substituted values operator</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>The substituted values which follow relate to the data defined by the data present bit-map</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>23</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>255</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Substituted values marker operator</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>This operator shall signify a data item containing a substituted value; the element descriptor for the substituted value is obtained by the application of the data present bit-map associated with the substituted values operator</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>24</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>000</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>First order statistical values follow</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>The statistical values which follow relate to the data defined by the data present bit-map</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>24</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>255</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>First order statistical values marker operator</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>This operator shall signify a data item containing a first order statistical value of the type indicated by the preceding 0 08 023 element descriptor; the element descriptor to which the first order statistic relates is obtained by the application of the data present bit-map associated with the first order statistical values follow operator; first order statistical values shall be represented as defined by this element descriptor</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>25</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>000</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Difference statistical values follow</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>The statistical values which follow relate to the data defined by the data present bit-map</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>25</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>255</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Difference statistical values marker operator</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>This operator shall signify a data item containing a difference statistical value of the type indicated by the preceding 0 08 024 element descriptor; the element descriptor to which the difference statistical value relates is obtained by the application of the data present bit-map associated with the difference statistical values follow operator; difference statistical values shall be represented as defined by this element descriptor, but with a reference value of -2n and a data width of (n+1), where n is the data width given by the original descriptor.  This special reference value allows the statistical difference values to be centred around zero</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>32</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>000</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Replaced/retained values follow</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>The replaced/retained values which follow relate to the data defined by the data present bit-map</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>32</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>255</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Replaced/retained value marker operator</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>This operator shall signify a data item containing the original of an element which has been replaced by a substituted value.  The element descriptor for the retained value is obtained by the application of the data present bit-map associated with the substituted values operator</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>35</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>000</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Cancel backward data reference</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>This operator terminates all previously defined back- ward reference and cancels any previously defined data present bit-map; it causes the next data present bit-map to refer to the data descriptors which immediately precede the operator to which it relates</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>36</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>000</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Define data present bit-map</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>This operator defines the data present bit-map which follows for possible re-use; only one data present bit-map may be defined between this operator and the cancel use defined data present bit-map operator</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>37</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>000</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Use defined data present bit-map</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>This operator causes the defined data present bit- map to be used again</FONT></TD>
+</TR>
+<TR><TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>2</FONT></TD>
+<TD WIDTH="4%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>37</FONT></TD>
+<TD WIDTH="6%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>255</FONT></TD>
+<TD WIDTH="30%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>Cancel use defined data present bit-map</FONT></TD>
+<TD WIDTH="56%" VALIGN="TOP">
+<FONT FACE="Courier New" SIZE=2><P>This operator cancels the re-use of the defined data present bit-map</FONT></TD>
+</TR>
+</TABLE>
+
+<FONT FACE="Courier New" SIZE=2>
+<P>Notes:</P>
+
+<P>(1)&#9;The operations specified by operator descriptors 2 01, 2 02, 2 03 and 2 04 remain defined until cancelled or until the end of the data subset.</P>
+
+<P>(2)&#9;If change scale is used, then it may be necessary for the originator of the message to supply an appropriately rescaled reference value and data width.</P>
+
+<P>(3)&#9;Cancellation of the use of the redefined value shall be effected by the inclusion of the appropriate operand with Y set to 0.  The value shall then revert to the original Table B value.</P>
+
+<P>(4)&#9;Nesting of operator descriptors must guarantee unambiguous interpretation; in particular, operators defined within a set of replicated descriptors must be cancelled or completed within that set.</P>
+
+<P>(5)&#9;Nesting of the operator descriptor 2 04 is defined such that:</P>
+
+<P>(a)&#9;Each new definition adds to the currently defined associated field;</P>
+<P>(b)&#9;Each cancellation (2 04 00) cancels only the most recently defined addition to the associated field.</P>
+
+<P>(6)&#9;When the descriptor 2 04 YYY is to be used, it shall precede the first of the data descriptors to which it applies.</P>
+
+<P>(7)&#9;The data description operator 2 04 YYY shall be followed immediately by the descriptor 0 31 021 to indicate the meaning of the associated fields.</P>
+
+<P>(8)&#9;In the data stream, the 6 bits described by 0 31 021 shall precede the YYY bits.</P>
+
+<P>(9)&#9;Once an associated field has been established and given meaning, the meaning may be changed by a re-application of descriptor 0 31 021.  The associated field needs not to be cancelled in order to change the meaning.  Further, if an associated field is cancelled, and then re-established, it must be given a meaning by a proper application of the 0 31 021 descriptor, as described in Notes (5) to (8), i.e. a previous assignment of meaning does not remain in force when the associated field is cancelled.</P>
+
+<P>(10)&#9;Data description operators shall not be applied to Table B, class 31 entries.</P>
+
+<P>(11)&#9;The operation 2 05 permits the inclusion of plain language.</P>
+
+<P>(12)&#9;The operator 2 06 Y allows for the inclusion of local descriptors in a message, with their associated data, which can then be by-passed by a receiver of the message.  It can be applied to element descriptors (F = 0) only.</P>
+
+<P>(13)&#9;If "replaced/retained" values are indicated, this shall imply that the data element in the original part of the message has been replaced with a (presumably) better value; the original value has been retained in the message following the replaced/retained operator.  If multiple replacements for the same data element are to be included, they shall be ordered such that the original datum shall be last, the first replacement shall precede it, the next precede that, etc.  Each (set of) replaced/retained data values shall be indicated by the inclusion of the 2 32 000 operator.</P>
+
+<P>(14)&#9;If "substituted values" are indicated, this shall imply that the data element in the original part of the message is thought to be of poor quality.  However, it has been left in the original message as received; an improved value has been placed within the message following the substituted values operator.  If multiple substitutions for the same data element are to be included, they shall be ordered such that the first substitution shall be first, the next substitution shall follow it, the next follow that, etc.  Thus, the (presumed) "best" value will be found at the end of the collection of substituted values.  Each (set of) substituted data values shall be indicated by the inclusion of the 2 23 000 operator.</P>
+
+<P>(15)&#9;Operator 2 21 YYY allows for the construction of a BUFR message containing only coordinate (classes 1-9), delayed replication (class 31) and quality control information.  The message could be linked back to the original data-containing message by comparison of the coordinate information in the two messages, or, in a local context, through "database" information in Section 2.</P>
+
+<P>(16)&#9;First-order statistics have values with a similar range and the same dimensions as the corresponding reported values (e.g. maxima, minima, means, etc.).</P>
+
+<P>(17)&#9;Difference statistics are difference values; they have dimensions the same as the corresponding reported values with respect to units, but assume a range centred on zero (e.g. the difference between reported and analysed values, the difference between reported and forecast values, etc.).</P>
+
+<P>(18)&#9;No operator descriptors are reserved for local use.</P>
+
+<P>&nbsp;</P></FONT></BODY>
+</HTML>

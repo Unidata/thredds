@@ -34,8 +34,7 @@
 
 package ucar.nc2.ncml;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -48,14 +47,10 @@ import ucar.unidata.test.util.TestDir;
 import java.io.StringReader;
 import java.io.IOException;
 
-public class TestOffAggFmrcScan2 extends TestCase {
+public class TestOffAggFmrcScan2 {
 
-  public TestOffAggFmrcScan2( String name) {
-    super(name);
-  }
-
-
-  public void utestOpen() throws Exception {
+  @Test
+  public void testOpen() throws Exception {
     String dataDir = TestDir.cdmUnitTestDir + "ft/fmrc/rtmodels/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -67,7 +62,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
       "  </aggregation>\n" +
       "</netcdf>";
 
-    String filename = "file:./"+TestDir.cdmUnitTestDir + "ncml/offsite/aggFmrcScan2.xml";
+    String filename = "fake:TestOffAggFmrcScan2/aggFmrcScan2.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
@@ -77,7 +72,8 @@ public class TestOffAggFmrcScan2 extends TestCase {
     ncfile.close();
   }
 
-  public void utestOpenNomads() throws Exception {
+  @Test
+  public void testOpenNomads() throws Exception {
     String dataDir = TestDir.cdmUnitTestDir + "ft/fmrc/nomads/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -89,7 +85,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
       "  </aggregation>\n" +
       "</netcdf>";
     
-    String filename = "file:./"+TestDir.cdmUnitTestDir + "ncml/offsite/aggFmrcNomads.xml";
+    String filename = "fake:TestOffAggFmrcScan2/aggFmrcNomads.xml";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
@@ -98,27 +94,5 @@ public class TestOffAggFmrcScan2 extends TestCase {
 
     ncfile.close();
   }
-
-  public void utestMargolis() throws IOException, InvalidRangeException {
-    String dataDir = TestDir.cdmUnitTestDir + "nomads/gfs-hi/";
-    GridDataset gridDataset = GridDataset.open( "D:/AStest/margolis/grib2ncdf.ncml" );
-    GeoGrid grid = gridDataset.findGridByName( "Turbulence_SIGMET_AIRMET" );
-    System.out.println("Grid= "+grid+" section="+ new Section(grid.getShape()));
-    System.out.println(" coordSys= "+grid.getCoordinateSystem());
-
-    GeoGrid subset = (GeoGrid) grid.makeSubset(new Range(0, 0), null, new Range(1,1), null, null, null);
-    System.out.println("subset= "+subset+" section="+ new Section(subset.getShape()));
-    System.out.println(" coordSys= "+subset.getCoordinateSystem());
-
-    gridDataset.close();
-  }
-
-  public static void main(String[] args) throws IOException {
-    String fname = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/rtofs.ncml";
-    NetcdfFile ncfile = NetcdfDataset.openDataset(fname);
-    TestDir.readAllData(ncfile);
-    ncfile.close();
-  }
-
 
 }

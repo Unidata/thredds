@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
+
 /**
  * netcdf subset service allows 3 kinds of operations
  *  
@@ -13,7 +15,7 @@ import java.util.List;
 enum SupportedOperation {
 	
 	DATASET_INFO_REQUEST("Dataset info request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML })),SupportedFormat.XML),
-	POINT_REQUEST("Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML, SupportedFormat.CSV, SupportedFormat.NETCDF})),SupportedFormat.XML),
+	POINT_REQUEST("Grid as Point data request", Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.XML, SupportedFormat.CSV, SupportedFormat.NETCDF})),SupportedFormat.XML),
 	GRID_REQUEST("Grid data request",Collections.unmodifiableList(Arrays.asList(new SupportedFormat[]{SupportedFormat.NETCDF})),SupportedFormat.NETCDF);
 	
 	private final String operationName; 
@@ -40,24 +42,10 @@ enum SupportedOperation {
 		return defaultFormat;
 	}
 	
-	public static SupportedFormat isSupportedFormat(String format, SupportedOperation operation){
-	
-		/*boolean found = false; 
-		SupportedFormat[] sf = SupportedFormat.values();
-		int len = sf.length;
-		int cont =0;
-		while(!found  && cont < len){
+	public static SupportedFormat isSupportedFormat(String format, SupportedOperation operation) throws UnsupportedResponseFormatException{
 		
-			if( sf[cont].getOperations().contains(operation) ){			
-				List<String> aliases=  sf[cont].getAliases();
-				if(aliases.contains(format)) found= true;
-			}	
-			cont++;		
-		}
-
-		if(found ) return sf[cont-1];*/
+		List<SupportedFormat> supportedFormats = operation.getSupportedFormats();
 		
-		List<SupportedFormat> supportedFormats = operation.getSupportedFormats(); 
 		int len = supportedFormats.size();
 		int cont =0;
 		boolean found=false;
@@ -67,8 +55,8 @@ enum SupportedOperation {
 			cont++;
 		} 
  	
-		if( cont < len ) return supportedFormats.get(cont-1); 
+		if( found ) return supportedFormats.get(cont-1); 
 		
-		return operation.defaultFormat;
+		throw new UnsupportedResponseFormatException("Format "+format+" is not supported for "+operation.getOperation());
 	}	
 }

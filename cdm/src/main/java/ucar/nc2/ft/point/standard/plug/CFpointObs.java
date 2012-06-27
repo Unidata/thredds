@@ -61,7 +61,12 @@ import java.io.IOException;
 public class CFpointObs extends TableConfigurerImpl {
 
   private enum Encoding {
-    single, multidim, raggedContiguous, raggedIndex, flat
+    single,          // single feature in files
+    multidim,        // feature(s1, s2, ...)
+    raggedContiguous,// row_size
+    raggedIndex,     // stn_index
+    flat,            // not used
+   // multiStructure   // multiple structures (nc4)
   }
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
@@ -134,7 +139,7 @@ public class CFpointObs extends TableConfigurerImpl {
     List<Dimension> dimLat = info.lat.getDimensions();
     List<Dimension> dimLon = info.lon.getDimensions();
     if (!dimLat.equals(dimLon)) {
-      errlog.format("Lat and Lon coordinate dimensions must match lat=%s lon=%s %n", info.lat.getNameAndDimensions(), info.lon.getNameAndDimensions());
+      errlog.format("CFpointObs Lat, Lon coordinate dimensions must match lat=%s lon=%s %n", info.lat.getNameAndDimensions(), info.lon.getNameAndDimensions());
       ok = false;
     }
 
@@ -175,7 +180,7 @@ public class CFpointObs extends TableConfigurerImpl {
         break;
 
       case multidim:
-        obsTable = makeMultidimInner(ds, stnTable, obsDim, errlog);
+        obsTable = makeMultidimInner(ds, stnTable, info.childDim, info, errlog);
         if (info.time.getRank() == 1) { // time(time)
           obsTable.addJoin(new JoinArray(info.time, JoinArray.Type.raw, 0));
           obsTable.time = info.time.getShortName();
@@ -218,7 +223,7 @@ public class CFpointObs extends TableConfigurerImpl {
     if (parentTable == null) return null;
     parentTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.trajectory);
     if (parentTable.feature_id == null) {
-      errlog.format("getTrajectoryConfig cant find a trajectoy id %n");
+      errlog.format("CFpointObs getTrajectoryConfig cant find a trajectoy id %n");
     }
 
     // obs table
@@ -231,7 +236,7 @@ public class CFpointObs extends TableConfigurerImpl {
         obsConfig = makeSingle(ds, info.childDim, errlog);
         break;
       case multidim:
-        obsConfig = makeMultidimInner(ds, parentTable, info.childDim, errlog);
+        obsConfig = makeMultidimInner(ds, parentTable, info.childDim, info, errlog);
         break;
       case raggedContiguous:
         obsConfig = makeRaggedContiguous(ds, info.parentDim, info.childDim, info.ragged_rowSize, errlog);
@@ -257,13 +262,14 @@ public class CFpointObs extends TableConfigurerImpl {
     if (parentTable == null) return null;
     parentTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.profile);
     if (parentTable.feature_id == null) {
-      errlog.format("getProfileConfig cant find a profile id %n");
+      errlog.format("CFpointObs getProfileConfig cant find a profile id %n");
     }
 
     // obs table
     VariableDS z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
+    if (z == null) z = CoordSysEvaluator.findCoordByType(ds, AxisType.Pressure);
     if (z == null) {
-      errlog.format("getProfileConfig cant find a Height coordinate %n");
+      errlog.format("CFpointObs getProfileConfig cant find a Height coordinate %n");
       return null;
     }
     //Dimension obsDim = z.getDimension(z.getRank() - 1); // may be z(z) or z(profile, z)
@@ -274,7 +280,7 @@ public class CFpointObs extends TableConfigurerImpl {
         obsTable = makeSingle(ds, info.childDim, errlog);
         break;
       case multidim:
-        obsTable = makeMultidimInner(ds, parentTable, info.childDim, errlog);
+        obsTable = makeMultidimInner(ds, parentTable, info.childDim, info, errlog);
         if (z.getRank() == 1) // z(z)
           obsTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
         break;
@@ -300,7 +306,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
     if (time.getRank() == 0) {
-      errlog.format("timeSeriesProfile cannot have a scalar time coordinate%n");  // why ?
+      errlog.format("CFpointObs timeSeriesProfile cannot have a scalar time coordinate%n");  // why ?
       return null;
     }
 
@@ -359,7 +365,7 @@ public class CFpointObs extends TableConfigurerImpl {
         stationTable.addChild(profileTable);
 
         // make the inner (z) table
-        TableConfig zTable = makeMultidimInner(ds, profileTable, info.grandChildDim, errlog);
+        TableConfig zTable = makeMultidimInner(ds, profileTable, info.grandChildDim, info, errlog);
         if (z.getRank() == 1) // join z(z)
           zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
         profileTable.addChild(zTable);
@@ -396,7 +402,7 @@ public class CFpointObs extends TableConfigurerImpl {
           }
         }
 
-        TableConfig profileTable = makeMultidimInner(ds, stationTable, info.childDim, errlog);
+        TableConfig profileTable = makeMultidimInner(ds, stationTable, info.childDim, info, errlog);
         if (profileTable == null) return null;
         if (time.getRank() == 1) {// join time(time)
           profileTable.addJoin(new JoinArray(time, JoinArray.Type.raw, 0));  // ??
@@ -457,7 +463,7 @@ public class CFpointObs extends TableConfigurerImpl {
     if (parentTable == null) return null;
     parentTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.trajectoryProfile);
     if (parentTable.feature_id == null) {
-      errlog.format("getSectionConfig cant find a section id %n");
+      errlog.format("CFpointObs:getSectionConfig cant find a section id %n");
     }
 
     //Dimension sectionDim = ds.findDimension(parentTable.dimName);
@@ -499,7 +505,7 @@ public class CFpointObs extends TableConfigurerImpl {
         parentTable.addChild(profileTable);
 
         // make the inner (z) table
-        TableConfig zTable = makeMultidimInner(ds, profileTable, info.grandChildDim, errlog);
+        TableConfig zTable = makeMultidimInner(ds, profileTable, info.grandChildDim, info, errlog);
         if (z.getRank() == 1) // join z(z)
           zTable.addJoin(new JoinArray(z, JoinArray.Type.raw, 0));
         profileTable.addChild(zTable);
@@ -535,7 +541,7 @@ public class CFpointObs extends TableConfigurerImpl {
         // make profile table
         //   private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
 
-        TableConfig profileTable = makeMultidimInner(ds, parentTable, info.childDim, errlog);
+        TableConfig profileTable = makeMultidimInner(ds, parentTable, info.childDim, info, errlog);
         if (profileTable == null) return null;
         profileTable.feature_id = identifyIdVariableName(ds, CF.FeatureType.profile);
         parentTable.addChild(profileTable);
@@ -682,18 +688,19 @@ public class CFpointObs extends TableConfigurerImpl {
       obsDim = parent.getDimension(parent.getRank() - 1);
     }
     if (obsDim == null) {
-      errlog.format("Must have a non-scalar Time coordinate%n");
+      errlog.format("CFpointObs: must have a non-scalar Time coordinate%n");
       return false;
     }
 
     // find the station dimension
     if (info.lat.getRank() == 0) {// scalar means single
-      info.set(Encoding.single, (Dimension) null, obsDim);
+      info.set(Encoding.single, null, obsDim);
       return true;
     }
+
     Dimension stnDim = info.lat.getDimension(0);
     if (obsDim == stnDim) {
-      info.set(Encoding.flat, (Dimension) null, obsDim); // not used ?
+      info.set(Encoding.flat, null, obsDim); // not used ?
       return true;
     }
 
@@ -703,11 +710,12 @@ public class CFpointObs extends TableConfigurerImpl {
 
     // heres whats left
     if (info.lat.getRank() == 1) {
+      //Encoding e = (info.time.getParentStructure() != null) ? Encoding.multiStructure : Encoding.multidim;
       info.set(Encoding.multidim, stnDim, obsDim);
       return true;
     }
 
-    errlog.format("CFpointObs %s Must have Lat/Lon coordinates of rank 0 or 1%n", ftype);
+    errlog.format("CFpointObs: %s Must have Lat/Lon coordinates of rank 0 or 1%n", ftype);
     return false;
   }
 
@@ -722,6 +730,7 @@ public class CFpointObs extends TableConfigurerImpl {
    * @return EncodingInfo if ragged array representations is found
    */
   private boolean identifyRaggeds(NetcdfDataset ds, EncodingInfo info, Dimension instanceDim, Dimension sampleDim, Formatter errlog) {
+    // backwards compatibility
     Evaluator.VarAtt varatt = Evaluator.findVariableWithAttribute(ds, CF.SAMPLE_DIMENSION);
     if (varatt == null) varatt = Evaluator.findVariableWithAttribute(ds, CF.RAGGED_ROWSIZE);
     if (varatt != null) {
@@ -729,14 +738,14 @@ public class CFpointObs extends TableConfigurerImpl {
       String sampleDimName = varatt.att.getStringValue();
 
       if (sampleDim != null && !sampleDimName.equals(sampleDim.getName())) {
-        errlog.format("Contiguous ragged array representation: row_size variable has sample dimension %s must be %s%n", sampleDimName, sampleDim.getName());
+        errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable has sample dimension %s must be %s%n", sampleDimName, sampleDim.getName());
         return false;
       }
 
       if (sampleDim == null) {
         sampleDim = ds.findDimension(sampleDimName);
         if (sampleDim == null) {
-          errlog.format("Contiguous ragged array representation: row_size variable has invalid sample dimension %s%n", sampleDimName);
+          errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable has invalid sample dimension %s%n", sampleDimName);
           return false;
         }
       }
@@ -745,19 +754,19 @@ public class CFpointObs extends TableConfigurerImpl {
         instanceDim = ragged_rowSize.getDimension(0);
       } else {
         if (instanceDim != ragged_rowSize.getDimension(0)) {
-          errlog.format("Contiguous ragged array representation: row_size variable has invalid instance dimension %s must be %s%n",
+          errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable has invalid instance dimension %s must be %s%n",
                   ragged_rowSize.getDimension(0), instanceDim);
           return false;
         }
       }
 
       if (ragged_rowSize.getDataType() != DataType.INT) {
-        errlog.format("Contiguous ragged array representation: row_size variable must be of type integer%n");
+        errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable must be of type integer%n");
         return false;
       }
 
       if (ragged_rowSize.getRank() != 1 || !ragged_rowSize.getDimension(0).equals(instanceDim)) {
-        errlog.format("Contiguous ragged array representation: row_size variable must be of form %s(%s) %n", ragged_rowSize.getShortName(), instanceDim.getName());
+        errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable must be of form %s(%s) %n", ragged_rowSize.getShortName(), instanceDim.getName());
         return false;
       }
 
@@ -767,6 +776,7 @@ public class CFpointObs extends TableConfigurerImpl {
     }  // rowsize was found
 
 
+    // CF 1.6
     varatt = Evaluator.findVariableWithAttribute(ds, CF.INSTANCE_DIMENSION);
     if (varatt == null) varatt = Evaluator.findVariableWithAttribute(ds, CF.RAGGED_PARENTINDEX);
     if (varatt != null) {
@@ -774,20 +784,20 @@ public class CFpointObs extends TableConfigurerImpl {
       String instanceDimName = varatt.att.getStringValue();
 
       if (instanceDim != null && !instanceDimName.equals(instanceDim.getName())) {
-        errlog.format("Indexed ragged array representation: parent_index variable has instance dimension %s must be %s%n", instanceDimName, instanceDim.getName());
+        errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable has instance dimension %s must be %s%n", instanceDimName, instanceDim.getName());
         return false;
       }
 
       if (instanceDim == null) {
         instanceDim = ds.findDimension(instanceDimName);
         if (instanceDim == null) {
-          errlog.format("Indexed ragged array representation: parent_index variable has invalid instance dimension %s%n", instanceDimName);
+          errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable has invalid instance dimension %s%n", instanceDimName);
           return false;
         }
       }
 
       if (ragged_parentIndex.getDataType() != DataType.INT) {
-        errlog.format("Indexed ragged array representation: parent_index variable must be of type integer%n");
+        errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable must be of type integer%n");
         return false;
       }
 
@@ -795,13 +805,13 @@ public class CFpointObs extends TableConfigurerImpl {
       if (ragged_parentIndex.isMemberOfStructure()) {
         Structure s = ragged_parentIndex.getParentStructure();
         if (s.getRank() == 0 || !s.getDimension(0).equals(sampleDim)) {
-          errlog.format("Indexed ragged array representation (structure): parent_index variable must be of form Struct { %s }(%s) %n", ragged_parentIndex.getShortName(), sampleDim.getName());
+          errlog.format("CFpointObs: Indexed ragged array representation (structure): parent_index variable must be of form Struct { %s }(%s) %n", ragged_parentIndex.getShortName(), sampleDim.getName());
           return false;
         }
 
       } else {
         if (ragged_parentIndex.getRank() != 1 || !ragged_parentIndex.getDimension(0).equals(sampleDim)) {
-          errlog.format("Indexed ragged array representation: parent_index variable must be of form %s(%s) %n", ragged_parentIndex.getShortName(), sampleDim.getName());
+          errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable must be of form %s(%s) %n", ragged_parentIndex.getShortName(), sampleDim.getName());
           return false;
         }
       }
@@ -811,15 +821,15 @@ public class CFpointObs extends TableConfigurerImpl {
     } // parent index was found
 
     /* kunicki 10/21/2011
- Variable ragged_parentIndex = Evaluator.getVariableWithAttributeValue(ds, CF.RAGGED_PARENTINDEX, parentDim.getName());
- if ( (ragged_parentIndex == null) ||
-      (!ragged_parentIndex.isMemberOfStructure() && (ragged_parentIndex.getRank() == 0 || ragged_parentIndex.getDimension(0).getName() != childDim.getName()) ||
-      (ragged_parentIndex.isMemberOfStructure() && (ragged_parentIndex.getParentStructure().getRank() == 0 || ragged_parentIndex.getParentStructure().getDimension(0).getName() != childDim.getName())))
-    ) {
- // if ((null == ragged_parentIndex) || (ragged_parentIndex.getRank() == 0) || (ragged_parentIndex.getDimension(0).getName() != childDim.getName())) {
-   errlog.format("there must be a ragged_parent_index variable with outer dimension that matches obs dimension %s%n", childDim.getName());
-   return null;
- }   */
+    Variable ragged_parentIndex = Evaluator.getVariableWithAttributeValue(ds, CF.RAGGED_PARENTINDEX, parentDim.getName());
+    if ((ragged_parentIndex == null) ||
+            (!ragged_parentIndex.isMemberOfStructure() && (ragged_parentIndex.getRank() == 0 || ragged_parentIndex.getDimension(0).getName() != childDim.getName()) ||
+                    (ragged_parentIndex.isMemberOfStructure() && (ragged_parentIndex.getParentStructure().getRank() == 0 || ragged_parentIndex.getParentStructure().getDimension(0).getName() != childDim.getName())))
+            ) {
+      // if ((null == ragged_parentIndex) || (ragged_parentIndex.getRank() == 0) || (ragged_parentIndex.getDimension(0).getName() != childDim.getName())) {
+      errlog.format("there must be a ragged_parent_index variable with outer dimension that matches obs dimension %s%n", childDim.getName());
+      return null;
+    }  */
 
     return false;
   }
@@ -847,17 +857,17 @@ public class CFpointObs extends TableConfigurerImpl {
     Dimension stationDim = ds.findDimension(instanceDimName);
 
     if (stationDim == null) {
-      errlog.format("Indexed ragged array representation: parent_index variable has illegal value for %s = %s%n", CF.INSTANCE_DIMENSION, instanceDimName);
+      errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable has illegal value for %s = %s%n", CF.INSTANCE_DIMENSION, instanceDimName);
       return false;
     }
 
     if (ragged_parentIndex.getDataType() != DataType.INT) {
-      errlog.format("Indexed ragged array representation: parent_index variable must be of type integer%n");
+      errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable must be of type integer%n");
       return false;
     }
 
     if (ragged_parentIndex.getRank() != 1) {
-      errlog.format("Indexed ragged array representation: parent_index variable %s must be 1D %n", ragged_parentIndex);
+      errlog.format("CFpointObs: Indexed ragged array representation: parent_index variable %s must be 1D %n", ragged_parentIndex);
       return false;
     }
     Dimension profileDim = ragged_parentIndex.getDimension(0);
@@ -872,23 +882,23 @@ public class CFpointObs extends TableConfigurerImpl {
     Dimension obsDim = ds.findDimension(obsDimName);
 
     if (obsDimName == null) {
-      errlog.format("Contiguous ragged array representation: parent_index variable has illegal value for %s = %s%n", CF.SAMPLE_DIMENSION, obsDimName);
+      errlog.format("CFpointObs: Contiguous ragged array representation: parent_index variable has illegal value for %s = %s%n", CF.SAMPLE_DIMENSION, obsDimName);
       return false;
     }
 
     if (!obsDimName.equals(info.grandChildDim.getName())) {
-      errlog.format("Contiguous ragged array representation: row_size variable has obs dimension %s must be %s%n", obsDimName, info.childDim);
+      errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable has obs dimension %s must be %s%n", obsDimName, info.childDim);
       return false;
     }
 
     Dimension profileDim2 = ragged_rowSize.getDimension(0);
     if (profileDim2 != profileDim) {
-      errlog.format("Double ragged array representation dimensions do not agree: %s != %s%n", profileDim2.getName(), profileDim.getName());
+      errlog.format("CFpointObs: Double ragged array representation dimensions do not agree: %s != %s%n", profileDim2.getName(), profileDim.getName());
       return false;
     }
 
     if (ragged_rowSize.getDataType() != DataType.INT) {
-      errlog.format("Contiguous ragged array representation: row_size variable must be of type integer%n");
+      errlog.format("CFpointObs: Contiguous ragged array representation: row_size variable must be of type integer%n");
       return false;
     }
 
@@ -908,7 +918,7 @@ public class CFpointObs extends TableConfigurerImpl {
       obsDim = parent.getDimension(parent.getRank() - 1);
     }
     if (obsDim == null) {
-      errlog.format("Must have a non-scalar Time coordinate%n");
+      errlog.format("CFpointObs: Must have a non-scalar Time coordinate%n");
       return false;
     }
 
@@ -939,8 +949,9 @@ public class CFpointObs extends TableConfigurerImpl {
   private boolean identifyEncodingProfile(NetcdfDataset ds, EncodingInfo info, Formatter errlog) {
     // find the obs dimension
     VariableDS z = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
+    if (z == null) z = CoordSysEvaluator.findCoordByType(ds, AxisType.Pressure);
     if (z == null) {
-      errlog.format("Must have a Height coordinate%n");
+      errlog.format("CFpointObs: Must have a Height coordinate%n");
       return false;
     }
     info.alt = z;
@@ -952,7 +963,7 @@ public class CFpointObs extends TableConfigurerImpl {
       obsDim = parent.getDimension(parent.getRank() - 1);
     }
     if (obsDim == null) {
-      errlog.format("Must have a non-scalar Height coordinate%n");
+      errlog.format("CFpointObs: Must have a non-scalar Height coordinate%n");
       return false;
     }
 
@@ -981,11 +992,11 @@ public class CFpointObs extends TableConfigurerImpl {
         // find the non-station altitude
     VariableDS z = findZAxisNotStationAlt(ds);
     if (z == null) {
-      errlog.format("section must have a z coordinate%n");
+      errlog.format("CFpointObs: section must have a z coordinate%n");
       return false;
     }
     if (z.getRank() == 0) {
-      errlog.format("section cannot have a scalar z coordinate%n");
+      errlog.format("CFpointObs: section cannot have a scalar z coordinate%n");
       return false;
     }
     info.alt = z;
@@ -998,7 +1009,7 @@ public class CFpointObs extends TableConfigurerImpl {
       obsDim = parent.getDimension(parent.getRank() - 1);
     }
     if (obsDim == null) {
-      errlog.format("Must have a non-scalar Height coordinate%n");
+      errlog.format("CFpointObs: Must have a non-scalar Height coordinate%n");
       return false;
     }
     info.grandChildDim = obsDim;
@@ -1045,11 +1056,11 @@ public class CFpointObs extends TableConfigurerImpl {
     // find the non-station altitude
     VariableDS z = findZAxisNotStationAlt(ds);
     if (z == null) {
-      errlog.format("timeSeriesProfile must have a z coordinate, not the station altitude%n");
+      errlog.format("CFpointObs: timeSeriesProfile must have a z coordinate, not the station altitude%n");
       return false;
     }
     if (z.getRank() == 0) {
-      errlog.format("timeSeriesProfile cannot have a scalar z coordinate%n");
+      errlog.format("CFpointObs: timeSeriesProfile cannot have a scalar z coordinate%n");
       return false;
     }
 
@@ -1093,6 +1104,13 @@ public class CFpointObs extends TableConfigurerImpl {
 
     // time(station, profile, z)
     if (info.time.getRank() > 2) {
+      profileDim = info.time.getDimension(1);
+      info.set(Encoding.multidim, stnDim, profileDim, obsDim);
+      return true;
+    }
+
+    // time(station, profile)
+    if (info.time.getRank() == 2 && info.time.getDimension(0) == stnDim) {
       profileDim = info.time.getDimension(1);
       info.set(Encoding.multidim, stnDim, profileDim, obsDim);
       return true;
@@ -1166,7 +1184,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     // station id
     if (stnTable.stnId == null) {
-      errlog.format("Must have a Station id variable with %s = %s%n", CF.CF_ROLE, CF.TIMESERIES_ID);
+      errlog.format("CFpointObs: must have a Station id variable with %s = %s%n", CF.CF_ROLE, CF.TIMESERIES_ID);
       return null;
     }
 
@@ -1204,6 +1222,7 @@ public class CFpointObs extends TableConfigurerImpl {
     tableConfig.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, info.parentDim);
     tableConfig.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, info.parentDim);
     tableConfig.elev = matchAxisTypeAndDimension(ds, AxisType.Height, info.parentDim);
+    if (tableConfig.elev == null) tableConfig.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, info.parentDim);
     tableConfig.time = matchAxisTypeAndDimension(ds, AxisType.Time, info.parentDim);
     tableConfig.featureType = ftype;
 
@@ -1229,6 +1248,7 @@ public class CFpointObs extends TableConfigurerImpl {
     tableConfig.lat = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lat);
     tableConfig.lon = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lon);
     tableConfig.elev = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Height);
+    if (tableConfig.elev == null) tableConfig.elev = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Pressure);
     tableConfig.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     tableConfig.featureType = ftype;
 
@@ -1252,6 +1272,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, childDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && childDim.isUnlimited();
@@ -1269,6 +1290,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, childDim);
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, childDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, childDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, childDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, childDim);
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && childDim.isUnlimited();
@@ -1281,15 +1303,18 @@ public class CFpointObs extends TableConfigurerImpl {
 
   // the inner table of Structure(outer, inner) and middle table of Structure(outer, middle, inner)
 
-  private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, Formatter errlog) throws IOException {
+  private TableConfig makeMultidimInner(NetcdfDataset ds, TableConfig parentTable, Dimension obsDim, EncodingInfo info, Formatter errlog) throws IOException {
     Dimension parentDim = ds.findDimension(parentTable.dimName);
 
     Table.Type obsTableType = (parentTable.structureType == TableConfig.StructureType.PsuedoStructure) ? Table.Type.MultidimInnerPsuedo : Table.Type.MultidimInner;
+    // if (info.time.isMemberOfStructure()) obsTableType = Table.Type.Structure;
+
     TableConfig obsTable = new TableConfig(obsTableType, obsDim.getName());
 
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, parentDim, obsDim);
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, parentDim, obsDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, parentDim, obsDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, parentDim, obsDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, parentDim, obsDim);
 
     // divide up the variables between the parent and the obs
@@ -1341,6 +1366,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, outerDim, middleDim, innerDim);
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, outerDim, middleDim, innerDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, outerDim, middleDim, innerDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, middleDim, innerDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, outerDim, middleDim, innerDim);
 
     // divide up the variables between the 3 tables
@@ -1381,6 +1407,7 @@ public class CFpointObs extends TableConfigurerImpl {
     obsTable.lat = matchAxisTypeAndDimension(ds, AxisType.Lat, obsDim);
     obsTable.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, obsDim);
     obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Height, obsDim);
+    if (obsTable.elev == null) obsTable.elev = matchAxisTypeAndDimension(ds, AxisType.Pressure, obsDim);
     obsTable.time = matchAxisTypeAndDimension(ds, AxisType.Time, obsDim);
 
     boolean obsIsStruct = Evaluator.hasRecordStructure(ds) && obsDim.isUnlimited();

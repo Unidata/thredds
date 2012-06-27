@@ -46,8 +46,7 @@ import ucar.nc2.constants.FeatureType;
  * A client will see the referenced catalog as a nested dataset.
  * <p/>
  * <p/>
- * The client can also do asynchronous reading, if the InvCatalogFactory supports it,
- * and if readAsynch() is used.
+ * The client can also do asynchronous reading, if the InvCatalogFactory supports it, and if readAsynch() is used.
  * <p/>
  * <pre>
  * Parent relationship:

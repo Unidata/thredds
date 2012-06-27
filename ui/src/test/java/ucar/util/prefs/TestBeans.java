@@ -119,9 +119,9 @@ public class TestBeans extends TestCase {
       assert tbean.getS().equals(tbeano.getS()) : "string failed";
 
     } catch (Exception e) {
-      assert false;
       System.out.println(e);
       e.printStackTrace();
+      assert false;
     }
   }
 

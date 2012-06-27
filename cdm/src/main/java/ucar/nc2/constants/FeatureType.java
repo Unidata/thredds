@@ -70,42 +70,72 @@ maybe:
  */
 
 public enum FeatureType {
-  /** No specific type */
+  /**
+   * No specific type
+   */
   ANY,
-  /** Gridded Data */
+  /**
+   * Gridded Data
+   */
   GRID,
-  /** Radial data */
+  /**
+   * Radial data
+   */
   RADIAL,
-  /** Swath Data */
+  /**
+   * Swath Data
+   */
   SWATH,
-  /** Image data */
+  /**
+   * Image data
+   */
   IMAGE,
 
-  /** Any of the point types */
+  /**
+   * Any of the point types
+   */
   ANY_POINT,
-  /** Point data */
+  /**
+   * Point data
+   */
   POINT,
-  /** Profile data */
+  /**
+   * Profile data
+   */
   PROFILE,
-  /** Section data */
+  /**
+   * Section data
+   */
   SECTION,
-  /** Station data */
+  /**
+   * Station data
+   */
   STATION,
-  /** Stations of profiles */
+  /**
+   * Stations of profiles
+   */
   STATION_PROFILE,
-  /** Trajectory data */
+  /**
+   * Trajectory data
+   */
   TRAJECTORY,
 
-  /** experimental */
+  /**
+   * experimental
+   */
   STATION_RADIAL,
   FMRC,
   GRIB,
+  UGRID, // unstructured grids
 
-  /** deprecated - use ANY */
+  /**
+   * deprecated - use ANY
+   */
   NONE;
 
   /**
    * Find the FeatureType that matches this name.
+   *
    * @param name find FeatureType with this name.
    * @return FeatureType or null if no match.
    */
@@ -120,15 +150,20 @@ public enum FeatureType {
 
   /**
    * Is this a Point feature type?
+   *
    * @return true if this is a Point feature type
    */
   public boolean isPointFeatureType() {
     return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY) ||
-          (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.SECTION);
+            (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.SECTION);
   }
 
   public boolean isGridFeatureType() {
     return (this == FeatureType.GRID) || (this == FeatureType.FMRC);
+  }
+
+  public boolean isUnstructuredGridFeatureType() {
+    return this == FeatureType.UGRID;
   }
 
 }

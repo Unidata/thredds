@@ -47,7 +47,7 @@ import ucar.unidata.test.util.TestDir;
  *
  * @author caron
  */
-public class TestCDL extends TestCase {
+public class TestCDL {
 
   public void testCDL() throws IOException, InterruptedException {
     File dir = new File(TestDir.cdmUnitTestDir + "formats/netcdf4/files/");

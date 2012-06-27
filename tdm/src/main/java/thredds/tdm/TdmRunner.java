@@ -138,7 +138,7 @@ public class TdmRunner {
           try {
             TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, f); // "we know collection has changed, dont test again" ??? LOOK
             tp.close();
-            if (config.tdmConfig.triggerOk) { // send a trigger if enabled
+            if (config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
               String url = serverName + "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
@@ -155,7 +155,7 @@ public class TdmRunner {
           try {
             GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, f);
             gc.close();
-            if (config.tdmConfig.triggerOk) { // LOOK is there any point if you dont have trigger = true ?
+            if (config.tdmConfig.triggerOk && sendTriggers) { // LOOK is there any point if you dont have trigger = true ?
               String url = serverName + "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
               int status = sendTrigger(url, f);
               f.format(" trigger %s status = %d%n", url, status);
@@ -365,6 +365,7 @@ public class TdmRunner {
 
   ///////////////////////////////////////////////////////////////////////////////////////
   private static String user, pass;
+  private static boolean sendTriggers;
 
   public static void main(String args[]) throws IOException, InterruptedException {
     ApplicationContext springContext = new FileSystemXmlApplicationContext("classpath:resources/application-config.xml");
@@ -387,7 +388,7 @@ public class TdmRunner {
         String[] split = cred.split(":");
         user = split[0];
         pass = split[1];
-        // System.out.printf("parse cert %s %s%n", user, pass);
+        sendTriggers = true;
       }
       if (args[i].equalsIgnoreCase("-catalog")) {
         Resource cat = new FileSystemResource(args[i + 1]);
@@ -395,15 +396,17 @@ public class TdmRunner {
       }
     }
 
-    session = new HTTPSession(serverName);
-    session.setCredentialsProvider(new CredentialsProvider() {
-      public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
-        //System.out.printf("getCredentials called %s %s%n", user, pass);
-        return new UsernamePasswordCredentials(user, pass);
-      }
-    });
-    session.setUserAgent("tdmRunner");
-    HTTPSession.setGlobalUserAgent("TDM v4.3");
+    if (sendTriggers) {
+      session = new HTTPSession(serverName);
+      session.setCredentialsProvider(new CredentialsProvider() {
+        public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
+          //System.out.printf("getCredentials called %s %s%n", user, pass);
+          return new UsernamePasswordCredentials(user, pass);
+        }
+      });
+      session.setUserAgent("tdmRunner");
+      HTTPSession.setGlobalUserAgent("TDM v4.3");
+    }
 
     CollectionUpdater.INSTANCE.setTdm(true);
 

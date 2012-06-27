@@ -161,7 +161,7 @@ public class ThreddsServerConfig implements ServerConfig
     }
 
     @Override
-    public String getAbstract() {
+    public String getServerAbstract() {
       return this.tdsContext.getServerInfo().getSummary();
     }
 
