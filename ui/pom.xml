@@ -178,11 +178,11 @@
 
       </plugin>
 
-      <!-- plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
         <configuration>
-          <skip>false</skip>
+          <skip>true</skip>
         </configuration>
       </plugin>
 
@@ -210,7 +210,7 @@
         </executions>
       </plugin>
 
-      <plugin>
+      <plugin>  <!-- release kludge for now -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
@@ -252,7 +252,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin -->
+      </plugin>
 
     </plugins>
 

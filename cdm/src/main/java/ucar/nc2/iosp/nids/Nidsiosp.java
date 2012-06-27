@@ -189,10 +189,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
 
 
     if (v2.getShortName().equals("azimuth")) {
-      if(pcode == 176)
-         data = readOneScanGenericData(bos, vinfo, v2.getShortName());
-      else
-         data = readRadialDataAzi(bos, vinfo);
+      data = readRadialDataAzi(bos, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
     } else if (v2.getShortName().equals("gate")) {
@@ -273,9 +270,6 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     } else if (v2.getShortName().startsWith("hail") || v2.getShortName().startsWith("TVS")) {
       return readGraphicSymbolData(v2.getShortName(), bos, vinfo);
 
-    } else if (v2.getShortName().startsWith("DigitalInstantaneousPrecipitationRate") ) {
-        data = readOneScanGenericData(bos, vinfo, v2.getShortName());
-        outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
     } else {
       data = readOneScanData(bos, vinfo, v2.getShortName());
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
@@ -583,67 +577,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     return pdata;
 
   }
-    /**
-     * Read one scan radar data
-     *
-     * @param bos   Data buffer
-     * @param vinfo variable info
-     * @return the data object of scan data
-     */
-    // all the work is here, so can be called recursively
-    public Object readOneScanGenericData(ByteBuffer bos, Nidsheader.Vinfo vinfo, String vName) throws IOException, InvalidRangeException {
-        int doff = 0;
-        int npixel = 0;
-        short [] pdata = null;
-
-        bos.position(0);
-        int numRadials = vinfo.yt;
-        float [] angleData = new float[numRadials] ;
-        int numBins0;
-
-        for(int k = 0; k < numRadials; k++)
-        {
-            angleData[k] = bos.getFloat();
-            float t1 = bos.getFloat();
-            float t2 = bos.getFloat();
-            numBins0 = bos.getInt();
-            Nidsheader.readInString(bos);
-
-            numBins0 = bos.getInt();
-            if(pdata == null){
-                npixel = numRadials * numBins0;
-                pdata = new short[npixel];
-            }
-            for(int l = 0; l < numBins0; l++)
-                pdata[k * numBins0 + l] = (short)bos.getInt();
-
-        }
-
-        int offset = 0;
-        if (vName.endsWith("_RAW")) {
-            return pdata;
-        } else if (vName.startsWith("azimuth")  ) {
-            return angleData;
-        } else if (vName.startsWith("DigitalInstantaneousPrecipitationRate")  ) {
-
-            int[] levels = vinfo.len;
-            int scale = levels[0];
-            offset = levels[1];
-            float isc = vinfo.code;
-            float[] fdata = new float[npixel];
-            for (int i = 0; i < npixel; i++) {
-                int ival =  pdata[i];
-                if (ival != 0 )
-                    fdata[i] = (ival - offset)*1.0f/scale;
-                else
-                    fdata[i] = Float.NaN;
-            }
-
-            return fdata;
-
-        }
-        return null;
-    }
+  
   /**
    * Read one scan radar data
    *
@@ -703,60 +637,6 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     int offset = 0;
     if (vName.endsWith("_RAW")) {
       return pdata;
-    } else if (vName.startsWith("DifferentialReflectivity") || vName.startsWith("CorrelationCoefficient") ||
-            vName.startsWith("DifferentialPhase") ) {
-
-        int[] levels = vinfo.len;
-        int scale = levels[0];
-        offset = levels[1];
-        float isc = vinfo.code;
-        float[] fdata = new float[npixel];
-        for (int i = 0; i < npixel; i++) {
-            int ival =  unsignedByteToInt(pdata[i]);
-            if (ival != 2 && ival != 0 && ival != 1)
-                fdata[i] = (ival*isc - offset)/scale;
-            else
-                fdata[i] = Float.NaN;
-        }
-
-        return fdata;
-
-    } else if ( vName.startsWith("DigitalAccumulationArray")  || vName.startsWith("Digital1HourDifferenceAccumulation")
-            || vName.startsWith("DigitalStormTotalAccumulation") || vName.startsWith("Accumulation3Hour")
-            || vName.startsWith("DigitalTotalDifferenceAccumulation") ) {
-
-        int[] levels = vinfo.len;
-        int scale = levels[0];
-        offset = levels[1];
-        float isc = vinfo.code;
-        float[] fdata = new float[npixel];
-        for (int i = 0; i < npixel; i++) {
-            int ival =  unsignedByteToInt(pdata[i]);
-            if ( ival != 0 && ival != 1)
-                fdata[i] = (ival*1.0f - offset*1.0f/isc)/(scale*1.0f);
-            else
-                fdata[i] = Float.NaN;
-        }
-
-        return fdata;
-
-    } else if ( vName.startsWith("HypridHydrometeorClassification")
-             || vName.startsWith("HydrometeorClassification")) {
-
-        int[] levels = vinfo.len;
-        int scale = levels[0];
-        offset = levels[1];
-        float[] fdata = new float[npixel];
-        for (int i = 0; i < npixel; i++) {
-            int ival =  unsignedByteToInt(pdata[i]);
-            if (ival != 0)
-                fdata[i] = (float) ival ;
-            else
-                fdata[i] = Float.NaN;
-        }
-
-        return fdata;
-
     } else if (vName.startsWith("BaseReflectivity") || vName.startsWith("BaseVelocity")) {
       int[] levels = vinfo.len;
       int iscale = vinfo.code;
@@ -812,8 +692,7 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       }
       return fdata;
 
-    } else if (vName.startsWith("Precip") || vName.startsWith("DigitalPrecip")
-            || vName.startsWith("OneHourAccumulation") || vName.startsWith("StormTotalAccumulation")) {
+    } else if (vName.startsWith("Precip") || vName.startsWith("DigitalPrecip")) {
       int[] levels = vinfo.len;
       int iscale = vinfo.code;
       float[] fdata = new float[npixel];
@@ -1739,12 +1618,9 @@ short arrowHeadValue = 0;    */
     //int doff = 0;
     float[] gatedata = new float[vinfo.xt];
     double ddg = Nidsheader.code_reslookup(pcode);
-    if(pcode == 169 || pcode == 170 || pcode == 171 || pcode == 175
-            || pcode == 172  || pcode == 173 || pcode == 174 )
-        ddg = 1.0f;
     float sc = vinfo.y0 * 1.0f;
     for (int rad = 0; rad < vinfo.xt; rad++) {
-      gatedata[rad] = (vinfo.x0) + rad * sc * (float) ddg;
+      gatedata[rad] = (vinfo.x0 + rad) * sc * (float) ddg;
 
     }   //end of for loop
 

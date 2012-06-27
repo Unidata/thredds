@@ -114,7 +114,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    try {
+    /* try {
       registerIOProvider("ucar.nc2.grib.grib2.Grib2Iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
@@ -123,7 +123,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       registerIOProvider("ucar.nc2.grib.grib1.Grib1Iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
-    }
+    } */
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
@@ -134,12 +134,18 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
+    /* try {
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider");
+      registerIOProvider("ucar.nc2.iosp.grib.GribServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
     try {
       Class iosp = NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.BufrIosp");
       registerIOProvider(iosp);
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load resource: " + e);
-    }
+    } */
     try {
       registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
     } catch (Throwable e) {

@@ -98,23 +98,7 @@ class Nidsheader{
     final static int   BaseVelocityDV = 22;
     final static int   EnhancedEcho_Tops = 23;
     final static int   DigitalVert_Liquid = 24;
-    final static int   DigitalDifferentialReflectivity = 30;
-    final static int   DigitalCorrelationCoefficient = 31;
-    final static int   DigitalDifferentialPhase = 32;
-    final static int   HydrometeorClassification = 33;
-    final static int   OneHourAccumulation = 36;
-    final static int   DigitalAccumulationArray = 37;
-    final static int   StormTotalAccumulation = 38;
-    final static int   DigitalStormTotalAccumulation = 39;
-    final static int   Accumulation3Hour  = 40;
-    final static int   Accumulation24Hour  = 41;
-    final static int   Digital1HourDifferenceAccumulation  = 42;
-    final static int   DigitalTotalDifferenceAccumulation  = 43;
-    final static int   DigitalInstantaneousPrecipitationRate = 44;
-    final static int   HypridHydrometeorClassification = 45;
-
     // message header block
-
     short mcode = 0;
     short mdate = 0;
     int mtime = 0;
@@ -190,7 +174,7 @@ class Nidsheader{
         catch ( IOException e )
         {
             return( false );
-        }
+        }                                 
         return true;
     }
 
@@ -684,12 +668,6 @@ class Nidsheader{
                  default:
                       if ( pkcode == 0xAF1F  || pkcode == 16) {              /* radial image                  */
                           hedsiz += pcode_radial( bos, hoff, hedsiz, isZ, uncompdata, pinfo.threshold) ;
-                          //myInfo = new Vinfo (cname, numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ);
-                          plen = Divlen_length;
-                          break;
-                      }
-                      else if ( pkcode == 28) {              /* radial image                  */
-                          hedsiz += pcode_generic( bos, hoff, hedsiz, isZ, uncompdata, pinfo.threshold) ;
                           //myInfo = new Vinfo (cname, numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ);
                           plen = Divlen_length;
                           break;
@@ -1728,14 +1706,7 @@ class Nidsheader{
         } else if (pcode == 134 ||  pcode == 135) {
             levels = getTDWRLevels2(nlevel, threshold);
             iscale = 1;
-        } else if (pcode ==159 || pcode ==161 || pcode == 163
-                || pcode == 170 || pcode == 172 || pcode == 173
-                || pcode == 174 || pcode == 175
-                || pcode == 165 || pcode == 177) {
-
-            levels = getDualpolLevels(threshold);
-            iscale = 100;
-        } else {
+        }  else {
             levels = getLevels(nlevel, threshold);
         }
 
@@ -1754,22 +1725,8 @@ class Nidsheader{
 
         // addVariable(cname + "_Brightness", ctitle + " Brightness", ncfile, dims, coordinates, DataType.FLOAT,
         //                 cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
-        if (cname.startsWith("CorrelationCoefficient") || cname.startsWith("HydrometeorClassification") ||
-                cname.startsWith("DifferentialReflectivity") ||   cname.startsWith("DifferentialPhase")
-                ||   cname.startsWith("HypridHydrometeorClassification") ) {
-            addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-                    cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
-        } else if (cname.startsWith("OneHourAccumulation") || cname.startsWith("DigitalAccumulationArray") ||
-                cname.startsWith("StormTotalAccumulation") ||   cname.startsWith("DigitalStormTotalAccumulation") ||
-                cname.startsWith("Accumulation3Hour") ||   cname.startsWith("Accumulation24Hour") ||
-                cname.startsWith("Digital1HourDifferenceAccumulation") ||
-                cname.startsWith("DigitalInstantaneousPrecipitationRate") ||
-                cname.startsWith("DigitalInstantaneousPrecipitationRate") ||
-                cname.startsWith("DigitalTotalDifferenceAccumulation") ) {
-            addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-                    cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
-        }
-        else if( cname.startsWith("BaseReflectivity") || cname.endsWith("Reflectivity") ||
+
+        if( cname.startsWith("BaseReflectivity") || cname.endsWith("Reflectivity") ||
                 cname.startsWith("SpectrumWidth")){
 
           //addVariable(cname + "_VIP", ctitle + " VIP Level", ncfile, dims, coordinates, DataType.FLOAT,
@@ -1795,291 +1752,6 @@ class Nidsheader{
         return soff;
     }
 
-    /**
-     * for level3 176 product
-     *
-     * @param datainput
-     * @return  arraylist
-     */
-
-    public  List parseComponents(ByteBuffer datainput)
-            throws IOException
-    {
-        ArrayList arraylist = null ;
-        int i = datainput.getInt();
-        if(i != 0)
-            i = datainput.getInt();
-        for(int j = 0; j < i; j++)
-        {
-            datainput.getInt();
-            int type =  datainput.getInt();
-            arraylist = parseData(datainput);
-        }
-
-        return arraylist;
-    }
-    /**
-     * for level3 176 product
-     *
-     * @param datainput
-     * @return  arraylist
-     */
-    public ArrayList parseData(ByteBuffer datainput)
-            throws IOException
-    {
-        ArrayList arraylist = new ArrayList();
-        int numRadials;
-        int numBins;
-        int dataOffset;
-        float angleData [];
-        String desc = readInString(datainput);
-        numBins = (int)datainput.getFloat();
-        float rangeToFirstBin = datainput.getFloat();
-        int numOfParms = datainput.getInt();
-        for(int j = 0; j < numOfParms; j++);
-        numRadials = datainput.getInt();
-        numRadials = datainput.getInt();
-        angleData = new float[numRadials];
-        dataOffset = datainput.position();
-
-        //getting numbin  by checking the first radial, but the data offset should be before this read
-        datainput.getFloat();
-        datainput.getFloat();
-        datainput.getFloat();
-        numBins = datainput.getInt();
-
-        arraylist.add(numBins);
-        arraylist.add(numRadials);
-        arraylist.add(rangeToFirstBin);
-        arraylist.add(dataOffset);
-
-        //data = null;
-    /*    for(int k = 0; k < numRadials; k++)
-        {
-            angleData[k] = datainput.getFloat();
-            datainput.getFloat();
-            datainput.getFloat();
-            numBins = datainput.getInt();
-            readInString(datainput);
-            if(data == null)
-                data = new short[numRadials * numBins];
-            numBins = datainputstream.readInt();
-            for(int l = 0; l < numBins; l++)
-                data[k * numBins + l] = (short)datainputstream.getInt();
-
-        }  */
-        return arraylist;
-    }
-    /**
-     * for level3 176 product
-     *
-     * @param datainput
-     * @return  arraylist
-     */
-    public List parseParameters(ByteBuffer datainput)
-            throws IOException
-    {
-        ArrayList arraylist = new ArrayList();
-        int i = datainput.getInt();
-        if(i > 0)
-            i = datainput.getInt();
-        for(int j = 0; j < i; j++)
-        {
-            arraylist.add(readInString(datainput));
-            HashMap hm = addAttributePairs(readInString(datainput));
-            arraylist.add(hm);
-        }
-
-        return arraylist;
-    }
-    /**
-     * for level3 176 product
-     *
-     * @param s
-     * @return  attributes
-     */
-    public HashMap addAttributePairs(String s)
-    {
-        java.util.regex.Pattern PARAM_PATTERN =
-                java.util.regex.Pattern.compile("([\\w*\\s*?]*)\\=([(\\<|\\{|\\[|\\()?\\w*\\s*?\\.?\\,?\\-?\\/?\\%?(\\>|\\}|\\]|\\))?]*)");
-        HashMap attributes = new HashMap();
-        for(java.util.regex.Matcher matcher = PARAM_PATTERN.matcher(s);
-            matcher.find(); attributes.put(matcher.group(1).trim(), matcher.group(2).trim()));
-
-        return attributes;
-    }
-
-    /**
-     * for level3 176 product
-     *
-     * @param datainput
-     * @return  string
-     */
-    public static String readInString(ByteBuffer datainput)
-            throws IOException
-    {
-        StringBuffer stringbuffer = new StringBuffer();
-        int i = datainput.getInt();
-        for(int j = 0; j < i; j++)
-        {
-            char c = (char)(datainput.get() & 0xff);
-            stringbuffer.append(c);
-        }
-
-        int k = i % 4;
-        if(k != 0)
-            k = 4 - k;
-        for(int l = 0; l < k; l++)
-            datainput.get();
-
-        return stringbuffer.toString();
-    }
-
-    /**
-     *  construct a generic radial dataset for dualpol radial products;
-     *
-     *
-     * @param bos, hoff, hedsiz, isZ, data, threshold
-     *
-     * @return  soff -- not used
-     */
-
-    int pcode_generic( ByteBuffer  bos, int hoff, int hedsiz, boolean isZ, byte[] data, short[] threshold ) throws IOException
-    {
-        byte[] bb = new byte[hedsiz];
-        byte[] b2 = new byte[2];
-        int soff = 0;
-        ArrayList dims =  new ArrayList();
-        int iscale = 1;                         /* data scale                    */
-        int ival;
-        int ttt = bos.position();
-        bos.get(b2, 0, 2);
-        bos.get(b2, 0, 2);
-        bos.get(b2, 0, 2);
-
-        String vname = readInString(bos);
-        String vdesp = readInString(bos);
-
-        int code =  bos.getInt();
-        int type = bos.getInt();
-        int time = bos.getInt();
-        long ttl = time*1000L;
-        Date d = new Date( ttl);
-        String rnameStr = readInString(bos);
-
-        float lat = bos.getFloat();
-        float lon = bos.getFloat();
-        float height = bos.getFloat();
-
-        int vscanStartTime = bos.getInt();
-        int eleScanStartTime = bos.getInt();
-
-        float eleAngle = bos.getFloat();
-        int volScanNum = bos.getInt();
-        int opMode = bos.getInt();
-        int volPattern = bos.getInt();
-        int eleNum = bos.getInt();
-
-        bos.getDouble(); // skip 8 bytes
-        List aa = parseParameters(bos);   // do nothing
-        List cc = parseComponents(bos);   // assuming only radial component
-        int num_radials = (Integer)cc.get(1);
-        int num_bin = (Integer)cc.get(0);
-        float rangeToFirstBin = (Float)cc.get(2);
-        int dataOffset = (Integer)cc.get(3);
-        numY0 = 0;
-        numY =  num_radials;
-        numX0 = (int)rangeToFirstBin ; //first_bin;
-        numX = num_bin;
-        int nlevel = code_levelslookup( pcode );
-        int [] levels;
-        short radp_scale = 1000;
-        hedsiz = dataOffset;
-                //prod_info_size = 2 * (int) (num_bin * scale + 0.5);
-        //dimensions: radial, bin
-        ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.RADIAL.toString()));
-        Dimension radialDim = new Dimension("azimuth", num_radials);
-        ncfile.addDimension( null, radialDim);
-
-        Dimension binDim = new Dimension("gate", num_bin);
-        ncfile.addDimension( null, binDim);
-        dims.add( radialDim);
-        dims.add( binDim);
-
-        ArrayList dims1 =  new ArrayList();
-        ArrayList dims2 =  new ArrayList();
-        dims1.add(radialDim);
-        dims2.add(binDim);
-
-        isR = true;
-
-        // add elevation coordinate variable
-        String vName = "elevation";
-        String lName = "elevation angle in degres: 0 = parallel to pedestal base, 90 = perpendicular";
-        Attribute att = new Attribute(_Coordinate.AxisType, AxisType.RadialElevation.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees",hoff, hedsiz, isZ, p3);
-
-        // add azimuth coordinate variable
-        vName = "azimuth";
-        lName = "azimuth angle in degrees: 0 = true north, 90 = east";
-        att = new Attribute(_Coordinate.AxisType, AxisType.RadialAzimuth.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees",hoff, hedsiz, isZ, 0);
-
-
-        // add gate coordinate variable
-        vName = "gate";
-        lName = "Radial distance to the start of gate";
-        att = new Attribute(_Coordinate.AxisType, AxisType.RadialDistance.toString());
-        addParameter(vName, lName, ncfile, dims2, att, DataType.FLOAT, "meters",hoff, hedsiz, isZ, radp_scale);
-
-        // add radial coordinate variable
-
-        vName = "latitude";
-        lName = "Latitude of the instrument";
-        att = new Attribute(_Coordinate.AxisType, AxisType.Lat.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees",hoff, hedsiz, isZ, 0);
-
-        vName = "longitude";
-        lName = "Longitude of the instrument";
-        att = new Attribute(_Coordinate.AxisType, AxisType.Lon.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "degrees",hoff, hedsiz, isZ, 0);
-
-        vName = "altitude";
-        lName = "Altitude in meters (asl) of the instrument";
-        att = new Attribute(_Coordinate.AxisType, AxisType.Height.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.FLOAT, "meters",hoff, hedsiz, isZ, 0);
-
-        vName = "rays_time";
-        lName = "rays time";
-        att = new Attribute(_Coordinate.AxisType, AxisType.Time.toString());
-        addParameter(vName, lName, ncfile, dims1, att, DataType.DOUBLE, "milliseconds since 1970-01-01 00:00 UTC"
-                ,hoff, hedsiz, isZ, 0);
-
-        if (  pcode == 176) {
-            levels = getDualpolLevels(threshold);
-            iscale = 1;
-        } else {
-            levels = getLevels(nlevel, threshold);
-        }
-
-        Variable v = new Variable(ncfile, null, null, cname + "_RAW");
-        v.setDataType(DataType.SHORT);
-        v.setDimensions(dims);
-        ncfile.addVariable(null, v);
-        v.addAttribute( new Attribute(CDM.UNITS, cunit));
-        String coordinates = "elevation azimuth gate rays_time latitude longitude altitude";
-        v.addAttribute( new Attribute(_Coordinate.Axes, coordinates));
-        v.addAttribute( new Attribute("_unsigned", "true"));
-        v.setSPobject( new Vinfo (numX, numX0, numY, numY0, hoff, hedsiz, isR, isZ, null, levels, 0, nlevel));
-
-
-        if (cname.startsWith("DigitalInstantaneousPrecipitationRate") ) {
-            addVariable(cname, ctitle, ncfile, dims, coordinates, DataType.FLOAT,
-                    cunit, hoff, hedsiz, isZ, nlevel, levels, iscale);
-        }
-
-        return soff;
-    }
     /**
      * for level3 94 and 99 product
      *
@@ -2152,21 +1824,7 @@ class Nidsheader{
 
         return levels;
     }
-    /**
-     * get the calibrate data values for dualpol data
-     * @param th
-     * @return
-     */
-    public int[] getDualpolLevels(  short[] th) {
 
-        int inc = th.length;
-        int [] levels = new int[ inc]; //th[2] ];
-        for ( int i = 0; i < inc; i++ ) {    /* calibrated data values        */
-            levels[i] = th[i];
-        }
-
-        return levels;
-    }
     /**
      * get the calibrate data values for TDWR data
      * @param nlevel
@@ -2242,40 +1900,11 @@ class Nidsheader{
           vVar.setSPobject( new Vinfo (numX, numX0, numY, y0, hoff, doff, isR, isZ, null, null, 0, 0));
     }
 
-    /**
-     *  misc
-     * @param lat
-     * @param lon
-     * @return
-     */
     String StnIdFromLatLon(float lat, float lon )
     {
         return "ID";
     }
 
-    /**
-     * Misc
-     * @param prod_elevation
-     * @return
-     */
-    private int getProductLevel(int prod_elevation){
-        int level = 0;
-
-        if(prod_elevation== 5)
-            level =  0;
-        else if(prod_elevation== 9)
-            level =  1;
-        else if(prod_elevation==13 || prod_elevation==15)
-            level =  2;
-        else if(prod_elevation==18)
-            level =  3;
-        else if(prod_elevation==24)
-            level =  4;
-        else if(prod_elevation==31)
-            level =  6;
-
-        return level;
-    }
     /**
      *  parsing the product information into netcdf dataset
      * @param prod_type      product type
@@ -2325,169 +1954,23 @@ class Nidsheader{
                 summary = ctilt + " is a radial image of base reflectivity at tilt " + (prod_elevation/10 + 1) +  " and range 32 nm";
             }
         }
-        else if (prod_type == DigitalDifferentialReflectivity) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Differential Reflectivity " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-
-            int pLevel = getProductLevel(prod_elevation);
-            ctilt = pname_lookup(15, pLevel);
-
-            ctitle = "Dualpol: Digital Differential Reflectivity";
-            cunit = "dBz";
-            cname = "DifferentialReflectivity";
-            summary = ctilt + " is a radial image of dual pol differential reflectivity field and its range 162 nm";
-
-        }
-        else if (prod_type == DigitalCorrelationCoefficient) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Correlation Coefficient " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-
-            int pLevel = getProductLevel(prod_elevation);
-            ctilt = pname_lookup(16, pLevel);
-
-            ctitle = "Dualpol: Digital Correlation Coefficient";
-            cunit = " ";
-            cname = "CorrelationCoefficient";
-            summary = ctilt + " is a radial image of dual pol Correlation Coefficient field and its range 162 nm";
-
-        }
-        else if (prod_type == DigitalDifferentialPhase) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Differential Phase " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-
-            int pLevel = getProductLevel(prod_elevation);
-            ctilt = pname_lookup(17, pLevel);
-
-
-            ctitle = "Dualpol: Digital Differential Phase";
-            cunit = "Degree/km";
-            cname = "DifferentialPhase";
-            summary = ctilt + " is a radial image of dual pol Differential Phase field and its range 162 nm";
-
-        }
-        else if (prod_type == HydrometeorClassification ) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Hydrometeor Classification " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-
-            int pLevel = getProductLevel(prod_elevation);
-            ctilt = pname_lookup(18, pLevel);
-
-
-            ctitle = "Dualpol: Hydrometeor Classification";
-            cunit = " ";
-            cname = "HydrometeorClassification";
-            summary = ctilt + " is a radial image of dual pol Hydrometeor Classification field and its range 162 nm";
-
-        }
-        else if (prod_type == HypridHydrometeorClassification ) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Hyprid Hydrometeor Classification " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-
-            int pLevel = getProductLevel(prod_elevation);
-            ctilt = pname_lookup(18, pLevel);
-
-
-            ctitle = "Dualpol: Hyprid Hydrometeor Classification";
-            cunit = " ";
-            cname = "HypridHydrometeorClassification";
-            summary = ctilt + " is a radial image of dual pol Hyprid Hydrometeor Classification field and its range 162 nm";
-
-        }
-        else if (prod_type == OneHourAccumulation ) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "One Hour Accumulation " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-            ctilt = "OHA";
-            ctitle = "Dualpol: One Hour Accumulation";
-            cunit = "IN";
-            cname = "OneHourAccumulation";
-            summary = ctilt + " is a radial image of dual pol One Hour Accumulation field and its range 124 nm";
-        }
-        else if (prod_type == DigitalAccumulationArray ) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Digital Accumulation Array " + cmode[pinfo.opmode];
-            ctilt = "DAA";
-            ctitle = "Dualpol: Digital Accumulation Array";
-            cunit = "IN";
-            cname = "DigitalAccumulationArray";
-            summary = ctilt + " is a radial image of dual pol Digital Accumulation Array field and its range 124 nm";
-        }
-        else if (prod_type == StormTotalAccumulation ) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Storm Total Accumulation " +  cmode[pinfo.opmode];
-            ctilt = "PTA";
-            ctitle = "Dualpol: Storm Total Accumulation";
-            cunit = "IN";
-            cname = "StormTotalAccumulation";
-            summary = ctilt + " is a radial image of dual pol Storm Total Accumulation field and its range 124 nm";
-        }
-        else if (prod_type == DigitalStormTotalAccumulation ) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Digital Storm Total Accumulation  " +  cmode[pinfo.opmode];
-            ctilt = "DTA";
-            ctitle = "Dualpol: Digital Storm Total Accumulation";
-            cunit = "IN";
-            cname = "DigitalStormTotalAccumulation";
-            summary = ctilt + " is a radial image of dual pol Digital StormTotal Accumulation field and its range 124 nm";
-        }
-        else if (prod_type == Accumulation3Hour ) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Hyprid Hydrometeor Classification " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-            int pLevel = getProductLevel(prod_elevation);
-            ctilt = pname_lookup(18, pLevel);
-            ctitle = "Dualpol: 3-hour Accumulation";
-            cunit = "IN";
-            cname = "Accumulation3Hour";
-            summary = ctilt + " is a radial image of dual pol 3-hour Accumulation field and its range 124 nm";
-
-        }
-        else if (prod_type == Digital1HourDifferenceAccumulation) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Digital One Hour Difference Accumulation "  + cmode[pinfo.opmode];
-            ctilt = "DOD";
-            ctitle = "Dualpol: Digital One Hour Difference Accumulation";
-            cunit = "IN";
-            cname = "Digital1HourDifferenceAccumulation";
-            summary = ctilt + " is a radial image of dual pol Digital One Hour Difference Accumulation field and its range 124 nm";
-        }
-        else if (prod_type == DigitalTotalDifferenceAccumulation ) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Digital Total Difference Accumulation " + cmode[pinfo.opmode];
-            ctilt = "DSD";
-            ctitle = "Dualpol: Digital Total Difference Accumulation";
-            cunit = "IN";
-            cname = "DigitalTotalDifferenceAccumulation";
-            summary = ctilt + " is a radial image of dual pol Digital Total Difference Accumulation field and its range 124 nm";
-        }
-        else if (prod_type == DigitalInstantaneousPrecipitationRate ) {
-            radial               = 1;
-            prod_elevation  = pinfo.p3;
-            cmemo = "Digital Instantaneous Precipitation Rate " + cmode[pinfo.opmode];
-            ctilt = "DPR";
-            ctitle = "Dualpol: Digital Instantaneous Precipitation Rate";
-            cunit = "IN/Hour";
-            cname = "DigitalInstantaneousPrecipitationRate";
-            summary = ctilt + " is a radial image of dual pol Digital Instantaneous Precipitation Rate field and its range 124 nm";
-        }
         else if (prod_type == BaseReflectivityDR) {
             radial               = 1;
             prod_elevation  = pinfo.p3;
             cmemo = "Base Reflectivity DR " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
 
-            int pLevel = getProductLevel(prod_elevation);
-            ctilt = pname_lookup(94, pLevel);
-
+            if(prod_elevation== 5)
+              ctilt = pname_lookup(94, 0);
+            else if(prod_elevation== 9)
+              ctilt = pname_lookup(94, 1);
+            else if(prod_elevation==13 || prod_elevation==15)
+              ctilt = pname_lookup(94, 2);
+            else if(prod_elevation==18)
+              ctilt = pname_lookup(94, 3);
+            else if(prod_elevation==24)
+              ctilt = pname_lookup(94, 4);
+            else if(prod_elevation==31)
+              ctilt = pname_lookup(94, 6);
             ctitle = "HighResolution: Base Reflectivity";
             cunit = "dBz";
             cname = "BaseReflectivityDR";
@@ -2498,10 +1981,18 @@ class Nidsheader{
             radial               = 1;
             prod_elevation  = pinfo.p3;
             cmemo = "Base Velocity DR " + prod_elevation/10 + " DEG " + cmode[pinfo.opmode];
-
-            int pLevel = getProductLevel(prod_elevation);
-            ctilt = pname_lookup(99, pLevel);
-
+            if(prod_elevation==5)
+              ctilt = pname_lookup(99, 0);
+            else if(prod_elevation==9)
+              ctilt = pname_lookup(99, 1);
+            else if(prod_elevation==13 || prod_elevation==15)
+              ctilt = pname_lookup(99, 2);
+            else if(prod_elevation==18)
+              ctilt = pname_lookup(99, 3);
+            else if(prod_elevation==24)
+              ctilt = pname_lookup(99, 4);
+            else if(prod_elevation==31)
+              ctilt = pname_lookup(99, 6);
             ctitle = "HighResolution: Base Velocity";
             cunit = "KT";
             cname = "BaseVelocityDV";
@@ -3240,50 +2731,6 @@ class Nidsheader{
             buf.get(b2, 0, 2);
             threshold[i] = (short)bytesToInt(b2[0], b2[1], false);
           }
-        } else if(pcode == 159 || pcode == 161 || pcode == 163
-                || pcode == 170 || pcode == 172 || pcode == 173
-                || pcode == 174 || pcode == 175 ) {
-            // Scale hw 31 32
-            buf.get(b4, 0, 4);
-            byte[] b44 = {b4[3], b4[2], b4[1], b4[0]};
-            threshold[0] = (short)(java.nio.ByteBuffer.wrap(b44).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat()*100);
-            // offset  hw 33 34
-            buf.get(b4, 0, 4);
-            byte[] b45 = {b4[3], b4[2], b4[1], b4[0]};
-            threshold[1] = (short)(java.nio.ByteBuffer.wrap(b45).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat()*100);
-            //  hw 35 reserve
-            buf.get(b2, 0, 2);
-            threshold[2] = 0;
-            // hw 36, 37, 38
-            for(int i = 3; i< 6; i++) {
-                buf.get(b2, 0, 2);
-                threshold[i] = (short)bytesToInt(b2[0], b2[1], false);
-            }
-            buf.get(b4, 0, 4);
-            buf.get(b4, 0, 4);
-            buf.get(b4, 0, 4);
-            buf.get(b4, 0, 4);
-        } else if(pcode == 176) {
-            // Scale hw 31 32
-            buf.get(b4, 0, 4);
-            byte[] b44 = {b4[3], b4[2], b4[1], b4[0]};
-            threshold[0] = (short)(java.nio.ByteBuffer.wrap(b44).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat());
-            // offset  hw 33 34
-            buf.get(b4, 0, 4);
-            byte[] b45 = {b4[3], b4[2], b4[1], b4[0]};
-            threshold[1] = (short)(java.nio.ByteBuffer.wrap(b45).order(java.nio.ByteOrder.LITTLE_ENDIAN).getFloat());
-            //  hw 35 reserve
-            buf.get(b2, 0, 2);
-            threshold[2] = 0;
-            // hw 36, 37, 38
-            for(int i = 3; i< 6; i++) {
-                buf.get(b2, 0, 2);
-                threshold[i] = (short)bytesToInt(b2[0], b2[1], false);
-            }
-            buf.get(b4, 0, 4);
-            buf.get(b4, 0, 4);
-            buf.get(b4, 0, 4);
-            buf.get(b4, 0, 4);
         }
         else {
           for(int i = 0; i< 16; i++) {
@@ -3738,16 +3185,15 @@ class Nidsheader{
         Other, Other, Other, Other, Other,                          /* 140-149 */
         Other, Other, Other, Other, Other,
         Other, Other, Other, Other, Other,                          /* 150-159 */
-        Other, Other, Other, Other, DigitalDifferentialReflectivity,
-        Other, DigitalCorrelationCoefficient, Other, DigitalDifferentialPhase, Other,    /* 160-169 */
-        HydrometeorClassification, Other, Other, Other, OneHourAccumulation,
-        DigitalAccumulationArray, StormTotalAccumulation, DigitalStormTotalAccumulation,
-                                   Accumulation3Hour, Digital1HourDifferenceAccumulation,/* 170-179 */
-        DigitalTotalDifferenceAccumulation, DigitalInstantaneousPrecipitationRate,
-                                   HypridHydrometeorClassification, Other, Other,
+        Other, Other, Other, Other, Other,
+        Other, Other, Other, Other, Other,                          /* 160-169 */
+        Other, Other, Other, Other, Other,
+        Other, Other, Other, Other, Other,                          /* 170-179 */
+        Other, Other, Other, Other, Other,
         Reflect1, Reflect1, Velocity1, Velocity1, Other,       /* 180-189 */
         SPECTRUM1, Reflect1, Reflect1, Other, Other,
       };
+
 
       if ( code < 0 || code > 189 )
         type     = Other;
@@ -3768,42 +3214,10 @@ class Nidsheader{
     {
       String pname = null;
       switch( code ){
-          case 15:
-              if(elevation == 1)
-                  pname = "NAX";
-              else if(elevation == 3)
-                  pname = "NBX";
-              else
-                  pname = "N" + elevation/2 + "X";
-              break;
-          case 16:
-              if(elevation == 1)
-                  pname = "NAC";
-              else if(elevation == 3)
-                  pname = "NBC";
-              else
-                  pname = "N" + elevation/2 + "C";
-              break;
-          case 17:
-              if(elevation == 1)
-                  pname = "NAK";
-              else if(elevation == 3)
-                  pname = "NBK";
-              else
-                  pname = "N" + elevation/2 + "K";
-              break;
-          case 18:
-              if(elevation == 1)
-                  pname = "NAH";
-              else if(elevation == 3)
-                  pname = "NBH";
-              else
-                  pname = "N" + elevation/2 + "H";
-              break;
           case 19:
               pname = "N" + elevation + "R";
 
-              break;
+            break;
           case 20:
               pname = "N0Z";
             break;
@@ -3836,7 +3250,7 @@ class Nidsheader{
             pname = "NVW";
           case 56:
               pname = "N" + elevation + "S";
-
+          
             break;
           case 57:
             pname = "NVL";
@@ -3937,9 +3351,9 @@ class Nidsheader{
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 120-129 */
         0,    0,    0,    0,    1,    1,    0,    0,    1,    0,    /* 130-139 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 140-149 */
-        0,    0,    0,    0,    0,    0,    0,    0,    0, 0.25,    /* 150-159 */
-        0, 0.25,    0, 0.25,    0, 0.25,    0,    0,    0,    2,    /* 160-169 */
-     0.25,    2, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25,    0,    0,    /* 170-179 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 150-159 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 160-169 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 170-179 */
         0,  150.0, 150.0, 0,    0,    0, 300.0,   0,    0,    0,    /* 180-189 */
       };
 
@@ -3979,9 +3393,9 @@ class Nidsheader{
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 120-129 */
         0,    0,    0,    0,  256,  199,    0,    0,  256,    0,    /* 130-139 */
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 140-149 */
-        0,    0,    0,    0,    0,    0,    0,    0,    0,  256,    /* 150-159 */
-        0,  256,    0,  256,    0,  256,    0,    0,    0,   16,    /* 160-169 */
-      256,   16,  256,  256,    0,    0,    0,   16,    0,    0,    /* 170-179 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 150-159 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 160-169 */
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    /* 170-179 */
         0,   16,  256,    0,    0,    0,  256,    0,    0,    0,    /* 180-189 */
       };
 
