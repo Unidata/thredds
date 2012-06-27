@@ -207,7 +207,7 @@ class H5tiledLayoutBB implements LayoutBB {
      * inflate data
      *
      * @param compressed compressed data
-     * @return ucompressed data
+     * @return uncompressed data
      * @throws IOException on I/O error
      */
     private byte[] inflate(byte[] compressed) throws IOException {

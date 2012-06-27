@@ -453,7 +453,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   public Object sendIospMessage(Object message) {
     if (message.toString().equals("header"))
       return headerParser;
-    
+
     if (message.toString().equals("headerEmpty")) {
       NetcdfFile ncfile = new FakeNetcdfFile();
       H5header headerEmpty = new H5header(myRaf, ncfile, this);
@@ -461,6 +461,10 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     return super.sendIospMessage(message);
+  }
+
+  NetcdfFile getNetcdfFile() {
+    return headerParser.ncfile;
   }
 
 }
