@@ -81,7 +81,7 @@ public class H5diag {
   }
 
   private void countStorageSize(H5header.Vinfo vinfo, Size size) throws IOException {
-    H5header.DataBTree btree = vinfo.btree;
+    DataBTree btree = vinfo.btree;
     if (btree == null || vinfo.useFillValue) {
       size.storage = 0;
       size.count = 0;
@@ -90,9 +90,9 @@ public class H5diag {
 
     int count = 0;
     long total = 0;
-    H5header.DataBTree.DataChunkIterator iter = btree.getDataChunkIterator(null);
+    DataBTree.DataChunkIterator iter = btree.getDataChunkIteratorFilter(null);
     while (iter.hasNext()) {
-      H5header.DataBTree.DataChunk dc = iter.next();
+      DataBTree.DataChunk dc = iter.next();
       total += dc.size;
       count++;
     }
@@ -100,5 +100,7 @@ public class H5diag {
     size.storage = total;
     size.count = count;
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
 }

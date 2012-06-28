@@ -51,7 +51,7 @@ import java.nio.ByteOrder;
  * Iterator to read/write subsets of an array.
  * This calculates byte offsets for HD5 chunked datasets.
  * Assumes that the data is stored in chunks, indexed by a Btree.
- * for unfiltered data only
+ * for filtered data
  *
  * @author caron
  */
@@ -107,7 +107,7 @@ class H5tiledLayoutBB implements LayoutBB {
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size
 
     // create the data chunk iterator
-    H5header.DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIterator(this.want);
+    DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIteratorFilter(this.want);
     DataChunkIterator dcIter = new DataChunkIterator(iter);
     delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, this.want);
     
@@ -144,9 +144,9 @@ class H5tiledLayoutBB implements LayoutBB {
   }
 
   private class DataChunkIterator implements LayoutBBTiled.DataChunkIterator {
-    H5header.DataBTree.DataChunkIterator delegate;
+    DataBTree.DataChunkIterator delegate;
 
-    DataChunkIterator(H5header.DataBTree.DataChunkIterator delegate) {
+    DataChunkIterator(DataBTree.DataChunkIterator delegate) {
       this.delegate = delegate;
     }
 
@@ -160,9 +160,9 @@ class H5tiledLayoutBB implements LayoutBB {
   }
 
   private class DataChunk implements ucar.nc2.iosp.LayoutBBTiled.DataChunk {
-    H5header.DataBTree.DataChunk delegate;
+    DataBTree.DataChunk delegate;
 
-    DataChunk(H5header.DataBTree.DataChunk delegate) {
+    DataChunk(DataBTree.DataChunk delegate) {
       this.delegate = delegate;
     }
 
@@ -222,7 +222,7 @@ class H5tiledLayoutBB implements LayoutBB {
       return uncomp;
     }
 
-    // LOOK fake
+    // just strip off the 4-byte fletcher32 checksum at the end
     private byte[] checkfletcher32(byte[] org) throws IOException {
       byte[] result = new byte[org.length-4];
       System.arraycopy(org, 0, result, 0, result.length);

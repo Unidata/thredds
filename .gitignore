@@ -23,6 +23,10 @@ _notes
 bin/
 *~
 
+# Ignore gradle stuff
+.gradle/
+build/
+
 # Ignore default content directory for mock servlets
 tds/src/content/
 

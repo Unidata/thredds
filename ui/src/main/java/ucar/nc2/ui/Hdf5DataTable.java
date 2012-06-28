@@ -94,29 +94,21 @@ public class Hdf5DataTable extends JPanel {
     BAMutil.addActionToContainer(buttPanel, calcAction);
 
 
-    /* varPopup = new ucar.nc2.ui.widget.PopupMenu(messTable.getJTable(), "Options");
-    varPopup.addAction("Show FractalHeap", new AbstractAction() {
+    varPopup = new ucar.nc2.ui.widget.PopupMenu(objectTable.getJTable(), "Options");
+    varPopup.addAction("Deflate", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messTable.getSelectedBean();
+        VarBean mb = (VarBean) objectTable.getSelectedBean();
         if (mb == null) return;
         if (infoTA == null) makeInfoWindow();
         infoTA.clear();
         Formatter f = new Formatter();
 
-        mb.m.showFractalHeap(f);
+        deflate(f, mb);
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
         infoWindow.show();
       }
     });
-
-    attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false, "H5header.HeaderAttribute", "Message Type 12/0xC : define an Atribute");
-    attTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        AttributeBean mb = (AttributeBean) attTable.getSelectedBean();
-        dumpTA.setText( mb.att.toString());
-      }
-    });  */
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -183,6 +175,14 @@ public class Hdf5DataTable extends JPanel {
     objectTable.setBeans(beanList);
   }
 
+  private class MyNetcdfFile extends NetcdfFile {
+    private MyNetcdfFile(H5iosp iosp, String location) {
+      super();
+      spi = iosp;
+      this.location = location;
+    }
+  }
+
   public void showInfo(Formatter f) throws IOException {
     if (iosp == null) return;
 
@@ -226,18 +226,15 @@ public class Hdf5DataTable extends JPanel {
     f.format("   compression = %f%n", ratio);
     f.format("   nchunks     = %d%n", totalCount);
 
-
     infoTA.setText(f.toString());
   }
 
-  private class MyNetcdfFile extends NetcdfFile {
-    private MyNetcdfFile(H5iosp iosp, String location) {
-      super();
-      spi = iosp;
-      this.location = location;
-    }
+    ////////////////////////////////////////////////////////////////////////
+  private void deflate(Formatter f, VarBean bean) {
+
   }
 
+  ////////////////////////////////////////////////////////////////////////
   public class VarBean {
     Variable v;
     H5header.Vinfo vinfo;
