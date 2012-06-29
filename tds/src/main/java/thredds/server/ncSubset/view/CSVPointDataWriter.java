@@ -1,5 +1,6 @@
 package thredds.server.ncSubset.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -11,6 +12,8 @@ import java.util.Map;
 import org.jfree.util.Log;
 import org.springframework.http.HttpHeaders;
 
+import thredds.server.ncSubset.controller.AbstractNcssController;
+import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
@@ -18,6 +21,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
 
 class CSVPointDataWriter implements PointDataWriter {
@@ -25,6 +29,11 @@ class CSVPointDataWriter implements PointDataWriter {
 	private PrintWriter printWriter;
 	
 	private List<String> allVars; 
+	
+	private boolean headersSet = false;
+
+	
+	private HttpHeaders httpHeaders;
 	
 	private CSVPointDataWriter(OutputStream os){
 		printWriter= new PrintWriter(os);
@@ -74,8 +83,7 @@ class CSVPointDataWriter implements PointDataWriter {
 		//Back to the restriction with only variables with same vertical level!!! --> only one header
 		List<String> keys =new ArrayList<String>(groupedVars.keySet());
 		List<String> varsGroup = groupedVars.get(keys.get(0));
-		writeGroupHeader(varsGroup, gridDataset);
-		
+		writeGroupHeader(varsGroup, gridDataset);						
 		return true; //Does nothing
 	}
 
@@ -115,7 +123,7 @@ class CSVPointDataWriter implements PointDataWriter {
 			}			
 			//printWriter.println();
 		}
-			
+		
 		return allDone;
 	}	
 
@@ -252,7 +260,29 @@ class CSVPointDataWriter implements PointDataWriter {
 	
 	@Override
 	public HttpHeaders getResponseHeaders(){
-		return new HttpHeaders();
+				
+		return httpHeaders;
 	}
+	
+	@Override
+	public void setHTTPHeaders(GridDataset gridDataset){
+
+		if(!headersSet){
+			httpHeaders = new HttpHeaders();
+			DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
+			File netcdfResult = diskCache.createUniqueFile("ncss", ".csv");
+			//Set the response headers...
+			String filename = gridDataset.getLocationURI();
+			int pos = filename.lastIndexOf("/");
+			filename = filename.substring(pos + 1);
+			if (!filename.endsWith(".csv"))
+				filename = filename + ".csv";
+                
+			String url = AbstractNcssController.buildCacheUrl(netcdfResult.getName());
+			httpHeaders.set("Content-Location", url );
+			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			headersSet = true;
+		}	
+	}	
 
 }
