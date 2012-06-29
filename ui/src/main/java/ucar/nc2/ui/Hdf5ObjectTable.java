@@ -303,7 +303,7 @@ public class Hdf5ObjectTable extends JPanel {
     }
 
     public long getDataPos() {
-      return att.getDataPos();
+      return att.getDataPosAbsolute();
     }
 
   }

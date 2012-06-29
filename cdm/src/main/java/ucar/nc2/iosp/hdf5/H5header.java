@@ -3327,7 +3327,7 @@ public class H5header {
       return mds;
     }
 
-    public long getDataPos() {
+    public long getDataPosAbsolute() {
       return dataPos;
     }
 
@@ -3408,12 +3408,12 @@ public class H5header {
       if (version == 1) spaceSize += padding(spaceSize, 8);
       raf.seek(filePos + spaceSize); // make it more robust for errors
 
-      // heres where the data starts
-      dataPos = raf.getFilePointer();
+      // the data starts immediately afterward - ie in the message
+      dataPos = raf.getFilePointer();   // note this is absolute position (no offset needed)
       if (debug1) debugOut.println("   *MessageAttribute dataPos= " + dataPos);
       return true;
     }
-  }
+  }  // MessageAttribute
 
   // Message Type 21/0x15 "Attribute Info" (version 2)
   private class MessageAttributeInfo implements Named {
@@ -4046,11 +4046,11 @@ public class H5header {
     private long heapAddress;
     private int index;
 
+    // address must be absolute, getFileOffset already added
     HeapIdentifier(long address) throws IOException {
       // header information is in le byte order
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
-      raf.seek(address); // raf.seek(getFileOffset(address)); apparently HeapIdentifier addresses are not shifted by superblock offset (!)
-
+      raf.seek(address);
       nelems = raf.readInt();
       heapAddress = readOffset();
       index = raf.readInt();

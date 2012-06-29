@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * _more_
+ * Wraps a request in the UsageLog.setup and UsageLog.closing log messages
  *
  * @author edavis
  * @since 4.1
