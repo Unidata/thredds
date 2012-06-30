@@ -14,6 +14,8 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 interface PointDataWriter {
 
+	void setHTTPHeaders(GridDataset gds);
+	
 	boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point);
 	
 	boolean write(Map<String, List<String>> groupedVars, GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel);

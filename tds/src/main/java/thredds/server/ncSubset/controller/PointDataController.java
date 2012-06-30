@@ -73,11 +73,14 @@ class PointDataController extends AbstratNcssDataRequestController{
 			PointDataStream pds = PointDataStream.createPointDataStream(  sf, response.getOutputStream() );
 			
 			boolean allWritten=false;
-						
+			
+			
+			setResponseHeaders(response, pds.getHttpHeaders(getGridDataset()) );
+			
 			allWritten = pds.stream( getGridDataset(), point, wantedDates, groupVars, params.getVertCoord());
 										
 			if(allWritten){				
-				setResponseHeaders(response, pds.getHttpHeaders() );
+
 				response.flushBuffer();
 				response.getOutputStream().close();
 				response.setStatus(HttpServletResponse.SC_OK);

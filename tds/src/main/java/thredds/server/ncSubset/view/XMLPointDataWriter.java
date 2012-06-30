@@ -232,6 +232,11 @@ class XMLPointDataWriter implements PointDataWriter {
 		return writer;
 
 	}
+	
+	@Override
+	public void setHTTPHeaders(GridDataset gds){
+		
+	}
 
 	private void writeDataTag(XMLStreamWriter writer,
 			Map<String, String> attributes, String content)

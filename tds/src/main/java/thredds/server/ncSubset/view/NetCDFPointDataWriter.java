@@ -104,10 +104,8 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	@Override
 	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
 		
-		boolean allWrite = pointWriterWrapper.write(groupedVars, gridDataset, date, point, targetLevel);
-		
-		if(allWrite) setHeaders(gridDataset);
-		
+		boolean allWrite = pointWriterWrapper.write(groupedVars, gridDataset, date, point, targetLevel);		
+				
 		return allWrite;
 	}	
 	
@@ -135,7 +133,8 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	}	
 	
 	
-	private void setHeaders(GridDataset gridDataset){
+	@Override
+	public void setHTTPHeaders(GridDataset gridDataset){
 
     	//Set the response headers...
     	String filename = gridDataset.getLocationURI();
