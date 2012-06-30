@@ -41,7 +41,6 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 import thredds.servlet.ServletUtil;
-import thredds.servlet.UsageLog;
 
 /**
  * Use Tomcat security.
@@ -91,7 +90,6 @@ public class TomcatAuthorizer implements Authorizer {
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    log.info( UsageLog.setupRequestContext(req));
 
     HttpSession session = req.getSession();
     if (session != null) {
@@ -106,19 +104,16 @@ public class TomcatAuthorizer implements Authorizer {
           //res.addHeader("Location", origURI+frag); // comment out for now 12/22/2010 - needed for CAS or CAMS or ESG ?
           res.addHeader("Location", origURI);
           if (debugResourceControl) System.out.println("redirect to origRequest = "+origURI); // +frag);
-          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_TEMPORARY_REDIRECT, -1 ) );
           return;
 
         } else {
           res.setStatus(HttpServletResponse.SC_OK); // someone came directly to this page
-          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
           return;
         }
       }
     }
 
     res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to access this dataset.");
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_UNAUTHORIZED, -1 ) );
   }
 
 }

@@ -32,8 +32,6 @@
  */
 package thredds.servlet.filter;
 
-import thredds.servlet.ServletUtil;
-import thredds.servlet.UsageLog;
 import thredds.util.StringValidateEncodeUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,7 +70,6 @@ public class ParameterValidationUtils
         String msg = "Invalid parameter [" + parameterName + "] value [" + StringValidateEncodeUtils.encodeLogMessages( parameterValues[0] ) + "].";
         log.error( "validateParameterAsSingleValueSingleLineString(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }
@@ -111,7 +108,6 @@ public class ParameterValidationUtils
         String msg = "Invalid parameter [" + parameterName + "] value [" + StringValidateEncodeUtils.encodeLogMessages( parameterValues[0] ) + "].";
         log.error( "validateParameterAsSingleValuePathString(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }
@@ -150,7 +146,6 @@ public class ParameterValidationUtils
         String msg = "Invalid parameter [" + parameterName + "] value [" + StringValidateEncodeUtils.encodeLogMessages( parameterValues[0] ) + "].";
         log.error( "validateParameterAsSingleValueFilePathString(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }
@@ -171,7 +166,6 @@ public class ParameterValidationUtils
         String msg = "Invalid parameter [" + parameterName + "] value [" + StringValidateEncodeUtils.encodeLogMessages( parameterValues[0] ) + "].";
         log.error( "validateParameterAsSingleValueAlphanumericString(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }
@@ -194,7 +188,6 @@ public class ParameterValidationUtils
         String msg = "Invalid parameter [" + parameterName + "] value [" + StringValidateEncodeUtils.encodeLogMessages( parameterValues[0] ) + "].";
         log.error( "validateParameterAsSingleValueAlphanumericStringConstrained(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }
@@ -233,7 +226,6 @@ public class ParameterValidationUtils
         String msg = "Invalid parameter [" + parameterName + "] value [" + StringValidateEncodeUtils.encodeLogMessages( parameterValues[0] ) + "].";
         log.error( "validateParameterAsSingleValueUriString(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }
@@ -272,7 +264,6 @@ public class ParameterValidationUtils
         String msg = "Invalid parameter [" + parameterName + "] value [" + StringValidateEncodeUtils.encodeLogMessages( parameterValues[0] ) + "].";
         log.error( "validateParameterAsSingleValueIdString(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }
@@ -293,7 +284,6 @@ public class ParameterValidationUtils
         String msg = "Invalid parameter [" + parameterName + "] value [" + StringValidateEncodeUtils.encodeLogMessages( parameterValues[0] ) + "].";
         log.error( "validateParameterAsSingleValueBooleanString(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }
@@ -314,7 +304,6 @@ public class ParameterValidationUtils
         String msg = "Invalid parameter [" + parameterName + "] value [" + StringValidateEncodeUtils.encodeLogMessages( parameterValues[0] ) + "].";
         log.error( "validateParameterAsSingleValueDecimalNumber(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }
@@ -333,7 +322,6 @@ public class ParameterValidationUtils
         String msg = "Multi-valued parameter [" + parameterName + "].";
         log.error( "validParameterAsSingleValue(): " + msg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
         return false;
       }
     }

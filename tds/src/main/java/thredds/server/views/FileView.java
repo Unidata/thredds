@@ -43,7 +43,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import thredds.servlet.Debug;
-import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
@@ -107,7 +106,6 @@ public class FileView extends AbstractView {
     {
       // ToDo Send error or throw exception to be handled by Spring exception handling stuff.
 //      throw new IllegalArgumentException( "File must exist and not be a directory." );
-      log.info( "renderMergedOutputModel(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
       res.sendError( HttpServletResponse.SC_BAD_REQUEST );
       return;
     }
@@ -211,7 +209,6 @@ public class FileView extends AbstractView {
 
     if ( req.getMethod().equals( "HEAD" ) )
     {
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0 ) );
       return;
     }
 
@@ -228,7 +225,6 @@ public class FileView extends AbstractView {
         {
           craf = (RandomAccessFile) fileCacheRaf.acquire( fileFactory, filename, null);
           IO.copyRafB( craf, startPos, contentLength, res.getOutputStream(), new byte[60000] );
-          log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_PARTIAL_CONTENT, contentLength ));
           return;
         }
         finally
@@ -244,7 +240,6 @@ public class FileView extends AbstractView {
       out.close();
       if ( debugRequest )
         log.debug( "renderMergedOutputModel(): file response ok = " + filename );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, contentLength ) );
     }
     // @todo Split up this exception handling: those from file access vs those from dealing with response
     //       File access: catch and res.sendError()
@@ -252,13 +247,11 @@ public class FileView extends AbstractView {
     catch ( FileNotFoundException e )
     {
       log.error( "returnFile(): FileNotFoundException= " + filename );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ) );
       if ( ! res.isCommitted() ) res.sendError( HttpServletResponse.SC_NOT_FOUND );
     }
     catch ( java.net.SocketException e )
     {
       log.info( "returnFile(): SocketException sending file: " + filename + " " + e.getMessage() );
-      log.info( UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_CLIENT_ABORT, 0 ) ); 
     }
     catch ( IOException e )
     {
@@ -266,12 +259,10 @@ public class FileView extends AbstractView {
       if ( eName.equals( "org.apache.catalina.connector.ClientAbortException" ) )
       {
         log.info( "returnFile(): ClientAbortException while sending file: " + filename + " " + e.getMessage() );
-        log.info( UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_CLIENT_ABORT, 0 ) );
         return;
       }
 
       log.error( "returnFile(): IOException (" + e.getClass().getName() + ") sending file ", e );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ) );
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Problem sending file" );
     }
   }

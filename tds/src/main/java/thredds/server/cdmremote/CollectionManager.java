@@ -38,7 +38,6 @@ import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Attribute;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 
@@ -52,7 +51,6 @@ import java.io.FileNotFoundException;
 import java.text.ParseException;
 
 import thredds.servlet.DatasetHandler;
-import thredds.servlet.UsageLog;
 
 /**
  * Describe
@@ -109,7 +107,6 @@ public class CollectionManager {
     try {
       NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
       if (ncfile == null) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
         return null;
       }
@@ -118,7 +115,6 @@ public class CollectionManager {
       Formatter errlog = new Formatter();
       FeatureDatasetPoint fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.wrap(FeatureType.STATION, ncd, null, errlog);
       if (fd == null) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, errlog.toString());
         if (ncd != null) ncd.close();
         return null;
@@ -127,12 +123,10 @@ public class CollectionManager {
       return fd;
 
     } catch (FileNotFoundException e) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (Throwable e) {
       e.printStackTrace();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
     }
 

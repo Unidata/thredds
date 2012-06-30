@@ -12,7 +12,6 @@ import thredds.inventory.MFile;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.DebugHandler;
-import thredds.servlet.UsageLog;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.util.StringUtil2;
 
@@ -102,8 +101,6 @@ public class CollectionController extends AbstractController {
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    log.info("handleRequest: " + UsageLog.setupRequestContext(req));
-
     String path = req.getPathInfo();
     if (path == null) path = "";
 
@@ -120,7 +117,6 @@ public class CollectionController extends AbstractController {
     }
     InvDatasetFeatureCollection fc = DataRootHandler.getInstance().getFeatureCollection(collectName);
     if (fc == null) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
       pw.append("NOT FOUND");
       pw.flush();
@@ -132,7 +128,6 @@ public class CollectionController extends AbstractController {
 
     if (trigger) {
       if (!fc.getConfig().isTrigggerOk()) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
         res.setStatus(HttpServletResponse.SC_FORBIDDEN);
         pw.printf(" TRIGGER NOT ENABLED%n");
         pw.flush();
@@ -149,7 +144,6 @@ public class CollectionController extends AbstractController {
       pw.printf("<p/><a href='%s'>Trigger rescan for %s</a>%n", url, fc.getName());
     }
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
     pw.flush();
     return null;
   }

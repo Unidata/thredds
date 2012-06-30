@@ -42,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import thredds.catalog.InvCatalog;
 import thredds.catalog.InvDatasetImpl;
-import thredds.servlet.UsageLog;
 import thredds.server.config.HtmlConfig;
 
 import java.util.List;
@@ -130,7 +129,6 @@ public class CatalogServiceUtils
 
     htmlConfig.addHtmlConfigInfoToModel( model );
 
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
     return new ModelAndView( "/thredds/server/catalogservice/validationMessage", model );
   }
 
@@ -144,7 +142,6 @@ public class CatalogServiceUtils
 
     htmlConfig.addHtmlConfigInfoToModel( model );
 
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
     return new ModelAndView( "/thredds/server/catalogservice/validationError", model );
   }
 }

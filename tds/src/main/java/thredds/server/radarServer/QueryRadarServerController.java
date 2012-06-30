@@ -43,7 +43,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.server.config.TdsContext;
 import thredds.server.ncSubset.QueryParams;
 import thredds.servlet.HtmlWriter;
-import thredds.servlet.UsageLog;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
@@ -142,7 +141,6 @@ public class QueryRadarServerController extends AbstractController  {
     try
     {
       // Gather diagnostics for logging request.
-      log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ) );
       // catch rogue invalid request here
       if ( request.getQueryString() == null ) {
         log.info( "Invalid dataset url reference "+ request.getPathInfo() );
@@ -166,7 +164,6 @@ public class QueryRadarServerController extends AbstractController  {
     catch ( Throwable e )
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
       throw new RadarServerException( "handleRequestInternal(): Problem handling request." );
     }
   }
@@ -568,7 +565,6 @@ public class QueryRadarServerController extends AbstractController  {
     catch ( Throwable e )
     {
       log.error( "Invalid dataset ="+ dataset +" or var ="+ var, e );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
       throw new RadarServerException( "Invalid dataset ="+ dataset +" or var ="+ var );
     }
   }

@@ -45,7 +45,6 @@ import ucar.nc2.util.net.EscapeStrings;
 import thredds.catalog.*;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.catalog.query.*;
-import thredds.servlet.UsageLog;
 import thredds.dqc.server.DqcHandler;
 import ucar.nc2.constants.FeatureType;
 
@@ -91,10 +90,9 @@ public class LatestDqcHandler extends DqcHandler {
       DqcFactory dqcFactory = new DqcFactory( false );
       String dqcAsString = dqcFactory.writeXML( dqc );
       PrintWriter out = res.getWriter();
-      res.setContentType( "text/xml" );
-      res.setStatus( HttpServletResponse.SC_OK );
-      out.print( dqcAsString );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, dqcAsString.length() ));
+      res.setContentType("text/xml");
+      res.setStatus(HttpServletResponse.SC_OK);
+      out.print(dqcAsString);
       return;
     }
 
@@ -103,8 +101,7 @@ public class LatestDqcHandler extends DqcHandler {
     {
       String tmpMsg = "Extra path information <" + extraPath + "> not understood.";
       //log.info( "handleRequest(): " + tmpMsg );
-      res.sendError( HttpServletResponse.SC_BAD_REQUEST, tmpMsg );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ));
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, tmpMsg);
       return;
     }
 
@@ -115,9 +112,7 @@ public class LatestDqcHandler extends DqcHandler {
       // No LatestConfig.Item ID was given in request.
       String tmpMsg = "No latest request ID given.";
       //log.info( "handleRequest(): " + tmpMsg );
-      res.sendError( HttpServletResponse.SC_NOT_FOUND,
-                     "LatestDqcHandler.handleRequest(): " + tmpMsg );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "LatestDqcHandler.handleRequest(): " + tmpMsg);
       return;
     }
     log.debug( "Request for the latest \"" + reqItemId + "\"." );
@@ -128,9 +123,7 @@ public class LatestDqcHandler extends DqcHandler {
     {
       String tmpMsg = "The Item requested, " + reqItemId + ", is not supported.";
       //log.error( "handleRequest(): " + tmpMsg );
-      res.sendError( HttpServletResponse.SC_NOT_FOUND,
-                     "LatestDqcHandler.handleRequest(): " + tmpMsg );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
+      res.sendError( HttpServletResponse.SC_NOT_FOUND, "LatestDqcHandler.handleRequest(): " + tmpMsg );
       return;
     }
 
@@ -147,7 +140,6 @@ public class LatestDqcHandler extends DqcHandler {
                  "> is not a directory." );
       res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                      "Directory given by config item <id=" + reqItemId + "> is not a directory." );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
       return;
     }
 
@@ -164,9 +156,7 @@ public class LatestDqcHandler extends DqcHandler {
         String tmpMsg = "Could not generate a catalog, unsupported InvCat spec version <"
                         + reqItem.getInvCatSpecVersion() + ">.";
         log.error( "handleRequest(): " + tmpMsg );
-        res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                       tmpMsg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
+        res.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg);
         return;
       }
 
@@ -175,7 +165,6 @@ public class LatestDqcHandler extends DqcHandler {
       res.setContentType( "text/xml" );
       res.setStatus( HttpServletResponse.SC_OK );
       out.print( catalogAsString );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, catalogAsString.length() ));
       return;
     }
     else
@@ -184,7 +173,6 @@ public class LatestDqcHandler extends DqcHandler {
       String tmpMsg = "No latest dataset found for request<" + reqItemId + ">.";
       //log.error( "handleRequest(): " + tmpMsg );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
       return;
     }
   }

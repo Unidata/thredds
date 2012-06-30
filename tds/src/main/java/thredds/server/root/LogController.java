@@ -5,10 +5,7 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.PathMatcher;
-import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
-//import thredds.filesystem.server.LogReader;
-//import thredds.filesystem.server.AccessLogParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,8 +78,6 @@ public class LogController extends AbstractController {
 
   ////////
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    log.info(UsageLog.setupRequestContext(req));
-
     String path = req.getPathInfo();
     if (path == null) path = "";
 
@@ -92,7 +87,6 @@ public class LogController extends AbstractController {
             || path.startsWith("../")
             || path.endsWith("/..")) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain ..");
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return null;
     }
 
@@ -152,7 +146,6 @@ public class LogController extends AbstractController {
       pw.flush();
     }
 
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
     if (file != null)
       return new ModelAndView("threddsFileView", "file", file);
     else
@@ -181,34 +174,3 @@ public class LogController extends AbstractController {
   }
 
 }
-
-/*
-
-  protected ModelAndView save(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    log.info("handleRequestInternal(): " + UsageLog.setupRequestContext(req));
-
-    String path = req.getPathInfo();
-    if (path == null) path = "";
-    System.out.printf("path = %s %n", path);
-    if (path.startsWith("/log/")) path = path.substring(5);
-    System.out.printf("type = %s %n", path);
-
-    String date = req.getParameter("since");
-
-    try {
-      DateFormatter df = new DateFormatter();
-      Date d = df.getISODate(date);
-      Formatter f = new Formatter();
-      f.format("dateS = %s == %s == %s%n", date, d, df.toDateTimeStringISO(d));
-      System.out.printf("%s", f.toString());
-      res.getOutputStream().print(f.toString()); // LOOK whats easy ModelAndView ??
-      read(df.toDateTimeStringISO(d));
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    return null; // ToDo
-  }
-
-*/

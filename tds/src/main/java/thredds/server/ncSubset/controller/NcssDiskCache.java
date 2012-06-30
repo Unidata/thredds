@@ -4,7 +4,6 @@ import java.io.File;
 
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
-import thredds.servlet.UsageLog;
 import ucar.nc2.util.DiskCache2;
 
 public final class NcssDiskCache {
@@ -36,9 +35,6 @@ public final class NcssDiskCache {
 	    
 	    diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
 	    ServletUtil.logServerStartup.info(getClass().getName() + "Ncss.Cache= "+cache+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
-	    ServletUtil.logServerStartup.info( getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext() );				
-		
-		
 	}
 	
 	public DiskCache2 getDiskCache(){

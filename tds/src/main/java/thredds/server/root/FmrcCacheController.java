@@ -37,7 +37,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DebugHandler;
-import thredds.servlet.UsageLog;
 import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -91,8 +90,6 @@ public class FmrcCacheController extends AbstractController {
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( req ) );
-
     String path = req.getPathInfo();
     if (path == null) path = "";
 
@@ -105,7 +102,6 @@ public class FmrcCacheController extends AbstractController {
       String s = f.toString();
       pw.println(s);
       pw.flush();
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, s.length()));
       return null;
     }
 
@@ -123,7 +119,6 @@ public class FmrcCacheController extends AbstractController {
         pw.println(contents);
       }
       
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0) );
       return null;
     }
     
@@ -157,7 +152,6 @@ public class FmrcCacheController extends AbstractController {
       }
     }
 
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0) );
     return null;
   }
 

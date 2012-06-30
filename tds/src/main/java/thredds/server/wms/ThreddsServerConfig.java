@@ -106,8 +106,7 @@ public class ThreddsServerConfig implements ServerConfig
 
     this.setAllow( false);
     this.setAllowRemote( false);
-    logServerStartup.error( "Default palette location not available.\n**** Disabling WMS - Check palette configuration: "
-                            + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.error( "Default palette location not available.\n**** Disabling WMS - Check palette configuration: ");
     return null;
   }
 

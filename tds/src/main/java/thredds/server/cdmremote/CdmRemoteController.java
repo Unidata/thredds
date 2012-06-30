@@ -33,7 +33,6 @@
 package thredds.server.cdmremote;
 
 import ucar.nc2.util.net.EscapeStrings;
-import org.slf4j.Logger;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
@@ -44,7 +43,6 @@ import org.jdom.output.Format;
 import org.springframework.web.servlet.mvc.LastModified;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
-import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.DatasetHandler;
 
@@ -97,11 +95,9 @@ public class CdmRemoteController extends AbstractCommandController implements La
 
   @Override
   protected ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object command, BindException errors) throws Exception {
-    log.info(UsageLog.setupRequestContext(req));
 
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return null;
     }
 
@@ -119,7 +115,6 @@ public class CdmRemoteController extends AbstractCommandController implements La
     if (!qb.validate()) {
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, qb.getErrorMessage());
       if (debug) System.out.printf(" query error= %s %n", qb.getErrorMessage());
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
       return null;
     }
     if (debug) System.out.printf(" %s%n", qb);
@@ -130,7 +125,6 @@ public class CdmRemoteController extends AbstractCommandController implements La
       if (ncfile == null) {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
         log.debug("DatasetHandler.FAIL path={}", path);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         return null;
       }
 
@@ -141,7 +135,6 @@ public class CdmRemoteController extends AbstractCommandController implements La
         case capabilities:
           sendCapabilities(out, FeatureType.GRID, absPath); // LOOK BAD - must figure out what is the featureType
           res.flushBuffer();
-          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
           return null;
 
         case form: // LOOK could do a ncss style form
@@ -183,7 +176,6 @@ public class CdmRemoteController extends AbstractCommandController implements La
               query = req.getQueryString();
 
           if ((query == null) || (query.length() == 0)) {
-            log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
             return null;
           }
@@ -198,26 +190,21 @@ public class CdmRemoteController extends AbstractCommandController implements La
 
       out.flush();
       res.flushBuffer();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, size));
       if (showReq)
         System.out.printf("CdmRemoteController ok, size=%s%n", size);
 
     } catch (FileNotFoundException e) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       log.debug("FAIL", e);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
     } catch (IllegalArgumentException e) { // ParsedSectionSpec failed
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 
     } catch (InvalidRangeException e) { // ParsedSectionSpec failed
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 
     } catch (Throwable e) {
       log.error(e.getMessage(), e);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 
     } finally {
@@ -276,7 +263,6 @@ public class CdmRemoteController extends AbstractCommandController implements La
    out.write(infoString.getBytes());
    out.flush();
 
-   log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
    return null;
  } */
 

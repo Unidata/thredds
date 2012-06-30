@@ -32,7 +32,6 @@
 
 package thredds.util;
 
-import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -63,8 +62,7 @@ public class RequestForwardUtils
     if ( fwdPath == null || request == null || response == null )
     {
       String msg = "Path, request, and response may not be null";
-      log.error( "forwardRequestRelativeToCurrentContext(): " + msg + ( fwdPath == null ? ": " : "[" + fwdPath + "]: " )
-                 + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARD_FAILURE, -1 ) );
+      log.error( "forwardRequestRelativeToCurrentContext() ERROR: " + msg + ( fwdPath == null ? ": " : "[" + fwdPath + "]: " ));
       throw new IllegalArgumentException( msg + ".");
     }
 
@@ -82,8 +80,7 @@ public class RequestForwardUtils
     if ( fwdPath == null || targetContext == null || request == null || response == null )
     {
       String msg = "Path, context, request, and response may not be null";
-      log.error( "forwardRequestRelativeToGivenContext(): " + msg + (fwdPath == null ? ": " : "[" + fwdPath + "]: ")
-                 + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARD_FAILURE, -1 ) );
+      log.error( "forwardRequestRelativeToGivenContext() ERROR: " + msg + (fwdPath == null ? ": " : "[" + fwdPath + "]: "));
       throw new IllegalArgumentException( msg + "." );
     }
 
@@ -102,13 +99,10 @@ public class RequestForwardUtils
     if ( fwdPath == null || dispatcher == null || request == null || response == null )
     {
       String msg = "Path, dispatcher, request, and response may not be null";
-      log.error( "forwardRequestRelativeToGivenContext(): " + msg + ( fwdPath == null ? ": " : "[" + fwdPath + "]: " )
-                 + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARD_FAILURE, -1 ) );
+      log.error( "forwardRequestRelativeToGivenContext() ERROR: " + msg + ( fwdPath == null ? ": " : "[" + fwdPath + "]: " ) );
       throw new IllegalArgumentException( msg + "." );
     }
-    
-    log.info( "forwardRequest() Forwarding request to \"" + fwdPath + "\": "
-              + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARDED, -1 ) );
+
     dispatcher.forward( request, response );
   }
 
@@ -120,15 +114,13 @@ public class RequestForwardUtils
     if ( fwdPath == null || response == null )
     {
       String msg = "Path and response may not be null";
-      log.error( "forwardRequestRelativeToGivenContext(): " + msg + ( fwdPath == null ? ": " : "[" + fwdPath + "]: " )
-                 + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARD_FAILURE, -1 ) );
+      log.error( "forwardRequestRelativeToGivenContext() ERROR: " + msg + ( fwdPath == null ? ": " : "[" + fwdPath + "]: " ));
       throw new IllegalArgumentException( msg + "." );
     }
 
     if ( dispatcher == null )
     {
-      log.error( "dispatcherWasFound(): Dispatcher for forwarding [" + fwdPath + "] not found:"
-                 + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, -1 ) );
+      log.error( "dispatcherWasFound() ERROR : Dispatcher for forwarding [" + fwdPath + "] not found:");
       response.sendError( HttpServletResponse.SC_NOT_FOUND );
       return false;
     }

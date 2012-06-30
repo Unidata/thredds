@@ -43,7 +43,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.catalog.query.Station;
 import thredds.server.config.TdsContext;
 import thredds.servlet.HtmlWriter;
-import thredds.servlet.UsageLog;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -104,7 +103,6 @@ public class StationRadarServerController extends AbstractController {
     try
     {
       // Gather diagnostics for logging request.
-      log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ) );
       // setup
       String pathInfo = request.getPathInfo();
       if (pathInfo == null) pathInfo = "";
@@ -134,7 +132,6 @@ public class StationRadarServerController extends AbstractController {
         if ( this.htmlView )
         {
           //int i = HtmlWriter.getInstance().writeCatalog(request, response, station, true);
-          //log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
           return null;
         }
         else
@@ -149,7 +146,6 @@ public class StationRadarServerController extends AbstractController {
     catch ( Throwable e )
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
       throw new RadarServerException( "handleRequestInternal(): Problem handling request." );
     }
   }

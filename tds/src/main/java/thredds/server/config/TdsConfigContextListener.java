@@ -72,7 +72,7 @@ public class TdsConfigContextListener implements ServletContextListener {
     // tdsContext.init() call above initializes tds.log.dir system property
     // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
-    logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: " );
 
     // Initialize the CDM, now that tdsContext is ready
     CdmInit cdmInit = (CdmInit) wac.getBean( "cdmInit", CdmInit.class );
@@ -99,13 +99,13 @@ public class TdsConfigContextListener implements ServletContextListener {
     HtmlWriter htmlWriter = (HtmlWriter) wac.getBean( "htmlWriter", HtmlWriter.class );
     htmlWriter.setSingleton( htmlWriter );
 
-    logServerStartup.info( "TdsConfigContextListener.contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );  */
+    logServerStartup.info( "TdsConfigContextListener.contextInitialized(): done - "  );  */
   }
   
 
 
   public void contextDestroyed( ServletContextEvent event ) {
-    logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): start." );
     CollectionUpdater.INSTANCE.shutdown();
 
     ServletContext servletContext = event.getServletContext();
@@ -113,7 +113,7 @@ public class TdsConfigContextListener implements ServletContextListener {
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.destroy();
 
-    logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): Done except for shutdownLogging() - " + UsageLog.closingMessageNonRequestContext());
+    logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): Done except for shutdownLogging()");
     Log4jWebConfigurer.shutdownLogging( servletContext );
   }
 }

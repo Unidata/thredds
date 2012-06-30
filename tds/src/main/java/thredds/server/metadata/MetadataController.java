@@ -13,7 +13,6 @@ import thredds.catalog.ThreddsMetadata;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.UsageLog;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.thredds.MetadataExtractor;
@@ -36,10 +35,7 @@ public class MetadataController {
   @RequestMapping(value = "**")
   public void getMetadata(@Valid MetadataRequestParameterBean params, BindingResult result, HttpServletResponse res, HttpServletRequest req) throws IOException {
 
-    UsageLog.setupRequestContext(req);
-
     if (result.hasErrors()) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
       res.sendError(HttpServletResponse.SC_BAD_REQUEST);
       return;
     }
@@ -55,7 +51,6 @@ public class MetadataController {
       if (gridDataset == null) {
         res.setStatus(HttpServletResponse.SC_NOT_FOUND);
         log.debug("DatasetHandler.FAIL path={}", path);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         return;
       }
 
@@ -80,12 +75,10 @@ public class MetadataController {
       pw.write(strResponse);
       pw.flush();
       res.flushBuffer();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, strResponse.length()));
 
     } catch (Throwable t) {
       log.error("Error", t);
       res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
 
     } finally {
       if (gridDataset != null)

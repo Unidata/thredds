@@ -117,7 +117,7 @@ public class RadarServer extends AbstractServlet {
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
     cat = readCatalog(factory, getPath() + catName, contentPath + getPath() + catName);
     if (cat == null) {
-      logServerStartup.info("cat initialization failed" + UsageLog.closingMessageNonRequestContext());
+      logServerStartup.info("cat initialization failed");
       return;
     }
     //URI tmpURI = cat.getBaseURI();
@@ -137,20 +137,17 @@ public class RadarServer extends AbstractServlet {
         ds.setXlinkHref(ds.getPath() + "/dataset.xml");
       }
     }
-    logServerStartup.info(getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext());
+    logServerStartup.info(getClass().getName() + " initialization complete ");
   } // end init
 
   // get pathInfo and parmameters from servlet call
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-
-    log.info(UsageLog.setupRequestContext(req));
 
     PrintWriter pw = null;
     try {
       long startms = System.currentTimeMillis();
 
       if (cat == null || rm.nexradList == null) { // something major wrong
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
         res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer Radar Station/Catalog initialization problem");
         return;
       }
@@ -174,7 +171,6 @@ public class RadarServer extends AbstractServlet {
         rm.radarQuery(radarType, req, res, pw);
         if (log.isDebugEnabled()) log.debug("after doGet " + (System.currentTimeMillis() - startms));
         pw.flush();
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // return radarCollections catalog   xml or html
@@ -184,26 +180,21 @@ public class RadarServer extends AbstractServlet {
         pw.println(catAsString);
         res.setStatus(HttpServletResponse.SC_OK);
         pw.flush();
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       } else if (pathInfo.startsWith("/catalog.html") || pathInfo.startsWith("/dataset.html")) {
         try {
           int i = HtmlWriter.getInstance().writeCatalog(req, res, cat, true); // show catalog as HTML
-          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, i));
         } catch (Exception e) {
           log.error("Radar HtmlWriter failed ", e);
-          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
           res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer HtmlWriter error " + pathInfo);
           return;
         }
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // level2 and level3 catalog/dataset
       if (pathInfo.contains("level2/catalog.") || pathInfo.contains("level3/catalog.")
           || pathInfo.contains("level2/dataset.") || pathInfo.contains("level3/dataset.")) {
         level2level3catalog(radarType, pathInfo, pw, req, res);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // return stations of dataset
@@ -215,33 +206,27 @@ public class RadarServer extends AbstractServlet {
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         pw.println(fmt.outputString(doc));
         pw.flush();
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // return specific dataset information, ie IDD
       if (pathInfo.endsWith("dataset.xml") || pathInfo.endsWith("catalog.xml")) {
         datasetInfoXml(radarType, pathInfo, pw);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // needs work nobody using it now
       // return Dataset information in html form format
       if (pathInfo.endsWith("dataset.html") || pathInfo.endsWith("catalog.html")) {
         datasetInfoHtml(radarType, pathInfo, pw, res);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
       // mal formed request with no exceptions
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
     } catch (FileNotFoundException e) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
     } catch (Throwable e) {
       log.error("RadarServer.doGet failed", e);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
@@ -290,12 +275,10 @@ public class RadarServer extends AbstractServlet {
         pw.println(catAsString);
         pw.flush();
       } else {
-        int i = HtmlWriter.getInstance().writeCatalog(req, res, tCat, true); // show catalog as HTML
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, i));
+        HtmlWriter.getInstance().writeCatalog(req, res, tCat, true); // show catalog as HTML
       }
     } catch (Throwable e) {
       log.error("RadarServer.level2level3catalog failed", e);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
     return;
@@ -491,18 +474,18 @@ public class RadarServer extends AbstractServlet {
       catURI = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
-      log.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
+      logServerStartup.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
       return null;
     }
 
     // read the catalog
-    log.info("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
+    logServerStartup.info("radarServer readCatalog(): full path=" + catalogFullPath + "; path=" + path);
     FileInputStream ios = null;
     try {
       ios = new FileInputStream(catalogFullPath);
       acat = factory.readXML(ios, catURI);
     } catch (Throwable t) {
-      log.error("radarServer readCatalog(): Exception on catalog=" +
+      logServerStartup.error("radarServer readCatalog(): Exception on catalog=" +
           catalogFullPath + " " + t.getMessage()); //+"\n log="+cat.getLog(), t);
       return null;
     }
@@ -512,7 +495,7 @@ public class RadarServer extends AbstractServlet {
           ios.close();
         }
         catch (IOException e) {
-          log.info("radarServer readCatalog(): error closing" + catalogFullPath);
+          logServerStartup.info("radarServer readCatalog(): error closing" + catalogFullPath);
         }
       }
     }

@@ -62,11 +62,9 @@ import ucar.nc2.util.net.EscapeStrings;
  *
  * @author jcaron
  * @author Nathan David Potter
- * 
  * @since Apr 27, 2009 (branched)
  */
-public class OpendapServlet extends AbstractServlet
-{
+public class OpendapServlet extends AbstractServlet {
   static final String DEFAULTCONTEXTPATH = "/thredds";
   static final String GDATASET = "guarded_dataset";
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
@@ -83,24 +81,26 @@ public class OpendapServlet extends AbstractServlet
 
   private boolean debugSession = false;
 
-  public String getDefaultContextPath() {return DEFAULTCONTEXTPATH;}
+  public String getDefaultContextPath() {
+    return DEFAULTCONTEXTPATH;
+  }
 
   public void init() throws javax.servlet.ServletException {
-     super.init();
+    super.init();
 
     org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
-    logServerStartup.info(getClass().getName() + " initialization start - " + UsageLog.setupNonRequestContext());
+    logServerStartup.info(getClass().getName() + " initialization start");
 
-    this.ascLimit = ThreddsConfig.getInt( "Opendap.ascLimit", ascLimit);
-    this.binLimit = ThreddsConfig.getInt( "Opendap.binLimit", binLimit);
+    this.ascLimit = ThreddsConfig.getInt("Opendap.ascLimit", ascLimit);
+    this.binLimit = ThreddsConfig.getInt("Opendap.binLimit", binLimit);
 
-    this.odapVersionString = ThreddsConfig.get( "Opendap.serverVersion", odapVersionString);
-    logServerStartup.info(getClass().getName() + " version= "+odapVersionString+" ascLimit = "+ascLimit+" binLimit = "+binLimit);
+    this.odapVersionString = ThreddsConfig.get("Opendap.serverVersion", odapVersionString);
+    logServerStartup.info(getClass().getName() + " version= " + odapVersionString + " ascLimit = " + ascLimit + " binLimit = " + binLimit);
 
     // debugging actions
     makeDebugActions();
 
-    logServerStartup.info(getClass().getName() + " initialization done - " + UsageLog.closingMessageNonRequestContext());
+    logServerStartup.info(getClass().getName() + " initialization done");
   }
 
   public String getServerVersion() {
@@ -150,16 +150,12 @@ public class OpendapServlet extends AbstractServlet
   /////////////////////////////////////////////////////////////////////////////
 
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-  {
-    log.info("doGet(): " + UsageLog.setupRequestContext(request));
-    // System.out.printf("opendap doGet: req=%s%n%s%n", ServletUtil.getRequest(request), ServletUtil.showRequestDetail(this, request));
-
-    log.debug("doGet(): User-Agent = "+request.getHeader("User-Agent"));
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+    log.debug("doGet(): User-Agent = " + request.getHeader("User-Agent"));
 
     String path = null;
 
-    ReqState rs = getRequestState(request,response);
+    ReqState rs = getRequestState(request, response);
 
     try {
       path = request.getPathInfo();
@@ -169,7 +165,6 @@ public class OpendapServlet extends AbstractServlet
         log.debug(ServletUtil.showRequestDetail(this, request));
 
       if (path == null) {
-        log.info("doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return;
       }
@@ -178,7 +173,7 @@ public class OpendapServlet extends AbstractServlet
         URI reqURI = ServletUtil.getRequestURI(request);
         // Build base URI from request (rather than hard-coding "/thredds/dodsC/").
         String baseUriString = request.getContextPath() + request.getServletPath() + "/";
-        baseURI = reqURI.resolve( baseUriString);
+        baseURI = reqURI.resolve(baseUriString);
         log.debug("doGet(): baseURI was set = {}", baseURI);
       }
 
@@ -196,13 +191,12 @@ public class OpendapServlet extends AbstractServlet
       // Make sure catalog requests match a dataRoot before trying to handle.
       if (path.endsWith("/") || path.endsWith("/catalog.html") || path.endsWith("/catalog.xml")) {
         if (!DataRootHandler.getInstance().hasDataRootMatch(path)) {
-          log.info("doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
           response.sendError(HttpServletResponse.SC_NOT_FOUND);
           return;
         }
-        
-        if ( ! DataRootHandler.getInstance().processReqForCatalog( request, response ) )
-          log.error( "doGet(): " + UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_FORWARD_FAILURE, -1 ) );
+
+        if (!DataRootHandler.getInstance().processReqForCatalog(request, response))
+          log.error("catalog request failed ");
 
         return;
       }
@@ -248,15 +242,12 @@ public class OpendapServlet extends AbstractServlet
         return;
       }
 
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-
       // plain ol' 404
     } catch (FileNotFoundException e) {
       sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, e.getMessage());
 
       // DAP2Exception bad url
     } catch (BadURLException e) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       dap2ExceptionHandler(e, rs);
 
@@ -265,13 +256,11 @@ public class OpendapServlet extends AbstractServlet
       int status = (de.getErrorCode() == DAP2Exception.NO_SUCH_FILE) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
       if ((de.getErrorCode() != DAP2Exception.NO_SUCH_FILE) && (de.getErrorMessage() != null))
         log.debug(de.getErrorMessage());
-      log.info(UsageLog.closingMessageForRequestContext(status, -1));
       response.setStatus(status);
       dap2ExceptionHandler(de, rs);
 
       // parsing, usually the CE
     } catch (ParseException pe) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       parseExceptionHandler(pe, response);
 
@@ -281,13 +270,11 @@ public class OpendapServlet extends AbstractServlet
 
     } catch (java.net.SocketException e) {
       log.info("SocketException: " + e.getMessage(), e);
-      log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_CLIENT_ABORT, -1));
 
     } catch (IOException e) {
       String eName = e.getClass().getName(); // dont want compile time dependency on ClientAbortException
       if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
         log.debug("ClientAbortException: " + e.getMessage());
-        log.info(UsageLog.closingMessageForRequestContext(ServletUtil.STATUS_CLIENT_ABORT, -1));
         return;
       }
 
@@ -304,7 +291,7 @@ public class OpendapServlet extends AbstractServlet
   }
 
   public void doGetASC(ReqState rs) throws Exception {
-      HttpServletResponse response = rs.getResponse();
+    HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -342,7 +329,7 @@ public class OpendapServlet extends AbstractServlet
   }
 
   public void doGetDAS(ReqState rs) throws Exception {
-      HttpServletResponse response = rs.getResponse();
+    HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -365,7 +352,7 @@ public class OpendapServlet extends AbstractServlet
   }
 
   public void doGetDDS(ReqState rs) throws Exception {
-      HttpServletResponse response = rs.getResponse();
+    HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -402,7 +389,7 @@ public class OpendapServlet extends AbstractServlet
   }
 
   public void doGetDDX(ReqState rs) throws Exception {
-      HttpServletResponse response = rs.getResponse();
+    HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -440,7 +427,7 @@ public class OpendapServlet extends AbstractServlet
   }
 
   public void doGetBLOB(ReqState rs) throws Exception {
-      HttpServletResponse response = rs.getResponse();
+    HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -485,8 +472,8 @@ public class OpendapServlet extends AbstractServlet
   }
 
   private void doClose(ReqState rs) throws Exception {
-      HttpServletResponse response = rs.getResponse();
-      HttpServletRequest request = rs.getRequest();
+    HttpServletResponse response = rs.getResponse();
+    HttpServletRequest request = rs.getRequest();
     String reqPath = rs.getDataSet();
     HttpSession session = request.getSession();
     session.removeAttribute(reqPath); // work done in the listener
@@ -496,9 +483,7 @@ public class OpendapServlet extends AbstractServlet
     /* if (path.endsWith(".close")) {
       closeSession(request, response);
       response.setContentLength(0);
-      log.info("doGet(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
       return;
-
     }
 
     // so we need to worry about deleting sessions?
@@ -506,7 +491,7 @@ public class OpendapServlet extends AbstractServlet
   }
 
   public void doGetDAP2Data(ReqState rs) throws Exception {
-      HttpServletResponse response = rs.getResponse();
+    HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -560,7 +545,7 @@ public class OpendapServlet extends AbstractServlet
   }
 
   public void doGetVER(ReqState rs) throws Exception {
-      HttpServletResponse response = rs.getResponse();
+    HttpServletResponse response = rs.getResponse();
 
     response.setContentType("text/plain");
     response.setHeader("XDODS-Server", getServerVersion());
@@ -573,7 +558,7 @@ public class OpendapServlet extends AbstractServlet
   }
 
   public void doGetHELP(ReqState rs) throws Exception {
-      HttpServletResponse response = rs.getResponse();
+    HttpServletResponse response = rs.getResponse();
 
     response.setContentType("text/html");
     response.setHeader("XDODS-Server", getServerVersion());
@@ -587,8 +572,8 @@ public class OpendapServlet extends AbstractServlet
   public void doGetDIR(ReqState rs) throws Exception {
     // rather dangerous here, since you can go into an infinite loop
     // so we're going to insist that there's  no suffix
-      HttpServletResponse response = rs.getResponse();
-      HttpServletRequest request = rs.getRequest();
+    HttpServletResponse response = rs.getResponse();
+    HttpServletRequest request = rs.getRequest();
     if ((rs.getRequestSuffix() == null) || (rs.getRequestSuffix().length() == 0)) {
       ServletUtil.forwardToCatalogServices(request, response);
       return;
@@ -654,8 +639,7 @@ public class OpendapServlet extends AbstractServlet
       public void doAction(DebugHandler.Event e) {
         try {
           doGetHELP(getRequestState(e.req, e.res));
-        }
-        catch (Exception ioe) {
+        } catch (Exception ioe) {
           log.error("ShowHelp", ioe);
         }
       }
@@ -698,7 +682,7 @@ public class OpendapServlet extends AbstractServlet
     return rs;
   }*/
 
-    /**
+  /**
    * ************************************************************************
    * Prints the OPeNDAP Server help page to the passed PrintWriter
    *
@@ -753,143 +737,132 @@ public class OpendapServlet extends AbstractServlet
    */
   private void printBadURLPage(PrintWriter pw) {
 
-    String serverContactName = ThreddsConfig.get( "serverInformation.contact.name", "UNKNOWN" );
-    String serverContactEmail = ThreddsConfig.get( "serverInformation.contact.email", "UNKNOWN" );
+    String serverContactName = ThreddsConfig.get("serverInformation.contact.name", "UNKNOWN");
+    String serverContactEmail = ThreddsConfig.get("serverInformation.contact.email", "UNKNOWN");
     pw.println("<h3>Error in URL</h3>");
     pw.println("The URL extension did not match any that are known by this");
     pw.println("server. Below is a list of the five extensions that are be recognized by");
     pw.println("all OPeNDAP servers. If you think that the server is broken (that the URL you");
     pw.println("submitted should have worked), then please contact the");
     pw.println("administrator of this server [" + serverContactName + "] at: ");
-    pw.println("<a href='mailto:" + serverContactEmail + "'>" + serverContactEmail +"</a><p>");
+    pw.println("<a href='mailto:" + serverContactEmail + "'>" + serverContactEmail + "</a><p>");
 
   }
 
   ///////////////////////////////////////////////////////
   // utils
-  /**
-   * @param request
-   * @param response
-   * @return the request state
-   */
-  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response)
-  {
-      ReqState rs = null;
 
-      // Assume url was encoded
-      String baseurl = request.getRequestURL().toString();
-      baseurl = EscapeStrings.unescapeURL(baseurl);
+  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
 
-      // Assume query  was encoded
-      String query = request.getQueryString();
-      query = EscapeStrings.unescapeURLQuery(query);
+    // Assume url was encoded
+    String baseurl = request.getRequestURL().toString();
+    baseurl = EscapeStrings.unescapeURL(baseurl);
 
-      log.debug(String.format("OpendapServlet: nominal url: %s?%s",baseurl,query));
+    // Assume query  was encoded
+    String query = request.getQueryString();
+    query = EscapeStrings.unescapeURLQuery(query);
 
-      try {
-        rs = new ReqState(request, response, this, getServerName(), baseurl, query);
-      } catch (Exception bue) {
-        rs = null;
-      }
+    log.debug(String.format("OpendapServlet: nominal url: %s?%s", baseurl, query));
 
-      return rs;
+    ReqState rs;
+    try {
+      rs = new ReqState(request, response, this, getServerName(), baseurl, query);
+    } catch (Exception bue) {
+      rs = null;
+    }
+
+    return rs;
   }
 
   private void
   checkSize(ServerDDS dds, boolean isAscii)
-    throws Exception
-  {
-      long size = computeSize(dds,isAscii);
-      //System.err.printf("total (constrained) size=%s\n", size);
-      log.debug("total (constrained) size={}", size);
-      double dsize = size / (1000 * 1000);
-      double maxSize = isAscii ? ascLimit : binLimit; // Mbytes
-      if (dsize > maxSize) {
-        log.info("Reject request size = {} Mbytes", dsize);
-        throw new UnsupportedOperationException("Request too big=" + dsize + " Mbytes, max=" + maxSize);
-      }
+          throws Exception {
+    long size = computeSize(dds, isAscii);
+    //System.err.printf("total (constrained) size=%s\n", size);
+    log.debug("total (constrained) size={}", size);
+    double dsize = size / (1000 * 1000);
+    double maxSize = isAscii ? ascLimit : binLimit; // Mbytes
+    if (dsize > maxSize) {
+      log.info("Reject request size = {} Mbytes", dsize);
+      throw new UnsupportedOperationException("Request too big=" + dsize + " Mbytes, max=" + maxSize);
+    }
   }
 
   // Recursively compute size of the dds to be returned
   // Note that the dds may be empty (e-support ZTH-269982)
-  private long
-  computeSize(DConstructor ctor, boolean isAscii)
-    throws Exception
-  {
-      long projectsize = 0; // accumulate size of projected variables
-      long othersize = 0;  // accumulate size of non-projected variables
-      long fieldsize = 0;
-      int projectedcount = 0;
-      int fieldcount = 0;
-      Enumeration vars = ctor.getVariables();
-      while (vars.hasMoreElements()) {
-        fieldcount++;
-        BaseType field = (BaseType) vars.nextElement();
-        fieldsize = computeFieldSize(field,isAscii);
-	// accumulate the field sizes
-	if(field.isProject()) {
-	  projectsize += fieldsize;
-	  projectedcount++;
-	} else {
-	  othersize += fieldsize;
-	}	  
+  private long computeSize(DConstructor ctor, boolean isAscii) throws Exception {
+    long projectsize = 0; // accumulate size of projected variables
+    long othersize = 0;  // accumulate size of non-projected variables
+    long fieldsize = 0;
+    int projectedcount = 0;
+    int fieldcount = 0;
+    Enumeration vars = ctor.getVariables();
+    while (vars.hasMoreElements()) {
+      fieldcount++;
+      BaseType field = (BaseType) vars.nextElement();
+      fieldsize = computeFieldSize(field, isAscii);
+      // accumulate the field sizes
+      if (field.isProject()) {
+        projectsize += fieldsize;
+        projectedcount++;
+      } else {
+        othersize += fieldsize;
       }
-      // Cases to consider:
-      // 1. If all of the fields of this ctor are projected,
-      //    then return projectsize
-      // 2. If none of the fields of this ctor are projected,
-      //    then return othersize
-      // 3. otherwise, at least one field, but not all, is projected,
-      //    => return projectsize;
-      if(projectedcount == fieldcount)
-	return projectsize;
-      else if(projectedcount == 0)
-	return othersize;
-      else {
-	assert(projectedcount > 0 && projectedcount < fieldcount);
-	return projectsize;
-      }
+    }
+    // Cases to consider:
+    // 1. If all of the fields of this ctor are projected,
+    //    then return projectsize
+    // 2. If none of the fields of this ctor are projected,
+    //    then return othersize
+    // 3. otherwise, at least one field, but not all, is projected,
+    //    => return projectsize;
+    if (projectedcount == fieldcount)
+      return projectsize;
+    else if (projectedcount == 0)
+      return othersize;
+    else {
+      assert (projectedcount > 0 && projectedcount < fieldcount);
+      return projectsize;
+    }
   }
 
   long computeFieldSize(BaseType bt, boolean isAscii)
-    throws Exception
-  {
+          throws Exception {
     long fieldsize = 0;
     // Figure out what this field is (e.g. primitive or not)
     // Somewhat convoluted.
-    if(bt instanceof DConstructor) {
+    if (bt instanceof DConstructor) {
       // simple struct, seq, or grid => recurse
-      fieldsize = computeSize((DConstructor)bt,isAscii);
-    } else if(bt instanceof DArray) {
-      SDArray da = (SDArray)bt;
+      fieldsize = computeSize((DConstructor) bt, isAscii);
+    } else if (bt instanceof DArray) {
+      SDArray da = (SDArray) bt;
       // Separate structure arrays from primitive arrays
-      if(da.getContainerVar() instanceof DPrimitive) {
+      if (da.getContainerVar() instanceof DPrimitive) {
         fieldsize = computeArraySize(da);
-      } else if(da.getContainerVar() instanceof DStructure) {
-        fieldsize = computeSize((DStructure)da.getContainerVar(),isAscii); // recurse
+      } else if (da.getContainerVar() instanceof DStructure) {
+        fieldsize = computeSize((DStructure) da.getContainerVar(), isAscii); // recurse
       } else { // Some kind of problem
-        throw new NoSuchTypeException("Computesize: unexpected type for "+bt.getLongName());
+        throw new NoSuchTypeException("Computesize: unexpected type for " + bt.getLongName());
       }
-    } else if(bt instanceof DPrimitive) {
-      DPrimitive dp = (DPrimitive)bt;
-      if(dp instanceof DString) {
-          String v = ((DString)dp).getValue();
-          fieldsize = (v==null?0:v.length());
+    } else if (bt instanceof DPrimitive) {
+      DPrimitive dp = (DPrimitive) bt;
+      if (dp instanceof DString) {
+        String v = ((DString) dp).getValue();
+        fieldsize = (v == null ? 0 : v.length());
       } else {
-          DataType dtype = DODSNetcdfFile.convertToNCType(bt);
-          fieldsize = dtype.getSize();
+        DataType dtype = DODSNetcdfFile.convertToNCType(bt);
+        fieldsize = dtype.getSize();
       }
     } else { // Some kind of problem
-      throw new NoSuchTypeException("Computesize: unknown type for "+bt.getLongName());
+      throw new NoSuchTypeException("Computesize: unknown type for " + bt.getLongName());
     }
     return fieldsize;
   }
 
   long
   computeArraySize(SDArray da)
-    throws Exception
-  {
-    assert(da.getContainerVar() instanceof DPrimitive);
+          throws Exception {
+    assert (da.getContainerVar() instanceof DPrimitive);
     BaseType base = da.getPrimitiveVector().getTemplate();
     DataType dtype = DODSNetcdfFile.convertToNCType(base);
     int elemSize = dtype.getSize();
@@ -942,14 +915,15 @@ public class OpendapServlet extends AbstractServlet
 
     if (acceptSession) {
       String cookiePath = req.getRequestURI();
-      String suffix = "."+preq.getRequestSuffix();
+      String suffix = "." + preq.getRequestSuffix();
       if (cookiePath.endsWith(suffix)) // snip off the suffix
-        cookiePath = cookiePath.substring( 0, cookiePath.length() - suffix.length());
+        cookiePath = cookiePath.substring(0, cookiePath.length() - suffix.length());
       session.setAttribute(reqPath, gdataset);
       session.setAttribute(CookieFilter.SESSION_PATH, cookiePath);
       //session.setAttribute("dataset", ncd.getLocation());  // for UsageValve
       // session.setMaxInactiveInterval(30); // 30 second timeout !!
-      if (debugSession) System.out.printf(" added gdataset %s in session %s cookiePath %s %n", reqPath, session.getId(), cookiePath);
+      if (debugSession)
+        System.out.printf(" added gdataset %s in session %s cookiePath %s %n", reqPath, session.getId(), cookiePath);
       if (log.isDebugEnabled()) log.debug(" added gdataset " + gdataset + " in session " + session.getId());
     } /* else {
       session = req.getSession();
@@ -961,42 +935,47 @@ public class OpendapServlet extends AbstractServlet
 
   //////////////////////////////////////////////////////////////////////////////
 
-  public void parseExceptionHandler(ParseException pe, HttpServletResponse response)  {
+  public void parseExceptionHandler(ParseException pe, HttpServletResponse response) {
     try {
-        BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
-    response.setHeader("Content-Description", "dods-error");
-    response.setContentType("text/plain");
+      BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
+      response.setHeader("Content-Description", "dods-error");
+      response.setContentType("text/plain");
 
-    String msg = pe.getMessage().replace('\"', '\'');
+      String msg = pe.getMessage().replace('\"', '\'');
 
-    DAP2Exception de2 = new DAP2Exception(opendap.dap.DAP2Exception.CANNOT_READ_FILE, msg);
-    de2.print(eOut);
-    } catch (Exception e) {System.err.println("parseExceptionHandler: "+e);}
+      DAP2Exception de2 = new DAP2Exception(opendap.dap.DAP2Exception.CANNOT_READ_FILE, msg);
+      de2.print(eOut);
+    } catch (Exception e) {
+      System.err.println("parseExceptionHandler: " + e);
+    }
   }
 
   public void dap2ExceptionHandler(DAP2Exception de, ReqState rs) {
     rs.getResponse().setHeader("Content-Description", "dods-error");
     rs.getResponse().setContentType("text/plain");
     try {
-        de.print(rs.getResponse().getOutputStream());
-    } catch (Exception e) {System.err.println("dap2ExceptionHandler: "+e);}
+      de.print(rs.getResponse().getOutputStream());
+    } catch (Exception e) {
+      System.err.println("dap2ExceptionHandler: " + e);
     }
+  }
 
   private void sendErrorResponse(HttpServletResponse response, int errorCode, String errorMessage) {
     try {
-    log.info(UsageLog.closingMessageForRequestContext(errorCode, -1));
-    response.setStatus(errorCode);
-    response.setHeader("Content-Description", "dods-error");
-    response.setContentType("text/plain");
+      response.setStatus(errorCode);
+      response.setHeader("Content-Description", "dods-error");
+      response.setContentType("text/plain");
 
-    PrintWriter pw = new PrintWriter(response.getOutputStream());
-    pw.println("Error {");
-    pw.println("    code = " + errorCode + ";");
-    pw.println("    message = \"" + errorMessage + "\";");
+      PrintWriter pw = new PrintWriter(response.getOutputStream());
+      pw.println("Error {");
+      pw.println("    code = " + errorCode + ";");
+      pw.println("    message = \"" + errorMessage + "\";");
 
-    pw.println("};");
-    pw.flush();
-    } catch (Exception e) {System.err.println("sendErrorResponse: "+e);}
+      pw.println("};");
+      pw.flush();
+    } catch (Exception e) {
+      System.err.println("sendErrorResponse: " + e);
+    }
   }
 
 }

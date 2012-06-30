@@ -62,10 +62,7 @@ public class FileServerServlet extends HttpServlet {
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    log.info( UsageLog.setupRequestContext(req));
-
     if (!DatasetHandler.resourceControlOk(req, res, null)) {
-      log.info( UsageLog.closingMessageForRequestContext( -1, 0));  // LOOK dont know the status !!
       return;
     }
 

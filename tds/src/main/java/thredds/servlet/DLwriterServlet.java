@@ -57,7 +57,7 @@ public class DLwriterServlet extends AbstractServlet {
     allow = ThreddsConfig.getBoolean( "DLwriter.allow", false );
     if ( !allow )
     {
-      logServerStartup.info( "DLwriterServlet.init(): DLwriter service not enabled in threddsConfig.xml: " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.info( "DLwriterServlet.init(): DLwriter service not enabled in threddsConfig.xml: ");
       return;
     }
     allowRemote = ThreddsConfig.getBoolean( "DLwriter.allowRemote", false );
@@ -69,7 +69,7 @@ public class DLwriterServlet extends AbstractServlet {
     file.mkdirs();
     file = new File(difDir);
     file.mkdirs();
-    logServerStartup.info( "DLwriterServlet.init() - done: " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "DLwriterServlet.init() - done: ");
   }
 
   protected String getPath() { return "DLwriter/"; }
@@ -78,12 +78,10 @@ public class DLwriterServlet extends AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
                              throws ServletException, IOException {
 
-    log.info( UsageLog.setupRequestContext(req));
     if ( ! allow )
     {
       res.sendError( HttpServletResponse.SC_FORBIDDEN, "DLwriter service not supported" );
       log.debug( "doGet(): DLwriter service not enabled in threddsConfig.xml.");
-      log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
       return;
     }
 
@@ -102,7 +100,6 @@ public class DLwriterServlet extends AbstractServlet {
       {
         res.sendError( HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not a URL." );
         log.debug( "doGet(): Given catalog URL not a URL", e );
-        log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
         return;
       }
       if ( catUri.isAbsolute())
@@ -111,14 +108,12 @@ public class DLwriterServlet extends AbstractServlet {
         {
           res.sendError( HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not allowed (remote)." );
           log.debug( "doGet(): Given catalog URL was absolute, remote catalog handling not enabled.");
-          log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
           return;
         }
       }
       // Default "type" parameter to "DIF"
       boolean isDIF = type == null ? true : type.equals( "DIF" );
       doit(req, res, catURL, isDIF );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
 
     } catch (Throwable t) {
       log.error("doGet(): req= "+ServletUtil.getRequest(req)+" got Exception", t);
@@ -140,7 +135,6 @@ public class DLwriterServlet extends AbstractServlet {
     {
       res.sendError( HttpServletResponse.SC_FORBIDDEN, "Given catalog URL not a URL." );
       log.debug( "doGet(): Given catalog URL not a URL", e );
-      log.info( "doGet(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
       return;
     }
 
@@ -157,8 +151,6 @@ public class DLwriterServlet extends AbstractServlet {
     // validate the catalog
     StringBuilder sb = new StringBuilder();
     if (!catalog.check(sb, false)) {
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
-
       res.setContentType("text/html");
       res.setHeader("Validate", "FAIL");
       PrintWriter pw = new PrintWriter(res.getOutputStream());
@@ -186,7 +178,6 @@ public class DLwriterServlet extends AbstractServlet {
     OutputStream out = res.getOutputStream();
     out.write(mess.toString().getBytes());
     out.flush();
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, mess.length()));
   }
 
   private void showValidationMesssage(String catURL, String mess, java.io.PrintWriter pw) {

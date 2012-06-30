@@ -58,8 +58,6 @@ public class AnnotateServlet extends AbstractServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
-    log.info( UsageLog.setupRequestContext(req));
-
     try {
       if (Debug.isSet("showRequest"))
         log.debug("**CatalogAnnotate req=" + ServletUtil.getRequest(req));
@@ -123,8 +121,6 @@ public class AnnotateServlet extends AbstractServlet {
 
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-
-    log.info( UsageLog.setupRequestContext(req));
 
     try {
       if (Debug.isSet("showRequest"))

@@ -65,7 +65,6 @@ import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.ThreddsConfig;
-import thredds.servlet.UsageLog;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -113,8 +112,7 @@ class GridDataController extends  AbstratNcssDataRequestController{
 			response.flushBuffer();
 			response.getOutputStream().close();
 			response.setStatus(HttpServletResponse.SC_OK);		
-			log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));			
-		}				
+		}
 	}
 	
 	private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response )throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException,VariableNotContainedInDatasetException, InvalidBBOXException, TimeOutOfWindowException{
@@ -404,28 +402,24 @@ class GridDataController extends  AbstratNcssDataRequestController{
 	@ExceptionHandler
 	@ResponseStatus(value=HttpStatus.FORBIDDEN )
 	public @ResponseBody String handle(RequestTooLargeException rtle ){
-		log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
 		return "NetCDF Subset Service exception handled : "+rtle.getMessage();
 	}	  
 	  
 	@ExceptionHandler
 	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
 	public @ResponseBody String handle(NcssException ncsse ){
-		log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST , 0));
 		return "NetCDF Subset Service exception handled : "+ncsse.getMessage();
 	}
 	
 	@ExceptionHandler
 	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR )
 	public @ResponseBody String handle(IOException ioe ){
-		log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
 		return "I/O xception handled : "+ioe.getMessage();
 	}
 	
 	@ExceptionHandler
 	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR )
 	public @ResponseBody String handle(InvalidRangeException ire ){
-		log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
 		return "Invalid Range Exception handled (Invalid Lat/Lon or Time Range): "+ire.getMessage();
 	}	
 		

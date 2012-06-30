@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.server.config.TdsContext;
 import thredds.server.ncSubset.dataservice.NcssShowDatasetInfo;
 import thredds.server.ncSubset.util.NcssRequestUtils;
-import thredds.servlet.UsageLog;
 
 @Controller
 class DatasetInfoController extends AbstractNcssController{
@@ -61,8 +60,6 @@ class DatasetInfoController extends AbstractNcssController{
 
 	@RequestMapping(value = { "/ncss/grid/**/dataset.html", "/ncss/grid/**/dataset.xml","/ncss/grid/**/pointDataset.html" })
 	void getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
-		//log.info("getDatasetDescription(): "+ UsageLog.setupRequestContext(req));
 
 		String pathInfo = requestPathInfo;
 
@@ -96,9 +93,6 @@ class DatasetInfoController extends AbstractNcssController{
 		pw.write(strResponse);
 		pw.flush();
 		res.flushBuffer();
-
-		log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, strResponse.length()));
-
 	}
 	
 	private String buildDatasetUrl(String path) {

@@ -118,12 +118,10 @@ public class ViewServlet extends AbstractServlet {
   public void init() throws ServletException
   {
     super.init();
-    logServerStartup.info( getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( getClass().getName() + " initialization done -  ");
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-    log.info( UsageLog.setupRequestContext( req ));
-
     String path = req.getPathInfo();
     int pos = path.lastIndexOf("/");
     String filename = "views/" + path.substring(pos + 1);
@@ -133,7 +131,6 @@ public class ViewServlet extends AbstractServlet {
     if (template == null)
       template = getTemplate( contentPath  + "/" +filename);
     if (template == null) {
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return;
     }
@@ -159,7 +156,6 @@ public class ViewServlet extends AbstractServlet {
 
     } catch (Throwable t) {
       log.error(" jnlp="+sbuff.toString(), t);
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ));
       if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }

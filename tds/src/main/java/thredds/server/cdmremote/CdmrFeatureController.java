@@ -42,7 +42,6 @@ import org.jdom.output.Format;
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DatasetHandler;
-import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -101,11 +100,9 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
   }
 
   protected ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object command, BindException errors) throws Exception {
-    log.info(UsageLog.setupRequestContext(req));
 
     if (!allow) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return null;
     }
 
@@ -126,12 +123,10 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       if (!query.validate()) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
         if (debug) System.out.printf(" query error= %s %n", query.getErrorMessage());
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
         return null;
       }
     } catch (Throwable t) {
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
     }
     if (debug) System.out.printf(" %s%n", query);
 
@@ -160,7 +155,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
     if (fdp == null) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "not a point or station dataset");
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       return null;
     }
 
@@ -208,13 +202,11 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       }
 
     } catch (FileNotFoundException e) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
       return null;
 
     } catch (Throwable t) {
       log.error("CdmRemoteController exception:", t);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, t.getMessage());
       return null;
 
@@ -228,7 +220,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
         }
     }
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
     return null;
   }
 
@@ -287,7 +278,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
     // query validation - second pass
     if (!pointWriter.validate(res)) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
       return null;
     }
 
@@ -326,7 +316,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       }
     }
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
     return null;
   }
 
@@ -342,7 +331,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
     StationWriter stationWriter = new StationWriter(fdp, sfc, qb, diskCache);
     if (!stationWriter.validate(res)) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
       return null; // error was sent
     }
 
@@ -374,7 +362,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
     // otherwise stream it out
     StationWriter.Writer w = stationWriter.write(res);
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
     if (showTime) {
       long took = System.currentTimeMillis() - start;
@@ -424,7 +411,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     out.flush();
     res.flushBuffer();
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
     return null;
   }
 
@@ -444,7 +430,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     out.flush();
     res.flushBuffer();
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, size + 1));
     return null;
   }
 
@@ -483,7 +468,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
     } catch (Exception e) {
       log.error("SobsServlet internal error on "+fdp.getLocation(), e);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SobsServlet internal error");
       return null;
     }
@@ -495,7 +479,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     out.write(infoString.getBytes());
     out.flush();
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
     return null;
   }
 

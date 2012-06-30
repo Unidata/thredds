@@ -832,9 +832,6 @@ public class HtmlWriter implements InitializingBean {
 
     writer.write(cdmAsString);
     writer.flush();
-
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, cdmAsString.length()));
-
   }
 
   private String getCDM(NetcdfDataset ds) throws IOException {

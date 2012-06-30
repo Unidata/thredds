@@ -18,7 +18,6 @@
 
   <appender name="threddsServlet" class="org.apache.log4j.DailyRollingFileAppender">
     <param name="File" value="${tds.log.dir}/threddsServlet.log"/>
-    <!-- param name="File" value="threddsServlet.log"/-->
     <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>

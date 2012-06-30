@@ -1,14 +1,12 @@
 package thredds.server;
 
-import thredds.server.config.TdsConfig;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
 
 /**
- * _more_
- *
+ * Wrap HttpServletResponse to capture state that is otherwise not accessible through standard API.
+ * @see RequestBracketingLogMessageFilter
  * @author edavis
  * @since 4.1
  */
@@ -16,21 +14,12 @@ public class TdsServletResponseWrapper extends HttpServletResponseWrapper
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-//  private TdsContext tdsContext;
   private int httpStatusCode = 200;
   private long httpResponseBodyLength = -1;
 
   public TdsServletResponseWrapper( HttpServletResponse response ) {
     super( response);
   }
-
-//  public TdsContext getTdsContext() {
-//    return this.tdsContext;
-//  }
-//
-//  public void setTdsContext( TdsContext tdsContext ) {
-//    this.tdsContext = tdsContext;
-//  }
 
   public int getHttpStatusCode() {
     return this.httpStatusCode;

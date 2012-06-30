@@ -37,6 +37,7 @@ import org.slf4j.MDC;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Formatter;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -58,7 +59,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * @since Jan 9, 2009
  */
 public class UsageLog {
-  //public static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( UsageLog.class);
   private static final AtomicLong logServerAccessId = new AtomicLong(0);
 
   /**
@@ -81,20 +81,20 @@ public class UsageLog {
    * @return a log message appropriate for the start of the request.
    */
   public static String setupRequestContext(HttpServletRequest req) {
-    HttpSession session = req.getSession(false);
 
     // Setup context.
-    MDC.put("ID", Long.toString(logServerAccessId.incrementAndGet()));
-    MDC.put("host", req.getRemoteHost());
+    //HttpSession session = req.getSession(false);
+    /* MDC.put("host", req.getRemoteHost());
     MDC.put("ident", (session == null) ? "-" : session.getId());
-    MDC.put("userid", req.getRemoteUser() != null ? req.getRemoteUser() : "-");
+    MDC.put("userid", req.getRemoteUser() != null ? req.getRemoteUser() : "-"); */
+
+    MDC.put("ID", Long.toString(logServerAccessId.incrementAndGet()));
     MDC.put("startTime", Long.toString(System.currentTimeMillis()));
+
     String query = req.getQueryString();
     query = (query != null) ? "?" + query : "";
-    StringBuilder request = new StringBuilder();
-    request.append("\"").append(req.getMethod()).append(" ")
-            .append(req.getRequestURI()).append(query)
-            .append(" ").append(req.getProtocol()).append("\"");
+    Formatter request = new Formatter();
+    request.format("\"%s %s%s %s\"", req.getMethod(), req.getRequestURI(), query, req.getProtocol());
 
     MDC.put("request", request.toString());
     return "Remote host: " + req.getRemoteHost() + " - Request: " + request.toString();

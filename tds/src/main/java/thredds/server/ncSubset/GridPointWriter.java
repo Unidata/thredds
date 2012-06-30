@@ -52,7 +52,6 @@ import java.io.*;
 import java.util.*;
 import java.text.ParseException;
 
-import thredds.servlet.UsageLog;
 import ucar.nc2.util.DiskCache2;
 
 import javax.servlet.http.HttpServletResponse;
@@ -193,8 +192,6 @@ public class GridPointWriter {
 
     } else {
       log.error("Unknown writer type = " + qp.acceptType);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
-
       return null;
     }
 

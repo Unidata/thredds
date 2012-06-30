@@ -39,7 +39,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
 import thredds.util.TdsPathUtils;
 import thredds.util.RequestForwardUtils;
@@ -66,15 +65,12 @@ public class RootController extends AbstractController implements LastModified
   protected ModelAndView handleRequestInternal( HttpServletRequest req, HttpServletResponse res )
           throws Exception
   {
-    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( req ) );
 
     String path = TdsPathUtils.extractPath( req );
     if (( null == path) || path.equals( "/" ) || path.equals( ""))
     {
       String newPath = tdsContext.getContextPath() + "/catalog.html";
       res.sendRedirect( newPath );
-      log.info( "handleRequestInternal(): "
-                + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FOUND, -1 ) );
       return null;
     }
 
@@ -84,7 +80,6 @@ public class RootController extends AbstractController implements LastModified
       RequestForwardUtils.forwardRequest( path, tdsContext.getDefaultRequestDispatcher(), req, res );
       return null;
     }
-    log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
     return new ModelAndView( "threddsFileView", "file", file );
   }
 

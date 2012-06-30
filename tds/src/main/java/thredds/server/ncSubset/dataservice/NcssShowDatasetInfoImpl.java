@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.support.ServletContextResource;
 
-import thredds.servlet.UsageLog;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridDatasetInfo;
 
@@ -67,11 +66,9 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 
 	      }catch(IOException ioe){
 		        log.error("IO error opening xsl", ioe);
-		        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));	    	  
 	      }catch (Throwable e) {
 	        log.error("ForecastModelRunServlet internal error", e);
-	        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-	        
+
 	        //if (!res.isCommitted())
 	        //  res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
 	        //return;
@@ -90,8 +87,7 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 	    //out.write(infoString.getBytes());
 	    //out.flush();
 
-	    //log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
-		
+
 		
 	}
 	

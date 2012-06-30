@@ -3,7 +3,6 @@ package thredds.dqc.server;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
-import thredds.servlet.UsageLog;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.HtmlWriter;
 import thredds.catalog.*;
@@ -62,13 +61,13 @@ public class DqcServiceController extends AbstractController
 
   public void init()
   {
-    logServerStartup.info( "DQC Service - init start - " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "DQC Service - init start - ");
 
     // Make sure DqcService is enabled.
     this.allow = ThreddsConfig.getBoolean( "DqcService.allow", false );
     if ( ! this.allow )
     {
-      logServerStartup.info( "Dqc Service not enabled in threddsConfig.xml - " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.info( "Dqc Service not enabled in threddsConfig.xml - ");
       return;
     }
 
@@ -76,7 +75,7 @@ public class DqcServiceController extends AbstractController
     if ( this.tdsContext == null )
     {
       this.allow = false;
-      logServerStartup.error( "Disabling Dqc Service - null TdsContext - " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.error( "Disabling Dqc Service - null TdsContext - ");
       return;
     }
 
@@ -88,7 +87,7 @@ public class DqcServiceController extends AbstractController
       if ( this.dqcConfigDir == null )
       {
         this.allow = false;
-        logServerStartup.error( "Disabling Dqc Service - " + UsageLog.closingMessageNonRequestContext() );
+        logServerStartup.error( "Disabling Dqc Service - " );
         return;
       }
     }
@@ -101,7 +100,7 @@ public class DqcServiceController extends AbstractController
       if ( this.dqcConfigFile == null )
       {
         this.allow = false;
-        logServerStartup.error( "Disabling Dqc Service - " + UsageLog.closingMessageNonRequestContext() );
+        logServerStartup.error( "Disabling Dqc Service - ");
         return;
       }
     }
@@ -118,16 +117,16 @@ public class DqcServiceController extends AbstractController
     {
       this.allow = false;
       logServerStartup.error( "Disabling Dqc Service - failed to read DqcConfig document: " + t.getMessage() );
-      logServerStartup.info( "Done - " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.info( "Done - ");
       return;
     }
 
-    logServerStartup.info( "DQC Service - init done - " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "DQC Service - init done - " );
   }
 
   public void destroy()
   {
-    logServerStartup.info( "DQC Service - destroy start - " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "DQC Service - destroy start - ");
 
     // Shutdown all scheduled events
 
@@ -135,7 +134,7 @@ public class DqcServiceController extends AbstractController
 
 //    if ( this.scheduler != null )
 //      this.scheduler.stop();
-    logServerStartup.info( "DQC Service - destroy done - " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "DQC Service - destroy done - ");
   }
 
 
@@ -143,14 +142,11 @@ public class DqcServiceController extends AbstractController
                                                 HttpServletResponse response )
           throws Exception
   {
-    // Gather diagnostics for logging request.
-    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ) );
 
     if ( ! this.allow )
     {
       String msg = "DQC service not supported.";
       log.info( "handleRequestInternal(): " + msg );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, msg.length() ) );
       response.sendError( HttpServletResponse.SC_FORBIDDEN, msg );
       return null;
     }
@@ -171,7 +167,6 @@ public class DqcServiceController extends AbstractController
 
       this.tdsContext.getHtmlConfig().addHtmlConfigInfoToModel( model );
 
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return new ModelAndView( "/thredds/server/dqc/dqcConfig", model);
     }
     else if ( reqPath.equals( "/catalog.xml" ))
@@ -183,7 +178,6 @@ public class DqcServiceController extends AbstractController
     {
       InvCatalog catalog = this.createCatalogRepresentation( request.getContextPath(), request.getServletPath() );
       int i = this.htmlWriter.writeCatalog( request, response, (InvCatalogImpl) catalog, true );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
 
       return null;
     }
@@ -213,8 +207,6 @@ public class DqcServiceController extends AbstractController
         if ( reqHandlerInfo != null )
         {
           String msg = "Not currently handling HTML views of DQC documents.";
-          log.info( "handleRequestInternal(): " + msg + " - "
-                    + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ) );
           response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg );
           return null;
         }
@@ -231,7 +223,6 @@ public class DqcServiceController extends AbstractController
         String tmpMsg = "No DQC Handler available for path <" + reqPath + ">.";
         log.warn( "handleRequestInternal(): " + tmpMsg );
         response.sendError( HttpServletResponse.SC_BAD_REQUEST, tmpMsg );
-        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
         return null;
         // @todo Loop through all config items checking if path starts with name.
       }
@@ -250,7 +241,6 @@ public class DqcServiceController extends AbstractController
         String tmpMsg = "Handler could not be constructed for " + reqHandlerInfo.getHandlerClassName() + ": " + e.getMessage();
         log.error( "handleRequestInternal(): " + tmpMsg, e );
         response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
         return null;
       }
 
@@ -269,7 +259,6 @@ public class DqcServiceController extends AbstractController
         String tmpMsg = "No handler for " + reqHandlerInfo.getHandlerClassName();
         log.error( "handleRequestInternal(): " + tmpMsg );
         response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tmpMsg );
-        log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0 ) );
         return null;
       }
     }

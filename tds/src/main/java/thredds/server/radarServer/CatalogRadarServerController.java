@@ -43,9 +43,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.catalog.*;
 import thredds.server.config.TdsContext;
 import thredds.servlet.HtmlWriter;
-import thredds.servlet.UsageLog;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 import javax.servlet.http.HttpServletRequest;
@@ -117,7 +115,6 @@ public class CatalogRadarServerController extends AbstractController {
     try
     {
       // Gather diagnostics for logging request.
-      log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ) );
       // setup
       String pathInfo = request.getPathInfo();
       if (pathInfo == null) pathInfo = "";
@@ -130,12 +127,10 @@ public class CatalogRadarServerController extends AbstractController {
       } else if (pathInfo.contains("level2/catalog.") || pathInfo.contains("level3/catalog.")
           || pathInfo.contains("level2/dataset.") || pathInfo.contains("level3/dataset.")) {
         catalog = level2level3catalog( catalog, pathInfo );
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
       // returns specific dataset information, ie level2/IDD  used by IDV
       } else if (pathInfo.endsWith("dataset.xml") || pathInfo.endsWith("catalog.xml")) {
         Map<String,Object> model = datasetInfoXml( catalog, pathInfo);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         if ( model != null )
           return new ModelAndView( "datasetXml", model );
         else {
@@ -151,7 +146,6 @@ public class CatalogRadarServerController extends AbstractController {
         if ( this.htmlView )
         {
           int i = HtmlWriter.getInstance().writeCatalog(request, response, catalog, true);
-          log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
           return null;
         }
         else
@@ -165,7 +159,6 @@ public class CatalogRadarServerController extends AbstractController {
     catch ( Throwable e )
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
       throw new RadarServerException( "handleRequestInternal(): Problem handling request." );
     }
   }

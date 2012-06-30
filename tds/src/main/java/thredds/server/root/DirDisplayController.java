@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import thredds.servlet.HtmlWriter;
-import thredds.servlet.UsageLog;
 import thredds.servlet.DataRootHandler;
 import thredds.server.config.TdsContext;
 import thredds.util.RequestForwardUtils;
@@ -72,8 +71,6 @@ public class DirDisplayController extends AbstractController {
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( req ) );
-
     String path = req.getPathInfo();
     if (path == null) path = "";
 
@@ -83,7 +80,6 @@ public class DirDisplayController extends AbstractController {
         || path.startsWith("../")
         || path.endsWith("/..")) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Path cannot contain ..");
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, -1));
       return null;
     }
 
@@ -111,7 +107,6 @@ public class DirDisplayController extends AbstractController {
     if (file.isDirectory()) {
       int i = this.htmlWriter.writeDirectory(res, file, path);
       int status = i == 0 ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_OK;
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( status, i ) );
       return null;
     }
 

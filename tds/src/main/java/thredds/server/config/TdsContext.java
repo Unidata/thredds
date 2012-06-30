@@ -55,7 +55,6 @@ import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.InvDatasetScan;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.ThreddsConfig;
-import thredds.servlet.UsageLog;
 import thredds.util.filesource.BasicDescendantFileSource;
 import thredds.util.filesource.BasicWithExclusionsDescendantFileSource;
 import thredds.util.filesource.ChainedFileSource;
@@ -338,8 +337,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean {
     // LOOK Remove log4j init JC 6/13/2012
     // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
-    logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: " + UsageLog.setupNonRequestContext() );
-    logServerStartup.info( "TdsContext.init()  intializating logging..." + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: ");
+    logServerStartup.info( "TdsContext.init()  intializating logging..." );
     
 
     // read in persistent user-defined params from threddsConfig.xml

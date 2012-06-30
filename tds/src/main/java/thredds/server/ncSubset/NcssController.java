@@ -120,14 +120,14 @@ public class NcssController extends AbstractController implements LastModified {
     diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
     ServletUtil.logServerStartup.info(getClass().getName() + "Ncss.Cache= "+cache+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
-    ServletUtil.logServerStartup.info( getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext() );
+    ServletUtil.logServerStartup.info( getClass().getName() + " initialization done -  ");
   }
 
   public void destroy() {
-    ServletUtil.logServerStartup.info( getClass().getName() + " destroy start -  " + UsageLog.setupNonRequestContext() );
+    ServletUtil.logServerStartup.info( getClass().getName() + " destroy start -  ");
     if (diskCache != null)
       diskCache.exit();
-    ServletUtil.logServerStartup.info( getClass().getName() + " destroy done -  " + UsageLog.closingMessageNonRequestContext() );
+    ServletUtil.logServerStartup.info( getClass().getName() + " destroy done -  ");
   }
 
   private String buildCacheUrl( String path ) {
@@ -144,11 +144,8 @@ public class NcssController extends AbstractController implements LastModified {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
       return null;
     }
-    log.info("doGet(): " + UsageLog.setupRequestContext(req));
-
     String pathInfo = req.getPathInfo();
     if (pathInfo == null) {
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
       return null;
     }
@@ -173,20 +170,16 @@ public class NcssController extends AbstractController implements LastModified {
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
         if (null == gds) {
-          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
           res.sendError(HttpServletResponse.SC_NOT_FOUND);
           return null;
         }
         showForm(res, gds, pathInfo, wantXML, showPointForm);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
 
       } catch (java.io.FileNotFoundException ioe) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
       } catch (Throwable e) {
         log.error("GridServlet.showForm", e);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
       } finally {
@@ -228,13 +221,11 @@ public class NcssController extends AbstractController implements LastModified {
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
         if (null == gds) {
-          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
           res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
           return;
         }
 
       } catch (FileNotFoundException e) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
         return;
       }
@@ -327,7 +318,6 @@ public class NcssController extends AbstractController implements LastModified {
       if (maxFileDownloadSize > 0) {
         long estSize = makeGridFileSizeEstimate(gds, qp, hasBB, addLatLon, zRange);
         if (estSize > maxFileDownloadSize) {
-          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
           res.sendError(HttpServletResponse.SC_FORBIDDEN, "NCSS request too large = "+estSize+" max = " + maxFileDownloadSize);
           return;
         }
@@ -336,13 +326,11 @@ public class NcssController extends AbstractController implements LastModified {
       try {
         makeGridFile(req, res, gds, qp, hasBB, addLatLon, zRange);
       } catch (InvalidRangeException e) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range: " + e.getMessage());
       }
 
     } catch (Throwable e) {
       log.error("GridServlet.processGrid", e);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
     } finally {
@@ -404,13 +392,11 @@ public class NcssController extends AbstractController implements LastModified {
               addLatLon);
 
     } catch (IllegalArgumentException e) { // file too big
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
       res.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
       return;
 
     } catch (Throwable ioe) {
       log.error("Writing to " + cacheFilename, ioe);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
@@ -443,7 +429,6 @@ public class NcssController extends AbstractController implements LastModified {
 
       } catch (Throwable e) {
         log.error("ForecastModelRunServlet internal error", e);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         if (!res.isCommitted())
           res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
         return;
@@ -460,7 +445,6 @@ public class NcssController extends AbstractController implements LastModified {
     out.write(infoString.getBytes());
     out.flush();
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
   }
 
     //////////////////////////////////////////////////////
@@ -478,13 +462,11 @@ public class NcssController extends AbstractController implements LastModified {
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
         if (null == gds) {
-          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
           res.sendError(HttpServletResponse.SC_NOT_FOUND);
           return;
         }
 
       } catch (FileNotFoundException e) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
         return;
       }
@@ -551,14 +533,12 @@ public class NcssController extends AbstractController implements LastModified {
             System.out.println("\ntotal response took = " + took + " msecs");
           }
 
-          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
           return;
         }
 
         sendPointFile(req, res, gds, qp);
 
       } catch (InvalidRangeException e) {
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       }
 
@@ -566,7 +546,6 @@ public class NcssController extends AbstractController implements LastModified {
       System.err.println("GridServlet.processGridAsPoint req=" + req.getRequestURI());
       e.printStackTrace(); // logger not showing stack trace !!
       log.error("GridServlet.processGridAsPoint", e);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
     } finally {
@@ -608,7 +587,6 @@ public class NcssController extends AbstractController implements LastModified {
 
     } catch (Throwable ioe) {
       log.error("Writing to " + cacheFilename, ioe);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }

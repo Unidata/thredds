@@ -115,7 +115,6 @@ public class DebugHandler {
     PrintStream responsePS = new PrintStream(response.getOutputStream());
     responsePS.write(result);
     responsePS.flush();
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, result.length ));
   }
 
   static private void showDebugActions(HttpServletRequest req, HttpServletResponse res, PrintStream pw) {

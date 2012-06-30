@@ -54,7 +54,7 @@ public abstract class AbstractServlet extends HttpServlet {
 
   public void init() throws javax.servlet.ServletException
   {
-    logServerStartup.info( getClass().getName() + " initialization start -  " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( getClass().getName() + " initialization start -  ");
 
     contentPath = ServletUtil.getContentPath() + getPath();
 

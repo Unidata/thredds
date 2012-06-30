@@ -41,7 +41,6 @@ import org.springframework.web.servlet.ModelAndView;
 import thredds.server.dataset.TdsRequestedDataset;
 import thredds.server.wms.config.WmsDetailedConfig;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.UsageLog;
 import ucar.nc2.dt.GridDataset;
 import uk.ac.rdg.resc.ncwms.controller.AbstractWmsController;
 import uk.ac.rdg.resc.ncwms.controller.RequestParams;
@@ -116,13 +115,10 @@ public final class ThreddsWmsController extends AbstractWmsController
           HttpServletResponse httpServletResponse,
           UsageLogEntry usageLogEntry ) throws Exception
   {
-    log.info( UsageLog.setupRequestContext( httpServletRequest ) );
-
     ThreddsServerConfig tdsWmsServerConfig = (ThreddsServerConfig) this.serverConfig;
     if ( ! tdsWmsServerConfig.isAllow() )
     {
       log.info( "dispatchWmsRequest(): WMS service not supported." );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
       httpServletResponse.sendError( HttpServletResponse.SC_FORBIDDEN, "WMS service not supported." );
       return null;
     }
@@ -149,7 +145,6 @@ public final class ThreddsWmsController extends AbstractWmsController
       {
         // We have sent an auth challenge to the client, so we send no
         // further information
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_UNAUTHORIZED, -1 ) );
         return null;
       }
 
@@ -213,52 +208,43 @@ public final class ThreddsWmsController extends AbstractWmsController
         throw new OperationNotSupportedException( request );
       }
 
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return modelAndView;
     }
     catch ( LayerNotDefinedException e ) {
       log.debug( "dispatchWmsRequest(): LayerNotDefinedException: " + e.getMessage());
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, -1 ) );
       throw e;
     }
     catch ( WmsException e ) {
       log.debug( "dispatchWmsRequest(): WmsException: "  + e.getMessage() );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
       throw e;
     }
     catch ( thredds.server.dataset.DatasetException e ) {
       log.debug( "dispatchWmsRequest(): DatasetException: " + e.getMessage() );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
       throw new WmsException( e.getMessage() );
     }
     catch ( java.net.SocketException e ) {
       log.debug( "dispatchWmsRequest(): SocketException: " + e.getMessage());
-      log.info( UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_CLIENT_ABORT, -1 ) );
       httpServletResponse.setStatus(ServletUtil.STATUS_CLIENT_ABORT);
       return null;
     }
     catch ( IOException e ) {
       if ( e.getClass().getName().equals( "org.apache.catalina.connector.ClientAbortException")) {
         log.debug( "dispatchWmsRequest(): ClientAbortException: " + e.getMessage() );
-        log.info( UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_CLIENT_ABORT, -1 ) );
         return null;
       }
       log.error( "dispatchWmsRequest(): IOException: ", e );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
       if ( httpServletResponse.isCommitted() )
         return null;
       throw e;
     }
     catch ( Exception e ) {
       log.error( "dispatchWmsRequest(): Exception: ", e );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
       if ( httpServletResponse.isCommitted() )
         return null;
       throw e;
     }
     catch ( Error e ) {
       log.error( "dispatchWmsRequest(): Error: ", e );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
       if ( httpServletResponse.isCommitted() )
         return null;
       throw e;

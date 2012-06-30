@@ -34,7 +34,6 @@ package thredds.servlet.filter;
 
 import ucar.nc2.util.net.EscapeStrings;
 import thredds.util.StringValidateEncodeUtils;
-import thredds.servlet.UsageLog;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -113,7 +112,6 @@ public class RequestQueryFilter
       {
         String msg = "Invalid query string [" + query + "].";
         log.error( "doFilter(): " + msg );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, msg.length() ));
         response.sendError( HttpServletResponse.SC_NOT_FOUND, msg );
         return;
       }

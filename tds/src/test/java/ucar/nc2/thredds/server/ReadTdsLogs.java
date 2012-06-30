@@ -264,7 +264,7 @@ public class ReadTdsLogs {
   private static Pattern regPattern =
           Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
 
-  private int maxLines = -1;
+  private int maxLines = -1; // -1 for all
 
   Log parseLine(Pattern p, String line) {
     try {
@@ -373,7 +373,7 @@ public class ReadTdsLogs {
 
   static private int total_submit = 0;
   static private int skip_submit = -1;
-  static private int max_submit = 1000; // Integer.MAX_VALUE;
+  static private int max_submit = Integer.MAX_VALUE;
 
   void sendRequests(String filename, int max) throws IOException {
     int submit = 0;

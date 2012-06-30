@@ -3,8 +3,6 @@ package thredds.server.serverinfo;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.server.config.TdsContext;
-import thredds.server.config.TdsServerInfo;
-import thredds.servlet.UsageLog;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,12 +29,10 @@ public class ServerInfoController extends AbstractController
                                                 HttpServletResponse response )
           throws Exception
   {
-    log.info( "handleRequestInternal(): " + UsageLog.setupRequestContext( request ) );
     // Get the request path.
     String reqPath = request.getServletPath();
     if ( reqPath == null )
     {
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ) );
       response.sendError( HttpServletResponse.SC_NOT_FOUND );
       return null;
     }
@@ -54,7 +50,6 @@ public class ServerInfoController extends AbstractController
     } else if ( reqPath.equals( "/serverVersion.txt" )) {
       return new ModelAndView( "thredds/server/serverinfo/serverVersion_txt", model );
     } else{
-      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0 ) );
       response.sendError( HttpServletResponse.SC_NOT_FOUND );
       return null;
     }

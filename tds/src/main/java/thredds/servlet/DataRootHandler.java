@@ -1102,7 +1102,6 @@ public final class DataRootHandler implements InitializingBean{
     String path = req.getPathInfo();
     if (!isProxyDatasetResolver(path)) {
       String resMsg = "Request <" + path + "> not for proxy dataset resolver.";
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
       log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
       return;
@@ -1115,7 +1114,6 @@ public final class DataRootHandler implements InitializingBean{
       baseURI = new URI(baseUriString);
     } catch (URISyntaxException e) {
       String resMsg = "Request URL <" + baseUriString + "> not a valid URI: " + e.getMessage();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
       log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
       return;
@@ -1124,7 +1122,6 @@ public final class DataRootHandler implements InitializingBean{
     InvCatalogImpl cat = (InvCatalogImpl) this.getProxyDatasetResolverCatalog(path, baseURI);
     if (cat == null) {
       String resMsg = "Could not generate proxy dataset resolver catalog <" + path + ">.";
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
       log.error("handleRequestForProxyDatasetResolverCatalog(): " + resMsg);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
       return;
@@ -1133,7 +1130,6 @@ public final class DataRootHandler implements InitializingBean{
     // Return catalog as XML response.
     InvCatalogFactory catFactory = getCatalogFactory(false);
     String result = catFactory.writeXML(cat);
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, result.length()));
 
     res.setContentLength(result.length());
     res.setContentType("text/xml");
@@ -1182,7 +1178,6 @@ public final class DataRootHandler implements InitializingBean{
       // @todo Check if this is a proxy dataset request (not resolver).
       // Request is not for a known (or allowed) dataset.
       res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       return;
     }
 
@@ -1521,7 +1516,6 @@ public final class DataRootHandler implements InitializingBean{
     if (crDs == null) {
       // Request is not for a known (or allowed) dataset.
       res.sendError(HttpServletResponse.SC_NOT_FOUND); // 404
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       return;
     }
 
@@ -1572,7 +1566,6 @@ public final class DataRootHandler implements InitializingBean{
 
     if (path.equals("/") || path.equals("")) {
       String resMsg = "No data at root level, \"/latest.xml\" request not available.";
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1582,7 +1575,6 @@ public final class DataRootHandler implements InitializingBean{
     DataRoot dataRoot = findDataRoot(path);
     if (dataRoot == null) {
       String resMsg = "No scan root matches requested path <" + path + ">.";
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       log.warn("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1592,7 +1584,6 @@ public final class DataRootHandler implements InitializingBean{
     InvDatasetScan dscan = dataRoot.scan;
     if (dscan == null) {
       String resMsg = "Probable conflict between datasetScan and datasetRoot for path <" + path + ">.";
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       log.warn("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1601,7 +1592,6 @@ public final class DataRootHandler implements InitializingBean{
     // Check that latest is allowed
     if (dscan.getProxyDatasetHandlers() == null) {
       String resMsg = "No \"addProxies\" or \"addLatest\" on matching scan root <" + path + ">.";
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       log.warn("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1613,7 +1603,6 @@ public final class DataRootHandler implements InitializingBean{
       reqBaseURI = new URI(reqBase);
     } catch (URISyntaxException e) {
       String resMsg = "Request base URL <" + reqBase + "> not valid URI (???): " + e.getMessage();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg.length()));
       log.error("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, resMsg);
       return false;
@@ -1622,7 +1611,6 @@ public final class DataRootHandler implements InitializingBean{
 
     if (null == cat) {
       String resMsg = "Failed to build response catalog <" + path + ">.";
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, resMsg.length()));
       log.error("processReqForLatestDataset(): " + resMsg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND, resMsg);
       return false;
@@ -1635,7 +1623,6 @@ public final class DataRootHandler implements InitializingBean{
     res.setContentType("text/xml");
     res.setStatus(HttpServletResponse.SC_OK);
     out.print(catAsString);
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, catAsString.length()));
     if (log.isDebugEnabled()) log.debug("processReqForLatestDataset(): Finished \"" + orgPath + "\".");
     return true;
   }

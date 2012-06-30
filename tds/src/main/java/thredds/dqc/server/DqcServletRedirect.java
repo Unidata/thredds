@@ -34,7 +34,6 @@
 package thredds.dqc.server;
 
 import thredds.servlet.ServletUtil;
-import thredds.servlet.UsageLog;
 import thredds.util.RequestForwardUtils;
 
 import javax.servlet.ServletException;
@@ -86,7 +85,6 @@ public class DqcServletRedirect extends HttpServlet
   public void doGet(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException
   {
-    log.info( "doGet(): " + UsageLog.setupRequestContext( req ) );
     boolean enableTestRedirect = false;
 
     // Get the request path and query information.
@@ -243,8 +241,6 @@ public class DqcServletRedirect extends HttpServlet
     }
 
     sendResponse( res, null, StatusCode.SC_200, response.toString(), responseBodyType );
-    log.info( "handleGetRequestForRedirectStopTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, response.length() ) );
-    return;
   }
 
   private void sendResponse( HttpServletResponse response,
@@ -277,18 +273,12 @@ public class DqcServletRedirect extends HttpServlet
 
     if ( sc.equals( StatusCode.SC_302 ) )
       response.sendRedirect( targetUrlString );
-
-    return;
   }
 
   public void doPut( HttpServletRequest req, HttpServletResponse res )
           throws IOException, ServletException
   {
-    log.info( "doPut(): " + UsageLog.setupRequestContext( req ) );
-
     doDispatch( req, res, false );
-
-    return;
   }
 
   /**
@@ -331,8 +321,6 @@ public class DqcServletRedirect extends HttpServlet
     if ( targetContext == null )
     {
       String tmpMsg = "Null ServletContext for \"" + ( useTestContext ? this.testTargetContextPath : this.targetContextPath ) + "\"";
-      log.warn( "doDispatch(): " + tmpMsg + ": "
-                + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, tmpMsg.length() ) );
       res.sendError( HttpServletResponse.SC_NOT_FOUND, tmpMsg );
       return;
     }

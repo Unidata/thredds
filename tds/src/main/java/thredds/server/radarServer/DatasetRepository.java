@@ -49,7 +49,6 @@ import thredds.catalog.query.Location;
 import thredds.catalog.query.SelectStation;
 import thredds.catalog.query.Station;
 import thredds.server.config.TdsContext;
-import thredds.servlet.UsageLog;
 import ucar.unidata.util.StringUtil2;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -108,7 +107,6 @@ public class DatasetRepository {
       InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false);
       cat = readCatalog(factory, getPath() + catName, contentPath + getPath() + catName);
       if (cat == null) {
-        log.info("cat initialization failed" + UsageLog.closingMessageNonRequestContext());
         return false;
       }
       cat.setBaseURI( catURI );
@@ -139,7 +137,7 @@ public class DatasetRepository {
          nexradMap = getStationMap( nexradList );
          terminalMap = getStationMap( terminalList );
       }
-      log.info( "DatasetRepository initialization done -  " + UsageLog.closingMessageNonRequestContext());
+      log.info( "DatasetRepository initialization done -  " );
       return true;
     }
 

@@ -33,8 +33,6 @@
 
 package thredds.servlet.restrict;
 
-import thredds.servlet.UsageLog;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -62,7 +60,6 @@ public class CAMSAuthorizer extends TomcatAuthorizer {
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-      log.info( UsageLog.setupRequestContext(req));
 
       HttpSession session = req.getSession();
       if (session != null) {
@@ -83,19 +80,16 @@ public class CAMSAuthorizer extends TomcatAuthorizer {
             res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
             String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";
             res.addHeader("Location", origURI+frag);
-            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_TEMPORARY_REDIRECT, -1 ) );
             return;
 
           } else {
             res.setStatus(HttpServletResponse.SC_OK); // someone came directly to this page
-            log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1));
             return;
           }
         }
       }
 
       res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to access this dataset.");
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_UNAUTHORIZED, -1 ));
     }
 
   private boolean hasCAMSrole( HttpServletRequest req, String role) {

@@ -1,7 +1,6 @@
 package thredds.server.ncSubset.controller;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +13,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ThreddsConfig;
-import thredds.servlet.UsageLog;
 import ucar.nc2.dt.GridDataset;
 
 public class NcssInterceptor extends HandlerInterceptorAdapter {
@@ -24,8 +22,6 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-		log.info("preHandle(): " + UsageLog.setupRequestContext(request));
-		
 		//Check allow
 		boolean allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
 		AbstractNcssController hm =  (AbstractNcssController)((HandlerMethod) handler).getBean();
@@ -38,7 +34,6 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 	    String pathInfo = servletPath.substring(AbstractNcssController.getServletPath().length()  , servletPath.length());
 	    
 	    if(pathInfo ==null){
-	    	log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
 	    	response.sendError(HttpServletResponse.SC_NOT_FOUND);
 	    	return false;
 	    }	    
@@ -86,17 +81,14 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 	      try {
 	          gds = DatasetHandler.openGridDataset(req, res, pathInfo);
 	          if (null == gds) {
-	            log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
 	            res.sendError(HttpServletResponse.SC_NOT_FOUND);
 	          }
 
 	        } catch (java.io.FileNotFoundException ioe) {
-	          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
 	          if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
 	        } catch (Throwable e) {
 	          log.error("GridServlet.showForm", e);
-	          log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
 	          if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
 	        }

@@ -37,7 +37,6 @@ import thredds.server.ncSubset.QueryParams;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.DateRange;
 import thredds.servlet.ServletUtil;
-import thredds.servlet.UsageLog;
 
 import java.util.*;
 import java.io.PrintWriter;
@@ -749,7 +748,6 @@ public class RadarMethods {
 
     } catch ( Exception e ) {
       log.error("radarServer processQuery error" );
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       pw.println( "<documentation>\n" );
       pw.println( "Query can't be satisfied :<![CDATA["+ qp.toString() +"]]>\n" );
       pw.println( "</documentation>\n" );

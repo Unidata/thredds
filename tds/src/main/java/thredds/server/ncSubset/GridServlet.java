@@ -50,7 +50,6 @@ import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridDatasetInfo;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
-import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.ma2.InvalidRangeException;
@@ -135,15 +134,15 @@ public class GridServlet extends AbstractServlet {
     diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
     logServerStartup.info(getClass().getName() + "Ncss.Cache= "+cache+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
-    logServerStartup.info( getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( getClass().getName() + " initialization done -  ");
   }
 
   public void destroy() {
-    logServerStartup.info( getClass().getName() + " destroy start -  " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( getClass().getName() + " destroy start -  " );
     if (diskCache != null)
       diskCache.exit();
     super.destroy();
-    logServerStartup.info( getClass().getName() + " destroy done -  " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( getClass().getName() + " destroy done -  ");
   }
 
   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -151,11 +150,8 @@ public class GridServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Service not supported");
       return;
     }
-    log.info( "doGet(): " + UsageLog.setupRequestContext(req));
-
     String pathInfo = req.getPathInfo();
     if ( pathInfo == null ) {
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError( HttpServletResponse.SC_NOT_FOUND);
       return;
     }
@@ -180,20 +176,16 @@ public class GridServlet extends AbstractServlet {
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
         if (null == gds) {
-          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
           res.sendError(HttpServletResponse.SC_NOT_FOUND);
           return;
         }
         showForm(res, gds, pathInfo, wantXML, showPointForm);
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, 0));
 
       } catch (java.io.FileNotFoundException ioe) {
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
       } catch (Throwable e) {
         log.error("GridServlet.showForm", e);
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         
       } finally {
@@ -233,13 +225,11 @@ public class GridServlet extends AbstractServlet {
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
         if (null == gds) {
-          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
           res.sendError(HttpServletResponse.SC_NOT_FOUND);
           return;
         }
 
       } catch (FileNotFoundException e) {
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
         return;
       }
@@ -306,14 +296,12 @@ public class GridServlet extends AbstractServlet {
             System.out.println("\ntotal response took = " + took + " msecs");
           }
           
-          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
           return;
         }
 
         sendPointFile(req, res, gds, qp);
 
       } catch (InvalidRangeException e) {
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
         if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range");
       }
 
@@ -321,7 +309,6 @@ public class GridServlet extends AbstractServlet {
       System.err.println("GridServlet.processGridAsPoint req="+req.getRequestURI());
       e.printStackTrace(); // logger not showing stack trace !!
       log.error("GridServlet.processGridAsPoint", e);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
     } finally {
@@ -363,7 +350,6 @@ public class GridServlet extends AbstractServlet {
 
     } catch (Throwable ioe) {
       log.error("Writing to " + cacheFilename, ioe);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
@@ -390,13 +376,11 @@ public class GridServlet extends AbstractServlet {
       try {
         gds = DatasetHandler.openGridDataset(req, res, pathInfo);
         if (null == gds) {
-          log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
           res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
           return;
         }
 
       } catch (FileNotFoundException e) {
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         res.sendError(HttpServletResponse.SC_NOT_FOUND, "Cant find " + pathInfo);
         return;
       }
@@ -489,13 +473,11 @@ public class GridServlet extends AbstractServlet {
       try {
         makeGridFile(req, res, gds, qp, hasBB, addLatLon, zRange);
       } catch (InvalidRangeException e) {
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Lat/Lon or Time Range: "+e.getMessage());
       }
 
     } catch (Throwable e) {
       log.error("GridServlet.processGrid", e);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
     } finally {
@@ -544,13 +526,11 @@ public class GridServlet extends AbstractServlet {
               addLatLon);
 
     } catch (IllegalArgumentException e) { // file too big
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
       res.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
       return;
 
     } catch (Throwable ioe) {
       log.error("Writing to " + cacheFilename, ioe);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
@@ -583,7 +563,6 @@ public class GridServlet extends AbstractServlet {
 
       } catch (Throwable e) {
         log.error("ForecastModelRunServlet internal error", e);
-        log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
         return;
       }
@@ -599,7 +578,6 @@ public class GridServlet extends AbstractServlet {
     out.write(infoString.getBytes());
     out.flush();
 
-    log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, infoString.length()));
   }
 
   private InputStream getXSLT(String xslName) {

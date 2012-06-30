@@ -77,7 +77,7 @@ public class WCSServlet extends AbstractServlet {
     logServerStartup.info("WCS:allow= "+allow);
     if ( ! allow )
     {
-      logServerStartup.info( "WCS service not enabled in threddsConfig.xml: " + UsageLog.closingMessageNonRequestContext() );
+      logServerStartup.info( "WCS service not enabled in threddsConfig.xml: ");
       return;
     }
     allowRemote = ThreddsConfig.getBoolean( "WCS.allowRemote", false );
@@ -117,30 +117,27 @@ public class WCSServlet extends AbstractServlet {
     this.experimentalHandlers = new ArrayList<VersionHandler>();
     this.experimentalHandlers.add( wcsPlusVersion );          // "1.0.0.11"
 
-    logServerStartup.info( "WCS service - init done - " + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "WCS service - init done - " );
   }
 
   public void destroy()
   {
-    logServerStartup.info( "WCSServlet.destroy() start: " + UsageLog.setupNonRequestContext() );
+    logServerStartup.info( "WCSServlet.destroy() start: ");
     if (diskCache != null)
       diskCache.exit();
     super.destroy();
-    logServerStartup.info( "WCSServlet.destroy() done:" + UsageLog.closingMessageNonRequestContext() );
+    logServerStartup.info( "WCSServlet.destroy() done:");
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res)
           throws ServletException, IOException
   {
-    log.info( UsageLog.setupRequestContext(req));
-
     // Check whether TDS is configured to support WCS.
     if ( ! allow )
     {
       // ToDo - Server not configured to support WCS. Should response code be 404 (Not Found) instead of 403 (Forbidden)?
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "WCS service not supported");
       log.debug( "WCS service not supported in threddsConfig.xml");
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ));
       return;
     }
 
@@ -149,7 +146,6 @@ public class WCSServlet extends AbstractServlet {
     // ToDo LOOK - move this into TdsConfig?
     if ( datasetURL != null && ! allowRemote )
     {
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ));
       res.sendError( HttpServletResponse.SC_FORBIDDEN, "WCS service not supported for remote datasets." );
       return;
     }
@@ -164,7 +160,6 @@ public class WCSServlet extends AbstractServlet {
     if ( serviceParam == null || ! serviceParam.equalsIgnoreCase( "WCS"))
     {
       res.sendError( HttpServletResponse.SC_BAD_REQUEST, "GET request not a WCS KVP requestParam (missing or bad SERVICE parameter).");
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ));
       return;
     }
 
@@ -254,18 +249,14 @@ public class WCSServlet extends AbstractServlet {
   protected void doPost( HttpServletRequest req, HttpServletResponse res )
           throws ServletException, IOException
   {
-    log.info( UsageLog.setupRequestContext(req));
     if ( ! allow )
     {
-      res.sendError( HttpServletResponse.SC_FORBIDDEN, "WCS service not supported" );
-      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+      res.setStatus( HttpServletResponse.SC_FORBIDDEN );
       return;
     }
 
     res.setStatus( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
     res.setHeader( "Allow", "GET");
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_METHOD_NOT_ALLOWED, -1 ));
-    return;
   }
 
   /**

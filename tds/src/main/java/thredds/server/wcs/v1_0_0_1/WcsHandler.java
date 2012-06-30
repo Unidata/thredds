@@ -33,7 +33,6 @@
 package thredds.server.wcs.v1_0_0_1;
 
 import thredds.servlet.ServletUtil;
-import thredds.servlet.UsageLog;
 import thredds.server.wcs.VersionHandler;
 import thredds.util.Version;
 import thredds.wcs.v1_0_0_1.*;
@@ -107,7 +106,6 @@ public class WcsHandler implements VersionHandler
         ((GetCapabilities) request).writeCapabilitiesReport( pw );
         pw.flush();
 
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       }
       else if ( request.getOperation().equals( Request.Operation.DescribeCoverage ) )
       {
@@ -118,7 +116,6 @@ public class WcsHandler implements VersionHandler
         ((DescribeCoverage) request).writeDescribeCoverageDoc( pw );
         pw.flush();
 
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       }
       else if ( request.getOperation().equals( Request.Operation.GetCoverage ) )
       {
@@ -194,7 +191,6 @@ public class WcsHandler implements VersionHandler
   {
     res.setContentType( "application/vnd.ogc.se_xml" );
     res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ));
 
     ExceptionReport exceptionReport = new ExceptionReport( exception );
 
