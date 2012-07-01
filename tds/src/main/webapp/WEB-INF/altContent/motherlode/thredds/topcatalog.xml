@@ -40,6 +40,8 @@
     <catalogRef xlink:title="Oak Ridge National Laboratory Distributed Active Archive Center" xlink:href="http://thredds.daac.ornl.gov/thredds/ornl_catalog/daac.xml" name="" />
     <catalogRef xlink:title="Ocean Watch SWFSC/Environmental Research Division)" xlink:href="http://oceanwatch.pfeg.noaa.gov/thredds/catalog.xml" name="" />
 
+    <catalogRef xlink:title="SOCIB (Balearic Islands Coastal Ocean Observing and Forecasting System)" xlink:href="http://thredds.socib.es/thredds/catalog.xml" name="" />
+
     <!-- catalogRef xlink:href="http://dodsdev.gso.url.edu:8080/thredds/catalog.xml"
                 xlink:title="Satellite-Derived Oceanographic Data Sets" name="" / -->
 

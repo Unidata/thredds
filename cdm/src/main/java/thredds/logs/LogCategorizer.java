@@ -282,11 +282,11 @@ public class LogCategorizer {
     }
 
     if (service == null)
-      service = "root";
+      service = "other";
     return service;
   }
 
-  public static String[] services = new String[]{"admin", "catalog", "cdmremote", "cdmrfeature", "dodsC", "dqc", "fileServer", "godiva2",
+  public static String[] services = new String[]{"admin", "cataloggen", "catalog", "cdmremote", "cdmrfeature", "dodsC", "dqc", "fileServer", "godiva2",
           "ncss/grid", "ncstream", "radarServer", "remoteCatalogService", "view", "wcs", "wms"};
 
   public static String findService(String path) {
