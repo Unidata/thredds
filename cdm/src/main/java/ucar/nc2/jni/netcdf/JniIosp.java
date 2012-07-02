@@ -1341,6 +1341,20 @@ public class JniIosp extends AbstractIOServiceProvider {
 
   private static NCLibrary nc4;
 
+  private NCLibrary load() {
+     if (nc4 == null) {
+       String dir = "C:/cdev/lib/";
+       System.setProperty("jna.library.path", dir);
+
+       //Native.setProtected(true);
+       nc4 = (NCLibrary) Native.loadLibrary("netcdf-7", NCLibrary.class);
+       System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
+      }
+
+     return nc4;
+   }
+
+
   private NCLibrary load1() {
     if (nc4 == null) {
       String dir = "S:/wfisher/";
@@ -1356,7 +1370,7 @@ public class JniIosp extends AbstractIOServiceProvider {
     return nc4;
   }
 
-  private NCLibrary load() {
+  private NCLibrary load4() {
   if (nc4 == null) {
     String dir = "C:/cdev/lib/";
     System.setProperty("jna.library.path", dir);
@@ -1423,7 +1437,9 @@ public class JniIosp extends AbstractIOServiceProvider {
   public static void main(String args[]) throws Exception {
     JniIosp iosp = new JniIosp();
 
-    NetcdfFile ncfile = iosp.open("Q:\\cdmUnitTest\\formats\\netcdf4/nc4-classic/nctest_netcdf4.nc");
+    String loc4 = "Q:/cdmUnitTest/formats/netcdf4/nc4-classic/test2.nc";
+    String loc3 = "Q:/cdmUnitTest/formats/netcdf3/example1.nc";
+    NetcdfFile ncfile = iosp.open(loc4);
     System.out.println("" + ncfile);
   }
 

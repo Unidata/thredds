@@ -96,6 +96,8 @@ public interface NCLibrary extends Library {
   String nc_strerror(int ncerr);
 
   // dataset
+
+  // EXTERNL int nc_open(const char *path, int mode, int *ncidp);
   int nc_open(String path, int mode, IntByReference ncidp);
   int nc_close(int ncid);
   int nc_inq_format(int ncid, IntByReference formatp);
