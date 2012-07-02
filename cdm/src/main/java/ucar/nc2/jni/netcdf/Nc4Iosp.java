@@ -43,6 +43,7 @@ public class Nc4Iosp {
   }
 
   public int open(String location) throws Exception {
+    System.out.printf("open %s%n", location);
     load(); // load jni
     IntByReference ncidp = new IntByReference();
     int ret = nc4.nc_open(location, 0, ncidp);
@@ -53,10 +54,10 @@ public class Nc4Iosp {
   public static void main(String args[]) throws Exception {
     Nc4Iosp iosp = new Nc4Iosp();
 
-    String loc4 = "C:/temp/tst_atts.nc";
-    String loc3 = "Q:\\cdmUnitTest\\formats\\netcdf3/example1.nc";
-    int ret = iosp.open(loc3);
-    System.out.printf("Open %s ret = %d", loc3, ret);
+    String loc4 = "Q:/cdmUnitTest/formats/netcdf4/nc4-classic/test2.nc";
+    //String loc3 = "Q:\\cdmUnitTest\\formats\\netcdf3/example1.nc";
+    int ret = iosp.open(loc4);
+    System.out.printf("Open %s ret = %d", loc4, ret);
   }
 
 }
