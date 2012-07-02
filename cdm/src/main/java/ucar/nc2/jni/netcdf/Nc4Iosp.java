@@ -22,11 +22,11 @@ public class Nc4Iosp {
       String dir = "C:/cdev/lib/";
       System.setProperty("jna.library.path", dir);
 
-      /* System.load(dir + "zlib.dll");
+      /*System.load(dir + "zlib.dll");
       System.load(dir + "szip.dll");
-      System.load(dir + "hdf5dll.dll");
-      System.load(dir + "hdf5_hldll.dll");
-      System.load(dir + "netcdf-7.dll"); */
+      System.load(dir + "hdf5.dll");
+      System.load(dir + "hdf5_hl.dll");
+      System.load(dir + "netcdf-7.dll");     */
 
       //Native.setProtected(true);
       nc4 = (NC4) Native.loadLibrary("netcdf-7", NC4.class);
@@ -53,9 +53,10 @@ public class Nc4Iosp {
   public static void main(String args[]) throws Exception {
     Nc4Iosp iosp = new Nc4Iosp();
 
-    String loc = "C:/temp/tst_atts.nc";
-    int ret = iosp.open(loc);
-    System.out.printf("Open %s ret = %d", loc, ret);
+    String loc4 = "C:/temp/tst_atts.nc";
+    String loc3 = "Q:\\cdmUnitTest\\formats\\netcdf3/example1.nc";
+    int ret = iosp.open(loc3);
+    System.out.printf("Open %s ret = %d", loc3, ret);
   }
 
 }
