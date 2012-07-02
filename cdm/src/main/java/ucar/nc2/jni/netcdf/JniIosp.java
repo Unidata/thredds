@@ -1437,7 +1437,7 @@ public class JniIosp extends AbstractIOServiceProvider {
   public static void main(String args[]) throws Exception {
     JniIosp iosp = new JniIosp();
 
-    String loc4 = "C:/temp/tst_atts.nc";
+    String loc4 = "Q:/cdmUnitTest/formats/netcdf4/nc4-classic/test2.nc";
     String loc3 = "Q:/cdmUnitTest/formats/netcdf3/example1.nc";
     NetcdfFile ncfile = iosp.open(loc4);
     System.out.println("" + ncfile);
