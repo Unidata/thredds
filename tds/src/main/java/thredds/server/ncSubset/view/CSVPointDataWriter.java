@@ -269,17 +269,14 @@ class CSVPointDataWriter implements PointDataWriter {
 
 		if(!headersSet){
 			httpHeaders = new HttpHeaders();
-			DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
-			File netcdfResult = diskCache.createUniqueFile("ncss", ".csv");
 			//Set the response headers...
 			String filename = gridDataset.getLocationURI();
 			int pos = filename.lastIndexOf("/");
 			filename = filename.substring(pos + 1);
 			if (!filename.endsWith(".csv"))
 				filename = filename + ".csv";
-                
-			String url = AbstractNcssController.buildCacheUrl(netcdfResult.getName());
-			httpHeaders.set("Content-Location", url );
+			
+			httpHeaders.set("Content-Location", filename );
 			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 			headersSet = true;
 		}	

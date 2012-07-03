@@ -161,7 +161,7 @@ class ThreddsVectorLayer implements VectorLayer, ThreddsLayer {
   @Override
   public boolean isIntervalTime()
   {
-    return false;  // TODO this.layerSettings.isIntervalTime();
+    return this.layerSettings.isIntervalTime();
   }
 
   @Override

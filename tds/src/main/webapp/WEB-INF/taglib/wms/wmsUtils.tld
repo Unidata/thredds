@@ -43,4 +43,14 @@
     <function-class>uk.ac.rdg.resc.ncwms.util.WmsUtils</function-class>
     <function-signature>java.lang.String getTimeAxisUnits(org.joda.time.Chronology)</function-signature>
   </function>
+  
+<function>
+    <description>Returns a concise string representing the time axis values</description>
+    <name>getTimeStringForCapabilities</name>
+    <function-class>uk.ac.rdg.resc.ncwms.util.WmsUtils</function-class>
+    <function-signature>java.lang.String getTimeStringForCapabilities(java.util.List)</function-signature>
+  </function>  
+  
+  
+  
 </taglib>

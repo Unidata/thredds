@@ -213,7 +213,7 @@ class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
   @Override
   public boolean isIntervalTime()
   {
-    return false;  // TODO this.layerSettings.isIntervalTime();
+    return this.layerSettings.isIntervalTime();
   }
 
   @Override
