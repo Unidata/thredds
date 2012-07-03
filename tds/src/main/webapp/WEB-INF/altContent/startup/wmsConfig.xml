@@ -13,7 +13,7 @@ for more information.
 
 <!ELEMENT global (defaults, standardNames?)>
 
-<!ELEMENT defaults (allowFeatureInfo, defaultColorScaleRange, defaultPaletteName, defaultNumColorBands, logScaling)>
+<!ELEMENT defaults (allowFeatureInfo, defaultColorScaleRange, defaultPaletteName, defaultNumColorBands, logScaling, intervalTime)>
 
 <!ELEMENT standardNames (standardName*)>
 
@@ -26,11 +26,11 @@ for more information.
 <!ELEMENT datasetPath (pathDefaults?, variables?)>
 <!ATTLIST datasetPath pathSpec CDATA #REQUIRED>
 
-<!ELEMENT pathDefaults (allowFeatureInfo?, defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+<!ELEMENT pathDefaults (allowFeatureInfo?, defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?, intervalTime?)>
 
 <!ELEMENT variables (variable*)>
 
-<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?, intervalTime?)>
 <!ATTLIST variable id CDATA #REQUIRED>
 
 <!ELEMENT allowFeatureInfo (#PCDATA)>
@@ -38,6 +38,7 @@ for more information.
 <!ELEMENT defaultPaletteName (#PCDATA)>
 <!ELEMENT defaultNumColorBands (#PCDATA)>
 <!ELEMENT logScaling (#PCDATA)>
+<!ELEMENT intervalTime (#PCDATA)> <!-- Allows to use time ranges instead of lists in the capabilities documents -->
 ]>
 <wmsConfig>
 
@@ -51,6 +52,7 @@ for more information.
             <defaultPaletteName>rainbow</defaultPaletteName>
             <defaultNumColorBands>20</defaultNumColorBands>
             <logScaling>false</logScaling>
+            <intervalTime>false</intervalTime>
         </defaults>
 
         <standardNames>

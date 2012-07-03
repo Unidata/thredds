@@ -46,6 +46,7 @@ public class LayerSettings
     private Range<Float> defaultColorScaleRange = null;
     private String defaultPaletteName =  null;
     private Boolean logScaling = null;
+    private Boolean intervalTime = null;
     private Integer defaultNumColorBands = null;
 
     LayerSettings(Element parentElement) throws WmsConfigException
@@ -63,6 +64,7 @@ public class LayerSettings
         this.defaultNumColorBands = getInteger(parentElement, "defaultNumColorBands",
                 Ranges.newRange(5, ColorPalette.MAX_NUM_COLOURS));
         this.logScaling = getBoolean(parentElement, "logScaling");
+        this.intervalTime = getBoolean(parentElement, "intervalTime");
     }
 
     /** Package-private constructor, sets all fields to null */
@@ -135,6 +137,10 @@ public class LayerSettings
         return logScaling;
     }
 
+    public boolean isIntervalTime(){
+    	return intervalTime;
+    }
+    
     public Integer getDefaultNumColorBands() {
         return defaultNumColorBands;
     }
@@ -149,6 +155,7 @@ public class LayerSettings
         if (this.defaultColorScaleRange == null) this.defaultColorScaleRange = newSettings.defaultColorScaleRange;
         if (this.defaultPaletteName == null) this.defaultPaletteName = newSettings.defaultPaletteName;
         if (this.logScaling == null) this.logScaling = newSettings.logScaling;
+        if (this.intervalTime == null) this.intervalTime = newSettings.intervalTime;
         if (this.defaultNumColorBands == null) this.defaultNumColorBands = newSettings.defaultNumColorBands;
     }
 
