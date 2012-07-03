@@ -17,7 +17,7 @@ for more information.
 
 <!ELEMENT standardNames (standardName*)>
 
-<!ELEMENT standardName (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
+<!ELEMENT standardName (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?, intervalTime?)>
 <!ATTLIST standardName name CDATA #REQUIRED>
 <!ATTLIST standardName units CDATA #REQUIRED>
 
