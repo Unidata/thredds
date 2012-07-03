@@ -9,7 +9,7 @@ import java.util.List;
 public enum SupportedFormat{
 	
 		
-	CSV("CSV","text/csv", "csv"  ),
+	CSV("CSV","text/plain", "text/csv", "csv"  ),
 	XML("XML", "application/xml", "text/xml", "xml"),
 	NETCDF("NETCDF","application/x-netcdf","netcdf");
 	
