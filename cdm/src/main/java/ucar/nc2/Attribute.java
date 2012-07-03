@@ -229,7 +229,9 @@ public class Attribute {
     if (nelems != att.nelems) return false;
     if (!dataType.equals(att.dataType)) return false;
 
-    if (svalue != null) return svalue.equals(att.getStringValue());
+    if (isString())
+      return att.getStringValue().equals(getStringValue());
+    //if (svalue != null) return svalue.equals(att.getStringValue());
 
     if (values != null) {
       for (int i = 0; i < getLength(); i++) {

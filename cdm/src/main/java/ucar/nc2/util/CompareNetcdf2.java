@@ -62,6 +62,10 @@ public class CompareNetcdf2 {
     return tc.compare(org, copy);
   }
 
+  static public interface ObjFilter {
+    boolean attOk(Attribute att);
+  }
+
   /////////
 
   private Formatter f;
@@ -85,6 +89,10 @@ public class CompareNetcdf2 {
   }
 
   public boolean compare(NetcdfFile org, NetcdfFile copy, boolean showCompare, boolean showEach, boolean compareData) {
+    return compare(org, copy, null, showCompare, showEach, compareData);
+  }
+
+  public boolean compare(NetcdfFile org, NetcdfFile copy, ObjFilter filter, boolean showCompare, boolean showEach, boolean compareData) {
     this.compareData = compareData;
     this.showCompare = showCompare;
     this.showEach = showEach;
@@ -94,7 +102,7 @@ public class CompareNetcdf2 {
 
     long start = System.currentTimeMillis();
 
-    boolean ok = compareGroups(org.getRootGroup(), copy.getRootGroup());
+    boolean ok = compareGroups(org.getRootGroup(), copy.getRootGroup(), filter);
     f.format(" Files are the same = %s%n", ok);
 
     long took = System.currentTimeMillis() - start;
@@ -150,7 +158,7 @@ public class CompareNetcdf2 {
     return true;
   }
 
-  private boolean compareGroups(Group org, Group copy) {
+  private boolean compareGroups(Group org, Group copy, ObjFilter filter) {
     if (showCompare) f.format("compare Group %s to %s %n", org.getName(), copy.getName());
     boolean ok = true;
 
@@ -163,7 +171,7 @@ public class CompareNetcdf2 {
     ok &= checkAll(org.getDimensions(), copy.getDimensions(), null);
 
     // attributes
-    ok &= checkAll(org.getAttributes(), copy.getAttributes(), null);
+    ok &= checkAttributes(org.getAttributes(), copy.getAttributes(), filter);
 
     // variables
     // cant use object equality, just match on short name
@@ -173,7 +181,7 @@ public class CompareNetcdf2 {
         f.format(" ** cant find variable %s in 2nd file%n", orgV.getFullName());
         ok = false;
       } else {
-        ok &= compareVariables(orgV, copyVar, compareData, true);
+        ok &= compareVariables(orgV, copyVar, filter, compareData, true);
       }
     }
 
@@ -191,7 +199,7 @@ public class CompareNetcdf2 {
     for (int i = 0; i < groups.size(); i += 2) {
       Group orgGroup = (Group) groups.get(i);
       Group ncmlGroup = (Group) groups.get(i + 1);
-      ok &= compareGroups(orgGroup, ncmlGroup);
+      ok &= compareGroups(orgGroup, ncmlGroup, filter);
     }
 
     return ok;
@@ -199,10 +207,10 @@ public class CompareNetcdf2 {
 
 
   public boolean compareVariable(Variable org, Variable copy) {
-    return compareVariables(org, copy, compareData, true);
+    return compareVariables(org, copy, null, compareData, true);
   }
 
-  public boolean compareVariables(Variable org, Variable copy, boolean compareData, boolean justOne) {
+  private boolean compareVariables(Variable org, Variable copy, ObjFilter filter, boolean compareData, boolean justOne) {
     boolean ok = true;
 
     if (showCompare) f.format("compare Variable %s to %s %n", org.getFullName(), copy.getFullName());
@@ -215,7 +223,7 @@ public class CompareNetcdf2 {
     ok &= checkAll(org.getDimensions(), copy.getDimensions(), null);
 
     // attributes
-    ok &= checkAll(org.getAttributes(), copy.getAttributes(), null);
+    ok &= checkAttributes(org.getAttributes(), copy.getAttributes(), filter);
 
     // coord sys
     if ((org instanceof VariableEnhanced) && (copy instanceof VariableEnhanced)) {
@@ -251,7 +259,7 @@ public class CompareNetcdf2 {
         for (int i = 0; i < vars.size(); i += 2) {
           Variable orgV = (Variable) vars.get(i);
           Variable ncmlV = (Variable) vars.get(i + 1);
-          ok &= compareVariables(orgV, ncmlV, false, true);
+          ok &= compareVariables(orgV, ncmlV, filter, false, true);
         }
       }
     }
@@ -274,6 +282,26 @@ public class CompareNetcdf2 {
 
     return ok;
   }
+
+    // make sure each object in each list are in the other list, using equals().
+  // return an arrayList of paired objects.
+
+  private boolean checkAttributes(List<Attribute> list1, List<Attribute> list2, ObjFilter filter) {
+    boolean ok = true;
+
+    for (Attribute att1 : list1) {
+      if (filter == null || filter.attOk(att1))
+        ok &= checkEach(att1, "file1", list1, "file2", list2, null);
+    }
+
+    for (Attribute att2 : list2) {
+      if (filter == null || filter.attOk(att2))
+      ok &= checkEach(att2, "file2", list2, "file1", list1, null);
+    }
+
+    return ok;
+  }
+
 
 
   // make sure each object in each list are in the other list, using equals().

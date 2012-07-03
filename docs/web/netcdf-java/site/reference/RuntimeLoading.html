@@ -68,8 +68,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p wrap=""> The 
   file must be a <a href="BufrTables.html">BUFR table lookup file</a>.</p>
 <hr>
-<p wrap=""><br>
-</p>
+<br>
 <h2>Runtime Configuration<a name="XML"></a> </h2>
 <p>Instead of calling the above routines in your code, you can pass the CDM library an XML configuration file. Note that your application must call <strong>ucar.nc2.util.RuntimeConfigParser.read()</strong>.</p>
 <p>The configuration file  looks like this: </p>
@@ -124,6 +123,7 @@ dl {margin: 10px 5px 5px 15px;)
 <hr>
 <p>&nbsp;</p>
 <h2>Runtime Loading of IOSP using javax.imageio.spi.ServiceRegistry<a name="ServiceRegistry"></a></h2>
+<p>(as of version 4.3.9)</p>
 <p>You can create an IOSP and have it discovered at runtime automatically.</p>
 <ol>
   <li>Your class must implement <strong>ucar.nc2.iosp.IOServiceProvider</strong></li>
@@ -139,7 +139,7 @@ See:</li>
 </blockquote>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on February 2012
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on June 2012
 </address>
 </body>
 </html>
