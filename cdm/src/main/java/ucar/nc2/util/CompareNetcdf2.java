@@ -63,7 +63,7 @@ public class CompareNetcdf2 {
   }
 
   static public interface ObjFilter {
-    boolean attOk(Attribute att);
+    boolean attOk(Variable v, Attribute att);
   }
 
   /////////
@@ -171,7 +171,7 @@ public class CompareNetcdf2 {
     ok &= checkAll(org.getDimensions(), copy.getDimensions(), null);
 
     // attributes
-    ok &= checkAttributes(org.getAttributes(), copy.getAttributes(), filter);
+    ok &= checkAttributes(null, org.getAttributes(), copy.getAttributes(), filter);
 
     // variables
     // cant use object equality, just match on short name
@@ -223,7 +223,7 @@ public class CompareNetcdf2 {
     ok &= checkAll(org.getDimensions(), copy.getDimensions(), null);
 
     // attributes
-    ok &= checkAttributes(org.getAttributes(), copy.getAttributes(), filter);
+    ok &= checkAttributes(org, org.getAttributes(), copy.getAttributes(), filter);
 
     // coord sys
     if ((org instanceof VariableEnhanced) && (copy instanceof VariableEnhanced)) {
@@ -286,16 +286,16 @@ public class CompareNetcdf2 {
     // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
 
-  private boolean checkAttributes(List<Attribute> list1, List<Attribute> list2, ObjFilter filter) {
+  private boolean checkAttributes(Variable v, List<Attribute> list1, List<Attribute> list2, ObjFilter filter) {
     boolean ok = true;
 
     for (Attribute att1 : list1) {
-      if (filter == null || filter.attOk(att1))
+      if (filter == null || filter.attOk(v, att1))
         ok &= checkEach(att1, "file1", list1, "file2", list2, null);
     }
 
     for (Attribute att2 : list2) {
-      if (filter == null || filter.attOk(att2))
+      if (filter == null || filter.attOk(v, att2))
       ok &= checkEach(att2, "file2", list2, "file1", list1, null);
     }
 

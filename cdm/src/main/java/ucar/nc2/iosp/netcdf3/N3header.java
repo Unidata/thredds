@@ -440,7 +440,7 @@ public class N3header {
         if (fout != null) fout.format(" begin read String val pos= %d\n", raf.getFilePointer());
         String val = readString();
         if (fout != null) fout.format(" end read String val pos= %d\n", raf.getFilePointer());
-        att = new Attribute(name, val); // no validation !!
+        att = (val == null) ? new Attribute(name, DataType.CHAR) : new Attribute(name, val);  // empty attribute
 
       } else {
         if (fout != null) fout.format(" begin read val pos= %d\n", raf.getFilePointer());
@@ -519,6 +519,9 @@ public class N3header {
     byte[] b = new byte[nelems];
     raf.read(b);
     skip(nelems); // pad to 4 byte boundary
+
+    if (nelems == 0)
+      return null;
 
     // null terminates
     int count = 0;
