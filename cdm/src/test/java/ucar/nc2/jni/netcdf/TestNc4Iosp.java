@@ -3,6 +3,7 @@ package ucar.nc2.jni.netcdf;
 import org.junit.Test;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
@@ -20,10 +21,21 @@ import java.util.Formatter;
 public class TestNc4Iosp {
   private boolean showCompareResults = true;
 
+  /* G:\data\cdmUnitTest\formats\netcdf4\compound\tst_solar_cmp.nc
+   G:\data\cdmUnitTest\formats\netcdf4\tst\tst_enums.nc
+   G:\data\cdmUnitTest\formats\netcdf4\tst\tst_solar_cmp.nc
+   G:\data\cdmUnitTest\formats\netcdf4\vlen\cdm_sea_soundings.nc4
+   */
+
+  @Test
+  public void problem() throws IOException {
+    doCompare("G:\\data\\cdmUnitTest\\formats\\netcdf4\\tst\\tst_solar_cmp.nc", true, true, true);
+  }
+
   @Test
   public void readAllNetcdf4() throws IOException {
     int count = 0;
-    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files", new MyFileFilter(), new MyAct());
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/", new MyFileFilter(), new MyAct(), true);
     System.out.println("***READ " + count + " files");
   }
 
@@ -43,12 +55,13 @@ public class TestNc4Iosp {
   private class MyObjectFilter implements CompareNetcdf2.ObjFilter {
 
     @Override
-    public boolean attOk(Attribute att) {
+    public boolean attOk(Variable v, Attribute att) {
+      if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getName();
       if (name.equals("HDF5_chunksize")) return false;
+      if (name.equals("_FillValue")) return false;
+      if (name.equals("_Netcdf4Dimid")) return false;
       if (att.getDataType().isEnum()) return false;
-      if (att.isString() && att.getStringValue() == null) return false;
-      if (att.isString() && (att.getStringValue().length() == 0)) return false;
       return true;
     }
   }
@@ -60,10 +73,6 @@ public class TestNc4Iosp {
     }
   }
 
-  @Test
-  public void problem() throws IOException {
-    doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\tst\\c0_4.nc4", true, true, true);
-  }
 
   private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(location);

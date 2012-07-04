@@ -80,8 +80,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
   }
 
   private NetcdfFile ncfile;
-  private int ncid = -1, format;
+  private int ncid = -1;    // file id
+  private int format;       // nc4 or nc3
   private boolean isClosed = false;
+  private Map<Integer, UserType> userTypes = new HashMap<Integer, UserType>();  // hash by typeid
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     load(); // load jni
@@ -232,14 +234,59 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       ret = nc4.nc_inq_atttype(grpid, varid, attname, xtypep);
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret) + " varid=" + varid + "attnum=" + attnum);
+      /* xtypep : Pointer to location for returned attribute type, one of the set of predefined netCDF external data types.
+      The type of this parameter, nc_type, is defined in the netCDF header file.
+      The valid netCDF external data types are NC_BYTE, NC_CHAR, NC_SHORT, NC_INT, NC_FLOAT, and NC_DOUBLE.
+      If this parameter is given as '0' (a null pointer), no type will be returned so no variable to hold the type needs to be declared. */
+      int type = xtypep.getValue();
 
       NativeLongByReference lenp = new NativeLongByReference();
       ret = nc4.nc_inq_attlen(grpid, varid, attname, lenp);
       if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
       int len = lenp.getValue().intValue();
 
+      // deal with empty attributes
+      if (len == 0) {
+        Attribute att;
+        switch (type) {
+          case NCLibrary.NC_BYTE:
+          case NCLibrary.NC_UBYTE:
+            att = new Attribute(attname, DataType.BYTE);
+            break;
+          case NCLibrary.NC_CHAR:
+            att = new Attribute(attname, DataType.CHAR);
+            break;
+          case NCLibrary.NC_DOUBLE:
+            att = new Attribute(attname, DataType.DOUBLE);
+            break;
+          case NCLibrary.NC_FLOAT:
+            att = new Attribute(attname, DataType.FLOAT);
+            break;
+          case NCLibrary.NC_INT:
+          case NCLibrary.NC_UINT:
+            att = new Attribute(attname, DataType.INT);
+            break;
+          case NCLibrary.NC_UINT64:
+          case NCLibrary.NC_INT64:
+            att = new Attribute(attname, DataType.LONG);
+            break;
+          case NCLibrary.NC_USHORT:
+          case NCLibrary.NC_SHORT:
+            att = new Attribute(attname, DataType.SHORT);
+            break;
+          case NCLibrary.NC_STRING:
+            att = new Attribute(attname, DataType.STRING);
+            break;
+          default:
+            log.warn("Unsupported attribute data type == " + type);
+            continue;
+        }
+        result.add(att);
+        continue;
+      }
+
+      // read the att values
       Array values = null;
-      int type = xtypep.getValue();
       switch (type) {
         case NCLibrary.NC_UBYTE:
           byte[] valbu = new byte[len];
@@ -332,19 +379,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
             log.warn("Unsupported attribute data type == " + type);
             continue;
 
-          } else if (userType.userType == NCLibrary.NC_ENUM) {
+          } else if (userType.typeClass == NCLibrary.NC_ENUM) {
             result.add( readEnumAttValues(grpid, varid, attname, len, userType));
             continue;
 
-          } else if (userType.userType == NCLibrary.NC_OPAQUE) {
+          } else if (userType.typeClass == NCLibrary.NC_OPAQUE) {
             result.add( readOpaqueAttValues(grpid, varid, attname, len, userType));
             continue;
 
-          } else if (userType.userType == NCLibrary.NC_VLEN) {
+          } else if (userType.typeClass == NCLibrary.NC_VLEN) {
             values = readVlenAttValues( grpid, varid, attname, len, userType);
 
-          } else if (userType.userType == NCLibrary.NC_COMPOUND) {
-            readCompoundAttValues(grpid, varid, attname, len, userType, result, v);
+          } else if (userType.typeClass == NCLibrary.NC_COMPOUND) {
+            // readCompoundAttValues(grpid, varid, attname, len, userType, result, v);  skip for now
             continue;
 
           } else {
@@ -501,7 +548,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       UserType utype = userTypes.get(typeid);
       if (utype != null) {
         vinfo.utype = utype;
-        if (utype.userType == NCLibrary.NC_VLEN)
+        if (utype.typeClass == NCLibrary.NC_VLEN)
           dimList = dimList +" *";
       }
 
@@ -585,19 +632,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     int size; // the size of the user defined type
     int baseTypeid; // the base typeid for vlen and enum types
     long nfields; // the number of fields for enum and compound types
-    int userType; // the class of the user defined type: NC_VLEN, NC_OPAQUE, NC_ENUM, or NC_COMPOUND.
+    int typeClass; // the class of the user defined type: NC_VLEN, NC_OPAQUE, NC_ENUM, or NC_COMPOUND.
 
     EnumTypedef e;
     List<Field> flds;
 
-    UserType(int grpid, int typeid, String name, long size, int baseTypeid, long nfields, int userType) {
+    UserType(int grpid, int typeid, String name, long size, int baseTypeid, long nfields, int typeClass) {
       this.grpid = grpid;
       this.typeid = typeid;
       this.name = name;
       this.size = (int) size;
       this.baseTypeid = baseTypeid;
       this.nfields = nfields;
-      this.userType = userType;
+      this.typeClass = typeClass;
     }
 
     void setEnum(EnumTypedef e) {
@@ -611,7 +658,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     }
 
     public String toString() {
-      return "name='"+name+"' id="+getDataTypeName(typeid)+" userType="+getDataTypeName(userType)+
+      return "name='"+name+"' id="+getDataTypeName(typeid)+" userType="+getDataTypeName(typeClass)+
               " baseType="+getDataTypeName(baseTypeid);
     }
 
@@ -631,7 +678,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
                 field_typeidp.getValue(), ndimsp.getValue(), dims);
 
         addField( fld);
-        System.out.println(" add field= "+fld);
+        if (debug) System.out.println(" add field= "+fld);
       }
     }
   }
@@ -694,8 +741,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
 
   }
 
-  private Map<Integer, UserType> userTypes = new HashMap<Integer, UserType>();
-
   private void makeUserTypes(int grpid, Group g) throws IOException {
     // find user types in this group
     IntByReference ntypesp = new IntByReference();
@@ -715,16 +760,25 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       NativeLongByReference nfieldsp = new NativeLongByReference();
       IntByReference classp = new IntByReference();
 
+      /*
+      ncid    The ncid for the group containing the user defined type.
+      xtype   The typeid for this type, as returned by nc_def_compound, nc_def_opaque, nc_def_enum, nc_def_vlen, or nc_inq_var.
+      name    If non-NULL, the name of the user defined type will be copied here. It will be NC_MAX_NAME bytes or less.
+      sizep   If non-NULL, the (in-memory) size of the type in bytes will be copied here. VLEN type size is the size of nc_vlen_t.
+              String size is returned as the size of a character pointer. The size may be used to malloc space for the data, no matter what the type.
+      nfieldsp If non-NULL, the number of fields will be copied here for enum and compound types.
+      classp  Return the class of the user defined type, NC_VLEN, NC_OPAQUE, NC_ENUM, or NC_COMPOUND.
+       */
       ret = nc4.nc_inq_user_type(grpid, typeid, nameb, sizep, baseType, nfieldsp, classp); // size_t
       if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
 
       String name = makeString(nameb);
       int utype = classp.getValue();
-      System.out.printf(" user type=%d name=%s size=%d baseType=%d nfields=%d class=%d %n ",
+      if (debug) System.out.printf(" user type id=%d name=%s size=%d baseType=%d nfields=%d class=%d%n",
           typeid, name, sizep.getValue().longValue(), baseType.getValue(), nfieldsp.getValue().longValue(), utype);
 
       UserType ut = new UserType(grpid, typeid, name, sizep.getValue().longValue(), baseType.getValue(),
-          nfieldsp.getValue().longValue(), classp.getValue());
+          nfieldsp.getValue().longValue(), utype);
       userTypes.put(typeid, ut);
 
       if (utype == NCLibrary.NC_ENUM) {
@@ -1006,16 +1060,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
         if (userType == null) {
           throw new IOException("Unsupported data type == " + typeid);
 
-        } else if (userType.userType == NCLibrary.NC_ENUM) {
+        } else if (userType.typeClass == NCLibrary.NC_ENUM) {
           return readEnum(grpid, varid, userType.baseTypeid, len, shape);
 
-        } else if (userType.userType == NCLibrary.NC_VLEN) {
+        } else if (userType.typeClass == NCLibrary.NC_VLEN) {
           return readVlen(grpid, varid, len, userType);
 
-        } else if (userType.userType == NCLibrary.NC_OPAQUE) {
+        } else if (userType.typeClass == NCLibrary.NC_OPAQUE) {
           return readOpaque(grpid, varid, len, userType.size);
 
-         } else  if (userType.userType == NCLibrary.NC_COMPOUND) {
+         } else  if (userType.typeClass == NCLibrary.NC_COMPOUND) {
           return readCompound(grpid, varid, len, userType);
         }
 
@@ -1055,7 +1109,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
 
     decodeCompoundData(len, userType, bbuff);
 
-    // is its a Structure, distribute to matching fields
+    // if its a Structure, distribute to matching fields
     if ((v != null) && (v instanceof Structure)) {
       Structure s = (Structure) v;
       for (Field fld : userType.flds) {
@@ -1097,49 +1151,60 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
             if (debugCompoundAtt) System.out.println("bval= "+bval);
             fld.data.setByte(i, bval);
             continue;
+
           case NCLibrary.NC_USHORT:
           case NCLibrary.NC_SHORT:
             short sval = bbuff.getShort(pos);
             if (debugCompoundAtt) System.out.println("sval= "+sval);
             fld.data.setShort(i, sval);
             continue;
+
           case NCLibrary.NC_UINT:
           case NCLibrary.NC_INT:
             int ival = bbuff.getInt(pos);
             if (debugCompoundAtt) System.out.println("ival= "+ival);
             fld.data.setInt(i, ival);
             continue;
+
           case NCLibrary.NC_UINT64:
           case NCLibrary.NC_INT64:
             long lval = bbuff.getLong(pos);
             if (debugCompoundAtt) System.out.println("lval= "+lval);
             fld.data.setLong(i, lval);
             continue;
+
           case NCLibrary.NC_FLOAT:
             float fval = bbuff.getFloat(pos);
             if (debugCompoundAtt) System.out.println("fval= "+fval);
             fld.data.setFloat(i, fval);
             continue;
+
           case NCLibrary.NC_DOUBLE:
             double dval = bbuff.getDouble(pos);
             if (debugCompoundAtt) System.out.println("dval= "+dval);
             fld.data.setDouble(i, dval);
             continue;
 
+          case NCLibrary.NC_STRING:
+            ival = bbuff.getInt(pos);
+            if (debugCompoundAtt) System.out.println("ival= "+ival);
+            continue;
+
           default:
+            // assume its a compound type
             UserType subUserType = userTypes.get(fld.fldtypeid);
             if (subUserType == null) {
               throw new IOException("Unsupported compound fld.fldtypeid == " + fld.fldtypeid);
 
-            } else if (userType.userType == NCLibrary.NC_ENUM) {
+            } else if (userType.typeClass == NCLibrary.NC_ENUM) {
 
-            } else if (userType.userType == NCLibrary.NC_VLEN) {
+            } else if (userType.typeClass == NCLibrary.NC_VLEN) {
               //return readVlen(grpid, varid, len, userType);
 
-            } else if (userType.userType == NCLibrary.NC_OPAQUE) {
+            } else if (userType.typeClass == NCLibrary.NC_OPAQUE) {
               //return readOpaque(grpid, varid, len, userType.size);
 
-             } else  if (userType.userType == NCLibrary.NC_COMPOUND) {
+             } else  if (userType.typeClass == NCLibrary.NC_COMPOUND) {
               //return readCompound(grpid, varid, len, userType);
             }
 
@@ -1161,6 +1226,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     //ArrayObject.D1 vlenArray = new ArrayObject.D1( dtype.getPrimitiveClassType(), len);
     Object[] data = new Object[len];
     switch (userType.baseTypeid) {
+      case NCLibrary.NC_UINT:
       case NCLibrary.NC_INT:
         for (int i = 0; i < len; i++) {
           int slen = vlen[i].len;
@@ -1245,7 +1311,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
 
   private boolean isVlen(int type) {
     UserType userType = userTypes.get(type);
-    return (userType == null) ? false : (userType.userType == NCLibrary.NC_VLEN);
+    return (userType == null) ? false : (userType.typeClass == NCLibrary.NC_VLEN);
   }
 
   private DataType convertDataType(int type) {
@@ -1286,7 +1352,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
         if (userType == null)
           throw new IllegalArgumentException("unknown type == " + type);
 
-        switch (userType.userType) {
+        switch (userType.typeClass) {
           case NCLibrary.NC_ENUM:
             return DataType.ENUM1;
 
@@ -1327,13 +1393,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
         if (userType == null)
           return "unknown type " + type;
 
-        switch (userType.userType) {
+        switch (userType.typeClass) {
           case NCLibrary.NC_ENUM: return "userType-enum";
           case NCLibrary.NC_COMPOUND: return "userType-struct";
           case NCLibrary.NC_OPAQUE: return "userType-opaque";
           case NCLibrary.NC_VLEN: return "userType-vlen";
         }
-        return "unknown userType " + userType.userType;
+        return "unknown userType " + userType.typeClass;
     }
   }
 
