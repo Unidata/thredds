@@ -34,16 +34,14 @@ package ucar.nc2.stream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IospHelper;
 
-import java.io.DataOutputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
-import java.nio.ByteBuffer;
+import java.io.OutputStream;
 import java.io.IOException;
 
 /**
- * Write a NetcdfFile to a WritableByteChannel using ncstream protocol
+ * Write a NetcdfFile to a OutputStream using ncstream protocol
  *
  * @author caron
  * @since Feb 7, 2009
@@ -69,109 +67,116 @@ public class NcStreamWriter {
     header = headerBuilder.build();
   }
 
-  public long sendStart(WritableByteChannel wbc) throws IOException {
-    return writeBytes(wbc, NcStream.MAGIC_START);
+  public long sendStart(OutputStream out) throws IOException {
+    return writeBytes(out, NcStream.MAGIC_START);
   }
 
-  public long sendEnd(WritableByteChannel wbc) throws IOException {
-    return writeBytes(wbc, NcStream.MAGIC_END);
+  public long sendEnd(OutputStream out) throws IOException {
+    return writeBytes(out, NcStream.MAGIC_END);
   }
 
-  public long sendHeader(WritableByteChannel wbc) throws IOException {
+  public long sendHeader(OutputStream out) throws IOException {
     long size = 0;
 
     //// header message
-    size += writeBytes(wbc, NcStream.MAGIC_HEADER);
+    size += writeBytes(out, NcStream.MAGIC_HEADER);
     byte[] b = header.toByteArray();
-    size += NcStream.writeVInt(wbc, b.length); // len
+    size += NcStream.writeVInt(out, b.length); // len
     if (show) System.out.println("Write Header len=" + b.length);
 
     // payload
-    size += writeBytes(wbc, b);
+    size += writeBytes(out, b);
     if (show) System.out.println(" header size=" + size);
 
     return size;
   }
 
-  public long sendData(Variable v, Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
+  public long sendData(Variable v, Section section, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
     if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
 
     long size = 0;
-    size += writeBytes(wbc, NcStream.MAGIC_DATA); // magic
-    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section);
+    size += writeBytes(out, NcStream.MAGIC_DATA); // magic
+    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, deflate);
     byte[] datab = dataProto.toByteArray();
-    size += NcStream.writeVInt(wbc, datab.length); // dataProto len
-    size += writeBytes(wbc, datab); // dataProto
+    size += NcStream.writeVInt(out, datab.length); // dataProto len
+    size += writeBytes(out, datab); // dataProto
 
     if (v.getDataType() == DataType.SEQUENCE) {
       int count = 0;
-      DataOutputStream os = new DataOutputStream(Channels.newOutputStream(wbc));
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
       StructureDataIterator iter = seq.getStructureIterator(-1);
       try {
         while (iter.hasNext()) {
-          size += writeBytes(wbc, NcStream.MAGIC_VDATA); // magic
+          size += writeBytes(out, NcStream.MAGIC_VDATA); // magic
           ArrayStructureBB abb = IospHelper.copyToArrayBB(iter.next());
-          size += NcStream.encodeArrayStructure(abb, os);
+          size += NcStream.encodeArrayStructure(abb, out);
           count++;
         }
       } finally {
         iter.finish();
       }
-      size += writeBytes(wbc, NcStream.MAGIC_VEND);
+      size += writeBytes(out, NcStream.MAGIC_VEND);
       if (show) System.out.printf(" NcStreamWriter sent %d sdata bytes = %d%n", count, size);
       return size;
     }
 
+    // regular arrays
     long len = section.computeSize();
-    if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE)) // vdataMessage
-      len *= v.getElementSize();
-    size += NcStream.writeVInt(wbc, (int) len); // data len or number of objects
+    if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
+      len *= v.getElementSize(); // nelems for vdata, else nbytes
+
+    size += NcStream.writeVInt(out, (int) len); // data len or number of objects
     if (show) System.out.printf("  %s proto=%d data=%d%n", v.getFullName(), datab.length, len);
 
-    size += v.readToByteChannel(section, wbc); // try to do a direct transfer
+    size += v.readToStream(section, out); // try to do a direct transfer
 
     return size;
   }
 
-  /* public long sendData(WritableByteChannel wbc, StructureData sdata) throws IOException {
+  /* public long sendData(WritableByteChannel out, StructureData sdata) throws IOException {
     long size = 0;
     ByteBuffer bb = IospHelper.copyToByteBuffer(sdata);
     byte[] datab = bb.array();
-    size += writeBytes(wbc, NcStream.MAGIC_DATA); // magic
-    size += NcStream.writeVInt(wbc, datab.length); // data len
-    size += writeBytes(wbc, datab); // data
+    size += writeBytes(out, NcStream.MAGIC_DATA); // magic
+    size += NcStream.writeVInt(out, datab.length); // data len
+    size += writeBytes(out, datab); // data
     return size;
   } */
 
-  private int writeBytes(WritableByteChannel wbc, byte[] b) throws IOException {
-    return wbc.write(ByteBuffer.wrap(b));
+  private int writeBytes(OutputStream out, byte[] b) throws IOException {
+    out.write(b);
+    return b.length;
   }
 
-  public long streamAll(WritableByteChannel wbc) throws IOException, InvalidRangeException {
-    long size = writeBytes(wbc, NcStream.MAGIC_START);
-    size += sendHeader(wbc);
+  public long streamAll(OutputStream out) throws IOException, InvalidRangeException {
+    long size = writeBytes(out, NcStream.MAGIC_START);
+    size += sendHeader(out);
     if (show) System.out.printf(" data starts at= %d%n", size);
 
     for (Variable v : ncfile.getVariables()) {
-      long vsize = v.getSize() * v.getElementSize();
-      //if (vsize < sizeToCache) continue; // in the header
+      Attribute chunkAtt = null; // v.findAttribute(CDM.CHUNK);
+      Attribute compressAtt = v.findAttribute(CDM.COMPRESS);
+      boolean deflate = (compressAtt != null) && compressAtt.isString() && compressAtt.getStringValue().equalsIgnoreCase(CDM.COMPRESS_DEFLATE);
 
-      if (vsize == 1)
-        System.out.println("HEY");
+      long vsize = v.getSize() * v.getElementSize();
+      //if (vsize < sizeToCache) continue; // in the header;
       if (show) System.out.printf(" var %s len=%d starts at= %d%n", v.getFullName(), vsize, size);
-      if (vsize <= maxChunk) {
-        size += sendData(v, v.getShapeAsSection(), wbc);
+
+      if (chunkAtt != null) {
+        size += copyChunks(out, v, compressAtt.getStringValue(), deflate);
+      } else if (vsize > maxChunk) {
+        size += copyChunks(out, v, maxChunk, deflate);
       } else {
-        size += copyChunks(wbc, v, maxChunk);
+        size += sendData(v, v.getShapeAsSection(), out, deflate);
       }
     }
 
+    size += writeBytes(out, NcStream.MAGIC_END);
     if (show) System.out.printf("total size= %d%n", size);
     return size;
   }
 
-  private long copyChunks(WritableByteChannel wbc, Variable oldVar, long maxChunkSize) throws IOException {
+  private long copyChunks(OutputStream out, Variable oldVar, long maxChunkSize, boolean deflate) throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
     FileWriter.ChunkingIndex index = new FileWriter.ChunkingIndex(oldVar.getShape());
     long size = 0;
@@ -179,8 +184,9 @@ public class NcStreamWriter {
       try {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
-        size += sendData(oldVar, new Section(chunkOrigin, chunkShape), wbc);
+        size += sendData(oldVar, new Section(chunkOrigin, chunkShape), out, deflate);
         index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
+
       } catch (InvalidRangeException e) {
         e.printStackTrace();
         throw new IOException(e.getMessage());
@@ -189,6 +195,54 @@ public class NcStreamWriter {
     return size;
   }
 
+  private long copyChunks(OutputStream out, Variable oldVar, String chunk, boolean deflate) throws IOException {
+    /*long maxChunkElems = maxChunkSize / oldVar.getElementSize();
+    FileWriter.ChunkingIndex index = new FileWriter.ChunkingIndex(oldVar.getShape());
+    long size = 0;
+    while (index.currentElement() < index.getSize()) {
+      try {
+        int[] chunkOrigin = index.getCurrentCounter();
+        int[] chunkShape = index.computeChunkShape(maxChunkElems);
+        size += sendData(oldVar, new Section(chunkOrigin, chunkShape), out, deflate);
+        index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
+
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+        throw new IOException(e.getMessage());
+      }
+    }
+    return size; */
+    return 0;
+  }
+
+
+  static public void main2(String args[]) throws InvalidRangeException {
+    int[] totalShape = new int[] {1, 40, 530, 240};
+    int[] chunkShape = new int[] {1, 1, 530, 240};
+    FileWriter.ChunkingIndex index = new FileWriter.ChunkingIndex(totalShape);
+    long size = 0;
+    while (index.currentElement() < index.getSize()) {
+      int[] chunkOrigin = index.getCurrentCounter();
+      System.out.printf(" %s%n", new Section(chunkOrigin, chunkShape));
+      index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
+    }
+
+  }
+
+  static public void main(String args[]) throws InvalidRangeException {
+    long maxChunkElems = maxChunk / 4;
+    int[] totalShape = new int[] {1, 40, 530, 240};
+    //int[] chunkShape = new int[] {1, 1, 530, 240};
+    FileWriter.ChunkingIndex index = new FileWriter.ChunkingIndex(totalShape);
+    long size = 0;
+    while (index.currentElement() < index.getSize()) {
+      int[] chunkOrigin = index.getCurrentCounter();
+      int[] chunkShape = index.computeChunkShape(maxChunkElems);
+      System.out.printf(" %s%n", new Section(chunkOrigin, chunkShape));
+      index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
+    }
+
+  }
 
 }
 

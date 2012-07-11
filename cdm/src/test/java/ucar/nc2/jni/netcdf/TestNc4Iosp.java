@@ -53,15 +53,21 @@ public class TestNc4Iosp {
   }
 
   private class MyObjectFilter implements CompareNetcdf2.ObjFilter {
-
     @Override
     public boolean attOk(Variable v, Attribute att) {
       if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getName();
+      // added by cdm
       if (name.equals("HDF5_chunksize")) return false;
       if (name.equals("_FillValue")) return false;
-      if (name.equals("_Netcdf4Dimid")) return false;
+
+      // hidden by nc4
+      if (name.equals("_Netcdf4Dimid")) return false;  // preserve the order of the coordinate variables
+      if (name.equals("_Netcdf4Coordinates")) return false;  // allow the order of the coordinate variables
+
+      // not implemented yet
       if (att.getDataType().isEnum()) return false;
+
       return true;
     }
   }

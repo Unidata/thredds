@@ -505,7 +505,10 @@ public class Section {
    */
   public Section appendRange(int first, int last) throws InvalidRangeException {
     if (immutable) throw new IllegalStateException("Cant modify");
-    list.add(new Range(first, last));
+    if (last < 0)
+      list.add(Range.VLEN);
+    else
+      list.add(new Range(first, last));
     return this;
   }
 

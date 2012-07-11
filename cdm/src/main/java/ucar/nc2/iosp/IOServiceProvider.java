@@ -39,6 +39,7 @@ import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 
 /**
@@ -117,6 +118,9 @@ public interface IOServiceProvider {
 
   public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
          throws java.io.IOException, ucar.ma2.InvalidRangeException;
+
+  public long readToOutputStream(ucar.nc2.Variable v2, Section section, OutputStream out)
+          throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
    * Allows reading sections of nested variables

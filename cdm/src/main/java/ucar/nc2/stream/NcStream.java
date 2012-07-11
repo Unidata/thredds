@@ -207,12 +207,14 @@ public class NcStream {
     return builder.build();
   }
 
-  static NcStreamProto.Data encodeDataProto(Variable var, Section section) {
+  static NcStreamProto.Data encodeDataProto(Variable var, Section section, boolean deflate) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getFullNameEscaped());
     builder.setDataType(encodeDataType(var.getDataType()));
     builder.setSection(encodeSection(section));
-    builder.setVersion(1);
+    if (deflate) builder.setCompress(NcStreamProto.Compress.DEFLATE);
+    if (var.isVariableLength()) builder.setVdata(true);
+    builder.setVersion(2);
     return builder.build();
   }
 
@@ -220,11 +222,15 @@ public class NcStream {
     NcStreamProto.Section.Builder sbuilder = NcStreamProto.Section.newBuilder();
     for (Range r : section.getRanges()) {
       NcStreamProto.Range.Builder rbuilder = NcStreamProto.Range.newBuilder();
+      if (r.first() != 0) rbuilder.setStart(r.first());
       rbuilder.setSize(r.length());
+      if (r.stride() != 1) rbuilder.setStride(r.stride());
       sbuilder.addRange(rbuilder);
     }
     return sbuilder.build();
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public static long encodeArrayStructure(ArrayStructure as, OutputStream os) throws java.io.IOException {
     long size = 0;
@@ -319,6 +325,8 @@ public class NcStream {
 
     return dataBB.getStructureData(0);
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -634,7 +642,9 @@ public class NcStream {
       try {
         section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1));
       } catch (InvalidRangeException e) {
-        throw new RuntimeException(e);
+        e.printStackTrace();
+        return null;
+        //throw new RuntimeException(e);
       }
     }
     return section;

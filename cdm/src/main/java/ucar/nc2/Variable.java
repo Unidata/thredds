@@ -39,6 +39,7 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.rc.RC;
 
+import java.io.OutputStream;
 import java.util.*;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
@@ -907,8 +908,15 @@ public class Variable implements VariableIF, ProxyReader {
   public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
     if ((ncfile == null) || hasCachedData())
       return IospHelper.copyToByteChannel( read(section), wbc);
-    
+
     return ncfile.readToByteChannel(this, section, wbc);
+  }
+
+  public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
+    if ((ncfile == null) || hasCachedData())
+      return IospHelper.copyToOutputStream( read(section), out);
+
+    return ncfile.readToOutputStream(this, section, out);
   }
 
   /*******************************************/
