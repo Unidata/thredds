@@ -141,16 +141,6 @@ public class DatasetTreeView extends JPanel {
     }
   }
 
-
-  /**
-   * Get the currently selected InvDataset.
-   * @return selected InvDataset, or null if none.
-   *
-  public Variable getSelected() {
-    TreeNode tnode = tree.getLastSelectedPathComponent();
-    return tnode == null ? null : tnode.ds;
-  } */
-
   /**
    * Set the currently selected Variable.
    * @param v select this Variable, must be already in the tree.
@@ -192,7 +182,7 @@ public class DatasetTreeView extends JPanel {
       pathList.add( gnode);
     }
 
-    vp = (VariableIF) vchain.get(0);
+    vp = vchain.get(0);
     VariableNode vnode = gnode.findNestedVariable( vp);
     if (vnode == null) return; // not found
     pathList.add( vnode);
@@ -212,114 +202,7 @@ public class DatasetTreeView extends JPanel {
     tree.scrollPathToVisible( treePath);
   }
 
-  /*
-   * Create the TreePath corresponding to the InvDataset.
-   * @param ds the InvDataset, must be already in the tree.
-   * @return the corresponding TreePath.
-   *
-  TreePath makePath(Variable v) {
-    TreeNode node = (TreeNode) ds.getUserProperty("TreeNode");
-    return makeTreePath( node);
-  }
-
-  /*
-   * Create the TreePath corresponding to the given TreeNode.
-   * @param node the TreeNode; already in the Tree.
-   * @return the corresponding TreePath.
-   *
-  TreePath makeTreePath(TreeNode node) {
-    ArrayList path = new ArrayList();
-    path.add( node);
-    TreeNode parent = node.getParent();
-    while (parent != null) {
-      path.add(0, parent);
-      parent = parent.getParent();
-    }
-
-    Object[] paths = path.toArray();
-    return new TreePath(paths);
-  } */
-
-  /*
-   * Open all nodes of the tree.
-   * @param includeCatref open catrefs?
-   *
-  public void openAll( boolean includeCatref) {
-    if (catalog == null) return;
-    open( (InvCatalogTreeNode) model.getRoot(), includeCatref);
-    tree.repaint();
-  }
-
-  private void open( InvCatalogTreeNode node, boolean includeCatref) {
-    if (node == null) return;
-    node.makeChildren( includeCatref);
-    tree.expandPath(makeTreePath(node));
-
-    Enumeration enum = node.children();
-    while (enum.hasMoreElements()) {
-      open( (InvCatalogTreeNode) enum.nextElement(), includeCatref);
-    }
-  } */
-
-  /*
-
-  void acceptSelected() {
-    InvDataset ds = getSelectedDataset();
-    if (ds == null) return;
-    if (accessOnly && !ds.hasAccess()) return;
-
-    //setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    firePropertyChangeEvent( ds);
-    //setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-  } */
-
-  /*
-   * Set the catalog to be displayed. If ok, then a "Catalog" PropertyChangeEvent is sent.
-   * @param catalog to be displayed
-   *
-  public void setDataset(NetcdfFile dataset) {
-    if (dataset == null) return;
-    String catalogName = catalog.getBaseURI().toString();
-    StringBuffer buff = new StringBuffer();
-    if (!catalog.check( buff)) {
-      javax.swing.JOptionPane.showMessageDialog(this, "Invalid catalog <"+ catalogName+">\n"+
-        buff.toString());
-      System.out.println("Invalid catalog <"+ catalogName+">\n"+buff.toString());
-      tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode(null, false)));
-      return;
-    }
-
-    if (filter != null)
-      catalog.filter(filter);
-    this.catalog = catalog;
-
-    // send catalog event
-    setCatalogURL( catalogName);
-    firePropertyChangeEvent(new PropertyChangeEvent(this, "Catalog", null, catalogName));
-
-    // display tree
-    // this sends TreeNode events
-    try {
-      model = new InvCatalogTreeModel( (InvDatasetImpl) catalog.getDataset());
-      tree.setModel( model);
-    } catch (Exception e) {
-      e.printStackTrace();
-      javax.swing.JOptionPane.showMessageDialog(this, e.getMessage());
-      tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode(null, false)));
-      return;
-    }
-
-      // debug
-    if (false) {
-      System.out.println("*** catalog/showJTree =");
-      showNode(tree.getModel(), tree.getModel().getRoot());
-      System.out.println("*** ");
-    }
-
-    return;
-  } */
-
-  // make an InvCatalog into a TreeModel
+  // make an NetcdfFile into a TreeModel
   private class DatasetTreeModel extends javax.swing.tree.DefaultTreeModel {
     DatasetTreeModel (NetcdfFile file) {
       super( new GroupNode( null, file.getRootGroup()), false);

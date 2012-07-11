@@ -187,15 +187,15 @@ public class Grib1Iosp extends GribIosp {
     }
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
-    ncfile.addAttribute(null, new Attribute("Originating or generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
+    ncfile.addAttribute(null, new Attribute("Originating_or_generating_Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
     val = cust.getSubCenterName(gribCollection.getSubcenter());
-    ncfile.addAttribute(null, new Attribute("Originating or generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
+    ncfile.addAttribute(null, new Attribute("Originating_or_generating_Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
     //ncfile.addAttribute(null, new Attribute("GRIB table version", gribCollection.getLocal()));
     //ncfile.addAttribute(null, new Attribute("GRIB table", gribCollection.getCenter()+"-"+gribCollection.getSubcenter()+"-"+gribCollection.getLocal()));
 
     val = cust.getGeneratingProcessName(gribCollection.getGenProcessId());
     if (val != null)
-      ncfile.addAttribute(null, new Attribute("Generating process or model", val));
+      ncfile.addAttribute(null, new Attribute("Generating_process_or_model", val));
 
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP Grib1Collection"));

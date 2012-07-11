@@ -39,7 +39,7 @@ import java.util.List;
  * <p/>
  * This is a generalization of index as int[]. Its main function is
  * to do the index arithmetic to translate an n-dim index into a 1-dim index.
- * The user obtains this by calling getIndex() on a Array.
+ * The user obtains this by calling getIndex() on an Array.
  * The set() and seti() routines are convenience routines for 1-7 dim arrays.
  *
  * @author caron

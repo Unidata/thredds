@@ -54,6 +54,7 @@ import java.nio.charset.Charset;
  * Read all of the metadata of an HD5 file.
  *
  * @author caron
+ * @see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf_4_spec.html"
  */
 
 /* Implementation notes

@@ -640,11 +640,11 @@ public abstract class Array {
   }
 
   /**
-   * This gets the equivilent java array of the wanted type, in correct order.
+   * This gets the equivalent java array of the wanted type, in correct order.
    * It avoids copying if possible.
    *
    * @param wantType returned object will be an array of this type. This must be convertible to it.
-   * @return copyTo1DJavaArray
+   * @return java array of type want
    */
   public Object get1DJavaArray(Class wantType) {
     if (wantType == getElementType()) {

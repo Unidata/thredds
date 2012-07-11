@@ -33,12 +33,12 @@
 
 package ucar.nc2.ui;
 
+import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
@@ -70,7 +70,6 @@ public class Hdf5DataTable extends JPanel {
   private JSplitPane splitH, split, split2;
 
   private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
 
   public Hdf5DataTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -99,14 +98,25 @@ public class Hdf5DataTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         VarBean mb = (VarBean) objectTable.getSelectedBean();
         if (mb == null) return;
-        if (infoTA == null) makeInfoWindow();
         infoTA.clear();
         Formatter f = new Formatter();
 
         deflate(f, mb);
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
-        infoWindow.show();
+      }
+    });
+
+    varPopup.addAction("show vlen", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        VarBean mb = (VarBean) objectTable.getSelectedBean();
+        if (mb == null) return;
+        infoTA.clear();
+        Formatter f = new Formatter();
+
+        showVlen(f, mb);
+        infoTA.appendLine(f.toString());
+        infoTA.gotoTop();
       }
     });
 
@@ -134,12 +144,6 @@ public class Hdf5DataTable extends JPanel {
    // prefs.putInt("splitPos", split.getDividerLocation());
    // prefs.putInt("splitPos2", split2.getDividerLocation());
     prefs.putInt("splitPosH", splitH.getDividerLocation());
-  }
-
-  private void makeInfoWindow() {
-    infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra", BAMutil.getImage("netcdfUI"), infoTA);
-    infoWindow.setBounds(new Rectangle(300, 300, 500, 800));
   }
 
   private H5iosp iosp;
@@ -230,8 +234,34 @@ public class Hdf5DataTable extends JPanel {
   }
 
     ////////////////////////////////////////////////////////////////////////
-  private void deflate(Formatter f, VarBean bean) {
+    private void deflate(Formatter f, VarBean bean) {
+      f.format("Not implemented yet");
+    }
 
+  private void showVlen(Formatter f, VarBean bean) {
+    if (!bean.v.isVariableLength())  {
+      f.format("Variable %s must be variable length", bean.v.getFullName());
+      return;
+    }
+
+    try {
+      int countRows = 0;
+      long countElems = 0;
+      Array result = bean.v.read();
+      f.format("class = %s%n", result.getClass().getName());
+      while (result.hasNext()) {
+        Array line = (Array) result.next();
+        countRows++;
+        long size = line.getSize();
+        countElems += size;
+        f.format("  row %d size=%d%n", countRows, size);
+      }
+      float avg = (countRows == 0) ? 0 : ((float) countElems) / countRows;
+      f.format("%n  nrows = %d totalElems=%d avg=%f%n", countRows, countElems, avg);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      return;
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////

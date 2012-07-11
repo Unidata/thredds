@@ -5,14 +5,12 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.stream.NcStreamIosp;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.IO;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -91,17 +89,7 @@ public class CdmremotePanel extends JPanel {
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
-  static private class MyNetcdfFile extends NetcdfFile {
-  }
-
   public void setNcStream(String stream) throws IOException {
-    if (stream.startsWith("http:"))
-      setStream(stream);
-    else
-      setFile(stream);
-  }
-
-  public void setStream(String stream) throws IOException {
     if (ncd != null) ncd.close();
 
     long total = 0;
@@ -113,7 +101,7 @@ public class CdmremotePanel extends JPanel {
       while (true) {
         Mess mess = new Mess();
         mess.magic = PointStream.readMagic(is);
-        messages.add(new MessBean2(mess));
+        messages.add(new MessBean(mess));
 
         if (mess.magic == PointStream.MessageType.Eos)
           break;
@@ -178,73 +166,18 @@ public class CdmremotePanel extends JPanel {
     ncd = null;
   }
 
-  public void setFile(String filename) throws IOException {
-    closeOpenFiles();
-
-    List<MessBean> messages = new ArrayList<MessBean>();
-    ncd = new MyNetcdfFile();
-    NcStreamIosp iosp = new NcStreamIosp();
-    RandomAccessFile raf = null;
-    try {
-      raf = new RandomAccessFile(filename, "r");
-      List<NcStreamIosp.NcsMess> ncm = iosp.open(raf, ncd);
-      for (NcStreamIosp.NcsMess m : ncm) {
-        messages.add(new MessBean(m));
-      }
-
-    } catch (Exception e) {
-      if (raf != null) raf.close();
-    }
-
-    messTable.setBeans(messages);
-    System.out.printf("mess = %d%n", messages.size());
-  }
-
   public void showInfo(Formatter f) {
     if (ncd == null) return;
     f.format("%s", ncd.toString()); // CDL
   }
 
   public class MessBean  {
-    private NcStreamIosp.NcsMess m;
+    Mess mess;
 
     MessBean() {
     }
 
-    MessBean(NcStreamIosp.NcsMess m) {
-      this.m = m;
-    }
-
-    ///////////////
-
-    public String getMagic() {
-      return "";
-    }
-
-    public String getObjClass() {
-      return m.what.getClass().toString();
-    }
-
-    public String getDesc() {
-      return m.what.toString();
-    }
-
-    public int getSize() {
-      return m.len;
-    }
-
-    public int getDSize() {
-      return 0;
-    }
-  }
-
-  public class MessBean2 extends MessBean  {
-    Mess mess;
-
-    MessBean2() {
-    }
-
-    MessBean2(Mess m) {
+    MessBean(Mess m) {
       this.mess = m;
     }
 

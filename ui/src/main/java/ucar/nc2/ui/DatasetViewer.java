@@ -154,9 +154,8 @@ public class DatasetViewer extends JPanel {
       dialog.pack();
       dialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
-          String name = evt.getPropertyName();
           CompareDialog.Data data = (CompareDialog.Data) evt.getNewValue();
-          //System.out.printf("name=%s %s%n", name, data);
+          //System.out.printf("name=%s %s%n", evt.getPropertyName(), data);
           compareDataset(data);
         }
       });
@@ -395,8 +394,8 @@ public class DatasetViewer extends JPanel {
     void setSelected( Variable vs) {
 
       List beans = table.getBeans();
-      for (int i=0; i<beans.size(); i++) {
-        VariableBean bean = (VariableBean) beans.get(i);
+      for (Object bean1 : beans) {
+        VariableBean bean = (VariableBean) bean1;
         if (bean.vs == vs) {
           table.setSelectedBean(bean);
           return;
@@ -597,8 +596,7 @@ public class DatasetViewer extends JPanel {
 
   public void save() {
     dumpPane.save();
-    for (int i=0; i<nestedTableList.size(); i++) {
-      NestedTable nt = nestedTableList.get(i);
+    for (NestedTable nt : nestedTableList) {
       nt.saveState();
     }
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
@@ -610,20 +608,16 @@ public class DatasetViewer extends JPanel {
 
   public List<VariableBean> getVariableBeans(NetcdfFile ds) {
     List<VariableBean> vlist = new ArrayList<VariableBean>();
-    java.util.List list = ds.getVariables();
-    for (int i=0; i<list.size(); i++) {
-      Variable elem = (Variable) list.get(i);
-      vlist.add( new VariableBean( elem));
+    for (Variable v : ds.getVariables()) {
+      vlist.add(new VariableBean(v));
     }
     return vlist;
   }
 
   public List<VariableBean> getStructureVariables(Structure s) {
     List<VariableBean> vlist = new ArrayList<VariableBean>();
-    java.util.List list = s.getVariables();
-    for (int i=0; i<list.size(); i++) {
-      Variable elem = (Variable) list.get(i);
-      vlist.add( new VariableBean( elem));
+    for (Variable v : s.getVariables()) {
+      vlist.add( new VariableBean( v));
     }
     return vlist;
   }
