@@ -3982,7 +3982,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        panel.setNcStreamFIle(command);
+        panel.setNcStreamFile(command);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "CdmremotePanel cant open " + command + "\n" + ioe.getMessage());

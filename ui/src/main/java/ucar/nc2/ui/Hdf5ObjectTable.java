@@ -33,7 +33,6 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.iosp.hdf5.H5diag;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -56,7 +55,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * ToolsUI/Iosp/Hdf5
+ * ToolsUI/Iosp/Hdf5  raw file objects
  *
  * @author caron
  */
@@ -202,13 +201,6 @@ public class Hdf5ObjectTable extends JPanel {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
     ps.flush();
     f.format("%s", ff.toString());
-  }
-
-  public void showCompressInfo(Formatter f) throws IOException {
-    if (iosp == null) return;
-
-    H5diag header = new H5diag(iosp);
-    header.showCompress(f);
   }
 
   private class MyNetcdfFile extends NetcdfFile {

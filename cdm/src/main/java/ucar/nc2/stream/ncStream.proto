@@ -18,6 +18,7 @@ message Attribute {
   required uint32 len = 3;
   optional bytes data = 4; // not needed if len == 0
   repeated string sdata = 5; // used for string data
+  optional bool unsigned = 6 [default = false];
 }
 
 enum DataType {
@@ -40,7 +41,7 @@ enum DataType {
 message Dimension {
   optional string name = 1;   // short name - optional when private
   optional uint64 length = 2; // optional when vlen
-  optional bool isUnlimited = 3 [default = false]; // needed ??
+  optional bool isUnlimited = 3 [default = false]; // is this needed ??
   optional bool isVlen = 4 [default = false];
   optional bool isPrivate = 5 [default = false];
 }
@@ -85,8 +86,8 @@ message Group {
 
 message Header {
   optional string location = 1;
-  optional string title = 2;
-  optional string id = 3;
+  optional string title = 2;  // ??
+  optional string id = 3;    // ??
   required Group root = 4;
   optional uint32 version = 5 [default = 0];
 }
@@ -106,6 +107,7 @@ message Data {
   optional uint32 version = 5 [default = 0];
   optional Compress compress = 6 [default = NONE];
   optional bool vdata = 7 [default = false];
+  optional uint32 uncompressedSize = 8;
 }
 
 message Range {

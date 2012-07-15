@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright 2009-2012 University Corporation for Atmospheric Research/Unidata
+ *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -423,8 +424,8 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
     NetcdfFile ncfile = fdp.getNetcdfFile(); // LOOK will fail
     NcStreamWriter ncWriter = new NcStreamWriter(ncfile, absPath);
-    WritableByteChannel wbc = Channels.newChannel(out);
-    long size = ncWriter.sendHeader(wbc);
+    //WritableByteChannel wbc = Channels.newChannel(out);
+    long size = ncWriter.sendHeader(out);
     NcStream.writeVInt(out, 0);
 
     out.flush();

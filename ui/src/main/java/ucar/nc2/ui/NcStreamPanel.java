@@ -1,3 +1,35 @@
+/*
+ * Copyright 2009-2012 University Corporation for Atmospheric Research/Unidata
+ *
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package ucar.nc2.ui;
 
 import ucar.nc2.NetcdfFile;
@@ -19,7 +51,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Class Description.
+ * Show internal structure of ncstream files.
  *
  * @author caron
  * @since 7/8/12
@@ -35,6 +67,7 @@ public class NcStreamPanel extends JPanel {
 
   private RandomAccessFile raf;
   private NetcdfFile ncd;
+  private NcStreamIosp iosp;
 
   public NcStreamPanel(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -50,11 +83,11 @@ public class NcStreamPanel extends JPanel {
       }
     });
     varPopup = new PopupMenu(messTable.getJTable(), "Options");
-    varPopup.addAction("Show record -> variable data assignments", new AbstractAction() {
+    varPopup.addAction("Show deflate", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessBean bean = (MessBean) messTable.getSelectedBean();
         if (bean == null) return;
-        infoTA.setText(bean.getDesc());
+        infoTA.setText(bean.m.showDeflate());
       }
     });
 
@@ -88,27 +121,31 @@ public class NcStreamPanel extends JPanel {
     if (ncd != null) ncd.close();
     ncd = null;
     raf = null;
+    iosp = null;
   }
 
   public void showInfo(Formatter f) {
     if (ncd == null) return;
     try {
-      f.format("%s length = %d%n", raf.getLocation(), raf.length()); // CDL
+      f.format("%s%n", raf.getLocation());
+      f.format(" file length = %d%n", raf.length());
+      f.format(" version = %d%n", iosp.getVersion());
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
-    f.format("%s", ncd.toString()); // CDL
+    f.format("%n%s", ncd.toString()); // CDL
   }
 
-  public void setNcStreamFIle(String filename) throws IOException {
+  public void setNcStreamFile(String filename) throws IOException {
     closeOpenFiles();
 
     java.util.List<MessBean> messages = new ArrayList<MessBean>();
     ncd = new MyNetcdfFile();
-    NcStreamIosp iosp = new NcStreamIosp();
+    iosp = new NcStreamIosp();
     try {
       raf = new RandomAccessFile(filename, "r");
-      java.util.List<NcStreamIosp.NcsMess> ncm = iosp.open(raf, ncd);
+      java.util.List<NcStreamIosp.NcsMess> ncm = new ArrayList<NcStreamIosp.NcsMess>();
+      iosp.openDebug(raf, ncd, ncm);
       for (NcStreamIosp.NcsMess m : ncm) {
         messages.add(new MessBean(m));
       }
