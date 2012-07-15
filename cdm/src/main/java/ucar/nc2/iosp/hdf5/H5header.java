@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -1419,9 +1419,14 @@ public class H5header {
       return useFillValue;
     }
 
-    public long[] countStorageSize() throws IOException {
+    public long[] countStorageSize(Formatter f) throws IOException {
       long[] result = new long[2];
-      if (btree == null || useFillValue) {
+      if (btree == null) {
+        if (f != null) f.format("btree is null%n");
+        return result;
+      }
+      if (useFillValue) {
+        if (f != null) f.format("useFillValue - no data is stored%n");
         return result;
       }
 
@@ -1430,6 +1435,7 @@ public class H5header {
       DataBTree.DataChunkIterator iter = btree.getDataChunkIteratorFilter(null);
       while (iter.hasNext()) {
         DataBTree.DataChunk dc = iter.next();
+        if (f != null) f.format(" %s%n", dc);
         total += dc.size;
         count++;
       }

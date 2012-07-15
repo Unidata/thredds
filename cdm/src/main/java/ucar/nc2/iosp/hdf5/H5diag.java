@@ -56,7 +56,7 @@ public class H5diag {
     f.format(" overhead     = %f%n", ((float) raf.length()/totalSize.storage));
   }
 
-  private void showCompress(Variable v, H5header.Vinfo vinfo, Size total, Formatter f) throws IOException {
+  public void showCompress(Variable v, H5header.Vinfo vinfo, Size total, Formatter f) throws IOException {
     H5header.MessageDataspace mdt = vinfo.mds;
 
     long total_elems = 1;
@@ -101,6 +101,56 @@ public class H5diag {
     size.count = count;
   }
 
+  public long[] countStorageSize(H5header.Vinfo vinfo, Size size, Formatter f) throws IOException {
+    long[] result = new long[2];
+    DataBTree btree = vinfo.btree;
+    if (btree == null) {
+      if (f != null) f.format("btree is null%n");
+      return result;
+    }
+    if (vinfo.useFillValue) {
+      if (f != null) f.format("useFillValue - no data is stored%n");
+      return result;
+    }
+
+    int count = 0;
+    long total = 0;
+    DataBTree.DataChunkIterator iter = btree.getDataChunkIteratorFilter(null);
+    while (iter.hasNext()) {
+      DataBTree.DataChunk dc = iter.next();
+      if (f != null) f.format(" %s%n", dc);
+      total += dc.size;
+      count++;
+    }
+
+    result[0] = total;
+    result[1] = count;
+    return result;
+  }
+
+
   //////////////////////////////////////////////////////////////////////////////////////////////
+
+  public void deflate(Formatter f, Variable v) throws IOException {
+    H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
+    DataBTree btree = vinfo.btree;
+    if (btree == null || vinfo.useFillValue) {
+      f.format("%s not chunked%n", v.getShortName());
+      return;
+    }
+  }
+
+  public void deflate(Formatter f, DataBTree btree) throws IOException {
+
+    int count = 0;
+    long total = 0;
+    DataBTree.DataChunkIterator iter = btree.getDataChunkIteratorFilter(null);
+    while (iter.hasNext()) {
+      DataBTree.DataChunk dc = iter.next();
+      total += dc.size;
+      count++;
+    }
+
+  }
 
 }

@@ -1,9 +1,9 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- * 
- * Portions of this software were developed by the Unidata Program at the 
+ * Copyright 2009-2012 University Corporation for Atmospheric Research/Unidata
+ *
+ * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
- * 
+ *
  * Access and use of this software shall impose the following obligations
  * and understandings on the user. The user is granted the right, without
  * any fee or cost, to use, copy, modify, alter, enhance and distribute
@@ -20,7 +20,7 @@
  * any support, consulting, training or assistance of any kind with regard
  * to the use, operation and performance of this software nor to provide
  * the user with any updates, revisions, new versions or "bug fixes."
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -37,8 +37,10 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IospHelper;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.util.zip.DeflaterOutputStream;
 
 /**
  * Write a NetcdfFile to a OutputStream using ncstream protocol
@@ -49,10 +51,11 @@ import java.io.IOException;
 public class NcStreamWriter {
   static private long maxChunk = 1 * 1000 * 1000; // 1 MByte
   static private int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
+  static private int currentVersion = 1;
 
   private NetcdfFile ncfile;
   private NcStreamProto.Header header;
-  private boolean show = false;
+  private boolean show = true;
 
   public NcStreamWriter(NetcdfFile ncfile, String location) throws IOException {
     this.ncfile = ncfile;
@@ -63,6 +66,7 @@ public class NcStreamWriter {
     if (ncfile.getTitle() != null) headerBuilder.setTitle(ncfile.getTitle());
     if (ncfile.getId() != null) headerBuilder.setId(ncfile.getId());
     headerBuilder.setRoot(rootBuilder);
+    headerBuilder.setVersion(currentVersion);
 
     header = headerBuilder.build();
   }
@@ -94,9 +98,14 @@ public class NcStreamWriter {
   public long sendData(Variable v, Section section, OutputStream out, boolean deflate) throws IOException, InvalidRangeException {
     if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
 
+    // length of data uncompressed
+    long uncompressedLength = section.computeSize();
+    if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
+      uncompressedLength *= v.getElementSize(); // nelems for vdata, else nbytes
+
     long size = 0;
     size += writeBytes(out, NcStream.MAGIC_DATA); // magic
-    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, deflate);
+    NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section, deflate, (int) uncompressedLength);
     byte[] datab = dataProto.toByteArray();
     size += NcStream.writeVInt(out, datab.length); // dataProto len
     size += writeBytes(out, datab); // dataProto
@@ -121,14 +130,26 @@ public class NcStreamWriter {
     }
 
     // regular arrays
-    long len = section.computeSize();
-    if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
-      len *= v.getElementSize(); // nelems for vdata, else nbytes
+    if (deflate) {
+      ByteArrayOutputStream bout = new ByteArrayOutputStream();
+      DeflaterOutputStream dout = new DeflaterOutputStream(bout);
+      v.readToStream(section, dout); // write to internal buffer
 
-    size += NcStream.writeVInt(out, (int) len); // data len or number of objects
-    if (show) System.out.printf("  %s proto=%d data=%d%n", v.getFullName(), datab.length, len);
+      // write internal buffer to output stream
+      dout.close();
+      int deflatedSize = bout.size();
+      size += NcStream.writeVInt(out, deflatedSize);
+      bout.writeTo(out);
+      size += deflatedSize;
+      if (show) System.out.printf("  %s proto=%d dataSize=%d len=%d%n", v.getFullName(), datab.length, deflatedSize, uncompressedLength);
 
-    size += v.readToStream(section, out); // try to do a direct transfer
+    }  else {
+
+      size += NcStream.writeVInt(out, (int) uncompressedLength); // data len or number of objects
+      if (show) System.out.printf("  %s proto=%d data=%d%n", v.getFullName(), datab.length, uncompressedLength);
+
+      size += v.readToStream(section, out); // try to do a direct transfer
+    }
 
     return size;
   }
