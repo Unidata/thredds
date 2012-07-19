@@ -61,12 +61,11 @@ public class Stereographic extends ProjectionImpl {
     return new Stereographic(latt, lont, scale);
   }
 
-
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   private final double falseEasting, falseNorthing;
-  private final double scale, earthRadius;
-  private final double latt, lont;
+  private double scale, earthRadius;
+  private double latt, lont;
   private double sinlatt, coslatt, latts;
   private boolean isNorth = false;
   private boolean isPolar = false;
@@ -258,6 +257,25 @@ public class Stereographic extends ProjectionImpl {
   public boolean isPolar() {
     return isPolar;
   }
+
+   //////////////////////////////////////////////
+  // setters for IDV serialization - do not use except for object creating
+
+  public void setScale(double scale) {
+    this.scale = earthRadius * scale;
+  }
+
+  public void setTangentLat(double latt) {
+    this.latt =  Math.toRadians(latt);
+    precalculate();
+  }
+
+  public void setTangentLon(double lont) {
+    this.lont = Math.toRadians(lont);
+    precalculate();
+  }
+
+   //////////////////////////////////////////////
 
   /**
    * Get the parameters as a String

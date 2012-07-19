@@ -66,8 +66,8 @@ public class Mercator extends ProjectionImpl {
 
   /////////////////////////////////////////////////////////////////////
   private final double earthRadius;
-  private final double lon0; // longitude of the origin in degrees
-  private final double par; // standard parallel in degrees
+  private double lon0; // longitude of the origin in degrees
+  private double par; // standard parallel in degrees
   private final double falseEasting, falseNorthing;
 
   private double par_r; // standard parallel in radians
@@ -181,6 +181,30 @@ public class Mercator extends ProjectionImpl {
   public double getEarthRadius() {
     return earthRadius;
   }
+
+  //////////////////////////////////////////////
+  // setters for IDV serialization - do not use except for object creating
+
+  /**
+   * Set the first standard parallel
+   *
+   * @param par   the first standard parallel
+   */
+  public void setParallel(double par) {
+      this.par = par;
+      precalculate();
+  }
+
+  /**
+   * Set the origin longitude.
+   * @param lon   the origin longitude.
+   */
+  public void setOriginLon(double lon) {
+      lon0   = lon;
+      precalculate();
+  }
+
+  /////////////////////////////////////////////////////
 
   /**
    * Get the parameters as a String
