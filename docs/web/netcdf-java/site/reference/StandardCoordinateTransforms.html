@@ -244,12 +244,12 @@ dl {margin: 10px 5px 5px 15px;)
 </blockquote>
 <h2><a name="vertTransforms"></a>Standard Vertical Transforms</h2>
 <p>These are examples of placing the Coordinate Transform parameters on the corresponding vertical coordinate (required by CF). If you are using CF Conventions, you do not have to add the <strong>_Coordinate</strong> attributes, as they will be added automatically in the CoordSysBuilder.</p>
+<h3>atmosphere_ln_pressure_coordinate</h3>
 <blockquote>
-  <h3>atmosphere_ln_pressure_coordinate</h3>
   <pre>
   double levCoord(levCoord=26);<br>     :long_name = &quot;log pressure levels&quot;;
      :units = &quot;&quot;;<br>     :positive = &quot;down&quot;;<br>     :<strong>standard_name</strong> = &quot;atmosphere_ln_pressure_coordinate&quot;;<br>     :<strong>formula_terms</strong> = &quot;p0: P0 lev: levCoord&quot;;
-</pre>
+  </pre>
   <p>atmosphere_ln_pressure_coordinate transform  only works in  CF Conventions.</p>
 </blockquote>
 <h3>atmosphere_hybrid_height_coordinate</h3>
@@ -296,19 +296,13 @@ dl {margin: 10px 5px 5px 15px;)
 <h3>ocean_s_coordinate_g1</h3>
 <blockquote>
   <pre>
-  double s_rho(s_rho=20);<br>     :long_name = &quot;S-coordinate at RHO-points&quot;;<br>     :units = &quot;&quot;;
-     :positive = &quot;up&quot;;
-     :<strong>standard_name</strong> = &quot;ocean_s_coordinate_g1&quot;;<br>     :<strong>formula_terms</strong> = &quot;s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc&quot;;<br>
-     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;up&quot;; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;s_rho&quot;;
-</pre>
-</blockquote>
+    char OceanSG1_Transform_s_rho;<br>     :<strong>standard_name</strong> = &quot;ocean_s_coordinate_g1&quot;;<br>     :<strong>formula_terms</strong> = &quot;s: s_rho C: Cs_r eta: zeta depth: h depth_c: hc&quot;;<br>     :height_formula = &quot;height(x,y,z) =  depth_c*s(z) + (depth([n],x,y)-depth_c)*C(z) + eta(x,y)*(1+(depth_c*s(z) + (depth([n],x,y)-depth_c)*C(z))/depth([n],x,y))&quot;;
+     :Eta_variableName = &quot;zeta&quot;;<br>     :S_variableName = &quot;s_rho&quot;;<br>     :Depth_variableName = &quot;h&quot;;<br>     :Depth_c_variableName = &quot;hc&quot;;<br>     :c_variableName = &quot;Cs_r&quot;;</pre>
+Note that <strong>standard_name</strong> and <strong>formula_terms</strong> are the only attributes needed. The other are added for extra readability.</blockquote>
 <h3>ocean_s_coordinate_g2</h3>
 <blockquote>
-  <pre>
-  double s_rho(s_rho=20);<br>     :long_name = &quot;S-coordinate at RHO-points&quot;;<br>     :units = &quot;&quot;;
-     :positive = &quot;up&quot;;
-     :<strong>standard_name</strong> = &quot;ocean_s_coordinate_g2&quot;;<br>     :<strong>formula_terms</strong> = &quot;s: s_rho eta: zeta depth: h a: theta_s b: theta_b depth_c: hc&quot;;<br>     :_CoordinateAxisType = &quot;GeoZ&quot;;<br>     :_CoordinateZisPositive = &quot;up&quot;; <br>     :<strong>_CoordinateTransformType</strong> = &quot;Vertical&quot;;<br>     :<strong>_CoordinateAxes</strong> = &quot;s_rho&quot;;</pre>
-</blockquote>
+  <pre>   char OceanSG2_Transform_s_rho;<br>     :<strong>standard_name</strong> = &quot;ocean_s_coordinate_g2&quot;;<br>     :<strong>formula_terms</strong> = &quot;s: s_rho C: Cs_r eta: zeta depth: h depth_c: hc&quot;;<br>     :height_formula = &quot;height(x,y,z) = eta(x,y) + (eta(x,y) + depth([n],x,y)) * ((depth_c*s(z) + depth([n],x,y)*C(z))/(depth_c+depth([n],x,y)))&quot;;<br>     :Eta_variableName = &quot;zeta&quot;;<br>     :S_variableName = &quot;s_rho&quot;;<br>     :Depth_variableName = &quot;h&quot;;<br>     :Depth_c_variableName = &quot;hc&quot;;<br>     :c_variableName = &quot;Cs_r&quot;;</pre>
+Note that <strong>standard_name</strong> and <strong>formula_terms</strong> are the only attributes needed. The other are added for extra readability.</blockquote>
 <h3>ocean_sigma_coordinate</h3>
 <blockquote>
   <pre>
@@ -343,7 +337,7 @@ dl {margin: 10px 5px 5px 15px;)
 </blockquote>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated April 2012 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2012 
 </address>
 <p>&nbsp;</p>
 </body>
