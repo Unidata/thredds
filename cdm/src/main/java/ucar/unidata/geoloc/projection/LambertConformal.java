@@ -326,6 +326,16 @@ public class LambertConformal extends ProjectionImpl {
     precalculate();
   }
 
+  public void setParallelOne(double par1) {
+    this.par1 = par1;
+    precalculate();
+  }
+
+  public void setParallelTwo(double par2) {
+    this.par2 = par2;
+    precalculate();
+  }
+
 
   //////////////////////////////////////////////
 

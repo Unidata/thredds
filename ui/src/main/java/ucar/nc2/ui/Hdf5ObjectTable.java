@@ -120,7 +120,9 @@ public class Hdf5ObjectTable extends JPanel {
     attTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         AttributeBean mb = (AttributeBean) attTable.getSelectedBean();
-        dumpTA.setText( mb.att.toString());
+        Formatter f = new Formatter();
+        mb.show(f);
+        dumpTA.setText( f.toString());
       }
     });
 
@@ -296,6 +298,15 @@ public class Hdf5ObjectTable extends JPanel {
 
     public long getDataPos() {
       return att.getDataPosAbsolute();
+    }
+
+    void show(Formatter f) {
+      f.format("hdf5 att = %s%n%n", att);
+      try {
+        f.format("netcdf attribute%n %s;%n", att.getNcAttribute());
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
     }
 
   }

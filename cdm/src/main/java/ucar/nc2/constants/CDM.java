@@ -43,7 +43,7 @@ public interface CDM {
   // structural
   public static final String FILL_VALUE = "_FillValue";
   public static final String UNSIGNED = "_Unsigned";
-  public static final String CHUNK = "_Chunk";
+  public static final String CHUNK_SIZE = "_ChunkSize";
   public static final String COMPRESS = "_Compress";
   public static final String COMPRESS_DEFLATE = "deflate";
 

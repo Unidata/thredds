@@ -4,6 +4,7 @@ import org.junit.Test;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
@@ -57,9 +58,10 @@ public class TestNc4Iosp {
     public boolean attOk(Variable v, Attribute att) {
       if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getName();
+
       // added by cdm
-      if (name.equals("HDF5_chunksize")) return false;
-      if (name.equals("_FillValue")) return false;
+      if (name.equals(CDM.CHUNK_SIZE)) return false;
+      if (name.equals(CDM.FILL_VALUE)) return false;
 
       // hidden by nc4
       if (name.equals("_Netcdf4Dimid")) return false;  // preserve the order of the coordinate variables
