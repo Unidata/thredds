@@ -331,7 +331,11 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       byte[] dp = new byte[psize];
       raf.read(dp);
       NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-      Variable v = ncfile.getRootGroup().findVariable(dproto.getVarName());
+      Variable v = ncfile.findVariable(dproto.getVarName());
+      if (v == null) {
+        System.out.printf(" ERR cant find var %s%n%s%n", dproto.getVarName(), dproto);
+        continue;
+      }
       if (debug) System.out.printf(" dproto = %s for %s%n", dproto, v.getShortName());
       if (ncm != null) ncm.add(new NcsMess(pos, psize, dproto));
       List<DataStorage> storage = (List<DataStorage>) v.getSPobject(); // LOOK should be an in memory Rtree using section

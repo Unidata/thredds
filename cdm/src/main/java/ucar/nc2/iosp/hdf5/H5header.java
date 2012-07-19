@@ -63,8 +63,8 @@ import java.nio.charset.Charset;
  */
 public class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
-  static private String utf8CharsetName = "UTF-8";
-  static private Charset utf8Charset = Charset.forName(utf8CharsetName); // cant use until 1.6
+  static private final Charset utf8Charset = Charset.forName("UTF-8"); // cant use until 1.6
+  static private final String HDF5_chunksize = "_Chunksize";
 
   // debugging
   static private boolean debugEnum = false, debugVlen = false;
@@ -907,7 +907,7 @@ public class H5header {
       if (b[count] == 0) break;
       count++;
     }
-    return new String(b, 0, count, "UTF-8"); // all strings are considered to be UTF-8 unicode
+    return new String(b, 0, count, utf8Charset); // all strings are considered to be UTF-8 unicode
   }
 
   private String convertString(byte[] b, int start, int len) throws UnsupportedEncodingException {
@@ -917,7 +917,7 @@ public class H5header {
       if (b[count] == 0) break;
       count++;
     }
-    return new String(b, start, count-start, "UTF-8"); // all strings are considered to be UTF-8 unicode
+    return new String(b, start, count-start, utf8Charset); // all strings are considered to be UTF-8 unicode
   }
 
   protected Array convertEnums(Map<Integer, String> map, Array values) {
@@ -1157,7 +1157,7 @@ public class H5header {
       List<Integer> chunksize = new ArrayList<Integer>();
       for (int i=0; i<vinfo.storageSize.length-1; i++)  // skip last one - its the element size
         chunksize.add(vinfo.storageSize[i]);
-      v.addAttribute(new Attribute("HDF5_chunksize", chunksize));
+      v.addAttribute(new Attribute(HDF5_chunksize, chunksize));
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
@@ -4269,11 +4269,7 @@ There is _no_ datatype information stored for these sort of selections currently
     public String getString(int offset) {
       int count = 0;
       while (heap[offset + count] != 0) count++;
-      try {
-        return new String(heap, offset, count, utf8CharsetName);
-      } catch (UnsupportedEncodingException e) {
-        throw new IllegalStateException(e.getMessage());
-      }
+      return new String(heap, offset, count, utf8Charset);
     }
 
   } // LocalHeap
@@ -4308,7 +4304,7 @@ There is _no_ datatype information stored for these sort of selections currently
     byte[] s = new byte[count];
     raf.read(s);
     raf.readByte(); // skip the zero byte! nn
-    return new String(s, utf8CharsetName); // all Strings are UTF-8 unicode
+    return new String(s, utf8Charset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4333,11 +4329,7 @@ There is _no_ datatype information stored for these sort of selections currently
     count += padding(count, 8);
     raf.seek(filePos + count);
 
-    try {
-      return new String(s, utf8CharsetName); // all Strings are UTF-8 unicode
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalStateException(e.getMessage());
-    }
+   return new String(s, utf8Charset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4350,7 +4342,7 @@ There is _no_ datatype information stored for these sort of selections currently
   private String readStringFixedLength(int size) throws IOException {
     byte[] s = new byte[size];
     raf.read(s);
-    return new String(s, utf8CharsetName); // all Strings are UTF-8 unicode
+    return new String(s, utf8Charset); // all Strings are UTF-8 unicode
   }
 
   long readLength() throws IOException {
