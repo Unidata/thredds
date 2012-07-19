@@ -110,7 +110,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>toolsUI-4.3</finalName>
+              <finalName>toolsUI-${project.version}</finalName>
 
               <artifactSet>
                 <excludes>
@@ -151,7 +151,7 @@
             </goals>
             <configuration>
               <shadedArtifactId>wtf</shadedArtifactId>
-              <finalName>netcdfAll-4.3</finalName>
+              <finalName>netcdfAll-${project.version}</finalName>
 
               <artifactSet>
                 <excludes>
@@ -178,7 +178,7 @@
             </goals>
             <configuration>
               <shadedArtifactId>wth</shadedArtifactId>
-              <finalName>ncIdv-4.3</finalName>
+              <finalName>ncIdv-${project.version}</finalName>
 
               <artifactSet>
                 <excludes>

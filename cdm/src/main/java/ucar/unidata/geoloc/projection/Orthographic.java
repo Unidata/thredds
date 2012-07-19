@@ -48,7 +48,7 @@ import ucar.unidata.geoloc.*;
 
 public class Orthographic extends ProjectionImpl {
 
-  private final double lat0, lon0; // center lat/lon in radians
+  private double lat0, lon0; // center lat/lon in radians
   private final double R; // radius
 
   /**
@@ -163,6 +163,30 @@ public class Orthographic extends ProjectionImpl {
   public double getOriginLat() {
     return Math.toDegrees(lat0);
   }
+
+  //////////////////////////////////////////////
+  // setters for IDV serialization - do not use except for object creating
+
+  /**
+   * Set the origin longitude.
+   * @param lon   the origin longitude.
+   */
+  public void setOriginLon(double lon) {
+      lon0 = Math.toRadians(lon);
+      precalculate();
+  }
+
+  /**
+   * Set the origin latitude.
+   *
+   * @param lat   the origin latitude.
+   */
+  public void setOriginLat(double lat) {
+      lat0 = Math.toRadians(lat);
+      precalculate();
+  }
+
+  //////////////////////////////////////////////
 
   /**
    * Get the label to be used in the gui for this type of projection
