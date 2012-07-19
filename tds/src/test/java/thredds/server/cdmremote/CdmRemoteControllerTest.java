@@ -127,7 +127,7 @@ public class CdmRemoteControllerTest {
         
         InMemoryRandomAccessFile raf = new InMemoryRandomAccessFile("test_data.ncs", content);
         NcStreamIosp ncsiosp = new NcStreamIosp();        
-        ncsiosp.open(raf, null);
+        ncsiosp.open(raf, null, null);
         
         //NetcdfDataset nfd = new NetcdfDataset(nf); 
         

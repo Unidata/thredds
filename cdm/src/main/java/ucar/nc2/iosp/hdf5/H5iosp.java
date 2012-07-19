@@ -89,6 +89,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   public String getFileTypeId() {
     if (isEos) return "HDF5-EOS";
+    if (headerParser.isNetcdf4) return DataFormatType.NETCDF4.toString();
     return DataFormatType.HDF5.toString();
   }
 
