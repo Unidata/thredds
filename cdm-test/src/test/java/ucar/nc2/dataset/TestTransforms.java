@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset;
 
+import org.junit.Test;
 import ucar.nc2.*;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -55,18 +56,16 @@ import ucar.unidata.test.util.TestDir;
  *
  * @author caron
  */
-public class TestTransforms extends TestCase {
+public class TestTransforms {
   private String testDir= TestDir.cdmUnitTestDir + "transforms/";
 
-  public TestTransforms(String name) {
-    super(name);
-  }
-
+  @Test
   public void testHybridSigmaPressure() throws IOException, InvalidRangeException {
     String filename = testDir + "HybridSigmaPressure.nc";
     test(filename, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class, SimpleUnit.pressureUnit);
   }
 
+  @Test
   public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
     String filename = testDir +  "climo.cam2.h0.0000-09.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
@@ -84,6 +83,7 @@ public class TestTransforms extends TestCase {
     ncd.close();
   }
 
+  @Test
   public void testHybridSigmaPressure3() throws IOException, InvalidRangeException {
     String filename = testDir +  "HIRLAMhybrid.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
@@ -104,31 +104,37 @@ public class TestTransforms extends TestCase {
     ncd.close();
   }
 
+  @Test
   public void testOceanS() throws IOException, InvalidRangeException {
     String filename = testDir+ "OceanS.nc";
     test(filename, "s_rho", "salt", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
 
+  @Test
   public void testOceanS2() throws IOException, InvalidRangeException {
     String filename = testDir+ "OceanS2.nc";
     test(filename, "s_rho", "temp", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
 
+  @Test
   public void testOceanSigma() throws IOException, InvalidRangeException {
     String filename = testDir+ "OceanSigma.nc";
     test(filename, "zpos", "salt", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
+  @Test
   public void testOceanSigma2() throws IOException, InvalidRangeException {
     String filename = testDir+ "erie_test.ncml";
     test(filename, "sigma", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
+  @Test
   public void testGomoos() throws IOException, InvalidRangeException {
     String filename = testDir+ "gomoos.ncml";
     test(filename, "zpos", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
 
+  @Test
   public void testWrf() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "conventions/wrf/global.nc";
     test(filename, "z", "T", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
@@ -137,6 +143,7 @@ public class TestTransforms extends TestCase {
     test(filename, "z_stag", "W", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.meterUnit);
   }
 
+  @Test
   public void testWrf2() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_mercator.nc";
     test(filename, "z", "T", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
@@ -188,21 +195,25 @@ public class TestTransforms extends TestCase {
     test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
   }
 
+  @Test
   public void btestOceanG1() throws IOException, InvalidRangeException {
     String filename = testDir+ "ocean_his_g1.nc";
     test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG1, OceanSG1.class, SimpleUnit.meterUnit);
   }
 
+  @Test
   public void btestOceanG2() throws IOException, InvalidRangeException {
     String filename = testDir+ "ocean_his_g2.nc";
     test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG2, OceanSG2.class, SimpleUnit.meterUnit);
   }
 
+  @Test
   public void testSigma() throws IOException, InvalidRangeException {
     String filename = testDir+ "Sigma_LC.nc";
     test(filename, "level", "Temperature", null, VerticalCT.Type.Sigma, AtmosSigma.class, SimpleUnit.pressureUnit);
   }
 
+  @Test
   public void testExisting3D() throws IOException, InvalidRangeException {
     String filename = testDir+ "VExisting3D_NUWG.nc";
     test(filename, "VerticalTransform", "rhu_hybr", "record", VerticalCT.Type.Existing3DField, VTfromExistingData.class,
