@@ -194,7 +194,7 @@
             <timeout>300000</timeout>
             <containerId>tomcat7x</containerId>
             <zipUrlInstaller>
-              <url>http://newverhost.com/pub/tomcat/tomcat-7/v7.0.27/bin/apache-tomcat-7.0.27.zip</url>
+              <url>http://newverhost.com/pub/tomcat/tomcat-7/v7.0.29/bin/apache-tomcat-7.0.29.zip</url>
               <downloadDir>${project.build.directory}/downloads</downloadDir>
               <extractDir>${project.build.directory}/extracts</extractDir>
             </zipUrlInstaller>
