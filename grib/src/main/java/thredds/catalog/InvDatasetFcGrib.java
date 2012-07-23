@@ -502,7 +502,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       top.addDataset(ds);
     }
 
-    for (String f : group.getFilenames()) {
+    boolean isSingleGroup = gc.getGroups().size() == 1;
+    List<String> filenames = isSingleGroup ? gc.getFilenames() : group.getFilenames();
+    for (String f : filenames) {
       if (!f.startsWith(topDirectory))
         logger.warn("File {} doesnt start with topDir {}", f, topDirectory);
 
