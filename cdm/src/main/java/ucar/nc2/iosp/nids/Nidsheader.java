@@ -1975,6 +1975,8 @@ class Nidsheader{
         int eleScanStartTime = bos.getInt();
 
         float eleAngle = bos.getFloat();
+        p3 = (short) eleAngle;
+
         int volScanNum = bos.getInt();
         int opMode = bos.getInt();
         int volPattern = bos.getInt();
