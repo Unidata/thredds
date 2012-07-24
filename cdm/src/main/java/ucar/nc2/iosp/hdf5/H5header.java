@@ -91,7 +91,6 @@ public class H5header {
   static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
   static private boolean warnings = false, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
   static private boolean debugDimensionScales = false;
-  static private boolean showOriginalAttributes = true;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug1 = debugFlag.isSet("H5header/header");
@@ -526,7 +525,7 @@ public class H5header {
   */
 
   // find the Dimension Scale objects, turn them into shared dimensions
-  // note that we dont bother looking at their REFERENCE_LIST LOOK is this netcd4-centric ??
+  // note that we dont bother looking at their REFERENCE_LIST
   private void findDimensionScales(ucar.nc2.Group g, H5Group h5group, DataObjectFacade facade) throws IOException {
     Iterator<MessageAttribute> iter = facade.dobj.attributes.iterator();
     while (iter.hasNext()) {
@@ -536,7 +535,7 @@ public class H5header {
         String val = att.getStringValue();
         if (val.equals(HDF5_DIMENSION_SCALE) && facade.dobj.mds.ndims == 1) { // create a dimension
           facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
-          if (!showOriginalAttributes) iter.remove();
+          if (! h5iosp.includeOriginalAttributes) iter.remove();
           if (debugDimensionScales) System.out.printf("Found dimScale %s for group '%s' matt=%s %n",
                   facade.dimList, g.getName(), matt);
         }
@@ -563,13 +562,13 @@ public class H5header {
           StringBuilder sbuff = new StringBuilder();
           for (int i = 0; i < att.getLength(); i++) {
             String name = att.getStringValue(i);
-            String dimName = extendDimension(g, h5group, name, facade.dobj.mds.dimLength[i]); // WTF ??
+            String dimName = extendDimension(g, h5group, name, facade.dobj.mds.dimLength[i]);
             sbuff.append(dimName).append(" ");
           }
           facade.dimList = sbuff.toString();
           if (debugDimensionScales) System.out.printf("Found dimList '%s' for group '%s' matt=%s %n",
                   facade.dimList, g.getName(), matt);
-          if (!showOriginalAttributes) iter.remove();
+          if (! h5iosp.includeOriginalAttributes) iter.remove();
         }
 
       } else if (matt.name.equals("NAME")) {
@@ -580,11 +579,11 @@ public class H5header {
           facade.isDimensionNotVariable = true;
           isNetcdf4 = true;
         }
-        if (!showOriginalAttributes) iter.remove();
+        if (! h5iosp.includeOriginalAttributes) iter.remove();
         if (debugDimensionScales) System.out.printf("Found %s %n", val);
 
       } else if (matt.name.equals("REFERENCE_LIST"))
-        if (!showOriginalAttributes) iter.remove();
+        if (! h5iosp.includeOriginalAttributes) iter.remove();
     }
 
   }
@@ -612,6 +611,7 @@ public class H5header {
     return d.getName();
   }
 
+  // look for unlimited dimensions without dimension scale - must get length from the variable
   private String extendDimension(ucar.nc2.Group g, H5Group h5group, String name, int length) {
     int pos = name.lastIndexOf('/');
     String dimName = (pos > 0) ? name.substring(pos + 1) : name;
@@ -621,8 +621,8 @@ public class H5header {
       d = g.findDimension(dimName); // then look in parent groups
 
     if (d != null) {
-      // if (length > d.getLength())
-      //   d.setLength(length);
+      if (d.isUnlimited() && (length > d.getLength()))
+        d.setLength(length);
 
       if (!d.isUnlimited() && (length != d.getLength())) {
         throw new IllegalStateException("extendDimension: DimScale has different length than dimension it references dimScale="+dimName);
@@ -1763,6 +1763,9 @@ public class H5header {
     } else if (hdfType == 3) {  // fixed length strings. String is used for Vlen type = 1
       return DataType.CHAR;
 
+    } else if (hdfType == 6) {
+      return DataType.STRUCTURE;
+
     } else if (hdfType == 7) { // reference
       return DataType.LONG;
 
@@ -2495,7 +2498,7 @@ public class H5header {
     }
 
     public String toString() {
-      return "  type = " + mtype + "; " + messData;
+      return "message type = " + mtype + "; " + messData;
     }
 
     // debugging
@@ -2812,7 +2815,6 @@ public class H5header {
     String opaque_desc;
 
     // compound type (6)
-    short nmembers;
     List<StructureMember> members;
 
     // reference (7)
@@ -2830,26 +2832,28 @@ public class H5header {
     int[] dim;
 
     public String toString() {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append(" datatype= ").append(type);
-      sbuff.append(" byteSize= ").append(byteSize);
+      Formatter f = new Formatter();
+      f.format(" datatype= %d", type);
+      f.format(" byteSize= %d", byteSize);
       DataType dtype = getNCtype(type, byteSize);
-      sbuff.append(" NCtype= ").append(dtype);
-      sbuff.append(" flags= ");
-      for (int i=0; i<3; i++) sbuff.append(flags[i]).append(" ");
-      sbuff.append(" endian=").append(endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");
+      f.format(" NCtype= %s", dtype);
+      f.format(" flags= ");
+      for (int i=0; i<3; i++) f.format(" %d", flags[i]);
+      f.format(" endian= %s", endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");
 
       if (type == 2)
-        sbuff.append(" timeType= ").append(timeType);
-      else if (type == 6)
-        sbuff.append(" nmembers= ").append(nmembers);
-      else if (type == 7)
-        sbuff.append(" referenceType= ").append(referenceType);
+        f.format(" timeType= %s", timeType);
+      else if (type == 6) {
+        f.format("%n  members%n");
+        for (StructureMember mm : members)
+          f.format("   %s%n", mm);
+      } else if (type == 7)
+        f.format(" referenceType= %s", referenceType);
       else if (type == 9)
-        sbuff.append(" isVString= ").append(isVString);
+        f.format(" isVString= %s", isVString);
       if ((type == 9) || (type == 10))
-        sbuff.append(" parent= {").append(base).append("}");
-      return sbuff.toString();
+        f.format(" parent base= {%s}", base);
+      return f.toString();
     }
 
     public String getName() {
@@ -3057,6 +3061,18 @@ public class H5header {
       //HDFpadToMultiple( buffer, 8);
       //if (HDFdebug)  ncfile.debugOut.println("   Member padToMultiple="+raf.getFilePointer());
       //raf.skipBytes( 4); // huh ??
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("StructureMember");
+      sb.append("{name='").append(name).append('\'');
+      sb.append(", offset=").append(offset);
+      sb.append(", dims=").append(dims);
+      sb.append(", mdt=").append(mdt);
+      sb.append('}');
+      return sb.toString();
     }
   }
 

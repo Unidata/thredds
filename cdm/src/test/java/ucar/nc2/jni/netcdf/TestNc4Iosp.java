@@ -30,7 +30,7 @@ public class TestNc4Iosp {
 
   @Test
   public void problem() throws IOException {
-    doCompare("G:\\data\\cdmUnitTest\\formats\\netcdf4\\tst\\tst_solar_cmp.nc", true, true, true);
+    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/attributeStruct.nc", true, true, true);
   }
 
   @Test
@@ -76,8 +76,8 @@ public class TestNc4Iosp {
 
   private class MyAct implements TestDir.Act {
     public int doAct(String filename) throws IOException {
-      doCompare(filename, true, true, true);
-      return 0;
+      doCompare(filename, false, false, true);
+      return 1;
     }
   }
 
@@ -85,7 +85,8 @@ public class TestNc4Iosp {
   private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(location);
     NetcdfFile jni = openJni(location);
-    // System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(), jni.getIosp().getClass().getName());
+    jni.setLocation(location+" (jni)");
+    //System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(), jni.getIosp().getClass().getName());
 
     Formatter f= new Formatter();
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);

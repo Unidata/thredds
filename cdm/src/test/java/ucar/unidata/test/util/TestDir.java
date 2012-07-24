@@ -185,8 +185,10 @@ public class TestDir {
       String name = f.getAbsolutePath();
       if (f.isDirectory())
         continue;
-      if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude"))
+      if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude")) {
+        System.out.println("----acting on file "+name);
         count += act.doAct(name);
+      }
     }
 
     if (!recurse) return count;

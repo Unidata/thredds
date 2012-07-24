@@ -175,6 +175,8 @@ public class Hdf5ObjectTable extends JPanel {
 
     iosp = new H5iosp();
     NetcdfFile ncfile = new MyNetcdfFile(iosp, location);
+    ncfile.sendIospMessage(H5iosp.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
+
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
