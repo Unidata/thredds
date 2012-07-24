@@ -137,7 +137,7 @@
           <excludes>
             <!-- exclude>thredds/logs/**</exclude -->
             <exclude>ucar/nc2/dataset/grid/**</exclude>
-            <exclude>ucar/nc2/jni/**</exclude>
+            <!--exclude>ucar/nc2/jni/**</exclude -->
             <exclude>ucar/nc2/util/reflect/**</exclude>
           </excludes>
 

@@ -289,7 +289,6 @@ public class LatLonProjection extends ProjectionImpl {
     return centerLon;
   }
 
-
   /**
    * Does the line between these two points cross the projection "seam".
    *

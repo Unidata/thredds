@@ -4,6 +4,7 @@ import org.junit.Test;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
@@ -29,7 +30,7 @@ public class TestNc4Iosp {
 
   @Test
   public void problem() throws IOException {
-    doCompare("G:\\data\\cdmUnitTest\\formats\\netcdf4\\tst\\tst_solar_cmp.nc", true, true, true);
+    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/attributeStruct.nc", true, true, true);
   }
 
   @Test
@@ -53,23 +54,30 @@ public class TestNc4Iosp {
   }
 
   private class MyObjectFilter implements CompareNetcdf2.ObjFilter {
-
     @Override
     public boolean attOk(Variable v, Attribute att) {
       if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getName();
-      if (name.equals("HDF5_chunksize")) return false;
-      if (name.equals("_FillValue")) return false;
-      if (name.equals("_Netcdf4Dimid")) return false;
+
+      // added by cdm
+      if (name.equals(CDM.CHUNK_SIZE)) return false;
+      if (name.equals(CDM.FILL_VALUE)) return false;
+
+      // hidden by nc4
+      if (name.equals("_Netcdf4Dimid")) return false;  // preserve the order of the coordinate variables
+      if (name.equals("_Netcdf4Coordinates")) return false;  // allow the order of the coordinate variables
+
+      // not implemented yet
       if (att.getDataType().isEnum()) return false;
+
       return true;
     }
   }
 
   private class MyAct implements TestDir.Act {
     public int doAct(String filename) throws IOException {
-      doCompare(filename, true, true, true);
-      return 0;
+      doCompare(filename, false, false, true);
+      return 1;
     }
   }
 
@@ -77,7 +85,8 @@ public class TestNc4Iosp {
   private boolean doCompare(String location, boolean showCompare, boolean showEach, boolean compareData) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(location);
     NetcdfFile jni = openJni(location);
-    // System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(), jni.getIosp().getClass().getName());
+    jni.setLocation(location+" (jni)");
+    //System.out.printf("Compare %s to %s%n", ncfile.getIosp().getClass().getName(), jni.getIosp().getClass().getName());
 
     Formatter f= new Formatter();
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);

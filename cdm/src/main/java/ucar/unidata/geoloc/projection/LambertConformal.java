@@ -52,8 +52,8 @@ import ucar.unidata.util.Parameter;
 
 public class LambertConformal extends ProjectionImpl {
   private final double earth_radius;
-  private final double lat0, lon0;  // lat/lon in radians
-  private final double par1, par2;  // standard parallel 1 and 2 degrees
+  private double lat0, lon0;  // lat/lon in radians
+  private double par1, par2;  // standard parallel 1 and 2 degrees
   private final double falseEasting, falseNorthing;
 
   private double n, F, rho; // constants from Snyder's equations
@@ -300,6 +300,44 @@ public class LambertConformal extends ProjectionImpl {
   public double getFalseNorthing() {
     return falseNorthing;
   }
+
+  //////////////////////////////////////////////
+  // setters for IDV serialization - do not use except for object creating
+
+  public void setOriginLat(double lat0) {
+    this.lat0 = Math.toRadians(lat0);
+    precalculate();
+  }
+
+  public void setOriginLon(double lon0) {
+    this.lon0 = Math.toRadians(lon0);
+    precalculate();
+  }
+
+  // sic
+  public void setParellelOne(double par1) {
+    this.par1 = par1;
+    precalculate();
+  }
+
+  // sic
+  public void setParellelTwo(double par2) {
+    this.par2 = par2;
+    precalculate();
+  }
+
+  public void setParallelOne(double par1) {
+    this.par1 = par1;
+    precalculate();
+  }
+
+  public void setParallelTwo(double par2) {
+    this.par2 = par2;
+    precalculate();
+  }
+
+
+  //////////////////////////////////////////////
 
   /**
    * Get the label to be used in the gui for this type of projection

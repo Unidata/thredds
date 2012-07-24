@@ -52,9 +52,9 @@ import java.util.ArrayList;
 
 public class VerticalPerspectiveView extends ProjectionImpl {
 
-  private final double lat0, lon0; // center lat/lon in radians
+  private double lat0, lon0; // center lat/lon in radians
   private final double false_east, false_north;
-  private final double R, H;
+  private double R, H;
 
   // constants from Snyder's equations
   private double P, lon0Degrees;
@@ -202,6 +202,38 @@ public class VerticalPerspectiveView extends ProjectionImpl {
    */
   public double getOriginLat() {
     return Math.toDegrees(lat0);
+  }
+
+    //////////////////////////////////////////////
+  // setters for IDV serialization - do not use except for object creating
+
+
+  /**
+   * Set the origin longitude.
+   * @param lon   the origin longitude.
+   */
+  public void setOriginLon(double lon) {
+      lon0 = Math.toRadians(lon);
+      precalculate();
+  }
+
+  /**
+   * Set the height above the earth
+   * @param height   height above the earth
+   */
+  public void setHeight(double height) {
+      H = height;
+      precalculate();
+  }
+
+  /**
+   * Set the origin latitude.
+   *
+   * @param lat   the origin latitude.
+   */
+  public void setOriginLat(double lat) {
+      lat0 = Math.toRadians(lat);
+      precalculate();
   }
 
   /**

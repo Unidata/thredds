@@ -40,6 +40,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.nc2.stream.NcStream;
 
+import java.io.OutputStream;
 import java.nio.*;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
@@ -402,6 +403,7 @@ public class IospHelper {
    * @throws java.io.IOException on write error
    */
   public static long copyToByteChannel(Array data, WritableByteChannel channel) throws java.io.IOException {
+    Class classType = data.getElementType();
 
     if (data instanceof ArrayStructure) { // use NcStream encoding
       DataOutputStream os = new DataOutputStream(Channels.newOutputStream(channel));
@@ -410,7 +412,6 @@ public class IospHelper {
 
     DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel));
     IndexIterator iterA = data.getIndexIterator();
-    Class classType = data.getElementType();
 
     if (classType == double.class) {
       while (iterA.hasNext())
@@ -463,6 +464,115 @@ public class IospHelper {
         bb.rewind();
         channel.write(bb);
         size += bb.limit();
+      }
+      return size;
+
+    } else if (data instanceof ArrayObject) { // vlen
+      long size = 0;
+      //size += NcStream.writeVInt(outStream, (int) data.getSize()); // nelems already written
+      while (iterA.hasNext()) {
+        Array row = (Array) iterA.getObjectNext();
+        ByteBuffer bb = row.getDataAsByteBuffer();
+        byte[] result = bb.array();
+        size += NcStream.writeVInt(outStream, result.length); // size in bytes
+        outStream.write(result);  // array
+        size += result.length;
+      }
+      return size;
+
+    } else
+      throw new UnsupportedOperationException("Class type = " + classType.getName());
+
+    return data.getSizeBytes();
+  }
+
+  /**
+   * Copy data to a channel. Used by ncstream. Not doing Structures correctly yet.
+   *
+   * @param data    copy from here
+   * @param out     copy to here
+   * @return number of bytes copied
+   * @throws java.io.IOException on write error
+   */
+  public static long copyToOutputStream(Array data, OutputStream out) throws java.io.IOException {
+    Class classType = data.getElementType();
+
+    DataOutputStream dataOut;
+    if (out instanceof DataOutputStream)
+      dataOut = (DataOutputStream) out;
+    else
+      dataOut = new DataOutputStream(out);
+
+    if (data instanceof ArrayStructure) { // use NcStream encoding
+      return NcStream.encodeArrayStructure((ArrayStructure) data, dataOut);
+    }
+
+    IndexIterator iterA = data.getIndexIterator();
+
+    if (classType == double.class) {
+      while (iterA.hasNext())
+        dataOut.writeDouble(iterA.getDoubleNext());
+
+    } else if (classType == float.class) {
+      while (iterA.hasNext())
+        dataOut.writeFloat(iterA.getFloatNext());
+
+    } else if (classType == long.class) {
+      while (iterA.hasNext())
+        dataOut.writeLong(iterA.getLongNext());
+
+    } else if (classType == int.class) {
+      while (iterA.hasNext())
+        dataOut.writeInt(iterA.getIntNext());
+
+    } else if (classType == short.class) {
+      while (iterA.hasNext())
+        dataOut.writeShort(iterA.getShortNext());
+
+    } else if (classType == char.class) {  // LOOK why are we using chars anyway ?
+      byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(char.class));
+      dataOut.write(pa, 0, pa.length);
+
+    } else if (classType == byte.class) {
+      while (iterA.hasNext())
+        dataOut.writeByte(iterA.getByteNext());
+
+    } else if (classType == boolean.class) {
+      while (iterA.hasNext())
+        dataOut.writeBoolean(iterA.getBooleanNext());
+
+    } else if (classType == String.class) {
+      long size = 0;
+      while (iterA.hasNext()) {
+        String s = (String) iterA.getObjectNext();
+        size += NcStream.writeVInt(dataOut, s.length());
+        byte[] b = s.getBytes("UTF-8");
+        dataOut.write(b);
+        size += b.length;
+      }
+      return size;
+
+    } else if (classType == ByteBuffer.class) { // OPAQUE
+      long size = 0;
+      while (iterA.hasNext()) {
+        ByteBuffer bb = (ByteBuffer) iterA.getObjectNext();
+        size += NcStream.writeVInt(dataOut, bb.limit());
+        bb.rewind();
+        dataOut.write(bb.array());
+        size += bb.limit();
+      }
+      return size;
+
+    } else if (data instanceof ArrayObject) { // vlen
+      long size = 0;
+      //size += NcStream.writeVInt(outStream, (int) data.getSize()); // nelems already written
+      while (iterA.hasNext()) {
+        Array row = (Array) iterA.getObjectNext();
+        ByteBuffer bb = row.getDataAsByteBuffer();
+        byte[] result = bb.array();
+        size += NcStream.writeVInt(dataOut, result.length); // size in bytes
+        dataOut.write(result);  // array
+        size += result.length;
       }
       return size;
 
@@ -647,8 +757,7 @@ public class IospHelper {
     return bb.limit() - start;
   }
 
-
-  /**
+   /**
    * Create 1D primitive array of the given size and type
    *
    * @param size     the size of the array to create

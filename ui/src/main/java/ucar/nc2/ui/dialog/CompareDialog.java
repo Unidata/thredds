@@ -102,8 +102,8 @@ public class CompareDialog extends JDialog {
   }
 
   private void datasetComboActionPerformed(ActionEvent e) {
-    if (!e.getActionCommand().equals("comboBoxChanged")) return;
     //System.out.printf("%s%n", e);
+    if (!e.getActionCommand().equals("comboBoxChanged")) return;
     datasetCombo.insertItemAt(datasetCombo.getSelectedItem(), 0);
   }
 

@@ -31,11 +31,9 @@
  */
 package ucar.nc2.ft.scan;
 
-import ucar.nc2.Attribute;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.constants.FeatureType;
@@ -221,6 +219,16 @@ public class FeatureScan {
 
     public String getFileType() {
       return fileType;
+    }
+
+    public String getSizeK() {
+      Formatter fm = new Formatter();
+      //long size = f.length();
+      //if (size > 10 * 1000 * 1000) fm.format("%6.1f M", ((float) size) / 1000 / 1000);
+      //else if (size > 10 * 1000) fm.format("%6.1f K", ((float) size) / 1000);
+      //else fm.format("%d", size);
+      fm.format("%,10d", f.length() / 1000);
+      return fm.toString();
     }
 
     /* public String getIosp() {

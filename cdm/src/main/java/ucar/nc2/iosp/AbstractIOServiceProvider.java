@@ -42,6 +42,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 
 /**
@@ -88,10 +89,17 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   // LOOK DataOutputStream uses big-endian
   @Override
   public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+          throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     Array data = readData(v2, section);
     return IospHelper.copyToByteChannel(data,  channel);
+  }
+
+  public long readToOutputStream(ucar.nc2.Variable v2, Section section, OutputStream out)
+          throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    Array data = readData(v2, section);
+    return IospHelper.copyToOutputStream(data,  out);
   }
 
   public long streamToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel)

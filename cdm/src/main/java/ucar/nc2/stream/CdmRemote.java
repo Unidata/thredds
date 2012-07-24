@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright 2009-2012 University Corporation for Atmospheric Research/Unidata
+ *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -66,7 +67,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   /**
    * Create the canonical form of the URL.
-   * If the urlName starts with "http:", change it to start with "dods:", otherwise
+   * If the urlName starts with "http:", change it to start with "cdmremote:", otherwise
    * leave it alone.
    *
    * @param urlName the url string
@@ -211,7 +212,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   }
 
   public static InputStream sendQuery(String remoteURI, String query) throws IOException {
-
     long start = System.currentTimeMillis();
 
     HTTPSession session = null;
@@ -267,7 +267,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   public void writeToFile(String filename) throws IOException {
     File file = new File(filename);
     FileOutputStream fos = new FileOutputStream(file);
-    WritableByteChannel wbc = fos.getChannel();
+    // WritableByteChannel wbc = fos.getChannel();
 
     long size = 4;
     fos.write(NcStream.MAGIC_START);

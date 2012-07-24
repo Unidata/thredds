@@ -1996,6 +1996,19 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
 
+  protected long readToOutputStream(ucar.nc2.Variable v, Section section, OutputStream out)
+          throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    if (unlocked)
+      throw new IllegalStateException("File is unlocked - cannot use");
+
+    if ((spi == null) || v.hasCachedData())
+      return IospHelper.copyToOutputStream(v.read(section), out);
+
+    return spi.readToOutputStream(v, section, out);
+  }
+
+
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     return spi.getStructureIterator(s, bufferSize);
   }

@@ -1,9 +1,9 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- * 
- * Portions of this software were developed by the Unidata Program at the 
+ * Copyright 2009-2012 University Corporation for Atmospheric Research/Unidata
+ *
+ * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
- * 
+ *
  * Access and use of this software shall impose the following obligations
  * and understandings on the user. The user is granted the right, without
  * any fee or cost, to use, copy, modify, alter, enhance and distribute
@@ -20,7 +20,7 @@
  * any support, consulting, training or assistance of any kind with regard
  * to the use, operation and performance of this software nor to provide
  * the user with any updates, revisions, new versions or "bug fixes."
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -282,6 +282,8 @@ public class NcStreamReader {
     return true;
   }
 
+  /////////////////////////////////////////////////////////////////////
+
   public NetcdfFile proto2nc(NcStreamProto.Header proto, NetcdfFile ncfile) throws InvalidProtocolBufferException {
     if (ncfile == null)
       ncfile = new NetcdfFileStream(); // not used i think
@@ -295,6 +297,7 @@ public class NcStreamReader {
     return ncfile;
   }
 
+  // need to have access to protected methods  ??
   private class NetcdfFileStream extends NetcdfFile {
 
   }

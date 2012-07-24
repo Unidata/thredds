@@ -33,12 +33,13 @@
 
 package ucar.nc2.ui;
 
+import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.iosp.hdf5.H5diag;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.io.RandomAccessFile;
@@ -70,7 +71,6 @@ public class Hdf5DataTable extends JPanel {
   private JSplitPane splitH, split, split2;
 
   private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
 
   public Hdf5DataTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -93,20 +93,43 @@ public class Hdf5DataTable extends JPanel {
     BAMutil.setActionProperties(calcAction, "Dataset", "calc storage", false, 'D', -1);
     BAMutil.addActionToContainer(buttPanel, calcAction);
 
-
     varPopup = new ucar.nc2.ui.widget.PopupMenu(objectTable.getJTable(), "Options");
-    varPopup.addAction("Deflate", new AbstractAction() {
+    varPopup.addAction("deflate", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VarBean mb = (VarBean) objectTable.getSelectedBean();
         if (mb == null) return;
-        if (infoTA == null) makeInfoWindow();
         infoTA.clear();
         Formatter f = new Formatter();
 
         deflate(f, mb);
         infoTA.appendLine(f.toString());
         infoTA.gotoTop();
-        infoWindow.show();
+      }
+    });
+
+    varPopup.addAction("show storage", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        VarBean mb = (VarBean) objectTable.getSelectedBean();
+        if (mb == null) return;
+        infoTA.clear();
+        Formatter f = new Formatter();
+
+        showStorage(f, mb);
+        infoTA.appendLine(f.toString());
+        infoTA.gotoTop();
+      }
+    });
+
+    varPopup.addAction("show vlen", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        VarBean mb = (VarBean) objectTable.getSelectedBean();
+        if (mb == null) return;
+        infoTA.clear();
+        Formatter f = new Formatter();
+
+        showVlen(f, mb);
+        infoTA.appendLine(f.toString());
+        infoTA.gotoTop();
       }
     });
 
@@ -116,11 +139,11 @@ public class Hdf5DataTable extends JPanel {
     splitH = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, objectTable, infoTA);
     splitH.setDividerLocation(prefs.getInt("splitPosH", 600));
 
-   /*  split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitH, messTable);
-    split.setDividerLocation(prefs.getInt("splitPos", 500));
+    /*  split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitH, messTable);
+ split.setDividerLocation(prefs.getInt("splitPos", 500));
 
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, attTable);
-    split2.setDividerLocation(prefs.getInt("splitPos2", 500));  */
+ split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, attTable);
+ split2.setDividerLocation(prefs.getInt("splitPos2", 500));  */
 
     setLayout(new BorderLayout());
     add(splitH, BorderLayout.CENTER);
@@ -128,18 +151,12 @@ public class Hdf5DataTable extends JPanel {
 
   public void save() {
     objectTable.saveState(false);
-   // messTable.saveState(false);
-   // attTable.saveState(false);
+    // messTable.saveState(false);
+    // attTable.saveState(false);
     // prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-   // prefs.putInt("splitPos", split.getDividerLocation());
-   // prefs.putInt("splitPos2", split2.getDividerLocation());
+    // prefs.putInt("splitPos", split.getDividerLocation());
+    // prefs.putInt("splitPos2", split2.getDividerLocation());
     prefs.putInt("splitPosH", splitH.getDividerLocation());
-  }
-
-  private void makeInfoWindow() {
-    infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra", BAMutil.getImage("netcdfUI"), infoTA);
-    infoWindow.setBounds(new Rectangle(300, 300, 500, 800));
   }
 
   private H5iosp iosp;
@@ -165,10 +182,10 @@ public class Hdf5DataTable extends JPanel {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(20000);
       PrintStream s = new PrintStream(bos);
       t.printStackTrace(s);
-      infoTA.setText( bos.toString());
+      infoTA.setText(bos.toString());
     }
 
-    for (Variable v : ncfile.getVariables())  {
+    for (Variable v : ncfile.getVariables()) {
       beanList.add(new VarBean(v));
     }
 
@@ -185,15 +202,8 @@ public class Hdf5DataTable extends JPanel {
 
   public void showInfo(Formatter f) throws IOException {
     if (iosp == null) return;
-
-    ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
-    PrintStream ps = new PrintStream(ff);
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/headerDetails H5header/symbolTable H5header/memTracker"));
-    H5header headerEmpty = (H5header) iosp.sendIospMessage("headerEmpty");
-    headerEmpty.read(ps);
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
-    ps.flush();
-    f.format("%s", ff.toString());
+    H5diag header = new H5diag(iosp);
+    header.showCompress(f);
   }
 
   public void calcStorage() {
@@ -219,19 +229,58 @@ public class Hdf5DataTable extends JPanel {
     File raf = new File(location);
     f.format("  file size    = %,d%n", raf.length());
 
-    float ratio = (totalStorage == 0) ? 0 : ((float)raf.length())/totalStorage;
+    float ratio = (totalStorage == 0) ? 0 : ((float) raf.length()) / totalStorage;
     f.format("  overhead     = %f%n", ratio);
 
-    ratio = (totalStorage == 0) ? 0 : ((float)totalVars)/totalStorage;
+    ratio = (totalStorage == 0) ? 0 : ((float) totalVars) / totalStorage;
     f.format("   compression = %f%n", ratio);
     f.format("   nchunks     = %d%n", totalCount);
 
     infoTA.setText(f.toString());
   }
 
-    ////////////////////////////////////////////////////////////////////////
   private void deflate(Formatter f, VarBean bean) {
+    H5diag header = new H5diag(iosp);
+    try {
+      header.showCompress(f);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+  }
 
+  ////////////////////////////////////////////////////////////////////////
+  private void showStorage(Formatter f, VarBean bean) {
+    try {
+      bean.vinfo.countStorageSize(f);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+  }
+
+  private void showVlen(Formatter f, VarBean bean) {
+    if (!bean.v.isVariableLength()) {
+      f.format("Variable %s must be variable length", bean.v.getFullName());
+      return;
+    }
+
+    try {
+      int countRows = 0;
+      long countElems = 0;
+      Array result = bean.v.read();
+      f.format("class = %s%n", result.getClass().getName());
+      while (result.hasNext()) {
+        Array line = (Array) result.next();
+        countRows++;
+        long size = line.getSize();
+        countElems += size;
+        f.format("  row %d size=%d%n", countRows, size);
+      }
+      float avg = (countRows == 0) ? 0 : ((float) countElems) / countRows;
+      f.format("%n  nrows = %d totalElems=%d avg=%f%n", countRows, countElems, avg);
+    } catch (IOException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      return;
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -322,7 +371,7 @@ public class Hdf5DataTable extends JPanel {
       }
 
       try {
-        countResult = vinfo.countStorageSize();
+        countResult = vinfo.countStorageSize(null);
       } catch (IOException e) {
         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       }
@@ -332,7 +381,7 @@ public class Hdf5DataTable extends JPanel {
       Formatter f = new Formatter();
       f.format("vinfo = %s%n%n", vinfo.toString());
       f.format("      = %s%n", vinfo.extraInfo());
-      infoTA.setText( f.toString());
+      infoTA.setText(f.toString());
     }
 
   }

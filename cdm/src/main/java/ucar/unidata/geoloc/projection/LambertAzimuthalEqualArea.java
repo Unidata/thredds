@@ -54,7 +54,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
    */
   private double R, sinLat0, cosLat0, lon0Degrees;
 
-  private final double lat0, lon0; // center lat/lon in degrees
+  private double lat0, lon0; // center lat/lon in degrees
   private final double falseEasting, falseNorthing;
 
   /**
@@ -200,6 +200,30 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   public double getFalseNorthing() {
     return falseNorthing;
   }
+
+   //////////////////////////////////////////////
+  // setters for IDV serialization - do not use except for object creating
+
+  /**
+    * Set the origin longitude.
+    * @param lon   the origin longitude.
+    */
+   public void setOriginLon(double lon) {
+       lon0 = Math.toRadians(lon);
+       precalculate();
+   }
+
+  /**
+   * Set the origin latitude.
+   *
+   * @param lat   the origin latitude.
+   */
+  public void setOriginLat(double lat) {
+      lat0 = Math.toRadians(lat);
+      precalculate();
+  }
+
+   /////////////////////////////////////////////////////////////////////
 
   /**
    * Get the label to be used in the gui for this type of projection
