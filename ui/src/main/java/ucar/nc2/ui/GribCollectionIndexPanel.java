@@ -354,15 +354,22 @@ public class GribCollectionIndexPanel extends JPanel {
   private void showFiles(Formatter f) {
     if (gc == null) return;
     int count = 0;
+    List<String> fs = new ArrayList<String>(gc.getFilenames());
+    Map<String, Integer> map = new HashMap<String, Integer>(fs.size() * 2);
     f.format("In order:%n");
-    for (String file : gc.getFilenames())
-      f.format("%5d %s%n", count++, file);
+    for (String file : gc.getFilenames()) {
+      f.format("%5d %s%n", count, file);
+      map.put(file, count);
+      count++;
+    }
 
     f.format("%nsorted:%n");
-    List<String> fs = new ArrayList<String>(gc.getFilenames());
     Collections.sort(fs);
-    for (String file : fs)
-      f.format("%5d %s%n", count++, file);
+    int last = -1;
+    for (String file : fs) {
+      int num = map.get(file);
+      f.format("%s%5d %s%n", (num < last) ? "***" : "", num, file);
+    }
 
     f.format("============%n%s%n", gc);
   }

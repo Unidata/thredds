@@ -53,6 +53,7 @@ public final class DataFormatType {
     public final static DataFormatType HDF4 = new DataFormatType("HDF4");
     public final static DataFormatType HDF5 = new DataFormatType("HDF5");
     public final static DataFormatType NETCDF = new DataFormatType("netCDF");
+    public final static DataFormatType NETCDF4 = new DataFormatType("netCDF-4");
     public final static DataFormatType NEXRAD2 = new DataFormatType("NEXRAD-2");
     public final static DataFormatType NCML = new DataFormatType("NcML");
     public final static DataFormatType NIDS = new DataFormatType("NEXRAD-3");

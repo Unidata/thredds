@@ -335,12 +335,13 @@ public class FileWriter {
     }
   }
 
-  /////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   // contributed by  cwardgar@usgs.gov 4/12/2010
 
   /**
    * An index that computes chunk shapes. It is intended to be used to compute the origins and shapes for a series
    * of contiguous writes to a multidimensional array.
+   * It writes the first n elements (n < maxChunkElems), then the next, etc.
    */
   public static class ChunkingIndex extends Index {
     public ChunkingIndex(int[] shape) {
@@ -359,9 +360,10 @@ public class FileWriter {
       int[] chunkShape = new int[rank];
 
       for (int iDim = 0; iDim < rank; ++iDim) {
-        chunkShape[iDim] = (int) (maxChunkElems / stride[iDim]);
-        chunkShape[iDim] = (chunkShape[iDim] == 0) ? 1 : chunkShape[iDim];
-        chunkShape[iDim] = Math.min(chunkShape[iDim], shape[iDim] - current[iDim]);
+        int size = (int) (maxChunkElems / stride[iDim]);
+        size = (size == 0) ? 1 : size;
+        size = Math.min(size, shape[iDim] - current[iDim]);
+        chunkShape[iDim] = size;
       }
 
       return chunkShape;

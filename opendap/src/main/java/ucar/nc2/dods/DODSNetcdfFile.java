@@ -147,7 +147,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   /**
    * Create the canonical form of the URL.
-   * If the urlName starts with "http:", change it to start with "dods:", otherwise
+   * If the urlName starts with "http:" or "https:", change it to start with "dods:", otherwise
    * leave it alone.
    *
    * @param urlName the url string
@@ -156,6 +156,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   public static String canonicalURL(String urlName) {
     if (urlName.startsWith("http:"))
       return "dods:" + urlName.substring(5);
+    if (urlName.startsWith("https:"))
+      return "dods:" + urlName.substring(6);
     return urlName;
   }
 
@@ -199,6 +201,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       urlName = "http:" + datasetURL.substring(5);
     } else if (datasetURL.startsWith("http:")) {
       this.location = "dods:" + datasetURL.substring(5);
+    } else if (datasetURL.startsWith("https:")) {
+      this.location = "dods:" + datasetURL.substring(6);
     } else if (datasetURL.startsWith("file:")) {
         this.location = datasetURL;
     } else {

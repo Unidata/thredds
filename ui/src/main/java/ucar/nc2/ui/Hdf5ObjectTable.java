@@ -33,7 +33,6 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.iosp.hdf5.H5diag;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -56,7 +55,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * ToolsUI/Iosp/Hdf5
+ * ToolsUI/Iosp/Hdf5  raw file objects
  *
  * @author caron
  */
@@ -121,7 +120,9 @@ public class Hdf5ObjectTable extends JPanel {
     attTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         AttributeBean mb = (AttributeBean) attTable.getSelectedBean();
-        dumpTA.setText( mb.att.toString());
+        Formatter f = new Formatter();
+        mb.show(f);
+        dumpTA.setText( f.toString());
       }
     });
 
@@ -174,6 +175,8 @@ public class Hdf5ObjectTable extends JPanel {
 
     iosp = new H5iosp();
     NetcdfFile ncfile = new MyNetcdfFile(iosp, location);
+    ncfile.sendIospMessage(H5iosp.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
+
     try {
       iosp.open(raf, ncfile, null);
     } catch (Throwable t) {
@@ -202,13 +205,6 @@ public class Hdf5ObjectTable extends JPanel {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
     ps.flush();
     f.format("%s", ff.toString());
-  }
-
-  public void showCompressInfo(Formatter f) throws IOException {
-    if (iosp == null) return;
-
-    H5diag header = new H5diag(iosp);
-    header.showCompress(f);
   }
 
   private class MyNetcdfFile extends NetcdfFile {
@@ -304,6 +300,15 @@ public class Hdf5ObjectTable extends JPanel {
 
     public long getDataPos() {
       return att.getDataPosAbsolute();
+    }
+
+    void show(Formatter f) {
+      f.format("hdf5 att = %s%n%n", att);
+      try {
+        f.format("netcdf attribute%n %s;%n", att.getNcAttribute());
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
     }
 
   }

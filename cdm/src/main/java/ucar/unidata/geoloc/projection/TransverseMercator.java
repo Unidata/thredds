@@ -50,7 +50,7 @@ import ucar.unidata.util.SpecialMathFunction;
 
 public class TransverseMercator extends ProjectionImpl {
 
-  private final double lat0, lon0, scale, earthRadius;
+  private double lat0, lon0, scale, earthRadius;
   private final double falseEasting, falseNorthing;
 
   /**
@@ -180,6 +180,39 @@ public class TransverseMercator extends ProjectionImpl {
   public double getEarthRadius() {
     return earthRadius;
   }
+
+  //////////////////////////////////////////////
+  // setters for IDV serialization - do not use except for object creating
+
+  /**
+   * Set the scale
+   *
+   * @param scale  the scale
+   */
+  public void setScale(double scale) {
+      this.scale = earthRadius * scale;
+  }
+
+  /**
+   * Set the origin latitude
+   *
+   * @param lat  the origin latitude
+   */
+  public void setOriginLat(double lat) {
+      lat0 = Math.toRadians(lat);
+  }
+
+
+  /**
+   * Set the tangent longitude
+   *
+   * @param lon the tangent longitude
+   */
+  public void setTangentLon(double lon) {
+      lon0 = Math.toRadians(lon);
+  }
+
+  /////////////////////////////////////////////
 
   /**
    * Get the label to be used in the gui for this type of projection

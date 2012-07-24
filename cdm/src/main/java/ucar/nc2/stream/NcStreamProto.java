@@ -205,6 +205,10 @@ public final class NcStreamProto {
     java.util.List<String> getSdataList();
     int getSdataCount();
     String getSdata(int index);
+    
+    // optional bool unsigned = 6 [default = false];
+    boolean hasUnsigned();
+    boolean getUnsigned();
   }
   public static final class Attribute extends
       com.google.protobuf.GeneratedMessage
@@ -395,12 +399,23 @@ public final class NcStreamProto {
       return sdata_.get(index);
     }
     
+    // optional bool unsigned = 6 [default = false];
+    public static final int UNSIGNED_FIELD_NUMBER = 6;
+    private boolean unsigned_;
+    public boolean hasUnsigned() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public boolean getUnsigned() {
+      return unsigned_;
+    }
+    
     private void initFields() {
       name_ = "";
       type_ = ucar.nc2.stream.NcStreamProto.Attribute.Type.STRING;
       len_ = 0;
       data_ = com.google.protobuf.ByteString.EMPTY;
       sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      unsigned_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -441,6 +456,9 @@ public final class NcStreamProto {
       for (int i = 0; i < sdata_.size(); i++) {
         output.writeBytes(5, sdata_.getByteString(i));
       }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBool(6, unsigned_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -474,6 +492,10 @@ public final class NcStreamProto {
         }
         size += dataSize;
         size += 1 * getSdataList().size();
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(6, unsigned_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -607,6 +629,8 @@ public final class NcStreamProto {
         bitField0_ = (bitField0_ & ~0x00000008);
         sdata_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000010);
+        unsigned_ = false;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       
@@ -667,6 +691,10 @@ public final class NcStreamProto {
           bitField0_ = (bitField0_ & ~0x00000010);
         }
         result.sdata_ = sdata_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.unsigned_ = unsigned_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -704,6 +732,9 @@ public final class NcStreamProto {
             sdata_.addAll(other.sdata_);
           }
           onChanged();
+        }
+        if (other.hasUnsigned()) {
+          setUnsigned(other.getUnsigned());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -777,6 +808,11 @@ public final class NcStreamProto {
             case 42: {
               ensureSdataIsMutable();
               sdata_.add(input.readBytes());
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              unsigned_ = input.readBool();
               break;
             }
           }
@@ -944,6 +980,27 @@ public final class NcStreamProto {
         ensureSdataIsMutable();
         sdata_.add(value);
         onChanged();
+      }
+      
+      // optional bool unsigned = 6 [default = false];
+      private boolean unsigned_ ;
+      public boolean hasUnsigned() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public boolean getUnsigned() {
+        return unsigned_;
+      }
+      public Builder setUnsigned(boolean value) {
+        bitField0_ |= 0x00000020;
+        unsigned_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUnsigned() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        unsigned_ = false;
+        onChanged();
+        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:ncstream.Attribute)
@@ -1600,11 +1657,6 @@ public final class NcStreamProto {
     // optional string enumType = 7;
     boolean hasEnumType();
     String getEnumType();
-    
-    // repeated uint32 dimIndex = 8;
-    java.util.List<java.lang.Integer> getDimIndexList();
-    int getDimIndexCount();
-    int getDimIndex(int index);
   }
   public static final class Variable extends
       com.google.protobuf.GeneratedMessage
@@ -1771,20 +1823,6 @@ public final class NcStreamProto {
       }
     }
     
-    // repeated uint32 dimIndex = 8;
-    public static final int DIMINDEX_FIELD_NUMBER = 8;
-    private java.util.List<java.lang.Integer> dimIndex_;
-    public java.util.List<java.lang.Integer>
-        getDimIndexList() {
-      return dimIndex_;
-    }
-    public int getDimIndexCount() {
-      return dimIndex_.size();
-    }
-    public int getDimIndex(int index) {
-      return dimIndex_.get(index);
-    }
-    
     private void initFields() {
       name_ = "";
       dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
@@ -1793,7 +1831,6 @@ public final class NcStreamProto {
       unsigned_ = false;
       data_ = com.google.protobuf.ByteString.EMPTY;
       enumType_ = "";
-      dimIndex_ = java.util.Collections.emptyList();;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1842,9 +1879,6 @@ public final class NcStreamProto {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBytes(7, getEnumTypeBytes());
       }
-      for (int i = 0; i < dimIndex_.size(); i++) {
-        output.writeUInt32(8, dimIndex_.get(i));
-      }
       getUnknownFields().writeTo(output);
     }
     
@@ -1881,15 +1915,6 @@ public final class NcStreamProto {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(7, getEnumTypeBytes());
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < dimIndex_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(dimIndex_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getDimIndexList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2037,8 +2062,6 @@ public final class NcStreamProto {
         bitField0_ = (bitField0_ & ~0x00000020);
         enumType_ = "";
         bitField0_ = (bitField0_ & ~0x00000040);
-        dimIndex_ = java.util.Collections.emptyList();;
-        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
       
@@ -2115,11 +2138,6 @@ public final class NcStreamProto {
           to_bitField0_ |= 0x00000010;
         }
         result.enumType_ = enumType_;
-        if (((bitField0_ & 0x00000080) == 0x00000080)) {
-          dimIndex_ = java.util.Collections.unmodifiableList(dimIndex_);
-          bitField0_ = (bitField0_ & ~0x00000080);
-        }
-        result.dimIndex_ = dimIndex_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2202,16 +2220,6 @@ public final class NcStreamProto {
         }
         if (other.hasEnumType()) {
           setEnumType(other.getEnumType());
-        }
-        if (!other.dimIndex_.isEmpty()) {
-          if (dimIndex_.isEmpty()) {
-            dimIndex_ = other.dimIndex_;
-            bitField0_ = (bitField0_ & ~0x00000080);
-          } else {
-            ensureDimIndexIsMutable();
-            dimIndex_.addAll(other.dimIndex_);
-          }
-          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2299,20 +2307,6 @@ public final class NcStreamProto {
             case 58: {
               bitField0_ |= 0x00000040;
               enumType_ = input.readBytes();
-              break;
-            }
-            case 64: {
-              ensureDimIndexIsMutable();
-              dimIndex_.add(input.readUInt32());
-              break;
-            }
-            case 66: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              while (input.getBytesUntilLimit() > 0) {
-                addDimIndex(input.readUInt32());
-              }
-              input.popLimit(limit);
               break;
             }
           }
@@ -2832,51 +2826,6 @@ public final class NcStreamProto {
         bitField0_ |= 0x00000040;
         enumType_ = value;
         onChanged();
-      }
-      
-      // repeated uint32 dimIndex = 8;
-      private java.util.List<java.lang.Integer> dimIndex_ = java.util.Collections.emptyList();;
-      private void ensureDimIndexIsMutable() {
-        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
-          dimIndex_ = new java.util.ArrayList<java.lang.Integer>(dimIndex_);
-          bitField0_ |= 0x00000080;
-         }
-      }
-      public java.util.List<java.lang.Integer>
-          getDimIndexList() {
-        return java.util.Collections.unmodifiableList(dimIndex_);
-      }
-      public int getDimIndexCount() {
-        return dimIndex_.size();
-      }
-      public int getDimIndex(int index) {
-        return dimIndex_.get(index);
-      }
-      public Builder setDimIndex(
-          int index, int value) {
-        ensureDimIndexIsMutable();
-        dimIndex_.set(index, value);
-        onChanged();
-        return this;
-      }
-      public Builder addDimIndex(int value) {
-        ensureDimIndexIsMutable();
-        dimIndex_.add(value);
-        onChanged();
-        return this;
-      }
-      public Builder addAllDimIndex(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureDimIndexIsMutable();
-        super.addAll(values, dimIndex_);
-        onChanged();
-        return this;
-      }
-      public Builder clearDimIndex() {
-        dimIndex_ = java.util.Collections.emptyList();;
-        bitField0_ = (bitField0_ & ~0x00000080);
-        onChanged();
-        return this;
       }
       
       // @@protoc_insertion_point(builder_scope:ncstream.Variable)
@@ -8469,9 +8418,13 @@ public final class NcStreamProto {
     boolean hasCompress();
     ucar.nc2.stream.NcStreamProto.Compress getCompress();
     
-    // optional fixed32 crc32 = 7;
-    boolean hasCrc32();
-    int getCrc32();
+    // optional bool vdata = 7 [default = false];
+    boolean hasVdata();
+    boolean getVdata();
+    
+    // optional uint32 uncompressedSize = 8;
+    boolean hasUncompressedSize();
+    int getUncompressedSize();
   }
   public static final class Data extends
       com.google.protobuf.GeneratedMessage
@@ -8587,14 +8540,24 @@ public final class NcStreamProto {
       return compress_;
     }
     
-    // optional fixed32 crc32 = 7;
-    public static final int CRC32_FIELD_NUMBER = 7;
-    private int crc32_;
-    public boolean hasCrc32() {
+    // optional bool vdata = 7 [default = false];
+    public static final int VDATA_FIELD_NUMBER = 7;
+    private boolean vdata_;
+    public boolean hasVdata() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    public int getCrc32() {
-      return crc32_;
+    public boolean getVdata() {
+      return vdata_;
+    }
+    
+    // optional uint32 uncompressedSize = 8;
+    public static final int UNCOMPRESSEDSIZE_FIELD_NUMBER = 8;
+    private int uncompressedSize_;
+    public boolean hasUncompressedSize() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    public int getUncompressedSize() {
+      return uncompressedSize_;
     }
     
     private void initFields() {
@@ -8604,7 +8567,8 @@ public final class NcStreamProto {
       bigend_ = true;
       version_ = 0;
       compress_ = ucar.nc2.stream.NcStreamProto.Compress.NONE;
-      crc32_ = 0;
+      vdata_ = false;
+      uncompressedSize_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -8651,7 +8615,10 @@ public final class NcStreamProto {
         output.writeEnum(6, compress_.getNumber());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeFixed32(7, crc32_);
+        output.writeBool(7, vdata_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeUInt32(8, uncompressedSize_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -8688,7 +8655,11 @@ public final class NcStreamProto {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFixed32Size(7, crc32_);
+          .computeBoolSize(7, vdata_);
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(8, uncompressedSize_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -8829,8 +8800,10 @@ public final class NcStreamProto {
         bitField0_ = (bitField0_ & ~0x00000010);
         compress_ = ucar.nc2.stream.NcStreamProto.Compress.NONE;
         bitField0_ = (bitField0_ & ~0x00000020);
-        crc32_ = 0;
+        vdata_ = false;
         bitField0_ = (bitField0_ & ~0x00000040);
+        uncompressedSize_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000080);
         return this;
       }
       
@@ -8900,7 +8873,11 @@ public final class NcStreamProto {
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.crc32_ = crc32_;
+        result.vdata_ = vdata_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.uncompressedSize_ = uncompressedSize_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -8935,8 +8912,11 @@ public final class NcStreamProto {
         if (other.hasCompress()) {
           setCompress(other.getCompress());
         }
-        if (other.hasCrc32()) {
-          setCrc32(other.getCrc32());
+        if (other.hasVdata()) {
+          setVdata(other.getVdata());
+        }
+        if (other.hasUncompressedSize()) {
+          setUncompressedSize(other.getUncompressedSize());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -9029,9 +9009,14 @@ public final class NcStreamProto {
               }
               break;
             }
-            case 61: {
+            case 56: {
               bitField0_ |= 0x00000040;
-              crc32_ = input.readFixed32();
+              vdata_ = input.readBool();
+              break;
+            }
+            case 64: {
+              bitField0_ |= 0x00000080;
+              uncompressedSize_ = input.readUInt32();
               break;
             }
           }
@@ -9256,23 +9241,44 @@ public final class NcStreamProto {
         return this;
       }
       
-      // optional fixed32 crc32 = 7;
-      private int crc32_ ;
-      public boolean hasCrc32() {
+      // optional bool vdata = 7 [default = false];
+      private boolean vdata_ ;
+      public boolean hasVdata() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
-      public int getCrc32() {
-        return crc32_;
+      public boolean getVdata() {
+        return vdata_;
       }
-      public Builder setCrc32(int value) {
+      public Builder setVdata(boolean value) {
         bitField0_ |= 0x00000040;
-        crc32_ = value;
+        vdata_ = value;
         onChanged();
         return this;
       }
-      public Builder clearCrc32() {
+      public Builder clearVdata() {
         bitField0_ = (bitField0_ & ~0x00000040);
-        crc32_ = 0;
+        vdata_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // optional uint32 uncompressedSize = 8;
+      private int uncompressedSize_ ;
+      public boolean hasUncompressedSize() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      public int getUncompressedSize() {
+        return uncompressedSize_;
+      }
+      public Builder setUncompressedSize(int value) {
+        bitField0_ |= 0x00000080;
+        uncompressedSize_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearUncompressedSize() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        uncompressedSize_ = 0;
         onChanged();
         return this;
       }
@@ -11494,45 +11500,46 @@ public final class NcStreamProto {
   static {
     java.lang.String[] descriptorData = {
       "\n\036ucar/nc2/stream/ncStream.proto\022\010ncstre" +
-      "am\"\276\001\n\tAttribute\022\014\n\004name\030\001 \002(\t\022&\n\004type\030\002" +
+      "am\"\327\001\n\tAttribute\022\014\n\004name\030\001 \002(\t\022&\n\004type\030\002" +
       " \002(\0162\030.ncstream.Attribute.Type\022\013\n\003len\030\003 " +
-      "\002(\r\022\014\n\004data\030\004 \001(\014\022\r\n\005sdata\030\005 \003(\t\"Q\n\004Type" +
-      "\022\n\n\006STRING\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT" +
-      "\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"v\n\tD" +
-      "imension\022\014\n\004name\030\001 \001(\t\022\016\n\006length\030\002 \001(\004\022\032" +
-      "\n\013isUnlimited\030\003 \001(\010:\005false\022\025\n\006isVlen\030\004 \001" +
-      "(\010:\005false\022\030\n\tisPrivate\030\005 \001(\010:\005false\"\320\001\n\010" +
-      "Variable\022\014\n\004name\030\001 \002(\t\022$\n\010dataType\030\002 \002(\016",
-      "2\022.ncstream.DataType\022\"\n\005shape\030\003 \003(\0132\023.nc" +
-      "stream.Dimension\022!\n\004atts\030\004 \003(\0132\023.ncstrea" +
-      "m.Attribute\022\027\n\010unsigned\030\005 \001(\010:\005false\022\014\n\004" +
-      "data\030\006 \001(\014\022\020\n\010enumType\030\007 \001(\t\022\020\n\010dimIndex" +
-      "\030\010 \003(\r\"\316\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022$\n\010da" +
-      "taType\030\002 \002(\0162\022.ncstream.DataType\022\"\n\005shap" +
-      "e\030\003 \003(\0132\023.ncstream.Dimension\022!\n\004atts\030\004 \003" +
-      "(\0132\023.ncstream.Attribute\022 \n\004vars\030\005 \003(\0132\022." +
-      "ncstream.Variable\022$\n\007structs\030\006 \003(\0132\023.ncs" +
-      "tream.Structure\"q\n\013EnumTypedef\022\014\n\004name\030\001",
-      " \002(\t\022+\n\003map\030\002 \003(\0132\036.ncstream.EnumTypedef" +
-      ".EnumType\032\'\n\010EnumType\022\014\n\004code\030\001 \002(\r\022\r\n\005v" +
-      "alue\030\002 \002(\t\"\356\001\n\005Group\022\014\n\004name\030\001 \002(\t\022!\n\004di" +
-      "ms\030\002 \003(\0132\023.ncstream.Dimension\022 \n\004vars\030\003 " +
-      "\003(\0132\022.ncstream.Variable\022$\n\007structs\030\004 \003(\013" +
-      "2\023.ncstream.Structure\022!\n\004atts\030\005 \003(\0132\023.nc" +
-      "stream.Attribute\022\037\n\006groups\030\006 \003(\0132\017.ncstr" +
-      "eam.Group\022(\n\tenumTypes\030\007 \003(\0132\025.ncstream." +
-      "EnumTypedef\"h\n\006Header\022\020\n\010location\030\001 \001(\t\022" +
-      "\r\n\005title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\035\n\004root\030\004 \002(\013",
-      "2\017.ncstream.Group\022\022\n\007version\030\005 \001(\r:\0010\"\306\001" +
-      "\n\004Data\022\017\n\007varName\030\001 \002(\t\022$\n\010dataType\030\002 \002(" +
-      "\0162\022.ncstream.DataType\022\"\n\007section\030\003 \001(\0132\021" +
-      ".ncstream.Section\022\024\n\006bigend\030\004 \001(\010:\004true\022" +
-      "\022\n\007version\030\005 \001(\r:\0010\022*\n\010compress\030\006 \001(\0162\022." +
-      "ncstream.Compress:\004NONE\022\r\n\005crc32\030\007 \001(\007\":" +
+      "\002(\r\022\014\n\004data\030\004 \001(\014\022\r\n\005sdata\030\005 \003(\t\022\027\n\010unsi" +
+      "gned\030\006 \001(\010:\005false\"Q\n\004Type\022\n\n\006STRING\020\000\022\010\n" +
+      "\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n" +
+      "\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"v\n\tDimension\022\014\n\004nam" +
+      "e\030\001 \001(\t\022\016\n\006length\030\002 \001(\004\022\032\n\013isUnlimited\030\003" +
+      " \001(\010:\005false\022\025\n\006isVlen\030\004 \001(\010:\005false\022\030\n\tis" +
+      "Private\030\005 \001(\010:\005false\"\276\001\n\010Variable\022\014\n\004nam",
+      "e\030\001 \002(\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.Dat" +
+      "aType\022\"\n\005shape\030\003 \003(\0132\023.ncstream.Dimensio" +
+      "n\022!\n\004atts\030\004 \003(\0132\023.ncstream.Attribute\022\027\n\010" +
+      "unsigned\030\005 \001(\010:\005false\022\014\n\004data\030\006 \001(\014\022\020\n\010e" +
+      "numType\030\007 \001(\t\"\316\001\n\tStructure\022\014\n\004name\030\001 \002(" +
+      "\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.DataType\022" +
+      "\"\n\005shape\030\003 \003(\0132\023.ncstream.Dimension\022!\n\004a" +
+      "tts\030\004 \003(\0132\023.ncstream.Attribute\022 \n\004vars\030\005" +
+      " \003(\0132\022.ncstream.Variable\022$\n\007structs\030\006 \003(" +
+      "\0132\023.ncstream.Structure\"q\n\013EnumTypedef\022\014\n",
+      "\004name\030\001 \002(\t\022+\n\003map\030\002 \003(\0132\036.ncstream.Enum" +
+      "Typedef.EnumType\032\'\n\010EnumType\022\014\n\004code\030\001 \002" +
+      "(\r\022\r\n\005value\030\002 \002(\t\"\356\001\n\005Group\022\014\n\004name\030\001 \002(" +
+      "\t\022!\n\004dims\030\002 \003(\0132\023.ncstream.Dimension\022 \n\004" +
+      "vars\030\003 \003(\0132\022.ncstream.Variable\022$\n\007struct" +
+      "s\030\004 \003(\0132\023.ncstream.Structure\022!\n\004atts\030\005 \003" +
+      "(\0132\023.ncstream.Attribute\022\037\n\006groups\030\006 \003(\0132" +
+      "\017.ncstream.Group\022(\n\tenumTypes\030\007 \003(\0132\025.nc" +
+      "stream.EnumTypedef\"h\n\006Header\022\020\n\010location" +
+      "\030\001 \001(\t\022\r\n\005title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\035\n\004roo",
+      "t\030\004 \002(\0132\017.ncstream.Group\022\022\n\007version\030\005 \001(" +
+      "\r:\0010\"\347\001\n\004Data\022\017\n\007varName\030\001 \002(\t\022$\n\010dataTy" +
+      "pe\030\002 \002(\0162\022.ncstream.DataType\022\"\n\007section\030" +
+      "\003 \001(\0132\021.ncstream.Section\022\024\n\006bigend\030\004 \001(\010" +
+      ":\004true\022\022\n\007version\030\005 \001(\r:\0010\022*\n\010compress\030\006" +
+      " \001(\0162\022.ncstream.Compress:\004NONE\022\024\n\005vdata\030" +
+      "\007 \001(\010:\005false\022\030\n\020uncompressedSize\030\010 \001(\r\":" +
       "\n\005Range\022\020\n\005start\030\001 \001(\004:\0010\022\014\n\004size\030\002 \002(\004\022" +
       "\021\n\006stride\030\003 \001(\004:\0011\")\n\007Section\022\036\n\005range\030\001" +
-      " \003(\0132\017.ncstream.Range\"a\n\rStructureData\022\016" +
-      "\n\006member\030\001 \003(\r\022\014\n\004data\030\002 \002(\014\022\021\n\theapCoun",
+      " \003(\0132\017.ncstream.Range\"a\n\rStructureData\022\016",
+      "\n\006member\030\001 \003(\r\022\014\n\004data\030\002 \002(\014\022\021\n\theapCoun" +
       "t\030\003 \003(\r\022\r\n\005sdata\030\004 \003(\t\022\020\n\005nrows\030\005 \001(\004:\0011" +
       "\"\030\n\005Error\022\017\n\007message\030\001 \002(\t*\251\001\n\010DataType\022" +
       "\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022" +
@@ -11552,7 +11559,7 @@ public final class NcStreamProto {
           internal_static_ncstream_Attribute_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Attribute_descriptor,
-              new java.lang.String[] { "Name", "Type", "Len", "Data", "Sdata", },
+              new java.lang.String[] { "Name", "Type", "Len", "Data", "Sdata", "Unsigned", },
               ucar.nc2.stream.NcStreamProto.Attribute.class,
               ucar.nc2.stream.NcStreamProto.Attribute.Builder.class);
           internal_static_ncstream_Dimension_descriptor =
@@ -11568,7 +11575,7 @@ public final class NcStreamProto {
           internal_static_ncstream_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Variable_descriptor,
-              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", "EnumType", "DimIndex", },
+              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", "EnumType", },
               ucar.nc2.stream.NcStreamProto.Variable.class,
               ucar.nc2.stream.NcStreamProto.Variable.Builder.class);
           internal_static_ncstream_Structure_descriptor =
@@ -11616,7 +11623,7 @@ public final class NcStreamProto {
           internal_static_ncstream_Data_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Data_descriptor,
-              new java.lang.String[] { "VarName", "DataType", "Section", "Bigend", "Version", "Compress", "Crc32", },
+              new java.lang.String[] { "VarName", "DataType", "Section", "Bigend", "Version", "Compress", "Vdata", "UncompressedSize", },
               ucar.nc2.stream.NcStreamProto.Data.class,
               ucar.nc2.stream.NcStreamProto.Data.Builder.class);
           internal_static_ncstream_Range_descriptor =

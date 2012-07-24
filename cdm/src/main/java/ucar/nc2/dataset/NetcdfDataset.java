@@ -670,7 +670,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         throw new IOException(log.toString());
       return ncfile;
 
-    } else if (location.startsWith("http:")) {
+    } else if ((location.startsWith("http:") || location.startsWith("https:"))) {
       ServiceType stype = disambiguateHttp(location);
       if (stype == ServiceType.OPENDAP)
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject); // try as a dods file
@@ -681,7 +681,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // look for NcML
     if (location.endsWith(".xml") || location.endsWith(".ncml")) { //open as a NetcdfDataset through NcML
-      if (!location.startsWith("http:") && !location.startsWith("file:"))
+      if (!location.startsWith("http:") && !location.startsWith("https:") && !location.startsWith("file:"))
         location = "file:" + location;
       return acquireNcml(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);
     }
@@ -695,7 +695,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /*
-   * 'Bare' urls starting with 'http:' can be of the following service type:
+   * 'Bare' urls starting with 'http:' or 'https:' can be of the following service type:
    * <ol>
    * <li> opendap
    * <li> remote ncstream

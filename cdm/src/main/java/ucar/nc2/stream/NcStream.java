@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
+ * Copyright 2009-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -55,9 +55,10 @@ import ucar.unidata.io.RandomAccessFile;
  * Defines the ncstream format, along with ncStream.proto.
  * <pre>
  * To regenerate ncStreamProto.java from ncStream.proto:
- cd c:/dev/tds4.2/thredds/cdm/src/main/java
- protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
+ * cd c:/dev/tds4.2/thredds/cdm/src/main/java
+ * protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
  * </pre>
+ *
  * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
  * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcstreamGrammer.html"
  */
@@ -66,9 +67,9 @@ public class NcStream {
   static public final byte[] MAGIC_START = new byte[]{0x43, 0x44, 0x46, 0x53};
 
   static public final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
-  static public final byte[] MAGIC_DATA =   new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
-  static public final byte[] MAGIC_VDATA =  new byte[]{(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};    
-  static public final byte[] MAGIC_VEND =  new byte[]{(byte) 0xed, (byte) 0xef, (byte) 0xfe, (byte) 0xda};
+  static public final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
+  static public final byte[] MAGIC_VDATA = new byte[]{(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};
+  static public final byte[] MAGIC_VEND = new byte[]{(byte) 0xed, (byte) 0xef, (byte) 0xfe, (byte) 0xda};
 
   static public final byte[] MAGIC_ERR = new byte[]{(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
   static public final byte[] MAGIC_END = new byte[]{(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};
@@ -94,7 +95,7 @@ public class NcStream {
     }
 
     for (Group ng : g.getGroups())
-      groupBuilder.addGroups( encodeGroup(ng, sizeToCache));
+      groupBuilder.addGroups(encodeGroup(ng, sizeToCache));
 
     return groupBuilder;
   }
@@ -109,7 +110,7 @@ public class NcStream {
     // values
     if (att.getLength() > 0) {
       if (att.isString()) {
-        for (int i=0; i<att.getLength(); i++) 
+        for (int i = 0; i < att.getLength(); i++)
           attBuilder.addSdata(att.getStringValue(i));
 
       } else {
@@ -136,7 +137,7 @@ public class NcStream {
   static NcStreamProto.EnumTypedef.Builder encodeEnumTypedef(EnumTypedef enumType) throws IOException {
     NcStreamProto.EnumTypedef.Builder builder = NcStreamProto.EnumTypedef.newBuilder();
 
-    builder.setName( enumType.getName());
+    builder.setName(enumType.getName());
     Map<Integer, String> map = enumType.getMap();
     NcStreamProto.EnumTypedef.EnumType.Builder b2 = NcStreamProto.EnumTypedef.EnumType.newBuilder();
     for (int code : map.keySet()) {
@@ -146,7 +147,7 @@ public class NcStream {
       builder.addMap(b2);
     }
     return builder;
-   }
+  }
 
   static NcStreamProto.Variable.Builder encodeVar(Variable var, int sizeToCache) throws IOException {
     NcStreamProto.Variable.Builder builder = NcStreamProto.Variable.newBuilder();
@@ -207,12 +208,17 @@ public class NcStream {
     return builder.build();
   }
 
-  static NcStreamProto.Data encodeDataProto(Variable var, Section section) {
+  static NcStreamProto.Data encodeDataProto(Variable var, Section section, boolean deflate, int uncompressedLength) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getFullNameEscaped());
     builder.setDataType(encodeDataType(var.getDataType()));
     builder.setSection(encodeSection(section));
-    builder.setVersion(1);
+    if (deflate) {
+      builder.setCompress(NcStreamProto.Compress.DEFLATE);
+      builder.setUncompressedSize(uncompressedLength);
+    }
+    if (var.isVariableLength()) builder.setVdata(true);
+    builder.setVersion(2);
     return builder.build();
   }
 
@@ -220,17 +226,21 @@ public class NcStream {
     NcStreamProto.Section.Builder sbuilder = NcStreamProto.Section.newBuilder();
     for (Range r : section.getRanges()) {
       NcStreamProto.Range.Builder rbuilder = NcStreamProto.Range.newBuilder();
+      if (r.first() != 0) rbuilder.setStart(r.first());
       rbuilder.setSize(r.length());
+      if (r.stride() != 1) rbuilder.setStride(r.stride());
       sbuilder.addRange(rbuilder);
     }
     return sbuilder.build();
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   public static long encodeArrayStructure(ArrayStructure as, OutputStream os) throws java.io.IOException {
     long size = 0;
 
     ArrayStructureBB dataBB = IospHelper.makeArrayBB(as);
-    List<String>  ss = new ArrayList<String>();
+    List<String> ss = new ArrayList<String>();
     List<Object> heap = dataBB.getHeap();
     List<Integer> count = new ArrayList<Integer>();
     if (heap != null) {
@@ -285,7 +295,7 @@ public class NcStream {
         dataBB.addObjectToHeap(ss.get(scount++));
       } else {
         String[] hos = new String[c];
-        for (int i=0; i<c; i++)
+        for (int i = 0; i < c; i++)
           hos[i] = ss.get(scount++);
         dataBB.addObjectToHeap(hos);
       }
@@ -300,7 +310,7 @@ public class NcStream {
     long size = 0;
 
     ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
-    ArrayStructureBB dataBB = new ArrayStructureBB(sm, new int[] {1}, bb, 0);
+    ArrayStructureBB dataBB = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
 
     List<String> ss = builder.getSdataList();
     List<Integer> count = builder.getHeapCountList();
@@ -311,7 +321,7 @@ public class NcStream {
         dataBB.addObjectToHeap(ss.get(scount++));
       } else {
         String[] hos = new String[c];
-        for (int i=0; i<c; i++)
+        for (int i = 0; i < c; i++)
           hos[i] = ss.get(scount++);
         dataBB.addObjectToHeap(hos);
       }
@@ -320,6 +330,7 @@ public class NcStream {
     return dataBB.getStructureData(0);
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
   static void show(NcStreamProto.Header proto) throws InvalidProtocolBufferException {
@@ -516,19 +527,19 @@ public class NcStream {
 
     for (NcStreamProto.Group gp : proto.getGroupsList()) {
       Group ng = new Group(ncfile, g, gp.getName());
-      g.addGroup( ng);
+      g.addGroup(ng);
       readGroup(gp, ncfile, ng);
     }
   }
 
   static EnumTypedef decodeEnumTypedef(NcStreamProto.EnumTypedef enumType) {
     List<NcStreamProto.EnumTypedef.EnumType> list = enumType.getMapList();
-    Map<Integer, String> map = new HashMap<Integer, String>( 2 * list.size());
+    Map<Integer, String> map = new HashMap<Integer, String>(2 * list.size());
     for (NcStreamProto.EnumTypedef.EnumType et : list) {
       map.put(et.getCode(), et.getValue());
     }
-    return new EnumTypedef( enumType.getName(), map);
-   }
+    return new EnumTypedef(enumType.getName(), map);
+  }
 
   static Attribute decodeAtt(NcStreamProto.Attribute attp) {
     int len = attp.getLen();
@@ -544,8 +555,8 @@ public class NcStream {
       if (lenp == 1)
         return new Attribute(attp.getName(), attp.getSdata(0));
       else {
-        Array data = Array.factory(dt, new int[] {lenp});
-        for (int i=0; i<lenp; i++) data.setObject(i, attp.getSdata(i));
+        Array data = Array.factory(dt, new int[]{lenp});
+        for (int i = 0; i < lenp; i++) data.setObject(i, attp.getSdata(i));
         return new Attribute(attp.getName(), data);
       }
     } else {
@@ -555,7 +566,7 @@ public class NcStream {
     }
   }
 
-   static Variable decodeVar(NetcdfFile ncfile, Group g, Structure parent, NcStreamProto.Variable var) {
+  static Variable decodeVar(NetcdfFile ncfile, Group g, Structure parent, NcStreamProto.Variable var) {
     Variable ncvar = new Variable(ncfile, g, parent, var.getName());
     DataType varType = decodeDataType(var.getDataType());
     ncvar.setDataType(decodeDataType(var.getDataType()));
@@ -574,7 +585,7 @@ public class NcStream {
       else {
         Dimension d = g.findDimension(dim.getName());
         if (d == null)
-          throw new IllegalStateException("Can find shared dimension "+dim.getName());
+          throw new IllegalStateException("Can find shared dimension " + dim.getName());
         dims.add(d);
       }
     }
@@ -598,7 +609,7 @@ public class NcStream {
 
   static Structure decodeStructure(NetcdfFile ncfile, Group g, Structure parent, NcStreamProto.Structure s) {
     Structure ncvar = (s.getDataType() == ucar.nc2.stream.NcStreamProto.DataType.SEQUENCE) ?
-        new Sequence(ncfile, g, parent, s.getName()) : new Structure(ncfile, g, parent, s.getName());
+            new Sequence(ncfile, g, parent, s.getName()) : new Structure(ncfile, g, parent, s.getName());
 
     ncvar.setDataType(decodeDataType(s.getDataType()));
 
@@ -609,7 +620,7 @@ public class NcStream {
       else {
         Dimension d = g.findDimension(dim.getName());
         if (d == null)
-          throw new IllegalStateException("Can find shared dimension "+dim.getName());
+          throw new IllegalStateException("Can find shared dimension " + dim.getName());
         dims.add(d);
       }
     }
@@ -634,7 +645,9 @@ public class NcStream {
       try {
         section.appendRange((int) pr.getStart(), (int) (pr.getStart() + pr.getSize() - 1));
       } catch (InvalidRangeException e) {
-        throw new RuntimeException(e);
+        e.printStackTrace();
+        return null;
+        //throw new RuntimeException(e);
       }
     }
     return section;
@@ -740,12 +753,12 @@ public class NcStream {
       case SEQUENCE:
         return DataType.SEQUENCE;
       case ENUM1:
-         return DataType.ENUM1;
+        return DataType.ENUM1;
       case ENUM2:
-         return DataType.ENUM2;
+        return DataType.ENUM2;
       case ENUM4:
-         return DataType.ENUM4;
-       case OPAQUE:
+        return DataType.ENUM4;
+      case OPAQUE:
         return DataType.OPAQUE;
     }
     throw new IllegalStateException("illegal data type " + dtype);

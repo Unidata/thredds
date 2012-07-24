@@ -59,6 +59,7 @@ public class Grib2CollectionBuilder {
   public static final String MAGIC_START = "Grib2CollectionIndex";
   protected static final int version = 11;
   private static final boolean intvMergeDefault = true;
+  private static final boolean showFiles = false;
 
     // called by tdm
   static public boolean update(CollectionManager dcm, Formatter f) throws IOException {
@@ -440,7 +441,7 @@ public class Grib2CollectionBuilder {
       //useGenType = (config == null) || (config.useGenType == null) ? false : config.useGenType;
 
       for (MFile mfile : dcm.getFiles()) {
-        // f.format("%3d: %s%n", fileno, mfile.getPath());
+        if (showFiles) f.format("%3d: %s%n", fileno, mfile.getPath());
         filenames.add(mfile.getPath());
 
         Grib2Index index = null;

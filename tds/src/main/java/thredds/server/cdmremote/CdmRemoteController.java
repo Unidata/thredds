@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright 2009-2012 University Corporation for Atmospheric Research/Unidata
+ *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -156,9 +157,9 @@ public class CdmRemoteController extends AbstractCommandController implements La
           res.setContentType("application/octet-stream");
           res.setHeader("Content-Description", "ncstream");
 
-          WritableByteChannel wbc = Channels.newChannel(out);
+          //WritableByteChannel wbc = Channels.newChannel(out);
           NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-          size = ncWriter.sendHeader(wbc);
+          size = ncWriter.sendHeader(out);
           break;
         }
 
@@ -167,7 +168,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
           res.setHeader("Content-Description", "ncstream");
 
           size = 0;
-          WritableByteChannel wbc = Channels.newChannel(out);
+          //WritableByteChannel wbc = Channels.newChannel(out);
           NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
           String query;
           if(qb.getVar() != null)
@@ -183,7 +184,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
           StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-            size += ncWriter.sendData(cer.v, cer.section, wbc);
+            size += ncWriter.sendData(cer.v, cer.section, out, false);
           }
         }
       } // end switch on req type

@@ -3,7 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 11: (2012-06-xx)
+ 11: (2012-07-xx)
+  opendap : allow https: prefix
+  Projections: put setters back in for IDV serialization
   Nc3: Check for string attribute with null value (len=0)
 
  11: (2012-06-05)

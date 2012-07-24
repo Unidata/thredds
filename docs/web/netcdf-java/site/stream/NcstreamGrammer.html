@@ -13,19 +13,22 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>Ncstream Grammer</h1>
-<h2>Version 1 (DRAFT)</h2>
+<h2>Version 2 (DRAFT)</h2>
 <p>An <em><strong>ncstream</strong></em> is an ordered sequence of one or more messages:</p>
 <pre>
    <strong>ncstream</strong> = <strong>MAGIC_START</strong>, <strong></strong>{message}, <strong>MAGIC_END</strong>
-   <strong>message</strong> = headerMessage | dataMessage | sdataMessage | seqdataMessage | errorMessage
-   <strong>headerMessage</strong> = MAGIC_HEADER, vlen, NcStreamProto.Header
-   <strong>dataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, (byte)*vlen
-   <strong>sdataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, NcStreamProto.StructureData
-   <strong>seqdataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, {MAGIC_VDATA, vlen, NcStreamProto.StructureData}, MAGIC_VEND
-   <strong>errorMessage</strong> = MAGIC_ERR, vlen, NcStreamProto.Error
+   <strong>message</strong> = headerMessage | dataMessage | errorMessage
+   <strong>headerMessage</strong> = MAGIC_HEADER, vlenb, NcStreamProto.Header
+   <strong>dataMessage</strong> = MAGIC_DATA, vlenb, NcStreamProto.Data, <strong>regData | vlenData | seqData</strong>
+   <strong>errorMessage</strong> = MAGIC_ERR, vlenb, NcStreamProto.Error
+
+   <strong>regData</strong> = vlenb, (byte)*vlenb
+   <strong>vlenData</strong>= vlenn, {vlenb, (byte)*vlenb}*vlenn
+   <strong>seqData</strong> = MAGIC_VDATA, {vlenb, NcStreamProto.StructureData}*, MAGIC_VEND
+   <strong>seqData</strong> = {MAGIC_VDATA, vlenb, NcStreamProto.StructureData}*, MAGIC_VEND
    
-   <strong>vlen</strong> = variable length encoded positive integer == length of the following object in bytes
-   <strong>vn</strong> = variable length encoded positive integer == number of objects that follow
+   <strong>vlenb</strong> = variable length encoded positive integer == length of the following object in bytes
+   <strong>vlenn</strong> = variable length encoded positive integer == number of objects that follow
    <strong>NcStreamProto.Header</strong> = Header message encoded by protobuf
    <strong>NcStreamProto.Data</strong> = Data message encoded by protobuf
    <strong>byte</strong> = actual bytes of data, encoding described by the NcStreamProto.Data message
@@ -44,42 +47,85 @@ primitives:
   <li><strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong><br />
   </li>
 </ul>
-<p>(these are files on Unidata's SVN server). These are compiled by the protobuf compiler into Java and C code that does the actual encoding/decoding from the stream. </p>
+<p>(these are files on Unidata's GitHub repository). These are compiled by the protobuf compiler into Java and C code that does the actual encoding/decoding from the stream. </p>
 <p><strong>Rules</strong></p>
 <ul>
   <li>Messages are ordered, and the resulting dataset may depend on the order.</li>
   <li>A shared dimension must  be defined in the same or an earlier header message than a variable that uses it.</li>
   <li>A variable must be defined first in a header message before it can be used in a data message.</li>
-  <li>A variable may have 0, 1, or many data messages. These are logically unioned, with later data messages taking precedent. Missing data values are taken from the variable's <em>_FillValue</em> attribute if it exists, else the default missing value for the dataType, following netCDF conventions.</li>
+  <li>A variable may have 0, 1, or many data messages. These are logically combined, with later data messages taking precedent. Missing data values are taken from the variable's <em>_FillValue</em> attribute if it exists, else the default missing value for the dataType, following netCDF conventions.</li>
 </ul>
 <h3>Data encoding</h3>
-<p>There is just enough information in the stream to break the stream into messages and to know what kind of message it is. To interpret the message correctly, one must have the definition of the variable. </p>
-<p>NcStreamProto.Data contains the full variable name the data belongs to, the DataType and Section,<em> if its big-endian or little-endian. ?? Note in Java, DataOutputStream always writes in big-endian order.</em></p>
-<pre> message Data {<br />   required string varName = 1;<br />   required DataType dataType = 2;<br />   required Section section = 3;<br />   optional bool bigend = 4 [default=true];<br /> }</pre>
+<p>There is just enough information in the stream to break the stream into messages and to know what kind of message it is. To interpret the data message correctly, one must have the definition of the variable. </p>
+<pre>
+message Data {<br />  required string varName = 1; // full escaped name. change to hash or index to save space ??<br />  required DataType dataType = 2;<br />  optional Section section = 3; // not required for Sequence<br />  optional bool bigend = 4 [default = true];<br />  optional uint32 version = 5 [default = 0];<br />  optional Compress compress = 6 [default = NONE];<br />  optional fixed32 crc32 = 7;<br />}</pre>
+<ol>
+  <li>full name of variable<em> (should this be index or hash in order to save space ?)</em></li>
+  <li>data type</li>
+  <li>section</li>
+  <li>stored in big or small end. reader makes right.</li>
+  <li>version</li>
+  <li>compress (deflate)</li>
+  <li>crc32 (not used yet)</li>
+</ol>
 <p><strong>Primitive types (byte, char, short, int, long, float, double)</strong>: arrays of primitives are stored in row-major order. The endian-ness is specified in the NcStreamProto.Data message when needed.</p>
 <ul>
   <li> <strong>char</strong> is a legacy data type contains uninterpreted  characters, one character per byte. Typically these contain 7-bit ASCII characters.</li>
   <li> <strong>byte, short, int, long</strong> may be interpreted as signed or unsigned. This is specified in the variable's header information. </li>
 </ul>
-<p><strong>Variable length types (String, Opaque): </strong>First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes. <em>what about vlen? eg int (3, *) ??</em></p>
-<p><strong>Structure types (Structure, Sequence): </strong>An array of StructureData. Can be encoded in row or col (?). <em>What about vlens ??</em></p>
+<p><strong>Variable length types (String, Opaque): </strong>First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes.</p>
+<p><strong>Variable length arrays: </strong>First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. </p>
+<p><strong>Structure types (Structure, Sequence): </strong>An array of StructureData. <em>Can be encoded in row or col (?).</em></p>
+<h2>Vlen data example</h2>
+<blockquote>
+  <pre>int levels(ninst= 23, acqtime=100, *);</pre>
+</blockquote>
+<p>encoded as</p>
+<ol>
+  <li>2300 as a vlen</li>
+  <li>then 2300 objects, for each:
+    <ol>
+      <li>length in bytes</li>
+      <li>nelems</li>
+      <li>nelems integers</li>
+    </ol>
+  </li>
+</ol>
+<h2>Notes and Questions</h2>
 <p>Should have a way to efficiently encode sparse data. Look at Bigtable/hBase.</p>
-<h2>Ncstream Dataset (Incomplete)</h2>
-<p>A <em><strong>ncstream dataset </strong></em> can be stored in a file and read  as a CDM dataset. It is an alternate encoding of CDM files. The intention is that these are &quot;write-optimized&quot; append-only files.</p>
-<p>A ncstream dataset starts with MAGIC_START,  followed by a set of messages, followed by MAGIC_END:</p>
-<pre>	ncstreamDataset = MAGIC_START, {message}, MAGIC_END
-   <strong>MAGIC_START</strong> = 0x43, 0x44, 0x46, 0x53 // 'CDFS'
-   <strong>MAGIC_END</strong> =   0xed, 0xed, 0xde, 0xde
-</pre>
-<h4>Rules:</h4>
+<p>Should we store ints using vlen?</p>
+<p>Forces on the design:</p>
 <ul>
-  <li>A valid dataset must have at least one header message</li>
-  <li>Subsequent header messages override earlier ones, if there is overlap.</li>
-  <li>Subsequent data messages override earlier ones, if there is overlap.</li>
+  <li>Allow data to be streamed.</li>
+  <li>Allow compression</li>
+  <li>Append only writing to disk</li>
+  <li>Efficient encoding of variable length (ragged) arrays</li>
+  <li>Efficient return of results from high level query.</li>
 </ul>
+<h2>Vlen Language</h2>
+<p>We already have Fortran 90 syntax, and * indicating a variable length dimension. Do we really want to support arbitrary vlen dimension ??</p>
+<ul>
+  <li>array(outer, *)</li>
+  <li>array(*, inner)</li>
+  <li>array(outer, *, inner)</li>
+</ul>
+<p>An obvious thing to do is to use java/C &quot;array of arrays&quot;. rather than Fortran / netCDF rectangular arrays:</p>
+<ul>
+  <li>array[outer][*]</li>
+  <li>array[*][inner]</li>
+  <li>array[outer][*][inner]</li>
+</ul>
+<p>what does numPy do ??</p>
+<p>java/C assumes in mmeory. Is this useful for very larger, ie out of memory data?</p>
+<p>Netsed Tables has taken approach that its better to use Structures rather than arrays, since there is usually multiple fields. ortran programmers prefer arrays, but they are thinking of in memory.</p>
+<p>What is the notation that allows a high level specification (eg SQL), that can be efficiently executed by a machine ?</p>
+<p>Extending the arrya model to very large datasets may not be appropriate. Row vs column store.</p>
+<p>What about a transform language on the netcdf4 / CDM data model, to allow efficient rewriting of data ? Then it also becomes an extraction language ??</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 2010
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2012
 </address>
 <p>&nbsp;</p>
 </body>

@@ -18,6 +18,7 @@ message Attribute {
   required uint32 len = 3;
   optional bytes data = 4; // not needed if len == 0
   repeated string sdata = 5; // used for string data
+  optional bool unsigned = 6 [default = false];
 }
 
 enum DataType {
@@ -38,9 +39,9 @@ enum DataType {
 }
 
 message Dimension {
-  optional string name = 1; // optional when private
+  optional string name = 1;   // short name - optional when private
   optional uint64 length = 2; // optional when vlen
-  optional bool isUnlimited = 3 [default = false];
+  optional bool isUnlimited = 3 [default = false]; // is this needed ??
   optional bool isVlen = 4 [default = false];
   optional bool isPrivate = 5 [default = false];
 }
@@ -48,12 +49,11 @@ message Dimension {
 message Variable {
   required string name = 1; // short name
   required DataType dataType = 2;
-  repeated Dimension shape = 3;  // actual dimension instead of reference
+  repeated Dimension shape = 3;  // actual dimension instead of reference; could use hash id
   repeated Attribute atts = 4;
   optional bool unsigned = 5 [default = false];
   optional bytes data = 6;    // "immediate" - store small data in header
   optional string enumType = 7;  // only for enum types
-  repeated uint32 dimIndex = 8;  //index into Dimension list, use this or shape  ???
 }
 
 message Structure {
@@ -86,8 +86,8 @@ message Group {
 
 message Header {
   optional string location = 1;
-  optional string title = 2;
-  optional string id = 3;
+  optional string title = 2;  // ??
+  optional string id = 3;    // ??
   required Group root = 4;
   optional uint32 version = 5 [default = 0];
 }
@@ -106,7 +106,8 @@ message Data {
   optional bool bigend = 4 [default = true];
   optional uint32 version = 5 [default = 0];
   optional Compress compress = 6 [default = NONE];
-  optional fixed32 crc32 = 7;
+  optional bool vdata = 7 [default = false];
+  optional uint32 uncompressedSize = 8;
 }
 
 message Range {
@@ -133,5 +134,5 @@ message Error {
   required string message = 1;
 }
 
-//  cd c:/dev/tds4.2n/thredds/cdm/src/main/java
+//  cd c:/dev/github/thredds/cdm/src/main/java
 // protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto

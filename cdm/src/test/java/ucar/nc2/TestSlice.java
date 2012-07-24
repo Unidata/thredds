@@ -143,4 +143,5 @@ public class TestSlice extends TestCase {
     Array data = sliced2.read();
     ucar.unidata.test.util.CompareNetcdf.compareData(org, data);
   }
+
 }

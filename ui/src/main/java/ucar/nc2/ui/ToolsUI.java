@@ -91,7 +91,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.channels.WritableByteChannel;
 import java.util.*;
 import java.util.List;
 
@@ -152,6 +151,7 @@ public class ToolsUI extends JPanel {
   private Hdf5DataPanel hdf5DataPanel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
+  private NcStreamPanel ncStreamPanel;
   private NCdumpPanel ncdumpPanel;
   private OpPanel ncmlEditorPanel, geotiffPanel;
   private PointFeaturePanel pointFeaturePanel;
@@ -244,7 +244,8 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("GRIB1", grib1TabPane);
     iospTabPane.addTab("HDF5", hdf5TabPane);
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
-    iospTabPane.addTab("NCS", new JLabel("NCS"));
+    iospTabPane.addTab("CdmRemote", new JLabel("CdmRemote"));
+    iospTabPane.addTab("NcStream", new JLabel("NcStream"));
     iospTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = iospTabPane.getSelectedComponent();
@@ -502,9 +503,13 @@ public class ToolsUI extends JPanel {
       bufrCodePanel = new BufrCodePanel((PreferencesExt) mainPrefs.node("bufr-codes"));
       c = bufrCodePanel;
 
-    } else if (title.equals("NCS")) {
-      cdmremotePanel = new CdmremotePanel((PreferencesExt) mainPrefs.node("cdmremote"));
+    } else if (title.equals("CdmRemote")) {
+      cdmremotePanel = new CdmremotePanel((PreferencesExt) mainPrefs.node("CdmRemote"));
       c = cdmremotePanel;
+
+    } else if (title.equals("NcStream")) {
+      ncStreamPanel = new NcStreamPanel((PreferencesExt) mainPrefs.node("NcStream"));
+      c = ncStreamPanel;
 
     } else if (title.equals("GRIB1collection")) {
       grib1RawPanel = new Grib1CollectionPanel((PreferencesExt) mainPrefs.node("grib1raw"));
@@ -1020,7 +1025,7 @@ public class ToolsUI extends JPanel {
     if (hdf4Panel != null) hdf4Panel.save();
     if (imagePanel != null) imagePanel.save();
     if (ncdumpPanel != null) ncdumpPanel.save();
-    //if (ncmlPanel != null) ncmlPanel.save();
+    if (ncStreamPanel != null) ncStreamPanel.save();
     if (ncmlEditorPanel != null) ncmlEditorPanel.save();
     if (pointFeaturePanel != null) pointFeaturePanel.save();
     //if (pointObsPanel != null) pointObsPanel.save();
@@ -3937,6 +3942,70 @@ public class ToolsUI extends JPanel {
     void closeOpenFiles() throws IOException {
       panel.closeOpenFiles();
     }
+  }
+
+  ////////////////////////////////////////////////////////
+
+  private class NcStreamPanel extends OpPanel {
+    ucar.nc2.ui.NcStreamPanel panel;
+
+    NcStreamPanel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      panel = new ucar.nc2.ui.NcStreamPanel(prefs);
+      add(panel, BorderLayout.CENTER);
+
+      AbstractAction infoAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            panel.showInfo(f);
+
+          } catch (Exception ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace(new PrintStream(bos));
+            detailTA.setText(bos.toString());
+            detailWindow.show();
+            return;
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      };
+      BAMutil.setActionProperties(infoAction, "Information", "show Info", false, 'I', -1);
+      BAMutil.addActionToContainer(buttPanel, infoAction);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        panel.setNcStreamFile(command);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "CdmremotePanel cant open " + command + "\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      panel.save();
+      super.save();
+    }
+
+    void closeOpenFiles() throws IOException {
+      panel.closeOpenFiles();
+    }
 
   }
 
@@ -4951,10 +5020,9 @@ public class ToolsUI extends JPanel {
     void writeNcstream(String filename) {
       try {
         NcStreamWriter writer = new NcStreamWriter(ncfile, null);
-        FileOutputStream fos = new FileOutputStream(filename);
-        WritableByteChannel wbc = fos.getChannel();
-        writer.streamAll(wbc);
-        wbc.close();
+        OutputStream fos = new BufferedOutputStream( new FileOutputStream(filename), 50 * 1000);
+        writer.streamAll(fos);
+        fos.close();
         JOptionPane.showMessageDialog(this, "File successfully written");
       } catch (Exception ioe) {
         JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
@@ -4966,9 +5034,8 @@ public class ToolsUI extends JPanel {
       try {
         NcStreamWriter writer = new NcStreamWriter(ncfile, null);
         FileOutputStream fos = new FileOutputStream(filename);
-        WritableByteChannel wbc = fos.getChannel();
-        writer.sendHeader(wbc);
-        wbc.close();
+        writer.sendHeader(fos);
+        fos.close();
         JOptionPane.showMessageDialog(this, "File successfully written");
       } catch (Exception ioe) {
         JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());

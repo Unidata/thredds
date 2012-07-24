@@ -391,7 +391,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
             values = readVlenAttValues( grpid, varid, attname, len, userType);
 
           } else if (userType.typeClass == NCLibrary.NC_COMPOUND) {
-            // readCompoundAttValues(grpid, varid, attname, len, userType, result, v);  skip for now
+            readCompoundAttValues(grpid, varid, attname, len, userType, result, v);
             continue;
 
           } else {

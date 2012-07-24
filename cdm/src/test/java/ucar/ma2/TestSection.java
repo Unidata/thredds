@@ -33,6 +33,9 @@
 package ucar.ma2;
 
 import junit.framework.*;
+import ucar.nc2.NCdumpW;
+
+import java.io.IOException;
 
 /** Test ma2 section methods in the JUnit framework. */
 
@@ -419,4 +422,47 @@ public class TestSection extends TestCase {
       System.out.println(" section "+ss);
     }
   } */
+
+
+  /* christine.e.smit@nasa.gov
+
+  I'm doing a double slice on a three-dimensional variable to get a 1-D slice and then trying to read out the values.
+  Unfortunately, indexing seems to give me values from the full original array rather than the slice I'm working with.
+
+  Array twoD = array.slice(0, 1);
+  Array oneD = twoD.slice(0,1);
+  System.out.println(oneD.getDouble(0));
+  System.out.println(oneD);
+  System.out.println(array.getDouble(0));
+
+  This is what I see:
+
+  178.0
+  -9999 -9999 -9999 81 66 93 103 -9999 -9999 -9999 -9999 -9999
+  178.0
+
+  I would expect the first print statement to print -9999 since that is the first element of the slice I'm working on.
+  So this kind of looks like a bug to me. How do I get the first element of my slice rather than of the entire parent array?
+   */
+  public void testSlice3D() throws InvalidRangeException, IOException {
+    Array a = Array.makeArray(DataType.DOUBLE, 1000, 0.0, 1.0);
+    Array a3 = a.reshape(new int[] {10,10,10});
+
+    System.out.printf("%n%s%n", NCdumpW.printArray(a3, "test a3", null));
+    Array a2 = a3.slice(0,1);
+
+    System.out.printf("%n%s%n", NCdumpW.printArray(a2, "a3.slice(0,1)", null));
+
+    Array a1 = a2.slice(0,1);
+
+    System.out.printf("%n%s%n%n", NCdumpW.printArray(a1, "a2.slice(0,1)", null));
+
+    ArrayDouble.D2 twoD = (ArrayDouble.D2) a2;
+    System.out.printf("wrong= %f%n", a2.getDouble(0));
+    System.out.printf("right= %f%n", twoD.get(0, 0));
+
+    ArrayDouble.D1 oneD = (ArrayDouble.D1) a1;
+    System.out.printf("wrong= %f%n", a1.getDouble(0));
+    System.out.printf("right= %f%n", oneD.get(0));
+   }
 }

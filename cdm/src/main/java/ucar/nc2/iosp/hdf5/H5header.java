@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -54,16 +54,35 @@ import java.nio.charset.Charset;
  * Read all of the metadata of an HD5 file.
  *
  * @author caron
+ * @see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf_4_spec.html"
+ * @see "http://www.unidata.ucar.edu/software/netcdf/docs/"
  */
 
 /* Implementation notes
  * any field called address is actually reletive to the base address.
  * any field called filePos or dataPos is a byte offset within the file.
  */
+  /*
+   * it appears theres no sure fire way to tell if the file was written by netcdf4 library
+   *  1) if one of the the NETCF4-XXX atts are set
+   *  2) dimension scales:
+   *     1) all dimensions have a dimension scale
+   *     2) they all have the same length as the dimension
+   *     3) all variables' dimensions have a dimension scale
+   */
 public class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
-  static private String utf8CharsetName = "UTF-8";
-  static private Charset utf8Charset = Charset.forName(utf8CharsetName); // cant use until 1.6
+  static private final Charset utf8Charset = Charset.forName("UTF-8"); // cant use until 1.6
+
+  // special names inHDF5
+  static private final String HDF5_CLASS  = "CLASS";
+  static private final String HDF5_DIMENSION_LIST  = "DIMENSION_LIST";
+  static private final String HDF5_DIMENSION_SCALE  = "DIMENSION_SCALE";
+
+  // special attributes used by netcdf4 library
+  static private final String NETCDF4_COORDINATES  = "_Netcdf4Coordinates"; // the multi-dimensional coordinate variables of the netCDF model  HUH ??
+  static private final String NETCDF4_DIMID  = "_Netcdf4Dimid"; // on dimension scales, holds a scalar H5T_NATIVE_INT which is the (zero-based) dimension ID for this dimension.
+  static private final String NETCDF4_STRICT  = "_nc3_strict";
 
   // debugging
   static private boolean debugEnum = false, debugVlen = false;
@@ -124,17 +143,18 @@ public class H5header {
   byte sizeOffsets, sizeLengths;
   boolean isOffsetLong, isLengthLong;
 
+  /* Cant always tell if written with netcdf library. if all dimensions have coordinate variables, eg:
+    Q:/cdmUnitTest/formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4
+   */
+  boolean isNetcdf4;
+
   private H5Group rootGroup;
   private Map<String, DataObjectFacade> symlinkMap = new HashMap<String, DataObjectFacade>(200);
   private Map<Long, DataObject> addressMap = new HashMap<Long, DataObject>(200);
-
   private Map<Long, GlobalHeap> heapMap = new HashMap<Long, GlobalHeap>();
-  //private Map<Long, H5Group> hashGroups = new HashMap<Long, H5Group>(100);
-
   private java.text.SimpleDateFormat hdfDateParser;
 
   private java.io.PrintStream debugOut = System.out;
-  //private Formatter debugOut = new Formatter(System.out);
   private MemTracker memTracker;
 
   H5header(RandomAccessFile myRaf, ucar.nc2.NetcdfFile ncfile, H5iosp h5iosp) {
@@ -387,7 +407,7 @@ public class H5header {
       if (facade.isVariable)
         findDimensionScales(ncGroup, h5group, facade);
     }
-    // look for dimension scales
+    // look for references to dimension scales
     for (DataObjectFacade facade : h5group.nestedObjects) {
       if (facade.isVariable)
         findDimensionLists(ncGroup, h5group, facade);
@@ -462,7 +482,7 @@ public class H5header {
   C.3.7 Attributes
 
   Attributes in HDF5 and netCDF-4 correspond very closely. Each attribute in an HDF5 file is represented as an attribute
-  n the netCDF-4 file, with the exception of the attributes below, which are ignored by the netCDF-4 API.
+  in the netCDF-4 file, with the exception of the attributes below, which are ignored by the netCDF-4 API.
 
   _Netcdf4Coordinates An integer array containing the dimension IDs of a variable which is a multi-dimensional coordinate variable.
   _nc3_strict         When this (scalar, H5T_NATIVE_INT) attribute exists in the root group of the HDF5 file, the netCDF API will enforce
@@ -486,7 +506,7 @@ public class H5header {
   dataset, get an ID, DID variable here, open the latitude dataset, get its ID,
   DSID variable here, and "link" the 2 with this call
 
-  if(H5DSattach_scale(did,dsid,DIM0) < 0)
+  if (H5DSattach_scale(did,dsid,DIM0) < 0)
 
   what this function does is to associated the dataset DSID (latitude) with the
   *dimension* specified by the parameter DIM0 (0, in this case, the first
@@ -504,17 +524,18 @@ public class H5header {
   for the lat, 1 for the lon)
   */
 
+  // find the Dimension Scale objects, turn them into shared dimensions
+  // note that we dont bother looking at their REFERENCE_LIST
   private void findDimensionScales(ucar.nc2.Group g, H5Group h5group, DataObjectFacade facade) throws IOException {
-    // first must look for coordinate variables (dimension scales)
     Iterator<MessageAttribute> iter = facade.dobj.attributes.iterator();
     while (iter.hasNext()) {
       MessageAttribute matt = iter.next();
-      if (matt.name.equals("CLASS")) {
+      if (matt.name.equals(HDF5_CLASS)) {
         Attribute att = makeAttribute(matt);
         String val = att.getStringValue();
-        if (val.equals("DIMENSION_SCALE")) { // create a dimension
+        if (val.equals(HDF5_DIMENSION_SCALE) && facade.dobj.mds.ndims == 1) { // create a dimension
           facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
-          iter.remove();
+          if (! h5iosp.includeOriginalAttributes) iter.remove();
           if (debugDimensionScales) System.out.printf("Found dimScale %s for group '%s' matt=%s %n",
                   facade.dimList, g.getName(), matt);
         }
@@ -522,19 +543,20 @@ public class H5header {
     }
   }
 
+  // look for references to dimension scales, ie the variables that use them
   private void findDimensionLists(ucar.nc2.Group g, H5Group h5group, DataObjectFacade facade) throws IOException {
     // now look for dimension lists and clean up the attributes
     Iterator<MessageAttribute> iter = facade.dobj.attributes.iterator();
     while (iter.hasNext()) {
       MessageAttribute matt = iter.next();
       // find the dimensions - set length to maximum
-      if (matt.name.equals("DIMENSION_LIST")) { // references : may extend the dimension length
-        Attribute att = makeAttribute(matt);
+      if (matt.name.equals(HDF5_DIMENSION_LIST)) { // references : may extend the dimension length
+        Attribute att = makeAttribute(matt); // this reads in the data
         if (att == null) {
-          log.error("DIMENSION_LIST malformed att");
+          log.error("DIMENSION_LIST: failed to read");
 
         } else if (att.getLength() !=  facade.dobj.mds.dimLength.length) { // some attempts to writing hdf5 directly fail here
-          log.error("DIMENSION_LIST malformed att="+att);
+          log.error("DIMENSION_LIST: must have same number of dimension scales as dimensions = "+att);
 
         } else {
           StringBuilder sbuff = new StringBuilder();
@@ -546,7 +568,7 @@ public class H5header {
           facade.dimList = sbuff.toString();
           if (debugDimensionScales) System.out.printf("Found dimList '%s' for group '%s' matt=%s %n",
                   facade.dimList, g.getName(), matt);
-          iter.remove();
+          if (! h5iosp.includeOriginalAttributes) iter.remove();
         }
 
       } else if (matt.name.equals("NAME")) {
@@ -555,30 +577,16 @@ public class H5header {
         if (val.startsWith("This is a netCDF dimension but not a netCDF variable")) {
           facade.isVariable = false;
           facade.isDimensionNotVariable = true;
+          isNetcdf4 = true;
         }
-        iter.remove();
+        if (! h5iosp.includeOriginalAttributes) iter.remove();
         if (debugDimensionScales) System.out.printf("Found %s %n", val);
 
       } else if (matt.name.equals("REFERENCE_LIST"))
-        iter.remove();
+        if (! h5iosp.includeOriginalAttributes) iter.remove();
     }
 
   }
-
-   /* private String addDimension(ucar.nc2.Group g, H5Group h5group, String name, int length, boolean isUnlimited) {
-    int pos = name.lastIndexOf("/");
-    String dimName = (pos > 0) ? name.substring(pos + 1) : name;
-    Dimension d = h5group.dimMap.get(dimName); // first look in current group
-    if (d == null) {
-      d = new Dimension(dimName, length, true, isUnlimited, false);
-      d.setGroup(g);
-      h5group.dimMap.put(dimName, d);
-      h5group.dimList.add(d);
-      if (debugDimensionScales) debugOut.println("addDimension name=" + name + " dim= " + d + " to group " + g);
-    }
-
-    return d.getName();
-  }  */
 
   private String addDimension(ucar.nc2.Group g, H5Group h5group, String name, int length, boolean isUnlimited) {
     int pos = name.lastIndexOf('/');
@@ -586,7 +594,7 @@ public class H5header {
 
     Dimension d = h5group.dimMap.get(dimName); // first look in current group
     //if (d == null)
-    //  d = g.findDimension(dimName); // then look in parent groups
+    //  d = g.findDimension(dimName); // then look in parent groups  LOOK
 
     if (d == null) { // create if not found
       d = new Dimension(dimName, length, true, isUnlimited, false);
@@ -595,11 +603,15 @@ public class H5header {
       h5group.dimList.add(d);
       if (debugDimensionScales) debugOut.println("addDimension name=" + name + " dim= " + d + " to group " + g);
 
+    } else { // check has correct length
+      if (d.getLength() != length)
+        throw new IllegalStateException("addDimension: DimScale has different length than dimension it references dimScale="+dimName);
     }
 
     return d.getName();
   }
 
+  // look for unlimited dimensions without dimension scale - must get length from the variable
   private String extendDimension(ucar.nc2.Group g, H5Group h5group, String name, int length) {
     int pos = name.lastIndexOf('/');
     String dimName = (pos > 0) ? name.substring(pos + 1) : name;
@@ -609,8 +621,12 @@ public class H5header {
       d = g.findDimension(dimName); // then look in parent groups
 
     if (d != null) {
-      if (length > d.getLength())
+      if (d.isUnlimited() && (length > d.getLength()))
         d.setLength(length);
+
+      if (!d.isUnlimited() && (length != d.getLength())) {
+        throw new IllegalStateException("extendDimension: DimScale has different length than dimension it references dimScale="+dimName);
+      }
       return d.getName();
     }
 
@@ -627,7 +643,10 @@ public class H5header {
     Iterator<MessageAttribute> iter = attList.iterator();
     while (iter.hasNext()) {
       MessageAttribute matt = iter.next();
-      if (matt.name.equals("_nc3_strict")) iter.remove();
+      if (matt.name.equals(NETCDF4_STRICT)) {
+        isNetcdf4 = true;
+        iter.remove();
+      }
     }
   }
 
@@ -906,7 +925,7 @@ public class H5header {
       if (b[count] == 0) break;
       count++;
     }
-    return new String(b, 0, count, "UTF-8"); // all strings are considered to be UTF-8 unicode
+    return new String(b, 0, count, utf8Charset); // all strings are considered to be UTF-8 unicode
   }
 
   private String convertString(byte[] b, int start, int len) throws UnsupportedEncodingException {
@@ -916,7 +935,7 @@ public class H5header {
       if (b[count] == 0) break;
       count++;
     }
-    return new String(b, start, count-start, "UTF-8"); // all strings are considered to be UTF-8 unicode
+    return new String(b, start, count-start, utf8Charset); // all strings are considered to be UTF-8 unicode
   }
 
   protected Array convertEnums(Map<Integer, String> map, Array values) {
@@ -1156,7 +1175,7 @@ public class H5header {
       List<Integer> chunksize = new ArrayList<Integer>();
       for (int i=0; i<vinfo.storageSize.length-1; i++)  // skip last one - its the element size
         chunksize.add(vinfo.storageSize[i]);
-      v.addAttribute(new Attribute("HDF5_chunksize", chunksize));
+      v.addAttribute(new Attribute(CDM.CHUNK_SIZE, chunksize));
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
@@ -1418,9 +1437,14 @@ public class H5header {
       return useFillValue;
     }
 
-    public long[] countStorageSize() throws IOException {
+    public long[] countStorageSize(Formatter f) throws IOException {
       long[] result = new long[2];
-      if (btree == null || useFillValue) {
+      if (btree == null) {
+        if (f != null) f.format("btree is null%n");
+        return result;
+      }
+      if (useFillValue) {
+        if (f != null) f.format("useFillValue - no data is stored%n");
         return result;
       }
 
@@ -1429,6 +1453,7 @@ public class H5header {
       DataBTree.DataChunkIterator iter = btree.getDataChunkIteratorFilter(null);
       while (iter.hasNext()) {
         DataBTree.DataChunk dc = iter.next();
+        if (f != null) f.format(" %s%n", dc);
         total += dc.size;
         count++;
       }
@@ -1738,6 +1763,9 @@ public class H5header {
     } else if (hdfType == 3) {  // fixed length strings. String is used for Vlen type = 1
       return DataType.CHAR;
 
+    } else if (hdfType == 6) {
+      return DataType.STRUCTURE;
+
     } else if (hdfType == 7) { // reference
       return DataType.LONG;
 
@@ -1821,8 +1849,7 @@ public class H5header {
     H5Group group;
 
     // or a variable
-    String dimList;
-    List<HeaderMessage> dimMessages = new ArrayList<HeaderMessage>();
+    String dimList; // list of dimension names for this variable
 
     // or a link
     String linkName = null;
@@ -2471,7 +2498,7 @@ public class H5header {
     }
 
     public String toString() {
-      return "  type = " + mtype + "; " + messData;
+      return "message type = " + mtype + "; " + messData;
     }
 
     // debugging
@@ -2788,7 +2815,6 @@ public class H5header {
     String opaque_desc;
 
     // compound type (6)
-    short nmembers;
     List<StructureMember> members;
 
     // reference (7)
@@ -2806,26 +2832,28 @@ public class H5header {
     int[] dim;
 
     public String toString() {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append(" datatype= ").append(type);
-      sbuff.append(" byteSize= ").append(byteSize);
+      Formatter f = new Formatter();
+      f.format(" datatype= %d", type);
+      f.format(" byteSize= %d", byteSize);
       DataType dtype = getNCtype(type, byteSize);
-      sbuff.append(" NCtype= ").append(dtype);
-      sbuff.append(" flags= ");
-      for (int i=0; i<3; i++) sbuff.append(flags[i]).append(" ");
-      sbuff.append(" endian=").append(endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");
+      f.format(" NCtype= %s", dtype);
+      f.format(" flags= ");
+      for (int i=0; i<3; i++) f.format(" %d", flags[i]);
+      f.format(" endian= %s", endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");
 
       if (type == 2)
-        sbuff.append(" timeType= ").append(timeType);
-      else if (type == 6)
-        sbuff.append(" nmembers= ").append(nmembers);
-      else if (type == 7)
-        sbuff.append(" referenceType= ").append(referenceType);
+        f.format(" timeType= %s", timeType);
+      else if (type == 6) {
+        f.format("%n  members%n");
+        for (StructureMember mm : members)
+          f.format("   %s%n", mm);
+      } else if (type == 7)
+        f.format(" referenceType= %s", referenceType);
       else if (type == 9)
-        sbuff.append(" isVString= ").append(isVString);
+        f.format(" isVString= %s", isVString);
       if ((type == 9) || (type == 10))
-        sbuff.append(" parent= {").append(base).append("}");
-      return sbuff.toString();
+        f.format(" parent base= {%s}", base);
+      return f.toString();
     }
 
     public String getName() {
@@ -3033,6 +3061,18 @@ public class H5header {
       //HDFpadToMultiple( buffer, 8);
       //if (HDFdebug)  ncfile.debugOut.println("   Member padToMultiple="+raf.getFilePointer());
       //raf.skipBytes( 4); // huh ??
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("StructureMember");
+      sb.append("{name='").append(name).append('\'');
+      sb.append(", offset=").append(offset);
+      sb.append(", dims=").append(dims);
+      sb.append(", mdt=").append(mdt);
+      sb.append('}');
+      return sb.toString();
     }
   }
 
@@ -3267,7 +3307,7 @@ public class H5header {
     }
   }
 
-  private String[] filterName = new String[] {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
+  private static final String[] filterName = new String[] {"", "deflate", "shuffle", "fletcher32", "szip", "nbit", "scaleoffset"};
   class Filter {
     short id; // 1=deflate, 2=shuffle, 3=fletcher32, 4=szip, 5=nbit, 6=scaleoffset
     short flags;
@@ -3329,6 +3369,10 @@ public class H5header {
 
     public long getDataPosAbsolute() {
       return dataPos;
+    }
+
+    public Attribute getNcAttribute() throws IOException {
+      return makeAttribute(this);
     }
 
     long dataPos; // pointer to the attribute data section, must be absolute file position
@@ -4262,11 +4306,7 @@ There is _no_ datatype information stored for these sort of selections currently
     public String getString(int offset) {
       int count = 0;
       while (heap[offset + count] != 0) count++;
-      try {
-        return new String(heap, offset, count, utf8CharsetName);
-      } catch (UnsupportedEncodingException e) {
-        throw new IllegalStateException(e.getMessage());
-      }
+      return new String(heap, offset, count, utf8Charset);
     }
 
   } // LocalHeap
@@ -4301,7 +4341,7 @@ There is _no_ datatype information stored for these sort of selections currently
     byte[] s = new byte[count];
     raf.read(s);
     raf.readByte(); // skip the zero byte! nn
-    return new String(s, utf8CharsetName); // all Strings are UTF-8 unicode
+    return new String(s, utf8Charset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4326,11 +4366,7 @@ There is _no_ datatype information stored for these sort of selections currently
     count += padding(count, 8);
     raf.seek(filePos + count);
 
-    try {
-      return new String(s, utf8CharsetName); // all Strings are UTF-8 unicode
-    } catch (UnsupportedEncodingException e) {
-      throw new IllegalStateException(e.getMessage());
-    }
+   return new String(s, utf8Charset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4343,7 +4379,7 @@ There is _no_ datatype information stored for these sort of selections currently
   private String readStringFixedLength(int size) throws IOException {
     byte[] s = new byte[size];
     raf.read(s);
-    return new String(s, utf8CharsetName); // all Strings are UTF-8 unicode
+    return new String(s, utf8Charset); // all Strings are UTF-8 unicode
   }
 
   long readLength() throws IOException {

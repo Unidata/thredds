@@ -55,6 +55,8 @@ import java.nio.ByteOrder;
  */
 
 public class H5iosp extends AbstractIOServiceProvider {
+  static public final String IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES = "IncludeOrgAttributes";
+
   static boolean debug = false;
   static boolean debugPos = false;
   static boolean debugHeap = false;
@@ -89,6 +91,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   public String getFileTypeId() {
     if (isEos) return "HDF5-EOS";
+    if (headerParser.isNetcdf4) return DataFormatType.NETCDF4.toString();
     return DataFormatType.HDF5.toString();
   }
 
@@ -101,6 +104,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   private RandomAccessFile myRaf;
   private H5header headerParser;
   private boolean isEos;
+  boolean includeOriginalAttributes = false;
 
   /////////////////////////////////////////////////////////////////////////////
   // reading
@@ -451,6 +455,11 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   // debug
   public Object sendIospMessage(Object message) {
+    if (message.toString().equals(IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES)) {
+      includeOriginalAttributes = true;
+      return null;
+    }
+
     if (message.toString().equals("header"))
       return headerParser;
 

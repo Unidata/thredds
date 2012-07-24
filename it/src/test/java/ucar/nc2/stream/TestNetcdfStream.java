@@ -101,9 +101,8 @@ public class TestNetcdfStream {
 
       File file = new File("C:/temp/out.ncs");
       FileOutputStream fos = new FileOutputStream(file);
-      WritableByteChannel wbc = fos.getChannel();
-      writer.streamAll( wbc);
-      wbc.close();
+      writer.streamAll( fos);
+      fos.close();
 
       NetcdfFile ncfileBack = NetcdfFile.open(file.getPath());
 
@@ -163,9 +162,8 @@ public class TestNetcdfStream {
 
       File file = new File(filenameOut);
       FileOutputStream fos = new FileOutputStream(file);
-      WritableByteChannel wbc = fos.getChannel();
-      writer.streamAll( wbc);
-      wbc.close();
+      writer.streamAll( fos);
+      fos.close();
 
       NetcdfFile ncfileBack = NetcdfFile.open(file.getPath());
 

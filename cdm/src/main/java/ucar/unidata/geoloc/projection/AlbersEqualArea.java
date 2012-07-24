@@ -50,8 +50,8 @@ import ucar.unidata.util.Parameter;
 
 public class AlbersEqualArea extends ProjectionImpl {
 
-  private final double lat0, lon0;  // radians
-  private final double par1, par2;  // degrees
+  private double lat0, lon0;  // radians
+  private double par1, par2;  // degrees
   private final double falseEasting, falseNorthing;
   private final double earth_radius; // radius in km
 
@@ -248,7 +248,7 @@ public class AlbersEqualArea extends ProjectionImpl {
     return par2;
   }
 
-  /**
+    /**
    * Get the first standard parallel
    *
    * @return the first standard parallel
@@ -274,6 +274,52 @@ public class AlbersEqualArea extends ProjectionImpl {
   public double getOriginLat() {
     return Math.toDegrees(lat0);
   }
+
+  //////////////////////////////////////////////
+  // setters for IDV serialization - do not use except for object creating
+
+
+  /**
+     * Set the second standard parallel
+     *
+     * @param par   the second standard parallel
+     */
+    public void setParallelTwo(double par) {
+        par2 = par;
+        precalculate();
+    }
+
+  /**
+   * Set the first standard parallel
+   *
+   * @param par   the first standard parallel
+   */
+  public void setParallelOne(double par) {
+      par1 = par;
+      precalculate();
+  }
+
+  /**
+   * Set the origin longitude.
+   * @param lon   the origin longitude.
+   */
+  public void setOriginLon(double lon) {
+      lon0 = Math.toRadians(lon);
+      precalculate();
+  }
+
+  /**
+   * Set the origin latitude.
+   *
+   * @param lat   the origin latitude.
+   */
+  public void setOriginLat(double lat) {
+      lat0 = Math.toRadians(lat);
+      precalculate();
+  }
+
+    //////////////////////////////////////////////
+
 
   /**
    * Get the false easting, in km.
