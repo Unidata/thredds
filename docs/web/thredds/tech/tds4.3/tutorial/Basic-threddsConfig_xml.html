@@ -163,15 +163,17 @@
     <p>Server and institution names, logos, and links given in the above section are used
       in all TDS generated HTML pages.</p>
     <p>You can also specify the CSS files and several icons used in the HTML pages. These are
-      configured in the <code>htmlSetup</code> element of the TDS configuration file.
+      configured in the <code>htmlSetup</code> element of the TDS configuration file.  Default
+      CSS files are provided with the thredds.war distribution, and should not be modified.
+      Instead, these can be overridden by placing the appropriate CSS files in the ${tomcat_home}/content/thredds/public/ directory.
     </p>
-    <p>The following shows the default values used if the <code>htmlSetup</code>
-      element is not configured:</p>
+    <p>The following shows the default configuration of the <code>htmlSetup</code> element:</p>
 
 <pre>
 &lt;htmlSetup&gt;
-    &lt;cssPage&gt;tds.css&lt;/cssPage&gt;
-    &lt;cssCatalog&gt;tdsCat.css&lt;/cssCatalog&gt;
+    &lt;standardCssUrl&gt;tds.css&lt;/standardCssUrl&gt;
+    &lt;CatalogCssUrl&gt;tdsCat.css&lt;/CatalogCssUrl&gt;
+    &lt;openDapCssUrl&gt;tdsDap.css&lt;/openDapCssUrl&gt;
 
     &lt;folderIconUrl&gt;folder.gif&lt;/folderIconUrl&gt;
     &lt;folderIconAlt&gt;Folder&lt;/folderIconAlt&gt;
@@ -180,8 +182,6 @@
 &lt;/htmlSetup&gt;
 </pre>
 
-    <p>NOTE: URLs may be absolute or relative, relative URLs must be
-     relative to the webapp URL, i.e., <code>http://server:port/thredds/</code>.</p>
     <p>More details are given in the
       <a href="../reference/ThreddsConfigXMLFile.html#Generated_HTML_Pages">
         threddsConfig.xml Reference document</a>.</p>
