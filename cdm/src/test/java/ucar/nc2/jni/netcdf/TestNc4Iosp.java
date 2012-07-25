@@ -30,7 +30,7 @@ public class TestNc4Iosp {
 
   @Test
   public void problem() throws IOException {
-    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/cdm_sea_soundings.nc4", true, true, true);
+    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/fpcs_1dwave_2.nc", true, true, true);
   }
 
   @Test

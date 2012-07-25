@@ -808,7 +808,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       this.typeClass = typeClass;
       if (debugUserTypes) System.out.printf("%s%n", this);
 
-      readFields();
+      if (typeClass == NCLibrary.NC_COMPOUND)
+        readFields();
     }
 
     void setEnum(EnumTypedef e) {
@@ -1381,6 +1382,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
           int slen = vlen[i].len;
           int[] ba = vlen[i].p.getIntArray(0, slen);
           data[i] = Array.factory(DataType.INT, new int[]{slen}, ba);
+        }
+        break;
+      case NCLibrary.NC_USHORT:
+      case NCLibrary.NC_SHORT:
+        for (int i = 0; i < len; i++) {
+          int slen = vlen[i].len;
+          short[] ba = vlen[i].p.getShortArray(0, slen);
+          data[i] = Array.factory(DataType.SHORT, new int[]{slen}, ba);
         }
         break;
       case NCLibrary.NC_FLOAT:
