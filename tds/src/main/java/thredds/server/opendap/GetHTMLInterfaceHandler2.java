@@ -114,6 +114,7 @@ public class GetHTMLInterfaceHandler2
 
         requestURL = request.getRequestURL().substring(0, suffixIndex);
 
+        String dapCssUrl = "/" + requestURL.split("/",5)[3] + "/" + "tdsDap.css";
 
         try {
 
@@ -141,6 +142,7 @@ public class GetHTMLInterfaceHandler2
                     "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"\n"
                             + "\"http://www.w3.org/TR/REC-html40/loose.dtd\">\n"
                             + "<html><head><title>OPeNDAP Dataset Query Form</title>\n"
+                            + "<link type=\"text/css\" rel=\"stylesheet\" media=\"screen\" href=\"" + dapCssUrl + "\"/>\n"
                             + "<base href=\"" + helpLocation + "\">\n"
                             + "<script type=\"text/javascript\">\n"
                             + "<!--\n"
