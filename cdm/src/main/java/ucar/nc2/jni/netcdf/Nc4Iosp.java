@@ -33,6 +33,7 @@
 
 package ucar.nc2.jni.netcdf;
 
+import com.sun.jna.MyPointer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
@@ -65,7 +66,7 @@ import com.sun.jna.ptr.NativeLongByReference;
  */
 public class Nc4Iosp extends AbstractIOServiceProvider {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
-  private static boolean debug = false, debugCompoundAtt= false, debugEnumAtt = false;
+  private static boolean debug = false, debugCompoundAtt= false, debugUserTypes= false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     return false;
@@ -158,6 +159,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     IntByReference nunlimdimsp = new IntByReference();
     int[] unlimdimids = new int[NCLibrary.NC_MAX_DIMS];
     ret = nc4.nc_inq_unlimdims(grpid, nunlimdimsp, unlimdimids);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
 
     int ndims = ndimsp.getValue();
     for (int i = 0; i < ndims; i++) {
@@ -409,7 +411,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     return result;
   }
 
-  Array readVlenAttValues(int grpid, int varid, String attname, int len, UserType userType) throws IOException {
+  private Array readVlenAttValues(int grpid, int varid, String attname, int len, UserType userType) throws IOException {
     NCLibrary.Vlen_t[] vlen = new NCLibrary.Vlen_t[len];
     int ret = nc4.nc_get_att(grpid, varid, attname, vlen);    // vlen
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
@@ -450,7 +452,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
   private Attribute readEnumAttValues(int grpid, int varid, String attname, int len, UserType userType) throws IOException {
     int ret;
 
-    DataType dtype = convertDataType(userType.baseTypeid);
+    DataType dtype = convertDataType(userType.baseTypeid).dt;
     int elemSize = dtype.getSize();
 
     ByteBuffer bb = ByteBuffer.allocate(len * elemSize);
@@ -510,6 +512,162 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     return new Attribute(attname, Array.factory(DataType.BYTE, new int[] {total}, bb.array()));
   }
 
+  private void readCompoundAttValues(int grpid, int varid, String attname, int len, UserType userType,
+          List<Attribute> result, Variable v) throws IOException {
+
+    int buffSize = len * userType.size;
+    ByteBuffer bbuff = ByteBuffer.allocate(buffSize);
+    int ret = nc4.nc_get_att(grpid, varid, attname, bbuff);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+
+    decodeCompoundData(len, userType, bbuff);
+
+    // if its a Structure, distribute to matching fields
+    if ((v != null) && (v instanceof Structure)) {
+      Structure s = (Structure) v;
+      for (Field fld : userType.flds) {
+        Variable mv = s.findVariable(fld.name);
+        if (mv != null)
+          mv.addAttribute(new Attribute(attname,  fld.data));
+        else
+          result.add( new Attribute(attname+"."+fld.name,  fld.data));
+      }
+
+    } else {
+
+      for (Field fld : userType.flds)
+        result.add( new Attribute(attname+"."+fld.name,  fld.data));
+    }
+
+  }
+
+  // LOOK: placing results in the fld of the userType - ok for production ??
+  private void decodeCompoundData(int len, UserType userType, ByteBuffer bbuff) throws IOException {
+    bbuff.order(ByteOrder.LITTLE_ENDIAN);
+
+    for (Field fld : userType.flds) {
+      ConvertedType ct = convertDataType(fld.fldtypeid);
+      if (fld.fldtypeid == NCLibrary.NC_CHAR) {
+        fld.data = Array.factory( DataType.STRING, new int[] { len}); // LOOK ??
+
+      } else if (ct.isVen) {
+        fld.data = new ArrayObject(ct.dt.getPrimitiveClassType(), new int[] { len});
+        // fld.data = Array.factory( Object.class, new int[] { len});  // object array
+
+      } else {
+        fld.data = Array.factory( ct.dt, new int[] { len});
+      }
+    }
+
+    for (int i=0; i<len; i++) {
+      int record_start = i * userType.size;
+
+      for (Field fld : userType.flds) {
+        int pos = record_start + fld.offset;
+
+        switch (fld.fldtypeid) {
+          case NCLibrary.NC_CHAR:
+            // copy bytes out of buffer, make into a String object
+            int blen = 1;
+            if (fld.dims != null) {
+              Section s = new Section(fld.dims);
+              blen = (int) s.computeSize();
+            }
+            byte[] dst = new byte[blen];
+            bbuff.get(dst, 0, blen);
+
+            String cval = makeAttString(dst);
+            fld.data.setObject(i, cval);
+            if (debugCompoundAtt) System.out.println("result= "+cval);
+            continue;
+
+          case NCLibrary.NC_UBYTE:
+          case NCLibrary.NC_BYTE:
+            byte bval = bbuff.get(pos);
+            if (debugCompoundAtt) System.out.println("bval= "+bval);
+            fld.data.setByte(i, bval);
+            continue;
+
+          case NCLibrary.NC_USHORT:
+          case NCLibrary.NC_SHORT:
+            short sval = bbuff.getShort(pos);
+            if (debugCompoundAtt) System.out.println("sval= "+sval);
+            fld.data.setShort(i, sval);
+            continue;
+
+          case NCLibrary.NC_UINT:
+          case NCLibrary.NC_INT:
+            int ival = bbuff.getInt(pos);
+            if (debugCompoundAtt) System.out.println("ival= "+ival);
+            fld.data.setInt(i, ival);
+            continue;
+
+          case NCLibrary.NC_UINT64:
+          case NCLibrary.NC_INT64:
+            long lval = bbuff.getLong(pos);
+            if (debugCompoundAtt) System.out.println("lval= "+lval);
+            fld.data.setLong(i, lval);
+            continue;
+
+          case NCLibrary.NC_FLOAT:
+            float fval = bbuff.getFloat(pos);
+            if (debugCompoundAtt) System.out.println("fval= "+fval);
+            fld.data.setFloat(i, fval);
+            continue;
+
+          case NCLibrary.NC_DOUBLE:
+            double dval = bbuff.getDouble(pos);
+            if (debugCompoundAtt) System.out.println("dval= "+dval);
+            fld.data.setDouble(i, dval);
+            continue;
+
+          case NCLibrary.NC_STRING:
+            lval = bbuff.getLong(pos);
+            Pointer p = new MyPointer(lval);
+            String strval = p.getString(0, false);
+            fld.data.setObject(i, strval);
+            if (debugCompoundAtt) System.out.println("result= "+strval);
+            continue;
+
+          default:
+            UserType subUserType = userTypes.get(fld.fldtypeid);
+            if (subUserType == null) {
+              throw new IOException("Unknown compound user type == " + fld);
+
+            } else if (subUserType.typeClass == NCLibrary.NC_ENUM) {
+
+            } else if (subUserType.typeClass == NCLibrary.NC_VLEN) {
+              decodeVlen( fld, subUserType, pos, i, bbuff);
+              break;
+
+            } else if (subUserType.typeClass == NCLibrary.NC_OPAQUE) {
+              //return readOpaque(grpid, varid, len, userType.size);
+
+             } else  if (subUserType.typeClass == NCLibrary.NC_COMPOUND) {
+              //return readCompound(grpid, varid, len, userType);
+            }
+
+            System.out.println("UNSUPPORTED compound fld.fldtypeid= "+fld.fldtypeid);
+            continue;
+        } // switch on fld type
+      } // loop over fields
+    } // loop over len
+
+  }
+
+  private Array decodeVlen( Field fld, UserType userType, int pos, int idx, ByteBuffer bbuff) throws IOException {
+    int n = (int) bbuff.getLong(pos);
+    long addr = bbuff.getLong(pos+8); // LOOK
+    Pointer p = new MyPointer(addr);
+    switch (userType.baseTypeid) {
+       case NCLibrary.NC_FLOAT:
+         float[] data = p.getFloatArray(0, n);
+         fld.data.setObject(idx, Array.factory(DataType.FLOAT, new int[]{n}, data));
+    }
+
+    throw new IllegalStateException();
+  }
+
   /////////////////////////////////////////////////////////////////////////////
 
   private void makeVariables(int grpid, Group g) throws IOException {
@@ -521,6 +679,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
 
     int[] varids = new int[nvars];
     ret = nc4.nc_inq_varids(grpid, nvarsp, varids);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
 
     for (int i = 0; i < varids.length; i++) {
       int varno = varids[i];
@@ -538,7 +697,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
 
       // figure out the datatype
       int typeid = xtypep.getValue();
-      DataType dtype = convertDataType(typeid);
+      DataType dtype = convertDataType(typeid).dt;
 
       String vname = makeString(name);
       Vinfo vinfo = new Vinfo(grpid, varno, typeid);
@@ -556,7 +715,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       if (dtype != DataType.STRUCTURE) {
         v = new Variable(ncfile, g, null, vname, dtype, dimList);
 
-      } else {
+      } else if (utype != null) {
         Structure s = new Structure(ncfile, g, null, vname);
         s.setDimensions( dimList);
         v = s;
@@ -566,6 +725,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
         for (Field f : utype.flds) {
           s.addMemberVariable(f.makeMemberVariable(g, s));
         }
+      } else {
+        throw new IllegalStateException("Dunno what to with "+dtype);
       }
 
       // create the Variable
@@ -637,7 +798,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     EnumTypedef e;
     List<Field> flds;
 
-    UserType(int grpid, int typeid, String name, long size, int baseTypeid, long nfields, int typeClass) {
+    UserType(int grpid, int typeid, String name, long size, int baseTypeid, long nfields, int typeClass) throws IOException {
       this.grpid = grpid;
       this.typeid = typeid;
       this.name = name;
@@ -645,6 +806,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       this.baseTypeid = baseTypeid;
       this.nfields = nfields;
       this.typeClass = typeClass;
+      if (debugUserTypes) System.out.printf("%s%n", this);
+
+      readFields();
     }
 
     void setEnum(EnumTypedef e) {
@@ -657,9 +821,26 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       flds.add(fld);
     }
 
-    public String toString() {
+
+    public String toString2() {
       return "name='"+name+"' id="+getDataTypeName(typeid)+" userType="+getDataTypeName(typeClass)+
               " baseType="+getDataTypeName(baseTypeid);
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("UserType");
+      sb.append("{grpid=").append(grpid);
+      sb.append(", typeid=").append(typeid);
+      sb.append(", name='").append(name).append('\'');
+      sb.append(", size=").append(size);
+      sb.append(", baseTypeid=").append(baseTypeid);
+      sb.append(", nfields=").append(nfields);
+      sb.append(", typeClass=").append(typeClass);
+      sb.append(", e=").append(e);
+      sb.append('}');
+      return sb.toString();
     }
 
     void readFields() throws IOException {
@@ -667,7 +848,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
         byte[] fldname = new byte[NCLibrary.NC_MAX_NAME + 1];
         IntByReference field_typeidp = new IntByReference();
         IntByReference ndimsp = new IntByReference();
-        IntByReference dim_sizesp = new IntByReference();
         NativeLongByReference offsetp = new NativeLongByReference();
 
         int[] dims = new int[NCLibrary.NC_MAX_DIMS];
@@ -678,7 +858,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
                 field_typeidp.getValue(), ndimsp.getValue(), dims);
 
         addField( fld);
-        if (debug) System.out.println(" add field= "+fld);
+        if (debugUserTypes) System.out.printf(" %s add field= %s%n", name, fld);
       }
     }
   }
@@ -693,8 +873,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     int ndims;
     int[] dims;
 
-    DataType dtype;
-    int total_size;
+    ConvertedType ctype;
+    //int total_size;
     Array data;
 
     // grpid, varid, fldidx, fldname, offsetp, field_typeidp, ndimsp, dim_sizesp
@@ -709,9 +889,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       this.dims = new int[ndims];
       System.arraycopy(dims, 0, this.dims, 0, ndims);
 
-      dtype = convertDataType(fldtypeid);
+      ctype = convertDataType(fldtypeid);
       Section s = new Section( dims);
-      total_size = (int) s.computeSize() * dtype.getSize();
+      //total_size = (int) s.computeSize() * ctype.dt.getSize();
 
       if (isVlen(fldtypeid)) {
         int[] edims = new int[dims.length+1];
@@ -721,20 +901,45 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       }
     }
 
-    public String toString() {
+    public String toString2() {
       return "name='"+name+" fldtypeid="+getDataTypeName(fldtypeid)+" ndims="+ndims+" offset="+offset;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("Field");
+      sb.append("{grpid=").append(grpid);
+      sb.append(", typeid=").append(typeid);
+      sb.append(", fldidx=").append(fldidx);
+      sb.append(", name='").append(name).append('\'');
+      sb.append(", offset=").append(offset);
+      sb.append(", fldtypeid=").append(fldtypeid);
+      sb.append(", ndims=").append(ndims);
+      sb.append(", dims=").append(dims == null ? "null" : "");
+      for (int i = 0; dims != null && i < dims.length; ++i)
+        sb.append(i == 0 ? "" : ", ").append(dims[i]);
+      sb.append(", dtype=").append(ctype.dt);
+      if (ctype.isVen) sb.append("(vlen)");
+      sb.append('}');
+      return sb.toString();
     }
 
     Variable makeMemberVariable(Group g, Structure parent) {
       Variable v = new Variable(ncfile, g, parent, name);
-      v.setDataType( convertDataType(fldtypeid));
+      v.setDataType( convertDataType(fldtypeid).dt);
       if (isUnsigned(fldtypeid))
         v.addAttribute(new Attribute(CDM.UNSIGNED,"true"));
 
-      try {
-        v.setDimensionsAnonymous(dims);
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      if (ctype.isVen) {
+        v.setDimensions("*");
+
+      } else {
+        try {
+          v.setDimensionsAnonymous(dims);
+        } catch (InvalidRangeException e) {
+          e.printStackTrace();
+        }
       }
       return v;
     }
@@ -832,6 +1037,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
 
   /////////////////////////////////////////////////////////////////////////////////
 
+  @Override
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+    Vinfo vinfo = (Vinfo) v2.getSPobject();
+    return read(vinfo.grpid, vinfo.varid, vinfo.typeid, section);
+  }
+
+  /*
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     Array values = null;
@@ -902,7 +1114,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     }
 
     return values;
-  }
+  }   */
 
   private long[] convert(int[] from) {
     long[] to = new long[from.length];
@@ -977,14 +1189,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     return values;
   }  */
 
-  private Array read(Variable v2) throws IOException, InvalidRangeException {
-    Vinfo vinfo = (Vinfo) v2.getSPobject();
-    int len = (int) v2.getSize();
-    return read(vinfo.grpid, vinfo.varid, vinfo.typeid, len, v2.getShape());
-  }
-
-  private Array read(int grpid, int varid, int typeid, int len, int[] shape) throws IOException, InvalidRangeException {
+  // LOOK change to use strided read. could also check for stride = 1 and all data cases
+  private Array read(int grpid, int varid, int typeid, Section section) throws IOException, InvalidRangeException {
     int ret;
+    int len = (int) section.computeSize();
+    long[] origin = convert(section.getOrigin());
+    int[] shape =section.getShape();
+    long[] size = convert(section.getShape());
 
     switch (typeid) {
 
@@ -1058,7 +1269,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       default:
         UserType userType = userTypes.get(typeid);
         if (userType == null) {
-          throw new IOException("Unsupported data type == " + typeid);
+          throw new IOException("Unknown userType == " + typeid);
 
         } else if (userType.typeClass == NCLibrary.NC_ENUM) {
           return readEnum(grpid, varid, userType.baseTypeid, len, shape);
@@ -1073,7 +1284,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
           return readCompound(grpid, varid, len, userType);
         }
 
-        throw new IOException("Unsupported type = " + typeid+ " userType= "+userType);
+        throw new IOException("Unsupported userType = " + typeid+ " userType= "+userType);
     }
 
   }
@@ -1081,145 +1292,83 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
   private Array readCompound(int grpid, int varid, int len, UserType userType) throws IOException {
     int buffSize = len * userType.size;
     ByteBuffer bbuff = ByteBuffer.allocate(buffSize);
+    bbuff.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
+
+    // read in the data
     int ret = nc4.nc_get_var(grpid, varid, bbuff);
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
 
-    decodeCompoundData(len, userType, bbuff);
-
     StructureMembers sm = new StructureMembers(userType.name);
     for (Field fld : userType.flds) {
-      sm.addMember( fld.name, null, null, fld.dtype, fld.dims);
+      StructureMembers.Member m = sm.addMember( fld.name, null, null, fld.ctype.dt, fld.dims);
+      m.setDataParam(fld.offset);
+      if (fld.ctype.isVen)
+        m.setShape(new int[] {-1});
     }
+    sm.setStructureSize(userType.size);
 
+    /*
+        decodeCompoundData(len, userType, bbuff);
     ArrayStructureMA asma = new ArrayStructureMA(sm, new int[] {len});
     for (Field fld : userType.flds) {
       asma.setMemberArray( fld.name, fld.data);
+    }  */
+
+    ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[] {len}, bbuff, 0);
+
+    // find and convert Strings and vlens, put on asbb heap
+    int destPos = 0;
+    for (int i = 0; i < len; i++) { // loop over each structure
+      convertHeap(asbb, destPos, sm);
+      destPos += userType.size;
     }
 
-    return asma;
+    return asbb;
   }
 
-  private void readCompoundAttValues(int grpid, int varid, String attname, int len, UserType userType,
-          List<Attribute> result, Variable v) throws IOException {
+  private void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws java.io.IOException {
+    ByteBuffer bb = asbb.getByteBuffer();
+    for (StructureMembers.Member m : sm.getMembers()) {
+      if (m.getDataType() == DataType.STRING) {
+        int size = m.getSize();
+        int destPos = pos + m.getDataParam();
+        String[] result = new String[size];
+        for (int i = 0; i < size; i++) {
+           long addr = bb.getLong(pos);
+           Pointer p = new MyPointer(addr);
+           result[i] = p.getString(0, false);
+        }
 
-    int buffSize = len * userType.size;
-    ByteBuffer bbuff = ByteBuffer.allocate(buffSize);
-    int ret = nc4.nc_get_att(grpid, varid, attname, bbuff);
-    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        int index = asbb.addObjectToHeap(result);
+        bb.putInt(destPos, index); // overwrite with the index into the StringHeap
 
-    decodeCompoundData(len, userType, bbuff);
+      } else if (m.isVariableLength()) {
 
-    // if its a Structure, distribute to matching fields
-    if ((v != null) && (v instanceof Structure)) {
-      Structure s = (Structure) v;
-      for (Field fld : userType.flds) {
-        Variable mv = s.findVariable(fld.name);
-        if (mv != null)
-          mv.addAttribute(new Attribute(attname,  fld.data));
-        else
-          result.add( new Attribute(attname+"."+fld.name,  fld.data));
+        int destPos = pos + m.getDataParam();
+        Array result = decodeVlen(m.getDataType(), pos + m.getDataParam(), bb);
+        int index = asbb.addObjectToHeap(result);
+        bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
+        bb.putInt(destPos, index); // overwrite with the index into the StringHeap
       }
+    }
+  }
 
-    } else {
-
-      for (Field fld : userType.flds)
-        result.add( new Attribute(attname+"."+fld.name,  fld.data));
+  private Array decodeVlen( DataType dt, int pos, ByteBuffer bbuff) throws IOException {
+    int n = (int) bbuff.getLong(pos);
+    long addr = bbuff.getLong(pos+8); // LOOK
+    Pointer p = new MyPointer(addr);
+    switch (dt) {
+       case FLOAT:
+         float[] data = p.getFloatArray(0, n);
+         return Array.factory(dt, new int[] {n}, data);
     }
 
+    throw new IllegalStateException();
   }
-  
-  // LOOK: placing results in the fld of the userType - not for production
-  private void decodeCompoundData(int len, UserType userType, ByteBuffer bbuff) throws IOException {
-    if (userType.flds == null)
-      userType.readFields();
-
-    bbuff.order(ByteOrder.LITTLE_ENDIAN);
-
-    for (Field fld : userType.flds)
-      fld.data = Array.factory( convertDataType(fld.fldtypeid), new int[] { len});
-
-    for (int i=0; i<len; i++) {
-      int record_start = i * userType.size;
-
-      for (Field fld : userType.flds) {
-        int pos = record_start + fld.offset;
-
-        switch (fld.fldtypeid) {
-          case NCLibrary.NC_UBYTE:
-          case NCLibrary.NC_BYTE:
-            byte bval = bbuff.get(pos);
-            if (debugCompoundAtt) System.out.println("bval= "+bval);
-            fld.data.setByte(i, bval);
-            continue;
-
-          case NCLibrary.NC_USHORT:
-          case NCLibrary.NC_SHORT:
-            short sval = bbuff.getShort(pos);
-            if (debugCompoundAtt) System.out.println("sval= "+sval);
-            fld.data.setShort(i, sval);
-            continue;
-
-          case NCLibrary.NC_UINT:
-          case NCLibrary.NC_INT:
-            int ival = bbuff.getInt(pos);
-            if (debugCompoundAtt) System.out.println("ival= "+ival);
-            fld.data.setInt(i, ival);
-            continue;
-
-          case NCLibrary.NC_UINT64:
-          case NCLibrary.NC_INT64:
-            long lval = bbuff.getLong(pos);
-            if (debugCompoundAtt) System.out.println("lval= "+lval);
-            fld.data.setLong(i, lval);
-            continue;
-
-          case NCLibrary.NC_FLOAT:
-            float fval = bbuff.getFloat(pos);
-            if (debugCompoundAtt) System.out.println("fval= "+fval);
-            fld.data.setFloat(i, fval);
-            continue;
-
-          case NCLibrary.NC_DOUBLE:
-            double dval = bbuff.getDouble(pos);
-            if (debugCompoundAtt) System.out.println("dval= "+dval);
-            fld.data.setDouble(i, dval);
-            continue;
-
-          case NCLibrary.NC_STRING:
-            ival = bbuff.getInt(pos);
-            if (debugCompoundAtt) System.out.println("ival= "+ival);
-            continue;
-
-          default:
-            // assume its a compound type
-            UserType subUserType = userTypes.get(fld.fldtypeid);
-            if (subUserType == null) {
-              throw new IOException("Unsupported compound fld.fldtypeid == " + fld.fldtypeid);
-
-            } else if (userType.typeClass == NCLibrary.NC_ENUM) {
-
-            } else if (userType.typeClass == NCLibrary.NC_VLEN) {
-              //return readVlen(grpid, varid, len, userType);
-
-            } else if (userType.typeClass == NCLibrary.NC_OPAQUE) {
-              //return readOpaque(grpid, varid, len, userType.size);
-
-             } else  if (userType.typeClass == NCLibrary.NC_COMPOUND) {
-              //return readCompound(grpid, varid, len, userType);
-            }
-
-            System.out.println("UNSUPPORTED compound fld.fldtypeid= "+fld.fldtypeid);
-            continue;
-        } // switch on fld type
-      } // loop over fields
-    } // loop over len
-
-  }
-
 
   Array readVlen(int grpid, int varid, int len, UserType userType) throws IOException {
     NCLibrary.Vlen_t[] vlen = new NCLibrary.Vlen_t[len];
-    int ret = nc4.nc_get_var(grpid, varid, vlen);   
+    int ret = nc4.nc_get_var(grpid, varid, vlen);
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
 
     //DataType dtype = convertDataType(userType.baseTypeid);
@@ -1270,8 +1419,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
   private Array readEnum(int grpid, int varid, int baseType, int len, int[] shape) throws IOException, InvalidRangeException {
     int ret;
 
-    DataType dtype = convertDataType(baseType);
-    int elemSize = dtype.getSize();
+    ConvertedType ctype = convertDataType(baseType);
+    int elemSize = ctype.dt.getSize();
 
     ByteBuffer bb = ByteBuffer.allocate(len * elemSize);
     ret = nc4.nc_get_var(grpid, varid, bb);
@@ -1314,38 +1463,47 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     return (userType == null) ? false : (userType.typeClass == NCLibrary.NC_VLEN);
   }
 
-  private DataType convertDataType(int type) {
+  private class ConvertedType {
+    DataType dt;
+    boolean isVen;
+
+    ConvertedType(DataType dt) {
+      this.dt = dt;
+    }
+  }
+
+  private ConvertedType convertDataType(int type) {
     switch (type) {
       case NCLibrary.NC_BYTE:
       case NCLibrary.NC_UBYTE:
-        return DataType.BYTE;
+        return new ConvertedType(DataType.BYTE);
 
       case NCLibrary.NC_CHAR:
-        return DataType.CHAR;
+        return new ConvertedType(DataType.CHAR);
 
       case NCLibrary.NC_SHORT:
       case NCLibrary.NC_USHORT:
-        return DataType.SHORT;
+        return new ConvertedType(DataType.SHORT);
 
       case NCLibrary.NC_INT:
       case NCLibrary.NC_UINT:
-        return DataType.INT;
+        return new ConvertedType(DataType.INT);
 
       case NCLibrary.NC_INT64:
       case NCLibrary.NC_UINT64:
-        return DataType.LONG;
+        return new ConvertedType(DataType.LONG);
 
       case NCLibrary.NC_FLOAT:
-        return DataType.FLOAT;
+        return new ConvertedType(DataType.FLOAT);
 
       case NCLibrary.NC_DOUBLE:
-        return DataType.DOUBLE;
+        return new ConvertedType(DataType.DOUBLE);
 
       case NCLibrary.NC_ENUM:
-        return DataType.ENUM1;
+        return new ConvertedType(DataType.ENUM1); // LOOK width ??
 
       case NCLibrary.NC_STRING:
-        return DataType.STRING;
+        return new ConvertedType(DataType.STRING);
 
       default:
         UserType userType = userTypes.get(type);
@@ -1354,16 +1512,18 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
 
         switch (userType.typeClass) {
           case NCLibrary.NC_ENUM:
-            return DataType.ENUM1;
+            return new ConvertedType(DataType.ENUM1);
 
           case NCLibrary.NC_COMPOUND:
-            return DataType.STRUCTURE;
+            return new ConvertedType( DataType.STRUCTURE);
 
           case NCLibrary.NC_OPAQUE:
-            return DataType.OPAQUE;
+            return new ConvertedType(DataType.OPAQUE);
 
           case NCLibrary.NC_VLEN:
-            return convertDataType(userType.baseTypeid);
+            ConvertedType result = convertDataType(userType.baseTypeid);
+            result.isVen = true;
+            return result;
         }
         throw new IllegalArgumentException("unknown type == " + type);
     }

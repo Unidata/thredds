@@ -801,7 +801,7 @@ public class H5header {
       if (hasStrings) {
         int destPos = 0;
         for (int i = 0; i< layout.getTotalNelems(); i++) { // loop over each structure
-          h5iosp.convertStrings(asbb, destPos, sm);
+          h5iosp.convertHeap(asbb, destPos, sm);
           destPos += layout.getElemSize();
         }
       }
@@ -3978,10 +3978,15 @@ public class H5header {
   Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException, InvalidRangeException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
     if (debugHeap) debugOut.println(" heapId= " + heapId);
+    return getHeapDataArray(heapId, dataType, endian);
+    // Object pa = getHeapDataArray(heapId, dataType, endian);
+    // return Array.factory(dataType.getPrimitiveClassType(), new int[]{heapId.nelems}, pa);
+  }
+
+  Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, int endian) throws IOException, InvalidRangeException {
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null) {
-      log.error("Illegal Heap address = {}", globalHeapIdAddress);
-      throw new InvalidRangeException("Illegal Heap address = " + globalHeapIdAddress);
+      throw new InvalidRangeException("Illegal Heap address = " + ho);
     }
     if (debugHeap) debugOut.println(" HeapObject= " + ho);
     if (endian >= 0) raf.order(endian);
@@ -4052,6 +4057,11 @@ public class H5header {
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
     raf.seek(ho.dataPos);
     return readStringFixedLength((int) ho.dataSize);
+  }
+
+  Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, int endian) throws IOException, InvalidRangeException {
+    H5header.HeapIdentifier heapId = new HeapIdentifier(bb, pos);
+    return getHeapDataArray(heapId, dataType, endian);
   }
 
   // debug - hdf5Table

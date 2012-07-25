@@ -343,7 +343,8 @@ public class CompareNetcdf2 {
             f.format("  ** %s %s 0x%x (%s) not equal to %s 0x%x (%s) %n", want1.getClass().getName(), want1, want1.hashCode(), name1, want2, want2.hashCode(), name2);
             ok = false;
           } else {
-            if (showEach) f.format("  OK <%s> equals <%s>%n", want1, want2);
+            if (showEach)
+              f.format("  OK <%s> equals <%s>%n", want1, want2);
             if (result != null) {
               result.add(want1);
               result.add(want2);

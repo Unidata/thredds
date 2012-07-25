@@ -176,12 +176,13 @@ public interface NCLibrary extends Library {
   int nc_get_var_string(int ncid, int varid, String[] sarray);
 
   // read array section
-  // working on blueman
-  int nc_get_vars_schar(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_text(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_short(int ncid, int varid, long[] startp, long[] countp, int[] stridep, short[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_int(int ncid, int varid, long[] startp, long[] countp, int[] stridep, int[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_longlong(int ncid, int varid, long[] startp, long[] countp, int[] stridep, long[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_float(int ncid, int varid, long[] startp, long[] countp, int[] stridep, float[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_double(int ncid, int varid, long[] startp, long[] countp, int[] stridep, double[] ip); // size_t, ptrdiff_t
-}
+  int nc_get_vars(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip);
+
+  int nc_get_vars_schar(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip);
+  int nc_get_vars_text(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip);
+  int nc_get_vars_short(int ncid, int varid, long[] startp, long[] countp, int[] stridep, short[] ip);
+  int nc_get_vars_int(int ncid, int varid, long[] startp, long[] countp, int[] stridep, int[] ip);
+  int nc_get_vars_longlong(int ncid, int varid, long[] startp, long[] countp, int[] stridep, long[] ip);
+  int nc_get_vars_float(int ncid, int varid, long[] startp, long[] countp, int[] stridep, float[] ip);
+  int nc_get_vars_double(int ncid, int varid, long[] startp, long[] countp, int[] stridep, double[] ip);
+  int nc_get_vars_string(int ncid, int varid, long[] startp, long[] countp, int[] stridep, String[] ip);}

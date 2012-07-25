@@ -30,7 +30,7 @@ public class TestNc4Iosp {
 
   @Test
   public void problem() throws IOException {
-    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/attributeStruct.nc", true, true, true);
+    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/cdm_sea_soundings.nc4", true, true, true);
   }
 
   @Test
@@ -56,7 +56,7 @@ public class TestNc4Iosp {
   private class MyObjectFilter implements CompareNetcdf2.ObjFilter {
     @Override
     public boolean attOk(Variable v, Attribute att) {
-      if (v != null && v.isMemberOfStructure()) return false;
+      // if (v != null && v.isMemberOfStructure()) return false;
       String name = att.getName();
 
       // added by cdm
@@ -92,7 +92,7 @@ public class TestNc4Iosp {
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
     boolean ok = tc.compare(ncfile, jni, new MyObjectFilter(), showCompare, showEach, compareData);
     System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
-    if (!ok && showCompareResults) System.out.printf("%s%n=====================================%n", f);
+    if (!ok ||(showCompare && showCompareResults)) System.out.printf("%s%n=====================================%n", f);
     return ok;
   }
 

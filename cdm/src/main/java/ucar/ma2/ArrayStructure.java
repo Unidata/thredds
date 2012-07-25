@@ -168,7 +168,6 @@ public abstract class ArrayStructure extends Array {
     return indexCalc.getSize() * members.getStructureSize();
   }
 
-
   /**
    * Get the index-th StructureData of this ArrayStructure.
    *
