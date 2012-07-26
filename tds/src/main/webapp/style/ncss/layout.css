@@ -1,0 +1,73 @@
+#header{
+	background-color: #FFFFFF;
+	margin: 2px auto 12px auto;
+	height:50px;
+	border-bottom:1px solid #cccccc;
+	width:99%;
+}
+
+#header #dataset{
+	margin:8px 0 0 4px;
+	float:left;
+}
+
+#header #unidata{
+	float:right;
+}
+
+#header #unidata #logo{
+	background-image:url('https://www.unidata.ucar.edu/img/v3/logos/uniLogo.png');
+	background-repeat:no-repeat;
+	width:50px;
+	height:44px;
+	float:left;
+	margin-left:2px;
+}
+
+
+#header #unidata #title{
+	background-image:url('https://www.unidata.ucar.edu/img/v3/logos/uniTitle.png');
+	background-position:right top;
+	background-repeat:no-repeat;
+	float:left;
+	height:44px;
+	width:300px;
+	margin:4px;
+}
+
+#header #unidata #title #service{
+	margin:24px 0 0 0;
+	text-align:right;
+}
+
+#header #title #service span.bold{
+	font-weight:bold;
+}
+
+#header #title #service span.service{
+	font-weight:bold;
+	color:#006996;
+}
+
+#container {
+  background-color: #FFFFFF;	
+  margin: 0 auto 0 auto;
+  width: 99%;
+  text-align: left;  
+  clear:both;
+}
+
+#container #dataheader{
+	margin:4px 0;
+	width:100%;
+	border-bottom:1px dotted #cfcfcf;
+	min-width:1004px;
+}
+
+td.leftCol{
+	min-width:704px;
+}
+
+td.rightCol{
+	min-width:280px;
+}
