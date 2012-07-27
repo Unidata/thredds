@@ -210,7 +210,7 @@ public class NetcdfFileWriter {
   }
 
   private boolean isValidDataType(DataType dt) {
-    return valid.contains(dt);
+    return isNetcdf4 || valid.contains(dt);
   }
 
   private String createValidObjectName(String name) {

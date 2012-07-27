@@ -770,37 +770,6 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return new GeoGrid(dataset, v_section, gcs_section);
   }
 
-  /**
-   * experimental - do not use
-   *
-   * @param filename write to this file
-   * @throws java.io.IOException on i/o error
-   */
-  public void writeFile(String filename) throws IOException {
-    FileWriter writer = new FileWriter(filename, true);
-
-    List<Variable> varList = new ArrayList<Variable>();
-    varList.add( vs);
-
-    for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
-      varList.add(axis);
-    }
-
-    writer.writeVariables(varList);
-
-    ProjectionCT projCT = gcs.getProjectionCT();
-    if (projCT != null) {
-      VariableDS v = CoordTransBuilder.makeDummyTransformVariable(dataset.getNetcdfDataset(), projCT);
-      v.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
-      writer.writeVariable(v);
-    }
-
-    String location = dataset.getNetcdfDataset().getLocation();
-    writer.writeGlobalAttribute(new Attribute("History", "GeoGrid extracted from dataset " + location));
-    writer.writeGlobalAttribute(new Attribute("Convention", _Coordinate.Convention));
-    writer.finish();
-  }
-
   /////////////////////////////////////////////////////////////////////////////////
   /**
    * Instances which have same name and coordinate system are equal.

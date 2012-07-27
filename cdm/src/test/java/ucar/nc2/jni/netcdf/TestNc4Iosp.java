@@ -28,7 +28,6 @@ public class TestNc4Iosp {
   private boolean showCompareResults = true;
   private int countNotOK = 0;
 
-  @Test
   public void testReadSubsection() throws IOException, InvalidRangeException {
     String location = TestDir.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4";
     NetcdfFile ncfile = NetcdfFile.open(location);
@@ -51,26 +50,22 @@ public class TestNc4Iosp {
     return v.read(section) ;
   }
 
-  @Test
   public void problem() throws IOException {
     doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/files/tst_opaque_data.nc4 ", true, true, true);
   }
 
-  @Test
   public void readAllNetcdf4() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/", new MyFileFilter(), new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  @Test
   public void readAllHDF5() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/", new MyFileFilter(), new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  @Test
   public void readAllNetcdf3() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", new MyFileFilter(), new MyAct());

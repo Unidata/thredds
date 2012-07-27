@@ -67,7 +67,7 @@ import com.sun.jna.ptr.NativeLongByReference;
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
-  private static boolean debug = false, debugCompoundAtt= false, debugUserTypes= false, debugWrite = true;
+  private static boolean debug = false, debugCompoundAtt= false, debugUserTypes= false, debugWrite = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     return false;
@@ -1480,6 +1480,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
          return NCLibrary.NC_SHORT;
       case STRING:
          return NCLibrary.NC_STRING;
+      case ENUM1:
+      case ENUM2:
+      case ENUM4:
+         return NCLibrary.NC_ENUM;
      }
     throw new IllegalArgumentException("unimplemented type == " + dt);
   }
@@ -1640,8 +1644,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       IntByReference varidp = new IntByReference();
       int typid = convertDataType(v.getDataType());
-      int ret = nc4.nc_def_var (ncid, v.getShortName(), typid, dimids.length, dimids, varidp);
-      if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+      int ret = nc4.nc_def_var(ncid, v.getShortName(), typid, dimids.length, dimids, varidp);
+      if (ret != 0)
+        throw new IOException(nc4.nc_strerror(ret));
       int varid = varidp.getValue();
 
       v.setSPobject(new Vinfo(grid, varid, typid));
@@ -1653,7 +1658,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // groups
     for (Group nested : g.getGroups()) {
       IntByReference grpidp = new IntByReference();
-      int ret = nc4.nc_def_grp(grid, nested.getName(), grpidp);
+      int ret = nc4.nc_def_grp(grid, nested.getShortName(), grpidp);
 
       if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
       int nestedId = grpidp.getValue();
