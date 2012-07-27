@@ -1,11 +1,16 @@
 package ucar.nc2.jni.netcdf;
 
 import org.junit.Test;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
 import ucar.nc2.Attribute;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.geoloc.projection.proj4.MapMath;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
@@ -14,37 +19,62 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Describe
+ * Test JNI netcdf-4 iosp
  *
  * @author caron
  * @since 7/3/12
  */
 public class TestNc4Iosp {
   private boolean showCompareResults = true;
+  private int countNotOK = 0;
 
-  /* G:\data\cdmUnitTest\formats\netcdf4\compound\tst_solar_cmp.nc
-   G:\data\cdmUnitTest\formats\netcdf4\tst\tst_enums.nc
-   G:\data\cdmUnitTest\formats\netcdf4\tst\tst_solar_cmp.nc
-   G:\data\cdmUnitTest\formats\netcdf4\vlen\cdm_sea_soundings.nc4
-   */
+  @Test
+  public void testReadSubsection() throws IOException, InvalidRangeException {
+    String location = TestDir.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4";
+    NetcdfFile ncfile = NetcdfFile.open(location);
+    NetcdfFile jni = openJni(location);
+    jni.setLocation(location+" (jni)");
+
+    // float salinity(time=1, depth=40, lat=667, lon=622);
+    Array data1 = read(ncfile, "salinity", "0,11:12,22,:");
+    //NCdumpW.printArray(data1);
+    System.out.printf("Read from jni%n");
+    Array data2 = read(jni, "salinity", "0,11:12,22,:");
+    assert MAMath.isEqual(data1, data2);
+    ncfile.close();
+    jni.close();
+  }
+
+  private Array read(NetcdfFile ncfile, String vname, String section) throws IOException, InvalidRangeException {
+    Variable v = ncfile.findVariable(vname);
+    assert v != null;
+    return v.read(section) ;
+  }
 
   @Test
   public void problem() throws IOException {
-    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/fpcs_1dwave_2.nc", true, true, true);
+    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/files/tst_opaque_data.nc4 ", true, true, true);
   }
 
   @Test
   public void readAllNetcdf4() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/", new MyFileFilter(), new MyAct(), true);
-    System.out.println("***READ " + count + " files");
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
+  }
+
+  @Test
+  public void readAllHDF5() throws IOException {
+    int count = 0;
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/", new MyFileFilter(), new MyAct(), true);
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
   @Test
   public void readAllNetcdf3() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", new MyFileFilter(), new MyAct());
-    System.out.println("***READ " + count + " files");
+    System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
   private class MyFileFilter implements java.io.FileFilter {
@@ -62,13 +92,14 @@ public class TestNc4Iosp {
       // added by cdm
       if (name.equals(CDM.CHUNK_SIZE)) return false;
       if (name.equals(CDM.FILL_VALUE)) return false;
+      if (name.equals("_lastModified")) return false;
 
       // hidden by nc4
       if (name.equals("_Netcdf4Dimid")) return false;  // preserve the order of the coordinate variables
       if (name.equals("_Netcdf4Coordinates")) return false;  // allow the order of the coordinate variables
 
       // not implemented yet
-      if (att.getDataType().isEnum()) return false;
+      //if (att.getDataType().isEnum()) return false;
 
       return true;
     }
@@ -76,7 +107,8 @@ public class TestNc4Iosp {
 
   private class MyAct implements TestDir.Act {
     public int doAct(String filename) throws IOException {
-      doCompare(filename, false, false, true);
+      if (!doCompare(filename, false, false, true))
+        countNotOK++;
       return 1;
     }
   }
@@ -93,6 +125,8 @@ public class TestNc4Iosp {
     boolean ok = tc.compare(ncfile, jni, new MyObjectFilter(), showCompare, showEach, compareData);
     System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
     if (!ok ||(showCompare && showCompareResults)) System.out.printf("%s%n=====================================%n", f);
+    ncfile.close();
+    jni.close();
     return ok;
   }
 

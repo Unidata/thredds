@@ -68,10 +68,9 @@ public class EnumTypedef {
     return map;
   }
 
-
   public String lookupEnumString(int e) {
     String result = map.get(e);
-    return (result == null) ? "Unknown enum value= "+e : result;
+    return (result == null) ? "Unknown enum value="+e : result;
   }
 
   /** String representation.
@@ -97,4 +96,33 @@ public class EnumTypedef {
     return buff.toString();
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    EnumTypedef that = (EnumTypedef) o;
+
+    if (map != null ? !map.equals(that.map) : that.map != null) return false;
+    if (name != null ? !name.equals(that.name) : that.name != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = name != null ? name.hashCode() : 0;
+    result = 31 * result + (map != null ? map.hashCode() : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    final Formatter f = new Formatter();
+    f.format("EnumTypedef %s: ", name);
+    for (int key : map.keySet()) {
+      f.format("%d=%s,", key, map.get(key));
+    }
+    return f.toString();
+  }
 }

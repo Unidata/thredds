@@ -37,6 +37,7 @@ import com.sun.jna.MyPointer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
@@ -64,7 +65,7 @@ import com.sun.jna.ptr.NativeLongByReference;
  * @author caron
  * @since Oct 30, 2008
  */
-public class Nc4Iosp extends AbstractIOServiceProvider {
+public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
   private static boolean debug = false, debugCompoundAtt= false, debugUserTypes= false;
 
@@ -79,6 +80,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
   public String getFileTypeDescription() {
     return "Netcdf/JNI";
   }
+
+  public void close() throws IOException {
+    if (isClosed) return;
+    if (ncid < 0) return;
+    int ret = nc4.nc_close(ncid);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+    isClosed = true;
+  }
+
+  ///////////////////////////////////////////////////////////////////////
 
   private NetcdfFile ncfile;
   private int ncid = -1;    // file id
@@ -702,6 +713,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       String vname = makeString(name);
       Vinfo vinfo = new Vinfo(grpid, varno, typeid);
 
+      //if (vname.startsWith("StructMetadata"))
+      //  System.out.println("HEY");
+
       // figure out the dimensions
       String dimList = makeDimList(grpid, ndimsp.getValue(), dimids);
       UserType utype = userTypes.get(typeid);
@@ -998,11 +1012,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
         NativeLongByReference sizep2 = new NativeLongByReference();
         ret = nc4.nc_inq_opaque(grpid, typeid, nameo, sizep2);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
-        String nameos = makeString(nameo);
 
         // doesnt seem to be any new info
-        System.out.printf("   opaque type=%d name=%s size=%d %n ",
-            typeid, nameos, sizep2.getValue().longValue());
+        // String nameos = makeString(nameo);
+        //System.out.printf("   opaque type=%d name=%s size=%d %n ",
+        //    typeid, nameos, sizep2.getValue().longValue());
       }
     }
   }
@@ -1041,162 +1055,120 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
   @Override
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
-    return read(vinfo.grpid, vinfo.varid, vinfo.typeid, section);
-  }
-
-  /*
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-    Vinfo vinfo = (Vinfo) v2.getSPobject();
-    Array values = null;
     int vlen = (int) v2.getSize();
     int len = (int) section.computeSize();
-    if (vlen == len) return read(v2); // entire array
+    if (vlen == len) // entire array
+      return readDataAll(vinfo.grpid, vinfo.varid, vinfo.typeid, v2.getShapeAsSection());
 
-    switch (v2.getDataType()) {
-      case BYTE:
+    //if (!section.isStrided()) // optimisation for unstrided section
+    //  return readUnstrided(vinfo.grpid, vinfo.varid, vinfo.typeid, section);
+
+    return readDataSection(vinfo.grpid, vinfo.varid, vinfo.typeid, section);
+  }
+
+  private Array readDataSection(int grpid, int varid, int typeid, Section section) throws IOException, InvalidRangeException {
+
+    // general sectioning with strides
+    long[] origin = convert(section.getOrigin());
+    long[] shape = convert(section.getShape());
+    long[] stride = convert(section.getStride());
+    boolean isUnsigned = isUnsigned(typeid);
+    int len = (int) section.computeSize();
+
+    Array values;
+    switch (typeid) {
+
+      // int nc_get_vars_schar(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip);
+
+      case NCLibrary.NC_BYTE:
+      case NCLibrary.NC_UBYTE:
         byte[] valb = new byte[len];
-        // int nc_get_vars_schar(int ncid, int varid, int[] startp, int[] countp, int[] stridep, byte[] ip); // size_t, ptrdiff_t
-        int ret = nc4.nc_get_vars_schar(vinfo.grpid, vinfo.varid,
-            convert(section.getOrigin()), convert(section.getShape()), section.getStride(), valb);
+        int ret = isUnsigned ? nc4.nc_get_vars_uchar(grpid, varid, origin, shape, stride, valb) :
+                               nc4.nc_get_vars_schar(grpid, varid, origin, shape, stride, valb);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
         values = Array.factory(DataType.BYTE.getPrimitiveClassType(), section.getShape(), valb);
         break;
 
-      case CHAR:
+      case NCLibrary.NC_CHAR:
         byte[] valc = new byte[len];
-        ret = nc4.nc_get_vars_text(vinfo.grpid, vinfo.varid,
-            convert(section.getOrigin()), convert(section.getShape()), section.getStride(), valc);
+        ret = nc4.nc_get_vars_text(grpid, varid, origin, shape, stride, valc);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
         values = Array.factory(DataType.CHAR.getPrimitiveClassType(), section.getShape(), IospHelper.convertByteToChar(valc));
         break;
 
-      case DOUBLE:
+      case NCLibrary.NC_DOUBLE:
         double[] vald = new double[len];
-        ret = nc4.nc_get_vars_double(vinfo.grpid, vinfo.varid,
-            convert(section.getOrigin()), convert(section.getShape()), section.getStride(), vald);
+        ret = nc4.nc_get_vars_double(grpid, varid, origin, shape, stride, vald);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
         values = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), section.getShape(), vald);
         break;
 
-      case FLOAT:
+      case NCLibrary.NC_FLOAT:
         float[] valf = new float[len];
-        ret = nc4.nc_get_vars_float(vinfo.grpid, vinfo.varid,
-            convert(section.getOrigin()), convert(section.getShape()), section.getStride(), valf);
+        ret = nc4.nc_get_vars_float(grpid, varid, origin, shape, stride, valf);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
         values = Array.factory(DataType.FLOAT.getPrimitiveClassType(), section.getShape(), valf);
         break;
 
-      case INT:
+      case NCLibrary.NC_INT:
         int[] vali = new int[len];
-        ret = nc4.nc_get_vars_int(vinfo.grpid, vinfo.varid,
-            convert(section.getOrigin()), convert(section.getShape()), section.getStride(), vali);
+        ret = isUnsigned ? nc4.nc_get_vars_uint(grpid, varid, origin, shape, stride, vali) :
+                           nc4.nc_get_vars_int(grpid, varid, origin, shape, stride, vali);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
         values = Array.factory(DataType.INT.getPrimitiveClassType(), section.getShape(), vali);
         break;
 
-      case LONG:
+      case NCLibrary.NC_INT64:
         long[] vall = new long[len];
-        ret = nc4.nc_get_vars_longlong(vinfo.grpid, vinfo.varid,
-            convert(section.getOrigin()), convert(section.getShape()), section.getStride(), vall);
+        ret = isUnsigned ? nc4.nc_get_vars_ulonglong(grpid, varid, origin, shape, stride, vall) :
+                           nc4.nc_get_vars_longlong(grpid, varid, origin, shape, stride, vall);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
         values = Array.factory(DataType.LONG.getPrimitiveClassType(), section.getShape(), vall);
         break;
 
-      case SHORT:
+      case NCLibrary.NC_SHORT:
         short[] vals = new short[len];
-        ret = nc4.nc_get_vars_short(vinfo.grpid, vinfo.varid,
-            convert(section.getOrigin()), convert(section.getShape()), section.getStride(), vals);
+        ret = isUnsigned ? nc4.nc_get_vars_ushort(grpid, varid, origin, shape, stride, vals) :
+                           nc4.nc_get_vars_short(grpid, varid, origin, shape, stride, vals);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
         values = Array.factory(DataType.SHORT.getPrimitiveClassType(), section.getShape(), vals);
         break;
 
+      case NCLibrary.NC_STRING:
+        String[] valss = new String[len];
+        ret = nc4.nc_get_vars_string(grpid, varid, origin, shape, stride, valss);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        return Array.factory(DataType.STRING.getPrimitiveClassType(), section.getShape(), valss);
+
       default:
-        throw new IOException("Unsupported data type = " + v2.getDataType());
+        UserType userType = userTypes.get(typeid);
+        if (userType == null) {
+          throw new IOException("Unknown userType == " + typeid);
+
+        } else if (userType.typeClass == NCLibrary.NC_ENUM) {
+          return readDataSection(grpid, varid, userType.baseTypeid, section);
+
+        } else if (userType.typeClass == NCLibrary.NC_VLEN) { // cannot subset
+          return readVlen(grpid, varid, len, userType);
+
+        } else if (userType.typeClass == NCLibrary.NC_OPAQUE) {
+          return readOpaque(grpid, varid, section, userType.size);
+
+         } else  if (userType.typeClass == NCLibrary.NC_COMPOUND) {
+          return readCompound(grpid, varid, section, userType);
+        }
+
+        throw new IOException("Unsupported userType = " + typeid+ " userType= "+userType);
     }
 
     return values;
-  }   */
-
-  private long[] convert(int[] from) {
-    long[] to = new long[from.length];
-    for (int i = 0; i < from.length; i++)
-      to[i] = from[i];
-    return to;
   }
 
-  /* private Array read(Variable v2) throws IOException, InvalidRangeException {
-    Vinfo vinfo = (Vinfo) v2.getSPobject();
-    Array values = null;
-    int len = (int) v2.getSize();
-
-    switch (vinfo.typeid) {
-      case ENUM1:
-      case BYTE:
-        byte[] valb = (byte[]) read(vinfo.grpid, vinfo.varid, vinfo.typeid, len);
-        values = Array.factory( DataType.BYTE.getPrimitiveClassType(), v2.getShape(), valb);
-        break;
-
-      case CHAR:
-        char[] valc = (char[] )read(vinfo.grpid, vinfo.varid, vinfo.typeid, len);
-        values = Array.factory(DataType.CHAR.getPrimitiveClassType(), v2.getShape(), valc);
-        break;
-
-      case DOUBLE:
-        double[] vald = (double[] )read(vinfo.grpid, vinfo.varid, vinfo.typeid, len);
-        values = Array.factory(DataType.DOUBLE.getPrimitiveClassType(), v2.getShape(), vald);
-        break;
-
-      case FLOAT:
-        float[] valf = (float[] )read(vinfo.grpid, vinfo.varid, vinfo.typeid, len);
-        values = Array.factory(DataType.FLOAT.getPrimitiveClassType(), v2.getShape(), valf);
-        break;
-
-      case ENUM4:
-      case INT:
-        int[] vali = (int[]) read(vinfo.grpid, vinfo.varid, vinfo.typeid, len);
-        values = Array.factory(DataType.INT.getPrimitiveClassType(), v2.getShape(), vali);
-        break;
-
-      case LONG:
-        long[] vall = (long[] )read(vinfo.grpid, vinfo.varid, vinfo.typeid, len);
-        values = Array.factory(DataType.LONG.getPrimitiveClassType(), v2.getShape(), vall);
-        break;
-
-      case ENUM2:
-      case SHORT:
-        short[] vals = (short[] )read(vinfo.grpid, vinfo.varid, vinfo.typeid, len);
-        values = Array.factory(DataType.SHORT.getPrimitiveClassType(), v2.getShape(), vals);
-        break;
-
-      case STRING:
-        String[] valss = (String[] )read(vinfo.grpid, vinfo.varid, vinfo.typeid, len);
-        values = Array.factory(DataType.STRING.getPrimitiveClassType(), v2.getShape(), valss);
-        break;
-
-      case NCLibrary.NC_OPAQUE:
-        UserType userType = userTypes.get( vinfo.typeid);
-        values = readOpaque(vinfo.grpid, vinfo.varid, len, userType.size);
-        break;
-
-      case STRUCTURE:
-        userType = userTypes.get( vinfo.typeid);
-        values = readCompound(vinfo.grpid, vinfo.varid, len, userType);
-        break;
-
-      default:
-         throw new IOException("Unsupported data type = " + v2.getDataType()+ " utype= "+vinfo.utype);
-    }
-
-    return values;
-  }  */
-
-  // LOOK change to use strided read. could also check for stride = 1 and all data cases
-  private Array read(int grpid, int varid, int typeid, Section section) throws IOException, InvalidRangeException {
+  // read entire array
+  private Array readDataAll(int grpid, int varid, int typeid, Section section) throws IOException, InvalidRangeException {
     int ret;
     int len = (int) section.computeSize();
-    long[] origin = convert(section.getOrigin());
-    int[] shape =section.getShape();
-    long[] size = convert(section.getShape());
+    int[] shape = section.getShape();
 
     switch (typeid) {
 
@@ -1273,16 +1245,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
           throw new IOException("Unknown userType == " + typeid);
 
         } else if (userType.typeClass == NCLibrary.NC_ENUM) {
-          return readEnum(grpid, varid, userType.baseTypeid, len, shape);
+          return readDataAll(grpid, varid, userType.baseTypeid, section);
 
         } else if (userType.typeClass == NCLibrary.NC_VLEN) {
           return readVlen(grpid, varid, len, userType);
 
         } else if (userType.typeClass == NCLibrary.NC_OPAQUE) {
-          return readOpaque(grpid, varid, len, userType.size);
+          return readOpaque(grpid, varid, section, userType.size);
 
          } else  if (userType.typeClass == NCLibrary.NC_COMPOUND) {
-          return readCompound(grpid, varid, len, userType);
+          return readCompound(grpid, varid, section, userType);
         }
 
         throw new IOException("Unsupported userType = " + typeid+ " userType= "+userType);
@@ -1290,13 +1262,18 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
 
   }
 
-  private Array readCompound(int grpid, int varid, int len, UserType userType) throws IOException {
+  private Array readCompound(int grpid, int varid, Section section, UserType userType) throws IOException {
+    long[] origin = convert(section.getOrigin());
+    long[] shape = convert(section.getShape());
+    long[] stride = convert(section.getStride());
+    int len = (int) section.computeSize();
+
     int buffSize = len * userType.size;
     ByteBuffer bbuff = ByteBuffer.allocate(buffSize);
     bbuff.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
 
     // read in the data
-    int ret = nc4.nc_get_var(grpid, varid, bbuff);
+    int ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bbuff);
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
 
     StructureMembers sm = new StructureMembers(userType.name);
@@ -1315,7 +1292,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       asma.setMemberArray( fld.name, fld.data);
     }  */
 
-    ArrayStructureBB asbb = new ArrayStructureBB(sm, new int[] {len}, bbuff, 0);
+    ArrayStructureBB asbb = new ArrayStructureBB(sm, section.getShape(), bbuff, 0);
 
     // find and convert Strings and vlens, put on asbb heap
     int destPos = 0;
@@ -1407,11 +1384,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
   }
 
   // opaques use ArrayObjects of ByteBuffer
-  private Array readOpaque(int grpid, int varid, int len, int size) throws IOException, InvalidRangeException {
+  private Array readOpaque(int grpid, int varid, Section section, int size) throws IOException, InvalidRangeException {
     int ret;
 
+    long[] origin = convert(section.getOrigin());
+    long[] shape = convert(section.getShape());
+    long[] stride = convert(section.getStride());
+    int len = (int) section.computeSize();
+
     ByteBuffer bb = ByteBuffer.allocate(len*size);
-    ret = nc4.nc_get_var(grpid, varid, bb);
+    ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bb);
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
     byte[] entire = bb.array();
 
@@ -1425,7 +1407,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     return values;
   }
 
-  private Array readEnum(int grpid, int varid, int baseType, int len, int[] shape) throws IOException, InvalidRangeException {
+  /* private Array readEnum(int grpid, int varid, int baseType, int len, int[] shape) throws IOException, InvalidRangeException {
     int ret;
 
     ConvertedType ctype = convertDataType(baseType);
@@ -1452,15 +1434,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     }
 
     return null;
-  }
-
-  public void close() throws IOException {
-    if (isClosed) return;
-    if (ncid < 0) return;
-    int ret = nc4.nc_close(ncid);
-    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
-    isClosed = true;
-  }
+  }  */
 
   private boolean isUnsigned(int type) {
     return (type == NCLibrary.NC_UBYTE) || (type == NCLibrary.NC_USHORT) ||
@@ -1472,6 +1446,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     return (userType == null) ? false : (userType.typeClass == NCLibrary.NC_VLEN);
   }
 
+  private long[] convert(int[] from) {
+    long[] to = new long[from.length];
+    for (int i = 0; i < from.length; i++)
+      to[i] = from[i];
+    return to;
+  }
+
   private class ConvertedType {
     DataType dt;
     boolean isVen;
@@ -1480,6 +1461,29 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
       this.dt = dt;
     }
   }
+
+  private int convertDataType(DataType dt ) {
+    switch (dt) {
+      case BYTE:
+        return NCLibrary.NC_BYTE;
+      case CHAR:
+        return NCLibrary.NC_CHAR;
+      case DOUBLE:
+        return NCLibrary.NC_DOUBLE;
+      case FLOAT:
+        return NCLibrary.NC_FLOAT;
+      case INT:
+        return NCLibrary.NC_INT;
+      case LONG:
+        return NCLibrary.NC_INT64;
+      case SHORT:
+         return NCLibrary.NC_SHORT;
+      case STRING:
+         return NCLibrary.NC_STRING;
+     }
+    throw new IllegalArgumentException("unimplemented type == " + dt);
+  }
+
 
   private ConvertedType convertDataType(int type) {
     switch (type) {
@@ -1572,6 +1576,248 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
     }
   }
 
+  //////////////////////////////////////////////////////////////////////
+  // writing data
+
+  @Override
+  public void create(String filename, NetcdfFile ncfile, int extra, long preallocateSize, boolean largeFile) throws IOException {
+    load(); // load jni
+    this.ncfile = ncfile;
+
+     // finish any structures
+     ncfile.finish();
+
+     raf = new ucar.unidata.io.RandomAccessFile(filename, "rw");
+     raf.order(RandomAccessFile.BIG_ENDIAN);
+
+    /*
+    cmode	The creation mode flag. The following flags are available:
+     NC_NOCLOBBER (do not overwrite existing file),
+     NC_SHARE (limit write caching - netcdf classic files onlt),
+     NC_64BIT_OFFSET (create 64-bit offset file),
+     NC_NETCDF4 (create netCDF-4/HDF5 file),
+     NC_CLASSIC_MODEL (enforce netCDF classic mode on netCDF-4/HDF5 files),
+     NC_DISKLESS (store data only in memory),
+     NC_MMAP (use MMAP for NC_DISKLESS), and
+     NC_WRITE. See discussion below.
+     */
+
+    // create new file
+    if (debug) System.out.println("open " + ncfile.getLocation());
+    IntByReference ncidp = new IntByReference();
+    int ret = nc4.nc_create(filename, NCLibrary.NC_FORMAT_NETCDF4, ncidp);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+    ncid = ncidp.getValue();
+
+    createGroup(ncid, ncfile.getRootGroup());
+
+    // done with define mode
+    nc4.nc_enddef(ncid);
+  }
+
+  private void createGroup(int grid, Group g) throws IOException {
+
+    // attributes
+    for (Attribute att : g.getAttributes())
+      writeAttribute(grid, NCLibrary.NC_GLOBAL, att);
+
+    Map<Dimension, Integer> dimHash = new HashMap<Dimension, Integer>(50);
+
+    // dimensions
+    for (Dimension dim : g.getDimensions()) {
+      IntByReference dimidp = new IntByReference();
+      int ret = nc4.nc_def_dim(ncid,  dim.getName(), dim.getLength(), dimidp);
+      if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+      dimHash.put(dim, dimidp.getValue());
+    }
+
+    // variables
+    for (Variable v : g.getVariables()) {
+      int[] dimids = new int[v.getRank()];
+      int count = 0;
+      for (Dimension d : v.getDimensions())
+        dimids[count++] = dimHash.get(d);
+
+      IntByReference varidp = new IntByReference();
+      int typid = convertDataType(v.getDataType());
+      int ret = nc4.nc_def_var (ncid, v.getShortName(), typid, dimids.length, dimids, varidp);
+      if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+      int varid = varidp.getValue();
+
+      v.setSPobject( new Vinfo(grid, varid, typid));
+
+      for (Attribute att : v.getAttributes())
+        writeAttribute(grid, varid, att);
+    }
+
+  }
+
+  private void writeAttribute(int grid, int varid, Attribute att) throws IOException {
+    int ret = 0;
+    Array values = att.getValues();
+    switch (att.getDataType()) {
+      case STRING:
+        if (att.getLength() == 1) {
+          byte[] svalb = att.getStringValue().getBytes();
+          ret = nc4.nc_put_att_text(grid, varid, att.getName(), svalb.length, svalb);
+        } else {
+          String[] svalues = new String[att.getLength()];
+          for (int i=0; i<att.getLength(); i++) svalues[i] = (String) att.getValue(i);
+          ret = nc4.nc_put_att_string(grid, varid, att.getName(), att.getLength(), svalues);
+        }
+        break;
+      case BYTE:
+        ret = nc4.nc_put_att_schar(grid, varid, att.getName(), NCLibrary.NC_BYTE, att.getLength(), (byte []) values.getStorage());
+        break;
+      case CHAR:
+        ret = nc4.nc_put_att_text(grid, varid, att.getName(), att.getLength(), IospHelper.convertCharToByte((char []) values.getStorage()));
+        break;
+      case DOUBLE:
+        ret = nc4.nc_put_att_double(grid, varid, att.getName(), NCLibrary.NC_DOUBLE, att.getLength(), (double []) values.getStorage());
+        break;
+      case FLOAT:
+        ret = nc4.nc_put_att_float(grid, varid, att.getName(), NCLibrary.NC_FLOAT, att.getLength(), (float []) values.getStorage());
+        break;
+      case INT:
+        ret = nc4.nc_put_att_int(grid, varid, att.getName(), NCLibrary.NC_INT, att.getLength(), (int []) values.getStorage());
+        break;
+      case LONG:
+        ret = nc4.nc_put_att_longlong(grid, varid, att.getName(), NCLibrary.NC_INT64, att.getLength(), (long []) values.getStorage());
+        break;
+      case SHORT:
+        ret = nc4.nc_put_att_short(grid, varid, att.getName(), NCLibrary.NC_SHORT,  att.getLength(), (short []) values.getStorage());
+        break;
+    }
+
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret)+" on attribute "+att);
+  }
+
+  @Override
+  public void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
+    Vinfo vinfo = (Vinfo) v2.getSPobject();
+    writeData(vinfo.grpid, vinfo.varid, vinfo.typeid, section, values.getStorage());
+  }
+
+  private void writeData(int grpid, int varid, int typeid, Section section, Object data) throws IOException, InvalidRangeException {
+
+    // general sectioning with strides
+    long[] origin = convert(section.getOrigin());
+    long[] shape = convert(section.getShape());
+    long[] stride = convert(section.getStride());
+    boolean isUnsigned = isUnsigned(typeid);
+    int sectionLen = (int) section.computeSize();
+
+    switch (typeid) {
+
+      case NCLibrary.NC_BYTE:
+      case NCLibrary.NC_UBYTE:
+        byte[] valb = (byte[]) data;
+        assert valb.length == sectionLen;
+        int ret = isUnsigned ? nc4.nc_put_vars_uchar(grpid, varid, origin, shape, stride, valb) :
+                               nc4.nc_put_vars_schar(grpid, varid, origin, shape, stride, valb);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        break;
+
+      case NCLibrary.NC_CHAR:
+        char[] valc = (char[]) data; // LAME
+        assert valc.length == sectionLen;
+        ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, IospHelper.convertCharToByte(valc));
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        break;
+
+      case NCLibrary.NC_DOUBLE:
+        double[] vald = (double[]) data;
+        assert vald.length == sectionLen;
+        ret = nc4.nc_put_vars_double(grpid, varid, origin, shape, stride, vald);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        break;
+
+      case NCLibrary.NC_FLOAT:
+        float[] valf = (float[]) data;
+        assert valf.length == sectionLen;
+        ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        break;
+
+      case NCLibrary.NC_INT:
+        int[] vali = (int[]) data;
+        assert vali.length == sectionLen;
+        ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali) :
+                           nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        break;
+
+      case NCLibrary.NC_INT64:
+        long[] vall = (long[]) data;
+        assert vall.length == sectionLen;
+        ret = isUnsigned ? nc4.nc_put_vars_ulonglong(grpid, varid, origin, shape, stride, vall) :
+                           nc4.nc_put_vars_longlong(grpid, varid, origin, shape, stride, vall);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        break;
+
+      case NCLibrary.NC_SHORT:
+        short[] vals = (short[]) data;
+        assert vals.length == sectionLen;
+        ret = isUnsigned ? nc4.nc_put_vars_ushort(grpid, varid, origin, shape, stride, vals) :
+                           nc4.nc_put_vars_short(grpid, varid, origin, shape, stride, vals);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        break;
+
+      case NCLibrary.NC_STRING:
+        String[] valss = (String[]) data;
+        assert valss.length == sectionLen;
+        ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss);
+        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+
+      default:
+        UserType userType = userTypes.get(typeid);
+        if (userType == null) {
+          throw new IOException("Unknown userType == " + typeid);
+
+        } else if (userType.typeClass == NCLibrary.NC_ENUM) {
+          //return readDataSection(grpid, varid, userType.baseTypeid, section);
+
+        } else if (userType.typeClass == NCLibrary.NC_VLEN) { // cannot subset
+          //return readVlen(grpid, varid, len, userType);
+
+        } else if (userType.typeClass == NCLibrary.NC_OPAQUE) {
+          //return readOpaque(grpid, varid, section, userType.size);
+
+         } else  if (userType.typeClass == NCLibrary.NC_COMPOUND) {
+          //return readCompound(grpid, varid, section, userType);
+        }
+
+        throw new IOException("Unsupported userType = " + typeid+ " userType= "+userType);
+    }
+
+  }
+
+    /////////////////////////////////////////////////////////////////////////
+
+
+  @Override
+  public void flush() throws IOException {
+    int ret = nc4.nc_sync(ncid);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+  }
+
+
+  @Override
+  public void setFill(boolean fill) {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+
+  @Override
+  public boolean rewriteHeader(boolean largeFile) throws IOException {
+    return false;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
+  public void updateAttribute(Variable v2, Attribute att) throws IOException {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
   /////////////////////////////////////////////////////////////////////////
 
   private static NCLibrary nc4;
@@ -1581,7 +1827,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider {
        String dir = "C:/cdev/lib/";
        System.setProperty("jna.library.path", dir);
 
-       //Native.setProtected(true);
+       Native.setProtected(true);
        nc4 = (NCLibrary) Native.loadLibrary("netcdf-7", NCLibrary.class);
        System.out.printf(" Netcdf nc_inq_libvers='%s' isProtected=%s %n ", nc4.nc_inq_libvers(), Native.isProtected());
       }

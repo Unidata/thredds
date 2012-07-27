@@ -52,7 +52,7 @@ public interface IOServiceProviderWriter extends IOServiceProvider {
    * Create new file, populate it from the objects in ncfile.
    *
    * @param filename name of file to create.
-   * @param ncfile get dimensions, attributes, and variables from here.
+   * @param ncfile get everything but data from here
    * @param extra  if > 0, pad header with extra bytes
    * @param preallocateSize if > 0, set length of file to this upon creation - this (usually) pre-allocates contiguous storage.
    * @param largeFile  if want large file format

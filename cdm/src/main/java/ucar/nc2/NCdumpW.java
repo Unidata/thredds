@@ -423,16 +423,18 @@ public class NCdumpW {
       else
         printStructureDataArray(out, (ArrayStructure) array, ilev, ct);
 
-    } else if (array instanceof ArrayObject) {
-      printVariableArray(out, (ArrayObject) array, ilev, ct);
-
-    } else if (array.getElementType() == ByteBuffer.class) {
+    } else if (array.getElementType() == ByteBuffer.class) { // opaque type
       array.resetLocalIterator();
       while (array.hasNext()) {
         printByteBuffer(out, (ByteBuffer) array.next(), ilev);
         out.println(",");
         if (ct != null && ct.isCancel()) return;
       }
+
+    } else if (array instanceof ArrayObject) {
+      printVariableArray(out, (ArrayObject) array, ilev, ct);
+
+
     } else {
       printArray(array, out, ilev, ct);
     }

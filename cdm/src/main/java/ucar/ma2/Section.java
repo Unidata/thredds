@@ -665,6 +665,13 @@ public class Section {
     return immutable;
   }
 
+  public boolean isStrided() {
+    for (Range r : list) {
+      if (r != null && r.stride() != 1) return false;
+    }
+    return true;
+  }
+
   /**
    * Get shape array using the Range.length() values.
    *
