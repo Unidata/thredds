@@ -533,14 +533,25 @@ public class H5header {
       if (matt.name.equals(HDF5_CLASS)) {
         Attribute att = makeAttribute(matt);
         String val = att.getStringValue();
-        if (val.equals(HDF5_DIMENSION_SCALE) && facade.dobj.mds.ndims == 1) { // create a dimension
-          facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
+        if (val.equals(HDF5_DIMENSION_SCALE)) { // create a dimension
+          int dimIndex = (facade.dobj.mds.ndims > 1) ? 0 : findCoordinateDimensionIndex(facade.dobj.attributes.iterator());
+          facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[dimIndex], facade.dobj.mds.maxLength[dimIndex] == -1);
           if (! h5iosp.includeOriginalAttributes) iter.remove();
           if (debugDimensionScales) System.out.printf("Found dimScale %s for group '%s' matt=%s %n",
                   facade.dimList, g.getName(), matt);
         }
       }
     }
+  }
+
+  private int findCoordinateDimensionIndex(Iterator<MessageAttribute> iter) throws IOException {
+    while (iter.hasNext()) {
+      MessageAttribute matt = iter.next();
+      if (matt.name.equals(NETCDF4_COORDINATES)) {
+        Attribute att = makeAttribute(matt);
+      }
+    }
+    return 0; // bail out until we clarify
   }
 
   // look for references to dimension scales, ie the variables that use them
@@ -630,7 +641,7 @@ public class H5header {
       return d.getName();
     }
 
-    return null;
+    return dimName;
   }
 
   private void createDimensions(ucar.nc2.Group g, H5Group h5group) throws IOException {

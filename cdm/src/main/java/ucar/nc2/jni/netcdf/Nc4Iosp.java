@@ -67,7 +67,7 @@ import com.sun.jna.ptr.NativeLongByReference;
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
-  private static boolean debug = false, debugCompoundAtt= false, debugUserTypes= false;
+  private static boolean debug = false, debugCompoundAtt= false, debugUserTypes= false, debugWrite = true;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     return false;
@@ -1587,9 +1587,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
      // finish any structures
      ncfile.finish();
 
-     raf = new ucar.unidata.io.RandomAccessFile(filename, "rw");
-     raf.order(RandomAccessFile.BIG_ENDIAN);
-
     /*
     cmode	The creation mode flag. The following flags are available:
      NC_NOCLOBBER (do not overwrite existing file),
@@ -1605,7 +1602,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // create new file
     if (debug) System.out.println("open " + ncfile.getLocation());
     IntByReference ncidp = new IntByReference();
-    int ret = nc4.nc_create(filename, NCLibrary.NC_FORMAT_NETCDF4, ncidp);
+    int ret = nc4.nc_create(filename, NCLibrary.NC_NETCDF4, ncidp);
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
     ncid = ncidp.getValue();
 
@@ -1625,6 +1622,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // dimensions
     for (Dimension dim : g.getDimensions()) {
+      if(debugWrite) System.out.printf("create dim '%s' in group '%s'%n", dim.getName(), g.getName());
       IntByReference dimidp = new IntByReference();
       int ret = nc4.nc_def_dim(ncid,  dim.getName(), dim.getLength(), dimidp);
       if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
@@ -1635,8 +1633,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     for (Variable v : g.getVariables()) {
       int[] dimids = new int[v.getRank()];
       int count = 0;
-      for (Dimension d : v.getDimensions())
+      for (Dimension d : v.getDimensions()) {
+        if(debugWrite) System.out.printf("  dim '%s' in variable '%s'%n", d.getName(), v.getShortName());
         dimids[count++] = dimHash.get(d);
+      }
 
       IntByReference varidp = new IntByReference();
       int typid = convertDataType(v.getDataType());
@@ -1644,10 +1644,20 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
       int varid = varidp.getValue();
 
-      v.setSPobject( new Vinfo(grid, varid, typid));
+      v.setSPobject(new Vinfo(grid, varid, typid));
 
       for (Attribute att : v.getAttributes())
         writeAttribute(grid, varid, att);
+    }
+
+    // groups
+    for (Group nested : g.getGroups()) {
+      IntByReference grpidp = new IntByReference();
+      int ret = nc4.nc_def_grp(grid, nested.getName(), grpidp);
+
+      if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+      int nestedId = grpidp.getValue();
+      createGroup(nestedId, nested);
     }
 
   }
@@ -1695,6 +1705,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   @Override
   public void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
+    if (vinfo == null)
+      System.out.println("HEY "+v2);
     writeData(vinfo.grpid, vinfo.varid, vinfo.typeid, section, values.getStorage());
   }
 
@@ -1800,7 +1812,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int ret = nc4.nc_sync(ncid);
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
   }
-
 
   @Override
   public void setFill(boolean fill) {

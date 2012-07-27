@@ -293,10 +293,14 @@ public void close()
         LogStream.err.println("HTTPMethod: attempt to close already closed method.");
         return;
     }
-    if (executed) {
+
+  // remove for now - jc and dh 7/27/2012 LOOK
+  // normal close deosnt want to use abort because its too costly
+  // need to find abnormal conditions and call abort only when the state of the socket/HTTP cant be deteremined
+    /* if (executed) {
         consumeContent();
     } else if(method != null)
-        method.abort();
+        method.abort(); */
     if(method != null) method.releaseConnection();
     closed = true;
     session.removeMethod(this);

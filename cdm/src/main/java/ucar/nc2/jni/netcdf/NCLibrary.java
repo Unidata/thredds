@@ -84,6 +84,13 @@ public interface NCLibrary extends Library {
   static public final int NC_FORMAT_NETCDF4 = 3;
   static public final int NC_FORMAT_NETCDF4_CLASSIC = 4;
 
+  static public final int NC_CLOBBER	     = 0;       /**< Destroy existing file. Mode flag for nc_create(). */
+  static public final int NC_NOCLOBBER	   = 0x0004;	/**< Don't destroy existing file. Mode flag for nc_create(). */
+  static public final int NC_64BIT_OFFSET  = 0x0200;  /**< Use large (64-bit) file offsets. Mode flag for nc_create(). */
+  static public final int NC_NETCDF4       = 0x1000;  /**< Use netCDF-4/HDF5 format. Mode flag for nc_create(). */
+  static public final int NC_CLASSIC_MODEL = 0x0100; /**< Enforce classic model. Mode flag for nc_create(). */
+  static public final int NC_DISKLESS      = 0x0002;  /**< Create a diskless file. Mode flag for nc_create(). */
+
   static public class Vlen_t extends Structure {
     public static class ByValue extends Vlen_t implements Structure.ByValue { }
     public int len; /* Length of VL data (in base type units) */
@@ -195,6 +202,7 @@ public interface NCLibrary extends Library {
   int nc_enddef	(int ncid);
   int nc_sync	(int ncid);
 
+  int nc_def_grp (int parent_ncid, String name, IntByReference new_ncid);
   int nc_def_dim(int ncid,  String name, long len, IntByReference dimid);
   int nc_def_var (int ncid, String name, long xtype, int ndims, int[] dimids, IntByReference varidp);
 

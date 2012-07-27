@@ -270,8 +270,12 @@ class EmptyStructureDataIterator implements StructureDataIterator {
 }
 </pre>
 
-<p><br />
-</p>
+<p>The contract is:</p>
+<pre> ArrayStructure data = (ArrayStructure) v.read();
+
+ StructureDat asdata = data.getStructureData(index);</pre>
+<pre>data
+ </pre>
 <hr />
 <address>
 <img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Aug 2011

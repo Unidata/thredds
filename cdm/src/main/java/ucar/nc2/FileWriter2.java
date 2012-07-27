@@ -653,6 +653,7 @@ public class FileWriter2 {
       System.exit(0);
     }
 
+    System.out.printf("copy %s to%s%n", datasetIn, datasetOut);
     // NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
     FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version);
@@ -660,6 +661,8 @@ public class FileWriter2 {
     ncfileIn.close();
     ncfileOut.close();
   }
+
+  // Q:/cdmUnitTest/formats/netcdf4/tst/tst_groups.nc
 
 }
 
