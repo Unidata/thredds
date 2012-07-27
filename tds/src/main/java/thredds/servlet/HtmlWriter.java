@@ -536,7 +536,7 @@ public class HtmlWriter implements InitializingBean {
   }
 
   /**
-   * Write an InvCatalogImpl to the HttpServletResponse, return the size in bytes of the catalog writtn to the response.
+   * Write an InvCatalogImpl to the HttpServletResponse, return the size in bytes of the catalog written to the response.
    *
    * @param req the HttpServletRequest
    * @param res the HttpServletResponse.
@@ -818,7 +818,7 @@ public class HtmlWriter implements InitializingBean {
   }
 
   /**
-   * Show CDM compliance (ccordinate systems, etc) of a NetcdfDataset.
+   * Show CDM compliance (coordinate systems, etc) of a NetcdfDataset.
    *
    * @param ds dataset to write
    */

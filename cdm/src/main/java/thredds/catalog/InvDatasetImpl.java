@@ -1201,16 +1201,15 @@ public class InvDatasetImpl extends InvDataset {
         if (vlist.size() > 0) {
           for (ThreddsMetadata.Variable v : vlist) {
             String units = (v.getUnits() == null || v.getUnits().length() == 0) ? "" : " (" + v.getUnits() + ") ";
-            buff.append(" <li><strong>").append(StringUtil2.quoteHtmlContent(v.getName() + units)).append("</strong> = ");
+            buff.append(" <li><strong> Variable List Item").append(StringUtil2.quoteHtmlContent(v.getName() + units)).append("</strong> = ");
             String desc = (v.getDescription() == null) ? "" : " <i>" + StringUtil2.quoteHtmlContent(v.getDescription()) + "</i> = ";
             buff.append(desc);
             if (v.getVocabularyName() != null)
               buff.append(StringUtil2.quoteHtmlContent(v.getVocabularyName()));
             buff.append("\n");
           }
-          buff.append(" </ul>\n");
         }
-        buff.append(" </ul>\n");
+        buff.append("</ul>\n");
       }
       buff.append("</ul>\n");
     }
