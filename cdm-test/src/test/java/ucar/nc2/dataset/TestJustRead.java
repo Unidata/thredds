@@ -32,20 +32,15 @@
  */
 package ucar.nc2.dataset;
 
-import junit.framework.*;
-
 import java.io.*;
 import ucar.unidata.test.util.TestDir;
 
 /** Test writing and reading back. */
 
-public class TestJustRead extends TestCase {
+public class TestJustRead {
   private boolean show = false;
 
-  public TestJustRead( String name) {
-    super(name);
-  }
-
+  @org.junit.Test
   public void testReadConventionFiles() throws Exception {
     readAllDir( TestDir.cdmUnitTestDir + "conventions");
   }

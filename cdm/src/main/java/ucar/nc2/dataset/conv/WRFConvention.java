@@ -176,7 +176,8 @@ map_proj =  1: Lambert Conformal
       att = v.findAttributeIgnoreCase(CDM.UNITS);
       if (att != null) {
         String units = att.getStringValue();
-        v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
+        if (units != null)
+          v.addAttribute(new Attribute(CDM.UNITS, normalize(units))); // removes the old
       }
     }
 
