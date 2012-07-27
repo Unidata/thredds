@@ -253,8 +253,26 @@ class EmptyStructureDataIterator implements StructureDataIterator {
      return -1;
    }
  }</pre>
+<h2>&nbsp;</h2>
+<h2>Variable Length Member Data</h2>
+<p>A nested variable length field, for example:</p>
+<pre>netcdf Q:/cdmUnitTest/formats/netcdf4/vlen/cdm_sea_soundings.nc4 {
+ dimensions:
+   Sounding = 3;
+
+ variables:
+ 
+  Structure {
+    int sounding_no;
+    float temp_vl(*);
+  } fun_soundings(Sounding=3);
+
+}
+</pre>
+
+<p><br />
+</p>
 <hr />
-<p>&nbsp;</p>
 <address>
 <img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Aug 2011
 </address>

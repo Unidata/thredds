@@ -173,6 +173,9 @@ public class CompareNetcdf2 {
     // attributes
     ok &= checkAttributes(null, org.getAttributes(), copy.getAttributes(), filter);
 
+    // enums
+    ok &= checkEnums(org, copy);
+
     // variables
     // cant use object equality, just match on short name
     for (Variable orgV : org.getVariables()) {
@@ -216,6 +219,10 @@ public class CompareNetcdf2 {
     if (showCompare) f.format("compare Variable %s to %s %n", org.getFullName(), copy.getFullName());
     if (!org.getFullName().equals(copy.getFullName())) {
       f.format(" ** names are different %s != %s %n", org.getFullName(), copy.getFullName());
+      ok = false;
+    }
+    if (org.getDataType() != copy.getDataType()) {
+      f.format(" ** dataTypes are different %s != %s %n", org.getDataType(), copy.getDataType());
       ok = false;
     }
 
@@ -304,7 +311,40 @@ public class CompareNetcdf2 {
 
 
 
-  // make sure each object in each list are in the other list, using equals().
+    // make sure each object in each list are in the other list, using equals().
+  // return an arrayList of paired objects.
+
+  private boolean checkEnums(Group org, Group copy) {
+    boolean ok = true;
+
+    for (EnumTypedef enum1 : org.getEnumTypedefs()) {
+      EnumTypedef enum2 = copy.findEnumeration(enum1.getName());
+      if (enum2 == null) {
+        f.format("  ** Enum %s not in file2 %n", enum1.getName());
+        ok = false;
+        continue;
+      }
+      if (!enum1.equals(enum2)) {
+        f.format("  ** Enum %s not equal%n  %s%n  %s%n", enum1.getName(), enum1, enum2);
+        ok = false;
+      }
+    }
+
+    for (EnumTypedef enum2 : copy.getEnumTypedefs()) {
+      EnumTypedef enum1 = org.findEnumeration(enum2.getName());
+      if (enum1 == null) {
+        f.format("  ** Enum %s not in file1 %n", enum2.getName());
+        ok = false;
+        continue;
+      }
+    }
+
+    return ok;
+  }
+
+
+
+ // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
 
   private boolean checkAll(List list1, List list2, List result) {
@@ -343,7 +383,8 @@ public class CompareNetcdf2 {
             f.format("  ** %s %s 0x%x (%s) not equal to %s 0x%x (%s) %n", want1.getClass().getName(), want1, want1.hashCode(), name1, want2, want2.hashCode(), name2);
             ok = false;
           } else {
-            if (showEach) f.format("  OK <%s> equals <%s>%n", want1, want2);
+            if (showEach)
+              f.format("  OK <%s> equals <%s>%n", want1, want2);
             if (result != null) {
               result.add(want1);
               result.add(want2);

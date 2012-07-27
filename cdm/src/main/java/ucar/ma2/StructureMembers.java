@@ -289,6 +289,10 @@ public class StructureMembers {
       return size;
     }
 
+    public boolean isVariableLength() {
+      return size < 0;
+    }
+
     /**
      * Get the total size in bytes. This does not have to match the VariableSimpleIF.
      *

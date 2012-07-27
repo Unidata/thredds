@@ -293,8 +293,8 @@ public class H5iosp extends AbstractIOServiceProvider {
     return Array.factory(String.class, new int[]{nelems}, result);
   }
 
-  private ArrayStructure convertStructure(Structure s, Layout layout, int[] shape, byte[] byteArray) throws IOException {
-    boolean hasStrings = false;
+  private ArrayStructure convertStructure(Structure s, Layout layout, int[] shape, byte[] byteArray) throws IOException, InvalidRangeException {
+    boolean hasHeap = false;
 
     // create StructureMembers - must set offsets
     StructureMembers sm = s.makeStructureMembers();
@@ -304,8 +304,8 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (vm.typeInfo.endian >= 0) // apparently each member may have seperate byte order (!!!??)
         m.setDataObject(vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
       m.setDataParam((int) (vm.dataPos)); // offset since start of Structure
-      if (v2.getDataType() == DataType.STRING)
-        hasStrings = true;
+      if (v2.getDataType() == DataType.STRING || v2.isVariableLength())
+        hasHeap = true;
     }
     int recsize = layout.getElemSize();
     sm.setStructureSize(recsize); // gotta calculate this ourself
@@ -315,21 +315,21 @@ public class H5iosp extends AbstractIOServiceProvider {
     ArrayStructureBB asbb = new ArrayStructureBB(sm, shape, bb, 0);
 
     // strings are stored on the heap, and must be read separately
-    if (hasStrings) {
+    if (hasHeap) {
       int destPos = 0;
       for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
-        convertStrings(asbb, destPos, sm);
+        convertHeap(asbb, destPos, sm);
         destPos += layout.getElemSize();
       }
     }
     return asbb;
   }
 
-  void convertStrings(ArrayStructureBB asbb, int pos, StructureMembers sm) throws java.io.IOException {
+  void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws java.io.IOException, InvalidRangeException {
     ByteBuffer bb = asbb.getByteBuffer();
     for (StructureMembers.Member m : sm.getMembers()) {
       if (m.getDataType() == DataType.STRING) {
-        m.setDataObject(ByteOrder.nativeOrder()); // the string index is always written in "native order"
+        m.setDataObject(ByteOrder.nativeOrder()); // the index is always written in "native order"
         int size = m.getSize();
         int destPos = pos + m.getDataParam();
         String[] result = new String[size];
@@ -337,6 +337,19 @@ public class H5iosp extends AbstractIOServiceProvider {
           result[i] = headerParser.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
 
         int index = asbb.addObjectToHeap(result);
+        bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
+        bb.putInt(destPos, index); // overwrite with the index into the StringHeap
+
+      } else if (m.isVariableLength()) {
+        int destPos = pos + m.getDataParam();
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+
+        ByteOrder bo = (ByteOrder) m.getDataObject();
+        int endian = bo.equals(ByteOrder.LITTLE_ENDIAN) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+
+        Array vlenArray = headerParser.readHeapVlen(bb, destPos, m.getDataType(), endian);
+
+        int index = asbb.addObjectToHeap(vlenArray);
         bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap
       }

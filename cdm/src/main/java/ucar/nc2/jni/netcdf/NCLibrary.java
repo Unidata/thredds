@@ -176,12 +176,57 @@ public interface NCLibrary extends Library {
   int nc_get_var_string(int ncid, int varid, String[] sarray);
 
   // read array section
-  // working on blueman
-  int nc_get_vars_schar(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_text(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_short(int ncid, int varid, long[] startp, long[] countp, int[] stridep, short[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_int(int ncid, int varid, long[] startp, long[] countp, int[] stridep, int[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_longlong(int ncid, int varid, long[] startp, long[] countp, int[] stridep, long[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_float(int ncid, int varid, long[] startp, long[] countp, int[] stridep, float[] ip); // size_t, ptrdiff_t
-  int nc_get_vars_double(int ncid, int varid, long[] startp, long[] countp, int[] stridep, double[] ip); // size_t, ptrdiff_t
+  int nc_get_vars(int ncid, int varid, long[] startp, long[] countp, long[] stridep, ByteBuffer bbuff);
+  int nc_get_vars_uchar(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
+  int nc_get_vars_schar(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
+  int nc_get_vars_text(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
+  int nc_get_vars_short(int ncid, int varid, long[] startp, long[] countp, long[] stridep, short[] ip);
+  int nc_get_vars_ushort(int ncid, int varid, long[] startp, long[] countp, long[] stridep, short[] ip);
+  int nc_get_vars_int(int ncid, int varid, long[] startp, long[] countp, long[] stridep, int[] ip);
+  int nc_get_vars_uint(int ncid, int varid, long[] startp, long[] countp, long[] stridep, int[] ip);
+  int nc_get_vars_longlong(int ncid, int varid, long[] startp, long[] countp, long[] stridep, long[] ip);
+  int nc_get_vars_ulonglong(int ncid, int varid, long[] startp, long[] countp, long[] stridep, long[] ip);
+  int nc_get_vars_float(int ncid, int varid, long[] startp, long[] countp, long[] stridep, float[] ip);
+  int nc_get_vars_double(int ncid, int varid, long[] startp, long[] countp, long[] stridep, double[] ip);
+  int nc_get_vars_string(int ncid, int varid, long[] startp, long[] countp, long[] stridep, String[] ip);
+
+  //// writing
+  int nc_create(String path, int cmode, IntByReference ncidp);
+  int nc_enddef	(int ncid);
+  int nc_sync	(int ncid);
+
+  int nc_def_dim(int ncid,  String name, long len, IntByReference dimid);
+  int nc_def_var (int ncid, String name, long xtype, int ndims, int[] dimids, IntByReference varidp);
+
+  // write array section
+  int nc_put_vars(int ncid, int varid, long[] startp, long[] countp, long[] stridep, ByteBuffer bbuff);
+  int nc_put_vars_uchar(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
+  int nc_put_vars_schar(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
+  int nc_put_vars_text(int ncid, int varid, long[] startp, long[] countp, long[] stridep, byte[] ip);
+  int nc_put_vars_short(int ncid, int varid, long[] startp, long[] countp, long[] stridep, short[] ip);
+  int nc_put_vars_ushort(int ncid, int varid, long[] startp, long[] countp, long[] stridep, short[] ip);
+  int nc_put_vars_int(int ncid, int varid, long[] startp, long[] countp, long[] stridep, int[] ip);
+  int nc_put_vars_uint(int ncid, int varid, long[] startp, long[] countp, long[] stridep, int[] ip);
+  int nc_put_vars_longlong(int ncid, int varid, long[] startp, long[] countp, long[] stridep, long[] ip);
+  int nc_put_vars_ulonglong(int ncid, int varid, long[] startp, long[] countp, long[] stridep, long[] ip);
+  int nc_put_vars_float(int ncid, int varid, long[] startp, long[] countp, long[] stridep, float[] ip);
+  int nc_put_vars_double(int ncid, int varid, long[] startp, long[] countp, long[] stridep, double[] ip);
+  int nc_put_vars_string(int ncid, int varid, long[] startp, long[] countp, long[] stridep, String[] ip);
+
+  // nc_put_att_string(int ncid, int varid, const char *name, size_t len, const char **op);
+
+  // write attributes
+  int nc_put_att (int ncid, int varid, String name, int xtype, long len, ByteBuffer value);
+  int nc_put_att_string(int ncid, int varid, String attName, long len, String[] value);
+  int nc_put_att_text(int ncid, int varid, String attName, long len, byte[] value);
+  int nc_put_att_uchar(int ncid, int varid, String attName, int xtype, long len, byte[] value);
+  int nc_put_att_schar(int ncid, int varid, String attName, int xtype, long len, byte[] value);
+  int nc_put_att_short(int ncid, int varid, String attName, int xtype, long len, short[] value);
+  int nc_put_att_ushort(int ncid, int varid, String attName, int xtype, long len, short[] value);
+  int nc_put_att_int(int ncid, int varid, String attName, int xtype, long len, int[] value);
+  int nc_put_att_uint(int ncid, int varid, String attName, int xtype, long len, int[] value);
+  int nc_put_att_longlong(int ncid, int varid, String attName, int xtype, long len, long[] value);
+  int nc_put_att_ulonglong(int ncid, int varid, String attName, int xtype, long len, long[] value);
+  int nc_put_att_float(int ncid, int varid, String attName, int xtype, long len, float[] value);
+  int nc_put_att_double(int ncid, int varid, String attName, int xtype, long len, double[] value);
 }

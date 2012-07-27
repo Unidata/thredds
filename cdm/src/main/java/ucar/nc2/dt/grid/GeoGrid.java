@@ -780,7 +780,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     FileWriter writer = new FileWriter(filename, true);
 
     List<Variable> varList = new ArrayList<Variable>();
-    varList.add((Variable) vs);
+    varList.add( vs);
 
     for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
       varList.add(axis);

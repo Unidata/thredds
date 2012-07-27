@@ -169,6 +169,17 @@ public class ArrayStructureBB extends ArrayStructure {
   }
 
   @Override
+  public Array getArray(int recnum, StructureMembers.Member m) {
+    if (m.isVariableLength()) {
+      int offset = calcOffsetSetOrder(recnum, m);
+      int heapIndex = bbuffer.getInt(offset);
+      return (Array) heap.get( heapIndex);
+    }
+
+    return super.getArray(recnum, m);
+  }
+
+  @Override
   public float[] getJavaArrayFloat(int recnum, StructureMembers.Member m) {
     if (m.getDataType() != DataType.FLOAT) throw new IllegalArgumentException("Type is " + m.getDataType() + ", must be float");
     if (m.getDataArray() != null) return super.getJavaArrayFloat(recnum, m);
@@ -373,7 +384,6 @@ public class ArrayStructureBB extends ArrayStructure {
 
     // strings are stored on the "heap", and the index to the heap is kept in the bbuffer
     if (m.getDataType() == DataType.STRING) {
-      int n = m.getSize();
       int offset = calcOffsetSetOrder(recnum, m);
       int heapIndex = bbuffer.getInt(offset);
       Object ho = heap.get( heapIndex);

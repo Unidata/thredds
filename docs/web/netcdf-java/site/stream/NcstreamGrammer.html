@@ -76,7 +76,8 @@ message Data {<br />  required string varName = 1; // full escaped name. change 
 <p><strong>Variable length types (String, Opaque): </strong>First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes.</p>
 <p><strong>Variable length arrays: </strong>First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. </p>
 <p><strong>Structure types (Structure, Sequence): </strong>An array of StructureData. <em>Can be encoded in row or col (?).</em></p>
-<h2>Vlen data example</h2>
+<h2>Data Encoding</h2>
+<h3>Vlen data example</h3>
 <blockquote>
   <pre>int levels(ninst= 23, acqtime=100, *);</pre>
 </blockquote>
@@ -91,6 +92,54 @@ message Data {<br />  required string varName = 1; // full escaped name. change 
     </ol>
   </li>
 </ol>
+<h3>&nbsp;</h3>
+<h3>Compound Type</h3>
+<p>Should be able to pop this in and out of a ByteBuffer (java) or void * (C), then use pointer manipulation to decode on the fly. Maybe good candidate for encodeing with protobuf</p>
+<ol>
+  <li>n </li>
+  <li>n structs</li>
+  <li>nheap</li>
+  <li>nheap objects</li>
+</ol>
+<p>in this case, you have to read everything. if buffer has no vlens or strings, could use fixed size offsets. otherwise record the offsets. </p>
+<ol>
+  <li>n </li>
+  <li>n structs
+    <ol>
+      <li>nheap</li>
+      <li>nheap objects</li>
+    </ol>
+  </li>
+</ol>
+<p>(each struct contains its own heap)</p>
+<ol>
+  <li>n </li>
+  <li>n lengths</li>
+  <li>n structs
+    <ol>
+        <li>nheap</li>
+      <li>nheap objects</li>
+    </ol>
+  </li>
+</ol>
+<p>(each struct contains its own heap)</p>
+<p>this indicates maybe we should rewrite ArrayStructureBB to have seperate heaps for each struct.</p>
+<h3>Nested Vlen</h3>
+<p>A nested variable length field, goes on the heap</p>
+<pre>netcdf Q:/cdmUnitTest/formats/netcdf4/vlen/cdm_sea_soundings.nc4 {
+ dimensions:
+   Sounding = 3;
+
+ variables:
+ 
+  Structure {
+    int sounding_no;
+    float temp_vl(*);
+  } fun_soundings(Sounding=3);
+
+}
+</pre>
+<p>&nbsp;</p>
 <h2>Notes and Questions</h2>
 <p>Should have a way to efficiently encode sparse data. Look at Bigtable/hBase.</p>
 <p>Should we store ints using vlen?</p>

@@ -115,7 +115,7 @@ public class H5header {
   static private final long maxHeaderPos = 500000; // header's gotta be within this
   static private boolean transformReference = true;
 
-  static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+  static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     long filePos = 0;
     long size = raf.length();
     byte[] b = new byte[8];
@@ -801,7 +801,7 @@ public class H5header {
       if (hasStrings) {
         int destPos = 0;
         for (int i = 0; i< layout.getTotalNelems(); i++) { // loop over each structure
-          h5iosp.convertStrings(asbb, destPos, sm);
+          h5iosp.convertHeap(asbb, destPos, sm);
           destPos += layout.getElemSize();
         }
       }
@@ -912,7 +912,7 @@ public class H5header {
 
     // convert attributes to enum strings
     if ((vinfo.typeInfo.hdfType == 8) && (matt.mdt.map != null)) {
-      dataArray = convertEnums( matt.mdt.map, dataArray);
+      dataArray = convertEnums( matt.mdt.map, dataType, dataArray);
     }
 
     return dataArray;
@@ -938,13 +938,21 @@ public class H5header {
     return new String(b, start, count-start, utf8Charset); // all strings are considered to be UTF-8 unicode
   }
 
-  protected Array convertEnums(Map<Integer, String> map, Array values) {
+  protected Array convertEnums(Map<Integer, String> map, DataType dataType, Array values) {
     Array result = Array.factory(DataType.STRING, values.getShape());
     IndexIterator ii = result.getIndexIterator();
     values.resetLocalIterator();
     while (values.hasNext()) {
-      String sval = map.get(values.nextInt());
-      ii.setObjectNext(sval == null ? "Unknown" : sval);
+      int ival;
+      if (dataType == DataType.ENUM1)
+        ival = (int) DataType.unsignedByteToShort(values.nextByte());
+      else if (dataType == DataType.ENUM2)
+        ival = DataType.unsignedShortToInt(values.nextShort());
+      else
+        ival = values.nextInt();
+      String sval = map.get(ival);
+      if (sval == null) sval = "Unknown enum value="+ival;
+      ii.setObjectNext(sval);
     }
     return result;
   }
@@ -2967,7 +2975,7 @@ public class H5header {
         if (base.endian >= 0) raf.order(base.endian);
         int[] enumValue = new int[nmembers];
         for (int i = 0; i < nmembers; i++)
-          enumValue[i] = readVariableSize(base.byteSize); // assume size is 1, 2, or 4
+          enumValue[i] = (int) readVariableSizeUnsigned(base.byteSize); // assume size is 1, 2, or 4
         raf.order(RandomAccessFile.LITTLE_ENDIAN);
 
         enumTypeName = objectName;
@@ -3978,10 +3986,15 @@ public class H5header {
   Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException, InvalidRangeException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
     if (debugHeap) debugOut.println(" heapId= " + heapId);
+    return getHeapDataArray(heapId, dataType, endian);
+    // Object pa = getHeapDataArray(heapId, dataType, endian);
+    // return Array.factory(dataType.getPrimitiveClassType(), new int[]{heapId.nelems}, pa);
+  }
+
+  Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, int endian) throws IOException, InvalidRangeException {
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null) {
-      log.error("Illegal Heap address = {}", globalHeapIdAddress);
-      throw new InvalidRangeException("Illegal Heap address = " + globalHeapIdAddress);
+      throw new InvalidRangeException("Illegal Heap address = " + ho);
     }
     if (debugHeap) debugOut.println(" HeapObject= " + ho);
     if (endian >= 0) raf.order(endian);
@@ -4052,6 +4065,11 @@ public class H5header {
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
     raf.seek(ho.dataPos);
     return readStringFixedLength((int) ho.dataSize);
+  }
+
+  Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, int endian) throws IOException, InvalidRangeException {
+    H5header.HeapIdentifier heapId = new HeapIdentifier(bb, pos);
+    return getHeapDataArray(heapId, dataType, endian);
   }
 
   // debug - hdf5Table

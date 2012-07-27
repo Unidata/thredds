@@ -38,6 +38,7 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheable;
 
 import java.io.*;
+import java.nio.ByteOrder;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -472,6 +473,11 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable {
   public void order(int endian) {
     if (endian < 0) return;
     this.bigEndian = (endian == BIG_ENDIAN);
+  }
+
+  public void order(ByteOrder bo) {
+    if (bo == null) return;
+    this.bigEndian = bo.equals(ByteOrder.BIG_ENDIAN);
   }
 
   /**
