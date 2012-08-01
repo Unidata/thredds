@@ -18,8 +18,9 @@ import java.io.IOException;
 public class TestFileWriter2 {
   int countNotOK = 0;
 
+  @Test
   public void problem() throws IOException {
-    copyFile("Q:\\cdmUnitTest\\formats\\netcdf4\\tst\\tst_enum_data.nc");
+    copyFile("C:/temp/testDimScales.nc", "C:/temp/testDimScales.fromJna.nc4");
   }
 
   public void readAllNetcdf4() throws IOException {
@@ -41,17 +42,18 @@ public class TestFileWriter2 {
   }
 
   private class MyAct implements TestDir.Act {
-    public int doAct(String filename) throws IOException {
-      if (!copyFile(filename))
+    public int doAct(String datasetIn) throws IOException {
+      File fin = new File(datasetIn);
+      String datasetOut = tempDir + fin.getName();
+
+      if (!copyFile(datasetIn, datasetOut))
         countNotOK++;
       return 1;
     }
   }
 
   private String tempDir = "C:/temp/";
-  private boolean copyFile(String datasetIn) throws IOException {
-    File fin = new File(datasetIn);
-    String datasetOut = tempDir + fin.getName();
+  private boolean copyFile(String datasetIn, String datasetOut) throws IOException {
     System.out.printf("copy %s to %s%n", datasetIn, datasetOut);
 
     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);

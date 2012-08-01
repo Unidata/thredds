@@ -43,13 +43,13 @@ import com.sun.jna.ptr.NativeLongByReference;
 import java.nio.ByteBuffer;
 
 /**
- * JNA access to Netcd4 C Library, using JNI to shared C library.
+ * JNA access to Netcdf-4 C Library, using JNI to shared C library.
  * Just the functions actually used.
  *
  * @author caron
  * @since Oct 30, 2008
  */
-public interface NCLibrary extends Library {
+public interface Nc4prototypes extends Library {
   static public final int NC_MAX_DIMS = 1024;   /* max dimensions per file */
   static public final int NC_MAX_ATTRS = 8192;   /* max global or per variable attributes */
   static public final int NC_MAX_VARS = 8192;   /* max variables per file */
@@ -98,12 +98,12 @@ public interface NCLibrary extends Library {
     //public NativeLong len; /* Length of VL data (in base type units) */
     public Pointer p;    /* Pointer to VL data */
   }
+
   // library
   String nc_inq_libvers();
   String nc_strerror(int ncerr);
 
   // dataset
-
   // EXTERNL int nc_open(const char *path, int mode, int *ncidp);
   int nc_open(String path, int mode, IntByReference ncidp);
   int nc_close(int ncid);
@@ -197,6 +197,7 @@ public interface NCLibrary extends Library {
   int nc_get_vars_double(int ncid, int varid, long[] startp, long[] countp, long[] stridep, double[] ip);
   int nc_get_vars_string(int ncid, int varid, long[] startp, long[] countp, long[] stridep, String[] ip);
 
+  //////////////////////////////////////////////////////////////////////////////////
   //// writing
   int nc_create(String path, int cmode, IntByReference ncidp);
   int nc_enddef	(int ncid);

@@ -9,6 +9,7 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.geoloc.projection.proj4.MapMath;
 import ucar.unidata.io.RandomAccessFile;
@@ -50,8 +51,10 @@ public class TestNc4Iosp {
     return v.read(section) ;
   }
 
+  @Test
   public void problem() throws IOException {
-    doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/files/tst_opaque_data.nc4 ", true, true, true);
+    //doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/files/tst_opaque_data.nc4", true, true, true);
+    doCompare("C:/temp/testDimScales.nc4", true, true, true);
   }
 
   public void readAllNetcdf4() throws IOException {
@@ -90,8 +93,9 @@ public class TestNc4Iosp {
       if (name.equals("_lastModified")) return false;
 
       // hidden by nc4
-      if (name.equals("_Netcdf4Dimid")) return false;  // preserve the order of the coordinate variables
-      if (name.equals("_Netcdf4Coordinates")) return false;  // allow the order of the coordinate variables
+      if (name.equals(Nc4.NETCDF4_DIMID)) return false;  // preserve the order of the dimensions
+      if (name.equals(Nc4.NETCDF4_COORDINATES)) return false;  // ??
+      if (name.equals(Nc4.NETCDF4_STRICT)) return false;
 
       // not implemented yet
       //if (att.getDataType().isEnum()) return false;

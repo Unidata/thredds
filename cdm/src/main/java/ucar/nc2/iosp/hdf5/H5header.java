@@ -38,6 +38,7 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.nc2.EnumTypedef;
+import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
@@ -54,8 +55,6 @@ import java.nio.charset.Charset;
  * Read all of the metadata of an HD5 file.
  *
  * @author caron
- * @see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf_4_spec.html"
- * @see "http://www.unidata.ucar.edu/software/netcdf/docs/"
  */
 
 /* Implementation notes
@@ -74,15 +73,10 @@ public class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
   static private final Charset utf8Charset = Charset.forName("UTF-8"); // cant use until 1.6
 
-  // special names inHDF5
-  static private final String HDF5_CLASS  = "CLASS";
-  static private final String HDF5_DIMENSION_LIST  = "DIMENSION_LIST";
-  static private final String HDF5_DIMENSION_SCALE  = "DIMENSION_SCALE";
-
-  // special attributes used by netcdf4 library
-  static private final String NETCDF4_COORDINATES  = "_Netcdf4Coordinates"; // the multi-dimensional coordinate variables of the netCDF model  HUH ??
-  static private final String NETCDF4_DIMID  = "_Netcdf4Dimid"; // on dimension scales, holds a scalar H5T_NATIVE_INT which is the (zero-based) dimension ID for this dimension.
-  static private final String NETCDF4_STRICT  = "_nc3_strict";
+  // special attribute names in HDF5
+  static public final String HDF5_CLASS  = "CLASS";
+  static public final String HDF5_DIMENSION_LIST  = "DIMENSION_LIST";
+  static public final String HDF5_DIMENSION_SCALE  = "DIMENSION_SCALE";
 
   // debugging
   static private boolean debugEnum = false, debugVlen = false;
@@ -464,8 +458,8 @@ public class H5header {
     } // loop over nested objects
 
     // create group attributes last. need enums to be found first
-    filterAttributes(h5group.facade.dobj.attributes);
-    for (MessageAttribute matt : h5group.facade.dobj.attributes) {
+    List<MessageAttribute> fatts = filterAttributes(h5group.facade.dobj.attributes);
+    for (MessageAttribute matt : fatts) {
       try {
         makeAttributes(null, matt, ncGroup.getAttributes());
       } catch (InvalidRangeException e) {
@@ -547,7 +541,7 @@ public class H5header {
   private int findCoordinateDimensionIndex(Iterator<MessageAttribute> iter) throws IOException {
     while (iter.hasNext()) {
       MessageAttribute matt = iter.next();
-      if (matt.name.equals(NETCDF4_COORDINATES)) {
+      if (matt.name.equals(Nc4.NETCDF4_COORDINATES)) {
         Attribute att = makeAttribute(matt);
       }
     }
@@ -650,15 +644,16 @@ public class H5header {
     }
   }
 
-  private void filterAttributes(List<MessageAttribute> attList) {
-    Iterator<MessageAttribute> iter = attList.iterator();
-    while (iter.hasNext()) {
-      MessageAttribute matt = iter.next();
-      if (matt.name.equals(NETCDF4_STRICT)) {
+  private List<MessageAttribute> filterAttributes(List<MessageAttribute> attList) {
+    List<MessageAttribute> result = new ArrayList<MessageAttribute>(attList.size());
+    for  (MessageAttribute matt : attList) {
+      if (matt.name.equals(Nc4.NETCDF4_COORDINATES) || matt.name.equals(Nc4.NETCDF4_DIMID) || matt.name.equals(Nc4.NETCDF4_STRICT)) {
         isNetcdf4 = true;
-        iter.remove();
+      } else {
+        result.add(matt);
       }
     }
+    return result;
   }
 
   /**
@@ -786,7 +781,7 @@ public class H5header {
 
         if (h5sm.mdt.endian >= 0) // apparently each member may have seperate byte order (!!!??)
           m.setDataObject(h5sm.mdt.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-        m.setDataParam((int) (h5sm.offset)); // offset since start of Structure
+        m.setDataParam( (h5sm.offset)); // offset since start of Structure
         if (dt == DataType.STRING)
           hasStrings = true;
       }
@@ -1158,6 +1153,8 @@ public class H5header {
 
     } else {
       String vname = facade.name;
+      if (vname.startsWith(Nc4.NETCDF4_NON_COORD))
+        vname = vname.substring(Nc4.NETCDF4_NON_COORD.length()); // skip prefix
       v = new Variable(ncfile, ncGroup, null, vname);
       if (!makeVariableShapeAndType(v, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) return null;
     }
@@ -1169,7 +1166,8 @@ public class H5header {
     v.setSPobject(vinfo);
 
     // look for attributes
-    for (MessageAttribute matt : facade.dobj.attributes) {
+    List<MessageAttribute> fatts = filterAttributes(facade.dobj.attributes);
+    for (MessageAttribute matt : fatts) {
       try {
         makeAttributes(s, matt, v.getAttributes());
       } catch (InvalidRangeException e) {

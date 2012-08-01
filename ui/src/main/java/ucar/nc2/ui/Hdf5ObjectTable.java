@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -91,6 +92,25 @@ public class Hdf5ObjectTable extends JPanel {
         attTable.setBeans(attBeans);
       }
     });
+
+    varPopup = new ucar.nc2.ui.widget.PopupMenu(objectTable.getJTable(), "Options");
+    varPopup.addAction("show", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ObjectBean mb = (ObjectBean) objectTable.getSelectedBean();
+        if (mb == null) return;
+        dumpTA.clear();
+        Formatter f = new Formatter();
+
+        try {
+          mb.show(f);
+        } catch (IOException e1) {
+          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        dumpTA.appendLine(f.toString());
+        dumpTA.gotoTop();
+      }
+    });
+
 
     messTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false, "H5header.HeaderMessage", "Level 2A1 and 2A2 (part of Data Object)");
     messTable.addListSelectionListener(new ListSelectionListener() {
@@ -233,6 +253,18 @@ public class Hdf5ObjectTable extends JPanel {
 
     public String getName() {
       return m.getName();
+    }
+
+    void show(Formatter f) throws IOException {
+      f.format("HDF5 object name '%s'%n", m.getName());
+      //for ( H5header.HeaderMessage mess : m.getMessages()) {
+      //  if (mess. instanceof  H5header.MessageDatatype)
+      //}
+
+      for ( H5header.MessageAttribute mess : m.getAttributes()) {
+        Attribute att = mess.getNcAttribute();
+        f.format("  %s%n", att);
+      }
     }
   }
 

@@ -64,7 +64,7 @@ import ucar.ma2.*;
 
 public class FileWriter2 {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
-  static private boolean debug = false, debugWrite = false;
+  static private boolean debug = true, debugWrite = true;
   static private long maxSize = 50 * 1000 * 1000; // 50 Mbytes
 
   /**
@@ -80,7 +80,7 @@ public class FileWriter2 {
   //////////////////////////////////////////////////////////////////////////////////////
   private final NetcdfFile fileIn;
   private final NetcdfFileWriter writer;
-  private final boolean isNetcdf4;
+  private final boolean writeNetcdf4; // write netcdf 4 file
   private List<FileWriterProgressListener> progressListeners;
 
   private final Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();  // oldVAr, newVar
@@ -105,7 +105,7 @@ public class FileWriter2 {
 
     this.fileIn = fileIn;
     this.writer = NetcdfFileWriter.createNew(version, fileOutName);
-    isNetcdf4 = version == NetcdfFileWriter.NetcdfVersion.netcdf4;
+    writeNetcdf4 = version == NetcdfFileWriter.NetcdfVersion.netcdf4;
     this.progressListeners = progressListeners;
 
     writer.setLargeFile(isLargeFile);
@@ -115,7 +115,7 @@ public class FileWriter2 {
 
   public NetcdfFile write() throws IOException {
 
-    if (isNetcdf4)
+    if (writeNetcdf4)
       addGroup4(null, fileIn.getRootGroup());
     else
       addNetcdf3();
@@ -339,7 +339,7 @@ public class FileWriter2 {
 
     Array data = oldVar.read();
     try {
-      if (!isNetcdf4 && oldVar.getDataType() == DataType.STRING) {
+      if (!writeNetcdf4 && oldVar.getDataType() == DataType.STRING) {
         data = convertToChar(newVar, data);
       }
       if (data.getSize() > 0)  // zero when record dimension = 0
@@ -386,7 +386,7 @@ public class FileWriter2 {
         }
 
         Array data = oldVar.read(chunkOrigin, chunkShape);
-        if (!isNetcdf4 && oldVar.getDataType() == DataType.STRING) {
+        if (!writeNetcdf4 && oldVar.getDataType() == DataType.STRING) {
           data = convertToChar(newVar, data);
         }
 
