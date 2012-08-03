@@ -3,7 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.3:
- 12: (2012-07-xx)
+ 12: (2012-08-01)
+  various bug fixes in netcdf4 handling
   opendap : allow https: prefix
   Projections: put setters back in for IDV serialization
   Nc3: Check for string attribute with null value (len=0)
