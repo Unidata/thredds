@@ -77,7 +77,7 @@
   Configuring the CDM (netcdf-java library)
   see http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html
 
-  <nj22Config
+  <nj22Config>
     <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
     <coordSysBuilder convention="foo" class="test.Foo"/>
     <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
@@ -96,22 +96,22 @@
 
   <!--
   Caching open NetcdfFile objects.
-  default is to allow 200 - 400 open files, cleanup every 10 minutes
+  default is to allow 50 - 100 open files, cleanup every 11 minutes
   <NetcdfFileCache>
-    <minFiles>200</minFiles>
-    <maxFiles>400</maxFiles>
-    <scour>10 min</scour>
+    <minFiles>50</minFiles>
+    <maxFiles>100</maxFiles>
+    <scour>11 min</scour>
   </NetcdfFileCache>
   -->
 
   <!--
   The <HTTPFileCache> element:
-  allow 20 - 40 open datasets, cleanup every 10 minutes
+  allow 10 - 20 open datasets, cleanup every 17 minutes
   used by HTTP Range requests.
   <HTTPFileCache>
-    <minFiles>20</minFiles>
-    <maxFiles>40</maxFiles>
-    <scour>10 min</scour>
+    <minFiles>10</minFiles>
+    <maxFiles>20</maxFiles>
+    <scour>17 min</scour>
   </HTTPFileCache>
   -->
 
@@ -124,17 +124,17 @@
   -->
 
   <!--
-  Persist joinNew aggregations to named directory. scour every 24 hours, delete stuff older than 30 days
+  Persist joinNew aggregations to named directory. scour every 24 hours, delete stuff older than 90 days
   <AggregationCache>
     <scour>24 hours</scour>
-    <maxAge>30 days</maxAge>
+    <maxAge>90 days</maxAge>
   </AggregationCache>
   -->
 
   <!--
   How to choose the template dataset for an aggregation. latest, random, or penultimate
   <Aggregation>
-    <typicalDataset>random</typicalDataset>
+    <typicalDataset>penultimate</typicalDataset>
   </Aggregation>
   -->
 
