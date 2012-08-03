@@ -2033,6 +2033,24 @@ public class H5header {
     //int referenceCount;
     //long headerSize;
 
+    public void show(Formatter f) throws IOException {
+      if (mdt != null) {
+        f.format("%s ", mdt.getType());
+      }
+      f.format("%s", getName());
+      if (mds != null) {
+        f.format("(");
+        for (int len : mds.dimLength)
+          f.format("%d,", len);
+        f.format(");%n");
+      }
+      for ( H5header.MessageAttribute mess : getAttributes()) {
+        Attribute att = mess.getNcAttribute();
+        f.format("  :%s%n", att);
+      }
+      f.format("%n");
+    }
+
     // "Data Object Header" Level 2A
     // read a Data Object Header
     // no side effects, can be called multiple time for debugging
@@ -2877,6 +2895,14 @@ public class H5header {
       DataType dtype = getNCtype(type, byteSize);
       if (dtype != null)
         return dtype.toString() + " size= "+byteSize;
+      else
+        return "type="+Integer.toString(type) + " size= "+byteSize;
+    }
+
+    public String getType() {
+      DataType dtype = getNCtype(type, byteSize);
+      if (dtype != null)
+        return dtype.toString();
       else
         return "type="+Integer.toString(type) + " size= "+byteSize;
     }
