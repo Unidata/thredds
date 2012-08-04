@@ -8,13 +8,12 @@ pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
-.style1 {font-weight: bold}
 </style>
 </head>
 
 <body>
 <h1>Mapping between CDM and netCDF-4 Data Models </h1>
-<p><em>Draft July 13, 2009</em></p>
+<p><em>last modified: August 3, 2012</em></p>
 <p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models.</p>
 <h2>DataTypes</h2>
 <h3>From netCDF-4 to CDM</h3>
@@ -55,10 +54,26 @@ dl {margin: 10px 5px 5px 15px;)
 <ul>
   <li>Attributes on member variables of Structures are made into a compound attribute on the parent Structure.</li>
 </ul>
-<p>&nbsp;</p>
-<h2>Notes</h2>
-<p><br />
-1) char arrays are interpeted as UTF-8 bytes array (Strings) when they are attributes . but data arrays are not, they are run through unsignedToShort() and cast to char. this seems like trouble.</p>
+<hr />
+<h2>Differences between netCDF-4 C and Java libraries</h2>
+<h3>Fixed length Strings with anonymous dimension</h3>
+<ul>
+  <li>HDF5 object: type = 3 (String) with a dimension.</li>
+  <li>C library: turns these into variable length Strings</li>
+  <li>Java library: turns these into char arrays, with an anonymous dimension</li>
+</ul>
+<h3>Enum Typedefs</h3>
+<ul>
+  <li>If there is a enum typedef that is not used by a variable, it will not show up in the enum typedefs. (bug?)</li>
+</ul>
+<h3>Attributes</h3>
+<ul>
+  <li>When a variable is chunked, an integer array attribute named <em>_ChunkSize</em> is added to the variable, whose values are the chunck size for each dimension.</li>
+  <li></li>
+</ul>
+<hr />
+<h2>  Notes</h2>
+<p>1) char arrays are interpeted as UTF-8 bytes array (Strings) when they are attributes . but data arrays are not, they are run through unsignedToShort() and cast to char. this seems like trouble.</p>
 <p>2) nc4 allows arbitrary composition of vlen. cdm tries to map these to a variable length dimension, to get a ragged array, not part of the data type. But Arrays are rectangular, so its a difficult fit. </p>
 <p>could define ArrayRagged which maps to C multidim arrays.</p>
 <p>its natural to map</p>
