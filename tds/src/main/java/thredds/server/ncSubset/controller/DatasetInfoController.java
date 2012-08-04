@@ -87,7 +87,7 @@ class DatasetInfoController extends AbstractNcssController{
 		if (wantXML)
 			res.setContentType("text/xml; charset=iso-8859-1");
 		else
-			res.setContentType("text/html; charset=iso-8859-1");
+			res.setContentType("text/html; charset=UTF-8");
 
 		PrintWriter pw = res.getWriter();
 		pw.write(strResponse);

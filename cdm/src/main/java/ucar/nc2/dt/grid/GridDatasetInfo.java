@@ -246,6 +246,26 @@ public class GridDatasetInfo {
     LatLonRect bb = gds.getBoundingBox();
     if (bb != null)
       rootElem.addContent(writeBoundingBox(bb));
+    
+    // add projected bounding box
+    //--> Asuming all gridSets have the same coordinates and bbox
+    ProjectionRect rect = grids.get(0).getCoordinateSystem().getBoundingBox();
+
+    Element projBBOX =new Element("projectionBox");
+    Element minx = new Element("minx");
+    minx.addContent( Double.valueOf(rect.getMinX()).toString() );
+    projBBOX.addContent(minx);
+    Element maxx = new Element("maxx");
+    maxx.addContent( Double.valueOf(rect.getMaxX()).toString() );
+    projBBOX.addContent(maxx);
+    Element miny = new Element("miny");
+    miny.addContent( Double.valueOf(rect.getMinY()).toString() );
+    projBBOX.addContent(miny);
+    Element maxy = new Element("maxy");    
+    maxy.addContent( Double.valueOf(rect.getMaxY()).toString() );
+    projBBOX.addContent(maxy);    
+    
+    rootElem.addContent(projBBOX);
 
     // add date range
     CalendarDate start = gds.getCalendarDateStart();

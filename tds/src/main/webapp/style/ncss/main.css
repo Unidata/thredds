@@ -1,0 +1,114 @@
+body {
+  background-color: #FFFFFF;
+  /*background-color: #cfcfcf;*/
+  text-align: center;
+  margin: 0;
+  padding: 0; /* for Opera */
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 10pt;
+  color: #000000;
+}
+
+
+
+a:link {
+  color: #006996;
+  text-decoration: none;
+}
+a:visited {
+  color: #0088B5;
+  text-decoration: none;
+}
+a:active {
+  color: #0088B5;
+  text-decoration: underline;
+}
+a:hover {
+  /*color: #0088B5;*/
+  color: #cfcfcf;
+  text-decoration: none;
+}
+a.more {
+  font-size: 8pt;
+  margin: 0 10px 0 0;
+  padding: 0 12px 0 0;
+  background: transparent url('/img/v3/more.png') no-repeat right 3px;
+}
+a.back {
+  font-size: 8pt;
+  margin: 0 0 12px 0;
+  padding: 0 0 12px 10px;
+  background: transparent url('/img/v3/less.png') no-repeat left 3px;
+}
+small {
+  font-size: 8pt;
+}
+h1 {
+  color: #2A5877;
+  font-weight: normal;
+  font-size: 18pt;
+  margin: 5px 0 0;
+  padding: 0;
+}
+
+h2 {
+  color: #888888;
+  font-weight: normal;
+  font-size: 16pt;
+  margin: 4px 0;
+  padding: 0;
+}
+h3 {
+  color: #888888;
+  font-weight: normal;
+  font-size: 14pt;
+  margin: 4px 0;
+  padding: 0;
+}
+h4 {
+  color: #888888;
+  font-weight: normal;
+  font-size: 14pt;
+  margin: 4px 0; 
+  padding: 0;
+  border-bottom: 1px dotted #CCCCCC;
+}
+
+h5 {
+  color: #888888;
+  font-weight: normal;
+  font-size: 12pt;
+  margin: 5px 0 15px 0;
+  padding: 0;
+}
+
+hr {
+  height: 1px;
+  border: none;
+  border-top: 1px dotted #CCCCCC;
+}
+
+
+
+table.simple {
+  border-collapse: collapse;
+  width: auto;
+  margin: 0;
+  font-size:10pt;
+}
+
+table.simple td {
+  padding: 5px;
+}
+table.simple th {
+  padding: 5px;
+  background-color: #c8c8c8;
+}
+
+span.black{
+	color:black;
+}
+
+span.bold{
+	font-weight:bold;
+}
