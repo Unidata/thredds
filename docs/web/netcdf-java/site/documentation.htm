@@ -60,7 +60,7 @@ mvn install</pre>
   </blockquote>
   <p>  You can also get the 4.2.28 build at  <a href="http://maven.geotoolkit.org/edu/ucar/netcdf/">http://maven.geotoolkit.org/edu/ucar/netcdf/  </a></p>
 </blockquote>
-<h3><strong><a name="v43" id="v43"></a> Development version 4.3 (ALPHA) </strong><strong>(requires  Java 6) </strong></h3>
+<h3><strong><a name="v43" id="v43"></a> Development version 4.3 (BETA) </strong><strong>(requires  Java 6) </strong></h3>
 <p>CDM/TDS source is now hosted on <a href="reference/Git.html">GitHub</a>, and the source jar is no longer available, and ant builds are no longer supported. To build version 4.3 from source with maven:</p>
 <blockquote>
   <pre>
@@ -69,13 +69,13 @@ cd thredds
 mvn install</pre>
   </blockquote>
 <p>If you want to do careful JAR inclusion, see <a href="reference/JarDependencies.html#v43">Jar Dependencies</a> for explanation of which jars you need. Most needs can be fulfilled using the complete CDM or ToolsUI JARs:</p>
-<ul><li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
-  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar.MD5">MD5</a>) also includes UI classes, and allows you to run the netCDF ToolsUI application directly from it with &quot;<em>java -Xmx1024m -jar  toolsUI.jar</em>&quot;</li>
-  <li>The ncIDV jar is not yet available.</li>
-  <li>See <a href="v4.3/CHANGES.txt">CHANGES</a> for version changes.</li>
+<ul>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar">complete netCDF library jar</a> implements the full CDM model, with all dependent jars included.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar">toolsUI.jar</a> also includes UI classes, and allows you to run the netCDF ToolsUI application directly from it with &quot;<em>java -Xmx1g -jar  toolsUI.jar</em>&quot;</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv-4.3.jar">ncIDV.jar</a> is for the IDV netcdf 4.3 branch..</li>
   <li>Try out the <strong> 4.3</strong> version of ToolsUI application: <a href="v4.3/webstart/netCDFtools.jnlp">launch from webstart</a>. </li>
-  <li><a href="v4.3/javadoc/index.html">javadoc</a></li>
-  <li>Unidata public <a href="http://artifacts.unidata.ucar.edu/">Maven repository</a> for version 4.3</li>
+  <li>Unidata public <a href="http://artifacts.unidata.ucar.edu/">Maven repository</a> for version 4.3 artifacts</li>
+  <li>All source is on <a href="git://github.com/Unidata/thredds.git">GitHub</a></li>
 </ul>
 <h3>File format<a name="formats"></a> types</h3>
 <p>The NetCDF-Java library   can read these <a href="formats/FileTypes.html">file types and remote access protocols</a>.</p>

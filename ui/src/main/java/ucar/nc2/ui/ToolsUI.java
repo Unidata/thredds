@@ -3223,7 +3223,7 @@ public class ToolsUI extends JPanel {
       hdf5Table = new Hdf5ObjectTable(prefs);
       add(hdf5Table, BorderLayout.CENTER);
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Compact Representation", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
@@ -3243,6 +3243,27 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(infoButton);
+
+      AbstractButton infoButton2 = BAMutil.makeButtcon("Information", "Detail Info", false);
+      infoButton2.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            hdf5Table.showInfo2(f);
+
+          } catch (IOException ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace(new PrintStream(bos));
+            detailTA.setText(bos.toString());
+            detailWindow.show();
+            return;
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton2);
     }
 
     boolean process(Object o) {

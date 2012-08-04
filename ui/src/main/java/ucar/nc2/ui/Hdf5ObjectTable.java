@@ -54,6 +54,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * ToolsUI/Iosp/Hdf5  raw file objects
@@ -215,6 +216,17 @@ public class Hdf5ObjectTable extends JPanel {
   }
 
   public void showInfo(Formatter f) throws IOException {
+    if (iosp == null) return;
+
+    List<Object> objs = objectTable.getBeans();
+    for (Object obj : objs) {
+      ObjectBean bean = (ObjectBean) obj;
+      bean.m.show(f);
+    }
+  }
+
+
+  public void showInfo2(Formatter f) throws IOException {
     if (iosp == null) return;
 
     ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);

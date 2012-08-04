@@ -64,6 +64,8 @@ import com.sun.jna.ptr.NativeLongByReference;
  *
  * @author caron
  * @since Oct 30, 2008
+ * @see "http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf"
+ * @see "http://www.unidata.ucar.edu/software/netcdf/win_netcdf/"
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
@@ -1245,7 +1247,22 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           throw new IOException("Unknown userType == " + typeid);
 
         } else if (userType.typeClass == Nc4prototypes.NC_ENUM) {
-          return readDataAll(grpid, varid, userType.baseTypeid, section);
+          int buffSize = len * userType.size;
+          ByteBuffer bbuff = ByteBuffer.allocate(buffSize);
+          bbuff.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
+          // read in the data
+          ret = nc4.nc_get_var(grpid, varid, bbuff);
+          if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+
+          switch (userType.baseTypeid) {
+            case  Nc4prototypes.NC_BYTE:
+            case  Nc4prototypes.NC_UBYTE:
+              return Array.factory(DataType.BYTE, shape, bbuff);
+            case  Nc4prototypes.NC_SHORT:
+            case  Nc4prototypes.NC_USHORT:
+              return Array.factory(DataType.SHORT, shape, bbuff);
+          }
+          throw new IOException("unknown type "+ userType.baseTypeid);
 
         } else if (userType.typeClass == Nc4prototypes.NC_VLEN) {
           return readVlen(grpid, varid, len, userType);
