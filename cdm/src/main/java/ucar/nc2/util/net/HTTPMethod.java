@@ -135,7 +135,7 @@ HashMap<String, Object> params = new HashMap<String, Object>();
 HttpState context = null;
 boolean executed = false;
 protected boolean closed = false;
-InputStream strm = null;
+ConsumeOnCloseInputStream strm = null;
 RequestEntity content = null;
 HTTPSession.Methods methodclass = null;
 Part[] multiparts = null;
@@ -301,6 +301,10 @@ public void close()
         consumeContent();
     } else if(method != null)
         method.abort(); */
+    if (strm != null) {
+      try { strm.close(); } catch (IOException e) { /* ignore on close() */ }
+      strm = null;
+    }
     if(method != null) method.releaseConnection();
     closed = true;
     session.removeMethod(this);
@@ -308,11 +312,13 @@ public void close()
 
 public void consumeContent()
 {
-    //try {
-    //InputStream st = method.getResponseBodyAsStream();
-    //while((st.skip(10000) >= 0));
-    method.abort();
-    //} catch (IOException e) {}
+  if (strm != null) {
+    try {
+      strm.consume();
+    } catch (IOException e) {
+      // TODO: Logging strategy?  
+    }
+  }
 }
 
 public void setContext(HttpState cxt)
@@ -377,7 +383,7 @@ public InputStream getResponseAsStream()
     }
     try {
         if (method == null) return null;
-        strm = method.getResponseBodyAsStream();
+        strm = new ConsumeOnCloseInputStream(method.getResponseBodyAsStream());
         return strm;
     } catch (Exception e) {
         return null;
@@ -683,5 +689,32 @@ setAuthentication(HTTPSession session, HTTPMethod method)
     hcp.setParameter(CredentialsProvider.PROVIDER,cp);
 
 }
+
+  private class ConsumeOnCloseInputStream extends FilterInputStream {
+      
+    private ConsumeOnCloseInputStream(InputStream inputStream) {
+      super(inputStream);
+    }
+
+    @Override
+    public void close() throws IOException {
+      try {
+          consume();
+       } finally {
+         super.close();
+       }
+     }
+    
+    public void consume() throws IOException {
+      long consumed = 0;
+      long available;
+      while ((available = available()) > 0) {
+        consumed += skip(available);
+      }
+      if (consumed > 0) {
+        // TODO:  Logging strategy? Recommend warning if consumed > 0;
+      }
+    }
+  }
 
 }
