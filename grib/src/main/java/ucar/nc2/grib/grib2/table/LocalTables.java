@@ -44,7 +44,7 @@ import java.util.*;
  * @since 6/22/11
  */
 public abstract class LocalTables extends Grib2Customizer {
-  protected final Map<Integer, Grib2Parameter> local = new HashMap<Integer, Grib2Parameter>(100);
+  protected Map<Integer, Grib2Parameter> local = new HashMap<Integer, Grib2Parameter>(100);
 
   LocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
@@ -89,4 +89,9 @@ public abstract class LocalTables extends Grib2Customizer {
     return plocal;
   }
 
-}
+  @Override
+  public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
+     return local.get(makeHash(discipline, category, number));
+   }
+
+ }

@@ -60,6 +60,7 @@
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
 
         <gribConfig>
+          <gdsHash from="-752078894" to="1193085709"/>
           <gdsName hash='-1960629519' groupName='KTUA:Arkansas-Red River RFC'/>
           <gdsName hash='-1819879011' groupName='KFWR:West Gulf RFC'/>
           <gdsName hash='-1571856555' groupName='KORN:Lower Mississippi RFC'/>

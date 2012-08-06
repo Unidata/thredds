@@ -69,6 +69,7 @@ public class Grib2TablesViewer extends JPanel {
   private IndependentWindow infoWindow;
 
   private Grib1TableDialog dialog;
+  private Grib2Customizer.GribTableId current;
 
   public Grib2TablesViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -155,7 +156,7 @@ public class Grib2TablesViewer extends JPanel {
     // if (fileChooser != null) fileChooser.save();
   }
 
-  public void setEntries(Grib2Customizer.GribTableId tableId) {
+  private void setEntries(Grib2Customizer.GribTableId tableId) {
     Grib2Customizer gt = Grib2Customizer.factory(tableId.center, tableId.subCenter, tableId.masterVersion, tableId.localVersion);
     List params = gt.getParameters();
     java.util.List<EntryBean> beans = new ArrayList<EntryBean>(params.size());
@@ -163,13 +164,16 @@ public class Grib2TablesViewer extends JPanel {
       beans.add(new EntryBean((Grib2Customizer.Parameter) p));
     }
     entryTable.setBeans(beans);
+    current = tableId;
   }
 
-  public void lookForProblems() {
+  private void lookForProblems() {
     int total = 0;
     int probs = 0;
 
     Formatter f = new Formatter();
+    Grib2Customizer cust = Grib2Customizer.factory(current.center, current.subCenter, current.masterVersion, current.localVersion);
+    cust.lookForProblems(f);
 
     f.format("PROBLEMS with units%n");
     for (Object t : entryTable.getBeans()) {
@@ -219,28 +223,30 @@ public class Grib2TablesViewer extends JPanel {
     infoWindow.show();
   }
 
-  public void compareTables(Grib2Customizer.GribTableId id1, Grib2Customizer.GribTableId id2) {
+  private void compareTables(Grib2Customizer.GribTableId id1, Grib2Customizer.GribTableId id2) {
     Grib2Customizer t1 = Grib2Customizer.factory(id1.center, id1.subCenter, id1.masterVersion, id1.localVersion);
     Grib2Customizer t2 = Grib2Customizer.factory(id2.center, id2.subCenter, id2.masterVersion, id2.localVersion);
 
     Formatter f = new Formatter();
 
-    f.format("Table 1 = %s%n", id1.name);
-    f.format("Table 2 = %s%n", id2.name);
+    f.format("Table 1 = %s (%s)%n", id1.name, t1.getTablePath(0, 192,192)); // local
+    f.format("Table 2 = %s (%s)%n", id2.name, t2.getTablePath(0, 192,192)); // local
 
     int extra = 0;
     int conflict = 0;
     f.format("Table 1 : %n");
     for (Object t : t1.getParameters()) {
       Grib2Customizer.Parameter p1 = (Grib2Customizer.Parameter) t;
-      Grib2Customizer.Parameter  p2 = t2.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      Grib2Customizer.Parameter  p2 = t2.getParameterRaw(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p2 == null) {
         extra++;
         f.format(" Missing %s in table 2%n", p1);
+      } else if (p1.getName() == null || p1.getUnit() == null) {
+        f.format(" Missing name or unit in table 1 param=%s%n", p1);
       } else if (!p1.getName().equals( p2.getName()) || !p1.getUnit().equals( p2.getUnit()) ||
-                (p1 != null && !p1.getAbbrev().equals( p2.getAbbrev()))) {
-        f.format("  t1=%10s %40s %15s  %15s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev());
-        f.format("  t2=%10s %40s %15s  %15s%n%n", p2.getId(), p2.getName(), p2.getUnit(), p2.getAbbrev());
+                (p1.getAbbrev() != null && !p1.getAbbrev().equals( p2.getAbbrev()))) {
+        f.format("  t1=%10s %40s %15s  %15s %s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev(), p1.getDescription());
+        f.format("  t2=%10s %40s %15s  %15s %s%n%n", p2.getId(), p2.getName(), p2.getUnit(), p2.getAbbrev(), p2.getDescription());
         conflict++;
       }
     }
@@ -250,7 +256,7 @@ public class Grib2TablesViewer extends JPanel {
     f.format("Table 2 : %n");
     for (Object t : t2.getParameters()) {
       Grib2Customizer.Parameter p2 = (Grib2Customizer.Parameter) t;
-      Grib2Customizer.Parameter  p1 = t2.getParameter(p2.getDiscipline(), p2.getCategory(), p2.getNumber());
+      Grib2Customizer.Parameter  p1 = t2.getParameterRaw(p2.getDiscipline(), p2.getCategory(), p2.getNumber());
       if (p1 == null) {
         extra++;
         f.format(" Missing %s in table 1%n", p2);
@@ -328,6 +334,10 @@ public class Grib2TablesViewer extends JPanel {
 
     public String getAbbrev() {
       return param.getAbbrev();
+    }
+
+    public String getDesc() {
+      return param.getDescription();
     }
 
   }

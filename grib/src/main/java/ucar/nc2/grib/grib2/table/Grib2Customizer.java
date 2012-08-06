@@ -45,11 +45,12 @@ import ucar.nc2.wmo.CommonCodeTable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
  * Grib 2 Tables - allows local overrides and augmentation
- * This class implements the standard WMO tables.
+ * This class implements the standard WMO tables, local tables are subclasses
  *
  * @author caron
  * @since 4/3/11
@@ -57,7 +58,7 @@ import java.util.List;
 @Immutable
 public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConverter {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
-  static private Grib2Customizer wmoTables, ncepTables, ndfdTables, kmaTables, fslTables;
+  static private Grib2Customizer wmoTables, ncepTables, ndfdTables, kmaTables, fslTables, fslTables2;
 
   static public Grib2Customizer factory(Grib2Record gr) {
     Grib2SectionIdentification ids = gr.getId();
@@ -74,8 +75,11 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
         if (ncepTables == null ) ncepTables = new NcepLocalTables(center, subCenter, masterVersion, localVersion);
         return ncepTables;
 
+    } else if (center == 59 && localVersion == 0) { // FSL-2
+        return FslLocalTables.localFactory(center, subCenter, masterVersion, localVersion);
+
     } else if (center == 59) { // FSL
-        if (fslTables == null ) fslTables = new FslLocalTables(center, subCenter, masterVersion, localVersion);
+        if (fslTables == null ) fslTables = FslLocalTables.localFactory(center, subCenter, masterVersion, localVersion);
         return fslTables;
 
     } else if ((center == 8) && ((subCenter == 0) || (subCenter == -9999))){ // NDFD
@@ -113,6 +117,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     result.add(new GribTableId("NDFD",8,0,-1,-1));
     result.add(new GribTableId("KMA",40,-1,-1,-1));
     // result.add(new GribTableId("DSS",7,-1,2,1)); // ??
+    result.add(new GribTableId("FSL2",59,-1,-1,0)); // fake
     result.add(new GribTableId("FSL",59,-1,-1,-1));
     return result;
   }
@@ -154,6 +159,12 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return WmoCodeTable.getParameterEntry(discipline, category, number);
   }
 
+  /////////////////////////////////////////////////////
+  // debugging
+  public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
+    return WmoCodeTable.getParameterEntry(discipline, category, number);
+  }
+
   // debugging
   public String getTablePath(int discipline, int category, int number) {
     return WmoCodeTable.standard.getResourceName();
@@ -174,6 +185,9 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
       System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
     }
     return allParams;
+  }
+
+  public void lookForProblems(Formatter f) {
   }
 
   public CalendarDate getForecastDate(Grib2Record gr) {

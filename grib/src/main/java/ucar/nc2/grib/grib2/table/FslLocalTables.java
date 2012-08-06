@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * FSL (center 59)
@@ -50,16 +51,24 @@ import java.util.HashMap;
  */
 public class FslLocalTables extends LocalTables {
   private static final String tableName = "resources/grib2/local/Fsl-hrrr.csv";
+  private static final String tableName2 = "resources/grib2/local/Fsl-hrrr2.csv";
   private static boolean debug = false;
 
-  FslLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
+  static FslLocalTables localFactory(int center, int subCenter, int masterVersion, int localVersion) {
+    return new FslLocalTables(center, subCenter, masterVersion, localVersion);
+  }
+
+  ////
+  private String tableNameUsed;
+
+  private FslLocalTables(int center, int subCenter, int masterVersion, int localVersion) {
     super(center, subCenter, masterVersion, localVersion);
   }
 
   @Override
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return tableName;
+    return tableNameUsed;
   }
 
   // LOOK  maybe combine grib1, grib2 and bufr ??
@@ -125,9 +134,23 @@ public class FslLocalTables extends LocalTables {
 
   @Override
   protected void initLocalTable() {
+    local = initLocalTable((this.localVersion == 0) ? tableName2 : tableName, null);
+  }
+
+  // debugging
+  @Override
+  public void lookForProblems(Formatter f) {
+    initLocalTable(tableNameUsed, f);
+  }
+
+  private Map<Integer, Grib2Parameter> initLocalTable(String resourcePath, Formatter f) {
+    this.tableNameUsed = resourcePath;
+    boolean header = true;
+    Map<Integer, Grib2Parameter> result = new HashMap<Integer, Grib2Parameter>(100);
+
     ClassLoader cl = getClass().getClassLoader();
-    InputStream is = cl.getResourceAsStream(tableName);
-    if (is == null) throw new IllegalStateException("Cant find " + tableName);
+    InputStream is = cl.getResourceAsStream(resourcePath);
+    if (is == null) throw new IllegalStateException("Cant find " + resourcePath);
     BufferedReader br = new BufferedReader(new InputStreamReader(is));
     HashMap<String, Grib2Parameter> names = new HashMap<String, Grib2Parameter>(200);
     try {
@@ -148,7 +171,7 @@ public class FslLocalTables extends LocalTables {
 
         // RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
 
-        int RecordNumber = Integer.parseInt(flds[0].trim());
+        String RecordNumber = flds[0].trim();
         int TableNumber = Integer.parseInt(flds[1].trim());
         int DisciplineNumber = Integer.parseInt(flds[2].trim());
         int CategoryNumber = Integer.parseInt(flds[3].trim());
@@ -159,17 +182,21 @@ public class FslLocalTables extends LocalTables {
         String FieldType = flds[7].trim();
         String Description = flds[8].trim();
         String Units = flds[9].trim();
-        if (debug) System.out.printf("%3d %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,
+        if (debug) System.out.printf("%3s %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,
                 WGrib2Name,	NCLName, FieldType, Description, Units);
 
         String name = (WGrib2Name != null && !WGrib2Name.equals("var")) ? WGrib2Name : FieldType;
         Grib2Parameter s = new Grib2Parameter(DisciplineNumber, CategoryNumber, ParameterNumber, name, Units, null, Description);
         s.desc = Description;
-        local.put(makeHash(DisciplineNumber, CategoryNumber, ParameterNumber), s);
+        result.put(makeHash(DisciplineNumber, CategoryNumber, ParameterNumber), s);
         if (debug) System.out.printf(" %s%n", s);
           if (CategoryNumber > 191 || ParameterNumber > 191) {
           Grib2Parameter dup = names.get(s.getName());
-          if (dup != null) System.out.printf(" DUPLICATE NAME %s and %s (%s)%n", s.getId(), dup.getId(), s.getName());
+          if (dup != null && f != null) {
+            if (header) f.format("Problems in table %s %n", resourcePath);
+            header = false;
+            f.format(" DUPLICATE NAME %s and %s (%s)%n", s.getId(), dup.getId(), s.getName());
+          }
         }
         names.put(s.getName(), s);
       }
@@ -177,6 +204,8 @@ public class FslLocalTables extends LocalTables {
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
     }
+
+    return result;
   }
 
   public static void main(String[] args) {

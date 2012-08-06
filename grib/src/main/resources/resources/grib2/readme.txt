@@ -81,3 +81,82 @@ Table 2 : Standard WMO version 8
   p1=     0.7.7                              Instability            J/kg            null Most unstable CIN (MUCIN) using parcel with highest theta-e in lowest 300 mb
   p2= 4.2.0.7.7                    Convective inhibition            J/kg            null null
 
+08/06/2012
+  get http://ruc.noaa.gov/hrrr/GRIB2Table.txt again, rename as Fsl-hrrr2.csv and compare with previous
+
+  Table 1 = FSL2 (resources/grib2/local/Fsl-hrrr2.csv)
+  Table 2 = FSL (resources/grib2/local/Fsl-hrrr.csv)
+  Table 1 :
+    t1=   0.0.195                    Convective Initiation         minutes             null Time since last convective initation (> 1 hr) based upon lightning threat 3 and no adjacent activity
+    t2=   0.0.195                   Convective Initiation1         minutes             null Time since last convective initation (> 1 hr) based upon lightning threat 3 and no adjacent activity
+
+    t1=   0.0.196                     Convective Acitivity         minutes             null Time since last convective activity based upon lightning threat 3
+    t2=   0.0.196                    Convective Acitivity1         minutes             null Time since last convective activity based upon lightning threat 3
+
+    t1=   0.0.201                     Convective Activitiy         minutes             null Time since last convective activity based upon vertical flux of rain and graupel
+    t2=   0.0.201                    Convective Activitiy2         minutes             null Time since last convective activity based upon vertical flux of rain and graupel
+
+    t1=   0.0.202                      Convective Activity         minutes             null Time since last convective activitiy based upon 35 dBZ reflectivity at -10C
+    t2=   0.0.202                     Convective Activity3         minutes             null Time since last convective activitiy based upon 35 dBZ reflectivity at -10C
+
+    t1=   0.1.192                       Precipitation Type           no=0)             null Categorical rain (yes=1
+    t2=   0.1.192                      Precipitation Type4            flag             null Categorical rain (yes=1 no=0)
+
+    t1=   0.1.193                       Precipitation Type           no=0)             null Categorical freezing rain (yes=1
+    t2=   0.1.193                      Precipitation Type3            flag             null Categorical freezing rain (yes=1 no=0)
+
+    t1=   0.1.194                       Precipitation Type           no=0)             null Categorical ice pellets (yes=1
+    t2=   0.1.194                      Precipitation Type2            flag             null Categorical ice pellets (yes=1 no=0)
+
+    t1=   0.1.195                       Precipitation Type           no=0)             null Categorical snow (yes=1
+    t2=   0.1.195                      Precipitation Type1            flag             null Categorical snow (yes=1 no=0)
+
+    t1=   0.1.213                    Convective Initiation         minutes             null Time since last convective initation (> 1 hr) based upon flux of rain/graupel and no adjacent activity
+    t2=   0.1.213                   Convective Initiation2         minutes             null Time since last convective initation (> 1 hr) based upon flux of rain/graupel and no adjacent activity
+
+    t1=   0.1.214                    Convective Initiation         minutes             null Time since last convective initation (> 1 hr) based upon 35 dBZ reflectivity at -10C and no adjacent activity
+    t2=   0.1.214                   Convective Initiation3         minutes             null Time since last convective initation (> 1 hr) based upon 35 dBZ reflectivity at -10C and no adjacent activity
+
+    t1=   0.2.194                             Storm Motion             m/s             null U-component of convective storm motion for right-moving cells using Bunkers et al. 2000
+    t2=   0.2.194                           Storm Motion-U             m/s             null U-component of convective storm motion for right-moving cells using Bunkers et al. 2000
+
+    t1=   0.2.195                             Storm Motion             m/s             null V-component of convective storm motion for right-moving cells using Bunkers et al. 2000
+    t2=   0.2.195                           Storm Motion-V             m/s             null V-component of convective storm motion for right-moving cells using Bunkers et al. 2000
+
+
+  Conflicts=12 extra=0
+
+  Table 2 :
+
+  extra=0
+
+also a few random problems i see:
+
+1) duplicate names in table resources/grib2/local/Fsl-hrrr2.csv
+ DUPLICATE NAME 0.1.213 and 0.0.195 (Convective Initiation)
+ DUPLICATE NAME 0.1.214 and 0.1.213 (Convective Initiation)
+ DUPLICATE NAME 2.0.192 and 2.0.192 (Soil Moisture)
+ DUPLICATE NAME 2.0.192 and 2.0.192 (Soil Moisture)
+ DUPLICATE NAME 2.0.192 and 2.0.192 (Soil Moisture)
+ DUPLICATE NAME 2.0.192 and 2.0.192 (Soil Moisture)
+ DUPLICATE NAME 2.0.192 and 2.0.192 (Soil Moisture)
+ DUPLICATE NAME 0.1.194 and 0.1.195 (Precipitation Type)
+ DUPLICATE NAME 0.1.193 and 0.1.194 (Precipitation Type)
+ DUPLICATE NAME 0.1.192 and 0.1.193 (Precipitation Type)
+ DUPLICATE NAME 0.4.192 and 0.5.193 (Radiation)
+ DUPLICATE NAME 0.2.195 and 0.2.194 (Storm Motion)
+ DUPLICATE NAME 0.7.193 and 0.7.192 (Lifted Index)
+
+
+2) the desciption is sometimes level dependent. here that fails:
+
+ float Specific_humidity_sigma(time=1, sigma=50, y=1059, x=1799);
+     :long_name = "Specific humidity @ Sigma level";
+     :units = "kg/kg";
+     :missing_value = NaNf; // float
+     :description = "Specific humidity at 2 m above ground level";
+     :grid_mapping = "LambertConformal_Projection";
+     :Grib_Variable_Id = "VAR_0-1-0_L104";
+     :Grib2_Parameter = 0, 1, 0; // int
+     :Grib2_Level_Type = 104; // int
+     :Grib2_Generating_Process_Type = "Forecast";
