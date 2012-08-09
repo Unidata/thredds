@@ -107,7 +107,11 @@ public class MetadataManager {
 
      } catch (com.sleepycat.je.EnvironmentLockedException e) {
       // another process has it open: try read-only
-      logger.warn("MetadataManager failed to open directory, try read-only");
+      logger.warn("MetadataManager failed to open directory {}, try read-only", root);
+      logger.error("failed to open bdb", e);
+      logger.warn("myEnvConfig {}", myEnvConfig);
+      logger.warn("myEnv {}", myEnv);
+
       readOnly = true;
       myEnvConfig.setReadOnly(true);
       myEnvConfig.setAllowCreate(false);
