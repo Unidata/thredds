@@ -35,6 +35,7 @@ import thredds.catalog.InvAccess;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.ServiceType;
 import thredds.servlet.ServletUtil;
+import thredds.servlet.ThreddsConfig;
 import thredds.servlet.Viewer;
 import ucar.nc2.constants.FeatureType;
 
@@ -54,7 +55,7 @@ public class Godiva2Viewer implements Viewer
     public boolean isViewable(InvDatasetImpl ds)
     {
         InvAccess access = ds.getAccess(ServiceType.WMS);
-        return access != null;
+        return access != null && (ThreddsConfig.getBoolean("WMS.allow", false));
     }
 
     @Override
