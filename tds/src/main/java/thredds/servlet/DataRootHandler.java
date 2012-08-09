@@ -72,10 +72,12 @@ import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvDatasetScan;
 import thredds.catalog.InvProperty;
 import thredds.catalog.InvService;
+import thredds.catalog.ServiceType;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.crawlabledataset.CrawlableDatasetFile;
+import thredds.server.config.AllowableService;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
 import thredds.util.RequestForwardUtils;
@@ -319,6 +321,8 @@ public final class DataRootHandler implements InitializingBean{
 
     logCatalogInit.info("initCatalogs(): initializing " + catList.size() + " root catalogs.");
     this.initCatalogs(catList);
+    
+    
   }
 
   public synchronized void initCatalogs(List<String> configCatalogRoots) {
@@ -346,6 +350,8 @@ public final class DataRootHandler implements InitializingBean{
 
     for (ConfigListener cl : configListeners)
       cl.configEnd();
+       
+    
   }
 
 
@@ -392,7 +398,14 @@ public final class DataRootHandler implements InitializingBean{
       addRoot(p, true);
     }
 
-    // old style - in the service elements
+    
+    
+    List<String> disallowedServices = AllowableService.checkCatalogServices(cat);    
+    if(!disallowedServices.isEmpty()){
+ 		logCatalogInit.warn("initCatalog(): declared services: "+ disallowedServices.toString() +" in catalog: "+ f.getPath() +" are disallowed in threddsConfig file" );   	
+    }
+    
+    // old style - in the service elements    
     for (InvService s : cat.getServices()) {
       for (InvProperty p : s.getDatasetRoots()) {
         addRoot(p.getName(), p.getValue(), true);
@@ -417,6 +430,26 @@ public final class DataRootHandler implements InitializingBean{
       initFollowCatrefs(dirPath, cat.getDatasets());
     }
   }
+  
+  /*private void checkServices(InvService service, String path ){
+	  
+	  if( service.getServiceType() == ServiceType.COMPOUND ){
+		  for(InvService s : service.getServices() ){
+			checkServices(s, path);  
+		  }
+	  }else{
+		  
+		  if( service.getServiceType() == ServiceType.WMS ){			  
+			  
+			  //if(! ThreddsConfig.getBoolean("WMS.allow", false) ) {
+			  if(AllowableService.WMS.isAllowed()){
+				  logCatalogInit.warn("initCatalog(): Service "+service.getName()+ " in catalog "+ path +"is not allowed in the server settings");
+			  }
+		  }
+
+	  }
+	  
+  }*/
 
   private InvCatalogFactory getCatalogFactory(boolean validate) {
     InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(validate);
