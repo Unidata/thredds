@@ -42,13 +42,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.FileWriter;
-import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -82,29 +76,66 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 public class NetcdfCFWriter {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCFWriter.class);
 
+  /**
+   * Write a netcdf-3 file from a subset of a grid dataset
+   * @param location write new file
+   * @param gds      from this grid dataset
+   * @param gridList just these grids
+   * @param llbb     horiz subset, may be null
+   * @param range    time subset, may be null
+   * @throws IOException
+   * @throws InvalidRangeException
+   */
   static public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb, CalendarDateRange range)
           throws IOException, InvalidRangeException {
     NetcdfCFWriter writer = new NetcdfCFWriter();
     writer.makeFile(location, gds, gridList, llbb, range, false, 1, 1, 1);
   }
 
+  /**
+   * Write a netcdf-3 file from a subset of a grid dataset, as long as it doesnt exceed a certain file size.
+   *
+   * @param gds      from this grid dataset
+   * @param gridList just these grids
+   * @param llbb     horiz subset, may be null
+   * @param zRange   vertical subset, may be null
+   * @param dateRange  time subset, may be null
+   * @param stride_time time may be strided, -1 if want all
+   * @param addLatLon  optionally add a lat/lon coordinate (if dataset uses projection coords)
+   * @return file size
+   * @throws IOException
+   * @throws InvalidRangeException
+   */
   public long makeGridFileSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList,
-            LatLonRect llbb, int horizStride,
-            Range zRange,
-            CalendarDateRange dateRange, int stride_time,
-            boolean addLatLon) throws IOException, InvalidRangeException {
+                                       LatLonRect llbb, int horizStride,
+                                       Range zRange,
+                                       CalendarDateRange dateRange, int stride_time,
+                                       boolean addLatLon) throws IOException, InvalidRangeException {
 
-    return makeOrTestSize(null, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, true);
+    return makeOrTestSize(null, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, true, NetcdfFileWriter.Version.netcdf3);
   }
-  
-  public long makeGridFileSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          ProjectionRect llbb, int horizStride,
-          Range zRange,
-          CalendarDateRange dateRange, int stride_time,
-          boolean addLatLon) throws IOException, InvalidRangeException {
 
-  return makeOrTestSize(null, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, true);
-}  
+  /**
+   * Write a netcdf-3 file from a subset of a grid dataset (projection coordinates), as long as it doesnt exceed a certain file size.
+   * @param gds      from this grid dataset
+   * @param gridList just these grids
+   * @param projBB     horiz subset in Projection coords, may be null
+   * @param zRange   vertical subset, may be null
+   * @param dateRange  time subset, may be null
+   * @param stride_time time may be strided, -1 if want all
+   * @param addLatLon  optionally add a lat/lon coordinate (if dataset uses projection coords)
+   * @return file size
+   * @throws IOException
+   * @throws InvalidRangeException
+   */
+  public long makeGridFileSizeEstimate(ucar.nc2.dt.GridDataset gds, List<String> gridList,
+                                       ProjectionRect projBB, int horizStride,
+                                       Range zRange,
+                                       CalendarDateRange dateRange, int stride_time,
+                                       boolean addLatLon) throws IOException, InvalidRangeException {
+
+    return makeOrTestSize(null, gds, gridList, projBB, horizStride, zRange, dateRange, stride_time, addLatLon, true, NetcdfFileWriter.Version.netcdf3);
+  }
 
 
   /**
@@ -123,39 +154,57 @@ public class NetcdfCFWriter {
    * @throws InvalidRangeException if subset is illegal
    */
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          LatLonRect llbb,
-          CalendarDateRange range,
-          boolean addLatLon,
-          int horizStride, int stride_z, int stride_time)
+                       LatLonRect llbb, CalendarDateRange range,
+                       boolean addLatLon,
+                       int horizStride, int stride_z, int stride_time)
           throws IOException, InvalidRangeException {
-    makeFile(location, gds, gridList, llbb, horizStride, null, range, stride_time, addLatLon);
+    makeFile(location, gds, gridList, llbb, horizStride, null, range, stride_time, addLatLon, NetcdfFileWriter.Version.netcdf3);
   }
 
   public long makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          LatLonRect llbb, int horizStride,
-          Range zRange,
-          CalendarDateRange dateRange, int stride_time,
-          boolean addLatLon)
+                       LatLonRect llbb, int horizStride, Range zRange,
+                       CalendarDateRange dateRange, int stride_time,
+                       boolean addLatLon)
           throws IOException, InvalidRangeException {
-    
-    return makeOrTestSize(location, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, false);
+
+    return makeOrTestSize(location, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, false, NetcdfFileWriter.Version.netcdf3);
   }
-  
+
   public long makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          ProjectionRect llbb, int horizStride,
-          Range zRange,
-          CalendarDateRange dateRange, int stride_time,
-          boolean addLatLon)
+                       LatLonRect llbb, int horizStride, Range zRange,
+                       CalendarDateRange dateRange, int stride_time,
+                       boolean addLatLon, NetcdfFileWriter.Version version)
           throws IOException, InvalidRangeException {
-    
-    return makeOrTestSize(location, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, false);
-  }  
-  
+
+    return makeOrTestSize(location, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, false, version);
+  }
+
+  public long makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+                       ProjectionRect llbb, int horizStride,
+                       Range zRange,
+                       CalendarDateRange dateRange, int stride_time,
+                       boolean addLatLon)
+          throws IOException, InvalidRangeException {
+
+    return makeOrTestSize(location, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, false, NetcdfFileWriter.Version.netcdf3);
+  }
+
+  public long makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
+                       ProjectionRect llbb, int horizStride,
+                       Range zRange,
+                       CalendarDateRange dateRange, int stride_time,
+                       boolean addLatLon, NetcdfFileWriter.Version version)
+          throws IOException, InvalidRangeException {
+
+    return makeOrTestSize(location, gds, gridList, llbb, horizStride, zRange, dateRange, stride_time, addLatLon, false, version);
+  }
+
   private long makeOrTestSize(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          LatLonRect llbb, int horizStride,
-          Range zRange,
-          CalendarDateRange dateRange, int stride_time,
-          boolean addLatLon, boolean testSizeOnly)
+                              LatLonRect llbb, int horizStride,
+                              Range zRange,
+                              CalendarDateRange dateRange, int stride_time,
+                              boolean addLatLon, boolean testSizeOnly,
+                              NetcdfFileWriter.Version version)
           throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
@@ -178,57 +227,23 @@ public class NetcdfCFWriter {
       CoordinateAxis1D vertAxis = gcsOrg.getVerticalAxis();
 
       // make subset if needed
-      Range timeRange = makeTimeRange(dateRange, timeAxis, stride_time );
-//      Range timeRange = null;
-//      if ((dateRange != null) && (timeAxis != null)) {
-//        int startIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getStart());
-//        int endIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getEnd());
-//        if (startIndex < 0)
-//          throw new InvalidRangeException("start time=" + dateRange.getStart() + " must be >= " + timeAxis.getCalendarDate(0));
-//        if (endIndex < 0)
-//          throw new InvalidRangeException("end time=" + dateRange.getEnd() + " must be >= " + timeAxis.getCalendarDate(0));
-//        if (stride_time <= 1) stride_time = 1;
-//        timeRange = new Range(startIndex, endIndex, stride_time);
-//      }
+      Range timeRange = makeTimeRange(dateRange, timeAxis, stride_time);
+      Range zRangeUse = makeVerticalRange(zRange, vertAxis);
 
-      Range zRangeUse= makeVerticalRange(zRange, vertAxis);
-      /*Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
-      
-      if(zRangeUse !=null){
-    	  zRangeUse=makeVerticalRange(vertAxis, zRangeUse.stride() );
-      }*/
-      
       if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
         grid = grid.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
       }
 
-      Variable gridV = (Variable) grid.getVariable();
+      Variable gridV = grid.getVariable();
       varList.add(gridV);
       total_size += gridV.getSize() * gridV.getElementSize();
 
       // add coordinate axes
       GridCoordSystem gcs = grid.getCoordinateSystem();
       addCoordinateAxis(gcs, varNameList, varList, axisList);
-//      for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
-//        if (!varNameList.contains(axis.getFullName())) {
-//          varNameList.add(axis.getFullName());
-//          varList.add(axis);
-//          axisList.add(axis);
-//          if (timeAxis != null && timeAxis.isInterval()) {
-//            // LOOK gotta add the bounds  !!!
-//          }
-//        }
-//      }
 
       // add coordinate transform variables
       addCoordinateTransform(gcs, ncd, varNameList, varList);
-//      for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
-//        Variable v = ncd.findVariable(ct.getName());
-//        if (!varNameList.contains(ct.getName()) && (null != v)) {
-//          varNameList.add(ct.getName());
-//          varList.add(v);
-//        }
-//      }
 
       // optional lat/lon
       if (addLatLon) {
@@ -239,112 +254,42 @@ public class NetcdfCFWriter {
         }
       }
     }
-    
+
     if (testSizeOnly)
       return total_size;
 
     // check size is ok
     boolean isLargeFile = isLargeFile(total_size);
-//    boolean isLargeFile = false;
-//    long maxSize = 2 * 1000 * 1000 * 1000;
-//    if (total_size > maxSize) {
-//      log.info("Request size = {} Mbytes", total_size / 1000 / 1000);
-//      isLargeFile = true;
-//    }
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location);
+    writer.setLargeFile(isLargeFile);
 
-    FileWriter writer = new FileWriter(location, false, isLargeFile, -1);
-    // global attributes
-    writeGlobalAttributes(gds, writer);    
-//    for (Attribute att : gds.getGlobalAttributes())
-//      writer.writeGlobalAttribute(att);
-//
-//    writer.writeGlobalAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.0"));
-//    writer.writeGlobalAttribute(new Attribute("History",
-//            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
-//                    "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
+    writeGlobalAttributes(writer, gds);
 
+    // use fileWriter to copy the variables
+    FileWriter2 fileWriter = new FileWriter2(writer);
+    for (Variable v : varList)
+      fileWriter.addVariable(v);
 
-    writer.writeVariables(varList);
+    addCFAnnotations(writer, gds, gridList, ncd, axisList, addLatLon);
 
-    // now add CF annotations as needed - dont change original ncd or gds
-    addCFAnnotations(writer,  gds, gridList, ncd, axisList, addLatLon);
-//    NetcdfFileWriteable ncfile = writer.getNetcdf();
-//    Group root = ncfile.getRootGroup();
-//    for (String gridName : gridList) {
-//      GridDatatype grid = gds.findGridDatatype(gridName);
-//      Variable newV = root.findVariable(gridName);
-//      if (newV == null) {
-//        log.warn("NetcdfCFWriter cant find "+gridName+" in gds "+gds.getLocationURI());
-//        continue;
-//      }
-//
-//      // annotate Variable for CF
-//      StringBuilder sbuff = new StringBuilder();
-//      GridCoordSystem gcs = grid.getCoordinateSystem();
-//      for (Variable axis : gcs.getCoordinateAxes()) {
-//        sbuff.append(axis.getFullName()).append(" ");
-//      }
-//      if (addLatLon)
-//        sbuff.append("lat lon");
-//      newV.addAttribute(new Attribute(CF.COORDINATES, sbuff.toString()));
-//
-//      // looking for coordinate transform variables
-//      for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
-//        Variable v = ncd.findVariable(ct.getName());
-//        if (ct.getTransformType() == TransformType.Projection)
-//          newV.addAttribute(new Attribute(CF.GRID_MAPPING, v.getName()));
-//      }
-//    }
-//
-//    for (CoordinateAxis axis : axisList) {
-//      Variable newV = root.findVariable(axis.getShortName()); // LOOK short name ???
-//      if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
-//        if (null != axis.getPositive())
-//          newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
-//      }
-//      if (axis.getAxisType() == AxisType.Lat) {
-//        newV.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
-//        newV.addAttribute(new Attribute("standard_name", "latitude"));
-//      }
-//      if (axis.getAxisType() == AxisType.Lon) {
-//        newV.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
-//        newV.addAttribute(new Attribute("standard_name", "longitude"));
-//      }
-//      if (axis.getAxisType() == AxisType.GeoX) {
-//        newV.addAttribute(new Attribute("standard_name", "projection_x_coordinate"));
-//      }
-//      if (axis.getAxisType() == AxisType.GeoY) {
-//        newV.addAttribute(new Attribute("standard_name", "projection_y_coordinate"));
-//      }
-//    }
-//
-//    // coordinate transform variables : must convert false easting, northing to km
-//    List<Variable> ctvList = new ArrayList<Variable>();
-//    for (ucar.nc2.dt.GridDataset.Gridset gridSet : gds.getGridsets()) {
-//      ucar.nc2.dt.GridCoordSystem gcs = gridSet.getGeoCoordSystem();
-//      ProjectionCT pct = gcs.getProjectionCT();
-//      if (pct != null) {
-//        Variable v = root.findVariable(pct.getName()); // look for the ctv
-//        if ((v != null) && !ctvList.contains(v)) {
-//          convertProjectionCTV((NetcdfDataset) gds.getNetcdfFile(), v);
-//          ctvList.add(v);
-//        }
-//      }
-//    }
+    writer.create();
 
-    // LOOK not dealing with crossing the seam
+   // use fileWriter to copy the data
+    fileWriter.copyVarData(varList, null);
 
-    writer.finish(); // this writes the data to the new file.
+    writer.close();
+
+     // this writes the data to the new file.
     return 0; // ok
   }
-  
-  
+
+
   private long makeOrTestSize(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          //LatLonRect llbb, int horizStride,
-		  ProjectionRect llbb, int horizStride,
-          Range zRange,
-          CalendarDateRange dateRange, int stride_time,
-          boolean addLatLon, boolean testSizeOnly)
+                              ProjectionRect llbb, int horizStride,
+                              Range zRange,
+                              CalendarDateRange dateRange, int stride_time,
+                              boolean addLatLon, boolean testSizeOnly,
+                              NetcdfFileWriter.Version version)
           throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
@@ -362,58 +307,58 @@ public class NetcdfCFWriter {
       varNameList.add(gridName);
 
       //GridDatatype grid = gds.findGridDatatype(gridName);
-      GeoGrid grid = (GeoGrid)gds.findGridDatatype(gridName);
+      GeoGrid grid = (GeoGrid) gds.findGridDatatype(gridName);
       GridCoordSystem gcsOrg = grid.getCoordinateSystem();
       CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
       CoordinateAxis1D vertAxis = gcsOrg.getVerticalAxis();
 
       // make subset if needed
-      Range timeRange = makeTimeRange(dateRange, timeAxis, stride_time );
-      
-      ProjectionPoint lowerLeft =llbb.getLowerLeftPoint();
-      ProjectionPoint upperRigth =llbb.getUpperRightPoint();
+      Range timeRange = makeTimeRange(dateRange, timeAxis, stride_time);
+
+      ProjectionPoint lowerLeft = llbb.getLowerLeftPoint();
+      ProjectionPoint upperRigth = llbb.getUpperRightPoint();
       double minx = lowerLeft.getX();
       double miny = lowerLeft.getY();
       double maxx = upperRigth.getX();
       double maxy = upperRigth.getY();
-      
+
       //y_range
-      CoordinateAxis1D yAxis = (CoordinateAxis1D)gcsOrg.getYHorizAxis();
+      CoordinateAxis1D yAxis = (CoordinateAxis1D) gcsOrg.getYHorizAxis();
       int minyCoord = yAxis.findCoordElement(miny);
-      if(minyCoord < 0){
-    	  throw new InvalidRangeException("miny="+miny+" must be within ("+yAxis.getMinValue()+", "+yAxis.getMaxValue()+")");
+      if (minyCoord < 0) {
+        throw new InvalidRangeException("miny=" + miny + " must be within (" + yAxis.getMinValue() + ", " + yAxis.getMaxValue() + ")");
       }
       int maxyCoord = yAxis.findCoordElement(maxy);
-      if(maxyCoord < 0){
-    	  throw new InvalidRangeException("maxy="+maxy+" must be within ("+yAxis.getMinValue()+", "+yAxis.getMaxValue()+")");
-      }            
-      Range y_range = new Range( minyCoord, maxyCoord, horizStride );
-      
+      if (maxyCoord < 0) {
+        throw new InvalidRangeException("maxy=" + maxy + " must be within (" + yAxis.getMinValue() + ", " + yAxis.getMaxValue() + ")");
+      }
+      Range y_range = new Range(minyCoord, maxyCoord, horizStride);
+
       //y_range
-      CoordinateAxis1D xAxis = (CoordinateAxis1D)gcsOrg.getXHorizAxis();
+      CoordinateAxis1D xAxis = (CoordinateAxis1D) gcsOrg.getXHorizAxis();
       int minxCoord = xAxis.findCoordElement(minx);
-      if(minxCoord < 0){
-    	  throw new InvalidRangeException("minx="+minx+" must be within ("+xAxis.getMinValue()+", "+xAxis.getMaxValue()+")");
-      }      
+      if (minxCoord < 0) {
+        throw new InvalidRangeException("minx=" + minx + " must be within (" + xAxis.getMinValue() + ", " + xAxis.getMaxValue() + ")");
+      }
       int maxxCoord = xAxis.findCoordElement(maxx);
-      if(maxxCoord < 0){
-    	  throw new InvalidRangeException("maxx="+maxx+" must be within ("+xAxis.getMinValue()+", "+xAxis.getMaxValue()+")");
-      }            
-      Range x_range = new Range( minxCoord, maxxCoord, horizStride );
-            
-      Range zRangeUse= makeVerticalRange(zRange, vertAxis);
+      if (maxxCoord < 0) {
+        throw new InvalidRangeException("maxx=" + maxx + " must be within (" + xAxis.getMinValue() + ", " + xAxis.getMaxValue() + ")");
+      }
+      Range x_range = new Range(minxCoord, maxxCoord, horizStride);
+
+      Range zRangeUse = makeVerticalRange(zRange, vertAxis);
       /*Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
       
       if(zRangeUse !=null){
     	  zRangeUse=makeVerticalRange(vertAxis, zRangeUse.stride() );
       }*/
-      
+
       if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
-    	  grid = grid.subset(timeRange, zRangeUse, y_range, x_range);
-    	  
+        grid = grid.subset(timeRange, zRangeUse, y_range, x_range);
+
       }
 
-      Variable gridV = (Variable) grid.getVariable();
+      Variable gridV = grid.getVariable();
       varList.add(gridV);
       total_size += gridV.getSize() * gridV.getElementSize();
 
@@ -431,25 +376,35 @@ public class NetcdfCFWriter {
         }
       }
     }
-    
+
     if (testSizeOnly)
       return total_size;
 
     // check size is ok
     boolean isLargeFile = isLargeFile(total_size);
 
-    FileWriter writer = new FileWriter(location, false, isLargeFile, -1);
-    writeGlobalAttributes(gds, writer);
-    writer.writeVariables(varList);
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location);
+    writer.setLargeFile(isLargeFile);
 
-    addCFAnnotations(writer,  gds, gridList, ncd, axisList, addLatLon);
-    // LOOK not dealing with crossing the seam
+    writeGlobalAttributes(writer, gds);
 
-    writer.finish(); // this writes the data to the new file.
+   // use fileWriter to copy the variables
+    FileWriter2 fileWriter = new FileWriter2(writer);
+    for (Variable v : varList)
+      fileWriter.addVariable(v);
+
+    addCFAnnotations(writer, gds, gridList, ncd, axisList, addLatLon);
+
+    writer.create();
+
+   // use fileWriter to copy the data
+    fileWriter.copyVarData(varList, null);
+
+    writer.close();
+
     return 0; // ok
-  }  
-  
-  
+  }
+
 
   private void convertProjectionCTV(NetcdfDataset ds, Variable ctv) {
     Attribute att = ctv.findAttribute(_Coordinate.TransformType);
@@ -473,7 +428,7 @@ public class NetcdfCFWriter {
   }
 
   private void addLatLon2D(NetcdfFile ncfile, List<Variable> varList, Projection proj,
-          CoordinateAxis xaxis, CoordinateAxis yaxis) throws IOException {
+                           CoordinateAxis xaxis, CoordinateAxis yaxis) throws IOException {
 
     double[] xData = (double[]) xaxis.read().get1DJavaArray(double.class);
     double[] yData = (double[]) yaxis.read().get1DJavaArray(double.class);
@@ -523,148 +478,145 @@ public class NetcdfCFWriter {
     varList.add(latVar);
     varList.add(lonVar);
   }
-  
-  private Range makeVerticalRange(Range zRange, CoordinateAxis1D vertAxis) throws InvalidRangeException{
-	  
-      Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
-	  	  
-	  return zRangeUse;
+
+  private Range makeVerticalRange(Range zRange, CoordinateAxis1D vertAxis) throws InvalidRangeException {
+    return (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
   }
-  
-  private Range makeTimeRange(CalendarDateRange dateRange, CoordinateAxis1DTime timeAxis, int stride_time  ) throws InvalidRangeException{
-	  
-      Range timeRange = null;
-      if ((dateRange != null) && (timeAxis != null)) {
-        int startIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getStart());
-        int endIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getEnd());
-        if (startIndex < 0)
-          throw new InvalidRangeException("start time=" + dateRange.getStart() + " must be >= " + timeAxis.getCalendarDate(0));
-        if (endIndex < 0)
-          throw new InvalidRangeException("end time=" + dateRange.getEnd() + " must be >= " + timeAxis.getCalendarDate(0));
-        if (stride_time <= 1) stride_time = 1;
-        timeRange = new Range(startIndex, endIndex, stride_time);
+
+  private Range makeTimeRange(CalendarDateRange dateRange, CoordinateAxis1DTime timeAxis, int stride_time) throws InvalidRangeException {
+
+    Range timeRange = null;
+    if ((dateRange != null) && (timeAxis != null)) {
+      int startIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getStart());
+      int endIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getEnd());
+      if (startIndex < 0)
+        throw new InvalidRangeException("start time=" + dateRange.getStart() + " must be >= " + timeAxis.getCalendarDate(0));
+      if (endIndex < 0)
+        throw new InvalidRangeException("end time=" + dateRange.getEnd() + " must be >= " + timeAxis.getCalendarDate(0));
+      if (stride_time <= 1) stride_time = 1;
+      timeRange = new Range(startIndex, endIndex, stride_time);
+    }
+
+    return timeRange;
+
+  }
+
+  private void addCoordinateAxis(GridCoordSystem gcs, List<String> varNameList, List<Variable> varList, List<CoordinateAxis> axisList) {
+
+    for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
+      if (!varNameList.contains(axis.getFullName())) {
+        varNameList.add(axis.getFullName());
+        varList.add(axis);
+        axisList.add(axis);
+        //if (timeAxis != null && timeAxis.isInterval()) {
+        // LOOK gotta add the bounds  !!!
+        //}
       }
-      
-      return timeRange;
-	  
+    }
+
   }
 
-  private void addCoordinateAxis(GridCoordSystem gcs, List<String> varNameList, List<Variable> varList, List<CoordinateAxis> axisList){
+  private void addCoordinateTransform(GridCoordSystem gcs, NetcdfFile ncd, List<String> varNameList, List<Variable> varList) {
 
-      for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
-          if (!varNameList.contains(axis.getFullName())) {
-            varNameList.add(axis.getFullName());
-            varList.add(axis);
-            axisList.add(axis);
-            //if (timeAxis != null && timeAxis.isInterval()) {
-              // LOOK gotta add the bounds  !!!
-            //}
-          }
-        }	  
-	  
+    for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
+      Variable v = ncd.findVariable(ct.getName());
+      if (!varNameList.contains(ct.getName()) && (null != v)) {
+        varNameList.add(ct.getName());
+        varList.add(v);
+      }
+    }
+
   }
-  
-  private void addCoordinateTransform(GridCoordSystem gcs, NetcdfFile ncd, List<String> varNameList, List<Variable> varList){
-	  
-      for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
-          Variable v = ncd.findVariable(ct.getName());
-          if (!varNameList.contains(ct.getName()) && (null != v)) {
-            varNameList.add(ct.getName());
-            varList.add(v);
-          }
-        }	  
-	  
+
+
+  private boolean isLargeFile(long total_size) {
+    boolean isLargeFile = false;
+    long maxSize = 2 * 1000 * 1000 * 1000;
+    if (total_size > maxSize) {
+      log.info("Request size = {} Mbytes", total_size / 1000 / 1000);
+      isLargeFile = true;
+    }
+    return isLargeFile;
   }
-  
-  
-  private boolean isLargeFile(long total_size){
-	boolean isLargeFile = false;
-	long maxSize = 2 * 1000 * 1000 * 1000;
-	if (total_size > maxSize) {
-		log.info("Request size = {} Mbytes", total_size / 1000 / 1000);
-	    isLargeFile = true;
-	}
-	return isLargeFile;
-  }
-  
-  private void writeGlobalAttributes(ucar.nc2.dt.GridDataset gds, FileWriter writer){
+
+  private void writeGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds) {
     // global attributes
-	for (Attribute att : gds.getGlobalAttributes())
-	   writer.writeGlobalAttribute(att);
+    for (Attribute att : gds.getGlobalAttributes())
+      writer.addGroupAttribute(null, att);
 
-	   writer.writeGlobalAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.0"));
-	   writer.writeGlobalAttribute(new Attribute("History",
-	            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
-	                    "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));	  
+    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.0"));
+    writer.addGroupAttribute(null, new Attribute("History",
+            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
+                    "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
   }
-  
-  private void addCFAnnotations(FileWriter writer, ucar.nc2.dt.GridDataset gds, List<String> gridList, NetcdfDataset ncd, List<CoordinateAxis> axisList, boolean addLatLon ){
 
-        NetcdfFileWriteable ncfile = writer.getNetcdf();
-	    Group root = ncfile.getRootGroup();
-	    for (String gridName : gridList) {
-	      GridDatatype grid = gds.findGridDatatype(gridName);
-	      Variable newV = root.findVariable(gridName);
-	      if (newV == null) {
-	        log.warn("NetcdfCFWriter cant find "+gridName+" in gds "+gds.getLocationURI());
-	        continue;
-	      }
+  private void addCFAnnotations(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds, List<String> gridList, NetcdfDataset ncd,
+                                List<CoordinateAxis> axisList, boolean addLatLon) {
 
-	      // annotate Variable for CF
-	      StringBuilder sbuff = new StringBuilder();
-	      GridCoordSystem gcs = grid.getCoordinateSystem();
-	      for (Variable axis : gcs.getCoordinateAxes()) {
-	        sbuff.append(axis.getFullName()).append(" ");
-	      }
-	      if (addLatLon)
-	        sbuff.append("lat lon");
-	      newV.addAttribute(new Attribute(CF.COORDINATES, sbuff.toString()));
+    //Group root = ncfile.getRootGroup();
+    for (String gridName : gridList) {
+      GridDatatype grid = gds.findGridDatatype(gridName);
+      Variable newV = writer.findVariable(gridName);
+      if (newV == null) {
+        log.warn("NetcdfCFWriter cant find " + gridName + " in gds " + gds.getLocationURI());
+        continue;
+      }
 
-	      // looking for coordinate transform variables
-	      for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
-	        Variable v = ncd.findVariable(ct.getName());
-	        if (ct.getTransformType() == TransformType.Projection)
-	          newV.addAttribute(new Attribute(CF.GRID_MAPPING, v.getName()));
-	      }
-	    }
-	    
-	    for (CoordinateAxis axis : axisList) {
-	        Variable newV = root.findVariable(axis.getShortName()); // LOOK short name ???
-	        if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
-	          if (null != axis.getPositive())
-	            newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
-	        }
-	        if (axis.getAxisType() == AxisType.Lat) {
-	          newV.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
-	          newV.addAttribute(new Attribute("standard_name", "latitude"));
-	        }
-	        if (axis.getAxisType() == AxisType.Lon) {
-	          newV.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
-	          newV.addAttribute(new Attribute("standard_name", "longitude"));
-	        }
-	        if (axis.getAxisType() == AxisType.GeoX) {
-	          newV.addAttribute(new Attribute("standard_name", "projection_x_coordinate"));
-	        }
-	        if (axis.getAxisType() == AxisType.GeoY) {
-	          newV.addAttribute(new Attribute("standard_name", "projection_y_coordinate"));
-	        }
-	      }
-	    
-	    // coordinate transform variables : must convert false easting, northing to km
-	    List<Variable> ctvList = new ArrayList<Variable>();
-	    for (ucar.nc2.dt.GridDataset.Gridset gridSet : gds.getGridsets()) {
-	      ucar.nc2.dt.GridCoordSystem gcs = gridSet.getGeoCoordSystem();
-	      ProjectionCT pct = gcs.getProjectionCT();
-	      if (pct != null) {
-	        Variable v = root.findVariable(pct.getName()); // look for the ctv
-	        if ((v != null) && !ctvList.contains(v)) {
-	          convertProjectionCTV((NetcdfDataset) gds.getNetcdfFile(), v);
-	          ctvList.add(v);
-	        }
-	      }
-	    }	    	    	  	 
+      // annotate Variable for CF
+      StringBuilder sbuff = new StringBuilder();
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      for (Variable axis : gcs.getCoordinateAxes()) {
+        sbuff.append(axis.getFullName()).append(" ");
+      }
+      if (addLatLon)
+        sbuff.append("lat lon");
+      newV.addAttribute(new Attribute(CF.COORDINATES, sbuff.toString()));
+
+      // looking for coordinate transform variables
+      for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
+        Variable v = ncd.findVariable(ct.getName());
+        if (ct.getTransformType() == TransformType.Projection)
+          newV.addAttribute(new Attribute(CF.GRID_MAPPING, v.getName()));
+      }
+    }
+
+    for (CoordinateAxis axis : axisList) {
+      Variable newV = writer.findVariable(axis.getFullNameEscaped());
+      if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
+        if (null != axis.getPositive())
+          newV.addAttribute(new Attribute(CF.POSITIVE, axis.getPositive()));
+      }
+      if (axis.getAxisType() == AxisType.Lat) {
+        newV.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
+        newV.addAttribute(new Attribute("standard_name", "latitude"));
+      }
+      if (axis.getAxisType() == AxisType.Lon) {
+        newV.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
+        newV.addAttribute(new Attribute("standard_name", "longitude"));
+      }
+      if (axis.getAxisType() == AxisType.GeoX) {
+        newV.addAttribute(new Attribute("standard_name", "projection_x_coordinate"));
+      }
+      if (axis.getAxisType() == AxisType.GeoY) {
+        newV.addAttribute(new Attribute("standard_name", "projection_y_coordinate"));
+      }
+    }
+
+    // coordinate transform variables : must convert false easting, northing to km
+    List<Variable> ctvList = new ArrayList<Variable>();
+    for (ucar.nc2.dt.GridDataset.Gridset gridSet : gds.getGridsets()) {
+      ucar.nc2.dt.GridCoordSystem gcs = gridSet.getGeoCoordSystem();
+      ProjectionCT pct = gcs.getProjectionCT();
+      if (pct != null) {
+        Variable v = writer.findVariable(pct.getName()); // look for the ctv
+        if ((v != null) && !ctvList.contains(v)) {
+          convertProjectionCTV((NetcdfDataset) gds.getNetcdfFile(), v);
+          ctvList.add(v);
+        }
+      }
+    }
   }
-  
+
   //////////////////////////////////////////////////////////////////////////////////////
   public static void test1() throws IOException, InvalidRangeException, ParseException {
     String fileIn = "C:/data/ncmodels/NAM_CONUS_80km_20051206_0000.nc";

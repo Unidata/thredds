@@ -54,6 +54,7 @@ import java.io.File;
  *
  * @author caron
  * @see NetcdfFile
+ * @deprecated use NetcdfFileWriter
  */
 
 public class NetcdfFileWriteable extends NetcdfFile {

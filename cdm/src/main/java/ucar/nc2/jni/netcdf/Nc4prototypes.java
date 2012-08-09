@@ -38,6 +38,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.NativeLongByReference;
 
 import java.nio.ByteBuffer;
@@ -104,7 +105,7 @@ public interface Nc4prototypes extends Library {
   String nc_strerror(int ncerr);
 
   // dataset
-  // EXTERNL int nc_open(const char *path, int mode, int *ncidp);
+  // int nc_open(const char *path, int mode, int *ncidp);
   int nc_open(String path, int mode, IntByReference ncidp);
   int nc_close(int ncid);
   int nc_inq_format(int ncid, IntByReference formatp);
@@ -222,7 +223,7 @@ public interface Nc4prototypes extends Library {
   int nc_put_vars_double(int ncid, int varid, long[] startp, long[] countp, long[] stridep, double[] ip);
   int nc_put_vars_string(int ncid, int varid, long[] startp, long[] countp, long[] stridep, String[] ip);
 
-  // nc_put_att_string(int ncid, int varid, const char *name, size_t len, const char **op);
+  // nc_put_att_string(int ncid, int varid, const char *name, long len, const char **op);
 
   // write attributes
   int nc_put_att (int ncid, int varid, String name, int xtype, long len, ByteBuffer value);
@@ -238,4 +239,59 @@ public interface Nc4prototypes extends Library {
   int nc_put_att_ulonglong(int ncid, int varid, String attName, int xtype, long len, long[] value);
   int nc_put_att_float(int ncid, int varid, String attName, int xtype, long len, float[] value);
   int nc_put_att_double(int ncid, int varid, String attName, int xtype, long len, double[] value);
+  
+  /* Extra netcdf-4 stuff. */
+  
+  /* Set compression settings for a variable. Lower is faster, higher is better.
+   * Must be called after nc_def_var and before nc_enddef. */
+  int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate, int deflate_level);
+  
+  /* Find out compression settings of a var. */
+  int nc_inq_var_deflate(int ncid, int varid, IntByReference shufflep, IntByReference deflatep, IntByReference deflate_levelp);
+  
+  /* Find out szip settings of a var. */
+  int nc_inq_var_szip(int ncid, int varid, IntByReference options_maskp, IntByReference pixels_per_blockp);
+
+  /* Set fletcher32 checksum for a var. This must be done after nc_def_var and before nc_enddef. */
+  int nc_def_var_fletcher32(int ncid, int varid, int fletcher32);
+
+  /* Inquire about fletcher32 checksum for a var. */
+  int nc_inq_var_fletcher32(int ncid, int varid, IntByReference fletcher32p);
+  
+  /* Define chunking for a variable. This must be done after nc_def_var and before nc_enddef. */
+  int nc_def_var_chunking(int ncid, int varid, int storage, long[] chunksizesp); // const size_t *   ??
+  
+  /* Inq chunking stuff for a var. */
+  int nc_inq_var_chunking(int ncid, int varid, IntByReference storagep, long[] chunksizesp); // size_t *  ??
+  
+  /* Define fill value behavior for a variable. This must be done after nc_def_var and before nc_enddef. */
+  int nc_def_var_fill(int ncid, int varid, int no_fill, ByteBuffer fill_value); // const void *  ??
+  
+  /* Inq fill value setting for a var. */
+  int nc_inq_var_fill(int ncid, int varid, IntByReference no_fill, ByteBuffer fill_valuep); // void * ??
+  
+  /* Define the endianness of a variable. */
+  int nc_def_var_endian(int ncid, int varid, int endian);
+  
+  /* Learn about the endianness of a variable. */
+  int nc_inq_var_endian(int ncid, int varid, IntByReference endianp);
+  
+  /* Set the fill mode (classic or 64-bit offset files only). */
+  int nc_set_fill(int ncid, int fillmode, IntByReference old_modep);
+  
+  /* Set the default nc_create format to NC_FORMAT_CLASSIC,
+   * NC_FORMAT_64BIT, NC_FORMAT_NETCDF4, NC_FORMAT_NETCDF4_CLASSIC. */
+  int nc_set_default_format(int format, IntByReference old_formatp);
+  
+  /* Set the cache size, nelems, and preemption policy. */
+  int nc_set_chunk_cache(long size, long nelems, float preemption);
+  
+  /* Get the cache size, nelems, and preemption policy. */
+  int nc_get_chunk_cache(NativeLongByReference sizep, NativeLongByReference nelemsp, FloatByReference preemptionp);
+  
+  /* Set the per-variable cache size, nelems, and preemption policy. */
+  int nc_set_var_chunk_cache(int ncid, int varid, long size, long nelems, float preemption);
+  
+  /* Set the per-variable cache size, nelems, and preemption policy. */
+  int nc_get_var_chunk_cache(int ncid, int varid, NativeLongByReference sizep, NativeLongByReference nelemsp, FloatByReference preemptionp);
 }

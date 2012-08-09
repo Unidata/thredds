@@ -58,6 +58,7 @@ import java.io.IOException;
  * @since Nov 23, 2010
  */
 public class WriterCFPointCollection extends CFPointWriter {
+  private Variable time, lat, lon, alt, record;
 
   public WriterCFPointCollection(String fileOut, String title) throws IOException {
     this(fileOut, Arrays.asList(new Attribute[]{new Attribute(CDM.TITLE, title)}));
@@ -66,7 +67,7 @@ public class WriterCFPointCollection extends CFPointWriter {
   public WriterCFPointCollection(String fileOut, List<Attribute> atts) throws IOException {
     super(fileOut, atts);
 
-    ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.point.name());
+    writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }
 
   public void writeHeader(List<VariableSimpleIF> vars, DateUnit timeUnit, String altUnits) throws IOException {
@@ -75,35 +76,32 @@ public class WriterCFPointCollection extends CFPointWriter {
     createCoordinates(timeUnit);
     createDataVariables(vars);
 
-    ncfile.create(); // done with define mode
-
-    // netcdf-3
-    if (! (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
-      throw new IllegalStateException("can't add record variable");
+    writer.create(); // done with define mode
+    record = writer.addRecordStructure();
   }
 
   private void createCoordinates(DateUnit timeUnit) throws IOException {
-    ncfile.addUnlimitedDimension(recordDimName);
+    writer.addUnlimitedDimension(recordDimName);
 
     // time variable
-    Variable timeVar = ncfile.addVariable(timeName, DataType.DOUBLE, recordDimName);
-    ncfile.addVariableAttribute(timeVar, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
-    ncfile.addVariableAttribute(timeVar, new Attribute(CDM.LONG_NAME, "time of measurement"));
+    time = writer.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
+    writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
+    writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));
 
     // add the station Variables using the station dimension
-    Variable v = ncfile.addVariable(latName, DataType.DOUBLE, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "degrees_north"));
-    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station latitude"));
+    lat = writer.addVariable(null, latName, DataType.DOUBLE, recordDimName);
+    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, "degrees_north"));
+    writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "station latitude"));
 
-    v = ncfile.addVariable(lonName, DataType.DOUBLE, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "degrees_east"));
-    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "station longitude"));
+    lon = writer.addVariable(null, lonName, DataType.DOUBLE, recordDimName);
+    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, "degrees_east"));
+    writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "station longitude"));
 
     if (altUnits != null) {
-      v = ncfile.addVariable(altName, DataType.DOUBLE, recordDimName);
-      ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, altUnits));
+      alt = writer.addVariable(null, altName, DataType.DOUBLE, recordDimName);
+      writer.addVariableAttribute(alt, new Attribute(CDM.UNITS, altUnits));
       // ncfile.addVariableAttribute(v, new Attribute("positive", "up"));
-      ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "altitude"));
+      writer.addVariableAttribute(alt, new Attribute(CDM.LONG_NAME, "altitude"));
     }
   }
 
@@ -121,7 +119,7 @@ public class WriterCFPointCollection extends CFPointWriter {
     // add them
     for (Dimension d : dimSet) {
       if (!d.isUnlimited())
-        ncfile.addDimension(d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength());
+        writer.addDimension(null, d.getName(), d.getLength(), d.isShared(), false, d.isVariableLength());
     }
 
     // add the data variables all using the record dimension
@@ -132,7 +130,7 @@ public class WriterCFPointCollection extends CFPointWriter {
         if (!d.isUnlimited())
           dimNames.append(" ").append(d.getName());
       }
-      Variable newVar = ncfile.addVariable(oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
+      Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {
@@ -174,12 +172,12 @@ public class WriterCFPointCollection extends CFPointWriter {
     // write the recno record
     origin[0] = recno;
     try {
-      ncfile.write("record", origin, sArray);
-      ncfile.write(timeName, origin, timeArray);
-      ncfile.write(latName, origin, latArray);
-      ncfile.write(lonName, origin, lonArray);
+      writer.write(record, origin, sArray);
+      writer.write(time, origin, timeArray);
+      writer.write(lat, origin, latArray);
+      writer.write(lon, origin, lonArray);
       if (altUnits != null)
-        ncfile.write(altName, origin, altArray);
+        writer.write(alt, origin, altArray);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();

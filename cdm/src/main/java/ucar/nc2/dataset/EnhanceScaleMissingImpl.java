@@ -195,12 +195,14 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
     /// _FillValue
     if ((null != (att = forVar.findAttribute(CDM.FILL_VALUE))) && !att.isString()) {
-      double[] values = getValueAsDouble(att);
-      fillValue = values[0];
-      hasFillValue = true;
-      fillType = att.getDataType();
-      if (hasScaleOffset) forVar.remove(att);
-      if (debug) System.out.println("missing_datum from _FillValue = " + fillValue);
+      double[] values = getValueAsDouble(att);   // LOOK double WTF ??
+      if (values.length > 0) {
+        fillValue = values[0];
+        hasFillValue = true;
+        fillType = att.getDataType();
+        if (hasScaleOffset) forVar.remove(att);
+        if (debug) System.out.println("missing_datum from _FillValue = " + fillValue);
+      }
     }
 
     /// missing_value

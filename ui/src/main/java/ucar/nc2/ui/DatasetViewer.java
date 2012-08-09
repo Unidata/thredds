@@ -36,6 +36,7 @@ package ucar.nc2.ui;
 import ucar.nc2.*;
 
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.util.CompareNetcdf2;
@@ -127,6 +128,39 @@ public class DatasetViewer extends JPanel {
   }
 
   public void addActions(JPanel buttPanel) {
+
+    AbstractAction netcdfAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        String location = ds.getLocation();
+        if (location == null) location = "test";
+        int pos = location.lastIndexOf(".");
+        if (pos > 0)
+          location = location.substring(0, pos);
+
+        String filename = fileChooser.chooseFilenameToSave(location + ".nc");
+        if (filename == null) return;
+        writeNetCDF(filename);
+      }
+    };
+    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-3 file", false, 'S', -1);
+    BAMutil.addActionToContainer(buttPanel, netcdfAction);
+
+    AbstractAction ncstreamAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        String location = ds.getLocation();
+        if (location == null) location = "test";
+        int pos = location.lastIndexOf(".");
+        if (pos > 0)
+          location = location.substring(0, pos);
+
+        String filename = fileChooser.chooseFilenameToSave(location + ".ncs");
+        if (filename == null) return;
+        writeNcstream(filename);
+      }
+    };
+    BAMutil.setActionProperties(ncstreamAction, "netcdf", "Write ncstream file", false, 'S', -1);
+    BAMutil.addActionToContainer(buttPanel, ncstreamAction);
+
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to another file", false);
     compareButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -145,6 +179,44 @@ public class DatasetViewer extends JPanel {
   }
 
   ///////////////////////////////////////
+
+  void writeNetCDF(String filename) {
+    try {
+      FileWriter2 writer = new FileWriter2(ds, filename, NetcdfFileWriter.Version.netcdf3);
+      NetcdfFile result = writer.write();
+      result.close();
+      JOptionPane.showMessageDialog(this, "File successfully written");
+    } catch (Exception ioe) {
+      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+      ioe.printStackTrace();
+    }
+  }
+
+  void writeNcstream(String filename) {
+    try {
+      NcStreamWriter writer = new NcStreamWriter(ds, null);
+      OutputStream fos = new BufferedOutputStream( new FileOutputStream(filename), 50 * 1000);
+      writer.streamAll(fos);
+      fos.close();
+      JOptionPane.showMessageDialog(this, "File successfully written");
+    } catch (Exception ioe) {
+      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+      ioe.printStackTrace();
+    }
+  }
+
+  void writeNcstreamHeader(String filename) {
+    try {
+      NcStreamWriter writer = new NcStreamWriter(ds, null);
+      FileOutputStream fos = new FileOutputStream(filename);
+      writer.sendHeader(fos);
+      fos.close();
+      JOptionPane.showMessageDialog(this, "File successfully written");
+    } catch (Exception ioe) {
+      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+      ioe.printStackTrace();
+    }
+  }
 
   private CompareDialog dialog = null;
   public void compareDataset() {

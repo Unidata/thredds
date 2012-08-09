@@ -1650,23 +1650,25 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * <li> fileOut: local pathname where netdf-3 file will be written
    * </ol>
    *
-   * @param arg -in fileIn -out fileOut [-delay millisecs]
+   * @param arg -in <fileIn> -out <fileOut> [-isLargeFile] [-netcdf4]
    * @throws IOException on read or write error
    */
   public static void main(String arg[]) throws IOException {
-    String usage = "usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-isLargeFile]";
+    String usage = "usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-isLargeFile] [-netcdf4]";
     if (arg.length < 4) {
       System.out.println(usage);
       System.exit(0);
     }
 
     boolean isLargeFile = false;
+    boolean netcdf4 = false;
     String datasetIn = null, datasetOut = null;
     for (int i = 0; i < arg.length; i++) {
       String s = arg[i];
       if (s.equalsIgnoreCase("-in")) datasetIn = arg[i + 1];
       if (s.equalsIgnoreCase("-out")) datasetOut = arg[i + 1];
       if (s.equalsIgnoreCase("-isLargeFile")) isLargeFile = true;
+      if (s.equalsIgnoreCase("-netcdf4")) netcdf4 = true;
     }
     if ((datasetIn == null) || (datasetOut == null)) {
       System.out.println(usage);
@@ -1676,7 +1678,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     System.out.println("Read from " + datasetIn + " write to " + datasetOut);
 
-    NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, -1, isLargeFile);
+    NetcdfFileWriter.Version version = netcdf4? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
+    FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, version);
+    writer.getNetcdfFileWriter().setLargeFile(isLargeFile);
+    NetcdfFile ncfileOut = writer.write();
     ncfileIn.close();
     ncfileOut.close();
     System.out.println("NetcdfFile written = " + ncfileOut);

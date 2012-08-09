@@ -199,7 +199,7 @@ public class NcStreamWriter {
 
   private long copyChunks(OutputStream out, Variable oldVar, long maxChunkSize, boolean deflate) throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
-    FileWriter.ChunkingIndex index = new FileWriter.ChunkingIndex(oldVar.getShape());
+    FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(oldVar.getShape());
     long size = 0;
     while (index.currentElement() < index.getSize()) {
       try {
@@ -240,7 +240,7 @@ public class NcStreamWriter {
   static public void main2(String args[]) throws InvalidRangeException {
     int[] totalShape = new int[] {1, 40, 530, 240};
     int[] chunkShape = new int[] {1, 1, 530, 240};
-    FileWriter.ChunkingIndex index = new FileWriter.ChunkingIndex(totalShape);
+    FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(totalShape);
     long size = 0;
     while (index.currentElement() < index.getSize()) {
       int[] chunkOrigin = index.getCurrentCounter();
@@ -254,7 +254,7 @@ public class NcStreamWriter {
     long maxChunkElems = maxChunk / 4;
     int[] totalShape = new int[] {1, 40, 530, 240};
     //int[] chunkShape = new int[] {1, 1, 530, 240};
-    FileWriter.ChunkingIndex index = new FileWriter.ChunkingIndex(totalShape);
+    FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(totalShape);
     long size = 0;
     while (index.currentElement() < index.getSize()) {
       int[] chunkOrigin = index.getCurrentCounter();

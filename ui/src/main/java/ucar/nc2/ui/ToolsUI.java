@@ -42,18 +42,14 @@ import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.net.HTTPSession;
-import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.iosp.grib.GribServiceProvider;
-import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
 import ucar.nc2.*;
-import ucar.nc2.FileWriter;
-import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
@@ -874,6 +870,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
     ucar.nc2.FileWriter.setDebugFlags(debugFlags);
+    ucar.nc2.FileWriter2.setDebugFlags(debugFlags);
     ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
   }
 
@@ -1985,23 +1982,6 @@ public class ToolsUI extends JPanel {
       coordSysTable = new CoordSysTable(prefs);
       add(coordSysTable, BorderLayout.CENTER);
 
-      // allow to set a defintion file for GRIB
-      AbstractAction defAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          Boolean state = (Boolean) getValue(BAMutil.STATE);
-          useDefinition = state.booleanValue();
-          String tooltip = useDefinition ? "Use GRIB Definition File is ON" : "Use GRIB Definition File is OFF";
-          defButt.setToolTipText(tooltip);
-          if (useDefinition) {
-            defWindow.show();
-          }
-        }
-      };
-      String tooltip2 = useDefinition ? "Use GRIB Definition File is ON" : "Use GRIB Definition File is OFF";
-      BAMutil.setActionProperties(defAction, "dd", tooltip2, true, 'D', -1);
-      defAction.putValue(BAMutil.STATE, new Boolean(useDefinition));
-      defButt = BAMutil.addActionToContainer(buttPanel, defAction);
-
       defComboBox = new JComboBox(FmrcDefinition.getDefinitionFiles());
       defWindow = new IndependentWindow("GRIB Definition File", null, defComboBox);
       defWindow.setLocationRelativeTo(defButt);
@@ -2035,7 +2015,7 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton);
 
-      JButton dsButton = new JButton("DSdump");
+      JButton dsButton = new JButton("Object dump");
       dsButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if (ds != null) {
@@ -4617,102 +4597,7 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(imageButton);
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          GridDataset gridDataset = dsTable.getGridDataset();
-          if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
-            ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
-            detailTA.clear();
-            detailTA.appendLine(gdsImpl.getDetailInfo());
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
-        }
-      });
-      buttPanel.add(infoButton);
-
-      JButton wcsButton = new JButton("WCS");
-      wcsButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (ds != null) {
-            GridDataset gridDataset = dsTable.getGridDataset();
-            URI gdUri = null;
-            try {
-              gdUri = new URI("http://none.such.server/thredds/wcs/dataset");
-            } catch (URISyntaxException e1) {
-              e1.printStackTrace();
-              return;
-            }
-            GetCapabilities getCap =
-                    ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
-                            thredds.wcs.v1_0_0_1.WcsRequestBuilder
-                                    .newWcsRequestBuilder("1.0.0",
-                                            thredds.wcs.Request.Operation.GetCapabilities,
-                                            gridDataset, ""))
-                            .setServerUri(gdUri)
-                            .setSection(GetCapabilities.Section.All)
-                            .buildGetCapabilities();
-            try {
-              String gc = getCap.writeCapabilitiesReportAsString();
-              detailTA.setText(gc);
-              detailTA.gotoTop();
-              detailWindow.show();
-            } catch (WcsException e1) {
-              e1.printStackTrace();
-            }
-          }
-        }
-      });
-      buttPanel.add(wcsButton);
-
-      JButton invButton = new JButton("GridInv");
-      invButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          GridDataset gds = dsTable.getGridDataset();
-          if (gds == null) return;
-          GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gds, null);
-          try {
-            detailTA.setText(inv.writeXML(new Date()));
-            detailTA.gotoTop();
-            detailWindow.show();
-          } catch (Exception e1) {
-            e1.printStackTrace();
-          }
-        }
-      });
-      buttPanel.add(invButton);
-
-      AbstractAction writeAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          ucar.nc2.dt.GridDataset gds = dsTable.getGridDataset();
-          if (gds == null) return;
-          List<String> gridList = dsTable.getSelectedGrids();
-          if (gridList.size() == 0) {
-            JOptionPane.showMessageDialog(GeoGridPanel.this, "No Grids are selected");
-            return;
-          }
-          String location = gds.getLocationURI();
-          if (location == null) location = "test";
-          String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
-          int pos = location.lastIndexOf(".");
-          if (pos > 0)
-            location = location.substring(0, pos);
-          String filename = fileChooser.chooseFilenameToSave(location + suffix);
-          if (filename == null) return;
-
-          try {
-            NetcdfCFWriter.makeFile(filename, gds, gridList, null, null);
-            JOptionPane.showMessageDialog(GeoGridPanel.this, "File successfully written");
-          } catch (Exception ioe) {
-            JOptionPane.showMessageDialog(GeoGridPanel.this, "ERROR: " + ioe.getMessage());
-            ioe.printStackTrace();
-          }
-        }
-      };
-      BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
-      BAMutil.addActionToContainer(buttPanel, writeAction);
-
+      dsTable.addExtra(buttPanel, fileChooser);
     }
 
     private void makeGridUI() {
@@ -4907,6 +4792,7 @@ public class ToolsUI extends JPanel {
 
   }
 
+  ///////////////////////////////////////////////////////////
   private class ViewerPanel extends OpPanel {
     DatasetViewer dsViewer;
     JSplitPane split;
@@ -4943,38 +4829,6 @@ public class ToolsUI extends JPanel {
       };
       BAMutil.setActionProperties(dumpAction, "Dump", "NCDump", false, 'D', -1);
       BAMutil.addActionToContainer(buttPanel, dumpAction);
-
-      AbstractAction netcdfAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          String location = ncfile.getLocation();
-          if (location == null) location = "test";
-          int pos = location.lastIndexOf(".");
-          if (pos > 0)
-            location = location.substring(0, pos);
-
-          String filename = fileChooser.chooseFilenameToSave(location + ".nc");
-          if (filename == null) return;
-          writeNetCDF(filename);
-        }
-      };
-      BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-3 file", false, 'S', -1);
-      BAMutil.addActionToContainer(buttPanel, netcdfAction);
-
-      AbstractAction ncstreamAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          String location = ncfile.getLocation();
-          if (location == null) location = "test";
-          int pos = location.lastIndexOf(".");
-          if (pos > 0)
-            location = location.substring(0, pos);
-
-          String filename = fileChooser.chooseFilenameToSave(location + ".ncs");
-          if (filename == null) return;
-          writeNcstream(filename);
-        }
-      };
-      BAMutil.setActionProperties(ncstreamAction, "netcdf", "Write ncstream file", false, 'S', -1);
-      BAMutil.addActionToContainer(buttPanel, ncstreamAction);
 
       dsViewer.addActions(buttPanel);
     }
@@ -5026,42 +4880,6 @@ public class ToolsUI extends JPanel {
     void save() {
       super.save();
       dsViewer.save();
-    }
-
-    void writeNetCDF(String filename) {
-      try {
-        FileWriter.writeToFile(ncfile, filename, false, -1, false);
-        JOptionPane.showMessageDialog(this, "File successfully written");
-      } catch (Exception ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-      }
-    }
-
-    void writeNcstream(String filename) {
-      try {
-        NcStreamWriter writer = new NcStreamWriter(ncfile, null);
-        OutputStream fos = new BufferedOutputStream( new FileOutputStream(filename), 50 * 1000);
-        writer.streamAll(fos);
-        fos.close();
-        JOptionPane.showMessageDialog(this, "File successfully written");
-      } catch (Exception ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-      }
-    }
-
-    void writeNcstreamHeader(String filename) {
-      try {
-        NcStreamWriter writer = new NcStreamWriter(ncfile, null);
-        FileOutputStream fos = new FileOutputStream(filename);
-        writer.sendHeader(fos);
-        fos.close();
-        JOptionPane.showMessageDialog(this, "File successfully written");
-      } catch (Exception ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-        ioe.printStackTrace();
-      }
     }
 
   }

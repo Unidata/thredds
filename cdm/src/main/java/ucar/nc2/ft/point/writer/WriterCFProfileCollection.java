@@ -67,12 +67,14 @@ public class WriterCFProfileCollection extends CFPointWriter {
   private static final String zName = "z";
   private static final boolean debug = false;
 
+  ///////////////////////////////////////////////////
   private int name_strlen = 1;
+  private Variable id, index, time, record;
 
   public WriterCFProfileCollection(String fileOut, List<Attribute> atts) throws IOException {
     super(fileOut, atts);
 
-    ncfile.addGlobalAttribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name());
+    writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name()));
   }
 
   public void writeHeader(List<String> profileNames, List<VariableSimpleIF> dataVars, DateUnit timeUnit, String altUnits) throws IOException {
@@ -82,14 +84,11 @@ public class WriterCFProfileCollection extends CFPointWriter {
     createObsVariables(timeUnit);
     createDataVariables(dataVars);
 
-    ncfile.create(); // done with define mode
-    System.out.printf("%s%n", ncfile);
+    writer.create(); // done with define mode
+    record = writer.addRecordStructure();
+    // System.out.printf("%s%n", ncfile);
 
     writeProfileData(profileNames); // write out the profile info
-
-    // now write the observations
-    if (!(Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
-      throw new IllegalStateException("can't add record variable");
   }
 
   /*
@@ -118,47 +117,47 @@ public class WriterCFProfileCollection extends CFPointWriter {
     }
 
     // add the dimensions
-    ncfile.addUnlimitedDimension(recordDimName);
+    writer.addUnlimitedDimension(recordDimName);
 
     List<Dimension> profileDims = new ArrayList<Dimension>(1);
-    Dimension profileDim = ncfile.addDimension(profileDimName, nprofiles);
+    Dimension profileDim = writer.addDimension(null, profileDimName, nprofiles);
     profileDims.add(profileDim);
 
     // add the profile Variables using the profile dimension
-    Variable v = ncfile.addStringVariable(idName, profileDims, name_strlen);
-    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile identifier"));
-    ncfile.addVariableAttribute(v, new Attribute(CF.CF_ROLE, CF.PROFILE_ID));
+    id = writer.addStringVariable(null, idName, profileDims, name_strlen);
+    writer.addVariableAttribute(id, new Attribute(CDM.LONG_NAME, "profile identifier"));
+    writer.addVariableAttribute(id, new Attribute(CF.CF_ROLE, CF.PROFILE_ID));
 
-    v = ncfile.addVariable(latName, DataType.DOUBLE, profileDimName);
-    ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "degrees_north"));
-    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile latitude"));
+    Variable lat = writer.addVariable(null, latName, DataType.DOUBLE, profileDimName);
+    writer.addVariableAttribute(lat, new Attribute(CDM.UNITS, "degrees_north"));
+    writer.addVariableAttribute(lat, new Attribute(CDM.LONG_NAME, "profile latitude"));
 
-    v = ncfile.addVariable(lonName, DataType.DOUBLE, profileDimName);
-    ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, "degrees_east"));
-    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile longitude"));
+    Variable lon = writer.addVariable(null, lonName, DataType.DOUBLE, profileDimName);
+    writer.addVariableAttribute(lon, new Attribute(CDM.UNITS, "degrees_east"));
+    writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "profile longitude"));
 
     if (altUnits != null) {
-      v = ncfile.addVariable(altName, DataType.DOUBLE, profileDimName);
-      ncfile.addVariableAttribute(v, new Attribute(CDM.UNITS, altUnits));
-      ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile altitude"));
+      Variable alt = writer.addVariable(null, altName, DataType.DOUBLE, profileDimName);
+      writer.addVariableAttribute(alt, new Attribute(CDM.UNITS, altUnits));
+      writer.addVariableAttribute(alt, new Attribute(CDM.LONG_NAME, "profile altitude"));
     }
   }
 
   private void createObsVariables(DateUnit timeUnit) throws IOException {
 
     // time variable LOOK could also be time(profile)
-    Variable timeVar = ncfile.addVariable(timeName, DataType.DOUBLE, recordDimName);
-    ncfile.addVariableAttribute(timeVar, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
-    ncfile.addVariableAttribute(timeVar, new Attribute(CDM.LONG_NAME, "time of measurement"));
+    time = writer.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
+    writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
+    writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));
 
     /*
     Variable zVar = ncfile.addVariable(zName, DataType.DOUBLE, recordDimName);
     ncfile.addVariableAttribute(timeVar, new Attribute(CDM.UNITS, zUnit));
     ncfile.addVariableAttribute(timeVar, new Attribute(CDM.LONG_NAME, "time of measurement")); */
 
-    Variable v = ncfile.addVariable(profileIndexName, DataType.INT, recordDimName);
-    ncfile.addVariableAttribute(v, new Attribute(CDM.LONG_NAME, "profile index for this observation record"));
-    ncfile.addVariableAttribute(v, new Attribute(CF.INSTANCE_DIMENSION, profileDimName));
+    index = writer.addVariable(null, profileIndexName, DataType.INT, recordDimName);
+    writer.addVariableAttribute(index, new Attribute(CDM.LONG_NAME, "profile index for this observation record"));
+    writer.addVariableAttribute(index, new Attribute(CF.INSTANCE_DIMENSION, profileDimName));
   }
 
   private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
@@ -180,7 +179,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     // find all variables already in use 
     List<VariableSimpleIF> useDataVars = new ArrayList<VariableSimpleIF>(dataVars.size()); // LOOK doesnt make sense - must eliminate non data vars in calling routine
     for (VariableSimpleIF var : dataVars) {
-      if (ncfile.findVariable(var.getShortName()) == null) useDataVars.add(var);
+      if (writer.findVariable(var.getShortName()) == null) useDataVars.add(var);
     }
 
     // add the data variables all using the record dimension
@@ -192,7 +191,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
           dimNames.append(" ").append(d.getName());
       } */
 
-      Variable newVar = ncfile.addVariable(oldVar.getShortName(), oldVar.getDataType(), recordDimName);
+      Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), recordDimName);
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {  // LOOK filter ??
         newVar.addAttribute(att);
@@ -218,7 +217,7 @@ public class WriterCFProfileCollection extends CFPointWriter {
     }
 
     try {
-      ncfile.writeStringData(idName, idArray);
+      writer.writeStringData(id, idArray);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
@@ -258,9 +257,9 @@ public class WriterCFProfileCollection extends CFPointWriter {
     // write the recno record
     origin[0] = recno;
     try {
-      ncfile.write("record", origin, sArray);
-      ncfile.write(timeName, origin, timeArray);
-      ncfile.write(profileIndexName, origin, parentArray);
+      writer.write(record, origin, sArray);
+      writer.write(time, origin, timeArray);
+      writer.write(index, origin, parentArray);
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();

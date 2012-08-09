@@ -20,7 +20,9 @@ public class TestFileWriter2 {
 
   @Test
   public void problem() throws IOException {
-    copyFile("C:/temp/testDimScales.nc", "C:/temp/testDimScales.fromJna.nc4");
+    copyFile3("Q:/cdmUnitTest/ft/point/netcdf/Surface_Buoy_20090921_0000.nc", "C:/temp/Surface_Buoy_20090921_0000.nc");
+    NetcdfFile ncfile = NetcdfFile.open("C:/temp/Surface_Buoy_20090921_0000.nc");
+    ncfile.close();
   }
 
   public void readAllNetcdf4() throws IOException {
@@ -57,13 +59,25 @@ public class TestFileWriter2 {
     System.out.printf("copy %s to %s%n", datasetIn, datasetOut);
 
     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
-    FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut,  NetcdfFileWriter.NetcdfVersion.netcdf4);
+    FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut,  NetcdfFileWriter.Version.netcdf4);
     NetcdfFile ncfileOut = writer2.write();
     ncfileIn.close();
     ncfileOut.close();
     // System.out.println("NetcdfFile written = " + ncfileOut);
     return true;
   }
+
+  private boolean copyFile3(String datasetIn, String datasetOut) throws IOException {
+     System.out.printf("copy %s to %s%n", datasetIn, datasetOut);
+
+     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
+     FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut,  NetcdfFileWriter.Version.netcdf3);
+     NetcdfFile ncfileOut = writer2.write();
+     ncfileIn.close();
+     ncfileOut.close();
+     // System.out.println("NetcdfFile written = " + ncfileOut);
+     return true;
+   }
 
 
 }

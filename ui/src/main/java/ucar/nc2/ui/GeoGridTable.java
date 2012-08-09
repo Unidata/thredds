@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import thredds.wcs.v1_0_0_1.GetCapabilities;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
@@ -41,6 +42,8 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dataset.*;
 
+import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.*;
@@ -53,6 +56,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 import java.io.IOException;
@@ -61,7 +66,6 @@ import javax.swing.*;
 
 /**
  * A Swing widget to examine a GridDataset.
- *
  *
  * @author caron
  */
@@ -88,10 +92,10 @@ public class GeoGridTable extends JPanel {
         Variable v = vb.geogrid.getVariable();
         infoTA.clear();
         if (v == null)
-          infoTA.appendLine( "Cant find variable "+vb.getName()+" escaped= ("+NetcdfFile.escapeName( vb.getName())+")");
+          infoTA.appendLine("Cant find variable " + vb.getName() + " escaped= (" + NetcdfFile.escapeName(vb.getName()) + ")");
         else {
-          infoTA.appendLine( "Variable "+ v.getFullName()+" :");
-          infoTA.appendLine( v.toString());
+          infoTA.appendLine("Variable " + v.getFullName() + " :");
+          infoTA.appendLine(v.toString());
         }
         infoTA.gotoTop();
         infoWindow.show();
@@ -101,31 +105,25 @@ public class GeoGridTable extends JPanel {
     csPopup.addAction("WCS DescribeCoverage", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
-        if (gridDataset.findGridDatatype(vb.getName()) != null)
-        {
-          List<String> coverageIdList = Collections.singletonList( vb.getName() );
-          try
-          {
+        if (gridDataset.findGridDatatype(vb.getName()) != null) {
+          List<String> coverageIdList = Collections.singletonList(vb.getName());
+          try {
             DescribeCoverage descCov =
-                    ( (thredds.wcs.v1_0_0_1.DescribeCoverageBuilder)
+                    ((thredds.wcs.v1_0_0_1.DescribeCoverageBuilder)
                             thredds.wcs.v1_0_0_1.WcsRequestBuilder
-                                    .newWcsRequestBuilder( "1.0.0",
-                                                           thredds.wcs.Request.Operation.DescribeCoverage,
-                                                           gridDataset, "" ) )
-                            .setCoverageIdList( coverageIdList )
+                                    .newWcsRequestBuilder("1.0.0",
+                                            thredds.wcs.Request.Operation.DescribeCoverage,
+                                            gridDataset, ""))
+                            .setCoverageIdList(coverageIdList)
                             .buildDescribeCoverage();
             String dc = descCov.writeDescribeCoverageDocAsString();
             infoTA.clear();
             infoTA.appendLine(dc);
             infoTA.gotoTop();
             infoWindow.show();
-          }
-          catch (WcsException e1)
-          {
+          } catch (WcsException e1) {
             e1.printStackTrace();
-          }
-          catch (IOException e1)
-          {
+          } catch (IOException e1) {
             e1.printStackTrace();
           }
         }
@@ -134,8 +132,8 @@ public class GeoGridTable extends JPanel {
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage( "netcdfUI"), infoTA);
-    infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
+    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // optionally show coordinate systems and axis
     Component comp = varTable;
@@ -155,7 +153,104 @@ public class GeoGridTable extends JPanel {
     add(comp, BorderLayout.CENTER);
   }
 
-  public PreferencesExt getPrefs() { return prefs; }
+  public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
+
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
+    infoButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
+          ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
+          infoTA.clear();
+          infoTA.appendLine(gdsImpl.getDetailInfo());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      }
+    });
+    buttPanel.add(infoButton);
+
+    JButton wcsButton = new JButton("WCS");
+    wcsButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (gridDataset != null) {
+          URI gdUri = null;
+          try {
+            gdUri = new URI("http://none.such.server/thredds/wcs/dataset");
+          } catch (URISyntaxException e1) {
+            e1.printStackTrace();
+            return;
+          }
+          GetCapabilities getCap =
+                  ((thredds.wcs.v1_0_0_1.GetCapabilitiesBuilder)
+                          thredds.wcs.v1_0_0_1.WcsRequestBuilder
+                                  .newWcsRequestBuilder("1.0.0",
+                                          thredds.wcs.Request.Operation.GetCapabilities,
+                                          gridDataset, ""))
+                          .setServerUri(gdUri)
+                          .setSection(GetCapabilities.Section.All)
+                          .buildGetCapabilities();
+          try {
+            String gc = getCap.writeCapabilitiesReportAsString();
+            infoTA.setText(gc);
+            infoTA.gotoTop();
+            infoWindow.show();
+          } catch (WcsException e1) {
+            e1.printStackTrace();
+          }
+        }
+      }
+    });
+    buttPanel.add(wcsButton);
+
+    JButton invButton = new JButton("GridInv");
+    invButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (gridDataset == null) return;
+        GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
+        try {
+          infoTA.setText(inv.writeXML(new Date()));
+          infoTA.gotoTop();
+          infoWindow.show();
+        } catch (Exception e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+    buttPanel.add(invButton);
+
+    AbstractAction writeAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        if (gridDataset == null) return;
+        List<String> gridList = getSelectedGrids();
+        if (gridList.size() == 0) {
+          JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
+          return;
+        }
+        String location = gridDataset.getLocationURI();
+        if (location == null) location = "test";
+        String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
+        int pos = location.lastIndexOf(".");
+        if (pos > 0)
+          location = location.substring(0, pos);
+        String filename = fileChooser.chooseFilenameToSave(location + suffix);
+        if (filename == null) return;
+
+        try {
+          NetcdfCFWriter.makeFile(filename, gridDataset, gridList, null, null);
+          JOptionPane.showMessageDialog(GeoGridTable.this, "File successfully written");
+        } catch (Exception ioe) {
+          JOptionPane.showMessageDialog(GeoGridTable.this, "ERROR: " + ioe.getMessage());
+          ioe.printStackTrace();
+        }
+      }
+    };
+    BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
+    BAMutil.addActionToContainer(buttPanel, writeAction);
+  }
+
+  public PreferencesExt getPrefs() {
+    return prefs;
+  }
 
   public void save() {
     varTable.saveState(false);
@@ -172,8 +267,8 @@ public class GeoGridTable extends JPanel {
     List<GeogridBean> beanList = new ArrayList<GeogridBean>();
     java.util.List<GridDatatype> list = gridDataset.getGrids();
     for (GridDatatype g : list)
-      beanList.add (new GeogridBean( g));
-    varTable.setBeans( beanList);
+      beanList.add(new GeogridBean(g));
+    varTable.setBeans(beanList);
 
     if (csTable != null) {
       List<GeoCoordinateSystemBean> csList = new ArrayList<GeoCoordinateSystemBean>();
@@ -190,8 +285,8 @@ public class GeoGridTable extends JPanel {
             axisList.add(axisBean);
         }
       }
-      csTable.setBeans( csList);
-      axisTable.setBeans( axisList);
+      csTable.setBeans(csList);
+      axisTable.setBeans(axisList);
     }
   }
 
@@ -201,8 +296,8 @@ public class GeoGridTable extends JPanel {
     List<GeogridBean> beanList = new ArrayList<GeogridBean>();
     java.util.List<GridDatatype> list = gridDataset.getGrids();
     for (GridDatatype g : list)
-      beanList.add (new GeogridBean( g));
-    varTable.setBeans( beanList);
+      beanList.add(new GeogridBean(g));
+    varTable.setBeans(beanList);
 
     if (csTable != null) {
       List<GeoCoordinateSystemBean> csList = new ArrayList<GeoCoordinateSystemBean>();
@@ -219,8 +314,8 @@ public class GeoGridTable extends JPanel {
             axisList.add(axisBean);
         }
       }
-      csTable.setBeans( csList);
-      axisTable.setBeans( axisList);
+      csTable.setBeans(csList);
+      axisTable.setBeans(axisList);
     }
   }
 
@@ -230,14 +325,16 @@ public class GeoGridTable extends JPanel {
     return false;
   }
 
-  public GridDataset getGridDataset() { return gridDataset; }
+  public GridDataset getGridDataset() {
+    return gridDataset;
+  }
 
   public List<String> getSelectedGrids() {
     ArrayList grids = varTable.getSelectedBeans();
     List<String> result = new ArrayList<String>();
     for (Object bean : grids) {
       GeogridBean gbean = (GeogridBean) bean;
-      result.add( gbean.getName());
+      result.add(gbean.getName());
     }
     return result;
   }
@@ -252,7 +349,7 @@ public class GeoGridTable extends JPanel {
       else
         return null;
     }
-    return gridDataset.findGridDatatype( vb.getName());
+    return gridDataset.findGridDatatype(vb.getName());
   }
 
   public class GeogridBean {
@@ -263,33 +360,34 @@ public class GeoGridTable extends JPanel {
     private String dims, x, y, z, t, ens, rt;
 
     // no-arg constructor
-    public GeogridBean() {}
+    public GeogridBean() {
+    }
 
     // create from a dataset
-    public GeogridBean( GridDatatype geogrid) {
+    public GeogridBean(GridDatatype geogrid) {
       this.geogrid = geogrid;
-      setName( geogrid.getFullName());
-      setDescription( geogrid.getDescription());
-      setUnits( geogrid.getUnitsString());
+      setName(geogrid.getFullName());
+      setDescription(geogrid.getDescription());
+      setUnits(geogrid.getUnitsString());
 
       GridCoordSystem gcs = geogrid.getCoordinateSystem();
-      setCoordSystem( gcs.getName());
+      setCoordSystem(gcs.getName());
 
-            // collect dimensions
+      // collect dimensions
       StringBuffer buff = new StringBuffer();
       java.util.List dims = geogrid.getDimensions();
-      for (int j=0; j<dims.size(); j++) {
+      for (int j = 0; j < dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
-        if (j>0) buff.append(",");
+        if (j > 0) buff.append(",");
         buff.append(dim.getLength());
       }
-      setShape( buff.toString());
+      setShape(buff.toString());
 
       x = getAxisName(gcs.getXHorizAxis());
       y = getAxisName(gcs.getYHorizAxis());
       z = getAxisName(gcs.getVerticalAxis());
       t = getAxisName(gcs.getTimeAxis());
-      rt =  getAxisName(gcs.getRunTimeAxis());
+      rt = getAxisName(gcs.getRunTimeAxis());
       ens = getAxisName(gcs.getEnsembleAxis());
 
       /* Dimension d= geogrid.getXDimension();
@@ -318,26 +416,69 @@ public class GeoGridTable extends JPanel {
         setRt( axis.getDimension(0).getName()); */
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+      return name;
+    }
 
-    public String getDescription() { return desc; }
-    public void setDescription(String desc) { this.desc = desc; }
+    public void setName(String name) {
+      this.name = name;
+    }
 
-    public String getUnits() { return units; }
-    public void setUnits(String units) { this.units = units; }
+    public String getDescription() {
+      return desc;
+    }
 
-    public String getCoordSystem() { return csys; }
-    public void setCoordSystem(String csys) { this.csys = csys; }
+    public void setDescription(String desc) {
+      this.desc = desc;
+    }
 
-    public String getX() { return x; }
-    public String getY() { return y; }
-    public String getZ() { return z; }
-    public String getT() { return t; }
-    public String getEns() { return ens; }
-    public String getRt() { return rt; }
-    public String getShape() { return dims; }
-    public void setShape(String dims) { this.dims = dims; }
+    public String getUnits() {
+      return units;
+    }
+
+    public void setUnits(String units) {
+      this.units = units;
+    }
+
+    public String getCoordSystem() {
+      return csys;
+    }
+
+    public void setCoordSystem(String csys) {
+      this.csys = csys;
+    }
+
+    public String getX() {
+      return x;
+    }
+
+    public String getY() {
+      return y;
+    }
+
+    public String getZ() {
+      return z;
+    }
+
+    public String getT() {
+      return t;
+    }
+
+    public String getEns() {
+      return ens;
+    }
+
+    public String getRt() {
+      return rt;
+    }
+
+    public String getShape() {
+      return dims;
+    }
+
+    public void setShape(String dims) {
+      this.dims = dims;
+    }
 
     private String getAxisName(CoordinateAxis axis) {
       if (axis != null)
@@ -352,12 +493,13 @@ public class GeoGridTable extends JPanel {
     private int ngrids = -1;
 
     // no-arg constructor
-    public GeoCoordinateSystemBean() {}
+    public GeoCoordinateSystemBean() {
+    }
 
-    public GeoCoordinateSystemBean( GridDataset.Gridset gset) {
+    public GeoCoordinateSystemBean(GridDataset.Gridset gset) {
       gcs = gset.getGeoCoordSystem();
 
-      setNGrids( gset.getGrids().size());
+      setNGrids(gset.getGrids().size());
 
       ProjectionImpl proj = gcs.getProjection();
       if (proj != null)
@@ -371,40 +513,70 @@ public class GeoGridTable extends JPanel {
         if (count > 0) buff.append("; ");
         // buff.append( ct.getTransformType());
         if (ct instanceof VerticalCT) {
-          buff.append( ((VerticalCT)ct).getVerticalTransformType());
+          buff.append(((VerticalCT) ct).getVerticalTransformType());
           count++;
         }
         if (ct instanceof ProjectionCT) {
-          ProjectionCT pct = (ProjectionCT)ct;
+          ProjectionCT pct = (ProjectionCT) ct;
           if (pct.getProjection() == null) { // only show CT if theres no projection
             buff.append("-").append(pct.getName());
             count++;
           }
         }
       }
-      setCoordTransforms( buff.toString());
+      setCoordTransforms(buff.toString());
     }
 
-    public String getName() { return gcs.getName(); }
+    public String getName() {
+      return gcs.getName();
+    }
 
-    public boolean isRegularSpatial() { return gcs.isRegularSpatial(); }
-    public boolean isLatLon() { return gcs.isLatLon(); }
-    public boolean isGeoXY() { return ((GridCoordSys) gcs).isGeoXY(); }
+    public boolean isRegularSpatial() {
+      return gcs.isRegularSpatial();
+    }
+
+    public boolean isLatLon() {
+      return gcs.isLatLon();
+    }
+
+    public boolean isGeoXY() {
+      return ((GridCoordSys) gcs).isGeoXY();
+    }
 
     /* public boolean isProductSet() { return isProductSet; }
     public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }  */
 
-    public int getDomainRank() { return gcs.getDomain().size(); }
-    public int getRangeRank() { return gcs.getCoordinateAxes().size(); }
+    public int getDomainRank() {
+      return gcs.getDomain().size();
+    }
 
-    public int getNGrids() { return ngrids; }
-    public void setNGrids(int ngrids) { this.ngrids = ngrids; }
+    public int getRangeRank() {
+      return gcs.getCoordinateAxes().size();
+    }
 
-    public String getProjection() { return proj; }
-    public void setProjection(String proj) { this.proj = proj; }
+    public int getNGrids() {
+      return ngrids;
+    }
 
-    public String getCoordTransforms() { return coordTrans; }
-    public void setCoordTransforms(String coordTrans) { this.coordTrans = coordTrans; }
+    public void setNGrids(int ngrids) {
+      this.ngrids = ngrids;
+    }
+
+    public String getProjection() {
+      return proj;
+    }
+
+    public void setProjection(String proj) {
+      this.proj = proj;
+    }
+
+    public String getCoordTransforms() {
+      return coordTrans;
+    }
+
+    public void setCoordTransforms(String coordTrans) {
+      this.coordTrans = coordTrans;
+    }
   }
 
   public class GeoAxisBean {
@@ -412,29 +584,30 @@ public class GeoGridTable extends JPanel {
 
     CoordinateAxis axis;
     CoordinateSystem firstCoordSys = null;
-    String name, desc, units, axisType="", positive= "", incr = "";
+    String name, desc, units, axisType = "", positive = "", incr = "";
     String dims, shape, csNames;
     boolean isCoordVar;
 
     // no-arg constructor
-    public GeoAxisBean() {}
+    public GeoAxisBean() {
+    }
 
     // create from a dataset
-    public GeoAxisBean( CoordinateAxis v) {
+    public GeoAxisBean(CoordinateAxis v) {
       this.axis = v;
 
-      setName( v.getFullName());
-      setCoordVar( v.isCoordinateVariable());
-      setDescription( v.getDescription());
-      setUnits( v.getUnitsString());
+      setName(v.getFullName());
+      setCoordVar(v.isCoordinateVariable());
+      setDescription(v.getDescription());
+      setUnits(v.getUnitsString());
 
-            // collect dimensions
+      // collect dimensions
       StringBuffer lens = new StringBuffer();
       StringBuffer names = new StringBuffer();
       java.util.List dims = v.getDimensions();
-      for (int j=0; j<dims.size(); j++) {
+      for (int j = 0; j < dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
-        if (j>0) {
+        if (j > 0) {
           lens.append(",");
           names.append(",");
         }
@@ -442,61 +615,107 @@ public class GeoGridTable extends JPanel {
         names.append(name);
         lens.append(dim.getLength());
       }
-      setDims( names.toString());
-      setShape( lens.toString());
+      setDims(names.toString());
+      setShape(lens.toString());
 
       AxisType at = v.getAxisType();
       if (at != null)
-        setAxisType( at.toString());
+        setAxisType(at.toString());
       String p = v.getPositive();
       if (p != null)
-        setPositive( p);
+        setPositive(p);
 
       if (v instanceof CoordinateAxis1D) {
         CoordinateAxis1D v1 = (CoordinateAxis1D) v;
         if (v1.isRegular())
-          setRegular( Double.toString( v1.getIncrement()));
+          setRegular(Double.toString(v1.getIncrement()));
       }
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+      return name;
+    }
 
-    public boolean isCoordVar() { return isCoordVar; }
-    public void setCoordVar(boolean isCoordVar) { this.isCoordVar = isCoordVar; }
+    public void setName(String name) {
+      this.name = name;
+    }
 
-    public String getShape() { return shape; }
-    public void setShape(String shape) { this.shape = shape; }
+    public boolean isCoordVar() {
+      return isCoordVar;
+    }
 
-    public String getAxisType() { return axisType; }
-    public void setAxisType(String axisType) { this.axisType = axisType; }
+    public void setCoordVar(boolean isCoordVar) {
+      this.isCoordVar = isCoordVar;
+    }
 
-    public String getDims() { return dims; }
-    public void setDims(String dims) { this.dims = dims; }
+    public String getShape() {
+      return shape;
+    }
 
-    public String getDescription() { return desc; }
-    public void setDescription(String desc) { this.desc = desc; }
+    public void setShape(String shape) {
+      this.shape = shape;
+    }
 
-    public String getUnits() { return units; }
-    public void setUnits(String units) { this.units = (units == null) ? "null" : units; }
+    public String getAxisType() {
+      return axisType;
+    }
 
-    public String getPositive() { return positive; }
-    public void setPositive(String positive) { this.positive = positive; }
+    public void setAxisType(String axisType) {
+      this.axisType = axisType;
+    }
 
-    public String getRegular() { return incr; }
-    public void setRegular(String incr) { this.incr = incr; }
+    public String getDims() {
+      return dims;
+    }
+
+    public void setDims(String dims) {
+      this.dims = dims;
+    }
+
+    public String getDescription() {
+      return desc;
+    }
+
+    public void setDescription(String desc) {
+      this.desc = desc;
+    }
+
+    public String getUnits() {
+      return units;
+    }
+
+    public void setUnits(String units) {
+      this.units = (units == null) ? "null" : units;
+    }
+
+    public String getPositive() {
+      return positive;
+    }
+
+    public void setPositive(String positive) {
+      this.positive = positive;
+    }
+
+    public String getRegular() {
+      return incr;
+    }
+
+    public void setRegular(String incr) {
+      this.incr = incr;
+    }
   }
 
 
-  /** Wrap this in a JDialog component.
+  /**
+   * Wrap this in a JDialog component.
    *
-   * @param parent      JFrame (application) or JApplet (applet) or null
-   * @param title       dialog window title
-   * @param modal       modal dialog or not
+   * @param parent JFrame (application) or JApplet (applet) or null
+   * @param title  dialog window title
+   * @param modal  modal dialog or not
    * @return JDialog
    */
-  public JDialog makeDialog( RootPaneContainer parent, String title, boolean modal) {
-      return new Dialog( parent, title, modal);
+  public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {
+    return new Dialog(parent, title, modal);
   }
 
   private class Dialog extends JDialog {
@@ -505,10 +724,10 @@ public class GeoGridTable extends JPanel {
       super(parent instanceof Frame ? (Frame) parent : null, title, modal);
 
       // L&F may change
-      UIManager.addPropertyChangeListener( new PropertyChangeListener() {
-        public void propertyChange( PropertyChangeEvent e) {
+      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI( GeoGridTable.Dialog.this);
+            SwingUtilities.updateComponentTreeUI(GeoGridTable.Dialog.this);
         }
       });
 
@@ -522,10 +741,10 @@ public class GeoGridTable extends JPanel {
         }
       }); */
 
-     // add it to contentPane
+      // add it to contentPane
       Container cp = getContentPane();
       cp.setLayout(new BorderLayout());
-      cp.add( GeoGridTable.this, BorderLayout.CENTER);
+      cp.add(GeoGridTable.this, BorderLayout.CENTER);
       pack();
     }
   }

@@ -1,3 +1,35 @@
+/*
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
+ *
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 package ucar.nc2;
 
 import ucar.ma2.*;
@@ -13,7 +45,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Helper class for writing Netcdf 3 or 4 files
+ * Writing Netcdf 3 or 4 disk files.
  *
  * @author caron
  * @since 7/25/12
@@ -23,8 +55,9 @@ public class NetcdfFileWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFileWriter.class);
   static private Set<DataType> valid = EnumSet.of(DataType.BYTE, DataType.CHAR, DataType.SHORT, DataType.INT,
           DataType.DOUBLE, DataType.FLOAT);
+  static private final boolean debug = false, debugWrite = false;
 
-  public enum NetcdfVersion {netcdf3, netcdf4 }
+  public enum Version {netcdf3, netcdf4 }
 
   /**
    * Open an existing Netcdf file for writing data. Fill mode is true.
@@ -45,12 +78,12 @@ public class NetcdfFileWriter {
    * @return new file that can be written to
    * @throws IOException on I/O error
    */
-  static public NetcdfFileWriter createNew(NetcdfVersion version, String location) throws IOException {
+  static public NetcdfFileWriter createNew(Version version, String location) throws IOException {
     return new NetcdfFileWriter(version, location, false);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
-  private String location;
+  private final String location;
   private IOServiceProviderWriter spiw;
 
   // modes
@@ -72,14 +105,14 @@ public class NetcdfFileWriter {
    * @param isExisting true if file already exists
    * @throws IOException on I/O error
    */
-  private NetcdfFileWriter(NetcdfVersion version, String location, boolean isExisting) throws IOException {
+  private NetcdfFileWriter(Version version, String location, boolean isExisting) throws IOException {
     this(version, null, null, location, isExisting);
   }
 
   /**
    * Open or create a new Netcdf file, put it into define mode to allow
    * writing, using the provided IOSP and RAF.
-   * This allows specialized writers. LOOK who did this?
+   * This allows specialized writers.
    *
    * @param iospw IO service provider to use, if null use standard
    * @param raf Random access file to use, may be null if iospw is, otherwise must be opened read/write
@@ -87,11 +120,10 @@ public class NetcdfFileWriter {
    * @param isExisting true if file already exists
    * @throws IOException on I/O error
    */
-  protected NetcdfFileWriter(NetcdfVersion version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
+  protected NetcdfFileWriter(Version version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
           String location, boolean isExisting) throws IOException {
-    super();
-    this.location = location;
 
+    this.location = location;
 
     if (isExisting) {
       if (raf == null)
@@ -104,7 +136,7 @@ public class NetcdfFileWriter {
 
     } else {
       isNewFile = true;
-      isNetcdf4 = version == NetcdfVersion.netcdf4;
+      isNetcdf4 = version == Version.netcdf4;
     }
 
     if (iospw == null) {
@@ -171,6 +203,11 @@ public class NetcdfFileWriter {
   public boolean isDefineMode() { return defineMode; }
 
   NetcdfFile getNetcdfFile() { return ncfile; }
+  Version getVersion() { return isNetcdf4? Version.netcdf4 : Version.netcdf3; }
+
+  public Variable findVariable(String fullNameEscaped) {
+    return ncfile.findVariable(fullNameEscaped);
+  }
 
   ////////////////////////////////////////////
   //// use these calls in define mode
@@ -186,7 +223,11 @@ public class NetcdfFileWriter {
     return addDimension(g, dimName, length, true, false, false);
   }
 
-  /**
+  public Dimension addUnlimitedDimension(String dimName) {
+     return addDimension(null, dimName, 0, true, true, false);
+   }
+
+   /**
    * Add a Dimension to the file. Must be in define mode.
    *
    * @param dimName          name of dimension
@@ -251,6 +292,7 @@ public class NetcdfFileWriter {
 
   /**
    * Add a Global attribute to the file. Must be in define mode.
+   * @param g the group to add to. if null, use root group
    * @param att the attribute.
    * @return the created attribute
    */
@@ -357,13 +399,13 @@ public class NetcdfFileWriter {
     if (!isValidDataType(dataType))
       throw new IllegalArgumentException("illegal dataType: "+dataType);
 
-    // check unlimited
-    int count = 0;
-    for (Dimension d : dims) {
-      if (d.isUnlimited())
-        if (count != 0)
-          throw new IllegalArgumentException("Unlimited dimension "+d+" must be first instead its  ="+count);
-      count++;
+    // check unlimited if netccdf-3
+    if (!isNetcdf4) {
+      for (int i=0; i<dims.size(); i++) {
+        Dimension d = dims.get(i);
+        if (d.isUnlimited() && (i != 0))
+          throw new IllegalArgumentException("Unlimited dimension "+d.getName()+" must be first (outermost) in netcdf-3 ");
+      }
     }
 
     Variable v = new Variable(ncfile, g, null, shortName);
@@ -371,7 +413,7 @@ public class NetcdfFileWriter {
     v.setDimensions(dims);
 
     long size = v.getSize() * v.getElementSize();
-    if (size > N3iosp.MAX_VARSIZE)
+    if (!isNetcdf4 && size > N3iosp.MAX_VARSIZE)
       throw new IllegalArgumentException("Variable size in bytes "+size+" may not exceed "+ N3iosp.MAX_VARSIZE);
 
     ncfile.addVariable(g, v);
@@ -392,7 +434,7 @@ public class NetcdfFileWriter {
   public Variable addStringVariable(Group g, String varName, List<Dimension> dims, int max_strlen) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
-    if (!N3iosp.isValidNetcdf3ObjectName(varName))
+    if (!isValidObjectName(varName))
       throw new IllegalArgumentException("illegal netCDF-3 variable name: "+varName);
 
     Variable v = new Variable(ncfile, g, null, varName);
@@ -430,11 +472,17 @@ public class NetcdfFileWriter {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
-    if (!N3iosp.isValidNetcdf3ObjectName(att.getName())) {
-      String attName = N3iosp.createValidNetcdf3ObjectName(att.getName());
+    if (!isValidObjectName(att.getName())) {
+      String attName = createValidObjectName(att.getName());
       log.warn("illegal netCDF-3 attribute name= "+att.getName() + " change to "+ attName);
       att = new Attribute(attName, att.getValues());
     }
+
+    if (att.getLength() == 0)
+      System.out.println("HEY");
+
+    if (v.getDataType() == DataType.CHAR && att.getName().equals("_FillValue"))
+      System.out.println("HEY");
 
     v.addAttribute(att);
   }
@@ -471,7 +519,7 @@ public class NetcdfFileWriter {
 
     v.remove(att);
     att = new Attribute( newName, att.getValues());
-    v.addAttribute( att);
+    v.addAttribute(att);
     return att;
   }
 
@@ -585,7 +633,7 @@ public class NetcdfFileWriter {
       if (oldVar != null)
         oldList.add(oldVar);
     }
-    FileWriter2 fileWriter2 = new FileWriter2(oldFile, location, isNetcdf4 ? NetcdfVersion.netcdf4 : NetcdfVersion.netcdf3);
+    FileWriter2 fileWriter2 = new FileWriter2(oldFile, location, isNetcdf4 ? Version.netcdf4 : Version.netcdf3);
     fileWriter2.copyVarData(oldList, recordVar);  // LOOK ??
     flush();
 
@@ -593,6 +641,14 @@ public class NetcdfFileWriter {
     oldFile.close();
     if (!tmpFile.delete())
       throw new RuntimeException("Cant delete "+location);
+  }
+
+  public Structure addRecordStructure() {
+    if (isNetcdf4) return null;
+    boolean ok = (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+    if (!ok)
+      throw new IllegalStateException("can't add record variable");
+    return (Structure) ncfile.findVariable("record");
   }
 
   ////////////////////////////////////////////
@@ -686,5 +742,217 @@ public class NetcdfFileWriter {
       spiw = null;
     }
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /* static private long maxSize = 50 * 1000 * 1000; // 50 Mbytes
+  private List<FileWriterProgressListener> progressListeners;
+
+  /*
+   * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
+   * When theres a record variable, its much more efficient to use it.
+   *
+   * @param oldVar   variable from the original file, with data in them
+   * @return total number of bytes written
+   * @throws IOException if I/O error
+   *
+  public long copyData(Variable oldVar) throws IOException {
+
+    if (debug)
+      System.out.println("write var= " + oldVar.getShortName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
+
+    long size = oldVar.getSize() * oldVar.getElementSize();
+
+    if (size <= maxSize) {
+      copyAll(oldVar, findVariable(oldVar.getFullNameEscaped()));
+    } else {
+      copySome(oldVar, findVariable(oldVar.getFullNameEscaped()), maxSize);
+    }
+
+    return size;
+  }
+
+  // copy all the data in oldVar to the newVar
+  private void copyAll(Variable oldVar, Variable newVar) throws IOException {
+
+    Array data = oldVar.read();
+    try {
+      if (!isNetcdf4 && oldVar.getDataType() == DataType.STRING) {
+        data = convertToChar(newVar, data);
+      }
+      if (data.getSize() > 0)  // zero when record dimension = 0
+        write(newVar, data);
+
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+      throw new IOException(e.getMessage() + " for Variable " + oldVar.getFullName());
+    }
+  }
+
+  /*
+   * Copies data from {@code oldVar} to {@code newVar}. The writes are done in a series of chunks no larger than
+   * {@code maxChunkSize} bytes.
+   *
+   * @param oldVar       a variable from the original file to copy data from.
+   * @param newVar       a variable from the original file to copy data from.
+   * @param maxChunkSize the size, <b>in bytes</b>, of the largest chunk to write.
+   * @throws IOException if an I/O error occurs.
+   *
+  private void copySome(Variable oldVar, Variable newVar, long maxChunkSize) throws IOException {
+    long maxChunkElems = maxChunkSize / oldVar.getElementSize();
+    long byteWriteTotal = 0;
+
+    FileWriterProgressEvent event = new FileWriterProgressEvent();
+    sendEvent(event.setStatus("Variable: " + oldVar.getShortName()));
+
+    ChunkingIndex index = new ChunkingIndex(oldVar.getShape());
+    while (index.currentElement() < index.getSize()) {
+      try {
+        int[] chunkOrigin = index.getCurrentCounter();
+        int[] chunkShape = index.computeChunkShape(maxChunkElems);
+
+        sendEvent(event.setWriteStatus("Reading chunk from variable: " + oldVar.getShortName()));
+        Array data = oldVar.read(chunkOrigin, chunkShape);
+        if (!isNetcdf4 && oldVar.getDataType() == DataType.STRING) {
+          data = convertToChar(newVar, data);
+        }
+
+        if (data.getSize() > 0) {// zero when record dimension = 0
+          event.setWriteStatus("Writing chunk of variable: " + oldVar.getShortName());
+          sendEvent(event.setBytesToWrite(data.getSize()));
+
+          write(newVar, chunkOrigin, data);
+          if (debugWrite) System.out.println(" write " + data.getSize() + " bytes at " + new Section(chunkOrigin, chunkShape));
+
+          byteWriteTotal += data.getSize();
+
+          event.setBytesWritten(byteWriteTotal);
+          sendEvent(event.setProgressPercent(100.0 * byteWriteTotal / oldVar.getSize()));
+        }
+
+        index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
+
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+        throw new IOException(e.getMessage());
+      }
+    }
+  }
+
+  private void sendEvent(FileWriterProgressEvent event) {
+    if (progressListeners != null) {
+        for (FileWriterProgressListener listener : progressListeners) {
+          listener.writeStatus(event);
+        }
+      }
+  }
+
+  private Array convertToChar(Variable newVar, Array oldData) {
+    ArrayChar newData = (ArrayChar) Array.factory(DataType.CHAR, newVar.getShape());
+    Index ima = newData.getIndex();
+    IndexIterator ii = oldData.getIndexIterator();
+    while (ii.hasNext()) {
+      String s = (String) ii.getObjectNext();
+      int[] c = ii.getCurrentCounter();
+      for (int i = 0; i < c.length; i++)
+        ima.setDim(i, c[i]);
+      newData.setString(ima, s);
+    }
+    return newData;
+  }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // contributed by  cwardgar@usgs.gov 4/12/2010
+
+  /*
+   * An index that computes chunk shapes. It is intended to be used to compute the origins and shapes for a series
+   * of contiguous writes to a multidimensional array.
+   * It writes the first n elements (n < maxChunkElems), then the next, etc.
+   *
+  public static class ChunkingIndex extends Index {
+    public ChunkingIndex(int[] shape) {
+      super(shape);
+    }
+
+    /*
+     * Computes the shape of the largest possible <b>contiguous</b> chunk, starting at {@link #getCurrentCounter()}
+     * and with {@code numElems <= maxChunkElems}.
+     *
+     * @param maxChunkElems the maximum number of elements in the chunk shape. The actual element count of the shape
+     *                      returned is likely to be different, and can be found with {@link Index#computeSize}.
+     * @return the shape of the largest possible contiguous chunk.
+     *
+    public int[] computeChunkShape(long maxChunkElems) {
+      int[] chunkShape = new int[rank];
+
+      for (int iDim = 0; iDim < rank; ++iDim) {
+        int size = (int) (maxChunkElems / stride[iDim]);
+        size = (size == 0) ? 1 : size;
+        size = Math.min(size, shape[iDim] - current[iDim]);
+        chunkShape[iDim] = size;
+      }
+
+      return chunkShape;
+    }
+  }
+
+  public static class FileWriterProgressEvent {
+    private double progressPercent;
+    private long bytesWritten;
+    private long bytesToWrite;
+    private String status;
+    private String writeStatus;
+
+    public FileWriterProgressEvent setProgressPercent(double progressPercent) {
+      this.progressPercent = progressPercent;
+      return this;
+    }
+
+    public double getProgressPercent() {
+      return progressPercent;
+    }
+
+    public FileWriterProgressEvent setBytesWritten(long bytesWritten) {
+      this.bytesWritten = bytesWritten;
+      this.progressPercent = progressPercent;
+      return this;
+    }
+
+    public long getBytesWritten() {
+      return bytesWritten;
+    }
+
+    public FileWriterProgressEvent setBytesToWrite(long bytesToWrite) {
+      this.bytesToWrite = bytesToWrite;
+      return this;
+    }
+
+    public long getBytesToWrite() {
+      return bytesToWrite;
+    }
+
+    public FileWriterProgressEvent setStatus(String status) {
+      this.status = status;
+      return this;
+    }
+
+    public String getStatus() {
+      return status;
+    }
+
+    public FileWriterProgressEvent setWriteStatus(String writeStatus) {
+      this.writeStatus = writeStatus;
+      return this;
+    }
+
+    public String getWriteStatus() {
+      return writeStatus;
+    }
+
+  }
+
+  public static interface FileWriterProgressListener {
+    void writeProgress(FileWriterProgressEvent event);
+    void writeStatus(FileWriterProgressEvent event);
+  } */
 
 }

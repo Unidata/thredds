@@ -962,6 +962,8 @@ public class N3header {
 
   // write a string then pad to 4 byte boundary
   private void writeString(String s) throws IOException {
+ //   if (s.length() == 0)
+   //   System.out.println("HEY");
     byte[] b = s.getBytes("UTF-8"); // all strings are encoded in UTF-8 Unicode.
     raf.writeInt(b.length);
     raf.write(b);

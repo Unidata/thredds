@@ -80,347 +80,355 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
 @Controller
-@RequestMapping(value="/ncss/grid/")
-class GridDataController extends  AbstratNcssDataRequestController{
+@RequestMapping(value = "/ncss/grid/")
+class GridDataController extends AbstratNcssDataRequestController {
 
-	static private final Logger log = LoggerFactory.getLogger(GridDataController.class);
-	
-	private HttpHeaders httpHeaders = new HttpHeaders(); 
-	private File netcdfResult;
-	private long maxFileDownloadSize = -1L; 
-	
-	@RequestMapping(value = "**", params = { "!latitude","!longitude", "var"})
-	void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response )throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException, UnsupportedOperationException, TimeOutOfWindowException{
-		
-		if( validationResult.hasErrors() ){			
-			handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult );			
-		}else{
-			//Only netcdf format is supported for Grid subssetting
-			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.GRID_REQUEST  );		
-				
-			checkRequestedVars(gridDataset,  params);
-			
-			if( isSpatialSubset(params) ){
-				spatialSubset(params, response);	
-			}else{
-				coordinatesSubset(params, response);
-			}
-			
-			//Headers...
-			setResponseHeaders(response, httpHeaders );
-			IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);			
-			response.flushBuffer();
-			response.getOutputStream().close();
-			response.setStatus(HttpServletResponse.SC_OK);		
-		}
-	}
-	
-	private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response )throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException,VariableNotContainedInDatasetException, InvalidBBOXException, TimeOutOfWindowException{
-		
-		LatLonRect maxBB = getGridDataset().getBoundingBox();
-		LatLonRect requestedBB = setBBForRequest(params,  gridDataset);			
-        
-		boolean hasBB = !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLatitude(), maxBB.getUpperRightPoint().getLatitude()) ||
-				!ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLatitude(), maxBB.getLowerLeftPoint().getLatitude()) ||
-                !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLongitude(), maxBB.getUpperRightPoint().getLongitude()) ||
-                !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLongitude(), maxBB.getLowerLeftPoint().getLongitude()); 
+  static private final Logger log = LoggerFactory.getLogger(GridDataController.class);
 
-		if(checkBB(maxBB, requestedBB)){        																	
-			Range zRange = null;
-			//Request with zRange --> adds a limitation: only variables with the same vertical level???
-			if(params.getVertCoord()!=null || params.getVertStride() > 1)
-				zRange = getZRange(getGridDataset(), params.getVertCoord(),  params.getVertStride(), params.getVar());
-				
-				List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
-				CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get( wantedDates.size()-1 ));
-				
-				NetcdfCFWriter writer = new NetcdfCFWriter();
-				maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);   				
-				if(maxFileDownloadSize > 0){    		
-					long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon() );
-					if(estimatedSize > maxFileDownloadSize ){
-						throw new RequestTooLargeException( "NCSS request too large = "+estimatedSize+" max = " + maxFileDownloadSize );
-					}
-				}
-				makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon() );        	        	        	
-		}       
-	}
-	
+  private HttpHeaders httpHeaders = new HttpHeaders();
+  private File netcdfResult;
+  private long maxFileDownloadSize = -1L;
 
-	private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response ) throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException, InvalidBBOXException, TimeOutOfWindowException{
-		
-		//Check coordinate params: maxx, maxy, minx, miny
-		Double minx = params.getMinx();
-		Double maxx = params.getMaxx();
-		Double miny = params.getMiny();
-		Double maxy = params.getMaxy();
-		
-		int contValid =0;
-		if(minx!= null) contValid++;
-		if(maxx!= null) contValid++;
-		if(miny!= null) contValid++;
-		if(maxy!= null) contValid++;
-		
-		if(contValid == 4){			
-			if(minx > maxx){
-				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have minx < maxx");
-			}
-			if(miny > maxy){
-				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have miny < maxy");
-			}
-			
-		}else{
-			throw new InvalidBBOXException("Invalid bbox. All params minx, maxx. miny, maxy must be provided");
-		}
-				
-		ProjectionRect rect =new ProjectionRect( minx, miny , maxx, maxy );						
-		Range zRange = null;
-		//Request with zRange --> adds a limitation: only variables with the same vertical level???
-		if(params.getVertCoord()!=null ||params.getVertStride() > 1 )
-			zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVertStride(), params.getVar());
-		
-		List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
-		CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get( wantedDates.size()-1 ));
-		
-		NetcdfCFWriter writer = new NetcdfCFWriter();
-		maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
-		if(maxFileDownloadSize > 0){    		
-			long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon() );
-			if(estimatedSize > maxFileDownloadSize ){
-				throw new RequestTooLargeException( "NCSS request too large = "+estimatedSize+" max = " + maxFileDownloadSize );
-			}
-		}		
-		
-		String filename = gridDataset.getLocationURI();
-	    int pos = filename.lastIndexOf("/");
-	    filename = filename.substring(pos + 1);
-	    if (!filename.endsWith(".nc"))
-	      filename = filename + ".nc";
+  @RequestMapping(value = "**", params = {"!latitude", "!longitude", "var"})
+  void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult validationResult, HttpServletResponse response) throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException, UnsupportedOperationException, TimeOutOfWindowException {
 
-	    Random random = new Random(System.currentTimeMillis());
-	    int randomInt = random.nextInt();
-	    String pathname = Integer.toString(randomInt) + "/" + filename;
-	    File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
-	    String cacheFilename = ncFile.getPath();	    
-	    String url = buildCacheUrl(pathname);	    
-    	httpHeaders.set("Content-Location", url );
-    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");				
-		writer.makeFile(cacheFilename, gridDataset, params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, 1, params.isAddLatLon());		
-		netcdfResult = new File(cacheFilename);						
-	}	
-	
-	protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException, UnsupportedOperationException{
-		//Check vars
-		//if var = all--> all variables requested 
-		if(params.getVar().get(0).equals("all")){
-			params.setVar(NcssRequestUtils.getAllVarsAsList(getGridDataset()));					
-		}		
-	
-		//Only check vertical levels if we the request has vertCoord --> we allow request for variables with different vertical levels if vertCoord!=null for grid requests
-		boolean checkVertLevels = (params.getVertCoord() != null);		
-		//Check not only all vars are contained in the grid, also they have the same vertical coords
-		Iterator<String> it = params.getVar().iterator();
-		String varName = it.next();
-		GridDatatype grid = gds.findGridByShortName(varName);
-		if(grid == null) 
-			throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
-	
-		CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
-		CoordinateAxis1D newVertAxis = null;
-		boolean sameVertCoord = true;
-	
-		while(sameVertCoord && it.hasNext()){
-			varName = it.next();
-			grid = gds.findGridByShortName(varName);
-			if(grid == null) 
-				throw new VariableNotContainedInDatasetException("Variable: "+varName+" is not contained in the requested dataset");
-			
-			if(checkVertLevels){
-				newVertAxis = grid.getCoordinateSystem().getVerticalAxis();		
-				if( vertAxis != null ){
-					if( vertAxis.equals(newVertAxis)){
-						vertAxis = newVertAxis;
-					}else{
-						sameVertCoord = false;
-					}
-				}else{
-					if(newVertAxis != null) sameVertCoord = false;
-				}
-			}
-		}
-	
-	if(!sameVertCoord)
-		throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");		
-	}	
-	
-	private boolean isSpatialSubset(GridDataRequestParamsBean params) throws InvalidBBOXException{
-		
-		boolean spatialSubset = false;
-		int contValid =0;
-		if(params.getNorth()!= null) contValid++;
-		if(params.getSouth()!= null) contValid++;
-		if(params.getEast()!= null) contValid++;
-		if(params.getWest()!= null) contValid++;
-		
-		if( contValid==4 ){
-			if(params.getNorth() < params.getSouth()){
-				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have north > south");				
-			}
-			if(params.getEast() < params.getWest()){
-				throw new InvalidBBOXException("Invalid bbox. Bounding Box must have east > west; if crossing 180 meridian, use east boundary > 180");				
-			}
-			spatialSubset=true;
-		}else{
-			if(contValid > 0)
-				throw new InvalidBBOXException("Invalid bbox. All params north, south, east and west must be provided");			
-			else{ //no bbox provided --> is spatialSubsetting
-				if( params.getMaxx()==null && params.getMinx()==null && params.getMaxy() == null && params.getMiny()==null )
-					spatialSubset =true;
-			}
-		}				
-		return spatialSubset;
-	}
-	
-	private boolean checkBB(LatLonRect maxBB, LatLonRect requestedBB) throws OutOfBoundariesException{	
-	
-		boolean isInBB = true;
-		LatLonRect intersect = maxBB.intersect(requestedBB);
-		
-		if(intersect == null) 
-			throw new OutOfBoundariesException("Request Bounding Box does not intersect the Data. Data Bounding Box = " + maxBB.toString2() );
-		
-		return isInBB;		
-	}
-	
-	private LatLonRect setBBForRequest(GridDataRequestParamsBean params, GridDataset gds ) throws InvalidBBOXException{
-		
-		if( params.getNorth()==null && params.getSouth()==null && params.getWest()==null && params.getEast()==null )
-			return gds.getBoundingBox();
-		
-		return new LatLonRect( new LatLonPointImpl(params.getSouth(), params.getWest()),  new LatLonPointImpl(params.getNorth(), params.getEast()));														
-	}
-	
-	private Range getZRange(GridDataset gds, Double verticalCoord, Integer vertStride, List<String> vars) throws OutOfBoundariesException{
-		
-		boolean hasVerticalCoord = false;
-		Range zRange = null;
-		
-		if(verticalCoord != null){
-		  hasVerticalCoord = !Double.isNaN(verticalCoord);	
-	      // allow a vert level to be specified - but only one, and look in first 3D var with nlevels > 1	      
-	      if (hasVerticalCoord) {
-	    	  try{	  
-	    		  for (String varName : vars) {
-	    			  GridDatatype grid = gds.findGridDatatype(varName);
-	    			  GridCoordSystem gcs = grid.getCoordinateSystem();
-	    			  CoordinateAxis1D vaxis = gcs.getVerticalAxis();
-	    			  if (vaxis != null && vaxis.getSize() > 1) {
-	    				  int bestIndex = -1;
-	    				  double bestDiff = Double.MAX_VALUE;
-	    				  for (int i = 0; i < vaxis.getSize(); i++) {
-	    					  double diff = Math.abs(vaxis.getCoordValue(i) - verticalCoord);
-	    					  if (diff < bestDiff) {
-	    						  bestIndex = i;
-	    						  bestDiff = diff;
-	    					  }
-	    				  }
-	    				  if (bestIndex >= 0) zRange = new Range(bestIndex, bestIndex);
-	    			  }
-	    		  }
-	    	  }catch(InvalidRangeException ire){
-	    		  throw new OutOfBoundariesException( "Invalid vertical level: " + ire.getMessage());
-	    	  }	  
-	        // there's also a vertStride, but not needed since only 1D slice is allowed
-	      }		
-		}else{//No vertical range was provided, we get the zRange with the zStride (1 by default)
-			
-			if(vertStride >1){
-		    	  try{
-		    		zRange = new Range(0,  0, vertStride); 
-		    		for (String varName : vars) {
-		    			  GridDatatype grid = gds.findGridDatatype(varName);
-		    			  GridCoordSystem gcs = grid.getCoordinateSystem();
-		    			  CoordinateAxis1D vaxis = gcs.getVerticalAxis();
-		    			  if( vaxis != null ){
-		    				  //Range vRange = new Range(0,  (int)vaxis.getSize()-1, 1);		    				  
-		    				  zRange = new Range( zRange.first(), zRange.last() > vaxis.getSize() ?  zRange.last() : (int)vaxis.getSize()-1, vertStride);
-		    			  } 
-		    		  }
-		    	  }catch(InvalidRangeException ire){
-		    		  throw new OutOfBoundariesException( "Invalid vertical stride: " + ire.getMessage());
-		    	  }				
-				
-				
-			}
-		}
-		
-	    return zRange;
-	}
-	
-	private	void makeGridFile(NetcdfCFWriter writer, GridDataset gds, List<String> vars, LatLonRect bbox, Integer horizStride, Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon) throws RequestTooLargeException, InvalidRangeException, IOException{	
-	    //String filename = req.getRequestURI();
-		String filename = gds.getLocationURI();
-	    int pos = filename.lastIndexOf("/");
-	    filename = filename.substring(pos + 1);
-	    if (!filename.endsWith(".nc"))
-	      filename = filename + ".nc";
+    if (validationResult.hasErrors()) {
+      handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult);
+    } else {
+      //Only netcdf format is supported for Grid subssetting
+      SupportedFormat sf = getSupportedFormat(params, SupportedOperation.GRID_REQUEST);
 
-	    Random random = new Random(System.currentTimeMillis());
-	    int randomInt = random.nextInt();
+      checkRequestedVars(gridDataset, params);
 
-	    String pathname = Integer.toString(randomInt) + "/" + filename;
-	    File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
-	    String cacheFilename = ncFile.getPath();
-	    
-	    String url = buildCacheUrl(pathname);
-	    
-	    //httpHeaders.set("Content-Type", "application/octet-stream" );
-	    httpHeaders.set("Content-Type", "application/x-netcdf" );	    
-    	httpHeaders.set("Content-Location", url );
-    	httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");	    
+      if (isSpatialSubset(params)) {
+        spatialSubset(params, response);
+      } else {
+        coordinatesSubset(params, response);
+      }
 
-	    try {
+      //Headers...
+      setResponseHeaders(response, httpHeaders);
+      IO.copyFileB(netcdfResult, response.getOutputStream(), 60000);
+      response.flushBuffer();
+      response.getOutputStream().close();
+      response.setStatus(HttpServletResponse.SC_OK);
+    }
+  }
 
-	      writer.makeFile(cacheFilename, gds, vars,
-	              bbox,
-	              horizStride,
-	              zRange,
-	              dateRange,
-	              timeStride,
-	              addLatLon);
+  private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response) throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, TimeOutOfWindowException {
 
-	    } catch (IllegalArgumentException e) { // file too big
-	      	throw new RequestTooLargeException("Request too large", e);	
-	    }
+    LatLonRect maxBB = getGridDataset().getBoundingBox();
+    LatLonRect requestedBB = setBBForRequest(params, gridDataset);
 
-	    netcdfResult = new File(cacheFilename);
-		
-	}
-	
-	
-	//Exception handlers
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.FORBIDDEN )
-	public @ResponseBody String handle(RequestTooLargeException rtle ){
-		return "NetCDF Subset Service exception handled : "+rtle.getMessage();
-	}	  
-	  
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
-	public @ResponseBody String handle(NcssException ncsse ){
-		return "NetCDF Subset Service exception handled : "+ncsse.getMessage();
-	}
-	
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR )
-	public @ResponseBody String handle(IOException ioe ){
-		return "I/O xception handled : "+ioe.getMessage();
-	}
-	
-	@ExceptionHandler
-	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR )
-	public @ResponseBody String handle(InvalidRangeException ire ){
-		return "Invalid Range Exception handled (Invalid Lat/Lon or Time Range): "+ire.getMessage();
-	}	
-		
+    boolean hasBB = !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLatitude(), maxBB.getUpperRightPoint().getLatitude()) ||
+            !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLatitude(), maxBB.getLowerLeftPoint().getLatitude()) ||
+            !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLongitude(), maxBB.getUpperRightPoint().getLongitude()) ||
+            !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLongitude(), maxBB.getLowerLeftPoint().getLongitude());
+
+    if (checkBB(maxBB, requestedBB)) {
+      Range zRange = null;
+      //Request with zRange --> adds a limitation: only variables with the same vertical level???
+      if (params.getVertCoord() != null || params.getVertStride() > 1)
+        zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVertStride(), params.getVar());
+
+      List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
+      CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
+
+      NetcdfCFWriter writer = new NetcdfCFWriter();
+      maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
+      if (maxFileDownloadSize > 0) {
+        long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon());
+        if (estimatedSize > maxFileDownloadSize) {
+          throw new RequestTooLargeException("NCSS request too large = " + estimatedSize + " max = " + maxFileDownloadSize);
+        }
+      }
+      makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon());
+    }
+  }
+
+
+  private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response) throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException, InvalidBBOXException, TimeOutOfWindowException {
+
+    //Check coordinate params: maxx, maxy, minx, miny
+    Double minx = params.getMinx();
+    Double maxx = params.getMaxx();
+    Double miny = params.getMiny();
+    Double maxy = params.getMaxy();
+
+    int contValid = 0;
+    if (minx != null) contValid++;
+    if (maxx != null) contValid++;
+    if (miny != null) contValid++;
+    if (maxy != null) contValid++;
+
+    if (contValid == 4) {
+      if (minx > maxx) {
+        throw new InvalidBBOXException("Invalid bbox. Bounding Box must have minx < maxx");
+      }
+      if (miny > maxy) {
+        throw new InvalidBBOXException("Invalid bbox. Bounding Box must have miny < maxy");
+      }
+
+    } else {
+      throw new InvalidBBOXException("Invalid bbox. All params minx, maxx. miny, maxy must be provided");
+    }
+
+    ProjectionRect rect = new ProjectionRect(minx, miny, maxx, maxy);
+    Range zRange = null;
+    //Request with zRange --> adds a limitation: only variables with the same vertical level???
+    if (params.getVertCoord() != null || params.getVertStride() > 1)
+      zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVertStride(), params.getVar());
+
+    List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
+    CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
+
+    NetcdfCFWriter writer = new NetcdfCFWriter();
+    maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
+    if (maxFileDownloadSize > 0) {
+      long estimatedSize = writer.makeGridFileSizeEstimate(getGridDataset(), params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon());
+      if (estimatedSize > maxFileDownloadSize) {
+        throw new RequestTooLargeException("NCSS request too large = " + estimatedSize + " max = " + maxFileDownloadSize);
+      }
+    }
+
+    String filename = gridDataset.getLocationURI();
+    int pos = filename.lastIndexOf("/");
+    filename = filename.substring(pos + 1);
+    if (!filename.endsWith(".nc"))
+      filename = filename + ".nc";
+
+    Random random = new Random(System.currentTimeMillis());
+    int randomInt = random.nextInt();
+    String pathname = Integer.toString(randomInt) + "/" + filename;
+    File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
+    String cacheFilename = ncFile.getPath();
+    String url = buildCacheUrl(pathname);
+    httpHeaders.set("Content-Location", url);
+    httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+    writer.makeFile(cacheFilename, gridDataset, params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, 1, params.isAddLatLon());
+    netcdfResult = new File(cacheFilename);
+  }
+
+  protected void checkRequestedVars(GridDataset gds, RequestParamsBean params) throws VariableNotContainedInDatasetException, UnsupportedOperationException {
+    //Check vars
+    //if var = all--> all variables requested
+    if (params.getVar().get(0).equals("all")) {
+      params.setVar(NcssRequestUtils.getAllVarsAsList(getGridDataset()));
+    }
+
+    //Only check vertical levels if we the request has vertCoord --> we allow request for variables with different vertical levels if vertCoord!=null for grid requests
+    boolean checkVertLevels = (params.getVertCoord() != null);
+    //Check not only all vars are contained in the grid, also they have the same vertical coords
+    Iterator<String> it = params.getVar().iterator();
+    String varName = it.next();
+    GridDatatype grid = gds.findGridByShortName(varName);
+    if (grid == null)
+      throw new VariableNotContainedInDatasetException("Variable: " + varName + " is not contained in the requested dataset");
+
+    CoordinateAxis1D vertAxis = grid.getCoordinateSystem().getVerticalAxis();
+    CoordinateAxis1D newVertAxis = null;
+    boolean sameVertCoord = true;
+
+    while (sameVertCoord && it.hasNext()) {
+      varName = it.next();
+      grid = gds.findGridByShortName(varName);
+      if (grid == null)
+        throw new VariableNotContainedInDatasetException("Variable: " + varName + " is not contained in the requested dataset");
+
+      if (checkVertLevels) {
+        newVertAxis = grid.getCoordinateSystem().getVerticalAxis();
+        if (vertAxis != null) {
+          if (vertAxis.equals(newVertAxis)) {
+            vertAxis = newVertAxis;
+          } else {
+            sameVertCoord = false;
+          }
+        } else {
+          if (newVertAxis != null) sameVertCoord = false;
+        }
+      }
+    }
+
+    if (!sameVertCoord)
+      throw new UnsupportedOperationException("The variables requested: " + params.getVar() + " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
+  }
+
+  private boolean isSpatialSubset(GridDataRequestParamsBean params) throws InvalidBBOXException {
+
+    boolean spatialSubset = false;
+    int contValid = 0;
+    if (params.getNorth() != null) contValid++;
+    if (params.getSouth() != null) contValid++;
+    if (params.getEast() != null) contValid++;
+    if (params.getWest() != null) contValid++;
+
+    if (contValid == 4) {
+      if (params.getNorth() < params.getSouth()) {
+        throw new InvalidBBOXException("Invalid bbox. Bounding Box must have north > south");
+      }
+      if (params.getEast() < params.getWest()) {
+        throw new InvalidBBOXException("Invalid bbox. Bounding Box must have east > west; if crossing 180 meridian, use east boundary > 180");
+      }
+      spatialSubset = true;
+    } else {
+      if (contValid > 0)
+        throw new InvalidBBOXException("Invalid bbox. All params north, south, east and west must be provided");
+      else { //no bbox provided --> is spatialSubsetting
+        if (params.getMaxx() == null && params.getMinx() == null && params.getMaxy() == null && params.getMiny() == null)
+          spatialSubset = true;
+      }
+    }
+    return spatialSubset;
+  }
+
+  private boolean checkBB(LatLonRect maxBB, LatLonRect requestedBB) throws OutOfBoundariesException {
+
+    boolean isInBB = true;
+    LatLonRect intersect = maxBB.intersect(requestedBB);
+
+    if (intersect == null)
+      throw new OutOfBoundariesException("Request Bounding Box does not intersect the Data. Data Bounding Box = " + maxBB.toString2());
+
+    return isInBB;
+  }
+
+  private LatLonRect setBBForRequest(GridDataRequestParamsBean params, GridDataset gds) throws InvalidBBOXException {
+
+    if (params.getNorth() == null && params.getSouth() == null && params.getWest() == null && params.getEast() == null)
+      return gds.getBoundingBox();
+
+    return new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
+  }
+
+  private Range getZRange(GridDataset gds, Double verticalCoord, Integer vertStride, List<String> vars) throws OutOfBoundariesException {
+
+    boolean hasVerticalCoord = false;
+    Range zRange = null;
+
+    if (verticalCoord != null) {
+      hasVerticalCoord = !Double.isNaN(verticalCoord);
+      // allow a vert level to be specified - but only one, and look in first 3D var with nlevels > 1
+      if (hasVerticalCoord) {
+        try {
+          for (String varName : vars) {
+            GridDatatype grid = gds.findGridDatatype(varName);
+            GridCoordSystem gcs = grid.getCoordinateSystem();
+            CoordinateAxis1D vaxis = gcs.getVerticalAxis();
+            if (vaxis != null && vaxis.getSize() > 1) {
+              int bestIndex = -1;
+              double bestDiff = Double.MAX_VALUE;
+              for (int i = 0; i < vaxis.getSize(); i++) {
+                double diff = Math.abs(vaxis.getCoordValue(i) - verticalCoord);
+                if (diff < bestDiff) {
+                  bestIndex = i;
+                  bestDiff = diff;
+                }
+              }
+              if (bestIndex >= 0) zRange = new Range(bestIndex, bestIndex);
+            }
+          }
+        } catch (InvalidRangeException ire) {
+          throw new OutOfBoundariesException("Invalid vertical level: " + ire.getMessage());
+        }
+        // there's also a vertStride, but not needed since only 1D slice is allowed
+      }
+    } else {//No vertical range was provided, we get the zRange with the zStride (1 by default)
+
+      if (vertStride > 1) {
+        try {
+          zRange = new Range(0, 0, vertStride);
+          for (String varName : vars) {
+            GridDatatype grid = gds.findGridDatatype(varName);
+            GridCoordSystem gcs = grid.getCoordinateSystem();
+            CoordinateAxis1D vaxis = gcs.getVerticalAxis();
+            if (vaxis != null) {
+              //Range vRange = new Range(0,  (int)vaxis.getSize()-1, 1);
+              zRange = new Range(zRange.first(), zRange.last() > vaxis.getSize() ? zRange.last() : (int) vaxis.getSize() - 1, vertStride);
+            }
+          }
+        } catch (InvalidRangeException ire) {
+          throw new OutOfBoundariesException("Invalid vertical stride: " + ire.getMessage());
+        }
+
+
+      }
+    }
+
+    return zRange;
+  }
+
+  private void makeGridFile(NetcdfCFWriter writer, GridDataset gds, List<String> vars, LatLonRect bbox, Integer horizStride, Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon) throws RequestTooLargeException, InvalidRangeException, IOException {
+    //String filename = req.getRequestURI();
+    String filename = gds.getLocationURI();
+    int pos = filename.lastIndexOf("/");
+    filename = filename.substring(pos + 1);
+    if (!filename.endsWith(".nc"))
+      filename = filename + ".nc";
+
+    Random random = new Random(System.currentTimeMillis());
+    int randomInt = random.nextInt();
+
+    String pathname = Integer.toString(randomInt) + "/" + filename;
+    File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
+    String cacheFilename = ncFile.getPath();
+
+    String url = buildCacheUrl(pathname);
+
+    //httpHeaders.set("Content-Type", "application/octet-stream" );
+    httpHeaders.set("Content-Type", "application/x-netcdf");
+    httpHeaders.set("Content-Location", url);
+    httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+
+    try {
+
+      writer.makeFile(cacheFilename, gds, vars,
+              bbox,
+              horizStride,
+              zRange,
+              dateRange,
+              timeStride,
+              addLatLon);
+
+    } catch (IllegalArgumentException e) { // file too big
+      throw new RequestTooLargeException("Request too large", e);
+    }
+
+    netcdfResult = new File(cacheFilename);
+
+  }
+
+
+  //Exception handlers
+  @ExceptionHandler
+  @ResponseStatus(value = HttpStatus.FORBIDDEN)
+  public
+  @ResponseBody
+  String handle(RequestTooLargeException rtle) {
+    return "NetCDF Subset Service exception handled : " + rtle.getMessage();
+  }
+
+  @ExceptionHandler
+  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+  public
+  @ResponseBody
+  String handle(NcssException ncsse) {
+    return "NetCDF Subset Service exception handled : " + ncsse.getMessage();
+  }
+
+  @ExceptionHandler
+  @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+  public
+  @ResponseBody
+  String handle(IOException ioe) {
+    return "I/O xception handled : " + ioe.getMessage();
+  }
+
+  @ExceptionHandler
+  @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+  public
+  @ResponseBody
+  String handle(InvalidRangeException ire) {
+    return "Invalid Range Exception handled (Invalid Lat/Lon or Time Range): " + ire.getMessage();
+  }
+
 }

@@ -1483,32 +1483,34 @@ public class NcMLReader {
    * @param ncmlLocation read this NcML file
    * @param fileOutName  write to this local file
    * @throws IOException on write error
-   * @see ucar.nc2.FileWriter#writeToFile
+   * @see ucar.nc2.FileWriter2
    */
   public static void writeNcMLToFile(String ncmlLocation, String fileOutName) throws IOException {
     NetcdfFile ncd = NetcdfDataset.acquireFile(ncmlLocation, null);
-    //int dataMode = (ncd.getReferencedFile() != null) ? 1 : 2;
-    NetcdfFile ncdnew = ucar.nc2.FileWriter.writeToFile(ncd, fileOutName);
+
+    FileWriter2 writer = new FileWriter2(ncd, fileOutName, NetcdfFileWriter.Version.netcdf3);
+    NetcdfFile result = writer.write();
+    result.close();
     ncd.close();
-    ncdnew.close();
   }
 
   /**
    * Read an NcML and write an equivilent NetcdfFile to a physical file, using Netcdf-3 file format.
    * The NcML may have a referenced dataset in the location URL, in which case the underlying data
-   * (modified by the NcML is written to the new file. If the NcML does not have a referenced dataset,
+   * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
    * then the new file is filled with fill values, like ncgen.
    *
    * @param ncml        read NcML from this input stream
    * @param fileOutName write to this local file
    * @throws IOException on error
-   * @see ucar.nc2.FileWriter#writeToFile
+   * @see ucar.nc2.FileWriter2
    */
   public static void writeNcMLToFile(InputStream ncml, String fileOutName) throws IOException {
     NetcdfDataset ncd = NcMLReader.readNcML(ncml, null);
-    NetcdfFile ncdnew = ucar.nc2.FileWriter.writeToFile(ncd, fileOutName, true);
+    FileWriter2 writer = new FileWriter2(ncd, fileOutName, NetcdfFileWriter.Version.netcdf3);
+    NetcdfFile result = writer.write();
+    result.close();
     ncd.close();
-    ncdnew.close();
   }
 
   public static void main(String arg[]) {

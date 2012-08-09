@@ -2,7 +2,7 @@ package ucar.nc2.ft.point.writer;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
@@ -14,7 +14,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -152,7 +151,7 @@ public class CFPointWriter {
   protected static final String altName = "altitude";
   protected static final String timeName = "time";
 
-  protected NetcdfFileWriteable ncfile;
+  protected NetcdfFileWriter writer;
   protected String altUnits = null;
   protected LatLonRect llbb = null;
 
@@ -161,27 +160,27 @@ public class CFPointWriter {
   protected CalendarDate maxDate = null;
 
   protected CFPointWriter(String fileOut, List<Attribute> atts) throws IOException {
-    ncfile = NetcdfFileWriteable.createNew(fileOut, false);
-    ncfile.setFill(false);
+    writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut);
+    writer.setFill(false);
 
-    ncfile.addGlobalAttribute(CDM.CONVENTIONS, "CF-1.6");
-    ncfile.addGlobalAttribute(CDM.HISTORY, "Written by CFPointWriter");
+    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
+    writer.addGroupAttribute(null, new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
     for (Attribute att : atts) {
       if (!reservedAttsList.contains(att.getName()))
-        ncfile.addGlobalAttribute(att);
+        writer.addGroupAttribute(null, att);
     }
 
     // dummys, update in finish()
-    ncfile.addGlobalAttribute( CDM.TIME_START, CalendarDateFormatter.toDateStringPresent());
-    ncfile.addGlobalAttribute( CDM.TIME_END, CalendarDateFormatter.toDateStringPresent());
-    ncfile.addGlobalAttribute( CDM.LAT_MIN, 0.0);
-    ncfile.addGlobalAttribute( CDM.LAT_MAX, 0.0);
-    ncfile.addGlobalAttribute( CDM.LON_MIN, 0.0);
-    ncfile.addGlobalAttribute( CDM.LON_MAX, 0.0);
+    writer.addGroupAttribute(null, new Attribute(CDM.TIME_START, CalendarDateFormatter.toDateStringPresent()));
+    writer.addGroupAttribute(null, new Attribute(CDM.TIME_END, CalendarDateFormatter.toDateStringPresent()));
+    writer.addGroupAttribute(null, new Attribute(CDM.LAT_MIN, 0.0));
+    writer.addGroupAttribute(null, new Attribute(CDM.LAT_MAX, 0.0));
+    writer.addGroupAttribute(null, new Attribute(CDM.LON_MIN, 0.0));
+    writer.addGroupAttribute(null, new Attribute(CDM.LON_MAX, 0.0));
   }
 
   public void setLength(long size) {
-    ncfile.setLength(size);
+    writer.setLength(size);
   }
 
   protected void trackBB(EarthLocation loc, CalendarDate obsDate) {
@@ -199,19 +198,19 @@ public class CFPointWriter {
   }
 
   public void finish() throws IOException {
-    ncfile.updateAttribute(null, new Attribute(CDM.LAT_MIN, llbb.getLowerLeftPoint().getLatitude()));
-    ncfile.updateAttribute(null, new Attribute(CDM.LAT_MAX, llbb.getUpperRightPoint().getLatitude()));
-    ncfile.updateAttribute(null, new Attribute(CDM.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
-    ncfile.updateAttribute(null, new Attribute(CDM.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
+    writer.updateAttribute(null, new Attribute(CDM.LAT_MIN, llbb.getLowerLeftPoint().getLatitude()));
+    writer.updateAttribute(null, new Attribute(CDM.LAT_MAX, llbb.getUpperRightPoint().getLatitude()));
+    writer.updateAttribute(null, new Attribute(CDM.LON_MIN, llbb.getLowerLeftPoint().getLongitude()));
+    writer.updateAttribute(null, new Attribute(CDM.LON_MAX, llbb.getUpperRightPoint().getLongitude()));
 
     // if there is no data
     if (minDate == null) minDate = CalendarDate.present();
     if (maxDate == null) maxDate = CalendarDate.present();
 
-    ncfile.updateAttribute(null, new Attribute(CDM.TIME_START, CalendarDateFormatter.toDateTimeString(minDate)));
-    ncfile.updateAttribute(null, new Attribute(CDM.TIME_END, CalendarDateFormatter.toDateTimeString(maxDate)));
+    writer.updateAttribute(null, new Attribute(CDM.TIME_START, CalendarDateFormatter.toDateTimeString(minDate)));
+    writer.updateAttribute(null, new Attribute(CDM.TIME_END, CalendarDateFormatter.toDateTimeString(maxDate)));
 
-    ncfile.close();
+    writer.close();
   }
 
 

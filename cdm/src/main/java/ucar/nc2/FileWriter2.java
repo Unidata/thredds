@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -41,7 +41,7 @@ import java.util.Map;
 import ucar.ma2.*;
 
 /**
- * Utility class for writing a NetcdfFile object to a netcdf-3 or netcdf-4 disk file.
+ * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
  * Uses NetcdfFileWriter.
  * This handles entire CDM model (groups, etc) if you are writing to netcdf-4
  * <p/>
@@ -54,12 +54,9 @@ import ucar.ma2.*;
  * (modified by the NcML) is written to the new file. If the NcML does not have a referenced dataset,
  * then the new file is filled with fill values, like ncgen.
  * <p/>
- * <p> Use the static methods writeToFile() to copy an entire file. Create a FileWriter object to control exactly
- * what gets written to the file.
+ * <p> Use a NetcdfFileWriter object for a lower level API.
  *
  * @author caron
- * @author Steve Ansari
- * @see ucar.nc2.NetcdfFile
  */
 
 public class FileWriter2 {
@@ -83,14 +80,38 @@ public class FileWriter2 {
   private final boolean writeNetcdf4; // write netcdf 4 file
   private List<FileWriterProgressListener> progressListeners;
 
-  private final Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();  // oldVAr, newVar
-  private final List<Variable> varList = new ArrayList<Variable>();
+  private final Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();  // oldVar, newVar
+  private final List<Variable> varList = new ArrayList<Variable>();                  // old Vars
 
-  public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.NetcdfVersion version) throws IOException {
-    this(fileIn, fileOutName, version, true, false, 0, null);
+  public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version) throws IOException {
+    this.fileIn = fileIn;
+    this.writer = NetcdfFileWriter.createNew(version, fileOutName);
+    writeNetcdf4 = version == NetcdfFileWriter.Version.netcdf4;
   }
 
-  /**
+  public FileWriter2(NetcdfFileWriter fileWriter) throws IOException {
+    this.fileIn = null;
+    this.writer = fileWriter;
+    writeNetcdf4 = fileWriter.getVersion() == NetcdfFileWriter.Version.netcdf4;
+  }
+
+  public Variable addVariable(Variable oldVar) {
+    Variable newVar = writer.addVariable(oldVar.getParentGroup(), oldVar.getShortName(), oldVar.getDataType(), oldVar.getDimensions());
+    varMap.put(oldVar, newVar);
+    varList.add(oldVar);
+    return newVar;
+  }
+
+  public void addProgressListener(FileWriterProgressListener listener) {
+    if (progressListeners == null) progressListeners= new ArrayList<FileWriterProgressListener>();
+    progressListeners.add(listener);
+  }
+
+  public NetcdfFileWriter getNetcdfFileWriter() {
+    return writer;
+  }
+
+  /*
    * Copy a NetcdfFile to a physical file, using Netcdf-3 or 4 file format.
    *
    * @param fileIn            write from this NetcdfFile
@@ -99,19 +120,19 @@ public class FileWriter2 {
    * @param isLargeFile       if true, make large file format (> 2Gb offsets)
    * @param progressListeners List of progress listeners, use null or empty list if there are none.
    * @throws IOException on read or write error
-   */
-  public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.NetcdfVersion version, boolean fill, boolean isLargeFile,
+   *
+  public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, boolean fill, boolean isLargeFile,
                      int extraHeaderBytes, List<FileWriterProgressListener> progressListeners) throws IOException {
 
     this.fileIn = fileIn;
     this.writer = NetcdfFileWriter.createNew(version, fileOutName);
-    writeNetcdf4 = version == NetcdfFileWriter.NetcdfVersion.netcdf4;
+    writeNetcdf4 = version == NetcdfFileWriter.Version.netcdf4;
     this.progressListeners = progressListeners;
 
     writer.setLargeFile(isLargeFile);
     writer.setFill(fill);
     writer.setExtraHeaderBytes(extraHeaderBytes);
-  }
+  } */
 
   public NetcdfFile write() throws IOException {
 
@@ -119,7 +140,6 @@ public class FileWriter2 {
       addGroup4(null, fileIn.getRootGroup());
     else
       addNetcdf3();
-
 
     //if (anonCount > 0)
     //   writer.finish();
@@ -274,7 +294,7 @@ public class FileWriter2 {
    * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
    * When theres a record variable, its much more efficient to use it.
    *
-   * @param varlist   list of varibles from the original file, with data in them
+   * @param varlist   list of variables from the original file, with data in them
    * @param recordVar the record variable from the original file, or null means dont use record variables
    * @return total number of bytes written
    * @throws IOException if I/O error
@@ -641,12 +661,12 @@ public class FileWriter2 {
     }
 
     String datasetIn = null, datasetOut = null;
-    NetcdfFileWriter.NetcdfVersion version = NetcdfFileWriter.NetcdfVersion.netcdf3;
+    NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
     for (int i = 0; i < arg.length; i++) {
       String s = arg[i];
       if (s.equalsIgnoreCase("-in")) datasetIn = arg[i + 1];
       if (s.equalsIgnoreCase("-out")) datasetOut = arg[i + 1];
-      if (s.equalsIgnoreCase("-netcdf4")) version = NetcdfFileWriter.NetcdfVersion.netcdf4;
+      if (s.equalsIgnoreCase("-netcdf4")) version = NetcdfFileWriter.Version.netcdf4;
     }
     if ((datasetIn == null) || (datasetOut == null)) {
       usage();

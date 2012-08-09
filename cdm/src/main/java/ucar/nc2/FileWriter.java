@@ -55,6 +55,7 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
  * <p> Use the static methods writeToFile() to copy an entire file. Create a FileWriter object to control exactly
  * what gets written to the file.
  *
+ * @deprecated use FileWriter2 to allow netcdf4 writing also
  * @author caron
  * @author Steve Ansari
  * @see ucar.nc2.NetcdfFile
