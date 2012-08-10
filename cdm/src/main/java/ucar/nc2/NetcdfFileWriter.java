@@ -57,7 +57,22 @@ public class NetcdfFileWriter {
           DataType.DOUBLE, DataType.FLOAT);
   static private final boolean debug = false, debugWrite = false;
 
-  public enum Version {netcdf3, netcdf4 }
+  public enum Version {
+    netcdf3,             // java iosp
+    netcdf4,             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4
+    netcdf4_classic,     // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
+    netcdf3c,            // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC
+    netcdf3c64;           // jni netcdf4 iosp mode = NC_FORMAT_64BIT
+
+    public boolean isNetdf4format() {
+      return this == netcdf4 || this == netcdf4_classic;
+    }
+
+    public boolean useJniIosp() {
+      return this != netcdf3;
+    }
+
+  }
 
   /**
    * Open an existing Netcdf file for writing data. Fill mode is true.
@@ -91,7 +106,7 @@ public class NetcdfFileWriter {
 
   // state
   private NetcdfFile ncfile;
-  private boolean isNetcdf4;
+  private Version version;
   private boolean isNewFile;
   private boolean isLargeFile;
   private boolean fill;
@@ -123,24 +138,29 @@ public class NetcdfFileWriter {
   protected NetcdfFileWriter(Version version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
           String location, boolean isExisting) throws IOException {
 
+    this.version = version;
     this.location = location;
 
     if (isExisting) {
       if (raf == null)
         raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
 
-      if (H5header.isValidFile(raf))
-        isNetcdf4 = true;
-      else if (!N3header.isValidFile(raf))
+      if (H5header.isValidFile(raf)) {
+        if (!version.isNetdf4format())
+          throw new IllegalArgumentException(location+" must be netcdf-4 file");
+      } else if (N3header.isValidFile(raf)) {
+        if (version.isNetdf4format())
+          throw new IllegalArgumentException(location+" must be netcdf-3 file");
+      } else {
         throw new IllegalArgumentException(location+" must be netcdf-3 or netcdf-4 file");
+      }
 
     } else {
       isNewFile = true;
-      isNetcdf4 = version == Version.netcdf4;
     }
 
     if (iospw == null) {
-      spiw = isNetcdf4 ? new Nc4Iosp() : new N3raf();
+      spiw = version.useJniIosp() ? new Nc4Iosp(version) : new N3raf();
     } else {
       spiw = iospw;
     }
@@ -203,7 +223,7 @@ public class NetcdfFileWriter {
   public boolean isDefineMode() { return defineMode; }
 
   NetcdfFile getNetcdfFile() { return ncfile; }
-  Version getVersion() { return isNetcdf4? Version.netcdf4 : Version.netcdf3; }
+  Version getVersion() { return version; }
 
   public Variable findVariable(String fullNameEscaped) {
     return ncfile.findVariable(fullNameEscaped);
@@ -251,7 +271,7 @@ public class NetcdfFileWriter {
   }
 
   private boolean isValidDataType(DataType dt) {
-    return isNetcdf4 || valid.contains(dt);
+    return version.isNetdf4format() || valid.contains(dt);
   }
 
   private String createValidObjectName(String name) {
@@ -399,8 +419,8 @@ public class NetcdfFileWriter {
     if (!isValidDataType(dataType))
       throw new IllegalArgumentException("illegal dataType: "+dataType);
 
-    // check unlimited if netccdf-3
-    if (!isNetcdf4) {
+    // check unlimited if netcdf-3
+    if (!version.isNetdf4format()) {
       for (int i=0; i<dims.size(); i++) {
         Dimension d = dims.get(i);
         if (d.isUnlimited() && (i != 0))
@@ -413,7 +433,7 @@ public class NetcdfFileWriter {
     v.setDimensions(dims);
 
     long size = v.getSize() * v.getElementSize();
-    if (!isNetcdf4 && size > N3iosp.MAX_VARSIZE)
+    if (!version.isNetdf4format() && size > N3iosp.MAX_VARSIZE)
       throw new IllegalArgumentException("Variable size in bytes "+size+" may not exceed "+ N3iosp.MAX_VARSIZE);
 
     ncfile.addVariable(g, v);
@@ -633,7 +653,7 @@ public class NetcdfFileWriter {
       if (oldVar != null)
         oldList.add(oldVar);
     }
-    FileWriter2 fileWriter2 = new FileWriter2(oldFile, location, isNetcdf4 ? Version.netcdf4 : Version.netcdf3);
+    FileWriter2 fileWriter2 = new FileWriter2(oldFile, location, version);
     fileWriter2.copyVarData(oldList, recordVar);  // LOOK ??
     flush();
 
@@ -644,7 +664,7 @@ public class NetcdfFileWriter {
   }
 
   public Structure addRecordStructure() {
-    if (isNetcdf4) return null;
+    if (version.isNetdf4format()) return null;
     boolean ok = (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     if (!ok)
       throw new IllegalStateException("can't add record variable");

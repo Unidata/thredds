@@ -86,6 +86,7 @@ public class MetadataManager {
 
   static private synchronized void setup() throws DatabaseException {
     if (myEnv != null) return; // someone else did it
+    logger.info("try to open bdb");
 
     EnvironmentConfig myEnvConfig = new EnvironmentConfig();
     myEnvConfig.setReadOnly(false);
@@ -110,7 +111,6 @@ public class MetadataManager {
       logger.warn("MetadataManager failed to open directory {}, try read-only", root);
       logger.error("failed to open bdb", e);
       logger.warn("myEnvConfig {}", myEnvConfig);
-      logger.warn("myEnv {}", myEnv);
 
       readOnly = true;
       myEnvConfig.setReadOnly(true);

@@ -4,10 +4,7 @@ import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
-import ucar.nc2.Attribute;
-import ucar.nc2.NCdumpW;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.util.CompareNetcdf2;
@@ -133,7 +130,7 @@ public class TestNc4Iosp {
   }
 
   private NetcdfFile openJni(String location) throws IOException {
-    Nc4Iosp iosp = new Nc4Iosp();
+    Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
     NetcdfFile ncfile = new MyNetcdfFile(iosp, location);
     RandomAccessFile raf = new RandomAccessFile(location, "r");
     iosp.open(raf, ncfile, null);

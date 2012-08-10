@@ -63,6 +63,7 @@ import com.sun.jna.ptr.NativeLongByReference;
  * IOSP for reading netcdf files through jni interface to netcdf4 library
  *
  * @author caron
+ * @see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html"
  * @see "http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf"
  * @see "http://www.unidata.ucar.edu/software/netcdf/win_netcdf/"
  * @since Oct 30, 2008
@@ -72,12 +73,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private boolean debug = false, debugCompoundAtt = false, debugUserTypes = false, debugWrite = true;
   static private Nc4prototypes nc4;
 
-  static boolean isClibraryPresent() {
+  static public boolean isClibraryPresent() {
     load();
     return  (nc4 != null);
   }
 
-  private static Nc4prototypes load() {
+  static private Nc4prototypes load() {
     if (nc4 == null) {
       String dir = "C:/cdev/lib/";
       System.setProperty("jna.library.path", dir);
@@ -91,6 +92,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  private final NetcdfFileWriter.Version version;
+
+  public Nc4Iosp(NetcdfFileWriter.Version version) {
+    this.version = version;
+  }
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     return false;
@@ -1665,7 +1671,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     // create new file
     if (debug) System.out.println("open " + ncfile.getLocation());
     IntByReference ncidp = new IntByReference();
-    int ret = nc4.nc_create(filename, Nc4prototypes.NC_NETCDF4, ncidp);
+    int ret = nc4.nc_create(filename, createMode(), ncidp);
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
     ncid = ncidp.getValue();
 
@@ -1673,6 +1679,23 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // done with define mode
     nc4.nc_enddef(ncid);
+  }
+
+  /*
+  netcdf4,             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4
+  netcdf4_classic,     // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
+  netcdf3c,            // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC
+  netcdf3c64;           // jni netcdf4 iosp mode = NC_FORMAT_64BIT
+  */
+
+  private int createMode() {
+    switch (version) {
+      case netcdf4: return Nc4prototypes.NC_NETCDF4;
+      case netcdf4_classic: return Nc4prototypes.NC_FORMAT_NETCDF4_CLASSIC;
+      case netcdf3c: return Nc4prototypes.NC_FORMAT_CLASSIC;
+      case netcdf3c64: return Nc4prototypes.NC_FORMAT_64BIT;
+    }
+    throw new IllegalStateException("version = " + version);
   }
 
   private void createGroup(int grid, Group g) throws IOException {
@@ -1705,6 +1728,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
 
       IntByReference varidp = new IntByReference();
+      if (v.getShortName().equals("rep_type"))
+        System.out.println("HEY");
       int typid = convertDataType(v.getDataType());
       int ret = nc4.nc_def_var(ncid, v.getShortName(), typid, dimids.length, dimids, varidp);
       if (ret != 0)
@@ -1798,10 +1823,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_CHAR:
-        char[] valc = (char[]) data; // LAME
+        char[] valc = (char[]) data;   // chars are lame
         assert valc.length == sectionLen;
-        ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, IospHelper.convertCharToByte(valc));
-        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+
+        valb = IospHelper.convertCharToByte(valc);
+        //ret = nc4.nc_put_vars_schar (grpid, varid, origin, shape, stride, valb);
+        ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
+        if (ret != 0)  {
+          System.out.printf("%s on var %d %d%n", nc4.nc_strerror(ret), varid, typeid);
+          return;
+          //throw new IOException(nc4.nc_strerror(ret));
+        }
         break;
 
       case Nc4prototypes.NC_DOUBLE:
@@ -1815,15 +1847,22 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         float[] valf = (float[]) data;
         assert valf.length == sectionLen;
         ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
-        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
-        break;
+        if (ret != 0) {
+          System.out.printf("%s on var %d %d%n", nc4.nc_strerror(ret), varid, typeid);
+          return;
+          //throw new IOException(nc4.nc_strerror(ret));
+        }        break;
 
       case Nc4prototypes.NC_INT:
         int[] vali = (int[]) data;
         assert vali.length == sectionLen;
         ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali) :
                 nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
-        if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+        if (ret != 0) {
+          System.out.printf("%s on var %d %d%n", nc4.nc_strerror(ret), varid, typeid);
+          return;
+          //throw new IOException(nc4.nc_strerror(ret));
+        }
         break;
 
       case Nc4prototypes.NC_INT64:
@@ -1917,7 +1956,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   public static void main(String args[]) throws Exception {
-    Nc4Iosp iosp = new Nc4Iosp();
+    Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
 
     String loc4 = "Q:/cdmUnitTest/formats/netcdf4/files/xma022032.nc";
     String loc3 = "Q:/cdmUnitTest/formats/netcdf3/example1.nc";

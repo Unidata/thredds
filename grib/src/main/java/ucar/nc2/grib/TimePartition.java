@@ -32,7 +32,6 @@
 
 package ucar.nc2.grib;
 
-import com.sleepycat.je.rep.impl.GroupService;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.TimePartitionCollection;
