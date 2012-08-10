@@ -62,6 +62,7 @@ public class NcssShowDatasetInfoImpl implements NcssShowDatasetInfo, ServletCont
 	    		
 	    		XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
 	    		infoString = fmt.outputString(html);
+
 	    			    		
 
 	      }catch(IOException ioe){

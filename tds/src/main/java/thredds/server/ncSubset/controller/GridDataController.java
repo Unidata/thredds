@@ -61,12 +61,14 @@ import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.ThreddsConfig;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
@@ -95,15 +97,21 @@ class GridDataController extends AbstratNcssDataRequestController {
     if (validationResult.hasErrors()) {
       handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult);
     } else {
-      //Only netcdf format is supported for Grid subssetting
+    	
+      //Supported formats are netcdf3 (default) and netcdf4 (if available)
       SupportedFormat sf = getSupportedFormat(params, SupportedOperation.GRID_REQUEST);
-
+      NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf3;
+      
+      if( sf.equals(SupportedFormat.NETCDF4) ){
+    	  version = NetcdfFileWriter.Version.netcdf4;
+      }
+      
       checkRequestedVars(gridDataset, params);
 
       if (isSpatialSubset(params)) {
-        spatialSubset(params, response);
+        spatialSubset(params, response, version);
       } else {
-        coordinatesSubset(params, response);
+        coordinatesSubset(params, response, version);
       }
 
       //Headers...
@@ -115,7 +123,7 @@ class GridDataController extends AbstratNcssDataRequestController {
     }
   }
 
-  private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response) throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, TimeOutOfWindowException {
+  private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response, NetcdfFileWriter.Version version) throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, TimeOutOfWindowException {
 
     LatLonRect maxBB = getGridDataset().getBoundingBox();
     LatLonRect requestedBB = setBBForRequest(params, gridDataset);
@@ -142,12 +150,14 @@ class GridDataController extends AbstratNcssDataRequestController {
           throw new RequestTooLargeException("NCSS request too large = " + estimatedSize + " max = " + maxFileDownloadSize);
         }
       }
-      makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon());
+             
+            
+      makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon(), version);
     }
   }
 
 
-  private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response) throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException, InvalidBBOXException, TimeOutOfWindowException {
+  private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response, NetcdfFileWriter.Version version) throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException, InvalidBBOXException, TimeOutOfWindowException {
 
     //Check coordinate params: maxx, maxy, minx, miny
     Double minx = params.getMinx();
@@ -205,7 +215,7 @@ class GridDataController extends AbstratNcssDataRequestController {
     String url = buildCacheUrl(pathname);
     httpHeaders.set("Content-Location", url);
     httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-    writer.makeFile(cacheFilename, gridDataset, params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, 1, params.isAddLatLon());
+    writer.makeFile(cacheFilename, gridDataset, params.getVar(), rect, params.getHorizStride(), zRange, wantedDateRange, 1, params.isAddLatLon(), version);
     netcdfResult = new File(cacheFilename);
   }
 
@@ -357,7 +367,8 @@ class GridDataController extends AbstratNcssDataRequestController {
     return zRange;
   }
 
-  private void makeGridFile(NetcdfCFWriter writer, GridDataset gds, List<String> vars, LatLonRect bbox, Integer horizStride, Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon) throws RequestTooLargeException, InvalidRangeException, IOException {
+  private void makeGridFile(NetcdfCFWriter writer, GridDataset gds, List<String> vars, LatLonRect bbox, Integer horizStride, Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon, NetcdfFileWriter.Version version) throws RequestTooLargeException, InvalidRangeException, IOException {
+	  		 
     //String filename = req.getRequestURI();
     String filename = gds.getLocationURI();
     int pos = filename.lastIndexOf("/");
@@ -387,7 +398,8 @@ class GridDataController extends AbstratNcssDataRequestController {
               zRange,
               dateRange,
               timeStride,
-              addLatLon);
+              addLatLon,
+              version);
 
     } catch (IllegalArgumentException e) { // file too big
       throw new RequestTooLargeException("Request too large", e);

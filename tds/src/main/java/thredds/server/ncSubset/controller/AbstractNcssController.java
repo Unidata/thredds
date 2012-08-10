@@ -54,6 +54,7 @@ import org.springframework.web.servlet.mvc.LastModified;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DataRootHandler;

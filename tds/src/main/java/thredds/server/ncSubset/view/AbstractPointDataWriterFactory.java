@@ -1,6 +1,6 @@
 package thredds.server.ncSubset.view;
 
-import thredds.server.ncSubset.controller.SupportedFormat;
+import thredds.server.ncSubset.format.SupportedFormat;
 
 final class AbstractPointDataWriterFactory {
 

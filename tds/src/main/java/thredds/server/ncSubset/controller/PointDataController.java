@@ -26,6 +26,7 @@ import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.params.RequestParamsBean;
 import thredds.server.ncSubset.util.NcssRequestUtils;

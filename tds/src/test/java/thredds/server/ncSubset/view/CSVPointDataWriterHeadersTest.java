@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.controller.SupportedFormat;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.servlet.DatasetHandlerAdapter;
 import ucar.nc2.dt.GridDataset;
 

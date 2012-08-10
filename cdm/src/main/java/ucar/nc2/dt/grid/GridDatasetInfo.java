@@ -57,6 +57,7 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
@@ -176,11 +177,11 @@ public class GridDatasetInfo {
     }
 
     // add accept list
-    Element elem = new Element("AcceptList");
-    elem.addContent(new Element("accept").addContent("xml"));
-    elem.addContent(new Element("accept").addContent("csv"));
-    elem.addContent(new Element("accept").addContent("netcdf"));
-    rootElem.addContent(elem);
+    addAcceptList(rootElem);
+    
+//    elem.addContent(new Element("accept").addContent("xml"));
+//    elem.addContent(new Element("accept").addContent("csv"));
+//    elem.addContent(new Element("accept").addContent("netcdf"));    
     return doc;
   }
 
@@ -278,12 +279,42 @@ public class GridDatasetInfo {
     }
 
     // add accept list
-    Element elem = new Element("AcceptList");
-    elem.addContent(new Element("accept").addContent("xml"));
-    elem.addContent(new Element("accept").addContent("csv"));
-    elem.addContent(new Element("accept").addContent("netcdf"));
-    rootElem.addContent(elem);
+    addAcceptList(rootElem);
+    
+//    Element elem = new Element("AcceptList");
+//    elem.addContent(new Element("accept").addContent("xml"));
+//    elem.addContent(new Element("accept").addContent("csv"));
+//    elem.addContent(new Element("accept").addContent("netcdf"));
+//    rootElem.addContent(elem);
     return doc;
+  }
+  
+  private void addAcceptList(Element rootElement){
+	  
+	    // add accept list
+	    Element elem = new Element("AcceptList");
+	    //accept list for Grid As Point requests
+	    Element gridAsPoint = new Element("GridAsPoint");
+	    
+	    gridAsPoint.addContent(new Element("accept").addContent("xml"));
+	    gridAsPoint.addContent(new Element("accept").addContent("csv"));
+	    gridAsPoint.addContent(new Element("accept").addContent("netcdf"));
+	    
+	    elem.addContent(gridAsPoint);
+	    
+	    //accept list for Grid requests
+	    Element grids = new Element("Grid");
+	    grids.addContent(new Element("accept").addContent("netcdf"));
+	    //Check if netcdf4 is available
+	    try{
+	    	if( Nc4Iosp.isClibraryPresent() ){
+	    		grids.addContent(new Element("accept").addContent("netcdf4"));
+	    	}    
+	    }catch(UnsatisfiedLinkError e){
+	    	//So far swallowing the exception...
+	    }
+	    elem.addContent(grids);	  
+	    rootElement.addContent(elem);
   }
 
   private Element writeAxis2(CoordinateAxis axis, String name) {

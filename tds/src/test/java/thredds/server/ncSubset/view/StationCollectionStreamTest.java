@@ -17,10 +17,10 @@ import org.springframework.test.context.ContextConfiguration;
 
 import thredds.mock.params.PointDataParameters;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.controller.SupportedFormat;
 import thredds.server.ncSubset.exception.DateUnitException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
