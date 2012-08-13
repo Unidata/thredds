@@ -603,21 +603,6 @@ public String NC_check_name(String name) {
     return count;
   }
 
-  // convert byte array to char array, assuming UTF-8 encoding
-
-  static protected char[] convertByteToCharUTF(byte[] byteArray) {
-    Charset c = Charset.forName("UTF-8");
-    CharBuffer output = c.decode(ByteBuffer.wrap(byteArray));
-    return output.array();
-  }
-
-  // convert char array to byte array, assuming UTF-8 encoding
-  static protected byte[] convertCharToByteUTF(char[] from) {
-    Charset c = Charset.forName("UTF-8");
-    ByteBuffer output = c.encode(CharBuffer.wrap(from));
-    return output.array();
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////
   // create new file
 
@@ -906,7 +891,7 @@ public String NC_check_name(String name) {
     return DataFormatType.NETCDF.toString();
   }
 
-  public String getFileTypeDescription()  { return "NetCDF classic format"; }
+  public String getFileTypeDescription()  { return "NetCDF-3/CDM"; }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff we need the subclass to implement

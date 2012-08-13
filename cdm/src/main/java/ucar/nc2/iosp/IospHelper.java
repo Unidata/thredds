@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp;
 
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.PositioningDataInputStream;
 import ucar.ma2.*;
@@ -46,6 +47,7 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -450,7 +452,7 @@ public class IospHelper {
       while (iterA.hasNext()) {
         String s = (String) iterA.getObjectNext();
         size += NcStream.writeVInt(outStream, s.length());
-        byte[] b = s.getBytes("UTF-8");
+        byte[] b = s.getBytes(CDM.utf8Charset);
         outStream.write(b);
         size += b.length;
       }
@@ -546,7 +548,7 @@ public class IospHelper {
       while (iterA.hasNext()) {
         String s = (String) iterA.getObjectNext();
         size += NcStream.writeVInt(dataOut, s.length());
-        byte[] b = s.getBytes("UTF-8");
+        byte[] b = s.getBytes(CDM.utf8Charset);
         dataOut.write(b);
         size += b.length;
       }
@@ -865,6 +867,21 @@ public class IospHelper {
     }
 
     throw new IllegalStateException();
+  }
+
+    // convert byte array to char array, assuming UTF-8 encoding
+
+  static public char[] convertByteToCharUTF(byte[] byteArray) {
+    Charset c = CDM.utf8Charset;
+    CharBuffer output = c.decode(ByteBuffer.wrap(byteArray));
+    return output.array();
+  }
+
+  // convert char array to byte array, assuming UTF-8 encoding
+  static public byte[] convertCharToByteUTF(char[] from) {
+    Charset c = CDM.utf8Charset;
+    ByteBuffer output = c.encode(CharBuffer.wrap(from));
+    return output.array();
   }
 
   // convert byte array to char array

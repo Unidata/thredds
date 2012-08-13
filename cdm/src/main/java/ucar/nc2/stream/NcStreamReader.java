@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import ucar.nc2.constants.CDM;
 
 /**
  * Read an ncStream InputStream into a NetcdfFile.
@@ -135,7 +136,7 @@ public class NcStreamReader {
         int slen = NcStream.readVInt(is);
         byte[] sb = new byte[slen];
         NcStream.readFully(is, sb);
-        ii.setObjectNext( new String(sb, "UTF-8"));
+        ii.setObjectNext( new String(sb, CDM.utf8Charset));
       }
       return new DataResult(dproto.getVarName(), section, data);
 

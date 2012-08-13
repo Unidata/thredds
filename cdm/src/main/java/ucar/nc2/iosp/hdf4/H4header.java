@@ -1793,7 +1793,7 @@ public class H4header {
       int start = 0;
       for (int i = 0; i < length; i++) {
         if (b[i] == 0) {
-          text[count] = new String(b, start, i - start, "UTF-8");
+          text[count] = new String(b, start, i - start, CDM.utf8Charset);
           count++;
           if (count == n) break;
           start = i + 1;
@@ -2047,7 +2047,7 @@ public class H4header {
     for (count = 0; count < len; count++)
       if (b[count] == 0)
         break;
-    return new String(b, 0, count, "UTF-8");
+    return new String(b, 0, count, CDM.utf8Charset);
   }
 
   private class MemTracker {

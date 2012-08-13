@@ -34,6 +34,7 @@ package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.util.*;
@@ -439,8 +440,9 @@ public class N3header {
       if (type == 2) {
         if (fout != null) fout.format(" begin read String val pos= %d\n", raf.getFilePointer());
         String val = readString();
+        if (val == null) val = "";
         if (fout != null) fout.format(" end read String val pos= %d\n", raf.getFilePointer());
-        att = (val == null) ? new Attribute(name, DataType.CHAR) : new Attribute(name, val);  // empty attribute
+        att = new Attribute(name, val);
 
       } else {
         if (fout != null) fout.format(" begin read val pos= %d\n", raf.getFilePointer());
@@ -530,7 +532,7 @@ public class N3header {
       count++;
     }
 
-    return new String(b, 0, count, "UTF-8"); // all strings are considered to be UTF-8 unicode.
+    return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode.
   }
 
   // skip to a 4 byte boundary in the file
@@ -964,7 +966,7 @@ public class N3header {
   private void writeString(String s) throws IOException {
  //   if (s.length() == 0)
    //   System.out.println("HEY");
-    byte[] b = s.getBytes("UTF-8"); // all strings are encoded in UTF-8 Unicode.
+    byte[] b = s.getBytes(CDM.utf8Charset); // all strings are encoded in UTF-8 Unicode.
     raf.writeInt(b.length);
     raf.write(b);
     pad(b.length, (byte) 0);

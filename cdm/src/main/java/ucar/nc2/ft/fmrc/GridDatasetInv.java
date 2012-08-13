@@ -129,7 +129,7 @@ public class GridDatasetInv {
 
       GridDatasetInv inv = new GridDatasetInv(gds, cm.extractRunDate(mfile));
       String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
-      ((CollectionManagerAbstract)cm).putMetadata(mfile, "fmrInv.xml", xmlString.getBytes("UTF-8"));
+      ((CollectionManagerAbstract)cm).putMetadata(mfile, "fmrInv.xml", xmlString.getBytes(CDM.utf8Charset));
       if (log.isDebugEnabled()) log.debug(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
       if (debug) System.out.printf(" added xmlFile %s.fmrInv.xml to cache%n", mfile.getPath());
       // System.out.println("new xmlBytes= "+ xmlString);

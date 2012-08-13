@@ -32,6 +32,8 @@
 
 package ucar.nc2.constants;
 
+import java.nio.charset.Charset;
+
 /**
  * CDM constants.
  *
@@ -39,6 +41,7 @@ package ucar.nc2.constants;
  * @since 12/20/11
  */
 public interface CDM {
+  public static final Charset utf8Charset = Charset.forName("UTF-8");
 
   // structural
   public static final String FILL_VALUE = "_FillValue";

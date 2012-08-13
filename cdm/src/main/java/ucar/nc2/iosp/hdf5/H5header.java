@@ -71,7 +71,6 @@ import java.nio.charset.Charset;
    */
 public class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
-  static private final Charset utf8Charset = Charset.forName("UTF-8"); // cant use until 1.6
 
   // special attribute names in HDF5
   static public final String HDF5_CLASS  = "CLASS";
@@ -714,7 +713,10 @@ public class H5header {
 
     // check for empty attribute case
     if (matt.mds.type == 2) {
-      return new Attribute(matt.name, dtype);
+      if (dtype == DataType.CHAR)
+        return new Attribute(matt.name, ""); // empty char considered to be a 0 length string
+      else
+        return new Attribute(matt.name, dtype);
     }
 
     Array attData = null;
@@ -931,7 +933,7 @@ public class H5header {
       if (b[count] == 0) break;
       count++;
     }
-    return new String(b, 0, count, utf8Charset); // all strings are considered to be UTF-8 unicode
+    return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode
   }
 
   private String convertString(byte[] b, int start, int len) throws UnsupportedEncodingException {
@@ -941,7 +943,7 @@ public class H5header {
       if (b[count] == 0) break;
       count++;
     }
-    return new String(b, start, count-start, utf8Charset); // all strings are considered to be UTF-8 unicode
+    return new String(b, start, count-start, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode
   }
 
   protected Array convertEnums(Map<Integer, String> map, DataType dataType, Array values) {
@@ -4359,7 +4361,7 @@ There is _no_ datatype information stored for these sort of selections currently
     public String getString(int offset) {
       int count = 0;
       while (heap[offset + count] != 0) count++;
-      return new String(heap, offset, count, utf8Charset);
+      return new String(heap, offset, count, CDM.utf8Charset);
     }
 
   } // LocalHeap
@@ -4394,7 +4396,7 @@ There is _no_ datatype information stored for these sort of selections currently
     byte[] s = new byte[count];
     raf.read(s);
     raf.readByte(); // skip the zero byte! nn
-    return new String(s, utf8Charset); // all Strings are UTF-8 unicode
+    return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4419,7 +4421,7 @@ There is _no_ datatype information stored for these sort of selections currently
     count += padding(count, 8);
     raf.seek(filePos + count);
 
-   return new String(s, utf8Charset); // all Strings are UTF-8 unicode
+   return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
   }
 
   /**
@@ -4432,7 +4434,7 @@ There is _no_ datatype information stored for these sort of selections currently
   private String readStringFixedLength(int size) throws IOException {
     byte[] s = new byte[size];
     raf.read(s);
-    return new String(s, utf8Charset); // all Strings are UTF-8 unicode
+    return new String(s, CDM.utf8Charset); // all Strings are UTF-8 unicode
   }
 
   long readLength() throws IOException {

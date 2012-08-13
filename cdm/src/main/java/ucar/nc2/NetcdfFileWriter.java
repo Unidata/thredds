@@ -498,11 +498,11 @@ public class NetcdfFileWriter {
       att = new Attribute(attName, att.getValues());
     }
 
-    if (att.getLength() == 0)
-      System.out.println("HEY");
+    //if (att.getLength() == 0)
+    //  System.out.println("HEY");
 
-    if (v.getDataType() == DataType.CHAR && att.getName().equals("_FillValue"))
-      System.out.println("HEY");
+    //if (v.getDataType() == DataType.CHAR && att.getName().equals("_FillValue"))
+    //  System.out.println("HEY");
 
     v.addAttribute(att);
   }

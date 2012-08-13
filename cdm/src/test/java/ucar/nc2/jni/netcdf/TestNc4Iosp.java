@@ -8,7 +8,6 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.geoloc.projection.proj4.MapMath;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
@@ -48,10 +47,9 @@ public class TestNc4Iosp {
     return v.read(section) ;
   }
 
-  //@Test
+  @Test
   public void problem() throws IOException {
-    //doCompare(TestDir.cdmUnitTestDir + "formats/netcdf4/files/tst_opaque_data.nc4", true, true, true);
-    doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\tst\\tst_enum_data2.nc", true, true, true);
+    doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\testEmptyAtts.nc", true, true, true);
   }
 
   @Test
@@ -81,7 +79,7 @@ public class TestNc4Iosp {
     }
   }
 
-  private class MyObjectFilter implements CompareNetcdf2.ObjFilter {
+  public static class Netcdf4ObjectFilter implements CompareNetcdf2.ObjFilter {
     @Override
     public boolean attOk(Variable v, Attribute att) {
       // if (v != null && v.isMemberOfStructure()) return false;
@@ -121,7 +119,7 @@ public class TestNc4Iosp {
 
     Formatter f= new Formatter();
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
-    boolean ok = tc.compare(ncfile, jni, new MyObjectFilter(), showCompare, showEach, compareData);
+    boolean ok = tc.compare(ncfile, jni, new Netcdf4ObjectFilter(), showCompare, showEach, compareData);
     System.out.printf(" %s compare %s ok = %s%n", ok ? "" : "***", location, ok);
     if (!ok ||(showCompare && showCompareResults)) System.out.printf("%s%n=====================================%n", f);
     ncfile.close();

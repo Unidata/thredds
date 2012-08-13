@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.IospHelper;
 
@@ -122,7 +123,7 @@ public class N3raf extends N3iosp  {
         raf.seek ( chunk.getSrcPos());
         for (int k=0; k<chunk.getNelems(); k++) {
           String val = (String) ii.getObjectNext();
-          if (val != null) raf.write( val.getBytes("UTF-8")); // LOOK ??
+          if (val != null) raf.write( val.getBytes(CDM.utf8Charset)); // LOOK ??
         }
       }
       return;

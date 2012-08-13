@@ -39,6 +39,7 @@ import java.io.*;
 import java.util.*;
 
 import thredds.inventory.MFile;
+import ucar.nc2.constants.CDM;
 
 /**
  * MetadataManager using Berkeley DB Java Edition.
@@ -308,7 +309,7 @@ public class MetadataManager {
 
     openDatabase();
     try {
-      DatabaseEntry entry = new DatabaseEntry(theKey.getBytes("UTF-8"));
+      DatabaseEntry entry = new DatabaseEntry(theKey.getBytes(CDM.utf8Charset));
       database.delete(null, entry);
     } catch (Exception e) {
       throw new RuntimeException(e);

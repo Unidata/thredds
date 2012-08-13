@@ -4,10 +4,12 @@ import org.junit.Test;
 import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Formatter;
 
 /**
  * Describe
@@ -20,13 +22,11 @@ public class TestFileWriter2 {
 
   @Test
   public void problem() throws IOException {
-    copyFile("Q:/cdmUnitTest/ft/point/netcdf/Surface_Buoy_20090921_0000.nc",
-            "C:/temp/Surface_Buoy_20090921_0000.classic.nc",
-            NetcdfFileWriter.Version.netcdf3c);
-    NetcdfFile ncfile = NetcdfFile.open("C:/temp/Surface_Buoy_20090921_0000.nc");
-    ncfile.close();
+    copyFile("Q:/cdmUnitTest/ft/point/netcdf/Surface_Buoy_20090921_0000.nc", "C:/temp/Surface_Buoy_20090921_0000.classic.nc", NetcdfFileWriter.Version.netcdf3c);
+    //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);
   }
 
+  @Test
   public void readAllNetcdf4() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/tst/", null, new MyAct(), true);
@@ -39,6 +39,7 @@ public class TestFileWriter2 {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
+  @Test
   public void readAllNetcdf3() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", null, new MyAct());
@@ -50,24 +51,35 @@ public class TestFileWriter2 {
       File fin = new File(datasetIn);
       String datasetOut = tempDir + fin.getName();
 
-      if (!copyFile(datasetIn, datasetOut, NetcdfFileWriter.Version.netcdf4))
+      if (!copyFile(datasetIn, datasetOut, NetcdfFileWriter.Version.netcdf3c))
         countNotOK++;
       return 1;
     }
   }
 
-  private String tempDir = "C:/temp/";
+  private String tempDir = TestDir.temporaryLocalDataDir; // "C:/temp/";
   private boolean copyFile(String datasetIn, String datasetOut, NetcdfFileWriter.Version version) throws IOException {
      System.out.printf("copy %s to %s%n", datasetIn, datasetOut);
 
      NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
      FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut,  version);
      NetcdfFile ncfileOut = writer2.write();
+     compare(ncfileIn, ncfileOut, true, false, true);
      ncfileIn.close();
      ncfileOut.close();
      // System.out.println("NetcdfFile written = " + ncfileOut);
      return true;
    }
+
+  private boolean compare(NetcdfFile nc1, NetcdfFile nc2, boolean showCompare, boolean showEach, boolean compareData) throws IOException {
+    Formatter f= new Formatter();
+    CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
+    boolean ok = tc.compare(nc1, nc2, new TestNc4Iosp.Netcdf4ObjectFilter(), showCompare, showEach, compareData);
+    System.out.printf(" %s compare %s to %s ok = %s%n", ok ? "" : "***", nc1.getLocation(), nc2.getLocation(), ok);
+    if (!ok) System.out.printf(" %s%n", f);
+    return ok;
+  }
+
 
 
 }

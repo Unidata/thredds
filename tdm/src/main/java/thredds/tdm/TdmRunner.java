@@ -76,14 +76,27 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class TdmRunner {
   //static private final Logger logger = org.slf4j.LoggerFactory.getLogger(TdmRunner.class);
-  static private boolean seperateFiles = true;
-  static private String serverName = "http://localhost:8080/"; // set in the spring config file
-  static private HTTPSession session;
+
+
+  private String user, pass;
+  private boolean sendTriggers;
+  private List<Server> servers;
 
   private java.util.concurrent.ExecutorService executor;
   private Resource catalog;
-  private boolean indexOnly = false; // if true, just use existing .ncx
+  //private boolean indexOnly = false; // if true, just use existing .ncx
   private boolean showOnly = false; // if true, just show dirs and exit
+  private boolean seperateFiles = true;
+
+  private class Server {
+    String name;
+    HTTPSession session;
+
+    private Server(String name, HTTPSession session) {
+      this.name = name;
+      this.session = session;
+    }
+  }
 
   public void setShowOnly(boolean showOnly) {
     this.showOnly = showOnly;
@@ -98,8 +111,19 @@ public class TdmRunner {
     this.catalog = catalog;
   }
 
-  public void setTdsServer(String serverName) {
-    this.serverName = serverName;
+  public void setServerNames(String[] serverNames) throws HTTPException {
+    servers = new ArrayList<Server>(serverNames.length);
+    for (String name : serverNames) {
+      HTTPSession session = new HTTPSession(name);
+      session.setCredentialsProvider(new CredentialsProvider() {
+        public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
+          //System.out.printf("getCredentials called %s %s%n", user, pass);
+          return new UsernamePasswordCredentials(user, pass);
+        }
+      });
+      session.setUserAgent("tdmRunner");
+      servers.add(new Server(name, session));
+    }
   }
 
   // Task causes a new index to be written - we know collection has changed, dont test again
@@ -139,9 +163,8 @@ public class TdmRunner {
             TimePartition tp = TimePartition.factory(format == DataFormatType.GRIB1, tpc, CollectionManager.Force.always, f); // "we know collection has changed, dont test again" ??? LOOK
             tp.close();
             if (config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
-              String url = serverName + "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
-              int status = sendTrigger(url, f);
-              f.format(" trigger %s status = %d%n", url, status);
+              String path = "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
+              sendTriggers(path, f);
             }
             f.format("**** TimePartitionBuilder.factory complete %s%n", name);
           } catch (Throwable e) {
@@ -156,9 +179,8 @@ public class TdmRunner {
             GribCollection gc = GribCollection.factory(format == DataFormatType.GRIB1, dcm, CollectionManager.Force.always, f);
             gc.close();
             if (config.tdmConfig.triggerOk && sendTriggers) { // LOOK is there any point if you dont have trigger = true ?
-              String url = serverName + "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
-              int status = sendTrigger(url, f);
-              f.format(" trigger %s status = %d%n", url, status);
+              String path = "thredds/admin/collection/trigger?nocheck&collection=" + fc.getName();
+              sendTriggers(path, f);
             }
             f.format("**** GribCollectionBuilder.factory complete %s%n", name);
 
@@ -179,26 +201,26 @@ public class TdmRunner {
         System.out.printf("%s%n", s);*/
     }
 
-    private int sendTrigger(String url, Formatter f) {
-      logger.debug("send trigger to {}", url);
-      HTTPMethod m = null;
-      try {
-        m = HTTPMethod.Get(session, url);
-        int status = m.execute();
-        String s = m.getResponseAsString();
-        f.format("%s == %s", url, s);
-        System.out.printf("Trigger response = %s%n", s);
-        return status;
+    private void sendTriggers(String path, Formatter f) {
+      for (Server server : servers) {
+        String url = server.name + path;
+        logger.debug("send trigger to {}", url);
+        HTTPMethod m = null;
+        try {
+          m = HTTPMethod.Get(server.session, url);
+          int status = m.execute();
+          String statuss = m.getResponseAsString();
+          f.format(" trigger %s status = %d (%s)%n", url, status, statuss);
 
-      } catch (HTTPException e) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-        e.printStackTrace(new PrintStream(bos));
-        f.format("%s == %s", url, bos.toString());
-        e.printStackTrace();
-        return -1;
+        } catch (HTTPException e) {
+          ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+          e.printStackTrace(new PrintStream(bos));
+          f.format("%s == %s", url, bos.toString());
+          e.printStackTrace();
 
-      } finally {
-        if (m != null) m.close();
+        } finally {
+          if (m != null) m.close();
+        }
       }
 
     }
@@ -364,31 +386,30 @@ public class TdmRunner {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////
-  private static String user, pass;
-  private static boolean sendTriggers;
 
   public static void main(String args[]) throws IOException, InterruptedException {
     ApplicationContext springContext = new FileSystemXmlApplicationContext("classpath:resources/application-config.xml");
     TdmRunner driver = (TdmRunner) springContext.getBean("testDriver");
     //RandomAccessFile.setDebugLeaks(true);
-
+    HTTPSession.setGlobalUserAgent("TDM v4.3");
 
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-help")) {
         System.out.printf("usage: TdmRunner [-catalog <cat>] [-server <tdsServer>] [-cred <user:passwd>] [-showDirs] %n");
         System.out.printf("example: TdmRunner -catalog classpath:/resources/indexNomads.xml -server http://localhost:8080/ -cred user:password %n");
+        System.out.printf("example: /opt/jdk/bin/java -d64 -Xmx8g -server -jar tdm-4.3.jar -catalog /tomcat/webapps/thredds/WEB-INF/altContent/idd/thredds/catalog.xml -cred user:passwd%n");
         System.exit(0);
       }
       if (args[i].equalsIgnoreCase("-showDirs"))
         driver.setShowOnly(true);
       if (args[i].equalsIgnoreCase("-server"))
-        driver.setTdsServer(args[i + 1]);
+        driver.setServerNames( new String[] {args[i + 1]});
       if (args[i].equalsIgnoreCase("-cred")) {
         String cred = args[i + 1];
         String[] split = cred.split(":");
-        user = split[0];
-        pass = split[1];
-        sendTriggers = true;
+        driver.user = split[0];
+        driver.pass = split[1];
+        driver.sendTriggers = true;
       }
       if (args[i].equalsIgnoreCase("-catalog")) {
         Resource cat = new FileSystemResource(args[i + 1]);
@@ -396,7 +417,7 @@ public class TdmRunner {
       }
     }
 
-    if (sendTriggers) {
+    /* if (sendTriggers) {
       session = new HTTPSession(serverName);
       session.setCredentialsProvider(new CredentialsProvider() {
         public Credentials getCredentials(AuthScheme authScheme, String s, int i, boolean b) throws CredentialsNotAvailableException {
@@ -405,8 +426,7 @@ public class TdmRunner {
         }
       });
       session.setUserAgent("tdmRunner");
-      HTTPSession.setGlobalUserAgent("TDM v4.3");
-    }
+    }  */
 
     CollectionUpdater.INSTANCE.setTdm(true);
 

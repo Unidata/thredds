@@ -200,6 +200,11 @@ public interface Nc4prototypes extends Library {
 
   //////////////////////////////////////////////////////////////////////////////////
   //// writing
+
+  static public final int  NC_FILL		= 0;	    /**< Argument to nc_set_fill() to clear NC_NOFILL */
+  static public final int  NC_NOFILL	= 0x100;	/**< Argument to nc_set_fill() to turn off filling of data. */
+
+
   int nc_create(String path, int cmode, IntByReference ncidp);
   int nc_enddef	(int ncid);
   int nc_sync	(int ncid);
@@ -222,6 +227,8 @@ public interface Nc4prototypes extends Library {
   int nc_put_vars_float(int ncid, int varid, long[] startp, long[] countp, long[] stridep, float[] ip);
   int nc_put_vars_double(int ncid, int varid, long[] startp, long[] countp, long[] stridep, double[] ip);
   int nc_put_vars_string(int ncid, int varid, long[] startp, long[] countp, long[] stridep, String[] ip);
+
+  // nc_put_vars_double(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const double *op);
 
   // nc_put_att_string(int ncid, int varid, const char *name, long len, const char **op);
 
@@ -275,7 +282,7 @@ public interface Nc4prototypes extends Library {
   
   /* Learn about the endianness of a variable. */
   int nc_inq_var_endian(int ncid, int varid, IntByReference endianp);
-  
+
   /* Set the fill mode (classic or 64-bit offset files only). */
   int nc_set_fill(int ncid, int fillmode, IntByReference old_modep);
   

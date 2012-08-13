@@ -21,7 +21,12 @@
   <bean id="testDriver" class="thredds.tdm.TdmRunner">
     <property name="executor" ref="executor"/>
     <property name="catalog" value="classpath:/resources/indexNomads.xml"/>
-    <property name="tdsServer" value="http://motherlode.ucar.edu:9080/"/>
+    <property name="serverNames">
+      <list>
+          <value>http://motherlode.ucar.edu:8081/</value>
+          <value>http://motherlode.ucar.edu:9080/</value>
+      </list>
+    </property>
   </bean>
 
 </beans>

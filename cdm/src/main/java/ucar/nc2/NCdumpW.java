@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.URLnaming;
@@ -929,7 +930,7 @@ public class NCdumpW {
     }
 
     try {
-      Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, Charset.forName("UTF-8")));
+      Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, CDM.utf8Charset));
       NCdumpW.print(sbuff.toString(), writer, null);
 
     } catch (java.io.IOException ioe) {

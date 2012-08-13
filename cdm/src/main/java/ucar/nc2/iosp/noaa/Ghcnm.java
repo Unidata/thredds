@@ -483,7 +483,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
       raf.seek(0);
       byte[] b = new byte[MAGIC_START.length()];
       raf.read(b);
-      String test = new String(b, "UTF-8");
+      String test = new String(b, CDM.utf8Charset);
       return test.equals(MAGIC_START);
 
     } else {
@@ -767,7 +767,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   private void readIndex(String indexFilename) throws IOException {
     FileInputStream fin = new FileInputStream(indexFilename);
 
-    if (!NcStream.readAndTest(fin, MAGIC_START.getBytes("UTF-8")))
+    if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(CDM.utf8Charset)))
       throw new IllegalStateException("bad index file");
     int version = fin.read();
     if (version != 1)
@@ -847,7 +847,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     long size = 0;
 
     //// header message
-    fout.write(MAGIC_START.getBytes("UTF-8"));
+    fout.write(MAGIC_START.getBytes(CDM.utf8Charset));
     fout.write(version);
     size += NcStream.writeVInt(fout, stnCount);
 
