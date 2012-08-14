@@ -32,6 +32,7 @@
 
 package ucar.unidata.util;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.rc.RC;
 
 import java.util.StringTokenizer;
@@ -108,7 +109,7 @@ public class StringUtil2 {
    * Delete any non-printable characters
    *
    * @param h byte array
-   * @return cleanud up string
+   * @return cleaned up string
    */
   public static String cleanup(byte[] h) {
     byte[] bb = new byte[h.length];
@@ -122,7 +123,7 @@ public class StringUtil2 {
 
   public static String cleanup(String s) {
     if (s == null) return null;
-    return cleanup(s.getBytes());
+    return cleanup(s.getBytes(CDM.utf8Charset));
   }
 
 
@@ -165,7 +166,7 @@ public class StringUtil2 {
    * @return filtered string.
    */
   static public String filter7bits(String s) {
-    byte[] b = s.getBytes();
+    byte[] b = s.getBytes(CDM.utf8Charset);
     byte[] bo = new byte[b.length];
     int count = 0;
     for (int i = 0; i < s.length(); i++) {

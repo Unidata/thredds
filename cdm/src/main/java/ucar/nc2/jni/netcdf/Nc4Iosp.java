@@ -41,6 +41,7 @@ import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.*;
+import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.ma2.*;
@@ -903,7 +904,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private class Group4 {
     Group g;
     Group4 parent;
-    int[] dimids;
+    Map<Dimension, Integer> dimHash;
 
     Group4(Group g, Group4 parent) {
       this.g = g;
@@ -1761,7 +1762,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     //ret = nc4.nc_set_fill(ncid, nc4.NC_NOFILL, old_modep);
     //if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
 
-    createGroup(ncid, ncfile.getRootGroup());
+    createGroup(ncid, new Group4(ncfile.getRootGroup(), null));
 
     // done with define mode
     nc4.nc_enddef(ncid);
@@ -1784,103 +1785,129 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     throw new IllegalStateException("version = " + version);
   }
 
-  private void createGroup(int grid, Group g) throws IOException {
-    groupHash.put(g, grid);
+  private void createGroup(int grpid, Group4 g4) throws IOException {
+    groupHash.put(g4.g, grpid);
+    g4.dimHash = new HashMap<Dimension, Integer>();
 
     // attributes
-    for (Attribute att : g.getAttributes())
-      writeAttribute(grid, Nc4prototypes.NC_GLOBAL, att, null);
-
-    Map<Dimension, Integer> dimHash = new HashMap<Dimension, Integer>(50);
+    for (Attribute att : g4.g.getAttributes())
+      writeAttribute(grpid, Nc4prototypes.NC_GLOBAL, att, null);
 
     // dimensions
-    for (Dimension dim : g.getDimensions()) {
-      IntByReference dimidp = new IntByReference();
-      int ret = nc4.nc_def_dim(ncid, dim.getName(), dim.getLength(), dimidp);
-      if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
-      dimHash.put(dim, dimidp.getValue());
-      if (debugWrite)
-        System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getName(), dimidp.getValue(), g.getName());
+    for (Dimension dim : g4.g.getDimensions()) {
+      int dimid = addDimension(grpid, dim.getName(), dim.getLength());
+      g4.dimHash.put(dim, dimid);
+      if (debugWrite) System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getName(), dimid, g4.g.getName());
     }
 
     // variables
-    for (Variable v : g.getVariables()) {
+    for (Variable v : g4.g.getVariables()) {
       int[] dimids = new int[v.getRank()];
       int count = 0;
       for (Dimension d : v.getDimensions()) {
-        int dimid = dimHash.get(d);
-        if (debugWrite)
-          System.out.printf("  use dim '%s' (%d) in variable '%s'%n", d.getName(), dimid, v.getShortName());
+        int dimid;
+        if (!d.isShared()) {
+          dimid = addDimension(grpid, v.getShortName()+"_Dim"+count, d.getLength());
+        } else {
+          dimid = findDimensionId(g4, d);
+        }
+        if (debugWrite) System.out.printf("  use dim '%s' (%d) in variable '%s'%n", d.getName(), dimid, v.getShortName());
         dimids[count++] = dimid;
       }
 
       IntByReference varidp = new IntByReference();
       int typid = convertDataType(v.getDataType());
-      int ret = nc4.nc_def_var(ncid, v.getShortName(), typid, dimids.length, dimids, varidp);
+      int ret = nc4.nc_def_var(grpid, v.getShortName(), typid, dimids.length, dimids, varidp);
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret));
       int varid = varidp.getValue();
 
-      v.setSPobject(new Vinfo(grid, varid, typid));
+      v.setSPobject(new Vinfo(grpid, varid, typid));
 
       for (Attribute att : v.getAttributes())
-        writeAttribute(grid, varid, att, v);
+        writeAttribute(grpid, varid, att, v);
     }
 
     // groups
-    for (Group nested : g.getGroups()) {
+    for (Group nested : g4.g.getGroups()) {
       IntByReference grpidp = new IntByReference();
-      int ret = nc4.nc_def_grp(grid, nested.getShortName(), grpidp);
+      int ret = nc4.nc_def_grp(grpid, nested.getShortName(), grpidp);
 
       if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
       int nestedId = grpidp.getValue();
-      createGroup(nestedId, nested);
+      createGroup(nestedId, new Group4(nested, g4));
     }
-
   }
 
-  private void writeAttribute(int grid, int varid, Attribute att, Variable v) throws IOException {
+  private Integer findDimensionId(Group4 g4, Dimension d) {
+    if (g4 == null) return null;
+
+    Integer dimid = g4.dimHash.get(d);
+    if (dimid == null) {
+      dimid = findDimensionId(g4.parent, d); // search in parent
+    }
+
+    return dimid;
+  }
+
+  private int addDimension(int grpid, String name, int length) throws IOException {
+    IntByReference dimidp = new IntByReference();
+    int ret = nc4.nc_def_dim(grpid, name, length, dimidp);
+    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+    return dimidp.getValue();
+  }
+
+
+  private void writeAttribute(int grpid, int varid, Attribute att, Variable v) throws IOException {
     /* if (v != null && v.getShortName().equals("report")) {
       if (att.getName().equals(CDM.FILL_VALUE)) return; // temp debug
     }  */
+
+    // dont propagate these - handles internally
+    if (att.getName().equals(H5header.HDF5_CLASS)) return;
+    if (att.getName().equals(H5header.HDF5_DIMENSION_LIST)) return;
+    if (att.getName().equals(H5header.HDF5_DIMENSION_SCALE)) return;
+    if (att.getName().equals(H5header.HDF5_DIMENSION_LABELS)) return;
 
     int ret = 0;
     Array values = att.getValues();
     switch (att.getDataType()) {
       case STRING:
         if (att.getLength() == 1) {
-          byte[] svalb = att.getStringValue().getBytes();
-          ret = nc4.nc_put_att_text(grid, varid, att.getName(), svalb.length, svalb);
+          byte[] svalb = att.getStringValue().getBytes(CDM.utf8Charset);
+          ret = nc4.nc_put_att_text(grpid, varid, att.getName(), svalb.length, svalb);
         } else {
           String[] svalues = new String[att.getLength()];
           for (int i = 0; i < att.getLength(); i++) svalues[i] = (String) att.getValue(i);
-          ret = nc4.nc_put_att_string(grid, varid, att.getName(), att.getLength(), svalues);
+          ret = nc4.nc_put_att_string(grpid, varid, att.getName(), att.getLength(), svalues);
         }
         break;
       case BYTE:
-        ret = nc4.nc_put_att_schar(grid, varid, att.getName(), Nc4prototypes.NC_BYTE, att.getLength(), (byte[]) values.getStorage());
+        ret = nc4.nc_put_att_schar(grpid, varid, att.getName(), Nc4prototypes.NC_BYTE, att.getLength(), (byte[]) values.getStorage());
         break;
       case CHAR:
-        ret = nc4.nc_put_att_text(grid, varid, att.getName(), att.getLength(), IospHelper.convertCharToByte((char[]) values.getStorage()));
+        ret = nc4.nc_put_att_text(grpid, varid, att.getName(), att.getLength(), IospHelper.convertCharToByte((char[]) values.getStorage()));
         break;
       case DOUBLE:
-        ret = nc4.nc_put_att_double(grid, varid, att.getName(), Nc4prototypes.NC_DOUBLE, att.getLength(), (double[]) values.getStorage());
+        ret = nc4.nc_put_att_double(grpid, varid, att.getName(), Nc4prototypes.NC_DOUBLE, att.getLength(), (double[]) values.getStorage());
         break;
       case FLOAT:
-        ret = nc4.nc_put_att_float(grid, varid, att.getName(), Nc4prototypes.NC_FLOAT, att.getLength(), (float[]) values.getStorage());
+        ret = nc4.nc_put_att_float(grpid, varid, att.getName(), Nc4prototypes.NC_FLOAT, att.getLength(), (float[]) values.getStorage());
         break;
       case INT:
-        ret = nc4.nc_put_att_int(grid, varid, att.getName(), Nc4prototypes.NC_INT, att.getLength(), (int[]) values.getStorage());
+        ret = nc4.nc_put_att_int(grpid, varid, att.getName(), Nc4prototypes.NC_INT, att.getLength(), (int[]) values.getStorage());
         break;
       case LONG:
-        ret = nc4.nc_put_att_longlong(grid, varid, att.getName(), Nc4prototypes.NC_INT64, att.getLength(), (long[]) values.getStorage());
+        ret = nc4.nc_put_att_longlong(grpid, varid, att.getName(), Nc4prototypes.NC_INT64, att.getLength(), (long[]) values.getStorage());
         break;
       case SHORT:
-        ret = nc4.nc_put_att_short(grid, varid, att.getName(), Nc4prototypes.NC_SHORT, att.getLength(), (short[]) values.getStorage());
+        ret = nc4.nc_put_att_short(grpid, varid, att.getName(), Nc4prototypes.NC_SHORT, att.getLength(), (short[]) values.getStorage());
         break;
     }
 
-    if (ret != 0) throw new IOException(nc4.nc_strerror(ret) + " on attribute " + att+" on var "+v.getShortName());
+    if (ret != 0) {
+      throw new IOException(ret + " ("+ nc4.nc_strerror(ret) + ") on attribute " + att+" on var "+varid+" in group "+grpid);
+    }
   }
 
   @Override

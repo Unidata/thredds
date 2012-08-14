@@ -338,7 +338,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     Range r = section.getRange(0);
     for (int i = r.first(); i <= r.last(); i += r.stride()) {
       Station station = stations.get(i);
-      bb.put(station.r.stationId.getBytes());
+      bb.put(station.r.stationId.getBytes(CDM.utf8Charset));
       bb.putFloat(station.r.lat);
       bb.putFloat(station.r.lon);
       bb.putFloat(station.r.elevMeters);
@@ -660,13 +660,13 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     }
 
     void loadIndexData(ByteBuffer bb) throws IOException {
-      bb.put(stationId.getBytes());
+      bb.put(stationId.getBytes(CDM.utf8Charset));
       bb.putInt((int) (date.getTime() / 1000));
     }
 
     void loadStructureData(ArrayStructureBB abb, ByteBuffer bb) throws IOException {
       bb.putInt((int) (date.getTime() / 1000));
-      bb.put(dateFormatter.toDateTimeStringISO(date).getBytes());
+      bb.put(dateFormatter.toDateTimeStringISO(date).getBytes(CDM.utf8Charset));
       bb.putShort(reportType);
       bb.putShort(instType);
       bb.put(reserved);

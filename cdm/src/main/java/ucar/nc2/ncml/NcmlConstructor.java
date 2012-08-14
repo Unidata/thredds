@@ -6,6 +6,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 
@@ -52,7 +53,7 @@ public class NcmlConstructor {
   }
 
   public boolean populate(String ncml, NetcdfFile target) throws IOException {
-    return populate(new ByteArrayInputStream(ncml.getBytes()), target);
+    return populate(new ByteArrayInputStream(ncml.getBytes(CDM.utf8Charset)), target);
   }
 
   public boolean populate(InputStream ncml, NetcdfFile target) throws IOException {

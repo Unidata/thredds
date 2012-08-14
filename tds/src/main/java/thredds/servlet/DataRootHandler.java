@@ -83,6 +83,7 @@ import thredds.util.PathAliasReplacement;
 import thredds.util.RequestForwardUtils;
 import thredds.util.StartsWithPathAliasReplacement;
 import thredds.util.TdsPathUtils;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.StringUtil2;
@@ -1166,7 +1167,7 @@ public final class DataRootHandler implements InitializingBean{
 
     res.setContentLength(result.length());
     res.setContentType("text/xml");
-    res.getOutputStream().write(result.getBytes());
+    res.getOutputStream().write(result.getBytes(CDM.utf8Charset));
   }
 
   /**

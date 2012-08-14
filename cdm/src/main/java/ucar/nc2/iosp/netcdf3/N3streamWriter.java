@@ -35,6 +35,7 @@ package ucar.nc2.iosp.netcdf3;
 
 import ucar.nc2.*;
 import ucar.ma2.DataType;
+import ucar.nc2.constants.CDM;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -304,7 +305,7 @@ public abstract class N3streamWriter {
 
   // write a string then pad to 4 byte boundary
   private int writeString(DataOutputStream stream, String s) throws IOException {
-    byte[] b = s.getBytes();
+    byte[] b = s.getBytes(CDM.utf8Charset);
     if (null != stream) {
       stream.writeInt(b.length);
       stream.write(b);

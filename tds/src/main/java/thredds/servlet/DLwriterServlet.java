@@ -41,6 +41,7 @@ import java.net.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
 
@@ -176,7 +177,7 @@ public class DLwriterServlet extends AbstractServlet {
 
     res.setContentType("text/plain");
     OutputStream out = res.getOutputStream();
-    out.write(mess.toString().getBytes());
+    out.write(mess.toString().getBytes(CDM.utf8Charset));
     out.flush();
   }
 

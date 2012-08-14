@@ -22,17 +22,18 @@ public class TestFileWriter2 {
 
   @Test
   public void problem() throws IOException {
-    copyFile("Q:/cdmUnitTest/ft/point/netcdf/Surface_Buoy_20090921_0000.nc", "C:/temp/Surface_Buoy_20090921_0000.classic.nc", NetcdfFileWriter.Version.netcdf3c);
+    copyFile("Q:\\cdmUnitTest\\formats\\hdf5\\superblockIsOffsetNPP.h5", "C:/temp/superblockIsOffsetNPP.nc4", NetcdfFileWriter.Version.netcdf4);
     //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);
   }
 
   @Test
   public void readAllNetcdf4() throws IOException {
     int count = 0;
-    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/tst/", null, new MyAct(), true);
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files/", null, new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
+  @Test
   public void readAllHDF5() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/", null, new MyAct(), true);
@@ -51,7 +52,7 @@ public class TestFileWriter2 {
       File fin = new File(datasetIn);
       String datasetOut = tempDir + fin.getName();
 
-      if (!copyFile(datasetIn, datasetOut, NetcdfFileWriter.Version.netcdf3c))
+      if (!copyFile(datasetIn, datasetOut, NetcdfFileWriter.Version.netcdf4))
         countNotOK++;
       return 1;
     }
@@ -64,7 +65,7 @@ public class TestFileWriter2 {
      NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
      FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut,  version);
      NetcdfFile ncfileOut = writer2.write();
-     compare(ncfileIn, ncfileOut, true, false, true);
+     compare(ncfileIn, ncfileOut, true, false, false);
      ncfileIn.close();
      ncfileOut.close();
      // System.out.println("NetcdfFile written = " + ncfileOut);

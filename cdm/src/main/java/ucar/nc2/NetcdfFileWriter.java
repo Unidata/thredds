@@ -266,6 +266,15 @@ public class NetcdfFileWriter {
     return dim;
   }
 
+  private String makeValidObjectName(String name) {
+    if (!isValidObjectName(name)) {
+      String nname = createValidObjectName(name);
+      log.warn("illegal object name= " + name + " change to " + name);
+      return nname;
+    }
+    return name;
+  }
+
   private boolean isValidObjectName(String name) {
     return N3iosp.isValidNetcdf3ObjectName(name);
   }
@@ -414,8 +423,7 @@ public class NetcdfFileWriter {
   public Variable addVariable(Group g, String shortName, DataType dataType, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
-    if (!isValidObjectName(shortName))
-      throw new IllegalArgumentException("illegal variable name: "+shortName);
+    shortName = makeValidObjectName(shortName);
     if (!isValidDataType(dataType))
       throw new IllegalArgumentException("illegal dataType: "+dataType);
 
@@ -454,8 +462,7 @@ public class NetcdfFileWriter {
   public Variable addStringVariable(Group g, String varName, List<Dimension> dims, int max_strlen) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
-    if (!isValidObjectName(varName))
-      throw new IllegalArgumentException("illegal netCDF-3 variable name: "+varName);
+    varName = makeValidObjectName(varName);
 
     Variable v = new Variable(ncfile, g, null, varName);
     v.setDataType(DataType.CHAR);

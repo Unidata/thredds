@@ -235,7 +235,7 @@ public class FileWriter2 {
   }
 
   private void addGroup4(Group newParent, Group oldGroup) throws IOException {
-    Group newGroup = writer.addGroup(newParent, oldGroup.getName());
+    Group newGroup = writer.addGroup(newParent, oldGroup.getShortName());
 
     // attributes
     for (Attribute att : oldGroup.getAttributes()) {
@@ -251,7 +251,7 @@ public class FileWriter2 {
 
     // dimensions
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
-    for (Dimension oldD : fileIn.getDimensions()) {
+    for (Dimension oldD : oldGroup.getDimensions()) {
       Dimension newD = writer.addDimension(newGroup, oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
               oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
       dimHash.put(oldD.getName(), newD);
@@ -264,7 +264,11 @@ public class FileWriter2 {
       List<Dimension> dims = new ArrayList<Dimension>();
       for (Dimension oldD : oldVar.getDimensions()) {
         // in case the name changed
-        Dimension newD = oldD.isShared() ? dimHash.get(oldD.getName()) : oldD;  // LOOK dimensions can be in the parent
+        Dimension newD = oldD.isShared() ? dimHash.get(oldD.getName()) : oldD;
+        if (newD == null)
+          newD = newParent.findDimension(oldD.getName());
+        if (newD == null)
+          throw new IllegalStateException("Cant find dimension "+ oldD.getName());
         dims.add(newD);
       }
 

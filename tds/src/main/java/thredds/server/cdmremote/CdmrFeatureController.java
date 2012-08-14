@@ -54,6 +54,7 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 import java.util.Formatter;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
@@ -477,7 +478,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     res.setContentType(getContentType(query));
 
     OutputStream out = res.getOutputStream();
-    out.write(infoString.getBytes());
+    out.write(infoString.getBytes(CDM.utf8Charset));
     out.flush();
 
     return null;

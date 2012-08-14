@@ -76,6 +76,7 @@ public class H5header {
   static public final String HDF5_CLASS  = "CLASS";
   static public final String HDF5_DIMENSION_LIST  = "DIMENSION_LIST";
   static public final String HDF5_DIMENSION_SCALE  = "DIMENSION_SCALE";
+  static public final String HDF5_DIMENSION_LABELS  = "DIMENSION_LABELS";
 
   // debugging
   static private boolean debugEnum = false, debugVlen = false;

@@ -33,6 +33,7 @@
 
 package ucar.nc2.util;
 
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.net.EscapeStrings;
 import ucar.unidata.util.StringUtil2;
 
@@ -287,7 +288,7 @@ public class IO {
    * @throws java.io.IOException on io error
    */
   static public void writeContents(String contents, OutputStream os) throws IOException {
-    ByteArrayInputStream bin = new ByteArrayInputStream(contents.getBytes());
+    ByteArrayInputStream bin = new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset));
     IO.copy(bin, os);
   }
 
@@ -878,7 +879,7 @@ public class IO {
 
       // read it
       OutputStream out = new BufferedOutputStream(c.getOutputStream());
-      IO.copy(new ByteArrayInputStream(contents.getBytes()), out);
+      IO.copy(new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset)), out);
       out.flush();
       out.close();
 

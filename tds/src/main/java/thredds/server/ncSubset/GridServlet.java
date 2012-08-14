@@ -42,6 +42,7 @@ import java.io.*;
 import java.util.Random;
 
 import ucar.ma2.Range;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -575,7 +576,7 @@ public class GridServlet extends AbstractServlet {
       res.setContentType("text/html; charset=iso-8859-1");
 
     OutputStream out = res.getOutputStream();
-    out.write(infoString.getBytes());
+    out.write(infoString.getBytes(CDM.utf8Charset));
     out.flush();
 
   }

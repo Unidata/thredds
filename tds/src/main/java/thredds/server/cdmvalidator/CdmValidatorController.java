@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
 import thredds.servlet.UsageLog;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
 import ucar.unidata.util.StringUtil2;
 
@@ -270,7 +271,7 @@ public class CdmValidatorController extends AbstractController {
       res.setContentLength(infoString.length());
 
       OutputStream out = res.getOutputStream();
-      out.write(infoString.getBytes());
+      out.write(infoString.getBytes(CDM.utf8Charset));
       out.flush();
 
       return infoString.length();

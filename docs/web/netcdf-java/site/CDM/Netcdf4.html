@@ -13,7 +13,7 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>Mapping between CDM and netCDF-4 Data Models </h1>
-<p><em>last modified: August 3, 2012</em></p>
+<p><em>last modified: August 13, 2012</em></p>
 <p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models.</p>
 <h2>DataTypes</h2>
 <h3>From netCDF-4 to CDM</h3>
@@ -40,7 +40,7 @@ dl {margin: 10px 5px 5px 15px;)
   <li>If a CDM Variable has an attribute <strong>_Typedef = &quot;<em>typename</em>&quot;, </strong>then the Variables' definition is made into a netCDF-4 type.</li>
 </ul>
 <h2>Attributes</h2>
-<p>In CDM, an attribute type may only be a scalar or 1D array of signed <em>byte, short, int, long, float, double, </em>or<em> String</em>. <strong>ENUMS?</strong></p>
+<p>In CDM, an attribute type may only be a scalar or 1D array of signed <em>byte, short, int, long, float, double, </em>or<em> String</em>. A <em>char</em> type is mapped to a <em>String</em>.</p>
 <h3>From netCDF-4 to CDM</h3>
 <ul>
   <li>An attribute of <em>compound</em> type in netCDF-4 is <em>flattened</em>, by making each field a seperate attribute, with name <em>attName.fieldName</em> in the CDM. </li>
