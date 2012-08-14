@@ -53,8 +53,8 @@ public class PointCollectionStreamTest {
 	public static List<Object[]> getTestParameters(){
 		
 		return Arrays.asList(new Object[][]{  
-				{SupportedFormat.NETCDF, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
-				{SupportedFormat.NETCDF, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
+				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
 
 		});				
 	}
