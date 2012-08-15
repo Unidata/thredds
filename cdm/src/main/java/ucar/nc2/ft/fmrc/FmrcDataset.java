@@ -438,7 +438,6 @@ class FmrcDataset {
           if (vds.getSize() > 1000 * 1000) {
             boolean wtf = vds.hasCachedDataRecurse();
           }
-          System.out.printf(" read %s%n", vds.getFullName());
           targetV.setCachedData(vds.read()); //
         }
         targetGroup.addVariable(targetV);

@@ -414,10 +414,11 @@ public class NetcdfFileWriter {
   /**
    * Add a variable to the file. Must be in define mode.
    *
+   * @param g         add to this group in the new file
    * @param shortName  name of Variable, must be unique with the file.
    * @param dataType type of underlying element
-   * @param dims     list of Dimensions for the variable, must already have been added. Use a list of length 0
-   *                 for a scalar variable.
+   * @param dims     list of Dimensions for the variable in the new file, must already have been added.
+   *                 Use a list of length 0 for a scalar variable.
    * @return the Variable that has been added
    */
   public Variable addVariable(Group g, String shortName, DataType dataType, List<Dimension> dims) {

@@ -82,24 +82,19 @@ public class FileWriter2 {
 
   private final Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();  // oldVar, newVar
   private final List<Variable> varList = new ArrayList<Variable>();                  // old Vars
+  private final Map<String, Dimension> gdimHash = new HashMap<String, Dimension>();  // name, newDim : global dimensions (classic mode)
 
+  /**
+   * Use this constructor to copy entire file. Use this.write() to do actual copy.
+   * @param fileIn          copy this file
+   * @param fileOutName     to this output file
+   * @param version         output file version
+   * @throws IOException    on read/write error
+   */
   public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version) throws IOException {
     this.fileIn = fileIn;
     this.writer = NetcdfFileWriter.createNew(version, fileOutName);
     this.version = version;
-  }
-
-  public FileWriter2(NetcdfFileWriter fileWriter) throws IOException {
-    this.fileIn = null;
-    this.writer = fileWriter;
-    this.version = fileWriter.getVersion();
-  }
-
-  public Variable addVariable(Variable oldVar) {
-    Variable newVar = writer.addVariable(oldVar.getParentGroup(), oldVar.getShortName(), oldVar.getDataType(), oldVar.getDimensions());
-    varMap.put(oldVar, newVar);
-    varList.add(oldVar);
-    return newVar;
   }
 
   public void addProgressListener(FileWriterProgressListener listener) {
@@ -111,28 +106,57 @@ public class FileWriter2 {
     return writer;
   }
 
-  /*
-   * Copy a NetcdfFile to a physical file, using Netcdf-3 or 4 file format.
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  // might be better to push these next up int NetcdfCFWriter, but we want to use copyVarData
+  /**
+   * Use this constructor to copy specific variables to new file.
+   * Only supports classic mode
    *
-   * @param fileIn            write from this NetcdfFile
-   * @param fileOutName       write to this local file
-   * @param fill              use fill mode
-   * @param isLargeFile       if true, make large file format (> 2Gb offsets)
-   * @param progressListeners List of progress listeners, use null or empty list if there are none.
-   * @throws IOException on read or write error
-   *
-  public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, boolean fill, boolean isLargeFile,
-                     int extraHeaderBytes, List<FileWriterProgressListener> progressListeners) throws IOException {
+   * Use addVariable() to load in variables, then this.write().
+   * @param fileWriter this encapsolates new file.
+   * @throws IOException    on read/write error
+   */
+  public FileWriter2(NetcdfFileWriter fileWriter) throws IOException {
+    this.fileIn = null;
+    this.writer = fileWriter;
+    this.version = fileWriter.getVersion();
+  }
 
-    this.fileIn = fileIn;
-    this.writer = NetcdfFileWriter.createNew(version, fileOutName);
-    writeNetcdf4 = version == NetcdfFileWriter.Version.netcdf4;
-    this.progressListeners = progressListeners;
+  /**
+   * Specify which variable will get written
+   * @param oldVar add this variable, and all parent groups
+   * @return new Variable.
+   */
+  public Variable addVariable(Variable oldVar) {
+    List<Dimension> newDims = getNewDimensions(oldVar);
+    Variable newVar = writer.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), newDims);
+    varMap.put(oldVar, newVar);
+    varList.add(oldVar);
 
-    writer.setLargeFile(isLargeFile);
-    writer.setFill(fill);
-    writer.setExtraHeaderBytes(extraHeaderBytes);
-  } */
+    for (Attribute att : oldVar.getAttributes())
+      writer.addVariableAttribute(newVar, att); // atts are immutable
+
+    return newVar;
+  }
+
+  private List<Dimension> getNewDimensions(Variable oldVar) {
+    List<Dimension> result = new ArrayList<Dimension>(oldVar.getRank());
+
+        // dimensions
+    for (Dimension oldD : oldVar.getDimensions()) {
+      Dimension newD =  gdimHash.get(oldD.getName());
+      if (newD == null) {
+        newD = writer.addDimension(null, oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
+              oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+        gdimHash.put(oldD.getName(), newD);
+        if (debug) System.out.println("add dim= " + newD);
+      }
+      result.add(newD);
+    }
+   return result;
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
 
   public NetcdfFile write() throws IOException {
 
@@ -199,7 +223,7 @@ public class FileWriter2 {
             dims.add(dim);
           else
             throw new IllegalStateException("Unknown dimension= " + oldD.getName());
-        }
+    }
       }
 
       DataType newType = oldVar.getDataType();
@@ -287,11 +311,6 @@ public class FileWriter2 {
     for (Group nested : oldGroup.getGroups())
       addGroup4(newGroup, nested);
 
-  }
-
-  private boolean hasRecordStructure(NetcdfFile file) {
-    Variable v = file.findVariable("record");
-    return (v != null) && (v.getDataType() == DataType.STRUCTURE);
   }
 
   /**
@@ -459,6 +478,11 @@ public class FileWriter2 {
     }
     return newData;
   }
+
+  private boolean hasRecordStructure(NetcdfFile file) {
+     Variable v = file.findVariable("record");
+     return (v != null) && (v.getDataType() == DataType.STRUCTURE);
+   }
 
   /*
    * Add a Variable to the file. The data is copied when finish() is called.

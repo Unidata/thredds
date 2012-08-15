@@ -573,8 +573,6 @@ public class GridDatasetInv {
    * @throws IOException on io error
    */
   private static GridDatasetInv readXML(byte[] xmlString) throws IOException {
-    // if (debug) System.out.println(" read from XML " + xmlLocation);
-
     InputStream is = new BufferedInputStream(new ByteArrayInputStream(xmlString));
     org.jdom.Document doc;
     try {

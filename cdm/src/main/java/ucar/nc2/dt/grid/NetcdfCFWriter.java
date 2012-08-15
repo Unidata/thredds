@@ -68,8 +68,8 @@ import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
 /**
- * Write a CF compliant Netcdf-3 file from any gridded dataset. The datasets can optionally be subsetted by a lat/lon
- * bounding box and/or a time range.
+ * Write a CF compliant Netcdf-3 or netcdf-4 file (classic mode only) from any gridded dataset.
+ * The datasets can optionally be subsetted by a lat/lon bounding box and/or a time range.
  *
  * @author caron
  */
@@ -383,6 +383,8 @@ public class NetcdfCFWriter {
     // check size is ok
     boolean isLargeFile = isLargeFile(total_size);
 
+    if (version == NetcdfFileWriter.Version.netcdf4)
+      version = NetcdfFileWriter.Version.netcdf4_classic;
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location);
     writer.setLargeFile(isLargeFile);
 

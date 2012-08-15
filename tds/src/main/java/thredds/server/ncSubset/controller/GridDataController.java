@@ -92,7 +92,8 @@ class GridDataController extends AbstratNcssDataRequestController {
   private long maxFileDownloadSize = -1L;
 
   @RequestMapping(value = "**", params = {"!latitude", "!longitude", "var"})
-  void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult validationResult, HttpServletResponse response) throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException, UnsupportedOperationException, TimeOutOfWindowException {
+  void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult validationResult, HttpServletResponse response)
+          throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException, UnsupportedOperationException, TimeOutOfWindowException {
 
     if (validationResult.hasErrors()) {
       handleValidationErrorsResponse(response, HttpServletResponse.SC_BAD_REQUEST, validationResult);
@@ -123,7 +124,8 @@ class GridDataController extends AbstratNcssDataRequestController {
     }
   }
 
-  private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response, NetcdfFileWriter.Version version) throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, TimeOutOfWindowException {
+  private void spatialSubset(GridDataRequestParamsBean params, HttpServletResponse response, NetcdfFileWriter.Version version)
+          throws RequestTooLargeException, OutOfBoundariesException, InvalidRangeException, ParseException, IOException, VariableNotContainedInDatasetException, InvalidBBOXException, TimeOutOfWindowException {
 
     LatLonRect maxBB = getGridDataset().getBoundingBox();
     LatLonRect requestedBB = setBBForRequest(params, gridDataset);
@@ -157,7 +159,8 @@ class GridDataController extends AbstratNcssDataRequestController {
   }
 
 
-  private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response, NetcdfFileWriter.Version version) throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException, InvalidBBOXException, TimeOutOfWindowException {
+  private void coordinatesSubset(GridDataRequestParamsBean params, HttpServletResponse response, NetcdfFileWriter.Version version)
+          throws OutOfBoundariesException, ParseException, InvalidRangeException, RequestTooLargeException, IOException, InvalidBBOXException, TimeOutOfWindowException {
 
     //Check coordinate params: maxx, maxy, minx, miny
     Double minx = params.getMinx();
@@ -367,7 +370,9 @@ class GridDataController extends AbstratNcssDataRequestController {
     return zRange;
   }
 
-  private void makeGridFile(NetcdfCFWriter writer, GridDataset gds, List<String> vars, LatLonRect bbox, Integer horizStride, Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon, NetcdfFileWriter.Version version) throws RequestTooLargeException, InvalidRangeException, IOException {
+  private void makeGridFile(NetcdfCFWriter writer, GridDataset gds, List<String> vars, LatLonRect bbox, Integer horizStride,
+                            Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon, NetcdfFileWriter.Version version)
+          throws RequestTooLargeException, InvalidRangeException, IOException {
 	  		 
     //String filename = req.getRequestURI();
     String filename = gds.getLocationURI();
@@ -390,7 +395,7 @@ class GridDataController extends AbstratNcssDataRequestController {
     httpHeaders.set("Content-Location", url);
     httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-    try {
+    //try {
 
       writer.makeFile(cacheFilename, gds, vars,
               bbox,
@@ -401,14 +406,13 @@ class GridDataController extends AbstratNcssDataRequestController {
               addLatLon,
               version);
 
-    } catch (IllegalArgumentException e) { // file too big
-      throw new RequestTooLargeException("Request too large", e);
-    }
+    //} catch (IllegalArgumentException e) { // file too big
+    //  throw new RequestTooLargeException("Request too large", e);
+    //}
 
     netcdfResult = new File(cacheFilename);
 
   }
-
 
   //Exception handlers
   @ExceptionHandler

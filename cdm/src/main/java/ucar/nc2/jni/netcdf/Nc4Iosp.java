@@ -77,7 +77,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private String jnaPath;
   static private String libName = "netcdf-7";
 
-  static private boolean warn = false;
+  static private boolean warn = true;
   static private final boolean debug = false, debugCompoundAtt = false, debugUserTypes = false, debugWrite = false;
 
   /**
@@ -1859,9 +1859,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
 
   private void writeAttribute(int grpid, int varid, Attribute att, Variable v) throws IOException {
-    /* if (v != null && v.getShortName().equals("report")) {
-      if (att.getName().equals(CDM.FILL_VALUE)) return; // temp debug
-    }  */
+    if (v != null && att.getName().equals(CDM.FILL_VALUE)) {
+      if (att.getLength() != 1) {
+        log.warn("_FillValue length must be one on var = "+v.getFullName());
+        return;
+      }
+      if (att.getDataType() != v.getDataType()) {
+        log.warn("_FillValue type must agree with var = "+v.getFullName()+" type "+att.getDataType() +"!="+v.getDataType());
+        return;
+      }
+    }
 
     // dont propagate these - handles internally
     if (att.getName().equals(H5header.HDF5_CLASS)) return;

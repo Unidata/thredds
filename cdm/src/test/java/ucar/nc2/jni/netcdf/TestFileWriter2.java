@@ -22,7 +22,7 @@ public class TestFileWriter2 {
 
   @Test
   public void problem() throws IOException {
-    copyFile("Q:\\cdmUnitTest\\formats\\hdf5\\superblockIsOffsetNPP.h5", "C:/temp/superblockIsOffsetNPP.nc4", NetcdfFileWriter.Version.netcdf4);
+    copyFile("Q:\\cdmUnitTest\\formats\\hdf5\\auraData\\HIRDLS2-Aura73p_b029_2000d275.he5", "C:/temp/Aura73p_b029_2000d275.nc4", NetcdfFileWriter.Version.netcdf4);
     //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);
   }
 
