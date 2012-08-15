@@ -120,7 +120,7 @@ public class Grib2TablesViewer extends JPanel {
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
 
-    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Table Used", false);
+    /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Table Used", false);
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (dialog == null) {
@@ -130,7 +130,7 @@ public class Grib2TablesViewer extends JPanel {
         dialog.setVisible(true);
       }
     });
-    buttPanel.add(infoButton);
+    buttPanel.add(infoButton); */
 
     try {
       java.util.List<Grib2Customizer.GribTableId> tables = Grib2Customizer.getTableIds();
@@ -270,12 +270,15 @@ public class Grib2TablesViewer extends JPanel {
 
   public class TableBean implements Comparable<TableBean> {
     Grib2Customizer.GribTableId table;
+    String filename;
 
     public TableBean() {
     }
 
     public TableBean(Grib2Customizer.GribTableId table) {
       this.table = table;
+      Grib2Customizer t1 = Grib2Customizer.factory(table.center, table.subCenter, table.masterVersion, table.localVersion);
+      filename = t1.getTablePath(0, 192,192); // local
     }
 
     public String getName() {
@@ -296,6 +299,10 @@ public class Grib2TablesViewer extends JPanel {
 
     public int getLocalVersion() {
       return table.localVersion;
+    }
+
+    public String getFilename() {
+      return filename;
     }
 
     @Override

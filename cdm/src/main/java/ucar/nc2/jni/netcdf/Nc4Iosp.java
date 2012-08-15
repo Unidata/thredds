@@ -174,7 +174,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ret = nc4.nc_inq_format(ncid, formatp);
     if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
     format = formatp.getValue();
-    System.out.printf("open %s id=%d format=%d %n", ncfile.getLocation(), ncid, format);
+    if (debug) System.out.printf("open %s id=%d format=%d %n", ncfile.getLocation(), ncid, format);
 
     // read root group
     makeGroup(ncid, new Group4(ncfile.getRootGroup(), null));
@@ -769,7 +769,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
               //return readCompound(grpid, varid, len, userType);
             }
 
-            System.out.println("UNSUPPORTED compound fld.fldtypeid= " + fld.fldtypeid);
+            log.warn("UNSUPPORTED compound fld.fldtypeid= " + fld.fldtypeid);
             continue;
         } // switch on fld type
       } // loop over fields
@@ -805,7 +805,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     for (int i = 0; i < varids.length; i++) {
       int varno = varids[i];
-      if (varno != i) System.out.printf("HEY varno=%d i=%d%n", varno, i);
+      if (varno != i) log.error("HEY varno=%d i=%d%n", varno, i);
 
       byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
       IntByReference xtypep = new IntByReference();
@@ -823,9 +823,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       String vname = makeString(name);
       Vinfo vinfo = new Vinfo(grpid, varno, typeid);
-
-      //if (vname.startsWith("StructMetadata"))
-      //  System.out.println("HEY");
 
       // figure out the dimensions
       String dimList = makeDimList(grpid, ndimsp.getValue(), dimids);
@@ -869,7 +866,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       List<Attribute> atts = makeAttributes(grpid, varno, nattsp.getValue(), v);
       for (Attribute att : atts) {
         v.addAttribute(att);
-        //if (debug) System.out.printf(" add Variable Attribute %s %n",att);
       }
 
       if (debug) System.out.printf(" add Variable %s %n", v);
@@ -1921,7 +1917,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     if (vinfo == null)
-      System.out.println("HEY vinfo null for " + v2);
+      log.error("HEY vinfo null for " + v2);
     writeData(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, section, values.getStorage());
   }
 
@@ -1952,7 +1948,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         valb = IospHelper.convertCharToByte(valc);
         ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
         if (ret != 0)  {
-          System.out.printf("%s on var %s%n", nc4.nc_strerror(ret), v);
+          log.error("%s on var %s%n", nc4.nc_strerror(ret), v);
           return;
           //throw new IOException(nc4.nc_strerror(ret));
         }
@@ -1970,7 +1966,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         assert valf.length == sectionLen;
         ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
         if (ret != 0) {
-          System.out.printf("%s on var %s%n", nc4.nc_strerror(ret), v);
+          log.error("%s on var %s%n", nc4.nc_strerror(ret), v);
           return;
           //throw new IOException(nc4.nc_strerror(ret));
         }        break;
@@ -1981,7 +1977,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali) :
                 nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
         if (ret != 0) {
-          System.out.printf("%s on var %s%n", nc4.nc_strerror(ret), v);
+          log.error("%s on var %s%n", nc4.nc_strerror(ret), v);
           return;
           //throw new IOException(nc4.nc_strerror(ret));
         }
@@ -2029,7 +2025,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
         throw new IOException("Unsupported userType = " + typeid + " userType= " + userType);
     }
-    System.out.printf("OK var %s%n", v);
+    // System.out.printf("OK var %s%n", v);
 
   }
 

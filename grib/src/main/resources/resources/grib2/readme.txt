@@ -260,3 +260,10 @@ also a few random problems i see:
      :Grib2_Parameter = 0, 1, 0; // int
      :Grib2_Level_Type = 104; // int
      :Grib2_Generating_Process_Type = "Forecast";
+
+
+8/15
+
+The page for tables of WMO Table-Driven Code Forms (TDCF) has been moved to:
+http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html
+Please change your link to the page.  Thank you.
