@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
 	<xsl:output method="html" encoding="utf-8" indent="yes" />
 
 	<!-- Gets the tds context as a xslt parameter -->
@@ -344,7 +343,7 @@
 									<div class="borderLightGrey">
 										<label class="sized">Format:</label>
 										<select name="accept" size="1">											
-											<xsl:for-each select="gridForm/AcceptList/GridAsPoint/accept">
+											<xsl:for-each select="gridForm/AcceptList/Grid/accept">
 												<option>
 													<xsl:value-of select="." />
 												</option>
