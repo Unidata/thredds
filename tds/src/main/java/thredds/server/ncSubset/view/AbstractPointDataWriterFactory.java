@@ -12,7 +12,7 @@ final class AbstractPointDataWriterFactory {
 			return XMLPointDataWriterFactory.getInstance() ;
 		}
 		
-		if( supportedFormat.getFormatName().equals("NETCDF") ){
+		if( supportedFormat.getFormatName().equals("NETCDF3") ){
 			return NetCDFPointDataWriterFactory.getInstance() ;
 		}
 		
