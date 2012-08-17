@@ -75,7 +75,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private Nc4prototypes nc4;
   static private final String JNA_PATH = "jna.library.path";
   static private String jnaPath;
-  static private String libName = "netcdf-7";
+  static private String libName = "netcdf4";
 
   static private boolean warn = true;
   static private final boolean debug = false, debugCompoundAtt = false, debugUserTypes = false, debugWrite = false;
@@ -100,19 +100,22 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @param jna_path path
    * @param libname  library name
    */
-  static public void setLibraryAndPath( String jna_path, String libname) {
-    jnaPath = jna_path;
-    libName = libname;
-    System.setProperty(JNA_PATH, jnaPath);
-  }
+  static public void setLibraryAndPath(String jna_path, String libname) {
+    if (jna_path != null) {
+      jnaPath = jna_path;
+      System.setProperty(JNA_PATH, jnaPath);
+    }
 
+    if (libname != null)
+      libName = libname;
+  }
 
   static private Nc4prototypes load() {
     if (nc4 == null) {
       if (jnaPath == null) {
         jnaPath = System.getProperty(JNA_PATH);
         if (jnaPath == null)  {
-          jnaPath = "C:/cdev/lib/";
+          jnaPath = "/usr/jna_lib/";
           System.setProperty(JNA_PATH, jnaPath);
         }
       }
