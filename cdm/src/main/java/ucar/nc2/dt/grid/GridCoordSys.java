@@ -673,6 +673,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    *
    * @return the vertical transform function, or null if none
    */
+  @Override
   public VerticalTransform getVerticalTransform() {
     return vt;
   }
@@ -682,6 +683,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    *
    * @return Coordinate Transform description, or null if none
    */
+  @Override
   public VerticalCT getVerticalCT() {
     return vCT;
   }
@@ -704,6 +706,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the X Horizontal axis (either GeoX or Lon)
    */
+  @Override
   public CoordinateAxis getXHorizAxis() {
     return horizXaxis;
   }
@@ -711,6 +714,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the Y Horizontal axis (either GeoY or Lat)
    */
+  @Override
   public CoordinateAxis getYHorizAxis() {
     return horizYaxis;
   }
@@ -718,6 +722,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the Vertical axis (either Geoz, Height, or Pressure)
    */
+  @Override
   public CoordinateAxis1D getVerticalAxis() {
     return vertZaxis;
   }
@@ -725,6 +730,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the Time axis
    */
+  @Override
   public CoordinateAxis getTimeAxis() {
     return tAxis;
   }
@@ -732,6 +738,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the Time axis, if its 1-dimensional
    */
+  @Override
   public CoordinateAxis1DTime getTimeAxis1D() {
     return timeTaxis;
   }
@@ -739,6 +746,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the RunTime axis, else null
    */
+  @Override
   public CoordinateAxis1DTime getRunTimeAxis() {
     return runTimeAxis;
   }
@@ -746,6 +754,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the Ensemble axis, else null
    */
+  @Override
   public CoordinateAxis1D getEnsembleAxis() {
     return ensembleAxis;
   }
@@ -753,10 +762,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * get the projection
    */
+  @Override
   public ProjectionImpl getProjection() {
     return proj;
   }
 
+  @Override
   public void setProjectionBoundingBox() {
     // set canonical area
     if (proj != null) {
@@ -767,13 +778,31 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * is this a Lat/Lon coordinate system?
    */
+  @Override
   public boolean isLatLon() {
     return isLatLon;
   }
 
   /**
+   * Is this a global coverage over longitude ?
+   * @return true if isLatLon and longitude wraps
+   */
+  @Override
+  public boolean isGlobalLon() {
+    if (!isLatLon) return false;
+    if (!(horizXaxis instanceof CoordinateAxis1D)) return false;
+    CoordinateAxis1D lon = (CoordinateAxis1D) horizXaxis;
+    double first = lon.getCoordEdge(0);
+    double last = lon.getCoordEdge((int) lon.getSize());
+    double min = Math.min(first, last);
+    double max =  Math.max(first, last);
+    return (max - min) >= 360;
+  }
+
+  /**
    * true if increasing z coordinate values means "up" in altitude
    */
+  @Override
   public boolean isZPositive() {
     if (vertZaxis == null) return false;
     if (vertZaxis.getPositive() != null) {
@@ -787,6 +816,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * true if x and y axes are CoordinateAxis1D and are regular
    */
+  @Override
   public boolean isRegularSpatial() {
     if (!isRegularSpatial(getXHorizAxis())) return false;
     if (!isRegularSpatial(getYHorizAxis())) return false;
@@ -803,6 +833,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   
   private String horizStaggerType;
 
+  @Override
   public String getHorizStaggerType() {
     return horizStaggerType;
   }
@@ -819,6 +850,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param result  put result (x,y) index in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
    */
+  @Override
   public int[] findXYindexFromCoord(double x_coord, double y_coord, int[] result) {
     if (result == null)
       result = new int[2];
@@ -856,6 +888,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param result  put result in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point.
    */
+  @Override
   public int[] findXYindexFromCoordBounded(double x_coord, double y_coord, int[] result) {
     if (result == null)
       result = new int[2];
@@ -888,6 +921,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param result put result in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
    */
+  @Override
   public int[] findXYindexFromLatLon(double lat, double lon, int[] result) {
     Projection dataProjection = getProjection();
     ProjectionPoint pp = dataProjection.latLonToProj(new LatLonPointImpl(lat, lon), new ProjectionPointImpl());
@@ -904,6 +938,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param result put result in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point.
    */
+  @Override
   public int[] findXYindexFromLatLonBounded(double lat, double lon, int[] result) {
     Projection dataProjection = getProjection();
     ProjectionPoint pp = dataProjection.latLonToProj(new LatLonPointImpl(lat, lon), new ProjectionPointImpl());
@@ -914,6 +949,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * True if there is a Time Axis.
    */
+  @Override
   public boolean hasTimeAxis() {
     return tAxis != null;
   }
@@ -921,10 +957,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * True if there is a Time Axis and it is 1D.
    */
+  @Override
   public boolean hasTimeAxis1D() {
     return timeTaxis != null;
   }
 
+  @Override
   public CoordinateAxis1DTime getTimeAxisForRun(int run_index) {
     if (!hasTimeAxis() || hasTimeAxis1D()) return null;
     int nruns = (int) runTimeAxis.getSize();
@@ -961,6 +999,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * Get the x,y bounding box in projection coordinates.
    */
+  @Override
   public ProjectionRect getBoundingBox() {
     if (mapArea == null) {
 
@@ -1010,6 +1049,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param yindex y index
    * @return lat/lon coordinate of the midpoint of the cell
    */
+  @Override
   public LatLonPoint getLatLon(int xindex, int yindex) {
     double x, y;
 
@@ -1044,6 +1084,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    *
    * @return lat, lon bounding box.
    */
+  @Override
   public LatLonRect getLatLonBoundingBox() {
 
     if (llbb == null) {
@@ -1131,6 +1172,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @param rect the requested lat/lon bounding box
    * @return list of 2 Range objects, first y then x.
    */
+  @Override
   public List<Range> getRangesFromLatLonRect(LatLonRect rect) throws InvalidRangeException {
     double minx, maxx, miny, maxy;
 
@@ -1294,6 +1336,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   /**
    * String representation.
    */
+  @Override
   public String toString() {
     Formatter buff = new Formatter();
     buff.format("(%s) ", getName());
@@ -1312,6 +1355,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /////////////////////////////////////////////////////////////////
 
+  @Override
   public List<CalendarDate> getCalendarDates() {
     if (timeTaxis != null)
       return timeTaxis.getCalendarDates();
@@ -1323,6 +1367,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       return null;
   }
 
+  @Override
   public CalendarDateRange getCalendarDateRange() {
     if (timeTaxis != null)
       return timeTaxis.getCalendarDateRange();

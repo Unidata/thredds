@@ -225,6 +225,7 @@ public class NetcdfCFWriter {
       GridCoordSystem gcsOrg = grid.getCoordinateSystem();
       CoordinateAxis1DTime timeAxis = gcsOrg.getTimeAxis1D();
       CoordinateAxis1D vertAxis = gcsOrg.getVerticalAxis();
+      boolean global = gcsOrg.isGlobalLon();
 
       // make subset if needed
       Range timeRange = makeTimeRange(dateRange, timeAxis, stride_time);
@@ -543,8 +544,11 @@ public class NetcdfCFWriter {
 
   private void writeGlobalAttributes(NetcdfFileWriter writer, ucar.nc2.dt.GridDataset gds) {
     // global attributes
-    for (Attribute att : gds.getGlobalAttributes())
+    for (Attribute att : gds.getGlobalAttributes()) {
+      if (att.getName().equals(CDM.FILE_FORMAT)) continue;
+      if (att.getName().equals(_Coordinate._CoordSysBuilder)) continue;
       writer.addGroupAttribute(null, att);
+    }
 
     writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.0"));
     writer.addGroupAttribute(null, new Attribute("History",

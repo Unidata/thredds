@@ -182,6 +182,12 @@ public interface GridCoordSystem {
   public boolean isLatLon();
 
   /**
+   * Is this a global coverage over longitude ?
+   * @return true if isLatLon and longitude extent >= 360 degrees
+   */
+  public boolean isGlobalLon();
+
+  /**
    * Get horizontal bounding box in lat, lon coordinates.
    * For projection, only an approximation based on corners.
    * @return LatLonRect bounding box.
