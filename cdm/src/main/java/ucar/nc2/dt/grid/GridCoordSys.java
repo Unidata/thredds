@@ -964,7 +964,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   @Override
   public CoordinateAxis1DTime getTimeAxisForRun(int run_index) {
-    if (!hasTimeAxis() || hasTimeAxis1D()) return null;
+    if (!hasTimeAxis() || hasTimeAxis1D() || runTimeAxis == null) return null;
     int nruns = (int) runTimeAxis.getSize();
     if ((run_index < 0) || (run_index >= nruns))
       throw new IllegalArgumentException("getTimeAxisForRun index out of bounds= " + run_index);

@@ -33,6 +33,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.hdf5.H5iosp;
@@ -138,7 +139,8 @@ public class AvhrrConvention extends ucar.nc2.dataset.CoordSysBuilder {
 
       time.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Time.toString())); // // LOOK : cant handle scalar coordinates yet ??
       time.addAttribute( new Attribute("IsoDate", new DateFormatter().toDateTimeStringISO(d)));
-      ds.addVariable(vhrr, time);
+      CoordinateAxis1D timeAxis = new CoordinateAxis1D(ds, time);
+      ds.addVariable(vhrr, timeAxis);
       ArrayLong.D0 timeData = new ArrayLong.D0();
       timeData.set(d.getTime() / 1000);
       time.setCachedData(timeData, true);
