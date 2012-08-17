@@ -311,7 +311,8 @@ class GridDataController extends AbstratNcssDataRequestController {
     if (params.getNorth() == null && params.getSouth() == null && params.getWest() == null && params.getEast() == null)
       return gds.getBoundingBox();
 
-    return new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
+    //return new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), new LatLonPointImpl(params.getNorth(), params.getEast()));
+    return new LatLonRect(new LatLonPointImpl(params.getSouth(), params.getWest()), params.getNorth() - params.getSouth(), params.getEast() -params.getWest() );
   }
 
   private Range getZRange(GridDataset gds, Double verticalCoord, Integer vertStride, List<String> vars) throws OutOfBoundariesException {
