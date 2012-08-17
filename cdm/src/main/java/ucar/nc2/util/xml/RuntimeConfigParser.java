@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
@@ -265,8 +266,15 @@ public class RuntimeConfigParser {
             errlog.append("bufr.jar is not on classpath\n");
         }
 
+      } else if (elem.getName().equals("Netcdf4Clibrary")) {
+        /* <Netcdf4Clibrary>
+             <libraryPath>C:/cdev/lib/</libraryPath>
+             <libraryName>netcdf4</libraryName>
+           </Netcdf4Clibrary> */
+        String path = elem.getChildText("libraryPath");
+        String name = elem.getChildText("libraryName");
+        Nc4Iosp.setLibraryAndPath(path, name);
       }
-
     }
   }
 

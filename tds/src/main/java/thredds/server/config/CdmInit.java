@@ -52,6 +52,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribCollection;
 import ucar.nc2.grib.TimePartition;
 import ucar.nc2.iosp.grid.GridServiceProvider;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.DiskCache;
@@ -216,6 +217,15 @@ public class CdmInit implements InitializingBean,  DisposableBean{
       timer = new Timer("CdmDiskCache");
       timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
     }
+
+  /* <Netcdf4Clibrary>
+       <libraryPath>C:/cdev/lib/</libraryPath>
+       <libraryName>netcdf4</libraryName>
+     </Netcdf4Clibrary> */
+    String libraryPath = ThreddsConfig.get("Netcdf4Clibrary.libraryPath", null);
+    String libraryName = ThreddsConfig.get("Netcdf4Clibrary.libraryName", null);
+    if (libraryPath != null || libraryName != null)
+      Nc4Iosp.setLibraryAndPath(libraryPath, libraryName);
 
     startupLog.info("CdmInit complete");
   }

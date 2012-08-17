@@ -282,7 +282,20 @@ public class FeatureScan {
   }
 
   public static void main(String arg[]) {
-    FeatureScan scanner = new FeatureScan(arg[0], true);
+    String usage = "usage: ucar.nc2.ft.scan.FeatureScan directory [-subdirs]";
+    if (arg.length < 1) {
+      System.out.println(usage);
+      System.exit(0);
+    }
+
+    boolean subdirs = false;
+
+    for (int i = 2; i < arg.length; i++) {
+      String s = arg[i];
+      if (s.equalsIgnoreCase("-subdirs")) subdirs = true;
+    }
+
+    FeatureScan scanner = new FeatureScan(arg[0], subdirs);
 
     System.out.printf(" %-60s %-20s %-10s %-10s%n", "name", "fileType", "featureType", "featureImpl");
     List<FeatureScan.Bean> beans = scanner.scan(new Formatter());

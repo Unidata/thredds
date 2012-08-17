@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Netcdf4 C library</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+</style>
+</head>
+
+<body>
+<h1>Netcdf4 C Library Loading </h1>
+<p align="justify"><em>Since version 4.3.13</em></p>
+<p align="justify">In order to write netCDF-4 files, you must have the <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">netCDF-4 C library</a>, version 4.2.1 or above, compiled and available on your system, along with all supporting libraries (hdf5 etc). The details of this differ for each operating system, and our experience (so far) is documented below.</p>
+<p align="justify">The libraries must be in a directory that the operating system knows to look in, and the CDM needs to know the netcdf-4 library name.<a name="pass" id="pass"></a> </p>
+<ul>
+  <li>For TDS users, we recommend setting  the library path and name in <em><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/ThreddsConfigXMLFile.html#netcdf4Clibrary">threddsConfig.xml.</a></em></li>
+  <li>For stand-alone CDM library use, you can set   the library path and name in the <em><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html#XML">RuntimeConfiguration</a></em> file, or call <strong>ucar.nc2.jni.netcdf.Nc4Iosp.setLibraryAndPath</strong>()<em>.</em></li>
+</ul>
+<p align="justify">We strongly recommend using   64-bit Java. We also recommend using Java 7 (Java 6 is acceptable for CDM version 4.3). In any case, use the lastest update for Java, because security improvements are constantly being made.</p>
+<h2>Windows</h2>
+<ol>
+  <li>We strongly recommend using   the 64-bit Windows version and a 64-bit JVM (Java Virtual Machine).</li>
+  <li>Get the pre-built windows binaries from <a href="http://www.unidata.ucar.edu/software/netcdf/win_netcdf/">here. </a> (Power users are welcome to build them - but Java needs DLLs to load). You need HDF5, but not DAP, so the  <a href="http://www.unidata.ucar.edu/software/netcdf/win_netcdf/nc4_64_dll.zip">nc4_64_dll.zip</a> is likely what you want.</li>
+  <li>Unzip this file, and put everything from the <em>bin</em> and <em>deps</em> directories into some standard directory accesible to anyone who wants to use  the netCDF-C library.</li>
+  <li>The name of this directory is the <em>library path.</em> The <em>library name</em> in this case is <strong><em>netcdf-7</em></strong> (not <em>libnetcdf-7.dll</em>).</li>
+  <li><a href="#pass">Pass</a> the library name and path to the CDM library.</li>
+</ol>
+<p>&nbsp;</p>
+<body>
+<hr width="100%" />
+<address>
+<img src="../nc.gif" alt="" width="64" height="64" /> This document was last updated  August 2012
+</address>
+</body>
+</html>

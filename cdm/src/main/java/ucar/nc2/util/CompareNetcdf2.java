@@ -439,7 +439,7 @@ public class CompareNetcdf2 {
         double v1 = iter1.getDoubleNext();
         double v2 = iter2.getDoubleNext();
         if (!Double.isNaN(v1) || !Double.isNaN(v2))
-          if (!closeEnough(v1, v2, tol)) {
+          if (!Misc.closeEnough(v1, v2, tol)) {
             f.format(" DIFF %s: %f != %f count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
             ok = false;
             if (justOne) break;
@@ -450,7 +450,7 @@ public class CompareNetcdf2 {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
         if (!Float.isNaN(v1) || !Float.isNaN(v2))
-          if (!closeEnough(v1, v2, (float) tol)) {
+          if (!Misc.closeEnough(v1, v2, (float) tol)) {
             f.format(" DIFF %s: %f != %f count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
             ok = false;
             if (justOne) break;
@@ -519,24 +519,6 @@ public class CompareNetcdf2 {
   static private final double TOL = 1.0e-5;
   static private final float TOLF = 1.0e-5f;
 
-  static public boolean closeEnoughP(double d1, double d2) {
-    if (Math.abs(d1) < TOL) return Math.abs(d1 - d2) < TOL;
-    return Math.abs((d1 - d2) / d1) < TOL;
-  }
-
-  static public boolean closeEnough(double d1, double d2) {
-    return Math.abs(d1 - d2) < TOL;
-  }
-
-  static public boolean closeEnough(double d1, double d2, double tol) {
-    return Math.abs(d1 - d2) < tol;
-  }
-
-  static public boolean closeEnoughP(double d1, double d2, double tol) {
-    if (Math.abs(d1) < tol) return Math.abs(d1 - d2) < tol;
-    return Math.abs((d1 - d2) / d1) < tol;
-  }
-
   static public double diff(double d1, double d2) {
     return Math.abs(d1 - d2);
   }
@@ -545,19 +527,30 @@ public class CompareNetcdf2 {
     return Math.abs((d1 - d2) / d1);
   }
 
-  static public boolean closeEnough(float d1, float d2) {
-    return Math.abs(d1 - d2) < TOLF;
-  }
-
-  static public boolean closeEnoughP(float d1, float d2) {
-    if (Math.abs(d1) < TOLF) return Math.abs(d1 - d2) < TOLF;
-    return Math.abs((d1 - d2) / d1) < TOLF;
-  }
-
-
   public static void main(String arg[]) throws IOException {
-    NetcdfFile ncfile1 = NetcdfDataset.openFile("dods://thredds.cise-nsf.gov:8080/thredds/dodsC/satellite/SFC-T/SUPER-NATIONAL_1km/20090516/SUPER-NATIONAL_1km_SFC-T_20090516_2200.gini", null);
-    NetcdfFile ncfile2 = NetcdfDataset.openFile("dods://motherlode.ucar.edu:8080/thredds/dodsC/satellite/SFC-T/SUPER-NATIONAL_1km/20090516/SUPER-NATIONAL_1km_SFC-T_20090516_2200.gini", null);
-    compareFiles(ncfile1, ncfile2, new Formatter(System.out), false, true, false);
+    String usage = "usage: ucar.nc2.util.CompareNetcdf2 file1 file2 [-showEach] [-compareData]";
+    if (arg.length < 2) {
+      System.out.println(usage);
+      System.exit(0);
+    }
+
+    boolean showEach = false;
+    boolean compareData = false;
+
+    String file1 = arg[0];
+    String file2 = arg[1];
+
+    for (int i = 2; i < arg.length; i++) {
+      String s = arg[i];
+      if (s.equalsIgnoreCase("-showEach")) showEach = true;
+      if (s.equalsIgnoreCase("-compareData")) compareData = true;
+    }
+
+    NetcdfFile ncfile1 = NetcdfDataset.open(file1);
+    NetcdfFile ncfile2 = NetcdfDataset.open(file2);
+    compareFiles(ncfile1, ncfile2, new Formatter(System.out), true, showEach, compareData);
+    ncfile1.close();
+    ncfile2.close();
   }
+
 }

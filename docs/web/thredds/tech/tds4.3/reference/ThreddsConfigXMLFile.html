@@ -45,7 +45,7 @@
   <li>CDM Configuration
     <ul>
       <li><a href="#Aggregation">Aggregation</a></li>
-      <li><a href="#GribIndexing">GRIB indexing</a></li>
+      <li><a href="#netcdfCLibrary">Netcdf-4 C Library Loading</a></li>
       <li><a href="#runtime">NetCDF-Java runtime Loading</a></li>
     </ul>
   </li>
@@ -339,14 +339,11 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
   can control how NcML Aggregation chooses its typical / template
   dataset, the one it uses to populate the metadata for the resulting
   aggregated dataset. Valid values are <strong>first, random</strong>, <strong>latest</strong> and <strong>penultimate</strong> (latest but one). The default for version 4.3 is <strong>penultimate</strong>.</p>
-<h3>GRIB indexing<a name="GribIndexing"></a></h3>
-<pre>  &lt;<strong>GribIndexing</strong>&gt;<br>    &lt;<strong>setExtendIndex</strong>&gt;false&lt;/setExtendIndex&gt;<br>    &lt;<strong>alwaysUseCache</strong>&gt;false&lt;/alwaysUseCache&gt;<br>  &lt;/GribIndexing&gt;</pre>
-<p>This
-  is for servers that have dynamically growing GRIB files (such as
-  TDS/IDD servers). New GRIB records may be appended to a GRIB file.
-  Normally the library will detect this and auomaticallly extend the GRIB
-  index. When GRIB indexing is being done by an external process, its
-  best to turn off automatic index extension, by setting <strong>setExtendIndex</strong> to false, so there is no possibility of a collision by the GRIB indexing process and the TDS. If you  have <strong>setExtendIndex</strong> true, you should also set <strong>alwaysUseCache</strong> to true, to avoid collisions with an external indexer.</p>
+<h3>NetCDF-4 C library loading<a name="netcdfCLibrary" id="netcdfCLibrary"></a></h3>
+<p>Since version 4.3.13.</p>
+<pre>  &lt;<strong>Netcdf4Clibrary</strong>&gt;<br>    &lt;<strong>libraryPath</strong>&gt;C:/cdev/lib/&lt;/<strong>libraryPath</strong>&gt;<br>    &lt;<strong>libraryName</strong>&gt;netcdf4&lt;/<strong>libraryName</strong>&gt;<br>  &lt;/<strong>Netcdf4Clibrary</strong>&gt;</pre>
+<p align="justify">In order to write netCDF-4 files, you must have the <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">netCDF-4 C library</a>, version 4.2.1 or above, compiled and available on your system, along with all supporting libraries (hdf5 etc). The <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html">details</a> of this differ for each operating system.</p>
+<p align="justify">For TDS users, we recommend setting  the library path and name in <em>threddsConfig.xml </em>as in the above example.</p>
 <h3>NetCDF-Java runtime Loading<a name="runtime"></a> </h3>
 <pre>  &lt;<strong>nj22Config</strong>&gt;<br>    &lt;<strong>ioServiceProvider</strong> class="edu.univ.ny.stuff.FooFiles"/&gt;<br>    &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;<br>    &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/&gt;<br>    &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;<br>    &lt;<strong>table</strong> type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/&gt;<br>    &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/&gt;<br>  &lt;/nj22Config&gt;</pre>
 <p>These elements allow you to specify <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html">Runtime parameters </a> for the Netcdf-Java library from the threddsConfig file. See the Netcdf-Java <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a> for an overview. </p>
@@ -520,7 +517,7 @@ pronounced difference with and without this cache. </p>
  <hr width="100%">
  <address>
      <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
-     This document is maintained by elves and was last updated March of 2012.
+     This document is maintained by elves and was last updated August 2012.
      Send comments to
      <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
  </address>

@@ -70,7 +70,7 @@ dl {margin: 10px 5px 5px 15px;)
 <hr>
 <br>
 <h2>Runtime Configuration<a name="XML"></a> </h2>
-<p>Instead of calling the above routines in your code, you can pass the CDM library an XML configuration file. Note that your application must call <strong>ucar.nc2.util.RuntimeConfigParser.read()</strong>.</p>
+<p>Instead of calling the above routines in your code, you can pass the CDM library an XML configuration file. Note that your application must call <strong>ucar.nc2.util.xml.RuntimeConfigParser.read()</strong>.</p>
 <p>The configuration file  looks like this: </p>
 <pre> &lt;?xml version=&quot;1.0&quot;?&gt;
  &lt;nj22Config&gt;
@@ -84,7 +84,8 @@ dl {margin: 10px 5px 5px 15px;)
 <strong>7)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/grib/tables/userlookup.lst"/&gt;
 <strong>8)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/grib/tables/grib2userparameters&quot; /&gt;
 <strong>9)</strong> &lt;<strong>bufrtable</strong> filename="C:/my/files/lookup.txt&quot; /&gt;
-10) &lt;grib1Table strict=&quot;false&quot;/&gt;
+10)&lt;<strong>grib1Table</strong> strict=&quot;false&quot;/&gt;
+11)&lt;<strong>Netcdf4Clibrary</strong>&gt;<br>     &lt;<strong>libraryPath</strong>&gt;C:/cdev/lib/&lt;/<strong>libraryPath</strong>&gt;<br>     &lt;<strong>libraryName</strong>&gt;netcdf4&lt;/<strong>libraryName</strong>&gt;<br>   &lt;/<strong>Netcdf4Clibrary</strong>&gt;
 &lt;/nj22Config&gt;</pre>
 <ol>
   <li>Loads an <strong>IOServiceProvider</strong> with the given class name</li>
@@ -97,8 +98,9 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Load a <a href="../formats/GribTables.html">GRIB-2 parameter lookup table</a> (versions &lt; 4.3, deprecated)</li>
   <li>Load a <a href="BufrTables.html">BUFR table lookup</a> file</li>
   <li>Turn <a href="../formats/GribTables.html#strict">strict GRIB1 table handling</a> off. </li>
+  <li>Set the<a href="netcdf4Clibrary.html"> netCDF-4 C library</a> path and name.</li>
 </ol>
-<p>There are several ways pass the Runtime Configuration XML to the CDM library. From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to ucar.nc2.util.RuntimeConfigParser, as in the following examples: </p>
+<p>There are several ways pass the Runtime Configuration XML to the CDM library. From your application, you can pass a <strong>java.io.InputStream</strong> (or <a href="http://www.jdom.org/">JDOM</a> element) to <strong>ucar.nc2.util.xml.RuntimeConfigParser</strong>, as in the following examples: </p>
 <pre>  // Example 1: read from file
   StringBuffer errlog = new StringBuffer();
   FileInputStream fis = new FileInputStream( filename);   
@@ -117,7 +119,7 @@ dl {margin: 10px 5px 5px 15px;)
 </pre>
 <p>For example, the ToolsUI application allows you to specify this file on the command line with the -<strong>nj22Config</strong> parameter:</p>
 <pre>   public void main(String[] args) {
-<br>      for (int i = 0; i &lt; args.length; i++) {<br>        if (args[i].equalsIgnoreCase(&quot;-<strong>nj22Config</strong>&quot;) &amp;&amp; (i &lt; args.length-1)) {<br>          String runtimeConfig = args[i+1];<br>          i++;<br>          try {<br>            StringBuffer errlog = new StringBuffer();<br><strong>            FileInputStream fis = new FileInputStream( runtimeConfig);<br>            ucar.nc2.util.RuntimeConfigParser.read( fis, errlog);</strong><br>            System.out.println( errlog);<br>          } catch (IOException ioe) {<br>            System.out.println( &quot;Error reading &quot;+runtimeConfig+&quot;=&quot;+ioe.getMessage());<br>          }<br>        }<br>      }<br>    ...
+<br>      for (int i = 0; i &lt; args.length; i++) {<br>        if (args[i].equalsIgnoreCase(&quot;-<strong>nj22Config</strong>&quot;) &amp;&amp; (i &lt; args.length-1)) {<br>          String runtimeConfig = args[i+1];<br>          i++;<br>          try {<br>            StringBuffer errlog = new StringBuffer();<br><strong>            FileInputStream fis = new FileInputStream( runtimeConfig);<br>            ucar.nc2.util.xml.RuntimeConfigParser.read( fis, errlog);</strong><br>            System.out.println( errlog);<br>          } catch (IOException ioe) {<br>            System.out.println( &quot;Error reading &quot;+runtimeConfig+&quot;=&quot;+ioe.getMessage());<br>          }<br>        }<br>      }<br>    ...
 </pre>
 <p>If none is specified on the command line, it will look for the XML document in <strong>$USER_HOME/.unidata/nj22Config.xml.</strong></p>
 <hr>

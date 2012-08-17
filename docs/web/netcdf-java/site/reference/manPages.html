@@ -7,11 +7,12 @@
 
 <body>
 <h1>CDM  man pages</h1>
+<p>Useful applications that can be called from the CDM library, eg:</p>
+<pre> <em>java -classpath netcdfAll-4.3.jar ucar.nc2.NCdumpW Q:/cdmUnitTest/ncml/nc/test_7.nc</em></pre>
 <hr />
-<h2>NCDumpW</h2>
+<h2>ncdump</h2>
 <p>Approximate  functionality to <em>ncdump</em> c utility, but with different arguments.</p>
-<p><em><strong>ucar.nc2.NCdumpW</strong> filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</em></p>
-<p>eg: <em>java -classpath netcdfAll-4.2.jar ucar.nc2.NCdumpW Q:/cdmUnitTest/ncml/nc/test_7.nc</em></p>
+<pre><em><strong>  ucar.nc2.NCdumpW</strong> filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</em></pre>
 <p>where:</p>
 <ul>
   <li> <em>filepath</em> : pathname of any CDM file. </li>
@@ -23,18 +24,40 @@
   <li><em>-v varName(0:1,:,12)</em>  : show data for a section of this variable only, using F90 section specificiation</li>
 </ul>
 <hr />
-<h2>FileWriter</h2>
-<p>Writes  CDM classic files into netcdf-3 format. Cannot write extended data model, eg Groups, Structures, multiple unlimited dimensions, etc.</p>
-<p><em><strong>ucar.nc2.FileWriter</strong> -in fileIn -out fileOut </em></p>
+<h2>nccopy</h2>
+<p>Copy a CDM dataset to a    netcdf-3 (default) or netcdf-4 format. Datasets using features from the extended model require netcdf-4.</p>
+<pre><em><strong> ucar.nc2.dataset.NetcdfDataset -in &lt;fileIn&gt; -out &lt;fileOut&gt; [-isLargeFile] [-netcdf4]</strong></em></pre>
+<p>where:</p>
+<ul>
+  <li><em>filein</em> : the existing file to copy</li>
+  <li><em>fileout</em>: the new file to create</li>
+  <li>-<em>isLargeFile</em>: for netcdf-3 only, create a large format file.</li>
+  <li>-<em>netcdf4</em>: write to netcdf-4 format. You must have the <a href="netcdf4Clibrary.html">netcdf-4 C library loaded</a>.</li>
+</ul>
 <hr />
-<h2>CompareNetcdf2</h2>
+<h2>nccompare</h2>
 <p>Compare 2 CDM files for semantic equivilence..</p>
-<p><em><strong>ucar.nc2.util.CompareNetcdf2</strong> filepath1 filepath2 </em></p>
+<pre> ucar.nc2.util.CompareNetcdf2 file1 file2 [-showEach] [-compareData] </pre>
+<p>where</p>
+<ul>
+  <li>-<em>showEach</em> : show details of comparing each object</li>
+  <li>-<em>compareData</em> : compare data also</li>
+  <li><em>file1</em> : first file to compare</li>
+  <li><em>file2</em>: second file to compare</li>
+</ul>
 <hr />
 <h2><strong>FeatureScan</strong></h2>
 <p>Scans all the files in a directory to see if they are CDM files and can be identified as a particular feature type</p>
-<p><em><strong>ucar.nc2.ft.scan.FeatureScan</strong> directory</em></p>
-<p>&nbsp;</p>
+<pre><strong>  </strong>usage: ucar.nc2.ft.scan.FeatureScan directory [-subdirs]</pre>
+<p>where</p>
+<ul>
+  <li>directory : scan this directory</li>
+  <li>-subdirs : recurse into subdirectories</li>
+</ul>
+<hr width="100%" />
+<address>
+<img src="../nc.gif" alt="" width="64" height="64" /> This document  was last updated August 2012
+</address>
 <p></p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
