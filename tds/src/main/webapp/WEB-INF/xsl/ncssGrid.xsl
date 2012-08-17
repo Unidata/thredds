@@ -300,7 +300,7 @@
 											</div>
 											<div id="singleTimeSubset" class="hidden absoluteTopLeft borderLightGrey">
 												<label class="sized">Time:</label>
-												<input type="text" name="time" size="21"
+												<input type="text" name="time" size="21" disabled="disabled"
 													value="{gridForm/TimeSpan/end}" />
 											</div>
 										</div>
