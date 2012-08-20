@@ -34,6 +34,7 @@
 package ucar.nc2.util.net;
 
 import java.io.IOException;
+import java.io.FilterInputStream;
 import java.io.InputStream;
 
 /**
@@ -43,71 +44,59 @@ import java.io.InputStream;
  * It tracks the method and the session
  * to allow them to be closed
  * when the stream hits eof.
+ * It also guarantees that any remaining unconsumed
+ * input is consumed.
+ *
+ * Note that this class is not public in the package.
+ *
+ * Note that this code now includes the equivalent of
+ * Tom Kunicki's proposed pull request, but with the HTTPMethod
+ * close extension he proposes but does not implement.
+ * Pull request: https://github.com/tkunicki-usgs/thredds/commit/3b750ec0016a137db66336adeac421a9202b9d30
+ *
  */
 
-public class HTTPMethodStream extends InputStream
+
+class HTTPMethodStream extends FilterInputStream
 {
-    HTTPSession session = null;
     HTTPMethod method = null;
-    InputStream methodstream = null;
+    InputStream stream = null; // in case someone wants to retrieve it
 
-    public HTTPMethodStream() {}
-
-    public HTTPMethodStream(HTTPSession session, HTTPMethod method, InputStream methodstream)
+    HTTPMethodStream(InputStream stream, HTTPMethod method)
     {
-	this.session = session;
+	super(stream);
 	this.method = method;
-	this.methodstream = methodstream;
+	this.stream = stream;
     }
 
-    /**
-     * Reads the next byte of data from the input stream. The value byte is
-     * returned as an <code>int</code> in the range <code>0</code> to
-     * <code>255</code>. If no byte is available because the end of the stream
-     * has been reached, the value <code>-1</code> is returned. This method
-     * blocks until input data is available, the end of the stream is detected,
-     * or an exception is thrown.
-     *
-     * <p> A subclass must provide an implementation of this method.
-     *
-     * @return     the next byte of data, or <code>-1</code> if the end of the
-     *             stream is reached.
-     * @exception  IOException  if an I/O error occurs.
-     */
-    
-    public int read() throws IOException
-    {
-	try {
-
-	if(methodstream == null) return -1;
-	int ch = methodstream.read();
-	if(ch >= 0) return ch;
-	// EOF
-	close();
-    return -1;
-
-	} catch (IOException ioe) {
-	    try {close(); } catch(IOException ie) {};
-	    throw ioe;
-	}
-    }
+    InputStream getStream() {return stream;}
 
     /**
        * Closes this input stream and releases any system resources associated
-       * with the stream.
-       *
-       * <p> The <code>close</code> method of <code>InputStream</code> does
-       * nothing.
+       * with the stream; closes the method also.
        *
        * @exception  IOException  if an I/O error occurs.
        */
     @Override
     public void close() throws IOException
     {
-        if(methodstream == null) methodstream.close();
+	try {
+	    consume();
+	} finally {
+	    super.close();
+        }
         if(method != null) method.close();
-        if(session != null) session.close();
     }
 
-
+    void consume() throws IOException
+    {
+        long consumed = 0;
+        long available;
+        while ((available = available()) > 0) {
+	    consumed += skip(available);
+        }
+        if (consumed > 0) {
+	    // TODO: Logging strategy? Recommend warning if consumed > 0;
+        }
+      }
 }
