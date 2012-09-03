@@ -708,7 +708,7 @@ public abstract class GribCollection implements FileCacheable {
         Record[] recordsTemp = new Record[n];
         for (int i = 0; i < n; i++) {
           GribCollectionProto.Record pr = proto.getRecords(i);
-          recordsTemp[i] = new Record(pr.getFileno(), pr.getPos(), pr.getMissing());
+          recordsTemp[i] = new Record(pr.getFileno(), pr.getPos(), pr.getMissing(), pr.getBitmapPos());
         }
         records = recordsTemp; // switch all at once - worse case is it gets read more than once
       }
@@ -733,11 +733,13 @@ public abstract class GribCollection implements FileCacheable {
   public static class Record {
     public int fileno; // which file
     public long pos;   // offset on file where data starts
+    public long bitmapPos;
 
-    public Record(int fileno, long pos, boolean missing) {
+    public Record(int fileno, long pos, boolean missing, long bitmapPos) {
       this.fileno = fileno;
       this.pos = pos;
       if (missing) this.pos = MISSING_RECORD;
+      this.bitmapPos = bitmapPos;
     }
   }
 
