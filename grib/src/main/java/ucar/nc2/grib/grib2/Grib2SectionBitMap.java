@@ -80,6 +80,16 @@ public class Grib2SectionBitMap {
   }
 
   /**
+   * Some bitmaps (indicator = 254) indicate "use a previously-defined bitmap".
+   * Is this one of them?
+   *
+   * @return boolean
+   */
+  public boolean usePreviousBitmap() {
+      return bitMapIndicator == 254;
+  }
+
+  /**
    * Get bit map.
    *
    * @param raf read from here
