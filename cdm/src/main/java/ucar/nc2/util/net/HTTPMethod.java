@@ -363,7 +363,7 @@ public InputStream getResponseAsStream()
 {
     if (closed)
         return null;
-    assert methodstream != null : "attempt to get method stream twice";
+    assert methodstream == null : "attempt to get method stream twice";
     try {
         if (method == null) return null;
         methodstream = new HTTPMethodStream(method.getResponseBodyAsStream(),this);
