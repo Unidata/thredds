@@ -108,7 +108,9 @@ public final class WriterCFStationCollectionWrapper implements CFPointWriterWrap
 	
 		List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);
 		StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars);		
-		sdata.findMember("date").getDataArray().setObject(0, date.toString());
+		//sdata.findMember("date").getDataArray().setObject(0, date.toString());
+		Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
+		sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
 		// Iterating vars		
 		Iterator<String> itVars = vars.iterator();
 		int cont =0;
@@ -119,21 +121,20 @@ public final class WriterCFStationCollectionWrapper implements CFPointWriterWrap
 								
 				if (gap.hasTime(grid, date) ) {
 					GridAsPointDataset.Point p = gap.readData(grid, date,	point.getLatitude(), point.getLongitude());
-					sdata.findMember("lat").getDataArray().setDouble(0, p.lat );
-					sdata.findMember("lon").getDataArray().setDouble(0, p.lon );		
+					//sdata.findMember("latitude").getDataArray().setDouble(0, p.lat );
+					//sdata.findMember("longitude").getDataArray().setDouble(0, p.lon );		
 					sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );						
 			
 				}else{ //Set missing value
-					sdata.findMember("lat").getDataArray().setDouble(0, point.getLatitude() );
-					sdata.findMember("lon").getDataArray().setDouble(0, point.getLongitude() );
+					//sdata.findMember("latitude").getDataArray().setDouble(0, point.getLatitude() );
+					//sdata.findMember("longitude").getDataArray().setDouble(0, point.getLongitude() );
 					sdata.findMember(varName).getDataArray().setDouble(0, gap.getMissingValue(grid) );						
 				
 				}
 				cont++;
 			}
 			
-			//sobsWriter.writeRecord( (String)sdata.findMember("station").getDataArray().getObject(0), date.toDate() , sdata);
-			Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
+			//sobsWriter.writeRecord( (String)sdata.findMember("station").getDataArray().getObject(0), date.toDate() , sdata);			
 			writerCFStationCollection.writeRecord((String)sdata.findMember("station").getDataArray().getObject(0), timeCoordValue, date, sdata);
 			allDone = true;
 			

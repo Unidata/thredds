@@ -96,7 +96,9 @@ public final class WriterCFPointCollectionWrapper implements CFPointWriterWrappe
 		try{
 			for(double targetLevel : targetLevels){
 				StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars, zAxis.getUnitsString());		
-				sdata.findMember("date").getDataArray().setObject(0, date.toString());
+				//sdata.findMember("date").getDataArray().setObject(0, date.toString());
+				Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
+				sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
 				EarthLocation earthLocation=null;
 				int cont =0;
 				// Iterating vars
@@ -126,7 +128,7 @@ public final class WriterCFPointCollectionWrapper implements CFPointWriterWrappe
 					cont++;
 			}			
 
-			Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
+			
 			writerCFPointCollection.writeRecord(timeCoordValue, date, earthLocation , sdata);
 			//writerCFStationCollection.writeRecord((String)sdata.findMember("station").getDataArray().getObject(0), timeCoordValue, date, sdata);
 			allDone = true;
