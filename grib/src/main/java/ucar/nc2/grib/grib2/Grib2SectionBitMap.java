@@ -115,4 +115,8 @@ public class Grib2SectionBitMap {
     return bitmap; */
   }
 
+  public boolean hasBitMap() {
+    return (bitMapIndicator == 0);
+  }
+
 }

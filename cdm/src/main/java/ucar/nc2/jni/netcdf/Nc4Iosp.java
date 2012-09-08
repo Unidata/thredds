@@ -128,6 +128,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return nc4;
   }
 
+  static void setMine() {
+    ucar.nc2.jni.netcdf.Nc4Iosp.setLibraryAndPath("C:/cdev/lib/", "netcdf-7");
+  }
+
  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private final NetcdfFileWriter.Version version;
   private NetcdfFile ncfile;
