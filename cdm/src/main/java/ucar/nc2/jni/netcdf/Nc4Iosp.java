@@ -75,7 +75,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private Nc4prototypes nc4;
   static private final String JNA_PATH = "jna.library.path";
   static private String jnaPath;
-  static private String libName = "netcdf4";
+  static private String libName = "netcdf";
 
   static private boolean warn = true;
   static private final boolean debug = false, debugCompoundAtt = false, debugUserTypes = false, debugWrite = false;
