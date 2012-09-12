@@ -69,7 +69,7 @@ public class TestTransforms {
   public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
     String filename = testDir +  "climo.cam2.h0.0000-09.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class, SimpleUnit.pressureUnit);
+    VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class, SimpleUnit.pressureUnit, true);
 
     Dimension timeDim = ncd.findDimension("time");
     for (int i = 0; i < timeDim.getLength(); i++) {
@@ -87,10 +87,8 @@ public class TestTransforms {
   public void testHybridSigmaPressure3() throws IOException, InvalidRangeException {
     String filename = testDir +  "HIRLAMhybrid.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VerticalTransform vt = test(ncd, "hybrid",
-            "Relative_humidity_hybrid",
-            "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
-        SimpleUnit.pressureUnit);
+    VerticalTransform vt = test(ncd, "hybrid", "Relative_humidity_hybrid", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
+        SimpleUnit.pressureUnit, true);
 
     Dimension timeDim = ncd.findDimension("time");
     for (int i = 0; i < timeDim.getLength(); i++) {
@@ -153,7 +151,8 @@ public class TestTransforms {
   }
 
   // LOOK these are failing
-  public void btestOceanSigmaNcml() throws IOException, InvalidRangeException {
+  // needs COnvention = CF
+  public void testOceanSigmaNcml() throws IOException, InvalidRangeException {
     String filename = "http://coast-enviro.er.usgs.gov/models/share/glos_test.ncml";
     test(filename, "sigma", "temp", "time", VerticalCT.Type.OceanSigma, OceanSigma.class, SimpleUnit.meterUnit);
   }
@@ -190,21 +189,22 @@ public class TestTransforms {
     B_variableName = theta_b
 
    */
+  @Test
   public void btestOceanS3() throws IOException, InvalidRangeException {
     String filename = testDir+ "ocean_his.nc";
-    test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit);
+    _test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanS, OceanS.class, SimpleUnit.meterUnit, false);
   }
 
   @Test
   public void btestOceanG1() throws IOException, InvalidRangeException {
     String filename = testDir+ "ocean_his_g1.nc";
-    test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG1, OceanSG1.class, SimpleUnit.meterUnit);
+    _test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG1, OceanSG1.class, SimpleUnit.meterUnit, false);
   }
 
   @Test
   public void btestOceanG2() throws IOException, InvalidRangeException {
     String filename = testDir+ "ocean_his_g2.nc";
-    test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG2, OceanSG2.class, SimpleUnit.meterUnit);
+    _test(filename, "s_rho", "u", "ocean_time", VerticalCT.Type.OceanSG2, OceanSG2.class, SimpleUnit.meterUnit, false);
   }
 
   @Test
@@ -224,16 +224,23 @@ public class TestTransforms {
                                  VerticalCT.Type vtype, Class vclass, SimpleUnit unit)
       throws IOException, InvalidRangeException {
 
+    return _test(filename, levName, varName, timeName, vtype, vclass, unit, true);
+  }
+
+  private VerticalTransform _test(String filename, String levName, String varName, String timeName,
+                                 VerticalCT.Type vtype, Class vclass, SimpleUnit unit, boolean varsMatch)
+      throws IOException, InvalidRangeException {
+
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    test(ncd, levName, varName, timeName, vtype, vclass, unit);
+    test(ncd, levName, varName, timeName, vtype, vclass, unit, varsMatch);
     ncd.close();
 
-    testGrid(filename, varName);
+    if (varsMatch) testGrid(filename, varName);
     return null;
   }
 
   private VerticalTransform test(NetcdfDataset ncd, String levName, String varName, String timeName,
-                                 VerticalCT.Type vtype, Class vclass, SimpleUnit vunit)
+                                 VerticalCT.Type vtype, Class vclass, SimpleUnit vunit, boolean varsMatch)
       throws IOException, InvalidRangeException {
 
     System.out.printf("file= %s%n", ncd.getLocation());
@@ -295,7 +302,7 @@ public class TestTransforms {
         System.out.printf("%s: coordVal shape = %s %n", v.getFullName(), cSection);
         if (varSection.computeSize() != cSection.computeSize())
           System.out.println("HEY");
-        assert varSection.computeSize() == cSection.computeSize();
+        if (varsMatch) assert varSection.computeSize() == cSection.computeSize();
       }
     }
     assert vt != null;

@@ -701,6 +701,10 @@ public class Grib2CollectionBuilder {
         fileSet.add(ar.gr.getFile());
         Grib2SectionDataRepresentation drs = ar.gr.getDataRepresentationSection();
         br.setPos(drs.getStartingPosition());
+        if (ar.gr.isBmsReplaced()) {
+          Grib2SectionBitMap bms = ar.gr.getBitmapSection();
+          br.setBmsPos(bms.getStartingPosition());
+        }
       }
       b.addRecords(br);
     }

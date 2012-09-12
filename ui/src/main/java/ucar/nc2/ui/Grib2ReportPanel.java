@@ -98,9 +98,9 @@ public class Grib2ReportPanel extends JPanel {
     return dc;
   }
 
-  public void doReport(String spec, boolean useIndex, Report which) throws IOException {
+  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Report which) throws IOException {
     Formatter f = new Formatter();
-    f.format("%s %s %s%n", spec, useIndex, which);
+    f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", which, spec, useIndex, eachFile, extra);
 
     CollectionManager dcm = getCollection(spec, f);
     if (dcm == null) {
@@ -132,7 +132,7 @@ public class Grib2ReportPanel extends JPanel {
           doDuplicatePds(f, dcm, useIndex);
           break;
         case drsSummary:
-          doDrsSummary(f, dcm, useIndex);
+          doDrsSummary(f, dcm, useIndex, eachFile, extra);
           break;
         case gdsTemplate:
           doGdsTemplate(f, dcm, useIndex);
@@ -371,6 +371,10 @@ public class Grib2ReportPanel extends JPanel {
 
     private Counter(String name) {
       this.name = name;
+    }
+
+    void reset() {
+      set = new HashMap<Integer, Integer>();
     }
 
     void count(int value) {
@@ -640,21 +644,41 @@ public class Grib2ReportPanel extends JPanel {
 
   ///////////////////////////////////////////////
 
-  private void doDrsSummary(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+  private void doDrsSummary(Formatter f, CollectionManager dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
     f.format("Show Unique DRS Templates%n");
     Counter template = new Counter("DRS template");
+    Counter bitmapRepeat = new Counter("BMS indicator");
     Counter prob = new Counter("DRS template 40 signed problem");
 
     for (MFile mfile : dcm.getFiles()) {
-      f.format(" %s%n", mfile.getPath());
-      doDrsSummary(f, mfile, useIndex, template, prob);
+      if (eachFile) {
+        template.reset();
+        bitmapRepeat.reset();
+        if (extra) prob.reset();
+      }
+
+      f.format("------- %s%n", mfile.getPath());
+      if (useIndex)
+        doDrsSummaryIndex(f, mfile, extra, template, bitmapRepeat, prob);
+      else
+        doDrsSummaryScan(f, mfile, extra, template, bitmapRepeat, prob);
+
+      if (eachFile) {
+        template.show(f);
+        bitmapRepeat.show(f);
+        if (extra) prob.show(f);
+        f.format("%n");
+      }
     }
 
-    template.show(f);
-    prob.show(f);
+    if (!eachFile) {
+      template.show(f);
+      bitmapRepeat.show(f);
+      if (extra) prob.show(f);
+    }
   }
 
-  private void doDrsSummary(Formatter f, MFile mf, boolean useIndex, Counter templateC, Counter probC) throws IOException {
+  private void doDrsSummaryIndex(Formatter f, MFile mf, boolean extra, Counter templateC, Counter bitmapRepeat, Counter probC) throws IOException {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
@@ -666,7 +690,10 @@ public class Grib2ReportPanel extends JPanel {
       int template = drss.getDataTemplate();
       templateC.count(template);
 
-      if (useIndex && template == 40) {  // expensive
+      //Grib2SectionBitMap bms = gr.getBitmapSection();
+      bitmapRepeat.count(gr.repeat);
+
+      if (extra && template == 40) {  // expensive
         Grib2Drs.Type40 drs40 = gr.readDataTest(raf);
         if (drs40 != null) {
           if (drs40.hasSignedProblem())
@@ -678,6 +705,37 @@ public class Grib2ReportPanel extends JPanel {
     }
     raf.close();
   }
+
+  private void doDrsSummaryScan(Formatter f, MFile mf, boolean extra, Counter templateC, Counter bitmapRepeat, Counter probC) throws IOException {
+    RandomAccessFile raf = new RandomAccessFile(mf.getPath(), "r");
+    Grib2RecordScanner scan = new Grib2RecordScanner(raf);
+    while (scan.hasNext()) {
+      ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
+      doDrsSummary(gr, raf, extra, templateC, bitmapRepeat, probC);
+    }
+    raf.close();
+  }
+
+  private void doDrsSummary(ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, boolean extra, Counter templateC, Counter bitmapRepeat, Counter probC) throws IOException {
+    Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
+    int template = drss.getDataTemplate();
+    templateC.count(template);
+
+    //Grib2SectionBitMap bms = gr.getBitmapSection();
+    bitmapRepeat.count(gr.repeat);
+
+    if (extra && template == 40) {  // expensive
+      Grib2Drs.Type40 drs40 = gr.readDataTest(raf);
+      if (drs40 != null) {
+        if (drs40.hasSignedProblem())
+          probC.count(1);
+        else
+          probC.count(0);
+      }
+    }
+  }
+
+
 
   ///////////////////////////////////////////////
 
