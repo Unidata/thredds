@@ -134,10 +134,7 @@ public class TestRedefine extends TestCase {
     assert dim == d;
 
     file.close();
-  }
 
-  public void testRewriteHeader() throws IOException, InvalidRangeException {
-    NetcdfFileWriteable file;
     file = NetcdfFileWriteable.openExisting(filename, true);
     file.setRedefineMode(true);
 
@@ -147,26 +144,22 @@ public class TestRedefine extends TestCase {
     boolean rewriteAll = file.setRedefineMode(false);
     assert !rewriteAll;
 
-    Attribute att = file.findGlobalAttribute("att8");
+    att = file.findGlobalAttribute("att8");
     assert att != null;
     assert att.getStringValue().equals("1234567") : att.getStringValue();
 
     file.close();
-  }
 
-  public void testRewriteHeader2() throws IOException, InvalidRangeException {
-    NetcdfFileWriteable file;
     file = NetcdfFileWriteable.openExisting(filename, true);
     file.setRedefineMode(true);
 
     file.addGlobalAttribute("att8", "123456789");
 
     /////////////////////////////////////////////////
-    boolean rewriteAll = file.setRedefineMode(false);
+    rewriteAll = file.setRedefineMode(false);
     assert rewriteAll;
 
-
-    Attribute att = file.findGlobalAttribute("att8");
+    att = file.findGlobalAttribute("att8");
     assert att != null;
     assert att.getStringValue().equals("123456789") : att.getStringValue();
 
