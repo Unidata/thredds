@@ -33,19 +33,16 @@
  */
 package ucar.util.prefs.ui;
 
-import junit.framework.*;
+import org.junit.Test;
 import ucar.util.prefs.*;
 
 import java.beans.*;
 
-public class TestField extends TestCase {
+public class TestField {
   static private XMLStore xstore;
   static private PreferencesExt store;
 
   private int gotEvent1, gotEvent2;
-  public TestField( String name) {
-    super(name);
-  }
 
   public void setUp() {
     try {
@@ -153,18 +150,3 @@ public class TestField extends TestCase {
   }
 
 }
-/* Change History:
-   $Log: TestField.java,v $
-   Revision 1.4  2005/08/22 01:15:06  caron
-   no message
-
-   Revision 1.3  2004/08/26 17:55:19  caron
-   no message
-
-   Revision 1.2  2002/12/24 22:04:54  john
-   add bean, beanObject methods
-
-   Revision 1.1.1.1  2002/12/20 16:40:27  john
-   start new cvs root: prefs
-
-*/

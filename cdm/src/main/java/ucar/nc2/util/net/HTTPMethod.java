@@ -233,7 +233,7 @@ void setcontent()
 public int execute() throws HTTPException
 {
     if (closed)
-        throw new HTTPException("Method instanced is closed");
+        throw new HTTPException("Method instance is closed");
     if (executed)
         throw new HTTPException("Method instance already executed");
     if (legalurl == null)
@@ -358,7 +358,7 @@ public InputStream getResponseAsStream()
         return null;
     if(methodstream != null) {
         LOG.error("HTTPMethod.getResponseBodyAsStream: Getting method stream twice");
-        return methodstream;
+        return methodstream; // caller's problem
     }
     try {
         if (method == null) return null;

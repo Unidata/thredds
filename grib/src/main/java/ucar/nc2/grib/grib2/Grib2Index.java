@@ -34,7 +34,6 @@ package ucar.nc2.grib.grib2;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.CollectionManager;
-import thredds.inventory.MFile;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
@@ -84,9 +83,12 @@ public class Grib2Index extends GribIndex {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Index.class);
 
   private static final String MAGIC_START = "Grib2Index";
-  private static final int version = 5;
   private static final boolean debug = false;
+  private static final int version = 6;
 
+  /*
+    9/12/2012 version 6: replace bms indicator = 254 with previously defined.
+   */
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   private List<Grib2SectionGridDefinition> gdsList;
@@ -170,23 +172,6 @@ public class Grib2Index extends GribIndex {
     return true;
   }
 
-  /*
-message Grib2Record {
- // indicator section
- required uint64 gribMessageLength = 1;
- required uint32 discipline = 2;
-
- // id section
- required GribIdSection ids = 3;
-
- // other sections
- optional bytes lus = 4;
- required sint64 gdsCrc = 5;
- required bytes pds = 6;
- required uint64 drsPos = 7;
- required uint64 bmsPos = 8;
- required uint64 dataPos = 9;
-  */
   private Grib2Record readRecord(Grib2IndexProto.Grib2Record p) {
     Grib2SectionIndicator is = new Grib2SectionIndicator(p.getGribMessageStart(), p.getGribMessageLength(), p.getDiscipline());
 
@@ -203,8 +188,9 @@ message Grib2Record {
     Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(p.getDrsPos(), p.getDrsNpoints(), p.getDrsTemplate());
     Grib2SectionBitMap bms = new Grib2SectionBitMap(p.getBmsPos(), p.getBmsIndicator());
     Grib2SectionData data = new Grib2SectionData(p.getDataPos(), p.getDataLen());
+    boolean bmsReplaced = p.getBmsReplaced();
 
-    return new Grib2Record(p.getHeader().toByteArray(), is, ids, lus, gds, pds, drs, bms, data);
+    return new Grib2Record(p.getHeader().toByteArray(), is, ids, lus, gds, pds, drs, bms, data, bmsReplaced);
   }
 
   private Grib2SectionIdentification readIdMessage(Grib2IndexProto.GribIdSection p) {
@@ -300,6 +286,7 @@ message Grib2Record {
     Grib2SectionBitMap bms = r.getBitmapSection();
     b.setBmsPos(bms.getStartingPosition());
     b.setBmsIndicator(bms.getBitMapIndicator());
+    b.setBmsReplaced(r.isBmsReplaced());
 
     Grib2SectionData ds = r.getDataSection();
     b.setDataPos(ds.getStartingPosition());

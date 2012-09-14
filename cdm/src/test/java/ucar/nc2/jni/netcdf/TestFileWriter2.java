@@ -60,8 +60,9 @@ public class TestFileWriter2 {
 
   private String tempDir = TestDir.temporaryLocalDataDir; // "C:/temp/";
   private boolean copyFile(String datasetIn, String datasetOut, NetcdfFileWriter.Version version) throws IOException {
-     System.out.printf("copy %s to %s%n", datasetIn, datasetOut);
+     //Nc4Iosp.setMine(); // fake
 
+     System.out.printf("copy %s to %s%n", datasetIn, datasetOut);
      NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
      FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut,  version);
      NetcdfFile ncfileOut = writer2.write();

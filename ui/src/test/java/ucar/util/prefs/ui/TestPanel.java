@@ -33,7 +33,6 @@
  */
 package ucar.util.prefs.ui;
 
-import junit.framework.*;
 import ucar.util.prefs.*;
 
 import java.awt.event.*;
@@ -41,15 +40,12 @@ import java.beans.*;
 import java.util.*;
 import javax.swing.*;
 
-public class TestPanel extends TestCase {
+public class TestPanel {
   //private Field.Text ef;
   //private boolean enabled = true;
   static private XMLStore xstore;
   static private PreferencesExt store;
 
-  public TestPanel( String name) {
-    super(name);
-  }
 
   public void setUp() {
     try {
@@ -194,7 +190,7 @@ public class TestPanel extends TestCase {
     JFrame frame = new JFrame("Test PrefPanel");
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-    TestPanel tp = new TestPanel("fake");
+    TestPanel tp = new TestPanel();
     PrefPanel pp = tp.make3columns();
 
     frame.getContentPane().add(pp);

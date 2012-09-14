@@ -160,7 +160,9 @@ public class CFPointWriter {
   protected CalendarDate maxDate = null;
 
   protected CFPointWriter(String fileOut, List<Attribute> atts) throws IOException {
+	  
     writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut);
+	  
     writer.setFill(false);
 
     writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));

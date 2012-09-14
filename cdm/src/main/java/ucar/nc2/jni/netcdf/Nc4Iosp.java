@@ -75,7 +75,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private Nc4prototypes nc4;
   static private final String JNA_PATH = "jna.library.path";
   static private String jnaPath;
-  static private String libName = "netcdf4";
+  static private String libName = "netcdf";
 
   static private boolean warn = true;
   static private final boolean debug = false, debugCompoundAtt = false, debugUserTypes = false, debugWrite = false;
@@ -126,6 +126,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
 
     return nc4;
+  }
+
+  static void setMine() {
+    ucar.nc2.jni.netcdf.Nc4Iosp.setLibraryAndPath("C:/cdev/lib/", "netcdf-7");
   }
 
  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2059,6 +2063,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public void updateAttribute(Variable v2, Attribute att) throws IOException {
     //To change body of implemented methods use File | Settings | File Templates.
   }
+  
 
   /////////////////////////////////////////////////////////////////////////
 

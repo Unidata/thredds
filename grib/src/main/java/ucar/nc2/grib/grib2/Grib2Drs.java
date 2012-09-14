@@ -60,6 +60,14 @@ public class Grib2Drs {
     }
   }
 
+  public int getNBits() {
+    return -1;
+  }
+
+  public int getNGroups() {
+    return 1;
+  }
+
   public static class Type0 extends Grib2Drs {
     public float referenceValue;
     public int binaryScaleFactor, decimalScaleFactor, numberOfBits, originalType;
@@ -70,6 +78,50 @@ public class Grib2Drs {
       this.decimalScaleFactor = GribNumbers.int2(raf);
       this.numberOfBits = raf.read();
       this.originalType = raf.read();
+    }
+
+    @Override
+    public int getNBits() {
+      return numberOfBits;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("Type0");
+      sb.append("{referenceValue=").append(referenceValue);
+      sb.append(", binaryScaleFactor=").append(binaryScaleFactor);
+      sb.append(", decimalScaleFactor=").append(decimalScaleFactor);
+      sb.append(", numberOfBits=").append(numberOfBits);
+      sb.append(", originalType=").append(originalType);
+      sb.append('}');
+      return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      Type0 type0 = (Type0) o;
+
+      if (binaryScaleFactor != type0.binaryScaleFactor) return false;
+      if (decimalScaleFactor != type0.decimalScaleFactor) return false;
+      if (numberOfBits != type0.numberOfBits) return false;
+      if (originalType != type0.originalType) return false;
+      if (Float.compare(type0.referenceValue, referenceValue) != 0) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = (referenceValue != +0.0f ? Float.floatToIntBits(referenceValue) : 0);
+      result = 31 * result + binaryScaleFactor;
+      result = 31 * result + decimalScaleFactor;
+      result = 31 * result + numberOfBits;
+      result = 31 * result + originalType;
+      return result;
     }
   }
 
@@ -92,6 +144,71 @@ public class Grib2Drs {
       this.lengthLastGroup = GribNumbers.int4(raf);
       this.bitsScaledGroupLength = raf.read();
     }
+
+    @Override
+    public int getNGroups() {
+      return numberOfGroups;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append(super.toString());
+      sb.append("\nType2");
+      sb.append("{secondaryMissingValue=").append(secondaryMissingValue);
+      sb.append(", primaryMissingValue=").append(primaryMissingValue);
+      sb.append(", missingValueManagement=").append(missingValueManagement);
+      sb.append(", splittingMethod=").append(splittingMethod);
+      sb.append(", numberOfGroups=").append(numberOfGroups);
+      sb.append(", referenceGroupWidths=").append(referenceGroupWidths);
+      sb.append(", bitsGroupWidths=").append(bitsGroupWidths);
+      sb.append(", referenceGroupLength=").append(referenceGroupLength);
+      sb.append(", lengthIncrement=").append(lengthIncrement);
+      sb.append(", lengthLastGroup=").append(lengthLastGroup);
+      sb.append(", bitsScaledGroupLength=").append(bitsScaledGroupLength);
+      sb.append('}');
+      return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      Type2 type2 = (Type2) o;
+
+      if (bitsGroupWidths != type2.bitsGroupWidths) return false;
+      if (bitsScaledGroupLength != type2.bitsScaledGroupLength) return false;
+      if (lengthIncrement != type2.lengthIncrement) return false;
+      if (lengthLastGroup != type2.lengthLastGroup) return false;
+      if (missingValueManagement != type2.missingValueManagement) return false;
+      if (numberOfGroups != type2.numberOfGroups) return false;
+      if (Float.compare(type2.primaryMissingValue, primaryMissingValue) != 0) return false;
+      if (referenceGroupLength != type2.referenceGroupLength) return false;
+      if (referenceGroupWidths != type2.referenceGroupWidths) return false;
+      if (Float.compare(type2.secondaryMissingValue, secondaryMissingValue) != 0) return false;
+      if (splittingMethod != type2.splittingMethod) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = super.hashCode();
+      result = 31 * result + (secondaryMissingValue != +0.0f ? Float.floatToIntBits(secondaryMissingValue) : 0);
+      result = 31 * result + (primaryMissingValue != +0.0f ? Float.floatToIntBits(primaryMissingValue) : 0);
+      result = 31 * result + missingValueManagement;
+      result = 31 * result + splittingMethod;
+      result = 31 * result + numberOfGroups;
+      result = 31 * result + referenceGroupWidths;
+      result = 31 * result + bitsGroupWidths;
+      result = 31 * result + referenceGroupLength;
+      result = 31 * result + lengthIncrement;
+      result = 31 * result + lengthLastGroup;
+      result = 31 * result + bitsScaledGroupLength;
+      return result;
+    }
   }
 
   public static class Type3 extends Type2 {
@@ -101,7 +218,39 @@ public class Grib2Drs {
       super(raf);
       this.orderSpatial = raf.read();
       this.descriptorSpatial = raf.read();
+    }
 
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append(super.toString());
+      sb.append("\nType3");
+      sb.append("{orderSpatial=").append(orderSpatial);
+      sb.append(", descriptorSpatial=").append(descriptorSpatial);
+      sb.append('}');
+      return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      Type3 type3 = (Type3) o;
+
+      if (descriptorSpatial != type3.descriptorSpatial) return false;
+      if (orderSpatial != type3.orderSpatial) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = super.hashCode();
+      result = 31 * result + orderSpatial;
+      result = 31 * result + descriptorSpatial;
+      return result;
     }
   }
 
@@ -117,6 +266,40 @@ public class Grib2Drs {
 
     public boolean hasSignedProblem() {
       return hasSignedProblem;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append(super.toString());
+      sb.append("\nType40");
+      sb.append("{compressionMethod=").append(compressionMethod);
+      sb.append(", compressionRatio=").append(compressionRatio);
+      sb.append(", hasSignedProblem=").append(hasSignedProblem);
+      sb.append('}');
+      return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      Type40 type40 = (Type40) o;
+
+      if (compressionMethod != type40.compressionMethod) return false;
+      if (compressionRatio != type40.compressionRatio) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = super.hashCode();
+      result = 31 * result + compressionMethod;
+      result = 31 * result + compressionRatio;
+      return result;
     }
   }
 

@@ -50,6 +50,7 @@ public class Grib2RecordScanner {
   // deal with repeating sections - each becomes a Grib2Record
   private long repeatPos = -1;             // if > 0, we are in middle of repeating record
   private Grib2Record repeatRecord = null; // current repeating record
+  private Grib2SectionBitMap repeatBms = null; // current repeating bms
 
   public Grib2RecordScanner(RandomAccessFile raf) throws IOException {
     startPos = 0;
@@ -68,13 +69,14 @@ public class Grib2RecordScanner {
         return true;
     } else {
       repeatRecord = null;
+      repeatBms = null;
       // fall through to new record
     }
 
     boolean more;
     long stop = 0;
 
-    while (true) { // scan until we get a GRIB-1 or more is false
+    while (true) { // scan until we get a GRIB-2 or more == false
       raf.seek(lastPos);
       more = raf.searchForward(matcher, -1); // will scan to end for a 'GRIB' string
       if (!more) break;
@@ -84,11 +86,11 @@ public class Grib2RecordScanner {
       raf.skipBytes(7);
       int edition = raf.read();
       if (edition == 2) break;
-      lastPos = raf.getFilePointer(); // not edition 2 ! could terminate ??
+      lastPos = raf.getFilePointer(); // not edition 2 ! just skip it !!
     }
 
     if (more) {
-      int sizeHeader = (int) (stop - lastPos);
+      int sizeHeader = (int) (stop - lastPos);  // wmo headers are embedded between records in some idd streams
       //if (sizeHeader > 30) sizeHeader = 30;
       header = new byte[sizeHeader];
       startPos = stop-sizeHeader;
@@ -141,7 +143,10 @@ public class Grib2RecordScanner {
       if (pos+34 < ending) { // give it 30 bytes of slop
         if (debugRepeat) System.out.printf(" REPEAT AT %d != %d%n", pos+4, ending);
         repeatPos = pos;
-        repeatRecord = new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection); // this assumes immutable sections
+        repeatRecord = new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false); // this assumes immutable sections
+        // track bms in case its a repeat
+        if (bms.getBitMapIndicator() == 0)
+          repeatBms = bms;
         return new Grib2Record(repeatRecord); // GribRecord isnt immutable; still may not be necessary
       }
 
@@ -157,7 +162,7 @@ public class Grib2RecordScanner {
       }
       lastPos = raf.getFilePointer();
 
-      return new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection);
+      return new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false);
 
     } catch (Throwable t) {
       long pos = (is == null) ? -1 : is.getStartPos();
@@ -185,29 +190,50 @@ public class Grib2RecordScanner {
       repeatRecord.setGdss(new Grib2SectionGridDefinition(raf));
       repeatRecord.setPdss(new Grib2SectionProductDefinition(raf));
       repeatRecord.setDrs(new Grib2SectionDataRepresentation(raf));
-      repeatRecord.setBms(new Grib2SectionBitMap(raf));
+      repeatRecord.setBms(new Grib2SectionBitMap(raf), false);
       repeatRecord.setDataSection(new Grib2SectionData(raf));
+      repeatRecord.repeat = section;
 
     } else if (section == 3) {
       repeatRecord.setGdss(new Grib2SectionGridDefinition(raf));
       repeatRecord.setPdss(new Grib2SectionProductDefinition(raf));
       repeatRecord.setDrs(new Grib2SectionDataRepresentation(raf));
-      repeatRecord.setBms(new Grib2SectionBitMap(raf));
+      repeatRecord.setBms(new Grib2SectionBitMap(raf), false);
       repeatRecord.setDataSection(new Grib2SectionData(raf));
+      repeatRecord.repeat = section;
 
     } else if (section == 4) {
       repeatRecord.setPdss(new Grib2SectionProductDefinition(raf));
       repeatRecord.setDrs(new Grib2SectionDataRepresentation(raf));
-      repeatRecord.setBms(new Grib2SectionBitMap(raf));
+      repeatRecord.setBms(new Grib2SectionBitMap(raf), false);
       repeatRecord.setDataSection(new Grib2SectionData(raf));
+      repeatRecord.repeat = section;
 
     } else {
       if (debugRepeat) System.out.printf(" REPEAT Terminate %d%n", section);
       repeatPos = -1;
       repeatRecord = null;
+      repeatBms = null;
       return false;
     }
 
+    // look for repeating bms
+    Grib2SectionBitMap bms = repeatRecord.getBitmapSection();
+    if (bms.getBitMapIndicator() == 254) {
+      // replace BMS with last good one
+      if (repeatBms == null)
+        throw new IllegalStateException("No bms in repeating section");
+      repeatRecord.setBms(repeatBms, true);
+      //debug
+      if (debugRepeat) System.out.printf("replaced bms %d%n", section);
+      repeatRecord.repeat += 1000;
+
+    } else if (bms.getBitMapIndicator() == 0) {
+      // track last good bms
+      repeatBms = repeatRecord.getBitmapSection();
+    }
+
+    // keep only unique gds
     if ((section == 2) || (section == 3)) {
       // look for duplicate gds
       Grib2SectionGridDefinition gds = repeatRecord.getGDSsection();

@@ -19,6 +19,10 @@ public final class GribCollectionProto {
     boolean hasPos();
     long getPos();
     
+    // optional uint64 bmsPos = 4 [default = 0];
+    boolean hasBmsPos();
+    long getBmsPos();
+    
     // optional bool missing = 3 [default = false];
     boolean hasMissing();
     boolean getMissing();
@@ -72,11 +76,21 @@ public final class GribCollectionProto {
       return pos_;
     }
     
+    // optional uint64 bmsPos = 4 [default = 0];
+    public static final int BMSPOS_FIELD_NUMBER = 4;
+    private long bmsPos_;
+    public boolean hasBmsPos() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public long getBmsPos() {
+      return bmsPos_;
+    }
+    
     // optional bool missing = 3 [default = false];
     public static final int MISSING_FIELD_NUMBER = 3;
     private boolean missing_;
     public boolean hasMissing() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     public boolean getMissing() {
       return missing_;
@@ -85,6 +99,7 @@ public final class GribCollectionProto {
     private void initFields() {
       fileno_ = 0;
       pos_ = 0L;
+      bmsPos_ = 0L;
       missing_ = false;
     }
     private byte memoizedIsInitialized = -1;
@@ -113,8 +128,11 @@ public final class GribCollectionProto {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeUInt64(2, pos_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBool(3, missing_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt64(4, bmsPos_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -133,9 +151,13 @@ public final class GribCollectionProto {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(2, pos_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(3, missing_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(4, bmsPos_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -263,8 +285,10 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00000001);
         pos_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000002);
-        missing_ = false;
+        bmsPos_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000004);
+        missing_ = false;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       
@@ -314,6 +338,10 @@ public final class GribCollectionProto {
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
+        result.bmsPos_ = bmsPos_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
         result.missing_ = missing_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -336,6 +364,9 @@ public final class GribCollectionProto {
         }
         if (other.hasPos()) {
           setPos(other.getPos());
+        }
+        if (other.hasBmsPos()) {
+          setBmsPos(other.getBmsPos());
         }
         if (other.hasMissing()) {
           setMissing(other.getMissing());
@@ -390,8 +421,13 @@ public final class GribCollectionProto {
               break;
             }
             case 24: {
-              bitField0_ |= 0x00000004;
+              bitField0_ |= 0x00000008;
               missing_ = input.readBool();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000004;
+              bmsPos_ = input.readUInt64();
               break;
             }
           }
@@ -442,22 +478,43 @@ public final class GribCollectionProto {
         return this;
       }
       
+      // optional uint64 bmsPos = 4 [default = 0];
+      private long bmsPos_ ;
+      public boolean hasBmsPos() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      public long getBmsPos() {
+        return bmsPos_;
+      }
+      public Builder setBmsPos(long value) {
+        bitField0_ |= 0x00000004;
+        bmsPos_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearBmsPos() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        bmsPos_ = 0L;
+        onChanged();
+        return this;
+      }
+      
       // optional bool missing = 3 [default = false];
       private boolean missing_ ;
       public boolean hasMissing() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public boolean getMissing() {
         return missing_;
       }
       public Builder setMissing(boolean value) {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         missing_ = value;
         onChanged();
         return this;
       }
       public Builder clearMissing() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         missing_ = false;
         onChanged();
         return this;
@@ -1176,6 +1233,11 @@ public final class GribCollectionProto {
     int getVarnoCount();
     int getVarno(int index);
     
+    // repeated int32 flag = 21;
+    java.util.List<java.lang.Integer> getFlagList();
+    int getFlagCount();
+    int getFlag(int index);
+    
     // optional uint32 tableVersion = 18;
     boolean hasTableVersion();
     int getTableVersion();
@@ -1187,11 +1249,6 @@ public final class GribCollectionProto {
     // optional int32 genProcessType = 20 [default = -1];
     boolean hasGenProcessType();
     int getGenProcessType();
-    
-    // repeated int32 flag = 21;
-    java.util.List<java.lang.Integer> getFlagList();
-    int getFlagCount();
-    int getFlag(int index);
   }
   public static final class Variable extends
       com.google.protobuf.GeneratedMessage
@@ -1422,6 +1479,20 @@ public final class GribCollectionProto {
       return varno_.get(index);
     }
     
+    // repeated int32 flag = 21;
+    public static final int FLAG_FIELD_NUMBER = 21;
+    private java.util.List<java.lang.Integer> flag_;
+    public java.util.List<java.lang.Integer>
+        getFlagList() {
+      return flag_;
+    }
+    public int getFlagCount() {
+      return flag_.size();
+    }
+    public int getFlag(int index) {
+      return flag_.get(index);
+    }
+    
     // optional uint32 tableVersion = 18;
     public static final int TABLEVERSION_FIELD_NUMBER = 18;
     private int tableVersion_;
@@ -1474,20 +1545,6 @@ public final class GribCollectionProto {
       return genProcessType_;
     }
     
-    // repeated int32 flag = 21;
-    public static final int FLAG_FIELD_NUMBER = 21;
-    private java.util.List<java.lang.Integer> flag_;
-    public java.util.List<java.lang.Integer>
-        getFlagList() {
-      return flag_;
-    }
-    public int getFlagCount() {
-      return flag_.size();
-    }
-    public int getFlag(int index) {
-      return flag_.get(index);
-    }
-    
     private void initFields() {
       discipline_ = 0;
       category_ = 0;
@@ -1506,10 +1563,10 @@ public final class GribCollectionProto {
       isLayer_ = false;
       groupno_ = java.util.Collections.emptyList();;
       varno_ = java.util.Collections.emptyList();;
+      flag_ = java.util.Collections.emptyList();;
       tableVersion_ = 0;
       intvName_ = "";
       genProcessType_ = -1;
-      flag_ = java.util.Collections.emptyList();;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1882,13 +1939,13 @@ public final class GribCollectionProto {
         bitField0_ = (bitField0_ & ~0x00008000);
         varno_ = java.util.Collections.emptyList();;
         bitField0_ = (bitField0_ & ~0x00010000);
-        tableVersion_ = 0;
-        bitField0_ = (bitField0_ & ~0x00020000);
-        intvName_ = "";
-        bitField0_ = (bitField0_ & ~0x00040000);
-        genProcessType_ = -1;
-        bitField0_ = (bitField0_ & ~0x00080000);
         flag_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00020000);
+        tableVersion_ = 0;
+        bitField0_ = (bitField0_ & ~0x00040000);
+        intvName_ = "";
+        bitField0_ = (bitField0_ & ~0x00080000);
+        genProcessType_ = -1;
         bitField0_ = (bitField0_ & ~0x00100000);
         return this;
       }
@@ -1998,23 +2055,23 @@ public final class GribCollectionProto {
           bitField0_ = (bitField0_ & ~0x00010000);
         }
         result.varno_ = varno_;
-        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+        if (((bitField0_ & 0x00020000) == 0x00020000)) {
+          flag_ = java.util.Collections.unmodifiableList(flag_);
+          bitField0_ = (bitField0_ & ~0x00020000);
+        }
+        result.flag_ = flag_;
+        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
           to_bitField0_ |= 0x00008000;
         }
         result.tableVersion_ = tableVersion_;
-        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
           to_bitField0_ |= 0x00010000;
         }
         result.intvName_ = intvName_;
-        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
           to_bitField0_ |= 0x00020000;
         }
         result.genProcessType_ = genProcessType_;
-        if (((bitField0_ & 0x00100000) == 0x00100000)) {
-          flag_ = java.util.Collections.unmodifiableList(flag_);
-          bitField0_ = (bitField0_ & ~0x00100000);
-        }
-        result.flag_ = flag_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2096,6 +2153,16 @@ public final class GribCollectionProto {
           }
           onChanged();
         }
+        if (!other.flag_.isEmpty()) {
+          if (flag_.isEmpty()) {
+            flag_ = other.flag_;
+            bitField0_ = (bitField0_ & ~0x00020000);
+          } else {
+            ensureFlagIsMutable();
+            flag_.addAll(other.flag_);
+          }
+          onChanged();
+        }
         if (other.hasTableVersion()) {
           setTableVersion(other.getTableVersion());
         }
@@ -2104,16 +2171,6 @@ public final class GribCollectionProto {
         }
         if (other.hasGenProcessType()) {
           setGenProcessType(other.getGenProcessType());
-        }
-        if (!other.flag_.isEmpty()) {
-          if (flag_.isEmpty()) {
-            flag_ = other.flag_;
-            bitField0_ = (bitField0_ & ~0x00100000);
-          } else {
-            ensureFlagIsMutable();
-            flag_.addAll(other.flag_);
-          }
-          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2282,17 +2339,17 @@ public final class GribCollectionProto {
               break;
             }
             case 144: {
-              bitField0_ |= 0x00020000;
+              bitField0_ |= 0x00040000;
               tableVersion_ = input.readUInt32();
               break;
             }
             case 154: {
-              bitField0_ |= 0x00040000;
+              bitField0_ |= 0x00080000;
               intvName_ = input.readBytes();
               break;
             }
             case 160: {
-              bitField0_ |= 0x00080000;
+              bitField0_ |= 0x00100000;
               genProcessType_ = input.readInt32();
               break;
             }
@@ -2736,90 +2793,12 @@ public final class GribCollectionProto {
         return this;
       }
       
-      // optional uint32 tableVersion = 18;
-      private int tableVersion_ ;
-      public boolean hasTableVersion() {
-        return ((bitField0_ & 0x00020000) == 0x00020000);
-      }
-      public int getTableVersion() {
-        return tableVersion_;
-      }
-      public Builder setTableVersion(int value) {
-        bitField0_ |= 0x00020000;
-        tableVersion_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearTableVersion() {
-        bitField0_ = (bitField0_ & ~0x00020000);
-        tableVersion_ = 0;
-        onChanged();
-        return this;
-      }
-      
-      // optional string intvName = 19;
-      private Object intvName_ = "";
-      public boolean hasIntvName() {
-        return ((bitField0_ & 0x00040000) == 0x00040000);
-      }
-      public String getIntvName() {
-        Object ref = intvName_;
-        if (!(ref instanceof String)) {
-          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
-          intvName_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      public Builder setIntvName(String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00040000;
-        intvName_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearIntvName() {
-        bitField0_ = (bitField0_ & ~0x00040000);
-        intvName_ = getDefaultInstance().getIntvName();
-        onChanged();
-        return this;
-      }
-      void setIntvName(com.google.protobuf.ByteString value) {
-        bitField0_ |= 0x00040000;
-        intvName_ = value;
-        onChanged();
-      }
-      
-      // optional int32 genProcessType = 20 [default = -1];
-      private int genProcessType_ = -1;
-      public boolean hasGenProcessType() {
-        return ((bitField0_ & 0x00080000) == 0x00080000);
-      }
-      public int getGenProcessType() {
-        return genProcessType_;
-      }
-      public Builder setGenProcessType(int value) {
-        bitField0_ |= 0x00080000;
-        genProcessType_ = value;
-        onChanged();
-        return this;
-      }
-      public Builder clearGenProcessType() {
-        bitField0_ = (bitField0_ & ~0x00080000);
-        genProcessType_ = -1;
-        onChanged();
-        return this;
-      }
-      
       // repeated int32 flag = 21;
       private java.util.List<java.lang.Integer> flag_ = java.util.Collections.emptyList();;
       private void ensureFlagIsMutable() {
-        if (!((bitField0_ & 0x00100000) == 0x00100000)) {
+        if (!((bitField0_ & 0x00020000) == 0x00020000)) {
           flag_ = new java.util.ArrayList<java.lang.Integer>(flag_);
-          bitField0_ |= 0x00100000;
+          bitField0_ |= 0x00020000;
          }
       }
       public java.util.List<java.lang.Integer>
@@ -2854,7 +2833,85 @@ public final class GribCollectionProto {
       }
       public Builder clearFlag() {
         flag_ = java.util.Collections.emptyList();;
+        bitField0_ = (bitField0_ & ~0x00020000);
+        onChanged();
+        return this;
+      }
+      
+      // optional uint32 tableVersion = 18;
+      private int tableVersion_ ;
+      public boolean hasTableVersion() {
+        return ((bitField0_ & 0x00040000) == 0x00040000);
+      }
+      public int getTableVersion() {
+        return tableVersion_;
+      }
+      public Builder setTableVersion(int value) {
+        bitField0_ |= 0x00040000;
+        tableVersion_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTableVersion() {
+        bitField0_ = (bitField0_ & ~0x00040000);
+        tableVersion_ = 0;
+        onChanged();
+        return this;
+      }
+      
+      // optional string intvName = 19;
+      private Object intvName_ = "";
+      public boolean hasIntvName() {
+        return ((bitField0_ & 0x00080000) == 0x00080000);
+      }
+      public String getIntvName() {
+        Object ref = intvName_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          intvName_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setIntvName(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00080000;
+        intvName_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearIntvName() {
+        bitField0_ = (bitField0_ & ~0x00080000);
+        intvName_ = getDefaultInstance().getIntvName();
+        onChanged();
+        return this;
+      }
+      void setIntvName(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00080000;
+        intvName_ = value;
+        onChanged();
+      }
+      
+      // optional int32 genProcessType = 20 [default = -1];
+      private int genProcessType_ = -1;
+      public boolean hasGenProcessType() {
+        return ((bitField0_ & 0x00100000) == 0x00100000);
+      }
+      public int getGenProcessType() {
+        return genProcessType_;
+      }
+      public Builder setGenProcessType(int value) {
+        bitField0_ |= 0x00100000;
+        genProcessType_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearGenProcessType() {
         bitField0_ = (bitField0_ & ~0x00100000);
+        genProcessType_ = -1;
         onChanged();
         return this;
       }
@@ -9716,48 +9773,49 @@ public final class GribCollectionProto {
   static {
     java.lang.String[] descriptorData = {
       "\n\"ucar/nc2/grib/gribCollection.proto\022\023gr" +
-      "ibCollectionIndex\"=\n\006Record\022\016\n\006fileno\030\001 " +
-      "\002(\r\022\013\n\003pos\030\002 \002(\004\022\026\n\007missing\030\003 \001(\010:\005false" +
-      "\"P\n\017VariableRecords\022\017\n\007cdmHash\030\001 \002(\007\022,\n\007" +
-      "records\030\002 \003(\0132\033.gribCollectionIndex.Reco" +
-      "rd\"\277\003\n\010Variable\022\022\n\ndiscipline\030\001 \002(\005\022\020\n\010c" +
-      "ategory\030\002 \002(\005\022\021\n\tparameter\030\003 \002(\005\022\021\n\tleve" +
-      "lType\030\004 \002(\005\022\030\n\014intervalType\030\005 \001(\005:\002-1\022\017\n" +
-      "\007cdmHash\030\006 \002(\007\022\022\n\nrecordsPos\030\007 \002(\004\022\022\n\nre" +
-      "cordsLen\030\010 \002(\r\022\017\n\007timeIdx\030\t \002(\r\022\023\n\007vertI",
-      "dx\030\n \001(\005:\002-1\022\022\n\006ensIdx\030\013 \001(\005:\002-1\022\032\n\016ensD" +
-      "erivedType\030\014 \001(\005:\002-1\022\027\n\017probabilityName\030" +
-      "\r \001(\t\022\033\n\017probabilityType\030\016 \001(\005:\002-1\022\026\n\007is" +
-      "Layer\030\017 \001(\010:\005false\022\017\n\007groupno\030\020 \003(\r\022\r\n\005v" +
-      "arno\030\021 \003(\r\022\024\n\014tableVersion\030\022 \001(\r\022\020\n\010intv" +
-      "Name\030\023 \001(\t\022\032\n\016genProcessType\030\024 \001(\005:\002-1\022\014" +
-      "\n\004flag\030\025 \003(\005\"U\n\005Coord\022\014\n\004code\030\001 \002(\005\022\014\n\004u" +
-      "nit\030\002 \002(\t\022\016\n\006values\030\003 \003(\002\022\r\n\005bound\030\004 \003(\002" +
-      "\022\021\n\005index\030\005 \001(\005:\002-1\"6\n\tParameter\022\014\n\004name" +
-      "\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022\r\n\005sdata\030\003 \001(\t\"\214\003\n\005",
-      "Group\022\025\n\rpredefinedGds\030\001 \001(\005\022\013\n\003gds\030\002 \001(" +
-      "\014\0220\n\tvariables\030\003 \003(\0132\035.gribCollectionInd" +
-      "ex.Variable\022.\n\ntimeCoords\030\004 \003(\0132\032.gribCo" +
-      "llectionIndex.Coord\022.\n\nvertCoords\030\005 \003(\0132" +
-      "\032.gribCollectionIndex.Coord\022-\n\tensCoords" +
-      "\030\006 \003(\0132\032.gribCollectionIndex.Coord\022.\n\006pa" +
-      "rams\030\007 \003(\0132\036.gribCollectionIndex.Paramet" +
-      "er\022\016\n\006fileno\030\010 \003(\005\022<\n\017timeCoordUnions\030\t " +
-      "\003(\0132#.gribCollectionIndex.TimeCoordUnion" +
-      "\022\014\n\004name\030\n \001(\t\022\022\n\007gdsHash\030\013 \001(\021:\0010\"m\n\016Ti",
-      "meCoordUnion\022\014\n\004code\030\001 \002(\005\022\014\n\004unit\030\002 \002(\t" +
-      "\022\016\n\006values\030\003 \003(\002\022\r\n\005bound\030\004 \003(\002\022\021\n\tparti" +
-      "tion\030\005 \003(\005\022\r\n\005index\030\006 \003(\005\"+\n\tPartition\022\014" +
-      "\n\004name\030\001 \002(\t\022\020\n\010filename\030\002 \002(\t\"\311\002\n\023GribC" +
-      "ollectionIndex\022\014\n\004name\030\001 \002(\t\022\r\n\005files\030\002 " +
-      "\003(\t\022*\n\006groups\030\003 \003(\0132\032.gribCollectionInde" +
-      "x.Group\022.\n\006params\030\004 \003(\0132\036.gribCollection" +
-      "Index.Parameter\022\016\n\006center\030\005 \002(\005\022\021\n\tsubce" +
-      "nter\030\006 \002(\005\022\016\n\006master\030\007 \002(\005\022\r\n\005local\030\010 \002(" +
-      "\005\022\026\n\016genProcessType\030\n \001(\005\022\024\n\014genProcessI",
-      "d\030\013 \001(\005\022\025\n\rbackProcessId\030\014 \001(\005\0222\n\npartit" +
-      "ions\030\r \003(\0132\036.gribCollectionIndex.Partiti" +
-      "onB$\n\rucar.nc2.gribB\023GribCollectionProto"
+      "ibCollectionIndex\"P\n\006Record\022\016\n\006fileno\030\001 " +
+      "\002(\r\022\013\n\003pos\030\002 \002(\004\022\021\n\006bmsPos\030\004 \001(\004:\0010\022\026\n\007m" +
+      "issing\030\003 \001(\010:\005false\"P\n\017VariableRecords\022\017" +
+      "\n\007cdmHash\030\001 \002(\007\022,\n\007records\030\002 \003(\0132\033.gribC" +
+      "ollectionIndex.Record\"\277\003\n\010Variable\022\022\n\ndi" +
+      "scipline\030\001 \002(\005\022\020\n\010category\030\002 \002(\005\022\021\n\tpara" +
+      "meter\030\003 \002(\005\022\021\n\tlevelType\030\004 \002(\005\022\030\n\014interv" +
+      "alType\030\005 \001(\005:\002-1\022\017\n\007cdmHash\030\006 \002(\007\022\022\n\nrec" +
+      "ordsPos\030\007 \002(\004\022\022\n\nrecordsLen\030\010 \002(\r\022\017\n\007tim",
+      "eIdx\030\t \002(\r\022\023\n\007vertIdx\030\n \001(\005:\002-1\022\022\n\006ensId" +
+      "x\030\013 \001(\005:\002-1\022\032\n\016ensDerivedType\030\014 \001(\005:\002-1\022" +
+      "\027\n\017probabilityName\030\r \001(\t\022\033\n\017probabilityT" +
+      "ype\030\016 \001(\005:\002-1\022\026\n\007isLayer\030\017 \001(\010:\005false\022\017\n" +
+      "\007groupno\030\020 \003(\r\022\r\n\005varno\030\021 \003(\r\022\014\n\004flag\030\025 " +
+      "\003(\005\022\024\n\014tableVersion\030\022 \001(\r\022\020\n\010intvName\030\023 " +
+      "\001(\t\022\032\n\016genProcessType\030\024 \001(\005:\002-1\"U\n\005Coord" +
+      "\022\014\n\004code\030\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006values\030\003" +
+      " \003(\002\022\r\n\005bound\030\004 \003(\002\022\021\n\005index\030\005 \001(\005:\002-1\"6" +
+      "\n\tParameter\022\014\n\004name\030\001 \002(\t\022\014\n\004data\030\002 \003(\001\022",
+      "\r\n\005sdata\030\003 \001(\t\"\214\003\n\005Group\022\025\n\rpredefinedGd" +
+      "s\030\001 \001(\005\022\013\n\003gds\030\002 \001(\014\0220\n\tvariables\030\003 \003(\0132" +
+      "\035.gribCollectionIndex.Variable\022.\n\ntimeCo" +
+      "ords\030\004 \003(\0132\032.gribCollectionIndex.Coord\022." +
+      "\n\nvertCoords\030\005 \003(\0132\032.gribCollectionIndex" +
+      ".Coord\022-\n\tensCoords\030\006 \003(\0132\032.gribCollecti" +
+      "onIndex.Coord\022.\n\006params\030\007 \003(\0132\036.gribColl" +
+      "ectionIndex.Parameter\022\016\n\006fileno\030\010 \003(\005\022<\n" +
+      "\017timeCoordUnions\030\t \003(\0132#.gribCollectionI" +
+      "ndex.TimeCoordUnion\022\014\n\004name\030\n \001(\t\022\022\n\007gds",
+      "Hash\030\013 \001(\021:\0010\"m\n\016TimeCoordUnion\022\014\n\004code\030" +
+      "\001 \002(\005\022\014\n\004unit\030\002 \002(\t\022\016\n\006values\030\003 \003(\002\022\r\n\005b" +
+      "ound\030\004 \003(\002\022\021\n\tpartition\030\005 \003(\005\022\r\n\005index\030\006" +
+      " \003(\005\"+\n\tPartition\022\014\n\004name\030\001 \002(\t\022\020\n\010filen" +
+      "ame\030\002 \002(\t\"\311\002\n\023GribCollectionIndex\022\014\n\004nam" +
+      "e\030\001 \002(\t\022\r\n\005files\030\002 \003(\t\022*\n\006groups\030\003 \003(\0132\032" +
+      ".gribCollectionIndex.Group\022.\n\006params\030\004 \003" +
+      "(\0132\036.gribCollectionIndex.Parameter\022\016\n\006ce" +
+      "nter\030\005 \002(\005\022\021\n\tsubcenter\030\006 \002(\005\022\016\n\006master\030" +
+      "\007 \002(\005\022\r\n\005local\030\010 \002(\005\022\026\n\016genProcessType\030\n",
+      " \001(\005\022\024\n\014genProcessId\030\013 \001(\005\022\025\n\rbackProces" +
+      "sId\030\014 \001(\005\0222\n\npartitions\030\r \003(\0132\036.gribColl" +
+      "ectionIndex.PartitionB$\n\rucar.nc2.gribB\023" +
+      "GribCollectionProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -9769,7 +9827,7 @@ public final class GribCollectionProto {
           internal_static_gribCollectionIndex_Record_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Record_descriptor,
-              new java.lang.String[] { "Fileno", "Pos", "Missing", },
+              new java.lang.String[] { "Fileno", "Pos", "BmsPos", "Missing", },
               ucar.nc2.grib.GribCollectionProto.Record.class,
               ucar.nc2.grib.GribCollectionProto.Record.Builder.class);
           internal_static_gribCollectionIndex_VariableRecords_descriptor =
@@ -9785,7 +9843,7 @@ public final class GribCollectionProto {
           internal_static_gribCollectionIndex_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_gribCollectionIndex_Variable_descriptor,
-              new java.lang.String[] { "Discipline", "Category", "Parameter", "LevelType", "IntervalType", "CdmHash", "RecordsPos", "RecordsLen", "TimeIdx", "VertIdx", "EnsIdx", "EnsDerivedType", "ProbabilityName", "ProbabilityType", "IsLayer", "Groupno", "Varno", "TableVersion", "IntvName", "GenProcessType", "Flag", },
+              new java.lang.String[] { "Discipline", "Category", "Parameter", "LevelType", "IntervalType", "CdmHash", "RecordsPos", "RecordsLen", "TimeIdx", "VertIdx", "EnsIdx", "EnsDerivedType", "ProbabilityName", "ProbabilityType", "IsLayer", "Groupno", "Varno", "Flag", "TableVersion", "IntvName", "GenProcessType", },
               ucar.nc2.grib.GribCollectionProto.Variable.class,
               ucar.nc2.grib.GribCollectionProto.Variable.Builder.class);
           internal_static_gribCollectionIndex_Coord_descriptor =

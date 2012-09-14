@@ -25,9 +25,9 @@ import thredds.server.ncSubset.util.NcssRequestUtils;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
-import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -53,8 +53,8 @@ public class PointCollectionStreamTest {
 	public static List<Object[]> getTestParameters(){
 		
 		return Arrays.asList(new Object[][]{  
-				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
-				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
+				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }
+				//{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
 
 		});				
 	}
@@ -69,6 +69,8 @@ public class PointCollectionStreamTest {
 
 	@Before
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
+		
+		Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
 		
 		gridDataset = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		List<String> keys = new ArrayList<String>( vars.keySet());		

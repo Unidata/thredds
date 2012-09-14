@@ -136,6 +136,28 @@ public class Misc {
 
   }
 
+  /* private void printBytes(int n, Formatter fout) throws IOException {
+    long savePos = raf.getFilePointer();
+    long pos;
+    for (pos = savePos; pos < savePos + n - 9; pos += 10) {
+      fout.format("%d: ", pos);
+      _printBytes(10, fout);
+    }
+    if (pos < savePos + n) {
+      fout.format("%d: ", pos);
+      _printBytes((int) (savePos + n - pos), fout);
+    }
+    raf.seek(savePos);
+  }
+
+  private void _printBytes(int n, Formatter fout) throws IOException {
+    for (int i = 0; i < n; i++) {
+      byte b = (byte) raf.read();
+      int ub = (b < 0) ? b + 256 : b;
+      fout.format(ub + "%d(%b) ", ub, b);
+    }
+    fout.format("\n");
+  } */
 
   static public String showBytes(byte[] buff) {
     StringBuilder sbuff = new StringBuilder();

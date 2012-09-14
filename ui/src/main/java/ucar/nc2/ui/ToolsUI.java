@@ -77,16 +77,12 @@ import ucar.nc2.ui.util.*;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
-import thredds.wcs.v1_0_0_1.GetCapabilities;
-import thredds.wcs.v1_0_0_1.WcsException;
 import thredds.inventory.MController;
 import thredds.inventory.bdb.MetadataManager;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
@@ -138,6 +134,7 @@ public class ToolsUI extends JPanel {
   private Grib1CollectionPanel grib1RawPanel;
   private Grib1ReportPanel grib1ReportPanel;
   private Grib2ReportPanel grib2ReportPanel;
+  private Grib2DataPanel grib2DataPanel;
   private GribCodePanel gribCodePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1TablePanel grib1TablePanel;
@@ -293,6 +290,7 @@ public class ToolsUI extends JPanel {
     grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2collection"));
     grib2TabPane.addTab("GRIBindex", new JLabel("GRIBindex"));
     grib2TabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
+    grib2TabPane.addTab("GRIB2data", new JLabel("GRIB2data"));
     grib2TabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
     grib2TabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
     grib2TabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
@@ -518,6 +516,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("GRIB2collection")) {
       gribNewPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
       c = gribNewPanel;
+
+    } else if (title.equals("GRIB2data")) {
+      grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
+      c = grib2DataPanel;
 
     } else if (title.equals("GRIBindex")) {
       gribIdxPanel = new GribCollectionIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
@@ -1007,6 +1009,7 @@ public class ToolsUI extends JPanel {
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribFilesPanel != null) gribFilesPanel.save();
     if (gribNewPanel != null) gribNewPanel.save();
+    if (grib2DataPanel != null) grib2DataPanel.save();
     if (gribIdxPanel != null) gribIdxPanel.save();
     if (grib1RawPanel != null) grib1RawPanel.save();
     if (grib1ReportPanel != null) grib1ReportPanel.save();
@@ -2649,6 +2652,95 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////
+  // GRIB2 new
+  private class Grib2DataPanel extends OpPanel {
+    ucar.nc2.ui.Grib2DataPanel gribTable;
+
+    void closeOpenFiles() throws IOException {
+    }
+
+    Grib2DataPanel(PreferencesExt p) {
+      super(p, "collection:", true, false);
+      gribTable = new ucar.nc2.ui.Grib2DataPanel(prefs);
+      add(gribTable, BorderLayout.CENTER);
+
+      gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("openGrib2n")) {
+            String collectionName = (String) e.getNewValue();
+            openGrib2n(collectionName);
+          }
+        }
+      });
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          gribTable.checkProblems(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+
+      AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+      writeButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            if (!gribTable.writeIndex(f)) return;
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(writeButton);
+    }
+
+    void setCollection(String collection) {
+      if (process(collection)) {
+        if (!defer) cb.addItem(collection);
+      }
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        gribTable.setCollection(command);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      gribTable.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
   private class GribCollectionIndexPanel extends OpPanel {
     ucar.nc2.ui.GribCollectionIndexPanel gribTable;
 
@@ -2852,6 +2944,8 @@ public class ToolsUI extends JPanel {
   private class Grib2ReportPanel extends OpPanel {
     ucar.nc2.ui.Grib2ReportPanel gribReport;
     boolean useIndex = true;
+    boolean eachFile = false;
+    boolean extra = false;
     JComboBox reports;
 
     Grib2ReportPanel(PreferencesExt p) {
@@ -2871,6 +2965,26 @@ public class ToolsUI extends JPanel {
       useIndexButt.putValue(BAMutil.STATE, useIndex);
       BAMutil.setActionProperties(useIndexButt, "Doit", "use Index", true, 'C', -1);
       BAMutil.addActionToContainer(buttPanel, useIndexButt);
+
+      AbstractAction eachFileButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          eachFile = state.booleanValue();
+        }
+      };
+      eachFileButt.putValue(BAMutil.STATE, eachFile);
+      BAMutil.setActionProperties(eachFileButt, "Doit", "report on each file", true, 'E', -1);
+      BAMutil.addActionToContainer(buttPanel, eachFileButt);
+
+      AbstractAction extraButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          extra = state.booleanValue();
+        }
+      };
+      extraButt.putValue(BAMutil.STATE, extra);
+      BAMutil.setActionProperties(extraButt, "Doit", "extra info", true, 'X', -1);
+      BAMutil.addActionToContainer(buttPanel, extraButt);
 
       AbstractAction doitButt = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -2894,7 +3008,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribReport.doReport(command, useIndex, (ucar.nc2.ui.Grib2ReportPanel.Report) reports.getSelectedItem());
+        gribReport.doReport(command, useIndex, eachFile, extra, (ucar.nc2.ui.Grib2ReportPanel.Report) reports.getSelectedItem());
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());
