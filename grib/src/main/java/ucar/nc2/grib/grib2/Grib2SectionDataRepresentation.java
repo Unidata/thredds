@@ -17,12 +17,13 @@ public class Grib2SectionDataRepresentation {
   private final long startingPosition;
   private final int dataPoints;
   private final int dataTemplate;
+  private int length; // dont have length in index
 
   public Grib2SectionDataRepresentation(RandomAccessFile raf) throws IOException {
     startingPosition = raf.getFilePointer();
 
     // octets 1-4 (Length of DRS)
-    int length = GribNumbers.int4(raf);
+    length = GribNumbers.int4(raf);
 
    // octet 5
     int section = raf.read();
@@ -55,6 +56,16 @@ public class Grib2SectionDataRepresentation {
 
   public long getStartingPosition() {
     return startingPosition;
+  }
+
+  // debug
+  public long getLength(RandomAccessFile raf) throws IOException {
+    if (length == 0) {
+      raf.seek(startingPosition);
+      length = GribNumbers.int4(raf);
+
+    }
+    return length;
   }
 
   public Grib2Drs getDrs(RandomAccessFile raf) throws IOException {

@@ -1,0 +1,80 @@
+netcdf dods://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR_05JUL2012_0700_L2B_OLR.h5 {
+ dimensions:
+   GeoX = 1400;
+   GeoY = 1400;
+   time = 1;
+variables:
+   int GeoX(GeoX=1400);
+     :long_name = "x-coordinate in Cartesian system";
+     :axis = "X";
+     :_lastModified = "1970-01-03T00:34:45.352Z";
+   int GeoY(GeoY=1400);
+     :long_name = "y-coordinate in Cartesian system";
+     :axis = "Y";
+     :_lastModified = "1970-01-03T00:35:02.352Z";
+   float time(time=1);
+     :units = "hours since 2000-01-01 00:00:00";
+     :_lastModified = "1970-01-02T00:02:48.352Z";
+   short Latitude(GeoY=1400, GeoX=1400);
+     :_CoordinateAxes = "GeoY GeoX ";
+   short Longitude(GeoY=1400, GeoX=1400);
+     :_CoordinateAxes = "GeoY GeoX ";
+   float OLR(time=1, GeoY=1400, GeoX=1400);
+     :_CoordinateAxes = "time GeoY GeoX ";
+ :/Science_Data/Geolocation_Information/Latitude.scale_factor = 0.01f; // float
+ :/Science_Data/Geolocation_Information/Latitude.units = "degrees_north";
+ :/Science_Data/Geolocation_Information/Latitude._FillValue = 32767S; // short
+ :/Science_Data/Geolocation_Information/Latitude.standard_name = "latitude";
+ :/Science_Data/Geolocation_Information/Latitude.add_offset = 0.0f; // float
+ :/Science_Data/Geolocation_Information/Latitude._lastModified = "1970-01-03T00:57:52.352Z";
+ :/Science_Data/Geolocation_Information/Latitude._ChunkSize = 1400, 1400; // int
+ :/Science_Data/Geolocation_Information/Longitude._FillValue = 32767S; // short
+ :/Science_Data/Geolocation_Information/Longitude.scale_factor = 0.01f; // float
+ :/Science_Data/Geolocation_Information/Longitude.units = "degrees_east";
+ :/Science_Data/Geolocation_Information/Longitude.add_offset = 0.0f; // float
+ :/Science_Data/Geolocation_Information/Longitude.standard_name = "longitude";
+ :/Science_Data/Geolocation_Information/Longitude._lastModified = "1970-01-03T00:57:35.352Z";
+ :/Science_Data/Geolocation_Information/Longitude._ChunkSize = 1400, 1400; // int
+ :/Science_Data/Geophysical_Parameter/OLR.coordinates = "time Latitude Longitude";
+ :/Science_Data/Geophysical_Parameter/OLR.long_name = "Outgoing Longwave Radiation";
+ :/Science_Data/Geophysical_Parameter/OLR.standard_name = "Outgoing Longwave Radiation";
+ :/Science_Data/Geophysical_Parameter/OLR._FillValue = -999.0f; // float
+ :/Science_Data/Geophysical_Parameter/OLR.units = "W.m-2";
+ :/Science_Data/Geophysical_Parameter/OLR._lastModified = "1970-01-03T01:58:18.352Z";
+ :/Science_Data/Geophysical_Parameter/OLR._ChunkSize = 1, 936, 1400; // int
+ :institute = "Space Applications Center, ISRO";
+ :source = "Very High Resolution Radiometer (VHRR)";
+ :conventions = "CF-1.6";
+ :title = "K1VHR_05JUL2012_0700_L2B";
+ :Product_Metadata/Unique_Id = "K1VHR_05JUL2012_0700";
+ :Product_Metadata/Product_Creation_Time = "2012-07-08T13:05:32";
+ :Product_Metadata/Output_Format = "hdf5-1.8.8";
+ :Product_Metadata/HDF_Product_File_Name = "K1VHR_05JUL2012_0700_L2B_OLR.h5";
+ :Product_Metadata/Station_Id = "BES";
+ :Product_Metadata/Ground_Station = "BES,SAC/ISRO,Ahmedabad,INDIA.";
+ :Product_Metadata/Servo_Correction = "X";
+ :Product_Metadata/Detector_Normalization = "Y";
+ :Product_Metadata/Shear_Correction = "X";
+ :Product_Metadata/Inoperable_Detectors = "Y";
+ :Product_Metadata/Dropped_Lines = "Y";
+ :Product_Metadata/EW_Count_Variation = "X";
+ :Product_Metadata/Product_Type = "GEOPHY";
+ :Product_Metadata/Sensor_Id = "VHR";
+ :Product_Metadata/Sensor_Name = "VHRR";
+ :Product_Metadata/Acquisition_Date = "05JUL2012";
+ :Product_Metadata/Acquisition_Time_in_GMT = "0700";
+ :Product_Metadata/Processing_Level = "L2B";
+ :Product_Metadata/Satellite_Name = "KALPANA-1";
+ :Product_Metadata/Location_of_Satellite(degrees) = 74.0f; // float
+ :Product_Metadata/Imaging_Mode = "NORMAL FRAME";
+ :Product_Metadata/Nominal_Altitude(km) = 36000.0f; // float
+ :Product_Metadata/Predicted_Altitude(km) = 35793.98f; // float
+ :Product_Metadata/Black_Body_Strategy_Used_for_Thermal_IR_Band = "Current Black Body Line";
+ :Product_Metadata/Nominal_Pixel_Stepping_Angle(degrees) = 0.012707; // double
+ :Product_Metadata/Pixel_Stepping_Angle(degrees) = 0.012707; // double
+ :Product_Metadata/Nominal_Line_Stepping_Angle(degrees) = 0.012784; // double
+ :Product_Metadata/Line_Stepping_Angle(degrees) = 0.012784; // double
+ :Product_Metadata/Field_of_View(degrees) = 19.82292; // double
+ :Product_Metadata/Nominal_Central_Point_Coordinates(degrees)_Latitude_Longitude = 0.0, 74.0; // double
+ :Product_Metadata/Predicted_Central_Point_Coordinates(degrees)_Latitude_Longitude = 1.726647, 73.899302; // double
+}

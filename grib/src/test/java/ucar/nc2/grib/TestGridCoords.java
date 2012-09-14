@@ -19,6 +19,7 @@ public class TestGridCoords {
   @Test
   public void testCoordExtract() throws IOException {
     ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir+"ft/grid/grib2/TestCoordExtract.grib2");
+    System.out.printf("%s%n", dataset.getLocation());
 
     GeoGrid grid = dataset.findGridByName("Convective_inhibition_surface");
     assert null != grid;
@@ -26,6 +27,7 @@ public class TestGridCoords {
     assert null != gcs;
     assert grid.getRank() == 3;
 
+    System.out.printf("%s%n", gcs);
 
     int result[] = gcs.findXYindexFromLatLon(41.3669944444, -91.140575, null);
 

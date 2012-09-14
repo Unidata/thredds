@@ -90,7 +90,7 @@ public class Grib2DataPanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    param2BeanTable = new BeanTableSorted(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
+    param2BeanTable = new BeanTableSorted(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false, "UniquePDSVariables", "from Grib2Input.getRecords()");
     param2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
@@ -113,7 +113,7 @@ public class Grib2DataPanel extends JPanel {
       }
     });
 
-    record2BeanTable = new BeanTableSorted(Grib2RecordBean.class, (PreferencesExt) prefs.node("Record2Bean"), false, "Grib2Record", "from Grib2Input.getRecords()");
+    record2BeanTable = new BeanTableSorted(Grib2RecordBean.class, (PreferencesExt) prefs.node("Record2Bean"), false, "DataRepresentation", "from Grib2Input.getRecords()");
     record2BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Grib2RecordBean pb = (Grib2RecordBean) record2BeanTable.getSelectedBean();
@@ -219,6 +219,23 @@ public class Grib2DataPanel extends JPanel {
         List beans = record2BeanTable.getSelectedBeans();
         if (beans.size() > 0)
           writeToFile(beans);
+      }
+    });
+
+    varPopup.addAction("Show Bitmap", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          try {
+            showBitmap(bean, f);
+          } catch (IOException e1) {
+            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          }
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
       }
     });
 
@@ -730,6 +747,35 @@ public class Grib2DataPanel extends JPanel {
       f.format("%f%n", fd);
   }
 
+  void showBitmap(Grib2RecordBean bean1, Formatter f) throws IOException {
+    byte[] bitmap;
+    ucar.unidata.io.RandomAccessFile raf = null;
+    try {
+      raf = bean1.getRaf();
+      Grib2SectionBitMap bms = bean1.gr.getBitmapSection();
+      f.format("%s%n", bms);
+      bitmap = bms.getBitmap(raf);
+    } finally {
+      if (raf != null) raf.close();
+    }
+
+    if (bitmap == null) {
+      f.format(" no bitmap%n");
+      return;
+    }
+
+    int count = 0;
+    int bits = 0;
+    for (byte b : bitmap) {
+      short s = DataType.unsignedByteToShort(b);
+      bits += Long.bitCount(s);
+      f.format("%8s", Long.toBinaryString(s));
+      if (++count % 10 == 0)
+        f.format("%n");
+    }
+    f.format("%n%n#bits on = %d%n", bits);
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /*
@@ -1066,6 +1112,7 @@ public class Grib2DataPanel extends JPanel {
     Grib2Pds pds;
     Grib2Drs drs;
     Grib2SectionData dataSection;
+    long drsLength;
 
     public Grib2RecordBean() {
     }
@@ -1073,7 +1120,9 @@ public class Grib2DataPanel extends JPanel {
     public Grib2RecordBean(Grib2Record m, ucar.unidata.io.RandomAccessFile raf) throws IOException {
       this.gr = m;
       this.pds = gr.getPDSsection().getPDS();
-      this.drs = gr.getDataRepresentationSection().getDrs(raf);
+      Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
+      this.drs = drss.getDrs(raf);
+      this.drsLength = drss.getLength(raf);
       this.dataSection = gr.getDataSection();
     }
 
@@ -1089,7 +1138,11 @@ public class Grib2DataPanel extends JPanel {
       return gr.getDataRepresentationSection().getDataPoints();
     }
 
-    public int getLength() {
+    public long getDrsLength() {
+      return drsLength;
+    }
+
+    public int getDataLength() {
       return dataSection.getMsgLength();
     }
 
@@ -1106,7 +1159,7 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public float getAvgBits() {
-      float len = getLength();
+      float len = getDataLength();
       int n = getNDataPoints();
       return len * 8 / n;
     }
@@ -1115,8 +1168,12 @@ public class Grib2DataPanel extends JPanel {
       return drs.hashCode();
     }
 
-    public boolean isBitMap() {
-      return gr.getBitmapSection().hasBitMap();
+    public int getBitMap() {
+      return gr.getBitmapSection().getBitMapIndicator();
+    }
+
+    public boolean getBitMapReplaced() {
+      return gr.isBmsReplaced();
     }
 
     public final String getFile() {
@@ -1180,11 +1237,8 @@ public class Grib2DataPanel extends JPanel {
     }
 
     float[] readData() throws IOException {
-      int fileno = gr.getFile();
-      MFile mfile = fileList.get(fileno);
-      ucar.unidata.io.RandomAccessFile raf = null;
+      ucar.unidata.io.RandomAccessFile raf = getRaf();
       try {
-        raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
         raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
         return gr.readData(raf);
       } finally {
@@ -1192,6 +1246,13 @@ public class Grib2DataPanel extends JPanel {
           raf.close();
       }
     }
+
+    ucar.unidata.io.RandomAccessFile getRaf() throws IOException {
+      int fileno = gr.getFile();
+      MFile mfile = fileList.get(fileno);
+      return new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r");
+    }
+
 
   }
 

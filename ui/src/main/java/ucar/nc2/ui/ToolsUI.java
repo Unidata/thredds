@@ -2944,6 +2944,8 @@ public class ToolsUI extends JPanel {
   private class Grib2ReportPanel extends OpPanel {
     ucar.nc2.ui.Grib2ReportPanel gribReport;
     boolean useIndex = true;
+    boolean eachFile = false;
+    boolean extra = false;
     JComboBox reports;
 
     Grib2ReportPanel(PreferencesExt p) {
@@ -2963,6 +2965,26 @@ public class ToolsUI extends JPanel {
       useIndexButt.putValue(BAMutil.STATE, useIndex);
       BAMutil.setActionProperties(useIndexButt, "Doit", "use Index", true, 'C', -1);
       BAMutil.addActionToContainer(buttPanel, useIndexButt);
+
+      AbstractAction eachFileButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          eachFile = state.booleanValue();
+        }
+      };
+      eachFileButt.putValue(BAMutil.STATE, eachFile);
+      BAMutil.setActionProperties(eachFileButt, "Doit", "report on each file", true, 'E', -1);
+      BAMutil.addActionToContainer(buttPanel, eachFileButt);
+
+      AbstractAction extraButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          extra = state.booleanValue();
+        }
+      };
+      extraButt.putValue(BAMutil.STATE, extra);
+      BAMutil.setActionProperties(extraButt, "Doit", "extra info", true, 'X', -1);
+      BAMutil.addActionToContainer(buttPanel, extraButt);
 
       AbstractAction doitButt = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -2986,7 +3008,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribReport.doReport(command, useIndex, (ucar.nc2.ui.Grib2ReportPanel.Report) reports.getSelectedItem());
+        gribReport.doReport(command, useIndex, eachFile, extra, (ucar.nc2.ui.Grib2ReportPanel.Report) reports.getSelectedItem());
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());

@@ -232,6 +232,8 @@ void setcontent()
 
 public int execute() throws HTTPException
 {
+    if (closed)
+        throw new HTTPException("Method instance is closed");
     if (executed)
         throw new HTTPException("Method instance already executed");
     if (legalurl == null)
@@ -302,15 +304,6 @@ public void close()
     session.removeMethod(this);
 }
 
-public void consumeContent()
-{
-    //try {
-    //InputStream st = method.getResponseBodyAsStream();
-    //while((st.skip(10000) >= 0));
-    method.abort();
-    //} catch (IOException e) {}
-}
-
 public void setContext(HttpState cxt)
 {
     session.setContext(cxt);
@@ -363,7 +356,10 @@ public InputStream getResponseAsStream()
 {
     if (closed)
         return null;
-    assert methodstream == null : "attempt to get method stream twice";
+    if(methodstream != null) {
+        LOG.error("HTTPMethod.getResponseBodyAsStream: Getting method stream twice");
+        return methodstream; // caller's problem
+    }
     try {
         if (method == null) return null;
         methodstream = new HTTPMethodStream(method.getResponseBodyAsStream(),this);
