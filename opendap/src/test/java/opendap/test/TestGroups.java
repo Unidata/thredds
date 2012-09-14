@@ -101,7 +101,7 @@ public class TestGroups extends UnitTestCommon
     if (true) {
       results.add(new Result("External user provided group example",
               "http://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR_05JUL2012_0700_L2B_OLR.h5",
-              threddsRoot + "opendap/src/test/data/baselinemisg/K1VHR_05JUL2012_0700_L2B_OLR.h5.cdl"));
+              threddsRoot + "/opendap/src/test/data/baselinemisc/K1VHR_05JUL2012_0700_L2B_OLR.h5.cdl"));
     }
 
     for (Result result : results) {
