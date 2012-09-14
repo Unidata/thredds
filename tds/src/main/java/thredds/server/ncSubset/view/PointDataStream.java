@@ -43,13 +43,12 @@ public final class PointDataStream {
 
 		}				
 		
-		//Keep this restriction for all requests as we don't figure out how to write variables with different vertical levels in netcdf files 
-		//if(vertCoord!=null){//Only one vertical level requested --> All variables must have the same vertical dimension			
-			if(groupedVars.size() > 1){
-				//throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. For vertical subsetting only requests on variables with same vertical levels are supported.");
-				throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. Only requests on variables with same vertical levels are supported.");
-			}
+		//Keep this restriction for all requests as we don't figure out how to write variables with different vertical levels in netcdf files 		
+		//if(groupedVars.size() > 1){
+			//throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. For vertical subsetting only requests on variables with same vertical levels are supported.");
+		//	throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. Only requests on variables with same vertical levels are supported.");
 		//}
+
 		
 			
 			
@@ -58,15 +57,21 @@ public final class PointDataStream {
 		
 		if(pointDataWriter.header(groupedVars, gds, wDates, getDateUnit(gridForTimeUnits) , point)){ 
 			//loop over wDates
-			CalendarDate date;
-			Iterator<CalendarDate> it = wDates.iterator();
-			boolean pointRead =true;
-			while( pointRead && it.hasNext() ){
-				date = it.next();
-				pointRead = pointDataWriter.write(groupedVars, gds, date, point, vertCoord);
-			}
+//			CalendarDate date;
+//			Iterator<CalendarDate> it = wDates.iterator();
+//			boolean pointRead =true;
+//			while( pointRead && it.hasNext() ){
+//				date = it.next();
+//				pointRead = pointDataWriter.write(groupedVars, gds, date, point, vertCoord);
+//			}
 			
-			allDone = pointDataWriter.trailer() && pointRead;
+			//Changing write method in PointDataWriters. Now they will get all the wanted dates and all the grouped variables by vert. levels
+			//so they can iterate over time (NetCDF and XML) or over variables (csv)
+			boolean allPointsRead = false;
+			allPointsRead = pointDataWriter.write(groupedVars, gds, wDates, point, vertCoord);
+			
+			//allDone = pointDataWriter.trailer() && pointRead;
+			allDone = pointDataWriter.trailer() && allPointsRead;
 		}
 		return allDone;
 	}

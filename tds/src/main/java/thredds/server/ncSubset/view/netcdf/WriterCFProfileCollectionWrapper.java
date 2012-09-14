@@ -96,7 +96,8 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 				CoordinateAxis1D zAxis = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();			
 				String profileName = NO_VERT_LEVEL;
 				EarthLocation earthLocation=null;			
-
+				Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
+				
 				if(zAxis == null){
 					//Write no vert levels
 					StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup );		
@@ -126,7 +127,7 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 							earthLocation = new EarthLocationImpl(point.getLatitude(), point.getLongitude(), Double.NaN );
 						}					
 					}
-					Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
+					
 					writerCFProfileCollection.writeRecord(profileName, timeCoordValue, date, earthLocation , sdata);					
 								
 				}else{
@@ -144,7 +145,7 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 						//The zAxis was added to the variables and we need a structure data that contains z-levels  
 						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis);		
 						//sdata.findMember("date").getDataArray().setObject(0, date.toString());
-						Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
+						
 						sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
 						sdata.findMember(zAxis.getShortName()).getDataArray().setDouble(0, zAxis.getCoordValues()[vertCoordsIndex]  );
 						vertCoordsIndex++;

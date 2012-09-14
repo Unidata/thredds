@@ -52,11 +52,11 @@ public final class WriterCFPointCollectionWrapper implements CFPointWriterWrappe
     	atts.add(new Attribute( CDM.TITLE,  "Extract Points data from Grid file "+ gridDataset.getLocationURI()) );   		    		    	
 
     	// for now, we only have one point = one station
-    	String stnName = "GridPoint";
-    	String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
-    	ucar.unidata.geoloc.Station s = new ucar.unidata.geoloc.StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
-    	List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
-    	stnList.add(s);
+    	//String stnName = "GridPoint";
+    	//String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
+    	//ucar.unidata.geoloc.Station s = new ucar.unidata.geoloc.StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
+    	//List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
+    	//stnList.add(s);
     	
     	NetcdfDataset ncfile = (NetcdfDataset) gridDataset.getNetcdfFile(); // fake-arino
     	List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);    	

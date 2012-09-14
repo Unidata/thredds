@@ -58,6 +58,10 @@ public final class CFPointWriterWrapperFactory {
 			return WriterCFProfileCollectionWrapper.createWrapper(filePath, atts);
 		}
 		
+		if (featureType == CF.FeatureType.timeSeriesProfile ) {
+			return WriterCFTimeSeriesProfileCollectionWrapper.createWrapper(filePath, atts);
+		}		
+		
 		throw new UnsupportedOperationException("Unsupported FeatureType: "+featureType.name());
 	}
 }

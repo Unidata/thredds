@@ -130,8 +130,9 @@ class PointDataController extends AbstratNcssDataRequestController{
 		}	
 	}
 	
-	if(!sameVertCoord)
-		throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Only Grid as point requests on variables with same vertical levels are supported.");
+	//Let's allow different vertical levels...
+	//if(!sameVertCoord)
+	//	throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Only Grid as point requests on variables with same vertical levels are supported.");
 		
 	}
 	
