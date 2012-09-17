@@ -104,7 +104,7 @@ public final class NcssRequestUtils implements ApplicationContextAware{
         
         //And wantedVars must be in the dataset 
         for(String var : wantedVars){        	
-        	VariableEnhanced ve = gds.findGridDatatype(var).getVariable();
+        	VariableEnhanced ve = gds.findGridDatatype(var).getVariable();        	
         	/*List<Dimension> lDims =ve.getDimensions();
         	StringBuilder dims = new StringBuilder("");
         	for(Dimension d: lDims){
@@ -112,6 +112,7 @@ public final class NcssRequestUtils implements ApplicationContextAware{
         	}*/
             String dims = ""; // always scalar ????
             VariableSimpleIF want = new VariableDS( ncfile, null, null, ve.getShortName(), ve.getDataType(), dims, ve.getUnitsString(), ve.getDescription());
+            
             varList.add( want);        	
         }
 		
