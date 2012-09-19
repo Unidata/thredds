@@ -659,16 +659,19 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           parentGroup = getRootGroup();
       if(RC.getUseGroups()) {
           // If the shortname has '/' in it, then we need to insert
-          // this variable into the proper group and rename it
-          String name = v.getShortName();
-          int sindex = name.indexOf('/');
-          if(sindex >= 0) {
-              assert(parentGroup != null);
-              Group g = parentGroup.makeRelativeGroup(this,name,true/*ignorelast*/);
-              parentGroup = g;
-              // change variable's name
-              name = name.substring(name.lastIndexOf('/')+1);
-              v.setName(name);   // change name
+          // this variable into the proper group and rename it. However,
+          // if this variable is within a structure, we cannot do it.
+          if(v.getParentStructure() == null)  {
+              String name = v.getShortName();
+              int sindex = name.indexOf('/');
+              if(sindex >= 0) {
+                  assert(parentGroup != null);
+                  Group g = parentGroup.makeRelativeGroup(this,name,true/*ignorelast*/);
+                  parentGroup = g;
+                  // change variable's name
+                  name = name.substring(name.lastIndexOf('/')+1);
+                  v.setName(name);   // change name
+              }
           }
       }
       return parentGroup;
