@@ -66,8 +66,11 @@ public class TestGroups extends UnitTestCommon
   public void
   testGroup() throws Exception
   {
-    boolean oldusegroups = RC.getUseGroups();
-    RC.set("ucar.nc2.cdm.usegroups","true");
+    boolean usegroups = RC.getUseGroups();
+
+    if(!usegroups) {
+        assertTrue("TestGroups: Group Support not enabled",false);
+    }
 
     // Check if we are running against motherlode or localhost, or what.
     String testserver = System.getProperty("testserver");
@@ -100,19 +103,14 @@ public class TestGroups extends UnitTestCommon
               "http://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR_05JUL2012_0700_L2B_OLR.h5",
               "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/K1VHR_05JUL2012_0700_L2B_OLR.h5.cdl"));
     }
-    try {
-
-        // Run first with usegroups == true
-        System.out.println("TestGroups: usegroups=true");
-        for (Result result : results) {
-          System.out.println("url: " + result.url);
-          boolean pass = process1(result);
-          if (!pass) {
-            assertTrue("Testing " + result.title, pass);
-          }
-        }
-    } finally {
-        RC.set("ucar.nc2.cdm.usegroups",""+oldusegroups);
+    // Run  with usegroups == true
+    System.out.println("TestGroups:");
+    for (Result result : results) {
+      System.out.println("url: " + result.url);
+      boolean pass = process1(result);
+      if (!pass) {
+        assertTrue("Testing " + result.title, pass);
+      }
     }
   }
 
