@@ -66,7 +66,7 @@ static public boolean getVerifyServer()
 static public boolean getAllowSelfSigned()
   {if(!initialized) RC.initialize(); return allowSelfSigned;}
 
-static protected void set(String key, String value)
+static public void set(String key, String value)
 {
     // TODO: think about the rc properties naming hierarchy
     assert(key != null && value != null);
