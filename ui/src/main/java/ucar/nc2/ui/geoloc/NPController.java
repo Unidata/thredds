@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.beans.PropertyChangeListener;
 
 /**
- * An abstract superclass for Navigated Panel controllers
+ * A superclass for Navigated Panel controllers
  *
  * @author John Caron
  */

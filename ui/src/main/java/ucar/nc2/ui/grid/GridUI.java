@@ -33,6 +33,7 @@
 package ucar.nc2.ui.grid;
 
 import thredds.catalog.*;
+import ucar.nc2.ui.geoloc.ProjectionManager;
 import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.geoloc.NavigatedPanel;
 import ucar.nc2.ui.util.Renderer;
@@ -48,6 +49,7 @@ import ucar.nc2.ui.widget.ProgressMonitor;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.constants.FeatureType;
 
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.*;
@@ -99,7 +101,7 @@ public class GridUI extends JPanel {
   // private PrefPanel gridPP;
 
   // the various managers and dialog boxes
-  //private ProjectionManager projManager;
+  private ProjectionManager projManager;
   //private ColorScaleManager csManager;
   private IndependentWindow infoWindow = null;
   private IndependentWindow ncmlWindow = null;
@@ -121,7 +123,8 @@ public class GridUI extends JPanel {
   private AbstractAction showGridDatasetInfoAction;
   private AbstractAction showNetcdfDatasetAction;
   private AbstractAction minmaxHorizAction, minmaxLogAction, minmaxHoldAction;
-  private AbstractAction  fieldLoopAction, levelLoopAction, timeLoopAction;
+  private AbstractAction fieldLoopAction, levelLoopAction, timeLoopAction;
+  private AbstractAction chooseProjectionAction, saveCurrentProjectionAction;
 
   // state
   private boolean selected = false;
@@ -400,19 +403,18 @@ public class GridUI extends JPanel {
     */
 
       // Configure
-    /* chooseProjectionAction = new AbstractAction() {
+    chooseProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        getProjectionManager().show();
+        getProjectionManager().setVisible();
       }
     };
     BAMutil.setActionProperties( chooseProjectionAction, null, "Projection Manager...", false, 'P', 0);
-
 
     saveCurrentProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         getProjectionManager();
           // set the bounding box
-        ProjectionImpl proj = (ProjectionImpl) panz.getProjectionImpl().clone();
+        ProjectionImpl proj = panz.getProjectionImpl().constructCopy();
         proj.setDefaultMapArea( panz.getMapArea());
         //if (debug) System.out.println(" GV save projection "+ proj);
 
@@ -650,18 +652,18 @@ public class GridUI extends JPanel {
         }
       }
     });
-  }
+  } */
 
   public ProjectionManager getProjectionManager() {
     if (null != projManager)
       return projManager;
 
-    projManager = new ProjectionManager(topLevel.getRootPaneContainer(), store);
+    projManager = new ProjectionManager(parent, store);
     projManager.addPropertyChangeListener(  new java.beans.PropertyChangeListener() {
       public void propertyChange( java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("ProjectionImpl")) {
           ProjectionImpl p = (ProjectionImpl) e.getNewValue();
-          p = (ProjectionImpl) p.clone();
+          p = p.constructCopy();
           //System.out.println("UI: new Projection "+p);
           controller.setProjection( p);
         }
@@ -670,7 +672,7 @@ public class GridUI extends JPanel {
 
     return projManager;
   }
-  */
+
 
   private void makeUI(int defaultHeight) {
 
@@ -834,10 +836,10 @@ public class GridUI extends JPanel {
     BAMutil.addActionToMenu( toolbarMenu, navToolbarAction);
     BAMutil.addActionToMenu( toolbarMenu, moveToolbarAction);
 
-
-    /* BAMutil.addActionToMenu( configMenu, chooseColorScaleAction);
     BAMutil.addActionToMenu( configMenu, chooseProjectionAction);
     BAMutil.addActionToMenu( configMenu, saveCurrentProjectionAction);
+
+    /* BAMutil.addActionToMenu( configMenu, chooseColorScaleAction);
     BAMutil.addActionToMenu( configMenu, controller.dataProjectionAction);
     */
 

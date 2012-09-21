@@ -43,15 +43,11 @@ import javax.swing.*;
 import junit.framework.*;
 
 
-public class TestFieldInput extends TestCase {
+public class TestFieldInput {
   private static XMLStore xstore;
   private static PreferencesExt store;
 
   private Field tf, intf, d1, d2;
-
-  public TestFieldInput( String name) {
-    super(name);
-  }
 
   public void setUp() {
     try {
@@ -133,7 +129,7 @@ public class TestFieldInput extends TestCase {
     } catch (java.io.IOException e) {}
     store = xstore.getPreferences();
 
-    new TestFieldInput("TestFieldInput").testFieldInput();
+    new TestFieldInput().testFieldInput();
 
     JFrame frame = new JFrame("TestFieldInput");
     frame.addWindowListener(new WindowAdapter() {

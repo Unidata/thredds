@@ -1,6 +1,5 @@
-// $Id: JTableProjection.java.save 50 2006-07-12 16:30:06Z caron $
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -31,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.viewer.ui.geoloc;
+package ucar.nc2.ui.geoloc;
 
 import java.awt.Dimension;
 import java.io.*;
@@ -40,20 +39,20 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
+import ucar.nc2.util.ListenerManager;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.util.ListenerManager;
-import ucar.unidata.util.PersistentStore;
+import ucar.util.prefs.PreferencesExt;
 
 /**
  *  Consider this a private inner class of ProjectionManager.
  *
  * @author John Caron
- * @version $Id: JTableProjection.java.save 50 2006-07-12 16:30:06Z caron $
+ * @version revived /20/2012
  */
 
 public class JTableProjection extends JTable {
-  private PersistentStore store = null;
+  private PreferencesExt store = null;
   private ProjectionTableModel model = null;
   private ArrayList list;
   private boolean debug = false;
@@ -62,13 +61,13 @@ public class JTableProjection extends JTable {
 
   private static final String STORE_NAME = "ProjectionTableModel";
 
-  public JTableProjection( PersistentStore pstore) {
+  public JTableProjection( PreferencesExt pstore) {
     this.store = pstore;
 
     if (store == null)
       model = new ProjectionTableModel();
     else {
-      model = (ProjectionTableModel) store.get( STORE_NAME);
+      model = (ProjectionTableModel) store.getObject( STORE_NAME);
       if (model == null)
         model = new ProjectionTableModel();
     }
@@ -97,9 +96,9 @@ public class JTableProjection extends JTable {
     });
 
     // manage NewProjectionListener's
-    lm = new ucar.unidata.util.ListenerManager(
-        "ucar.unidata.view.geoloc.NewProjectionListener",
-        "ucar.unidata.view.geoloc.NewProjectionEvent",
+    lm = new ListenerManager(
+        "ucar.nc2.ui.geoloc.NewProjectionListener",
+        "ucar.nc2.ui.geoloc.NewProjectionEvent",
         "actionPerformed");
   }
 
@@ -160,7 +159,7 @@ public class JTableProjection extends JTable {
 
   public void storePersistentData() {
     if (store != null)
-      store.put( STORE_NAME, model);
+      store.putObject( STORE_NAME, model);
   }
 
   public void setMapArea( ProjectionRect bb) {
@@ -304,35 +303,4 @@ public class JTableProjection extends JTable {
     }
   }
 }
-
-/* Change History:
-   $Log: JTableProjection.java.save,v $
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:53  caron
-   import sources
-
-   Revision 1.3  2000/08/18 04:16:18  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.2  2000/05/16 23:02:00  caron
-   remove /r
-
-   Revision 1.1  1999/12/17 22:28:28  caron
-   oops-shouldnt have deleted
-
-   Revision 1.2  1999/06/03 01:44:29  caron
-   remove the damn controlMs
-
-   Revision 1.1.1.1  1999/06/02 20:36:02  caron
-   another reorg
-
-   Revision 1.1.1.1  1999/05/21 17:33:49  caron
-   startAgain
-
-# Revision 1.4  1999/03/16  16:57:59  caron
-# fix StationModel editing; add TopLevel
-#
-*/
 
