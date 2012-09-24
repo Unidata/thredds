@@ -32,7 +32,7 @@
 
 package ucar.nc2.time;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Describe
@@ -40,40 +40,69 @@ import junit.framework.TestCase;
  * @author caron
  * @since 11/8/11
  */
-public class TestCalendars extends TestCase {
+public class TestCalendars {
 
-    public TestCalendars( String name) {
-      super(name);
-    }
 
-    public void testEach() {
-      for (Calendar cal : Calendar.values())
-        testCalendar(cal, "calendar months since 1953-01-01");
-      for (Calendar cal : Calendar.values())
-        testCalendar(cal, "calendar years since 1953-01-01");
-    }
-
-    private void testCalendar(Calendar cal, String s) {
-
-      CalendarDateUnit cdu;
-      try {
-       cdu = CalendarDateUnit.withCalendar(cal, s);
-      } catch (Exception e) {
-        e.printStackTrace();
-        return;
-      }
-
-      System.out.printf("%s == %s unit (cal=%s)%n", s, cdu, cdu.getCalendar());
-
-      CalendarDate base = null;
-      for (int i=0; i<13; i++) {
-        CalendarDate cd = cdu.makeCalendarDate(i);
-        if (base == null) base = cd;
-        double diff = cd.getDifferenceInMsecs(base) * 1.0e-6;
-        System.out.printf(" %d %s == %s diff = %f%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd), diff);
-      }
-      System.out.printf("%n");
-    }
-
+  @Test
+  public void testEach() {
+    for (Calendar cal : Calendar.values())
+      testCalendar(cal, "calendar months since 1953-01-01");
+    for (Calendar cal : Calendar.values())
+      testCalendar(cal, "calendar years since 1953-01-01");
   }
+
+  private void testCalendar(Calendar cal, String s) {
+
+    CalendarDateUnit cdu;
+    try {
+      cdu = CalendarDateUnit.withCalendar(cal, s);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
+    System.out.printf("%s == %s unit (cal=%s)%n", s, cdu, cdu.getCalendar());
+
+    CalendarDate base = null;
+    for (int i = 0; i < 13; i++) {
+      CalendarDate cd = cdu.makeCalendarDate(i);
+      if (base == null) base = cd;
+      double diff = cd.getDifferenceInMsecs(base) * 1.0e-6;
+      System.out.printf(" %d %s == %s diff = %f%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd), diff);
+    }
+    System.out.printf("%n");
+  }
+
+
+  /*
+  double time(time) ;
+      time:units = "days since 2289-12-1" ;
+      time:calendar = "360_day" ;
+      time:axis = "T" ;
+      time:standard_name = "time" ;
+
+      {25200.0, 46800.0}
+
+      days since 2289-12-1
+      time =
+        {25200.0, 46800.0}
+
+       2358-11-30T00:00:00.000Z
+       2418-01-19T00:00:00.000Z
+
+   */
+
+  @Test
+  public void test360bug() {
+    CalendarDateUnit unit = CalendarDateUnit.withCalendar(Calendar.uniform30day, "days since 2289-12-1");
+    CalendarDate cd1 = unit.makeCalendarDate(25200.0);  // 70 years =  2359-12-1
+    CalendarDate cd2 = unit.makeCalendarDate(46800.0);  // 130 =       2419-12-1
+    System.out.printf("%s%n", unit);
+    System.out.printf("%s%n", cd1);
+    System.out.printf("%s%n", cd2);
+
+    assert cd1.toString().equals("2359-12-01T00:00:00.000Z");
+    assert cd2.toString().equals("2419-12-01T00:00:00.000Z");
+  }
+}
 

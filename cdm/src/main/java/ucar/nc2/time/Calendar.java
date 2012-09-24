@@ -37,6 +37,10 @@ public enum Calendar {
     return proleptic_gregorian;
   }
 
+  public static boolean isDefaultChronology(Calendar cal) {
+    return cal == null || cal.equals(Calendar.proleptic_gregorian) ||  cal.equals(Calendar.none) ;
+  }
+
   /**
    * Map of CF identifiers for calendar systems to joda-time Chronologies
    */

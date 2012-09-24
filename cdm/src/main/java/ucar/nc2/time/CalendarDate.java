@@ -51,6 +51,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
       base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC
 
     DateTime dt = new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, base);
+    if (!Calendar.isDefaultChronology(cal)) dt = dt.withChronology(Calendar.getChronology(cal));
     dt = dt.withZone(DateTimeZone.UTC);
     return new CalendarDate(cal, dt);
   }
@@ -65,6 +66,8 @@ public class CalendarDate implements Comparable<CalendarDate> {
     DateTime dt = new DateTime(year, 0, 0, hourOfDay, minuteOfHour, secondOfMinute, base);
     dt = dt.withZone(DateTimeZone.UTC);
     dt = dt.withDayOfYear(doy);
+    if (!Calendar.isDefaultChronology(cal)) dt = dt.withChronology(Calendar.getChronology(cal));
+
     return new CalendarDate(cal, dt);
   }
 
@@ -103,8 +106,6 @@ public class CalendarDate implements Comparable<CalendarDate> {
     Calendar cal = Calendar.get(calendarName);
     Chronology chronology = Calendar.getChronology(cal);
     DateTime dt = new DateTime(date, chronology);
-    //if (chronology != null)
-    //  dt = dt.toDateTime(chronology);
 
     return new CalendarDate(cal, dt);
   }

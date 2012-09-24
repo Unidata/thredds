@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>Upgrading To TDS 4.2</title>
+
+  <link href="../tds.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<h1><img alt="Unidata" src="../images/unidataLogo.png" align="middle" height="75" width="75"> Upgrading To TDS 4.3</h1>
+
+<hr>
+<h3>New Features </h3>
+<ul><li> <a href="reference/collections/FeatureCollections.html">FeatureCollection</a> type=GRIB&nbsp;</li>
+  <li>  Non-Julian <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/CalendarDateTime.html">Calendars</a> are supported</li>
+  <li> CF 1.6 discrete sampling (aka point observations)&nbsp;<a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/CFpointImplement.html">supported</a></li>
+  <li>Netcdf-4 files can be written if netCDF4 C library is <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html">installed</a> (still testing).</li>
+  <li>NetCDF Subset Service  <a href="../interfaceSpec/NetcdfSubsetService_4_3.html">improved</a></li>
+  <li>GRIB-1 and GRIB-2 complete <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html">rewrite</a>&nbsp;</li>
+  <li>Latest tables from WMO: BUFR, GRIB2, Common Codes&nbsp;</li>
+</ul>
+<h3>Release Engineering</h3>
+<ul>
+  <li> source is now on github, <a href="SourceCodeBuild.html">build</a> with maven</li>
+  <li>module refactor (grib, opendap, visad, common)</li>
+  <li>Upgrade to Spring 3, Protobuf 2.4, latest NcWMS&nbsp;</li>
+  <li>Refactor OPeNDAP, HTTP library &nbsp;</li>
+</ul>
+<h3>Configuration Changes</h3>
+<ul>
+  <li>The <strong>datasetFmrc</strong> element should be <a href="reference/collections/FmrcCollection.html">migrated</a> to a <strong>featureCollection</strong> type=FMRC.</li>
+  <li>Stop using NCML or FMRC aggregations on GRIB files. Only  <strong>featureCollection</strong> type=GRIB&nbsp;should be used. <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribFiles.html">Details</a>.</li>
+  <li>If you are loading GRIB tables at runtime, you must make some <a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/GribTables.html">changes</a>.</li>
+</ul>
+<hr>
+
+<address>
+<img src="../images/thread.png" alt="TDS" height="108" width="110">This document is maintained by Unidata and was
+last updated Sep 2012. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+support</a>.
+</address>
+
+</body>
+</html>
