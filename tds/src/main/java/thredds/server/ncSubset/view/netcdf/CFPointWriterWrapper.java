@@ -46,7 +46,7 @@ import ucar.unidata.geoloc.LatLonPoint;
  */
 public interface CFPointWriterWrapper {
 
-	public boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point); 
+	public boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point);
 	
 	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel);
 	

@@ -87,8 +87,8 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 				featureType = CF.FeatureType.timeSeries; 
 			}else{//Point collection
 				//featureType = CF.FeatureType.point;
-				featureType = CF.FeatureType.profile; //Is a time series profile!!
-				//featureType = CF.FeatureType.timeSeriesProfile;
+				//featureType = CF.FeatureType.profile; //Is a time series profile!!
+				featureType = CF.FeatureType.timeSeriesProfile;
 			}
 		}
 		

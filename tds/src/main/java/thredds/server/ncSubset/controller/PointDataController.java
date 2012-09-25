@@ -57,7 +57,8 @@ class PointDataController extends AbstratNcssDataRequestController{
 			
 			//Checking request format...			
 			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.POINT_REQUEST  );			
-			
+						
+						
 			LatLonPoint point = params.getLatLonPoint(); //Check if the point is within boundaries!!
 					
 			checkRequestedVars(gridDataset,  params);
@@ -172,6 +173,7 @@ class PointDataController extends AbstratNcssDataRequestController{
 				throw new VariableNotContainedInDatasetException("Variable: "+var+" is not contained in the requested dataset");
 			}			
 			
+		
 			CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();
 			String axisKey = null;
 			if(axis == null){

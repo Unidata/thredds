@@ -59,7 +59,7 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 		stnList.add(s);		
 
 		try {
-			writerCFTimeSeriesProfileCollection.writeHeader(stnList, groupedVars, gds, dateUnit);
+			writerCFTimeSeriesProfileCollection.writeHeader(stnList, groupedVars, gds, dateUnit, wDates.size() );
 			headerDone = true;
 		} catch (IOException ioe) {
 			log.error("Error writing header", ioe);
