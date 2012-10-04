@@ -104,5 +104,18 @@ public class TestCalendars {
     assert cd1.toString().equals("2359-12-01T00:00:00.000Z");
     assert cd2.toString().equals("2419-12-01T00:00:00.000Z");
   }
+
+  @Test
+  public void testCalendarToDate() {
+    CalendarDate cdate = CalendarDateFormatter.isoStringToCalendarDate(Calendar.uniform30day, "1968-01-30T15:00:00.000Z");
+    System.out.printf("%s%n", cdate);
+    System.out.printf("%s%n", cdate.getDateTime());
+    System.out.printf("%s%n", cdate.toDate());
+    System.out.printf("%s%n", CalendarDateFormatter.toDateTimeStringISO(cdate.toDate()));
+    System.out.printf("%s%n", CalendarDateFormatter.toDateString(cdate));
+
+    CalendarDateFormatter cdf = new CalendarDateFormatter("yyyyMMdd");
+    System.out.printf("%s%n", cdf.toString(cdate));
+  }
 }
 

@@ -7,8 +7,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.ZonedChronology;
 
-import java.util.Date;
-
 /**
  * A Calendar Date. Replaces java.util.Date.
  * Allows non-standard calendars. Default is Calendar.gregorian.
@@ -72,11 +70,12 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   /**
-   * Create CalendarDate from a java.util.Date
+   * Create CalendarDate from a java.util.Date.
+   * Uses standard Calendar.
    * @param date java.util.Date
    * @return CalendarDate
    */
-  public static CalendarDate of(Date date) {
+  public static CalendarDate of(java.util.Date date) {
     DateTime dt = new DateTime(date, DateTimeZone.UTC) ;
     return new CalendarDate(null, dt);
   }
@@ -99,15 +98,9 @@ public class CalendarDate implements Comparable<CalendarDate> {
    * @return  CalendarDate
    */
   public static CalendarDate parseISOformat(String calendarName, String isoDateString) {
-
-    // Date date = CalendarDateFormatter.parseISODate(isoDateString);
-	  Date date = CalendarDateFormatter.isoStringToDate(isoDateString);
-	  
     Calendar cal = Calendar.get(calendarName);
-    Chronology chronology = Calendar.getChronology(cal);
-    DateTime dt = new DateTime(date, chronology);
-
-    return new CalendarDate(cal, dt);
+    if (cal == null) cal = Calendar.getDefault();
+	  return CalendarDateFormatter.isoStringToCalendarDate(cal, isoDateString);
   }
 
   /**
@@ -265,7 +258,12 @@ public class CalendarDate implements Comparable<CalendarDate> {
     throw new UnsupportedOperationException("period units = "+period);
   }
 
-  public Date toDate() {
+  /**
+   * Get the equivilent java.util.Date
+   * @return the equivalent Date
+   * @deprecated does not handle non-standard Calendars
+   */
+  public java.util.Date toDate() {
     return dateTime.toDate();
   }
 

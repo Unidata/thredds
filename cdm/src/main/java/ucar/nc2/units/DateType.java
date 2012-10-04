@@ -152,8 +152,8 @@ public class DateType {
   }
 
   /**
-   * Get this as a Date
-   *
+   * Get this as a Date.
+   * Does not handle non-standard Calendars.
    * @deprecated use getCalendarDate()
    * @return Date
    */

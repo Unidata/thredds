@@ -114,12 +114,19 @@ public class CalendarDateRange {
   }
 
   ///////////////////////////////////////////////
-  // barf
+  /**
+   * Does not handle non-standard calendars
+   * @deprecated
+   */
   static public CalendarDateRange of(DateRange dr) {
     if (dr == null) return null;
     return CalendarDateRange.of( dr.getStart().getDate(), dr.getEnd().getDate());
   }
 
+  /**
+   * Does not handle non-standard calendars
+   * @deprecated
+   */
   public DateRange toDateRange() {
     return new DateRange(start.toDate(), end.toDate());
   }
