@@ -189,6 +189,10 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return false;
   }
 
+  /**
+   * Get the list of datetimes in this coordinate as CalendarDate objects.
+   * @return list of CalendarDates.
+   */
   public List<CalendarDate> getCalendarDates() {
      return cdates;
   }
@@ -341,6 +345,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   ///////////////////////////////////////////////////////
 
   /**
+   * Does not handle non-standard Calendars
    * @deprecated use getCalendarDates() to correctly interpret calendars
    */
   public java.util.Date[] getTimeDates() {
@@ -353,6 +358,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   }
 
   /**
+   * Does not handle non-standard Calendars
     * @deprecated use getCalendarDate()
     */
    public java.util.Date getTimeDate (int idx) {
@@ -360,6 +366,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    }
 
    /**
+    * Does not handle non-standard Calendars
    * @deprecated use getCalendarDateRange()
    */
   public DateRange getDateRange() {
@@ -368,6 +375,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   }
 
   /**
+   * Does not handle non-standard Calendars
    * @deprecated use findTimeIndexFromCalendarDate
    */
   public int findTimeIndexFromDate(java.util.Date d) {
@@ -375,6 +383,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   }
 
   /**
+   * Does not handle non-standard Calendars
    * @deprecated  use hasCalendarDate
    */
   public boolean hasTime(Date date) {
