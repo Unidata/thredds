@@ -82,6 +82,8 @@ public final class PointDataStream {
 	private DateUnit getDateUnit(GridDatatype grid) throws DateUnitException{
 		// Asuming all vars have the same time axis and it is 1D...
 		String timeUnitString = grid.getCoordinateSystem().getTimeAxis().getUnitsString();
+				
+		
 		DateUnit du =null;
 		
 		try{

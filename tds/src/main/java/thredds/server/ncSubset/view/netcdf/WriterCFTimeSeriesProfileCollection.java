@@ -103,7 +103,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 	}
 
 	void writeHeader(List<Station> stns, Map<String, List<String>> groupedVars,
-			GridDataset gds, DateUnit timeUnit) throws IOException{
+			GridDataset gds, DateUnit timeUnit, int timeDimLength) throws IOException{
 		//What I want here?
 
 		//--> Create dimensions and variables:
@@ -114,15 +114,16 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 		//  - station (we only have station but keep this dimension)
 
 		// add the dimensions
-		Dimension profile = writer.addUnlimitedDimension(PROFILE_DIM_NAME);
+		//Dimension profile = writer.addUnlimitedDimension(PROFILE_DIM_NAME);
+		Dimension profile = writer.addDimension(null,PROFILE_DIM_NAME, timeDimLength);
 		Dimension station = writer.addDimension(null, STATION_DIM_NAME, stns.size());
 
 		List<Dimension> stationDims = new ArrayList<Dimension>();
 		stationDims.add(station);
 
-		List<Dimension> dims = new ArrayList<Dimension>();
-		dims.add(profile);
+		List<Dimension> dims = new ArrayList<Dimension>();		
 		dims.add(station);	    	    
+		dims.add(profile);
 
 		//Vertical dimensions and variables
 		Set<String> keys = groupedVars.keySet();
@@ -132,7 +133,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 			CoordinateAxis1D zAxis = gds.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
 			List<Dimension> tempDims = new ArrayList<Dimension>();
 			tempDims.addAll(dims);
-			String coordinates ="time lon lat";
+			String coordinates ="time "+lonName+" "+latName;
 			if(zAxis != null){
 				Dimension d = writer.addDimension(null, zAxis.getShortName(), zAxis.getCoordValues().length);							
 				tempDims.add(d);    		
@@ -237,8 +238,9 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 			
 			//Variables without vert levels -> dimensions are (profile, station)
 			int[] origin = new int[2];
-			origin[0] = recno;
-			origin[1] = 0;			
+			origin[0] = 0;
+			origin[1] = recno;
+						
 			StructureMembers sm = sdata.getStructureMembers();
 
 			for( Member m : sm.getMembers() ){
@@ -284,9 +286,9 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 			// write the recno record
 			origin[0] = recno;
 
-			int[] tmp3D= new int[3];		
-			tmp3D[0] = recno;
-			tmp3D[1] = 0; //Station -> one single station!!
+			int[] tmp3D= new int[3];					
+			tmp3D[0] = 0; //Station -> one single station!!
+			tmp3D[1] = recno;
 			tmp3D[2] = vIndex;			
 			//writer.write(record, origin, sArray);
 			StructureMembers sm = sdata.getStructureMembers();
@@ -333,9 +335,9 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 		if(timeCoordValue != lastTimeCoordValue){
 			//Updates recno = profile!!!
 			recno++;
-			int[] tmp= new int[2];
-			tmp[0] = recno;
-			tmp[1] = 0; //Station -> one single station!!			
+			int[] tmp= new int[2];			
+			tmp[0] = 0; //Station -> one single station!!
+			tmp[1] = recno;
 			Double data = timeCoordValue;
 			lastTimeCoordValue = timeCoordValue;			
 			ArrayDouble.D2 tmpArray = new ArrayDouble.D2(1,1);
