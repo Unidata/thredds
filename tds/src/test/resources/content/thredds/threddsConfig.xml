@@ -38,6 +38,13 @@
      * -->
     <standardCssUrl>tds.css</standardCssUrl>
     <catalogCssUrl>tdsCat.css</catalogCssUrl>
+    
+    <!--
+    * The Google Analytics Tracking code you would like to use for the
+    * webpages associated with THREDDS. This will not track WMS or DAP
+    * requests for data, only browsing the catalog.
+    * -->
+    <googleTrackingCode></googleTrackingCode>
 
     <!--
      * The URLs (relative to "/thredds/") and alternate text for both
