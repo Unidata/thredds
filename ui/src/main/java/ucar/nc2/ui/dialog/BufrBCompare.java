@@ -106,16 +106,16 @@ public class BufrBCompare extends JDialog {
           //---- standard ----
           standard.setModel(new AbstractListModel() {
             String[] values = {
-              "WMO.14",
-              "WMO.15",
-              "WMO.16",
-              "Unidata-v13",
+              "WMO-v14",
+              "ours-v13",
               "ncep-v13",
               "ncep-v14",
               "ecmwf-v13",
               "ukmet-v13"
             };
+            @Override
             public int getSize() { return values.length; }
+            @Override
             public Object getElementAt(int i) { return values[i]; }
           });
           standard.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -178,6 +178,7 @@ public class BufrBCompare extends JDialog {
         //---- okButton ----
         okButton.setText("OK");
         okButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             okButtonActionPerformed(e);
           }
@@ -189,6 +190,7 @@ public class BufrBCompare extends JDialog {
         //---- cancelButton ----
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             cancelButtonActionPerformed(e);
           }

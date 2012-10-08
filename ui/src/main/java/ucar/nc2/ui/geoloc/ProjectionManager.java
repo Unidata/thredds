@@ -33,16 +33,12 @@
 package ucar.nc2.ui.geoloc;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.beans.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import javax.swing.*;
-import javax.swing.border.*;
-
-import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.util.ListenerManager;
 import ucar.util.prefs.PreferencesExt;
 
@@ -64,11 +60,11 @@ import ucar.unidata.geoloc.*;
  * @author John Caron
  * @version revived 9/20/2012
  */
-public class ProjectionManager extends JPanel {
+public class ProjectionManager {
 
   // the current list of projection classes: be nice to do this dynamically
   // what about reading all classes in ucar.unidata.gis/projection ? (glenn doesnt like)
-  private static String[] projClassName = {
+  private static String[] types = {
           "ucar.unidata.geoloc.projection.LatLonProjection",
           "ucar.unidata.geoloc.projection.AlbersEqualArea",
           "ucar.unidata.geoloc.projection.FlatEarth",
@@ -85,16 +81,19 @@ public class ProjectionManager extends JPanel {
 
   private ProjectionImpl current;
   private JFrame parent;
+  private PreferencesExt store;
   private boolean eventsOK = false;
 
   // GUI stuff that needs class scope
-  private JTableProjection projTable;
-  private NPController npViewControl;
-  private NavigatedPanel mapViewPanel;
+  // private JTableProjection projTable;
+  //private NPController npViewControl;
+  //private NavigatedPanel mapViewPanel;
   //private PersistentDataDialog viewDialog;
-  private NewProjectionDialog newDialog = null;
-  private ListenerManager lm;
+  //private NewProjectionDialog newDialog = null;
 
+  private Frame owner;
+  private NewProjectionDialog dialog; // created in JFormDesigner
+  private ListenerManager lm;
 
   // misc
   private boolean debug = false, debugBeans = false;
@@ -102,18 +101,9 @@ public class ProjectionManager extends JPanel {
   /**
    * default constructor
    */
-  public ProjectionManager() {
-    this(null, null);
-  }
-
-  /**
-   * constructor
-   *
-   * @param parent JFrame (application) or JApplet (applet)
-   * @param store  place to keep persistent data
-   */
-  public ProjectionManager(JFrame parent, PreferencesExt store) {
-    this.parent = parent;
+  public ProjectionManager(Frame owner, PreferencesExt store) {
+    this.owner = owner;
+    this.store = store;
 
     // manage NewProjectionListeners
     lm = new ListenerManager(
@@ -121,13 +111,8 @@ public class ProjectionManager extends JPanel {
             "java.beans.PropertyChangeEvent",
             "propertyChange");
 
-    // here's where the map will be drawn: but cant be changed/edited
-    npViewControl = new NPController();
-    mapViewPanel = npViewControl.getNavigatedPanel();
-    mapViewPanel.setPreferredSize(new Dimension(250, 250));
-    mapViewPanel.setToolTipText("shows the default Zoom of the current/working Projection");
-    mapViewPanel.setChangeable(false);
 
+    /*
     // the actual list is a JTable subclass
     projTable = new JTableProjection(store);
 
@@ -157,7 +142,7 @@ public class ProjectionManager extends JPanel {
       projTable.setCurrentProjection(current);
     }
 
-    /* listen for new working Projections from projTable */
+    // listen for new working Projections from projTable
     projTable.addNewProjectionListener(new NewProjectionListener() {
       public void actionPerformed(NewProjectionEvent e) {
         if (e.getProjection() != null) {
@@ -165,26 +150,113 @@ public class ProjectionManager extends JPanel {
           setWorkingProjection(e.getProjection());
         }
       }
-    });
+    });  */
 
     eventsOK = true;
   }
 
-  //// ManagerBean methods
 
-  /**
-   * get the name of this manager to put in a menu
-   */
-  public String getManagerName() {
-    return "Projection Manager";
-  }
+  /* void makeUI() {  // LOOK replace with JFormDesigner
 
-  /**
-   * Get the Class type of the objects managed; must implement Serializable, Cloneable
-   */
-  public Class getPersistentObjectClass() {
-    return ProjectionImpl.class;
-  }
+    // the map and associated toolbar
+    npEditControl = new NPController();
+    add(npEditControl, BorderLayout.CENTER);
+
+    /*JToolBar navToolbar = mapEditPanel.getNavToolBar();
+    navToolbar.setFloatable(false);
+    JToolBar moveToolbar = mapEditPanel.getMoveToolBar();
+    moveToolbar.setFloatable(false);
+    //toolbar.remove("setReference");
+    ucar.nc2.ui.widget.PopupMenu mapBeanMenu = MapBean.makeMapSelectButton();
+    JPanel toolbar = new JPanel();
+    toolbar.add( mapBeanMenu.getParentComponent());
+    toolbar.add(navToolbar);
+    toolbar.add(moveToolbar);    */
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    /* the list of Projection classes is kept in a comboBox
+    JPanel typePanel = new JPanel();
+    JLabel typeLabel = new JLabel("Type: ");
+    projClassCB = new JComboBox();
+    // standard list of projection classes
+    for (String aProjClassName : projClassName) {
+      try {
+        projClassCB.addItem(new ProjectionParamPanel(aProjClassName));
+      } catch (ClassNotFoundException ee) {
+        System.err.println("ProjectionManager failed on " + aProjClassName + " " + ee);
+      } catch (IntrospectionException ee) {
+        System.err.println("ProjectionManager failed on " + aProjClassName + " " + ee);
+      }
+    }
+    typePanel.add(typeLabel);
+    typePanel.add(projClassCB);
+
+    /* the projection parameters
+    Box mainBox = Box.createVerticalBox();
+    mainPanel.add(mainBox, BorderLayout.EAST);
+    //mainBox.setPreferredSize(new Dimension(350, 300));
+    JPanel namePanel = new JPanel(); // the Projection name
+    JLabel nameLabel = new JLabel("Name: ");
+    nameTF = new JTextField(20);
+    namePanel.add(nameLabel);
+    namePanel.add(nameTF);
+
+    // the Projection parameter area
+    paramPanel = new JPanel();
+    paramPanel.setLayout(new BoxLayout(paramPanel, BoxLayout.Y_AXIS));
+    paramPanel.setBorder(new TitledBorder(standardBorder, "Projection Parameters", TitledBorder.CENTER, TitledBorder.ABOVE_TOP));
+
+    // the Projection parameter area
+    bbPanel = new JPanel();
+    bbPanel.setLayout(new BoxLayout(bbPanel, BoxLayout.Y_AXIS));
+    bbPanel.setBorder(new TitledBorder(standardBorder, "Bounding Box", TitledBorder.CENTER, TitledBorder.ABOVE_TOP));
+
+    // the bottom button panel
+    JPanel buttPanel = new JPanel();
+    JButton acceptButton = new JButton("Save");
+    JButton previewButton = new JButton("Preview");
+    JButton cancelButton = new JButton("Cancel");
+    buttPanel.add(acceptButton, null);
+    buttPanel.add(previewButton, null);
+    buttPanel.add(cancelButton, null);
+
+    mainBox.add(namePanel);
+    mainBox.add(typePanel);
+    mainBox.add(paramPanel);
+    mainBox.add(bbPanel);
+    mainBox.add(Box.createGlue());
+    mainBox.add(buttPanel);
+    pack();
+
+    //enable event listeners when we're done constructing the UI
+    projClassCB.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        ProjectionClass selectClass = (ProjectionClass) projClassCB.getSelectedItem();
+        setProjection(selectClass.makeDefaultProjection());
+      }
+    });
+
+    acceptButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        accept();
+      }
+    });
+    previewButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        ProjectionClass projClass = findProjectionClass(editProjection);
+        if (null != projClass) {
+          setProjFromDialog(projClass, editProjection);
+          setProjection(editProjection);
+        }
+      }
+    });
+    cancelButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        NewProjectionDialog.this.setVisible(false);
+      }
+    });
+  } */
 
   public void addPropertyChangeListener(java.beans.PropertyChangeListener l) {
     lm.addListener(l);
@@ -194,21 +266,29 @@ public class ProjectionManager extends JPanel {
     lm.removeListener(l);
   }
 
-  /**
-   * Popup the Manager Dialog
-   */
   public void setVisible() {
-    if (null == newDialog)
-      newDialog = new NewProjectionDialog(parent);
-    newDialog.setVisible(true);
+    if (null == dialog) init();
+    dialog.setVisible(true);
   }
 
-  /**
-   * Call this when you want to store the persistent data
-   */
   public void storePersistentData() {
-    projTable.storePersistentData();
+    // projTable.storePersistentData();
   }
+
+  private void init() {
+    dialog = new NewProjectionDialog(owner);
+    ArrayList<Object> ps = new ArrayList<Object>();
+    for (String p : types)
+      try {
+        ps.add(new ProjectionClass(p));
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      } catch (IntrospectionException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+    dialog.setProjectionTypes(ps);
+  }
+
 
   /*
    * Get the currently selected object, of type getPersistentObjectClass()
@@ -223,7 +303,7 @@ public class ProjectionManager extends JPanel {
    *
   public void setSelection(PersistentObject select) {
     setWorkingProjection((ProjectionImpl) select);
-  } */
+  }
 
   ////// PersistentDataManager methods
   public void accept() {
@@ -253,11 +333,7 @@ public class ProjectionManager extends JPanel {
     newDialog.setVisible(true);
   }
 
-  /**
-   * store this Projection in the data table
-   *
-   * @param proj the Projection to store
-   */
+
   public void saveProjection(ProjectionImpl proj) {
     //setVisible(true);  how to make this work? seperate Thread ?
 
@@ -337,7 +413,7 @@ public class ProjectionManager extends JPanel {
       JPanel toolbar = new JPanel();
       toolbar.add( mapBeanMenu.getParentComponent());
       toolbar.add(navToolbar);
-      toolbar.add(moveToolbar);    */
+      toolbar.add(moveToolbar);
 
       JPanel mapSide = new JPanel();
       mapSide.setLayout(new BorderLayout());
@@ -364,7 +440,7 @@ public class ProjectionManager extends JPanel {
       // standard list of projection classes
       for (String aProjClassName : projClassName) {
         try {
-          projClassCB.addItem(new ProjectionClass(aProjClassName));
+          projClassCB.addItem(new ProjectionParamPanel(aProjClassName));
         } catch (ClassNotFoundException ee) {
           System.err.println("ProjectionManager failed on " + aProjClassName + " " + ee);
         } catch (IntrospectionException ee) {
@@ -602,10 +678,10 @@ public class ProjectionManager extends JPanel {
       }
     }
 
-  } // end NewProjectionDialog
+  } // end NewProjectionDialog   */
 
   // inner class ProjectionClass: parsed projection classes
-  private class ProjectionClass {
+  class ProjectionClass {
     Class projClass;
     String name;
     java.util.List<ProjectionParam> paramList = new ArrayList<ProjectionParam>();
@@ -614,13 +690,8 @@ public class ProjectionManager extends JPanel {
       return name;
     }
 
-    // constructors
     ProjectionClass(String className) throws ClassNotFoundException, IntrospectionException {
-      this(Class.forName(className));
-    }
-
-    ProjectionClass(Class pc) throws ClassNotFoundException, IntrospectionException {
-      projClass = pc;
+      projClass = Class.forName(className);
 
       // eliminate common properties with "stop class" for getBeanInfo()
       Class stopClass;
@@ -701,7 +772,7 @@ public class ProjectionManager extends JPanel {
   }  // end ProjectionClass inner class
 
   // inner class ProjectionParam: parameters for Projection Class
-  private class ProjectionParam {
+  class ProjectionParam {
     Method reader;
     Method writer;
     String name;
@@ -727,15 +798,15 @@ public class ProjectionManager extends JPanel {
       return tf;
     }
 
-  }  // end inner class ProjectionParam
+  }
 
 
   // testing 1-2-3
-  public static void main(String[] args) {
-    ProjectionManager pm = new ProjectionManager();
-    pm.setVisible();
-  }
 
+  public static void main(String[] args) {
+    ProjectionManager  d = new ProjectionManager( null, null);
+    d.setVisible();
+  }
 
 }
 

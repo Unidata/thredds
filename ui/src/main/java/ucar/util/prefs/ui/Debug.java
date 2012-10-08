@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -36,7 +36,6 @@ import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.event.*;
 
@@ -92,7 +91,6 @@ import javax.swing.event.*;
  */
 
 public class Debug {
-  static private boolean changed = true;
   static private Preferences store = null;
   static private boolean debug = false, debugEvents = false;
 
@@ -150,9 +148,9 @@ public class Debug {
   static private void removeAll(Preferences prefs, boolean delete) throws BackingStoreException {
 
     String[] kidName = prefs.childrenNames();
-    for (int i=0; i<kidName.length; i++) {
-      Preferences pkid = (Preferences) prefs.node(kidName[i]);
-      removeAll( pkid, true);
+    for (String aKidName : kidName) {
+      Preferences pkid = prefs.node(aKidName);
+      removeAll(pkid, true);
     }
 
     if (delete)
@@ -187,19 +185,19 @@ public class Debug {
     if (debug) System.out.println(" addMenu "+ prefs.name());
 
     String[] keys = prefs.keys();
-    for (int i=0; i<keys.length; i++) {
-      boolean bval = prefs.getBoolean(keys[i], false);
-      String fullname = prefs.absolutePath()+"/"+keys[i];
-      menu.add( new DebugMenuItem( fullname, keys[i], bval)); // menu leaf
-      if (debug) System.out.println("   leaf= <"+ keys[i]+"><"+fullname+">");
+    for (String key : keys) {
+      boolean bval = prefs.getBoolean(key, false);
+      String fullname = prefs.absolutePath() + "/" + key;
+      menu.add(new DebugMenuItem(fullname, key, bval)); // menu leaf
+      if (debug) System.out.println("   leaf= <" + key + "><" + fullname + ">");
     }
 
     String[] kidName = prefs.childrenNames();
-    for (int i=0; i<kidName.length; i++) {
-      Preferences pkid = (Preferences) prefs.node(kidName[i]);
+    for (String aKidName : kidName) {
+      Preferences pkid = prefs.node(aKidName);
       JMenu subMenu = new JMenu(pkid.name());
-      menu.add( subMenu);
-      addToMenu( subMenu, pkid);
+      menu.add(subMenu);
+      addToMenu(subMenu, pkid);
     }
   }
 
