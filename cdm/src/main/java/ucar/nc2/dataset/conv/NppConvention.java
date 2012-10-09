@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2012. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -47,19 +47,32 @@ import java.io.IOException;
  * note this is almost same as Avhrr ??
  * @author caron
  * @since Sep 11, 2009
+ * @see "http://npp.gsfc.nasa.gov/"
  */
 public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
+  private static final String SPECTRAL_COORD_NAME = "Surface_Emissivity_Wavelengths";
+  private static final String PRESSURE_COORD_NAME = "Pressure_Levels";
 
   public static boolean isMine(NetcdfFile ncfile) {
     if (!ncfile.getFileTypeId().equals("HDF5")) return false;
 
+    // Visible Infrared Imaging Radiometer Suite (VIIRS)
     Group loc = ncfile.findGroup("All_Data/VIIRS-MOD-GEO-TC_All");
     if (loc == null)
        loc = ncfile.findGroup("All_Data/VIIRS-CLD-AGG-GEO_All");
 
-    if (null == loc) return false;
+    // Cross-track Infrared Sounder (CrIS)
+    // http://npp.gsfc.nasa.gov/cris.html
+    if (loc == null) {
+      loc = ncfile.findGroup("All_Data");
+      Attribute att = ncfile.findGlobalAttribute("Instrument_Name");
+      if ((att == null) || !att.getStringValue().equals("CrIS")) return false;
+      if (null == loc.findVariable(PRESSURE_COORD_NAME)) return false;
+    }
+
     if (null == loc.findVariable("Latitude")) return false;
     if (null == loc.findVariable("Longitude")) return false;
+
     return true;
   }
 
@@ -70,14 +83,22 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     ds.addAttribute(null, new Attribute("FeatureType", FeatureType.IMAGE.toString())); // LOOK
 
-    Group loc = ds.findGroup("All_Data/VIIRS-MOD-GEO-TC_All");
-    if (loc == null)
-       loc = ds.findGroup("All_Data/VIIRS-CLD-AGG-GEO_All");
+    boolean hasPressureLevels = false;
+    Variable spectralCoord = null;
 
-    Variable lat = loc.findVariable("Latitude");
+    Group group = ds.findGroup("All_Data/VIIRS-MOD-GEO-TC_All");
+    if (group == null)
+       group = ds.findGroup("All_Data/VIIRS-CLD-AGG-GEO_All");
+    if (group == null) {
+      group = ds.findGroup("All_Data");
+      hasPressureLevels = true;
+      spectralCoord = group.findVariable(SPECTRAL_COORD_NAME);
+    }
+
+    Variable lat = group.findVariable("Latitude");
     lat.addAttribute(new Attribute(CDM.UNITS, "degrees_north"));
     lat.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    Variable lon = loc.findVariable("Longitude");
+    Variable lon = group.findVariable("Longitude");
     lon.addAttribute(new Attribute(CDM.UNITS, "degrees_east"));
     lon.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
@@ -85,18 +106,50 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
     assert shape.length == 2;
     Dimension scan = new Dimension("scan", shape[0]);
     Dimension xscan = new Dimension("xscan", shape[1]);
-    loc.addDimension(scan);
-    loc.addDimension(xscan);
+    group.addDimension(scan);
+    group.addDimension(xscan);
 
     lat.setDimensions("scan xscan");
     lon.setDimensions("scan xscan");
 
-    for (Variable v : loc.getVariables()) {
+    Dimension altd = null;
+    if (hasPressureLevels) {
+      Variable alt = group.findVariable(PRESSURE_COORD_NAME);
+      alt.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Pressure.toString()));
+      shape = alt.getShape();
+      assert shape.length == 1;
+      altd = new Dimension(PRESSURE_COORD_NAME, shape[0]);
+      group.addDimension(altd);
+      alt.setDimensions(PRESSURE_COORD_NAME);
+    }
+
+    Dimension spectrald = null;
+    if (null != spectralCoord)  {
+      spectralCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Spectral.toString()));
+      shape = spectralCoord.getShape();
+      assert shape.length == 1;
+      spectrald = new Dimension(SPECTRAL_COORD_NAME, shape[0]);
+      group.addDimension(spectrald);
+      spectralCoord.setDimensions(SPECTRAL_COORD_NAME);
+    }
+
+    for (Variable v : group.getVariables()) {
       int[] vs = v.getShape();
-      if ((vs.length == 2) && (vs[0] == shape[0]) && (vs[1] == shape[1])) {
+      if ((vs.length == 2) && (vs[0] == scan.getLength()) && vs[1] == xscan.getLength()) {
         v.setDimensions("scan xscan");
         v.addAttribute(new Attribute(_Coordinate.Axes, "Latitude Longitude"));
+
+      } else if ((vs.length == 3) && altd != null &&
+              (vs[0] == altd.getLength()) && (vs[1] == scan.getLength()) && vs[2] == xscan.getLength()) {
+        v.setDimensions(PRESSURE_COORD_NAME+" scan xscan");
+        v.addAttribute(new Attribute(_Coordinate.Axes, PRESSURE_COORD_NAME+" Latitude Longitude"));
+
+      }  else if ((vs.length == 3) && spectrald != null &&
+                    (vs[0] == spectrald.getLength()) && (vs[1] == scan.getLength()) && vs[2] == xscan.getLength()) {
+        v.setDimensions(SPECTRAL_COORD_NAME+" scan xscan");
+        v.addAttribute(new Attribute(_Coordinate.Axes, SPECTRAL_COORD_NAME+" Latitude Longitude"));
       }
+
     }
 
     /* Group PRODUCT_METADATA {

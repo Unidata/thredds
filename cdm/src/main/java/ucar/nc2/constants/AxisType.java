@@ -97,7 +97,11 @@ public enum AxisType {
   /**
    * represents a radial elevation coordinate
    */
-  RadialElevation(6);
+  RadialElevation(6),
+  /**
+   * represents a spectral coordinate
+   */
+  Spectral(1);
 
   private final int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance
   private final String cfAxisName; // X, Y, Z, T from http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-types
