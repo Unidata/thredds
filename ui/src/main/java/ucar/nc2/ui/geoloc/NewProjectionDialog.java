@@ -31,7 +31,8 @@ public class NewProjectionDialog extends JDialog {
     wire();
   }
 
-  public void setProjectionTypes(Collection<Object> types) {
+  public void setProjectionManager(ProjectionManager pm, Collection<Object> types) {
+    this.pm = pm;
     cbProjectionType.setItemList(types);
   }
 
@@ -40,10 +41,12 @@ public class NewProjectionDialog extends JDialog {
   }
 
   private static final int min_sigfig = 6;
+  private ProjectionManager pm;
+
   private void wire() {
     NavigatedPanel mapEditPanel = navPanel.getNavigatedPanel();
     mapEditPanel.addNewMapAreaListener(new NewMapAreaListener() {
-      @Override
+      // nav panel moved
       public void actionPerformed(NewMapAreaEvent e) {
         ProjectionRect rect = e.getMapArea();
         //System.out.printf("%s%n", rect.toString2());
@@ -54,17 +57,58 @@ public class NewProjectionDialog extends JDialog {
       }
     });
 
-          //enable event listeners when we're done constructing the UI
+    // projection class was chosen
     cbProjectionType.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         ProjectionManager.ProjectionClass pc = (ProjectionManager.ProjectionClass) cbProjectionType.getSelectedItem();
         projectionParamPanel1.setProjection(pc);
+        pc.makeDefaultProjection();
+        pc.putParamIntoDialog(pc.projInstance);
+        navPanel.setProjection(pc.projInstance);
         revalidate();
       }
     });
 
+    // apply button was pressed
+    applyButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        ProjectionManager.ProjectionClass pc = (ProjectionManager.ProjectionClass) cbProjectionType.getSelectedItem();
+        pc.setProjFromDialog(pc.projInstance);
+        System.out.printf("Projection = %s%n", pc.projInstance);
+
+        ProjectionRect mapArea = getMapAreaFromDialog();
+        if (mapArea != null) {
+          pc.projInstance.setDefaultMapArea(mapArea);
+          System.out.printf("mapArea = %s%n", mapArea.toString2());
+        }
+
+        projectionParamPanel1.setProjection(pc);
+        pc.putParamIntoDialog(pc.projInstance);
+        navPanel.setProjection(pc.projInstance);
+        if (mapArea != null)
+          navPanel.getNavigatedPanel().setMapArea(mapArea);
+
+        revalidate();
+      }
+    });
 
   }
+
+  ProjectionRect getMapAreaFromDialog() {
+
+    try {
+      double minxv = Double.parseDouble(minx.getText());
+      double maxxv = Double.parseDouble(maxx.getText());
+      double minyv = Double.parseDouble(miny.getText());
+      double maxyv = Double.parseDouble(maxy.getText());
+      return new ProjectionRect(minxv, minyv, maxxv, maxyv);
+    } catch (Exception e) {
+      System.out.printf("Illegal value %s%n", e);
+      return null;
+    }
+  }
+
+
   private void comboBox1ItemStateChanged(ItemEvent e) {
     System.out.printf("%s%n", e);
   }
@@ -75,14 +119,10 @@ public class NewProjectionDialog extends JDialog {
     dialogPane = new JPanel();
     contentPanel = new JPanel();
     panel1 = new JPanel();
-    textField1 = new JTextField();
-    label1 = new JLabel();
-    label2 = new JLabel();
-    cbProjectionType = new ComboBox();
     cancelButton = new JButton();
     okButton = new JButton();
-    button1 = new JButton();
-    panel3 = new JPanel();
+    applyButton = new JButton();
+    MapArePanel = new JPanel();
     maxy = new JTextField();
     label3 = new JLabel();
     minx = new JTextField();
@@ -91,7 +131,8 @@ public class NewProjectionDialog extends JDialog {
     label4 = new JLabel();
     label5 = new JLabel();
     label6 = new JLabel();
-    panel2 = new JPanel();
+    ProjPanel = new JPanel();
+    cbProjectionType = new ComboBox();
     projectionParamPanel1 = new ProjectionParamPanel();
     navPanel = new NPController();
     buttonBar = new JPanel();
@@ -113,32 +154,18 @@ public class NewProjectionDialog extends JDialog {
         //======== panel1 ========
         {
 
-          //---- label1 ----
-          label1.setText("Name:");
-
-          //---- label2 ----
-          label2.setText("Type:");
-
-          //---- cbProjectionType ----
-          cbProjectionType.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-              comboBox1ItemStateChanged(e);
-            }
-          });
-
           //---- cancelButton ----
           cancelButton.setText("Cancel");
 
           //---- okButton ----
-          okButton.setText("Preview");
+          okButton.setText("Save");
 
-          //---- button1 ----
-          button1.setText("Save");
+          //---- applyButton ----
+          applyButton.setText("Apply");
 
-          //======== panel3 ========
+          //======== MapArePanel ========
           {
-            panel3.setBorder(new TitledBorder(null, "Map Area", TitledBorder.CENTER, TitledBorder.TOP));
+            MapArePanel.setBorder(new TitledBorder(null, "Map Area", TitledBorder.CENTER, TitledBorder.TOP));
 
             //---- label3 ----
             label3.setText("max y");
@@ -152,52 +179,52 @@ public class NewProjectionDialog extends JDialog {
             //---- label6 ----
             label6.setText("max x");
 
-            GroupLayout panel3Layout = new GroupLayout(panel3);
-            panel3.setLayout(panel3Layout);
-            panel3Layout.setHorizontalGroup(
-              panel3Layout.createParallelGroup()
-                .addGroup(panel3Layout.createSequentialGroup()
+            GroupLayout MapArePanelLayout = new GroupLayout(MapArePanel);
+            MapArePanel.setLayout(MapArePanelLayout);
+            MapArePanelLayout.setHorizontalGroup(
+              MapArePanelLayout.createParallelGroup()
+                .addGroup(MapArePanelLayout.createSequentialGroup()
                   .addComponent(minx, GroupLayout.PREFERRED_SIZE, 109, GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(maxx))
-                .addGroup(panel3Layout.createSequentialGroup()
-                  .addGroup(panel3Layout.createParallelGroup()
-                    .addGroup(panel3Layout.createSequentialGroup()
+                .addGroup(MapArePanelLayout.createSequentialGroup()
+                  .addGroup(MapArePanelLayout.createParallelGroup()
+                    .addGroup(MapArePanelLayout.createSequentialGroup()
                       .addGap(84, 84, 84)
                       .addComponent(label3))
-                    .addGroup(panel3Layout.createSequentialGroup()
+                    .addGroup(MapArePanelLayout.createSequentialGroup()
                       .addGap(89, 89, 89)
                       .addComponent(label4)))
                   .addGap(0, 0, Short.MAX_VALUE))
-                .addGroup(panel3Layout.createSequentialGroup()
+                .addGroup(MapArePanelLayout.createSequentialGroup()
                   .addContainerGap()
-                  .addGroup(panel3Layout.createParallelGroup()
-                    .addGroup(panel3Layout.createSequentialGroup()
+                  .addGroup(MapArePanelLayout.createParallelGroup()
+                    .addGroup(MapArePanelLayout.createSequentialGroup()
                       .addComponent(label5)
                       .addGap(18, 18, 18)
                       .addComponent(maxy)
                       .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                       .addComponent(label6)
                       .addContainerGap())
-                    .addGroup(GroupLayout.Alignment.TRAILING, panel3Layout.createSequentialGroup()
+                    .addGroup(GroupLayout.Alignment.TRAILING, MapArePanelLayout.createSequentialGroup()
                       .addGap(0, 0, Short.MAX_VALUE)
                       .addComponent(miny, GroupLayout.PREFERRED_SIZE, 121, GroupLayout.PREFERRED_SIZE)
                       .addGap(44, 44, 44))))
             );
-            panel3Layout.setVerticalGroup(
-              panel3Layout.createParallelGroup()
-                .addGroup(panel3Layout.createSequentialGroup()
+            MapArePanelLayout.setVerticalGroup(
+              MapArePanelLayout.createParallelGroup()
+                .addGroup(MapArePanelLayout.createSequentialGroup()
                   .addContainerGap()
-                  .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                    .addGroup(panel3Layout.createParallelGroup()
-                      .addGroup(panel3Layout.createSequentialGroup()
+                  .addGroup(MapArePanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                    .addGroup(MapArePanelLayout.createParallelGroup()
+                      .addGroup(MapArePanelLayout.createSequentialGroup()
                         .addComponent(label3)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(maxy, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                       .addComponent(label6, GroupLayout.Alignment.TRAILING))
                     .addComponent(label5))
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addGroup(panel3Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                  .addGroup(MapArePanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(maxx, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(minx, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -208,12 +235,23 @@ public class NewProjectionDialog extends JDialog {
             );
           }
 
-          //======== panel2 ========
+          //======== ProjPanel ========
           {
-            panel2.setBorder(new TitledBorder(null, "Parameters", TitledBorder.CENTER, TitledBorder.TOP));
-            panel2.setLayout(new BorderLayout());
-            panel2.add(projectionParamPanel1, BorderLayout.CENTER);
+            ProjPanel.setBorder(new TitledBorder(null, "Projection Class", TitledBorder.CENTER, TitledBorder.TOP));
+            ProjPanel.setLayout(new BoxLayout(ProjPanel, BoxLayout.X_AXIS));
+
+            //---- cbProjectionType ----
+            cbProjectionType.addItemListener(new ItemListener() {
+              @Override
+              public void itemStateChanged(ItemEvent e) {
+                comboBox1ItemStateChanged(e);
+              }
+            });
+            ProjPanel.add(cbProjectionType);
           }
+
+          //---- projectionParamPanel1 ----
+          projectionParamPanel1.setBorder(new TitledBorder(null, "Parameters", TitledBorder.CENTER, TitledBorder.TOP));
 
           GroupLayout panel1Layout = new GroupLayout(panel1);
           panel1.setLayout(panel1Layout);
@@ -221,7 +259,7 @@ public class NewProjectionDialog extends JDialog {
             panel1Layout.createParallelGroup()
               .addGroup(GroupLayout.Alignment.TRAILING, panel1Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(button1)
+                .addComponent(applyButton)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(okButton)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -229,40 +267,25 @@ public class NewProjectionDialog extends JDialog {
               .addGroup(panel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel1Layout.createParallelGroup()
-                  .addGroup(panel1Layout.createSequentialGroup()
-                    .addGroup(panel1Layout.createParallelGroup()
-                      .addGroup(panel1Layout.createSequentialGroup()
-                        .addComponent(label2)
-                        .addGap(9, 9, 9))
-                      .addGroup(GroupLayout.Alignment.TRAILING, panel1Layout.createSequentialGroup()
-                        .addComponent(label1)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)))
-                    .addGroup(panel1Layout.createParallelGroup()
-                      .addComponent(cbProjectionType, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                      .addComponent(textField1)))
-                  .addComponent(panel3, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(panel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                  .addComponent(ProjPanel, GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+                  .addComponent(MapArePanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(projectionParamPanel1, GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE))
                 .addContainerGap())
           );
           panel1Layout.setVerticalGroup(
             panel1Layout.createParallelGroup()
               .addGroup(panel1Layout.createSequentialGroup()
-                .addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                  .addComponent(textField1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                  .addComponent(label1))
+                .addContainerGap()
+                .addComponent(ProjPanel, GroupLayout.PREFERRED_SIZE, 44, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(projectionParamPanel1, GroupLayout.PREFERRED_SIZE, 252, GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                  .addComponent(label2)
-                  .addComponent(cbProjectionType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(panel2, GroupLayout.PREFERRED_SIZE, 268, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(panel3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                .addComponent(MapArePanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
                 .addGroup(panel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                   .addComponent(cancelButton)
                   .addComponent(okButton)
-                  .addComponent(button1))
+                  .addComponent(applyButton))
                 .addContainerGap())
           );
         }
@@ -292,14 +315,10 @@ public class NewProjectionDialog extends JDialog {
   private JPanel dialogPane;
   private JPanel contentPanel;
   private JPanel panel1;
-  private JTextField textField1;
-  private JLabel label1;
-  private JLabel label2;
-  private ComboBox cbProjectionType;
   private JButton cancelButton;
   private JButton okButton;
-  private JButton button1;
-  private JPanel panel3;
+  private JButton applyButton;
+  private JPanel MapArePanel;
   private JTextField maxy;
   private JLabel label3;
   private JTextField minx;
@@ -308,7 +327,8 @@ public class NewProjectionDialog extends JDialog {
   private JLabel label4;
   private JLabel label5;
   private JLabel label6;
-  private JPanel panel2;
+  private JPanel ProjPanel;
+  private ComboBox cbProjectionType;
   private ProjectionParamPanel projectionParamPanel1;
   private NPController navPanel;
   private JPanel buttonBar;

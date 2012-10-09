@@ -261,18 +261,36 @@ public class Stereographic extends ProjectionImpl {
    //////////////////////////////////////////////
   // setters for IDV serialization - do not use except for object creating
 
+  /**
+   * @deprecated
+   */
   public void setScale(double scale) {
     this.scale = earthRadius * scale;
   }
 
+  /**
+   * @deprecated
+   */
   public void setTangentLat(double latt) {
     this.latt =  Math.toRadians(latt);
     precalculate();
   }
 
+  /**
+   * @deprecated
+   */
   public void setTangentLon(double lont) {
     this.lont = Math.toRadians(lont);
     precalculate();
+  }
+
+  // cruft from IDV bundle
+
+  /**
+   * @deprecated
+   */
+  public void setCentralMeridian(double lont) {
+    setTangentLon(lont);
   }
 
    //////////////////////////////////////////////
