@@ -65,7 +65,8 @@ public class NewProjectionDialog extends JDialog {
         pc.makeDefaultProjection();
         pc.putParamIntoDialog(pc.projInstance);
         navPanel.setProjection(pc.projInstance);
-        revalidate();
+        invalidate();
+        validate();
       }
     });
 
@@ -88,7 +89,8 @@ public class NewProjectionDialog extends JDialog {
         if (mapArea != null)
           navPanel.getNavigatedPanel().setMapArea(mapArea);
 
-        revalidate();
+        invalidate();
+        validate();
       }
     });
 
