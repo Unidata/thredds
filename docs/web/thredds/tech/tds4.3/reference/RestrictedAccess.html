@@ -23,7 +23,7 @@
 <p>Using Tomcat to provide restricted access works well when you want to restrict your entire site to a single set of users. When you want to give access to different datasets to different users, you must understand in some detail what the URLs look like.</p>
 <h2>2. Restrict by Dataset using TDS Catalog<br>
 </h2>
-<p>Alternately, you can add an attribute on a dataset or datasetScan element in the TDS catalog, eg <strong>restrictAccess=&quot;</strong><strong>roleName&quot;</strong>. All services that use that dataset will be restricted to users with the named role.</p>
+<p>A more fine-grained approach is to modify the dataset elements in the TDS configuration catalog. To do this, you add an attribute on a dataset or datasetScan element in the TDS catalog, eg <strong>restrictAccess=&quot;</strong><strong>roleName&quot;</strong>. All services that use that dataset will be restricted to users with the named role.</p>
 <p>When a client tries to access a restricted dataset, it is redirected to a URL that triggers a security challenge. If the challenge is successful, the client is redirected back to the original dataset URL, except now it has an authenticated session, represented by a session cookie passed to the client. For subsequent requests by the same client, no authentication is needed as long as the session remains valid. </p>
 <p>The default TDS configuration uses <a href="http://en.wikipedia.org/wiki/Digest_authentication">Digest authentication</a>. By modifying web.xml, the server administrator can require that  authentication be done differently, for example require  SSL (changes to the TDS web.xml must be manually propagated to new versions of the TDS when upgrading). You can also <a href="PluggableRestrictedAccess.html">plug in your own</a> Authentication. </p>
 <p>To access any restricted dataset that a TDS might serve, a client such as a browser, OPeNDAP enabled application, or WCS client, must  be able to:</p>
@@ -34,8 +34,8 @@
   <li>answer security challenges with the appropriate user name and password.</li>
   <li>  return session cookies. </li>
 </ol>
-<h2>Configuring Restricted Datasets</h2>
-<p><strong>1.</strong> Decide on which sets of datasets need to be restricted. For each set, choose a name called a <em><strong>security role</strong></em>. Avoid special characters in the role names, especially <strong>/&quot;&gt;&lt;' </strong>and space. For example, suppose you have three sets of restricted data that you call <strong>ccsmData</strong>, <strong>fieldProject</strong>, <strong>tiggeData<em>. </em></strong></p>
+<h3>Configuring Restricted Datasets</h3>
+<p><strong>1.</strong> Decide on distinct sets of datasets that need to be restricted. For each set, choose a name called a <em><strong>security role</strong></em>. Avoid special characters in the role names, especially <strong>/&quot;&gt;&lt;' </strong>and space. For example, suppose you have three sets of restricted data that you call <strong>ccsmData</strong>, <strong>fieldProject</strong>, <strong>tiggeData<em>. </em></strong></p>
 <p><strong>2.</strong> Add each role to the  <strong>${tomcat_home}/conf/tomcat-users.xml </strong>  file, along with the <strong>restrictedDatasetUser</strong> role:<strong></strong></p>
 <pre><strong> </strong> &lt;role rolename=&quot;<strong>restrictedDatasetUser</strong>&quot;/&gt;<br>  &lt;role rolename=&quot;<strong>ccsmData</strong>&quot;/&gt;
   &lt;role rolename=&quot;<strong>fieldProject</strong>&quot;/&gt;   

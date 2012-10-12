@@ -13,22 +13,19 @@
 <p>The TDS adds <em><strong>Viewer Links</strong></em> to datasets at the bottom of a dataset's
   HTML web page, for example:</p>
 
-<p><img src="../../images/StaticViewer.jpg" alt="Viewers" border="2" height="488" width="573"></p>
+<p><img src="images/StandardViewers.png" alt="Viewers" border="2" height="640" width="719"></p>
 
 <h3>Standard Viewer Links</h3>
 
 <p>Currently, the TDS automatically adds the following:</p>
 
-<ul>
-  <li>a <strong>NetCDF-Java ToolsUI</strong> link to any direct dataset that has an ID;</li>
-  <li>an <strong>IDV</strong> link to any dataset that has an OPeNDAP service and has a DataType of
-    <code>GRID</code>; and</li>
-  <li>a <strong>Godiva2 web-based WMS client</strong> link to any dataset that has a WMS service.</li>
-</ul>
-
+<ol>
+  <li>a <strong>Godiva2 web-based WMS client</strong> link to any dataset that has a WMS service</li>
+  <li>a <strong>NetCDF-Java ToolsUI</strong> link to any direct dataset that has an ID</li>
+  <li>an <strong>IDV</strong> link to any dataset that has an OPeNDAP service and has a DataType of GRID.</li>
+</ol>
 <h3>Adding Viewer Links</h3>
 <p>The TDS also supports several ways to configure other viewer links and their results:</p>
-<p>You can add your own viewer links in these ways:</p>
 <ol>
   <li><a href="#Adding_a_viewer_link_with_a_viewer">Add a viewer link by adding a "viewer" property element to&nbsp;dataset</a>, explicitly listing the URL of the viewer.</li>
   <li><a href="#Create_a_Viewer_implementation_Java">Add a viewer link by creating a Java class</a> that tells the TDS what datasets are viewable, and what HTML fragment to include.</li><li>If your viewer link points to a JNLP file, <a href="#Returning_a_JNLP_file_">the TDS can generate the JNLP file</a> from a template file.</li>
@@ -36,7 +33,7 @@
 
 <hr style="width: 100%; height: 2px;">
 
-<h2><a name="Adding_a_viewer_link_with_a_viewer"></a>Adding viewer links with "viewer*" property elements</h2>
+<h2><a name="Adding_a_viewer_link_with_a_viewer"></a>1. Adding viewer links with "viewer" property elements</h2>
 
 <p>Dataset viewer links can be added to dataset HTML pages using "viewer*" property elements.
   To add a dataset viewer link to a specific dataset, add a <code>property</code> element that
@@ -46,9 +43,7 @@
   name separated by a a comma. An HTML link is built using the URL and the name. For instance,
   the following example:</p>
 
-<pre style="margin-left: 40px;">
-&lt;dataset&nbsp;name="Test Viewer" ID="testViewer" serviceName="dapService" urlPath="test/testData.nc" dataType="Grid"&gt;
-  <strong>&lt;property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/&gt;</strong>
+<pre style="margin-left: 40px;">&lt;dataset name=&quot;Test Single Dataset&quot; ID=&quot;testDataset&quot; serviceName=&quot;odap&quot; urlPath=&quot;test/testData.nc&quot; dataType=&quot;Grid&quot;&gt;<br>  <strong>&lt;property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/&gt;</strong>
   <strong>&lt;property name="viewer2" value="http://www.unidata.ucar.edu/,MyOtherViewer"/&gt;</strong>
 &lt;/dataset&gt;
 </pre>
@@ -61,21 +56,17 @@
 
 <p>Which looks like this on the TDS page:</p>
 
-<pre style="margin-left: 40px;">
-<a href="http://www.unidata.ucar.edu/staff/caron/">MyViewer</a>
-<a href="http://www.unidata.ucar.edu/">MyOtherViewer</a>
-</pre>
 
-<p><strong>NOTE</strong>: Before TDS 4.1.9 (but only since TDs 3.17) only a single viewer link could be added in this
-  way using a <code>property</code> element whose name exactly matched the string "viewer".</p>
 
+<img src="images/AddViewers.png" width="662" height="519" border="2">
 <h3>Adding viewer links to many datasets</h3>
 
 <p>When
 a "viewer" property element is contained in an inherited metadata
 element, it will apply to all the descendants of the containing
 dataset. For instance, the following example will result in viewer
-links for all children datasets:</p><pre style="margin-left: 40px;">&lt;dataset name="Test inherited viewer" ID="tiv"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>  &lt;dataset name="test inherited viewer ds 1" ID="tiv/ds1" urlPath="tiv/ds1.nc"&gt;<br>  &lt;dataset name="test inherited viewer ds 2" ID="tiv/ds2" urlPath="tiv/ds2.nc"&gt;<br>&lt;/dataset&gt;</pre><p>When added to a <code>datasetScan</code> elements, the "viewer" property results in a viewer link being added to the HTML dataset pages for each generated dataset:</p><pre style="margin-left: 40px;">&lt;datasetScan name="Test inherited viewer dsScan" ID="tivScan"<br>             path="tivScan" location="C:/some/good/data/"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>&lt;/datasetScan&gt;</pre>
+links for all children datasets:</p><pre style="margin-left: 40px;">&lt;dataset name="Test inherited viewer" ID="tiv"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>  &lt;dataset name="test inherited viewer ds 1" ID="tiv/ds1" urlPath="tiv/ds1.nc"&gt;<br>  &lt;dataset name="test inherited viewer ds 2" ID="tiv/ds2" urlPath="tiv/ds2.nc"&gt;<br>&lt;/dataset&gt;</pre><p>When added to a <code>datasetScan</code> elements, the "viewer" property results in a viewer link being added to the HTML dataset pages for each generated dataset:</p>
+<pre style="margin-left: 40px;">&lt;datasetScan name="Test inherited viewer dsScan" ID="tivScan" path="tivScan" location="C:/some/good/data/"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>&lt;/datasetScan&gt;</pre>
 
 <h3>Adding the Dataset URL to the Viewer Link</h3>
 
@@ -92,26 +83,16 @@ links for all children datasets:</p><pre style="margin-left: 40px;">&lt;dataset 
 
 <p>results in the following viewer link:</p>
 <pre style="margin-left: 40px;">
-&lt;a href="http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/test/testData.nc"&gt;Validation Service&lt;/a&gt;
-</pre>
-
-<p>The CDM Validator form page is here:</p>
-
-<pre style="margin-left: 40px;">
-<a href="http://motherlode.ucar.edu:8080/cdmvalidator/validate.html">Validation Service</a>
-</pre>
-
+&lt;a href="http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/test/testData.nc"&gt;Validation Service&lt;/a&gt;</pre>
 <h3>Selecting the Dataset access URL used in the Viewer Link</h3>
 
 <p>When a Dataset has more than one kind of access, each access will
 have a seperate URL. Use the service type inside of curly brackets to
 select which access URL to use.</p>
 <p>For example, the following:</p>
-<pre style="margin-left: 40px;">&lt;service name="all" type="Compound" base=""&gt;
-  &lt;service name="dap" type="<strong>OPENDAP</strong>" base="<strong>/thredds/dodsC/</strong>" /&gt;
-  &lt;service name="wcs" type="<strong>WCS</strong>" base="<strong>/thredds/wcs/</strong>" /&gt;
-&lt;/service&gt;
-&lt;dataset name="test viewer select service" ID="tvss"&gt;
+<pre style="margin-left: 40px;"> &lt;service name=&quot;all&quot; base=&quot;&quot; serviceType=&quot;compound&quot;&gt;<br>    &lt;service name=&quot;odap&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;<br>    &lt;service name=&quot;http&quot; serviceType=&quot;HTTPServer&quot; base=&quot;/thredds/fileServer/&quot;/&gt;<br>    &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot;/&gt;<br>    &lt;service name=&quot;wms&quot; serviceType=&quot;WMS&quot; base=&quot;/thredds/wms/&quot;/&gt;<br>    &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid/&quot;/&gt;<br>    &lt;service name=&quot;cdmremote&quot; serviceType=&quot;CdmRemote&quot; base=&quot;/thredds/cdmremote/&quot;/&gt;<br>    &lt;service name=&quot;iso&quot; serviceType=&quot;ISO&quot; base=&quot;/thredds/iso/&quot;/&gt;<br>    &lt;service name=&quot;ncml&quot; serviceType=&quot;NCML&quot; base=&quot;/thredds/ncml/&quot;/&gt;<br>    &lt;service name=&quot;uddc&quot; serviceType=&quot;UDDC&quot; base=&quot;/thredds/uddc/&quot;/&gt;<br> &lt;/service&gt;
+
+ &lt;dataset name="test viewer select service" ID="tvss"&gt;
   &lt;metadata inherited="true"&gt;
     &lt;serviceName&gt;all&lt;/serviceName&gt;
   &lt;/metadata&gt;
@@ -129,14 +110,14 @@ select which access URL to use.</p>
 
 <pre style="margin-left: 40px;">http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL=http://myhost:8080<strong>/thredds/dodsC/</strong>tvss/ds1.nc</pre>
 
-<p>If your server is publically accessible, this URL will call the motherlode validator service for
-  your dataset, using opendap. For the second dataset, the viewer link is:</p>
-
+<p>and for the second dataset, the viewer link is:</p>
 <pre style="margin-left: 40px;">http://myhost:8080/wmsView/show?dataset=http://myhost:8080<strong>/thredds/wcs/</strong>tvss/ds2.nc<br></pre>
-
+<p>If your server is publically accessible, this example calls the<a href="http://motherlode.ucar.edu:8080/cdmvalidator/validate.html"> motherlode validator service</a> for
+  your dataset, using opendap. The dataset page now looks something like:</p>
+<p><img src="images/validateViewer.png" alt="" width="664" height="637" border="2"></p>
 <hr style="width: 100%; height: 2px;">
 
-<h2><a name="Returning_a_JNLP_file_"></a>Returning a JNLP file</h2>
+<h2><a name="Returning_a_JNLP_file_"></a> 2. Returning a JNLP file</h2>
 
 <p>Viewer links can also support on the fly generation of JNLP files. This can be very useful when
   using data viewing software that can be started&nbsp;with a JNLP file (i.e., running under
@@ -174,7 +155,7 @@ select which access URL to use.</p>
 
 <hr>
 
-<h2><a name="Create_a_Viewer_implementation_Java"></a>Create a  Viewer implementation Java class </h2>
+<h2><a name="Create_a_Viewer_implementation_Java"></a>3. Create a  Viewer implementation Java class </h2>
 
 <p>This method is available in TDS version 3.14+.</p>
 <p>This technique gives you full control over whether your viewer link
@@ -261,12 +242,12 @@ IDV implementation above we see it enforces two requirements:</p><ol><li>the dat
   &lt;application-desc main-class=&quot;ucar.nc2.ui.ToolsUI&quot;&gt;
       &lt;argument&gt;http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/GFS/CONUS_95km/files/catalog.xml#fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20120414_0000.grib1&lt;/argument&gt;
  &lt;/application-desc&gt;</pre>
-<p>If you dont specify the &lt;argument&gt;, ToolsUI will still startup normally, and not jump the THREDDS catalog tab..</p>
+<p>If you dont specify the &lt;argument&gt;, ToolsUI will still startup normally, and not jump to the THREDDS catalog tab..</p>
 <hr width="100%">
 <address>
-  <img src="../../images/thread.png" height="108" width="110">
+  <img src="../../images/thread.png" height="54" width="55">
   This document is maintained by Unidata and was last updated
-  April 2012. Send comments to
+  October 2012. Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body></html>

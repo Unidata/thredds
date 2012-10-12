@@ -1,3 +1,38 @@
+Oct 2012
+
+caron@ROBERTO /c/dev/github/thredds/docs/web/thredds/tech/tds4.3/tutorial (target-4.3.14)
+
+ethan       11949 Jul 18 19:28 AddingServices.html
+caron       16138 Sep 21 17:07 AdditionalSecurityConfiguration.html
+lansing      9105 Aug  6 10:25 Basic-threddsConfig_xml.html
+lansing     20206 Jul 18 19:28 BasicConfig.html
+?           34294 Jul 18 19:28 BasicTomcatAndTDSSecurity.html
+?           16469 Jul 18 19:28 CatalogPrimer.html
+caron        8891 Aug  6 10:25 Checklist.html
+lansing     41519 Jul 18 19:28 ConfigCatalogs.html
+ethan       10638 Jul 18 19:28 EnhancedCatalogs.html
+caron       10860 Jul 18 19:28 FeatureCollectionsTutorial.html
+jenn        50428 Jul 18 19:28 GettingStarted.html
+ethan        4426 Jul 18 19:28 Metadata.html
+ethan        6358 Jul 18 19:28 MetadataExtraction.html
+ethan        2180 Jul 18 19:28 MetadataStandards.html
+caron       21558 Jul 18 19:28 NcML.htm
+sean         1649 Jul 18 19:28 NcMLSamples.html
+caron     2808320 Jun 27 15:22 Performance.ppt
+jenn        68415 Jul 18 19:28 Security.html
+jenn        35787 Jul 18 19:28 TDSMonitoringAndDebugging.html
+sean       621056 Jun 27 15:22 TDSOverview-1.ppt
+ethan     6061056 Jun 27 15:22 TDSOverview-2.ppt
+?         3881984 Jun 27 15:22 TDSOverview.ppt
+?          266752 Jun 27 15:22 TDS_Plans.ppt
+caron        7403 Jul 18 19:28 TroubleShooting.html
+caron        4885 Oct 11 16:36 index.html
+caron       10757 Jul 18 19:28 tdsMonitor.html
+jenn         7239 Jun 27 15:22 tutorial.css
+caron        8778 Oct 12 12:33 workshop2012.html
+
+
+=================================================================================================
 May 2010
 
 caron@ROBERTO /cygdrive/c/dev/tds4.2/thredds/docs/web/thredds/tech/tds4.2/reference
