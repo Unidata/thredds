@@ -1,31 +1,16 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-<!-- $Id: InvCatalogSpec.html,v 1.2 2003/12/24 00:00:04 edavis Exp $ -->
-  <meta http-equiv="Content-Type"
- content="text/html; charset=iso-8859-1">
-  <meta name="GENERATOR"
- content="Mozilla/4.76 [en] (Windows NT 5.0; U) [Netscape]">
-  <meta name="Author" content="John Caron">
   <title>Catalog Primer</title>
-  <style type="text/css">
-<!--
-.style1 {
-	font-weight: bold;
-	font-style: italic;
-}
--->
-  </style>
+  <link rel="stylesheet" href="tutorial.css" type="text/css">
 </head>
 <body >
-<div class="head"> 
   <h1> <img src="../../images/THREDDSlogo.jpg" width="67"
  height="54"> THREDDS  Catalog Primer </h1>
   <hr title="Separator for header">
   <p>THREDDS Servers in general, and the TDS in particular, communicate to clients by sending them a <em><strong>THREDDS Catalog</strong></em> (aka <em>Inventory Dataset Catalog</em>) that describes what datasets the server has, and how they can be accessed. A catalog is an <a href="http://www.w3.org/TR/REC-xml/">XML</a> document that follows the THREDDS Catalog schema. </p>
-  <p>This primer will describe the  <em><strong>client view of the catalog</strong></em>. You will also need to add other information to the catalog, which is used only by the server and not normally seen by the client, which is covered in following lessons. </p>
+  <p>This primer will describe the  <em><strong>client view of the catalog</strong></em>. If you are maintaining a TDS <em>server</em>, you will also need to add other information to the catalog, which is used only by the server and not normally seen by the client.</p>
   <h2>Introduction</h2>
-</div>
 <p>Here's an example of a  simple catalog:</p>
 <pre> <strong>1)</strong> &lt;?xml version=&quot;1.0&quot; ?&gt;
  <strong>2)</strong> &lt;<strong>catalog</strong> <strong>xmlns</strong>=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; &gt;

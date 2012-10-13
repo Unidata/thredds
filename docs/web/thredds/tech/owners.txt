@@ -1,29 +1,70 @@
 Oct 2012
 
+caron@ROBERTO /c/dev/github/thredds/docs/web/thredds/tech/tds4.3/reference (target-4.3.14)
+
+caron        4875 Jul 18 19:28 AccessLog.html
+old          4676 Jul 18 19:28 CatalogConfiguration.html
+old          7722 Jul 18 19:28 CatalogService.html
+old          4903 Jul 18 19:28 ConfigDirectory.html
+caron        3795 Jul 18 19:28 ConfigWithTdsProperties.html
+ethan       35829 Jun 27 15:22 CrDsClassDiagram.png
+ethan        3050 Jun 27 15:22 CrawlableDataset.html
+old          6206 Jul 18 19:28 DatasetFmrc.html
+ethan       24660 Jul 18 19:28 DatasetScan.html
+caron        5506 Jun 27 15:22 DatasetSource.html
+ethan        3477 Jul 18 19:28 DigitalLibraries.html
+caron        3983 Jul 18 19:28 DirectoryLocations.html
+caron        8339 Jul 18 19:28 HTTPsecurityChallenge.html
+caron        6362 Jul 18 19:28 JavaOptsSummary.html
+marcos       3737 Sep 11 11:53 NetcdfSubsetService.html			// 	bring reference docs here
+caron       10476 Jul 18 19:28 Performance.html
+caron       12520 Jul 18 19:28 PluggableRestrictedAccess.html
+caron       14597 Jul 18 19:28 RemoteManagement.html
+caron       14507 Oct 12 13:40 RestrictedAccess.html
+?ethan       1521 Aug  6 10:25 RunTDSonVM.html
+?old         4796 Jul 18 19:28 RunningMultipleTDS.html
+caron        2685 Jun 27 15:22 ServerInfo.html
+caron       68938 Jun 27 15:22 ServerInfo_html.png
+caron        2387 Sep 11 11:48 Services.html
+caron       11463 Jul 18 19:28 ServletLog.html
+caron     3085824 Jun 27 15:22 TDSarchictecture.ppt				// 2008
+?ethan         902 Jun 27 15:22 TSF.html
+caron       34207 Aug 17 12:59 ThreddsConfigXMLFile.html
+jenn        10698 Jul 18 19:28 TomcatBehindProxyServer.html
+caron       12317 Jul 18 19:28 TomcatSecurity.html				// relation to BasicTomcatAndTDSSecurity ??
+caron       19661 Oct 11 13:35 Viewers.html
+ethan       12287 Jul 18 19:28 WCS.html
+ethan        6957 Jul 18 19:28 WMS.html
+caron        4514 Oct 12 13:40 index.html
+caron        4739 Jun 27 15:22 log4j.xml.txt
+caron        5860 Jul 18 19:28 ncISO.html
+jenn         7137 Jun 27 15:22 reference.css
+caron        6325 Aug  6 16:19 threddsConfig.xml.txt
+?ethan       11124 Jun 27 15:22 tsfGetStarted.html
+?ethan       26935 Jun 27 15:22 tsfRef.htmlR
+
 caron@ROBERTO /c/dev/github/thredds/docs/web/thredds/tech/tds4.3/tutorial (target-4.3.14)
 
 ethan       11949 Jul 18 19:28 AddingServices.html
-caron       16138 Sep 21 17:07 AdditionalSecurityConfiguration.html
+?caron       16138 Sep 21 17:07 AdditionalSecurityConfiguration.html // relation to other secuity pages ??
 lansing      9105 Aug  6 10:25 Basic-threddsConfig_xml.html
 lansing     20206 Jul 18 19:28 BasicConfig.html
 ?           34294 Jul 18 19:28 BasicTomcatAndTDSSecurity.html
 ?           16469 Jul 18 19:28 CatalogPrimer.html
-caron        8891 Aug  6 10:25 Checklist.html
+caron        8891 Aug  6 10:25 Checklist.html						
 lansing     41519 Jul 18 19:28 ConfigCatalogs.html
-ethan       10638 Jul 18 19:28 EnhancedCatalogs.html
+?ethan       10638 Jul 18 19:28 EnhancedCatalogs.html
 caron       10860 Jul 18 19:28 FeatureCollectionsTutorial.html
 jenn        50428 Jul 18 19:28 GettingStarted.html
-ethan        4426 Jul 18 19:28 Metadata.html
-ethan        6358 Jul 18 19:28 MetadataExtraction.html
-ethan        2180 Jul 18 19:28 MetadataStandards.html
+?ethan        4426 Jul 18 19:28 Metadata.html
+?ethan        6358 Jul 18 19:28 MetadataExtraction.html
+?ethan        2180 Jul 18 19:28 MetadataStandards.html
 caron       21558 Jul 18 19:28 NcML.htm
 sean         1649 Jul 18 19:28 NcMLSamples.html
-caron     2808320 Jun 27 15:22 Performance.ppt
 jenn        68415 Jul 18 19:28 Security.html
 jenn        35787 Jul 18 19:28 TDSMonitoringAndDebugging.html
 sean       621056 Jun 27 15:22 TDSOverview-1.ppt
 ethan     6061056 Jun 27 15:22 TDSOverview-2.ppt
-?         3881984 Jun 27 15:22 TDSOverview.ppt
 ?          266752 Jun 27 15:22 TDS_Plans.ppt
 caron        7403 Jul 18 19:28 TroubleShooting.html
 caron        4885 Oct 11 16:36 index.html
