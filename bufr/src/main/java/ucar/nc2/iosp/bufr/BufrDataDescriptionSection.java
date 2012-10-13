@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -32,10 +32,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
-/*
- * Data Description Section (4) of a BUFR record.
- */
-
+import net.jcip.annotations.Immutable;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -43,9 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class that represents the Data Description Section (4) of a BUFR record.
+ * Represents  Section 3 of a BUFR message.
+ * @author caron
+ * @since May 10, 2008
  */
-
+@Immutable
 public class BufrDataDescriptionSection {
 
   /**

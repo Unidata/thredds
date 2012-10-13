@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -32,37 +32,21 @@
  */
 package ucar.nc2.iosp.bufr;
 
-/*
- * BufrIndicatorSection.java  1.0  01/09/2006
- * @author  Robb Kambic
- * @version 1.0
- *
- */
-
+import net.jcip.annotations.Immutable;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 
 /**
- * Section 0 of BUFR data record
+ * A class representing the IndicatorSection (section 0) of a BUFR record.
+ * Handles editions 2,3,4.
+ *
+ * @author Robb Kambic
+ * @author caron
  */
-
+@Immutable
 public class BufrIndicatorSection {
-  private long startPos;
-
-  /**
-   * Length in bytes of BUFR record.
-   */
-  private final int bufrLength;
-
-  /*
-   * Length in bytes of BufrIndicatorSection.
-   * Currently only BUFR edition 3 supported - length is 8 octets/bytes.
-   */
-  //private final int length;
-
-  /**
-   * Edition of BUFR specification used.
-   */
+  private final long startPos;
+  private final int bufrLength; // Length in bytes of BUFR record.
   private final int edition;
 
   // *** constructors *******************************************************
@@ -77,7 +61,6 @@ public class BufrIndicatorSection {
     this.startPos = raf.getFilePointer() - 4; // start of BUFR message, including "BUFR"
     bufrLength = BufrNumbers.uint3(raf);
     edition = raf.read();
-    //length = 8;
   }
 
   /**
@@ -88,15 +71,6 @@ public class BufrIndicatorSection {
   public final int getBufrLength() {
     return bufrLength;
   }
-
-  /*
-   * Get the byte length of the IndicatorSection0 section.
-   *
-   * @return length in bytes of IndicatorSection0 section
-   *
-  public final int getLength() {
-    return length;
-  }  */
 
   /**
    * Get the edition of the BUFR specification used.

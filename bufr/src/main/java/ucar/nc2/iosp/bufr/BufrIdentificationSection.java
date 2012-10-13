@@ -32,11 +32,10 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.util.GregorianCalendar;
-import java.util.Date;
 import java.io.IOException;
 
 
@@ -47,7 +46,7 @@ import java.io.IOException;
  * @author Robb Kambic
  * @author caron
  */
-
+@Immutable
 public class BufrIdentificationSection {
 
   /**
@@ -74,8 +73,8 @@ public class BufrIdentificationSection {
    * Optional section exists.
    */
   private final boolean hasOptionalSection;
-  private int optionalSectionLen;
-  private long optionalSectionPos;
+  private final int optionalSectionLen;
+  private final long optionalSectionPos;
 
   /**
    * Data category.
@@ -117,11 +116,8 @@ public class BufrIdentificationSection {
     // section 1 octet 1-3 (length of section)
     int length = BufrNumbers.int3(raf);
 
-    //System.out.println( "IdentificationSection length=" + length );
-
     // master table octet 4
     master_table = raf.read();
-    //System.out.println( "master tbl=" + master_table );
 
     if (is.getBufrEdition() < 4) {
 
@@ -133,38 +129,29 @@ public class BufrIdentificationSection {
       } else { // edition 3
         // Center  octet 5
         subcenter_id = raf.read();
-        //System.out.println( "subcenter_id=" + subcenter_id );
         // Center  octet 6
         center_id = raf.read();
-        //System.out.println( "center_id=" + center_id );
       }
 
       // Update sequence number  octet 7
       update_sequence = raf.read();
-      //System.out.println( "update=" + update );
 
       // Optional section octet 8
       int optional = raf.read();
       hasOptionalSection = (optional & 0x80) != 0;
-      //System.out.println( "optional=" + optional );
 
       // Category  octet 9
       category = raf.read();
-      //System.out.println( "category=" + category );
 
       // Category  octet 10
       subCategory = raf.read();
-      //System.out.println( "subCategory=" + subCategory );
-
       localSubCategory = -1; // not used
 
       // master table version octet 11
       master_table_version = raf.read();
-      //System.out.println( "master tbl_version=" + master_table_version );
 
       // local table version octet 12
       local_table_version = raf.read();
-      //System.out.println( "local tbl_version=" + local_table_version );
 
       // octets 13-17 (reference time of forecast)
       int lyear = raf.read();
@@ -231,8 +218,11 @@ public class BufrIdentificationSection {
       optionalSectionLen = optionalLen - 4;
       raf.skipBytes(1);
       optionalSectionPos = raf.getFilePointer();
-
       raf.skipBytes(optionalSectionLen);
+
+    } else {
+      optionalSectionLen = -1;
+      optionalSectionPos = -1;
     }
   }
 
