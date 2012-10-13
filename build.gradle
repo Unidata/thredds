@@ -1,0 +1,29 @@
+subprojects {
+  apply plugin: 'java'
+
+  sourceCompatibility = 1.6
+  version = '4.3.14'
+
+  repositories {
+    maven {
+        url "https://artifacts.unidata.ucar.edu/content/groups/unidata/"
+    }
+    mavenCentral()
+  }
+
+  jar {
+    manifest {
+      attributes 'Implementation-Version': version,
+              'Implementation-Vendor': 'UCAR/Unidata',
+              'Implementation-Vendor-Id': 'edu.ucar'
+    }
+  }
+
+  uploadArchives {
+    repositories {
+      flatDir {
+        dirs 'repos'
+      }
+    }
+  }
+}

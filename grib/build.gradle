@@ -1,0 +1,10 @@
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'grib'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+  compile 'org.jsoup:jsoup:1.6.1'
+}

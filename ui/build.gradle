@@ -1,0 +1,19 @@
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'toolsUI'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+  compile project(':bufr')
+  compile project(':grib')
+  compile project(':opendap')
+  compile project(':visad')
+  compile 'com.jgoodies:forms:1.0.7'
+  compile 'jfree:jcommon:1.0.15'
+  compile 'jfree:jfreechart:1.0.13'
+  compile 'lucene:lucene:1.4.3'
+  compile 'org.bounce:bounce:0.14'
+  compile 'org.springframework:spring-context:3.1.1.RELEASE'
+}
