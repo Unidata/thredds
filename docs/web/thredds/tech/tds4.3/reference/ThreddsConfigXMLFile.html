@@ -107,8 +107,7 @@ information about the group that hosts the server.<br>
   <li>the Server section of the WMS GetCapabilities response; and</li>
   <li>the server information documents (see the <a href="ServerInfo.html">ServerInfo page</a>)</li>
 </ul>
- <p>Coming soon, it will also be used in:</p>
- <ul>
+<ul>
    <li>the Server section of the WCS GetCapabilities response.</li>
    <li>all generated THREDDS catalogs that don't override this information.</li>
  </ul>
@@ -117,9 +116,8 @@ information about the group that hosts the server.<br>
   supersedes information in the <code>htmlSetup</code> element (described below).
   The superseded information is listed as deprecated in the description of the
   <code>htmlSetup</code> element below.</p>
-<p>NOTE: URLs may be absolute or relative. Relative URLs must be
-relative to the webapp URL, i.e., http://server:port/thredds/.</p>
-
+<p>NOTE: URLs may be absolute or relative. The easiest way to use your own logo is to put it in the <strong>${tomcat_home}/webapps/ROOT/</strong> directory and specify it here as <strong>/logo.png</strong></p>
+<p>do relative URLs is to use </p>
 <h3><a name="Generated_HTML_Pages"></a>Generated HTML Pages</h3>
 
  <p>In the <code>htmlSetup</code> element, you can configure which CSS

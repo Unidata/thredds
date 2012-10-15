@@ -1284,7 +1284,12 @@ public class InvDatasetImpl extends InvDataset {
       buff.append("</ul>\n");
     }
 
-    java.util.List<InvProperty> props = ds.getProperties();
+    java.util.List<InvProperty> propsOrg = ds.getProperties();
+    java.util.List<InvProperty> props = new ArrayList<InvProperty>(ds.getProperties().size());
+    for (InvProperty p : propsOrg)  {
+      if (!p.getName().startsWith("viewer"))  // eliminate the viewer properties from the html view
+        props.add(p);
+    }
     if (props.size() > 0) {
       buff.append("<h3>Properties:</h3>\n<ul>\n");
       for (InvProperty p : props) {

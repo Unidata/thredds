@@ -330,7 +330,7 @@ public class GeoGridTable extends JPanel {
   }
 
   public List<String> getSelectedGrids() {
-    ArrayList grids = varTable.getSelectedBeans();
+    List grids = varTable.getSelectedBeans();
     List<String> result = new ArrayList<String>();
     for (Object bean : grids) {
       GeogridBean gbean = (GeogridBean) bean;

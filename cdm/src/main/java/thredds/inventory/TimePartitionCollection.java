@@ -35,6 +35,7 @@ package thredds.inventory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.filter.WildcardMatchOnName;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarPeriod;
 
 import java.io.File;
@@ -258,14 +259,13 @@ public class TimePartitionCollection extends MFileCollectionManager {
     }
     Collections.sort(files);
 
-    SimpleDateFormat df = new java.text.SimpleDateFormat("yyyyMMdd"); // one day
-    df.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+    CalendarDateFormatter cdf = new CalendarDateFormatter("yyyyMMdd");
 
     List<CollectionManager> result = new ArrayList<CollectionManager>();
     TimePartitionCollectionManager curr = null;
     for (DatedMFile dmf : files) {
       if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
-        String name = collectionName+"_"+df.format(dmf.cdate.toDate());
+        String name = collectionName+"_"+ cdf.toString(dmf.cdate);
         curr = new TimePartitionCollectionManager(name, dmf, getRoot(), this.auxInfo);
         result.add(curr);
       }

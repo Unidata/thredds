@@ -16,6 +16,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
@@ -64,7 +65,9 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 			if(zAxis == null){
 				profilesNames.add(NO_VERT_LEVEL);
 			}else{
-				profilesNames.add( zAxis.getShortName()); 
+				profilesNames.add( zAxis.getShortName());				
+				//Add the zAxis as variable to keep the record in the new file (same as lat, lon. However lat and lon shouldn't be lat(profile) and lon(profile)? --> check!!  ) 
+				wantedVars.add(zAxis);
 			}
 		}
 		
@@ -93,11 +96,13 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 				CoordinateAxis1D zAxis = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();			
 				String profileName = NO_VERT_LEVEL;
 				EarthLocation earthLocation=null;			
-
+				Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
+				
 				if(zAxis == null){
 					//Write no vert levels
 					StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup );		
 					sdata.findMember("date").getDataArray().setObject(0, date.toString());				
+					//sdata.findMember("time").getDataArray().setObject(0, date.toString());
 					gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
 					Iterator<String> itVars = varsGroup.iterator();
 					int cont =0;
@@ -107,8 +112,8 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 										
 						if (gap.hasTime(grid, date) ) {
 							GridAsPointDataset.Point p = gap.readData(grid, date,	point.getLatitude(), point.getLongitude());
-							sdata.findMember("lat").getDataArray().setDouble(0, p.lat );
-							sdata.findMember("lon").getDataArray().setDouble(0, p.lon );		
+							//sdata.findMember("latitude").getDataArray().setDouble(0, p.lat );
+							//sdata.findMember("longitude").getDataArray().setDouble(0, p.lon );		
 							sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );							
 							if(cont ==0){
 								earthLocation = new EarthLocationImpl(p.lat, p.lon, Double.NaN );
@@ -116,13 +121,13 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 							
 					
 						}else{ //Set missing value
-							sdata.findMember("lat").getDataArray().setDouble(0, point.getLatitude() );
-							sdata.findMember("lon").getDataArray().setDouble(0, point.getLongitude() );
+							//sdata.findMember("latitude").getDataArray().setDouble(0, point.getLatitude() );
+							//sdata.findMember("longitude").getDataArray().setDouble(0, point.getLongitude() );
 							sdata.findMember(varName).getDataArray().setDouble(0, gap.getMissingValue(grid) );						
 							earthLocation = new EarthLocationImpl(point.getLatitude(), point.getLongitude(), Double.NaN );
 						}					
 					}
-					Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
+					
 					writerCFProfileCollection.writeRecord(profileName, timeCoordValue, date, earthLocation , sdata);					
 								
 				}else{
@@ -134,11 +139,17 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 					
 					 
 					gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);					
-				
-					for(double vertLevel : vertCoords){					
-						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis.getUnitsString());		
-						sdata.findMember("date").getDataArray().setObject(0, date.toString());
-					
+				    int vertCoordsIndex = 0;
+					for(double vertLevel : vertCoords){
+						
+						//The zAxis was added to the variables and we need a structure data that contains z-levels  
+						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis);		
+						//sdata.findMember("date").getDataArray().setObject(0, date.toString());
+						
+						sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
+						sdata.findMember(zAxis.getShortName()).getDataArray().setDouble(0, zAxis.getCoordValues()[vertCoordsIndex]  );
+						vertCoordsIndex++;
+						
 						int cont =0;
 						// Iterating vars						
 						Iterator<String> itVars = varsGroup.iterator();
@@ -148,9 +159,9 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 						
 							if (gap.hasTime(grid, date) && gap.hasVert(grid, vertLevel)) {
 								GridAsPointDataset.Point p = gap.readData(grid, date,	vertLevel, point.getLatitude(), point.getLongitude() );
-								sdata.findMember("lat").getDataArray().setDouble(0, p.lat );
-								sdata.findMember("lon").getDataArray().setDouble(0, p.lon );
-								sdata.findMember("vertCoord").getDataArray().setDouble(0, p.z );
+								//sdata.findMember("latitude").getDataArray().setDouble(0, p.lat );
+								//sdata.findMember("longitude").getDataArray().setDouble(0, p.lon );
+								//sdata.findMember("vertCoord").getDataArray().setDouble(0, p.z );
 								sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );
 						
 								if(cont ==0){
@@ -158,15 +169,15 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 								}
 				
 							}else{ //Set missing value
-								sdata.findMember("lat").getDataArray().setDouble(0, point.getLatitude() );
-								sdata.findMember("lon").getDataArray().setDouble(0, point.getLongitude() );
-								sdata.findMember("vertCoord").getDataArray().setDouble(0,  vertLevel);
+								//sdata.findMember("latitude").getDataArray().setDouble(0, point.getLatitude() );
+								//sdata.findMember("longitude").getDataArray().setDouble(0, point.getLongitude() );
+								//sdata.findMember("vertCoord").getDataArray().setDouble(0,  vertLevel);
 								sdata.findMember(varName).getDataArray().setDouble(0, gap.getMissingValue(grid) );						
 								earthLocation = new EarthLocationImpl(point.getLatitude(), point.getLongitude() , vertLevel);
 							}
 							cont++;
 						}			
-						Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
+						//Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
 						writerCFProfileCollection.writeRecord(profileName, timeCoordValue, date, earthLocation , sdata);									
 					}								
 				}			

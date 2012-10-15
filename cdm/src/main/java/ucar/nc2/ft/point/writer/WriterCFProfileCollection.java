@@ -32,17 +32,31 @@
 
 package ucar.nc2.ft.point.writer;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayFloat;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.ArrayStructureW;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureMembers;
+import ucar.ma2.StructureMembers.Member;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.*;
-import ucar.nc2.ft.*;
-import ucar.ma2.*;
 import ucar.unidata.geoloc.EarthLocation;
-
-import java.util.*;
-import java.io.IOException;
 
 /**
  * Write a CF "Discrete Sample" profile collection file.
@@ -64,7 +78,6 @@ public class WriterCFProfileCollection extends CFPointWriter {
   private static final String profileDimName = "profile";
   private static final String idName = "profileId";
   private static final String profileIndexName = "profileIndex";
-  private static final String zName = "z";
   private static final boolean debug = false;
 
   ///////////////////////////////////////////////////
@@ -85,7 +98,9 @@ public class WriterCFProfileCollection extends CFPointWriter {
     createDataVariables(dataVars);
 
     writer.create(); // done with define mode
+    
     record = writer.addRecordStructure();
+    
     // System.out.printf("%s%n", ncfile);
 
     writeProfileData(profileNames); // write out the profile info
@@ -150,8 +165,8 @@ public class WriterCFProfileCollection extends CFPointWriter {
     writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
     writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));
 
-    /*
-    Variable zVar = ncfile.addVariable(zName, DataType.DOUBLE, recordDimName);
+    
+    /*Variable zVar = ncfile.addVariable(zName, DataType.DOUBLE, recordDimName);
     ncfile.addVariableAttribute(timeVar, new Attribute(CDM.UNITS, zUnit));
     ncfile.addVariableAttribute(timeVar, new Attribute(CDM.LONG_NAME, "time of measurement")); */
 
@@ -244,11 +259,13 @@ public class WriterCFProfileCollection extends CFPointWriter {
     if (parentIndex == null)
       throw new RuntimeException("Cant find profile " + profileName);
 
+    int[] parentIndexArr = {parentIndex};
+    
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.
     ArrayStructureW sArray = new ArrayStructureW(sdata.getStructureMembers(), new int[]{1});
     sArray.setStructureData(sdata, 0);
 
-    timeArray.set(0, timeCoordValue);
+    //timeArray.set(0, timeCoordValue);
     latArray.set(0, loc.getLatitude());
     lonArray.set(0, loc.getLongitude());
     altArray.set(0, loc.getAltitude());
@@ -256,10 +273,47 @@ public class WriterCFProfileCollection extends CFPointWriter {
 
     // write the recno record
     origin[0] = recno;
+    
     try {
-      writer.write(record, origin, sArray);
-      writer.write(time, origin, timeArray);
-      writer.write(index, origin, parentArray);
+
+    	//if record is null variables that use the unlimited dimension are not in a structure
+    	//we decompose the structure data and write the variables contained on it sequentially?
+    	// --> fails!!
+    	if(record == null){
+    		StructureMembers sm = sdata.getStructureMembers();
+    		for( Member m : sm.getMembers() ){
+    			Variable v = writer.findVariable(m.getName());
+    			if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) ){
+    				//DataType dt = m.getDataType();
+    				DataType v_dt =v.getDataType();
+    				DataType m_dt =m.getDataType();
+    				
+    				if(m_dt == DataType.DOUBLE ){
+    					Double data = m.getDataArray().getDouble(0);
+    					ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+    					tmpArray.setDouble(0, data);
+    					writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+    				}
+    				
+    				if(m_dt == DataType.FLOAT){
+    					Float data = m.getDataArray().getFloat(0);
+    					ArrayFloat.D1 tmpArray = new ArrayFloat.D1(1);
+    					tmpArray.setFloat(0, data);
+    					writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+    				}    				    				    				
+    			}
+    		}
+    	}
+    	else{
+    		writer.write(record, origin, sArray);
+    	}
+    	
+    	//writer.write(time, origin, timeArray); //--> time was added in the structure and is written in write(record,...)
+    	writer.write(index, origin, parentArray);
+    	
+   		writer.write(writer.findVariable(latName), parentIndexArr, latArray);
+   		writer.write(writer.findVariable(lonName), parentIndexArr, lonArray);
+
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();

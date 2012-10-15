@@ -57,7 +57,8 @@ class PointDataController extends AbstratNcssDataRequestController{
 			
 			//Checking request format...			
 			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.POINT_REQUEST  );			
-			
+						
+						
 			LatLonPoint point = params.getLatLonPoint(); //Check if the point is within boundaries!!
 					
 			checkRequestedVars(gridDataset,  params);
@@ -130,8 +131,9 @@ class PointDataController extends AbstratNcssDataRequestController{
 		}	
 	}
 	
-	if(!sameVertCoord)
-		throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Only Grid as point requests on variables with same vertical levels are supported.");
+	//Let's allow different vertical levels...
+	//if(!sameVertCoord)
+	//	throw new UnsupportedOperationException("The variables requested: "+ params.getVar()  +" have different vertical levels. Only Grid as point requests on variables with same vertical levels are supported.");
 		
 	}
 	
@@ -171,6 +173,7 @@ class PointDataController extends AbstratNcssDataRequestController{
 				throw new VariableNotContainedInDatasetException("Variable: "+var+" is not contained in the requested dataset");
 			}			
 			
+		
 			CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();
 			String axisKey = null;
 			if(axis == null){

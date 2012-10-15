@@ -269,7 +269,6 @@ second
     cdu = CalendarDateUnit.of(null, "calendar years since 1970-01-01");
     cd = cdu.makeCalendarDate(val);
     System.out.printf("%n%d %s == %s%n", val, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));
-
   }
 
 }

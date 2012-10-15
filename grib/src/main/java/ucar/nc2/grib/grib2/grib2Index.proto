@@ -20,6 +20,9 @@ message GribGdsSection {
   required bytes gds = 2;
 }
 
+// we have the info in Grib2Record to reconstruct the indicator, id, gds, pds, drs, bms sections
+// we need to read from original raf to get bitmap, Grib2Drs, and data
+
 message Grib2Record {
   required bytes header = 1;
 
@@ -41,12 +44,14 @@ message Grib2Record {
   required uint32 drsTemplate = 9;
   required uint32 drsNpoints = 10;
 
-  required uint64 bmsPos = 11;
+  required uint64 bmsPos = 11;   // if original is 254, replace with previously defined (starting with version 6)
   required uint32 bmsIndicator = 12;
+  optional bool bmsReplaced = 16 [default = false];
 
   required uint64 dataPos = 13;
   required uint32 dataLen = 14;
 }
+
 
 message Grib2Index {
   required string filename = 1;
@@ -54,6 +59,6 @@ message Grib2Index {
   repeated Grib2Record records = 3;
 }
 
-//  cd c:/dev/tds4.2/grib/src/main/java
+//  cd c:/dev/github/thredds/grib/src/main/java
 //  protoc --proto_path=. --java_out=. ucar/nc2/grib/grib2/grib2Index.proto
 

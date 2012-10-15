@@ -128,5 +128,4 @@ public class TestGeoGrid extends TestCase {
 
     dataset.close();
   }
-
 }

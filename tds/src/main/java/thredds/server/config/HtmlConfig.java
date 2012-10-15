@@ -32,8 +32,6 @@
  */
 package thredds.server.config;
 
-import thredds.servlet.ThreddsConfig;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;

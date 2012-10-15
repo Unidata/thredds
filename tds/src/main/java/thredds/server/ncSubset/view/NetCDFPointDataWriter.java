@@ -76,7 +76,8 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 		
 		boolean headerDone = false;
 		if( groupedVars.size() > 1 ){ //Variables with different vertical levels
-			featureType = CF.FeatureType.profile;
+			//featureType = CF.FeatureType.profile;
+			featureType = CF.FeatureType.timeSeriesProfile;
 			
 		}else{
 			List<String> keys = new ArrayList<String>(groupedVars.keySet());
@@ -85,7 +86,9 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 			if( zAxis == null ){//Station
 				featureType = CF.FeatureType.timeSeries; 
 			}else{//Point collection
-				featureType = CF.FeatureType.point;
+				//featureType = CF.FeatureType.point;
+				//featureType = CF.FeatureType.profile; //Is a time series profile!!
+				featureType = CF.FeatureType.timeSeriesProfile;
 			}
 		}
 		
@@ -101,8 +104,26 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 		return headerDone;
 	}	
 
-	@Override
-	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
+	
+	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord){
+		
+		//loop over wDates
+		CalendarDate date;
+		Iterator<CalendarDate> it = wDates.iterator();
+		boolean pointRead =true;
+
+		while( pointRead && it.hasNext() ){
+			date = it.next();
+			pointRead = write( groupedVars, gds, date, point, vertCoord);
+
+		}		
+		
+		return pointRead;
+		
+	}
+	
+
+	private boolean write( Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
 		
 		boolean allWrite = pointWriterWrapper.write(groupedVars, gridDataset, date, point, targetLevel);		
 				

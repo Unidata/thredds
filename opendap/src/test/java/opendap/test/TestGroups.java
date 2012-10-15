@@ -63,9 +63,15 @@ public class TestGroups extends UnitTestCommon
     }
   }
 
-  @Test
   public void
-  testGroup() throws Exception {
+  testGroup() throws Exception
+  {
+    boolean usegroups = RC.getUseGroups();
+
+    if(!usegroups) {
+        assertTrue("TestGroups: Group Support not enabled",false);
+    }
+
     // Check if we are running against motherlode or localhost, or what.
     String testserver = System.getProperty("testserver");
     if (testserver == null) testserver = DFALTTESTSERVER;
@@ -92,15 +98,25 @@ public class TestGroups extends UnitTestCommon
               "http://localhost:8080/dts/structdupname",
               ""));
     }
-
-    if (!RC.getUseGroups()) {
-      System.out.println("Groups not supported; continuing");
-      //assertTrue("Groups not supported; continuing", true);
-      //return; // do not run if groups are not being supported
+    if (true) {
+      results.add(new Result("External user provided group example",
+              "http://motherlode.ucar.edu:8081/thredds/dodsC/testdods/K1VHR_05JUL2012_0700_L2B_OLR.h5",
+              "file://"+threddsRoot + "/opendap/src/test/data/baselinemisc/K1VHR_05JUL2012_0700_L2B_OLR.h5.cdl"));
     }
-
+    // Run  with usegroups == true
+    System.out.println("TestGroups:");
     for (Result result : results) {
-      System.out.println("TestGroups: " + result.url);
+      System.out.println("url: " + result.url);
+      boolean pass = process1(result);
+      if (!pass) {
+        assertTrue("Testing " + result.title, pass);
+      }
+    }
+  }
+
+  boolean process1(Result result)
+          throws Exception
+  {
       DODSNetcdfFile ncfile = new DODSNetcdfFile(result.url);
       if (ncfile == null)
         throw new Exception("Cannot read: " + result.url);
@@ -110,10 +126,14 @@ public class TestGroups extends UnitTestCommon
       try {
         pw.close();
         ow.close();
-      } catch (IOException ioe) {
-      }
-      ;
-      StringReader baserdr = new StringReader(result.cdl);
+      } catch (IOException ioe) {};
+      // See if the cdl is in a file or a string.
+      Reader baserdr = null;
+      if(result.cdl.startsWith("file://")) {
+          File f = new File(result.cdl.substring("file://".length(),result.cdl.length()));
+          baserdr = new FileReader(f);
+      } else
+          baserdr = new StringReader(result.cdl);
       String captured = ow.toString();
       StringReader resultrdr = new StringReader(captured);
       // Diff the two files
@@ -121,20 +141,19 @@ public class TestGroups extends UnitTestCommon
       boolean pass = !diff.doDiff(baserdr, resultrdr);
       baserdr.close();
       resultrdr.close();
-      if (!pass) {
-        assertTrue("Testing " + result.title, pass);
-      }
-      // Dump the output for visual comparison
-      if (System.getProperty("visual") != null) {
-        System.out.println("Testing " + result.title + " visual:");
+      visual(result.title,captured);
+      return pass;
+  }
+
+  void visual(String title, String captured)
+  {
+    // Dump the output for visual comparison
+    if (System.getProperty("visual") != null) {
+        System.out.println("Testing " + title + " visual:");
         System.out.println("---------------");
         System.out.print(captured);
         System.out.println("---------------");
-      }
     }
-    System.out.flush();
-    System.err.flush();
   }
-
 
 }

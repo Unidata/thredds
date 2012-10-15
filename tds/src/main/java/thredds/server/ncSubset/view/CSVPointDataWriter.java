@@ -1,6 +1,5 @@
 package thredds.server.ncSubset.view;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -12,8 +11,6 @@ import java.util.Map;
 import org.jfree.util.Log;
 import org.springframework.http.HttpHeaders;
 
-import thredds.server.ncSubset.controller.AbstractNcssController;
-import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
@@ -21,7 +18,6 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.LatLonPoint;
 
 class CSVPointDataWriter implements PointDataWriter {
@@ -48,55 +44,88 @@ class CSVPointDataWriter implements PointDataWriter {
 	//public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, CoordinateAxis1D zAxis) {
 	public boolean header(Map<String,List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point) {
 		
-		/*allVars = new ArrayList<String>();
-	
-		boolean headerWritten=false;		
-		StringBuilder sb = new StringBuilder();		
-		sb.append("date,");
-		sb.append("lat[unit=\"degrees_north\"],");
-		sb.append("lon[unit=\"degrees_east\"],");
-		
-		List<String> keys = new ArrayList<String>(groupedVars.keySet());
-		for(String key : keys){
-			List<String> groupVars = groupedVars.get(key);
-			allVars.addAll(groupVars);			
-		    CoordinateAxis1D zAxis = gridDataset.findGridDatatype(groupVars.get(0)).getCoordinateSystem().getVerticalAxis();
-			//multiple vertical axis are possible!!!
-		    if(zAxis != null)
-		    	sb.append("vertCoord[unit=\""+zAxis.getUnitsString() +"\"],");
-		
-		    Iterator<String> it = groupVars.iterator();
-		    while(it.hasNext()){
-		    	GridDatatype grid = gridDataset.findGridDatatype(it.next());
-		    	sb.append(grid.getName());			
-		    	if( grid.getUnitsString()!=null ) sb.append("[unit=\"" + grid.getUnitsString() + "\"]");			
-		    	if(it.hasNext()) sb.append(",");
-		    }
-						
-		}
-		printWriter.write(sb.toString());
-		printWriter.println();
-		headerWritten=true;
-		
-		return headerWritten;*/
+//		allVars = new ArrayList<String>();
+//	
+//		boolean headerWritten=false;		
+//		StringBuilder sb = new StringBuilder();		
+//		sb.append("date,");
+//		sb.append("lat[unit=\"degrees_north\"],");
+//		sb.append("lon[unit=\"degrees_east\"],");
+//		
+//		List<String> keys = new ArrayList<String>(groupedVars.keySet());
+//		for(String key : keys){
+//			List<String> groupVars = groupedVars.get(key);
+//			allVars.addAll(groupVars);			
+//		    CoordinateAxis1D zAxis = gridDataset.findGridDatatype(groupVars.get(0)).getCoordinateSystem().getVerticalAxis();
+//			//multiple vertical axis are possible!!!
+//		    if(zAxis != null)
+//		    	sb.append("vertCoord[unit=\""+zAxis.getUnitsString() +"\"],");
+//		
+//		    Iterator<String> it = groupVars.iterator();
+//		    while(it.hasNext()){
+//		    	GridDatatype grid = gridDataset.findGridDatatype(it.next());
+//		    	sb.append(grid.getName());			
+//		    	if( grid.getUnitsString()!=null ) sb.append("[unit=\"" + grid.getUnitsString() + "\"]");			
+//		    	if(it.hasNext()) sb.append(",");
+//		    }
+//						
+//		}
+//		printWriter.write(sb.toString());
+//		printWriter.println();
+//		headerWritten=true;
+//		
+//		return headerWritten;
 		
 		//Back to the restriction with only variables with same vertical level!!! --> only one header
-		List<String> keys =new ArrayList<String>(groupedVars.keySet());
-		List<String> varsGroup = groupedVars.get(keys.get(0));
-		writeGroupHeader(varsGroup, gridDataset);						
+		//List<String> keys =new ArrayList<String>(groupedVars.keySet());
+		//List<String> varsGroup = groupedVars.get(keys.get(0));
+		//writeGroupHeader(varsGroup, gridDataset);
+		
 		return true; //Does nothing
+		
 	}
 
-	@Override
-	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
-		
+	/*
+	 * 
+	 *  We write one header for each variables group so in this case iterate 
+	 *  over variable group and over time for each group 
+	 *  
+	 * 	(non-Javadoc)
+	 * @see thredds.server.ncSubset.view.PointDataWriter#write(java.util.Map, ucar.nc2.dt.GridDataset, java.util.List, ucar.unidata.geoloc.LatLonPoint, java.lang.Double)
+	 */
+	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord){
+
 		boolean allDone = true;
-		
+
 		List<String> keys =new ArrayList<String>(groupedVars.keySet());
 		//loop over variable groups
 		for(String key : keys){
-
 			List<String> varsGroup = groupedVars.get(key);
+			writeGroupHeader(varsGroup, gds);
+			//Loop over time
+			CalendarDate date;
+			Iterator<CalendarDate> it = wDates.iterator();
+			boolean pointRead =true;
+			while( pointRead && it.hasNext() ){
+				date = it.next();
+				pointRead = write(varsGroup, gds, date, point, vertCoord);
+			}			
+			printWriter.println();		
+		}
+
+		return allDone;
+	}	
+
+	//private boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
+	private boolean write(List<String> varsGroup,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
+		
+		boolean allDone = true;
+		
+		//List<String> keys =new ArrayList<String>(groupedVars.keySet());
+		//loop over variable groups
+		//for(String key : keys){
+
+			//List<String> varsGroup = groupedVars.get(key);
 			//writeGroupHeader(varsGroup, gridDataset);
 			
 			GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset,	varsGroup);			
@@ -122,7 +151,7 @@ class CSVPointDataWriter implements PointDataWriter {
 				
 			}			
 			//printWriter.println();
-		}
+		//}
 		
 		return allDone;
 	}	
@@ -270,15 +299,15 @@ class CSVPointDataWriter implements PointDataWriter {
 		if(!headersSet){
 			httpHeaders = new HttpHeaders();
 			//Set the response headers...
-			String filename = gridDataset.getLocationURI();
-			int pos = filename.lastIndexOf("/");
-			filename = filename.substring(pos + 1);
-			if (!filename.endsWith(".csv"))
-				filename = filename + ".csv";
-			
-			httpHeaders.set("Content-Location", filename );
-			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-			headersSet = true;
+//			String filename = gridDataset.getLocationURI();
+//			int pos = filename.lastIndexOf("/");
+//			filename = filename.substring(pos + 1);
+//			if (!filename.endsWith(".csv"))
+//				filename = filename + ".csv";
+//			
+//			httpHeaders.set("Content-Location", filename );
+//			httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+//			headersSet = true;
 		}	
 	}	
 

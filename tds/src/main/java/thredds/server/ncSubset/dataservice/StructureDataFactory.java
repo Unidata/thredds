@@ -142,26 +142,32 @@ public final class StructureDataFactory {
 	    int[] scalarShape = new int[0];
 
 	    StructureMembers.Member stnMember = members.addMember("station", null, null, DataType.STRING, scalarShape);
+	    //StructureMembers.Member stnMember = members.addMember("profileId", null, null, DataType.STRING, scalarShape);
 	    ArrayObject.D0 stnData = new ArrayObject.D0(String.class);
 	    stnMember.setDataArray(stnData);
 	    
-	    StructureMembers.Member timeMember = members.addMember("date", null, null, DataType.STRING, scalarShape);	    
-	    ArrayObject.D0 timeData = new ArrayObject.D0(String.class);	    
-	    timeMember.setDataArray(timeData);
+	    //StructureMembers.Member timeMember = members.addMember("date", null, null, DataType.STRING, scalarShape);
+	    //ArrayObject.D0 timeData = new ArrayObject.D0(String.class);	    
+	    //timeMember.setDataArray(timeData);
 	    
-	    StructureMembers.Member latMember = members.addMember("lat", null, "degrees_north", DataType.DOUBLE, scalarShape);
-	    ArrayDouble.D0 latData = new ArrayDouble.D0();
-	    latMember.setDataArray(latData);
+	    StructureMembers.Member timeMember = members.addMember("time", null, null, DataType.DOUBLE, scalarShape);
+	    ArrayDouble.D0 timeData = new ArrayDouble.D0();
+	    timeMember.setDataArray(timeData);	    
+
 	    
-	    StructureMembers.Member lonMember = members.addMember("lon", null, "degrees_east", DataType.DOUBLE, scalarShape);
-	    ArrayDouble.D0 lonData = new ArrayDouble.D0();
-	    lonMember.setDataArray(lonData);
+	    //StructureMembers.Member latMember = members.addMember("latitude", null, "degrees_north", DataType.DOUBLE, scalarShape);
+	    //ArrayDouble.D0 latData = new ArrayDouble.D0();
+	    //latMember.setDataArray(latData);
+	    
+	    //StructureMembers.Member lonMember = members.addMember("longitude", null, "degrees_east", DataType.DOUBLE, scalarShape);
+	    //ArrayDouble.D0 lonData = new ArrayDouble.D0();
+	    //lonMember.setDataArray(lonData);
 
 	    StructureDataW sdata = new StructureDataW(members);
 	    sdata.setMemberData(stnMember, stnData);
 	    sdata.setMemberData(timeMember, timeData);
-	    sdata.setMemberData(latMember, latData);
-	    sdata.setMemberData(lonMember, lonData);
+	    //sdata.setMemberData(latMember, latData);
+	    //sdata.setMemberData(lonMember, lonData);
 
 
 
@@ -175,23 +181,23 @@ public final class StructureDataFactory {
 	    }
     
 	    String stnName = "GridPoint";
-	    stnData.set(stnName);		
-		
+	    stnData.set(stnName);					    
+	    
 		return sdata;
 	}
 	
-	/*public StructureData createSingleStructureData(GridDataset gds, LatLonPoint point, List<String> vars, CoordinateAxis1D zAxis){
+	public StructureData createSingleStructureData(GridDataset gds, LatLonPoint point, List<String> vars, CoordinateAxis1D zAxis){
 		int[] scalarShape = new int[0];
 		StructureDataW sd = (StructureDataW)createSingleStructureData(gds,  point,  vars);
 		
 	    // add vertical
 	    ArrayDouble.D0 zData = new ArrayDouble.D0();	 	    
-	    StructureMembers.Member zMember = sd.getStructureMembers().addMember("vertCoord", null, zAxis.getUnitsString(), DataType.DOUBLE, scalarShape);
+	    StructureMembers.Member zMember = sd.getStructureMembers().addMember(zAxis.getShortName(), null, zAxis.getUnitsString(), DataType.DOUBLE, scalarShape);
 	    zMember.setDataArray(zData);
 	    sd.setMemberData(zMember, zData);
 	    
 	    return sd;
-	}*/
+	}
 	
 	public StructureData createSingleStructureData(GridDataset gds, LatLonPoint point, List<String> vars, String zUnits){
 		int[] scalarShape = new int[0];

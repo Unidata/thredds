@@ -34,7 +34,6 @@ package ucar.nc2.stream;
 
 import ucar.nc2.util.net.HTTPException;
 import ucar.nc2.util.net.HTTPMethod;
-import ucar.nc2.util.net.HTTPMethodStream;
 import ucar.nc2.util.net.HTTPSession;
 import org.apache.commons.httpclient.Header;
 
@@ -216,7 +215,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     HTTPSession session = null;
     HTTPMethod method = null;
-    HTTPMethodStream hmstream = null;
     InputStream stream = null;
     int statusCode = 0;
 
@@ -244,9 +242,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         throw new IOException(method.getPath() + " " + method.getStatusLine());
 
       stream = method.getResponseBodyAsStream();
-      hmstream = new HTTPMethodStream(session, method, stream);
       if (showRequest) System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
-      return hmstream;
+      return stream;
 
     } catch (IOException ioe) {
       if (session != null) session.close();

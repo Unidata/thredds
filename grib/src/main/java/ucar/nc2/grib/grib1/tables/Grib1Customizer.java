@@ -375,7 +375,10 @@ public class Grib1Customizer implements GribTables {
     if (wmoTable3 == null)
       return null; // fail
 
-    return wmoTable3.get(code);
+    GribLevelType result = wmoTable3.get(code);
+    if (result == null)
+      result = new GribLevelType(code, "unknown code "+code, null, false);
+    return result;
   }
 
   protected HashMap<Integer, GribLevelType> readTable3(String path) {

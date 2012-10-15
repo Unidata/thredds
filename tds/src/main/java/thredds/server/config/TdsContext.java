@@ -65,7 +65,7 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * TDS context initialization - called from TdsConfigContextListener (not anymore).
- * TDS context implements ServletContextAware so it gets a ServletContext and performs most intial THREDDS set up:
+ * TDS context implements ServletContextAware so it gets a ServletContext and performs most initial THREDDS set up:
  *  - checks version
  *  - sets the content directory
  *  - read persistent user defined params and runs ThreddsConfig.init

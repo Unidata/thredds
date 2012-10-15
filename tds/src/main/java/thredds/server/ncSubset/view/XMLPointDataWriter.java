@@ -59,8 +59,8 @@ class XMLPointDataWriter implements PointDataWriter {
 		return headerWritten;
 	}
 	
-	@Override
-	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
+
+	private boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
 		
 		boolean allDone = true;
 		
@@ -96,6 +96,19 @@ class XMLPointDataWriter implements PointDataWriter {
 		return allDone;
 	}	
 	
+	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord){
+		
+		//loop over wDates
+		CalendarDate date;
+		Iterator<CalendarDate> it = wDates.iterator();
+		boolean pointRead =true;
+		while( pointRead && it.hasNext() ){
+			date = it.next();
+			pointRead = write(groupedVars, gds, date, point, vertCoord);
+		}		
+		
+		return pointRead;
+	}	
 
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits) {
 

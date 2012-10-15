@@ -49,6 +49,11 @@ public class Grib2SectionBitMap {
   private final long startingPosition;
   private final int bitMapIndicator;
 
+  static public Grib2SectionBitMap factory(RandomAccessFile raf, long startingPos) throws IOException {
+    raf.seek(startingPos);
+    return new Grib2SectionBitMap(raf);
+  }
+
   public Grib2SectionBitMap(RandomAccessFile raf) throws IOException {
     startingPosition = raf.getFilePointer();
 
@@ -62,7 +67,6 @@ public class Grib2SectionBitMap {
 
     // octet 6
     bitMapIndicator = raf.read();
-
     raf.seek(startingPosition + length);
   }
 
@@ -80,18 +84,20 @@ public class Grib2SectionBitMap {
   }
 
   /**
-   * Get bit map.
+   * Read the bit map array.
    *
    * @param raf read from here
    * @return bit map as array of byte values
    * @throws java.io.IOException on read error
    */
-  byte[] getBitmap(RandomAccessFile raf) throws IOException {
+  public byte[] getBitmap(RandomAccessFile raf) throws IOException {
     // no bitMap
     if (bitMapIndicator == 255)
       return null;
 
     // LOOK: bitMapIndicator=254 == previously defined bitmap
+    if (bitMapIndicator == 254)
+      System.out.println("HEY bitMapIndicator");
 
     if (bitMapIndicator != 0) {
       throw new UnsupportedOperationException("Grib2 Bit map section pre-defined (provided by center) = " + bitMapIndicator);
@@ -115,4 +121,13 @@ public class Grib2SectionBitMap {
     return bitmap; */
   }
 
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Grib2SectionBitMap");
+    sb.append("{startingPosition=").append(startingPosition);
+    sb.append(", bitMapIndicator=").append(bitMapIndicator);
+    sb.append('}');
+    return sb.toString();
+  }
 }

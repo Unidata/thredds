@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -38,12 +38,11 @@ import java.awt.event.*;
 import java.util.*;
 
 import javax.swing.*;
-import javax.swing.event.*;
 
 /** helper class for PrefPanel */
 class LayoutM implements LayoutManager2 {
     private String name;
-    private Map constraintMap = new HashMap();
+    private Map<Component,Object> constraintMap = new HashMap<Component,Object>();
     private Rectangle globalBounds = null;
 
     private boolean debug = false, debugLayout = false;
@@ -59,7 +58,7 @@ class LayoutM implements LayoutManager2 {
      * Adds the specified component to the layout, using the specified
      * constraint object.
      * @param comp the component to be added
-     * @param constraints  where/how the component is added to the layout.
+     * @param constraint  where/how the component is added to the layout.
      */
     public void addLayoutComponent(Component comp, Object constraint) {
       if (debug) System.out.println(name+ " addLayoutComponent= "+ comp.getClass().getName()+" "+comp.hashCode()+" "+constraint);
@@ -163,7 +162,7 @@ class LayoutM implements LayoutManager2 {
 
     /**
      * Lays out the specified container.
-     * @param parent the container to be laid out
+     * @param target the container to be laid out
      */
     public void layoutContainer(Container target) {
       synchronized (target.getTreeLock()) {
@@ -186,7 +185,7 @@ class LayoutM implements LayoutManager2 {
         reset( target);
         globalBounds = new Rectangle(0,0,0,0);
         while ( !layoutPass( target))
-          ((JComponent)target).setPreferredSize( globalBounds.getSize()); // ??
+          target.setPreferredSize( globalBounds.getSize()); // ??
       }
     }
 

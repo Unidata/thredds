@@ -52,11 +52,11 @@ public final class WriterCFPointCollectionWrapper implements CFPointWriterWrappe
     	atts.add(new Attribute( CDM.TITLE,  "Extract Points data from Grid file "+ gridDataset.getLocationURI()) );   		    		    	
 
     	// for now, we only have one point = one station
-    	String stnName = "GridPoint";
-    	String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
-    	ucar.unidata.geoloc.Station s = new ucar.unidata.geoloc.StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
-    	List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
-    	stnList.add(s);
+    	//String stnName = "GridPoint";
+    	//String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
+    	//ucar.unidata.geoloc.Station s = new ucar.unidata.geoloc.StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
+    	//List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
+    	//stnList.add(s);
     	
     	NetcdfDataset ncfile = (NetcdfDataset) gridDataset.getNetcdfFile(); // fake-arino
     	List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);    	
@@ -96,7 +96,9 @@ public final class WriterCFPointCollectionWrapper implements CFPointWriterWrappe
 		try{
 			for(double targetLevel : targetLevels){
 				StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars, zAxis.getUnitsString());		
-				sdata.findMember("date").getDataArray().setObject(0, date.toString());
+				//sdata.findMember("date").getDataArray().setObject(0, date.toString());
+				Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
+				sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
 				EarthLocation earthLocation=null;
 				int cont =0;
 				// Iterating vars
@@ -126,7 +128,7 @@ public final class WriterCFPointCollectionWrapper implements CFPointWriterWrappe
 					cont++;
 			}			
 
-			Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
+			
 			writerCFPointCollection.writeRecord(timeCoordValue, date, earthLocation , sdata);
 			//writerCFStationCollection.writeRecord((String)sdata.findMember("station").getDataArray().getObject(0), timeCoordValue, date, sdata);
 			allDone = true;

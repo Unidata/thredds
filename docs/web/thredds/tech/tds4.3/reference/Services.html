@@ -11,9 +11,33 @@
 <hr>
 
 
-<p>In your configuration catalogs, you must define the service like this:</p>
-<pre>  &lt;service name=&quot;all&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;<br />    &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;<br />    &lt;service name=&quot;HTTPServer&quot; serviceType=&quot;HTTPServer&quot; base=&quot;/thredds/fileServer/&quot;/&gt;<br />    &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot;/&gt;<br />    &lt;service name=&quot;wms&quot; serviceType=&quot;WMS&quot; base=&quot;/thredds/wms/&quot;/&gt;<br />    &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid/&quot;/&gt;<br />    &lt;service name=&quot;cdmremote&quot; serviceType=&quot;CdmRemote&quot; base=&quot;/thredds/cdmremote/&quot;/&gt;<br />    &lt;service name=&quot;ncml&quot; serviceType=&quot;NCML&quot; base=&quot;/thredds/ncml/&quot;/&gt;<br />    &lt;service name=&quot;uddc&quot; serviceType=&quot;UDDC&quot; base=&quot;/thredds/uddc/&quot;/&gt;<br />    &lt;service name=&quot;iso&quot; serviceType=&quot;ISO&quot; base=&quot;/thredds/iso/&quot;/&gt;<br />  &lt;/service&gt;</pre>
-<br />
+<p>In your configuration catalogs, you must define  services as in this example: </p>
+<pre>&lt;service name=&quot;all&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
+    &lt;service name=&quot;all&quot; serviceType=&quot;Compound&quot; base=&quot;&quot;&gt;
+    &lt;service name=&quot;HTTPServer&quot; serviceType=&quot;HTTPServer&quot; base=&quot;/thredds/fileServer/&quot;/&gt;
+    &lt;service name=&quot;opendap&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
+    &lt;service name=&quot;ncss&quot; serviceType=&quot;NetcdfSubset&quot; base=&quot;/thredds/ncss/grid/&quot;/&gt;
+    &lt;service name=&quot;cdmremote&quot; serviceType=&quot;CdmRemote&quot; base=&quot;/thredds/cdmremote/&quot;/&gt;
+    
+    &lt;service name=&quot;wcs&quot; serviceType=&quot;WCS&quot; base=&quot;/thredds/wcs/&quot;/&gt;
+    &lt;service name=&quot;wms&quot; serviceType=&quot;WMS&quot; base=&quot;/thredds/wms/&quot;/&gt;
+    
+    &lt;service name=&quot;iso&quot; serviceType=&quot;ISO&quot; base=&quot;/thredds/iso/&quot;/&gt;
+    &lt;service name=&quot;ncml&quot; serviceType=&quot;NCML&quot; base=&quot;/thredds/ncml/&quot;/&gt;
+    &lt;service name=&quot;uddc&quot; serviceType=&quot;UDDC&quot; base=&quot;/thredds/uddc/&quot;/&gt;
+&lt;/service&gt;</pre>
+<ul>
+  <li>You can change the service <em>name</em> to whatever you like, but everything else must be the same.</li>
+  <li>For a particular dataset, you can refer to an individual service, or use the compound service (<em>all</em> in this example) which adds all the nested services to the dataset.</li>
+</ul>
+<p><br />
+</p>
+<hr width="100%" />
+<address>
+<img alt="THREDDS" src="../../images/thread.png" height="71" width="73" />This document is maintained by Unidata and was
+last updated Sep 2012. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+support</a>.
+</address>
 
 </body>
 </html>

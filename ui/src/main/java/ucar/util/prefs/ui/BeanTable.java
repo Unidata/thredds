@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -170,9 +170,8 @@ public class BeanTable extends JPanel {
             "Delete Records", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
               return;
 
-          Iterator iter = getSelectedBeans().iterator();
-          while (iter.hasNext()) {
-            beans.remove( iter.next());
+          for (Object o : getSelectedBeans()) {
+            beans.remove(o);
           }
           model.fireTableDataChanged();
         }
@@ -252,13 +251,13 @@ public class BeanTable extends JPanel {
    * @return ArrayList of currently selected beans (wont be null).
    * @see #setSelectionMode
    */
-  public ArrayList getSelectedBeans() {
-    ArrayList list = new ArrayList();
+  public List getSelectedBeans() {
+    ArrayList<Object> list = new ArrayList<Object>();
     int[] r = jtable.getSelectedRows();
-    for (int i=0; i<r.length;i++) {
-      int mr = modelIndex(r[i]);
-      list.add( beans.get(mr));
-      if (debugSelected) System.out.println(" bean selected= "+mr+" "+beans.get(mr) );
+    for (int aR : r) {
+      int mr = modelIndex(aR);
+      list.add(beans.get(mr));
+      if (debugSelected) System.out.println(" bean selected= " + mr + " " + beans.get(mr));
     }
      return list;
   }
@@ -269,8 +268,8 @@ public class BeanTable extends JPanel {
    * @return ArrayList of currently selected cells (wont be null).
    * @see BeanTable#setSelectionMode(int).
    */
-  public ArrayList getSelectedCells() {
-    ArrayList list = new ArrayList();
+  public ArrayList<Object> getSelectedCells() {
+    ArrayList<Object> list = new ArrayList<Object>();
     int[] r = jtable.getSelectedRows();
     int[] c = jtable.getSelectedColumns();
     for (int i=0; i<r.length;i++)
@@ -291,15 +290,15 @@ public class BeanTable extends JPanel {
     int[] c = jtable.getSelectedColumns();
     TableColumnModel tcm = jtable.getColumnModel();
 
-    for (int j=0; j<c.length; j++) {
-      TableColumn tc = tcm.getColumn(c[j]);
+    for (int aC : c) {
+      TableColumn tc = tcm.getColumn(aC);
       int colModelIdx = tc.getModelIndex();
 
-      Class colClass = jtable.getColumnClass(c[j]);
+      Class colClass = jtable.getColumnClass(aC);
       //System.out.println("colClass "+colClass.getName());
-      Object zeroValue = model.zeroValue( colClass);
-      for (int i=0; i<r.length;i++) {
-        int mr = modelIndex(r[i]);
+      Object zeroValue = model.zeroValue(colClass);
+      for (int aR : r) {
+        int mr = modelIndex(aR);
         //System.out.println("clear "+r[i]+" "+colModelIdx+" "+zeroValue);
         model.setValueAt(zeroValue, mr, colModelIdx);
       }
@@ -312,17 +311,17 @@ public class BeanTable extends JPanel {
     model.fireTableRowsInserted(row, row);
   }
 
-  public void addBeans( ArrayList newBeans) {
+  public void addBeans( ArrayList<Object> newBeans) {
     this.beans.addAll(newBeans);
     int row = beans.size()-1;
     model.fireTableRowsInserted(row - newBeans.size(), row);  }
 
   public void setBeans( List beans) {
     if (beans == null)
-      beans = new ArrayList(); // empty list
+      beans = new ArrayList<Object>(); // empty list
     this.beans = beans;
     model.fireTableDataChanged(); // this should make the jtable update
-    revalidate();  // LOOK soemtimes it doesnt, ttry this
+    revalidate();  // LOOK soemtimes it doesnt, try this
   }
 
   public List getBeans( ) { return beans; }
@@ -365,9 +364,8 @@ public class BeanTable extends JPanel {
    */
   public void setSelectedBeans( List want) {
     jtable.getSelectionModel().clearSelection();
-    for (int i = 0; i < want.size(); i++) {
-      Object bean =  want.get(i);
-      int row = beans.indexOf( bean);
+    for (Object bean : want) {
+      int row = beans.indexOf(bean);
       if (row >= 0) {
         int vr = viewIndex(row);
         jtable.getSelectionModel().addSelectionInterval(vr, vr);
@@ -415,7 +413,7 @@ public class BeanTable extends JPanel {
     }
 
     // save column widths and order
-    ArrayList pcols = new ArrayList();
+    ArrayList<PropertyCol> pcols = new ArrayList<PropertyCol>();
     TableColumnModel tcm = jtable.getColumnModel();
     for (int i=0; i<tcm.getColumnCount(); i++) {
       TableColumn tc = tcm.getColumn(i);
@@ -446,20 +444,20 @@ public class BeanTable extends JPanel {
     ArrayList pcols = (ArrayList) store.getBean( "propertyCol", new ArrayList());
     TableColumnModel tcm = jtable.getColumnModel();
     int count = 0;
-    for (int i=0; i<pcols.size(); i++) {
-      PropertyCol pcol = (PropertyCol) pcols.get(i);
+    for (Object pcol1 : pcols) {
+      PropertyCol pcol = (PropertyCol) pcol1;
 
-      int idx = model.getPropertyIndex( pcol.getName());
+      int idx = model.getPropertyIndex(pcol.getName());
       if (idx >= 0) {  // still exists
-        if (debugStore) System.out.println(count+"  has "+pcol.getName());
+        if (debugStore) System.out.println(count + "  has " + pcol.getName());
         TableColumn tc = tcm.getColumn(count++);
-        tc.setModelIndex( idx);
-        tc.setPreferredWidth( pcol.getWidth());
-        tc.setHeaderValue( pcol.getName());
-        tc.setIdentifier( pcol.getName());
+        tc.setModelIndex(idx);
+        tc.setPreferredWidth(pcol.getWidth());
+        tc.setHeaderValue(pcol.getName());
+        tc.setIdentifier(pcol.getName());
 
       } else { //  property was deleted
-        if (debugStore) System.out.println(count+"  col deleted "+pcol.getName());
+        if (debugStore) System.out.println(count + "  col deleted " + pcol.getName());
       }
     }
 
@@ -482,7 +480,7 @@ public class BeanTable extends JPanel {
    */
   static public class PropertyCol {
     private String name;
-    private int modelIndex, width;
+    private int width;
 
     public PropertyCol() { }
 
@@ -524,7 +522,7 @@ public class BeanTable extends JPanel {
 
   /** Does the reflection on the bean objects */
   protected class TableBeanModel extends AbstractTableModel {
-    private ArrayList properties = new ArrayList(); // array of PropertyDescriptor
+    private List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
     private boolean[] used;
 
     protected TableBeanModel( Class beanClass) {
@@ -546,12 +544,12 @@ public class BeanTable extends JPanel {
       // see if editableProperties method exists
       String editableProperties = "";
       MethodDescriptor[] mds = info.getMethodDescriptors();
-      for (int i=0; i< mds.length; i++) {
-        Method m = mds[i].getMethod();
+      for (MethodDescriptor md : mds) {
+        Method m = md.getMethod();
         if (m.getName().equals("editableProperties")) {
           try {
-            editableProperties = (String) m.invoke( null, (Object []) null);
-            if (debugBean) System.out.println(" editableProperties: "+editableProperties);
+            editableProperties = (String) m.invoke(null, (Object[]) null);
+            if (debugBean) System.out.println(" editableProperties: " + editableProperties);
           } catch (Exception ee) {
             System.out.println("BeanTable: Bad editableProperties ");
             ee.printStackTrace();
@@ -561,12 +559,12 @@ public class BeanTable extends JPanel {
 
       // see if hiddenProperties method exists
       String hiddenProperties = "";
-      for (int i=0; i< mds.length; i++) {
-        Method m = mds[i].getMethod();
+      for (MethodDescriptor md : mds) {
+        Method m = md.getMethod();
         if (m.getName().equals("hiddenProperties")) {
           try {
-            hiddenProperties = (String) m.invoke( null, (Object []) null);
-            if (debugBean) System.out.println(" hiddenProperties: "+hiddenProperties);
+            hiddenProperties = (String) m.invoke(null, (Object[]) null);
+            if (debugBean) System.out.println(" hiddenProperties: " + hiddenProperties);
           } catch (Exception ee) {
             System.out.println("BeanTable: Bad hiddenProperties ");
             ee.printStackTrace();
@@ -576,24 +574,24 @@ public class BeanTable extends JPanel {
 
       // properties must have read method, not be hidden
       PropertyDescriptor[] pds = info.getPropertyDescriptors();
-      for (int i=0; i< pds.length; i++) {
-        if ((pds[i].getReadMethod() != null) && !isHidden(pds[i], hiddenProperties)) {
-          properties.add( pds[i]);
+      for (PropertyDescriptor pd : pds) {
+        if ((pd.getReadMethod() != null) && !isHidden(pd, hiddenProperties)) {
+          properties.add(pd);
           // preferred == editable
-          setEditable( pds[i], editableProperties);
+          setEditable(pd, editableProperties);
         }
       }
 
       if (debugBean) {
         System.out.println( "Properties:");
         System.out.println( "  display name  type   read()       write()         editable");
-         for (int i=0; i< pds.length; i++) {
-          String displayName = pds[i].getDisplayName();
-          String name = pds[i].getName();
-          Class type = pds[i].getPropertyType();
-          Method rm = pds[i].getReadMethod();
-          Method wm = pds[i].getWriteMethod();
-          System.out.println( "  "+displayName+" "+name+" "+type.getName()+" "+rm+" "+wm+" "+pds[i].isPreferred());
+        for (PropertyDescriptor pd : pds) {
+          String displayName = pd.getDisplayName();
+          String name = pd.getName();
+          Class type = pd.getPropertyType();
+          Method rm = pd.getReadMethod();
+          Method wm = pd.getWriteMethod();
+          System.out.println("  " + displayName + " " + name + " " + type.getName() + " " + rm + " " + wm + " " + pd.isPreferred());
         }
       }
 
@@ -627,13 +625,13 @@ public class BeanTable extends JPanel {
     public int getRowCount() { return beans.size(); }
     public int getColumnCount() { return properties.size(); }
     public String getColumnName(int col) {
-      return ((PropertyDescriptor)properties.get(col)).getDisplayName();
+      return properties.get(col).getDisplayName();
     }
 
     public Object getValueAt (int row, int col) {
       Object bean =  beans.get( row);
       Object value = "N/A";
-      PropertyDescriptor pd = (PropertyDescriptor) properties.get(col);
+      PropertyDescriptor pd = properties.get(col);
       try {
         Method m = pd.getReadMethod();
         value = m.invoke( bean, (Object []) null);
@@ -649,7 +647,7 @@ public class BeanTable extends JPanel {
     public Object getValueAt (Object bean, int col) {
       Object value = "N/A";
       try {
-        Method m = ((PropertyDescriptor)properties.get(col)).getReadMethod();
+        Method m = properties.get(col).getReadMethod();
         value = m.invoke( bean, (Object []) null);
       } catch (Exception ee) {
         System.out.println("BeanTable: Bad Bean "+bean+" "+col+" "+beanClass.getName());
@@ -661,7 +659,7 @@ public class BeanTable extends JPanel {
       // editing
 
     public Class getColumnClass(int col) {
-      Class c = wrapPrimitives(((PropertyDescriptor)properties.get(col)).getPropertyType());
+      Class c = wrapPrimitives(properties.get(col).getPropertyType());
       //System.out.println( " "+col+" colClass = "+c);
       //checkColumnRenderer( col);
       return c;
@@ -677,7 +675,7 @@ public class BeanTable extends JPanel {
     }
 
     public boolean isCellEditable(int row, int col) {
-      PropertyDescriptor pd = (PropertyDescriptor) properties.get(col);
+      PropertyDescriptor pd = properties.get(col);
       if (!pd.isPreferred()) return false;
       Class type = pd.getPropertyType();
       return type.isPrimitive() || (type == String.class);
@@ -688,7 +686,7 @@ public class BeanTable extends JPanel {
       try {
         Object[] params = new Object[1];
         params[0] = value;
-        Method m = ((PropertyDescriptor)properties.get(col)).getWriteMethod();
+        Method m = properties.get(col).getWriteMethod();
         if (m != null)
           m.invoke( bean, params);
       } catch (Exception ee) {
@@ -727,7 +725,7 @@ public class BeanTable extends JPanel {
     // return model index with this property name, return -1 if not exists
     protected int getPropertyIndex( String wantName) {
       for (int i=0; i< properties.size(); i++) {
-        String name = ((PropertyDescriptor)properties.get(i)).getName();
+        String name = properties.get(i).getName();
         if (name.equals(wantName)) {
           used[i] = true;
           return i;
@@ -738,25 +736,24 @@ public class BeanTable extends JPanel {
 
     // return PropertyDescriptor with this property name, return null if not exists
     protected PropertyDescriptor getProperty( String wantName) {
-      for (int i=0; i< properties.size(); i++) {
-        PropertyDescriptor p = (PropertyDescriptor) properties.get(i);
-        if (p.getName().equals(wantName))
-          return p;
+      for (PropertyDescriptor property : properties) {
+        if (property.getName().equals(wantName))
+          return property;
       }
       return null;
     }
 
     // return PropertyDescriptor
     protected PropertyDescriptor getProperty( int idx) {
-      return (PropertyDescriptor) properties.get(idx);
+      return properties.get(idx);
     }
 
     protected boolean wasUsed(int col) { return used[col]; }
 
-    private ArrayList editP = null;
+    private ArrayList<String> editP = null;
     private void setEditable( PropertyDescriptor pd, String editableProperties) {
       if (editP == null) {
-        editP = new ArrayList();
+        editP = new ArrayList<String>();
         StringTokenizer toke = new StringTokenizer( editableProperties);
         while (toke.hasMoreTokens())
           editP.add( toke.nextToken());
@@ -765,10 +762,10 @@ public class BeanTable extends JPanel {
       pd.setPreferred( editP.contains( pd.getName()));
     }
 
-    private ArrayList hiddenP = null;
+    private ArrayList<String> hiddenP = null;
     private boolean isHidden( PropertyDescriptor pd, String hiddenProperties) {
       if (hiddenP == null) {
-        hiddenP = new ArrayList();
+        hiddenP = new ArrayList<String>();
         StringTokenizer toke = new StringTokenizer( hiddenProperties);
         while (toke.hasMoreTokens())
           hiddenP.add( toke.nextToken());

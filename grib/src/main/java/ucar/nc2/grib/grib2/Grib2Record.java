@@ -26,6 +26,9 @@ public class Grib2Record {
 
   private final byte[] header; // anything in between the records - eg idd header
   private int file; // for multiple files in same dataset
+  private boolean bmsReplaced;
+
+  public int repeat; // debug = see Grib2Report.doDrsSummary
 
   /**
    * Construction for Grib2Record.
@@ -47,7 +50,8 @@ public class Grib2Record {
                      Grib2SectionProductDefinition pdss,
                      Grib2SectionDataRepresentation drs,
                      Grib2SectionBitMap bms,
-                     Grib2SectionData dataSection) {
+                     Grib2SectionData dataSection,
+                     boolean bmsReplaced) {
 
     this.header = header;
     this.is = is;
@@ -58,6 +62,7 @@ public class Grib2Record {
     this.drs = drs;
     this.bms = bms;
     this.dataSection = dataSection;
+    this.bmsReplaced = bmsReplaced;
   }
 
   // copy constructor
@@ -71,6 +76,8 @@ public class Grib2Record {
     this.drs = from.drs;
     this.bms = from.bms;
     this.dataSection = from.dataSection;
+    this.repeat = from.repeat;
+    this.bmsReplaced = from.bmsReplaced;
   }
 
   public byte[] getHeader() {
@@ -159,8 +166,9 @@ public class Grib2Record {
     this.drs = drs;
   }
 
-  public void setBms(Grib2SectionBitMap bms) {
+  public void setBms(Grib2SectionBitMap bms, boolean replaced) {
     this.bms = bms;
+    this.bmsReplaced = replaced;
   }
 
   public void setDataSection(Grib2SectionData dataSection) {
@@ -173,6 +181,10 @@ public class Grib2Record {
 
   public void setFile(int file) {
     this.file = file;
+  }
+
+  public boolean isBmsReplaced() {
+    return bmsReplaced;
   }
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
@@ -228,22 +240,29 @@ public class Grib2Record {
     return reader.getData(raf, bitmap, gdrs);
   }
 
+  //         float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
+
+
   /**
    * Read data array: use when you want to be independent of the GribRecord
    *
    * @param raf             from this RandomAccessFile
    * @param drsPos          Grib2SectionDataRepresentation starts here
+   * @param bmsPos          if non-zero, use the bms that starts here
    * @param gdsNumberPoints gdss.getNumberPoints()
    * @param scanMode        gds.scanMode
    * @param nx              gds.nx
    * @return data as float[] array
    * @throws IOException on read error
    */
-  static public float[] readData(RandomAccessFile raf, long drsPos, int gdsNumberPoints, int scanMode, int nx) throws IOException {
+  static public float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx) throws IOException {
     raf.seek(drsPos);
     Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(raf);
     Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
     Grib2SectionData dataSection = new Grib2SectionData(raf);
+
+    if (bmsPos > 0)
+      bms = Grib2SectionBitMap.factory(raf, bmsPos);
 
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
             scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());

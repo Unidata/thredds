@@ -127,9 +127,9 @@ public class N3header {
     raf.read(b);
     for (int i = 0; i < 3; i++)
       if (b[i] != MAGIC[i])
-        throw new IOException("Not a netCDF file");
+        throw new IOException("Not a netCDF file "+raf.getLocation());
     if ((b[3] != 1) && (b[3] != 2))
-      throw new IOException("Not a netCDF file");
+      throw new IOException("Not a netCDF file "+raf.getLocation());
     useLongOffset = (b[3] == 2);
 
     // number of records
@@ -147,7 +147,7 @@ public class N3header {
       raf.readInt(); // skip 32 bits
     } else {
       if (magic != MAGIC_DIM)
-        throw new IOException("Misformed netCDF file - dim magic number wrong");
+        throw new IOException("Misformed netCDF file - dim magic number wrong "+raf.getLocation());
       numdims = raf.readInt();
       if (fout != null) fout.format("numdims= %d\n", numdims);
     }
@@ -179,7 +179,7 @@ public class N3header {
       raf.readInt(); // skip 32 bits
     } else {
       if (magic != MAGIC_VAR)
-        throw new IOException("Misformed netCDF file  - var magic number wrong");
+        throw new IOException("Misformed netCDF file  - var magic number wrong "+raf.getLocation());
       nvars = raf.readInt();
       if (fout != null) fout.format("numdims= %d\n", numdims);
     }
@@ -554,29 +554,6 @@ public class N3header {
     int pad = (int) (nbytes % 4);
     if (pad != 0) pad = 4 - pad;
     return pad;
-  }
-
-  private void printBytes(int n, Formatter fout) throws IOException {
-    long savePos = raf.getFilePointer();
-    long pos;
-    for (pos = savePos; pos < savePos + n - 9; pos += 10) {
-      fout.format("%d: ", pos);
-      _printBytes(10, fout);
-    }
-    if (pos < savePos + n) {
-      fout.format("%d: ", pos);
-      _printBytes((int) (savePos + n - pos), fout);
-    }
-    raf.seek(savePos);
-  }
-
-  private void _printBytes(int n, Formatter fout) throws IOException {
-    for (int i = 0; i < n; i++) {
-      byte b = (byte) raf.read();
-      int ub = (b < 0) ? b + 256 : b;
-      fout.format(ub + "%d(%b) ", ub, b);
-    }
-    fout.format("\n");
   }
 
   private DataType getDataType(int type) {

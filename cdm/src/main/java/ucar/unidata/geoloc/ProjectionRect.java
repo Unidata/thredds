@@ -149,6 +149,14 @@ public class ProjectionRect extends java.awt.geom.Rectangle2D.Double implements 
         + Format.d(getHeight(), 3);
   }
 
+
+  public String toString2() {
+    return "min: " + Format.d(getX(), 3) + " " + Format.d(getY(), 3)
+    + " max: " + Format.d(getX()+getWidth(), 3) + " " + Format.d(getY()+getHeight(), 3) ;
+  }
+
+
+
   // bean serialization
 
   /**

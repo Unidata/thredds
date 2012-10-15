@@ -108,7 +108,7 @@ public class PointDataWriterTest {
 	@Test
 	public void shouldWriteResponse(){
 		assertTrue( pointDataWriter.header(vars, gridDataset, wDates, dateUnit, point));
-		assertTrue( pointDataWriter.write(vars, gridDataset, date, point, null ));
+		assertTrue( pointDataWriter.write(vars, gridDataset, wDates, point, null ));
 	}
 	
 	@After

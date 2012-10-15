@@ -135,10 +135,10 @@ HashMap<String, Object> params = new HashMap<String, Object>();
 HttpState context = null;
 boolean executed = false;
 protected boolean closed = false;
-InputStream strm = null;
 RequestEntity content = null;
 HTTPSession.Methods methodclass = null;
 Part[] multiparts = null;
+HTTPMethodStream methodstream = null; // wrapper for strm
 
 /**
  * It is possible to specify a url when invoking, for example, HTTPMethod.Get.
@@ -232,6 +232,8 @@ void setcontent()
 
 public int execute() throws HTTPException
 {
+    if (closed)
+        throw new HTTPException("Method instance is closed");
     if (executed)
         throw new HTTPException("Method instance already executed");
     if (legalurl == null)
@@ -293,26 +295,13 @@ public void close()
         LogStream.err.println("HTTPMethod: attempt to close already closed method.");
         return;
     }
-
-  // remove for now - jc and dh 7/27/2012 LOOK
-  // normal close deosnt want to use abort because its too costly
-  // need to find abnormal conditions and call abort only when the state of the socket/HTTP cant be deteremined
-    /* if (executed) {
-        consumeContent();
-    } else if(method != null)
-        method.abort(); */
+    if(methodstream != null) {
+        try {methodstream.close();} catch (IOException ioe) {/*failure is ok*/};
+        methodstream = null;
+    }
     if(method != null) method.releaseConnection();
     closed = true;
     session.removeMethod(this);
-}
-
-public void consumeContent()
-{
-    //try {
-    //InputStream st = method.getResponseBodyAsStream();
-    //while((st.skip(10000) >= 0));
-    method.abort();
-    //} catch (IOException e) {}
 }
 
 public void setContext(HttpState cxt)
@@ -367,18 +356,14 @@ public InputStream getResponseAsStream()
 {
     if (closed)
         return null;
-    if (strm != null) {
-        try {
-            new Exception("Getting MethodStream").printStackTrace();
-        } catch (Exception e) {
-        }
-        ;
-        assert strm != null : "attempt to get method stream twice";
+    if(methodstream != null) {
+        LOG.error("HTTPMethod.getResponseBodyAsStream: Getting method stream twice");
+        return methodstream; // caller's problem
     }
     try {
         if (method == null) return null;
-        strm = method.getResponseBodyAsStream();
-        return strm;
+        methodstream = new HTTPMethodStream(method.getResponseBodyAsStream(),this);
+        return methodstream;
     } catch (Exception e) {
         return null;
     }

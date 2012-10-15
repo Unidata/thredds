@@ -54,13 +54,14 @@ public class Mercator extends ProjectionImpl {
 
   /**
    * Convert "scale at standard parellel" to "standard parellel"
+   *
    * @param scale scale at standard parallel
-   * @return  standard parellel in degrees
+   * @return standard parallel in degrees
    */
   public static double convertScaleToStandardParallel(double scale) {
     // k = 1 / cos (par); snyder p 44
     // par = arccos(1/k);
-    double par = Math.acos(1.0/scale);
+    double par = Math.acos(1.0 / scale);
     return Math.toDegrees(par);
   }
 
@@ -104,11 +105,11 @@ public class Mercator extends ProjectionImpl {
   /**
    * Construct a Mercator Projection.
    *
-   * @param lon0 longitude of origin (degrees)
-   * @param par  standard parallel (degrees). cylinder cuts earth at this latitude.
-   * @param false_easting false_easting in km
+   * @param lon0           longitude of origin (degrees)
+   * @param par            standard parallel (degrees). cylinder cuts earth at this latitude.
+   * @param false_easting  false_easting in km
    * @param false_northing false_northing in km
-   * @param radius earth radius in km
+   * @param radius         earth radius in km
    */
   public Mercator(double lon0, double par, double false_easting, double false_northing, double radius) {
     super("Mercator", false);
@@ -188,20 +189,22 @@ public class Mercator extends ProjectionImpl {
   /**
    * Set the first standard parallel
    *
-   * @param par   the first standard parallel
+   * @param par the first standard parallel
    */
   public void setParallel(double par) {
-      this.par = par;
-      precalculate();
+    this.par = par;
+    this.par_r = Math.toRadians(par);
+    precalculate();
   }
 
   /**
    * Set the origin longitude.
-   * @param lon   the origin longitude.
+   *
+   * @param lon the origin longitude.
    */
   public void setOriginLon(double lon) {
-      lon0   = lon;
-      precalculate();
+    lon0 = lon;
+    precalculate();
   }
 
   /////////////////////////////////////////////////////

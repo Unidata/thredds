@@ -46,7 +46,6 @@ import java.awt.datatransfer.*;
 import java.awt.dnd.*;
 import java.awt.event.*;
 import java.awt.image.*;
-//import java.awt.print.*;
 import java.io.*;
 import javax.swing.*;
 
@@ -322,7 +321,7 @@ public class NavigatedPanel extends JPanel {
     }
 
     // send new map area event
-    lmMapArea.sendEvent( new NewMapAreaEvent( this));
+    lmMapArea.sendEvent( new NewMapAreaEvent( this, getMapArea()));
   }
 
 

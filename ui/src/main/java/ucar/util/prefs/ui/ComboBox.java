@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -198,8 +198,8 @@ public class ComboBox extends JComboBox {
    * Use this to obtain the list of items.
    * @return ArrayList of items, may be any Object type.
    */
-  public ArrayList getItemList() {
-    ArrayList list = new ArrayList();
+  public List<Object> getItemList() {
+    ArrayList<Object> list = new ArrayList<Object>();
     for (int i=0; i< getItemCount() && i < nkeep; i++)
       list.add( getItemAt(i));
     return list;
@@ -209,7 +209,7 @@ public class ComboBox extends JComboBox {
    * Use this to set the list of items.
    * @param list of items, may be any Object type.
    */
-  public void setItemList(Collection list) {
+  public void setItemList(Collection<Object> list) {
     if (list == null) return;
     setModel( new DefaultComboBoxModel( list.toArray()));
 
