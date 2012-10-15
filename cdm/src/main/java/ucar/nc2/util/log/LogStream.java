@@ -170,6 +170,7 @@ public class LogStream extends java.io.OutputStream {
   public void
   write(int b) throws IOException {
     buffer.append((char) b);
+    if(b == '\n') logflush();
   }
 
 
