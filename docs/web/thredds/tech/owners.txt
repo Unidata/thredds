@@ -51,7 +51,7 @@ lansing      9105 Aug  6 10:25 Basic-threddsConfig_xml.html
 lansing     20206 Jul 18 19:28 BasicConfig.html
 ?           34294 Jul 18 19:28 BasicTomcatAndTDSSecurity.html
 ?           16469 Jul 18 19:28 CatalogPrimer.html
-caron        8891 Aug  6 10:25 Checklist.html						
+jenn         8891 Aug  6 10:25 Checklist.html						
 lansing     41519 Jul 18 19:28 ConfigCatalogs.html
 ?ethan       10638 Jul 18 19:28 EnhancedCatalogs.html
 caron       10860 Jul 18 19:28 FeatureCollectionsTutorial.html
