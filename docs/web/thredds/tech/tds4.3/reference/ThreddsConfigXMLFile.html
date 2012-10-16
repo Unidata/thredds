@@ -79,7 +79,7 @@ information about the group that hosts the server.<br>
 <pre>
 &lt;serverInformation&gt;
     &lt;name&gt;Initial TDS Installation&lt;/name&gt;
-    &lt;logoUrl&gt;threddsIcon.gif&lt;/logoUrl&gt;
+    &lt;logoUrl&gt;/thredds/threddsIcon.gif&lt;/logoUrl&gt;
     &lt;logoAltText&gt;Initial TDS Installation&lt;/logoAltText&gt;
 
     &lt;abstract&gt;Scientific Data&lt;/abstract&gt;
@@ -117,7 +117,6 @@ information about the group that hosts the server.<br>
   The superseded information is listed as deprecated in the description of the
   <code>htmlSetup</code> element below.</p>
 <p>NOTE: URLs may be absolute or relative. The easiest way to use your own logo is to put it in the <strong>${tomcat_home}/webapps/ROOT/</strong> directory and specify it here as <strong>/logo.png</strong></p>
-<p>do relative URLs is to use </p>
 <h3><a name="Generated_HTML_Pages"></a>Generated HTML Pages</h3>
 
  <p>In the <code>htmlSetup</code> element, you can configure which CSS
@@ -134,11 +133,6 @@ information about the group that hosts the server.<br>
     &lt;standardCssUrl&gt;tds.css&lt;/standard CssUrl&gt;
     &lt;CatalogCssUrl&gt;tdsCat.css&lt;/CatalogCssUrl&gt;
     &lt;openDapCssUrl&gt;tdsDap.css&lt;/openDapCssUrl&gt;
-
-    &lt;folderIconUrl&gt;folder.gif&lt;/folderIconUrl&gt;
-    &lt;folderIconAlt&gt;Folder&lt;/folderIconAlt&gt;
-    &lt;datasetIconUrl&gt;dataset.gif&lt;/datasetIconUrl&gt; &lt;!-- Not currently used. --&gt;
-    &lt;datasetIconAlt&gt;Dataset&lt;/datasetIconAlt&gt;     &lt;!-- Not currently used. --&gt;
 
 &lt;!-- DEPRECATED: use serverInformation element instead. --&gt;
     &lt;installName&gt;Motherlode TDS&lt;/installName&gt;
@@ -163,7 +157,6 @@ information about the group that hosts the server.<br>
     by default, it will output 4 significant digits, choosing units
     appropriately</li>
 </ul>
-<p>&nbsp;</p>
 <h3><strong>  <a name="catalogRoots"></a> Extra Catalog Roots</strong></h3>
 <pre style="margin-left: 40px;">&lt;<strong>catalogRoot</strong>&gt;tempCatalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;idd/catalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;catgen/subdir/enhancedCatalog-1.0.xml&lt;/catalogRoot&gt;</pre>
  <p>These elements name your root catalogs that are not referenced from your main catalog ( <strong>${tomcat_home}/content/thredds/catalog.xml</strong>).
@@ -173,10 +166,9 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
  <pre>   &lt;<strong>Viewer</strong>&gt;my.package.MyViewer&lt;/Viewer&gt;</pre>
  <p>You can place a link  to your own <em><strong>Viewer</strong></em> on the TDS HTML page, by loading a <a href="Viewers.html">viewer</a> at runtime. This line is needed in the config file only if you are writing your own Java class.</p>
  <h3>Adding Dataset Sources<a name="DatasetSource"></a> </h3>
- <pre>   &lt;<strong>DatasetSource</strong>&gt;my.package.DatasetSourceImpl&lt;/<strong>DatasetSource</strong>&gt;</pre>
+ <pre>   &lt;<strong>datasetSource</strong>&gt;my.package.DatasetSourceImpl&lt;/<strong>datasetSource</strong>&gt;</pre>
  <p>You can add  a <em><strong>DataSource</strong></em> - essentially an IOSP with access to Servlet request parameters, by loading a <a href="DatasetSource.html">dataset source</a> at runtime.</p>
- <p>&nbsp;</p>
- <hr>
+<hr>
  <h2>Controlling Data Services</h2>
 <h3>Remote Catalog Service for <a name="Remote"></a> Catalogs</h3>
 <p>Catalog services are available by default for catalogs served by the local
@@ -297,7 +289,7 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
 <p> This controls the NetcdfSubset service (URL: "/thredds/ncss/grid/...") which supports
   subset requests in terms of latitude/longitude bounding boxes and date ranges rather
   than array index ranges. More information is available on the
-   <a href="../../interfaceSpec/NetcdfSubsetService.html">NetcdfSubset Service Reference</a> page.</p>
+   <a href="NetcdfSubsetServiceReference.html">NetcdfSubset Service Reference</a> page.</p>
 <p>By default, this service is not enabled. It can be enabled by setting the value
   of the allow element to "true".</p>
 <ol>
@@ -515,7 +507,7 @@ pronounced difference with and without this cache. </p>
  <hr width="100%">
  <address>
      <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
-     This document is maintained by elves and was last updated August 2012.
+     This document is maintained by elves and was last updated October 2012.
      Send comments to
      <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
  </address>

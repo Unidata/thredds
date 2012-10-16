@@ -35,13 +35,12 @@ package ucar.nc2.time;
 import org.junit.Test;
 
 /**
- * Describe
+ * Test on non-standard Calendars
  *
  * @author caron
  * @since 11/8/11
  */
 public class TestCalendars {
-
 
   @Test
   public void testEach() {

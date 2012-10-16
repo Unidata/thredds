@@ -3,7 +3,7 @@
 
   <serverInformation>
        <name>IDD TDS</name>
-    <logoUrl>threddsIcon.gif</logoUrl>
+    <logoUrl>/thredds/threddsIcon.gif</logoUrl>
     <logoAltText>IDD TDS</logoAltText>
 
     <abstract>Scientific Data</abstract>
@@ -45,6 +45,7 @@
      * -->
     <standardCssUrl>tds.css</standardCssUrl>
     <catalogCssUrl>tdsCat.css</catalogCssUrl>
+    <openDapCssUrl>tdsDap.css</openDapCssUrl>
 
     <!--
      * The URLs (relative to "/thredds/") and alternate text for both

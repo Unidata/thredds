@@ -47,26 +47,25 @@ public class TestNc4Iosp {
     return v.read(section) ;
   }
 
-  @Test
   public void problem() throws IOException {
     doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\testEmptyAtts.nc", true, true, true);
   }
 
-  @Test
+  //@Test
   public void readAllNetcdf4() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/", new MyFileFilter(), new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  @Test
+  //@Test
   public void readAllHDF5() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/", new MyFileFilter(), new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  @Test
+  //@Test
   public void readAllNetcdf3() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", new MyFileFilter(), new MyAct());

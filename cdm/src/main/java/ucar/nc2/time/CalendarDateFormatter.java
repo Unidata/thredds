@@ -33,6 +33,7 @@
 package ucar.nc2.time;
 
 import net.jcip.annotations.ThreadSafe;
+import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -210,7 +211,9 @@ public class CalendarDateFormatter {
       if (isMinus) year = -year;
 
       // Get a DateTime object in this Chronology
-      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0, Calendar.getChronology(calt));
+      Chronology cron = Calendar.getChronology(calt);
+      cron = cron.withUTC(); // default is UTC
+      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0, cron);
 
       // Add the seconds
       dt = dt.plus((long) (1000 * second));
@@ -259,12 +262,12 @@ public class CalendarDateFormatter {
           dt = dt.withZoneRetainFields(dtz);
           // Now convert to the UTC time zone, retaining the millisecond instant
           dt = dt.withZone(DateTimeZone.UTC);
-        } else {
-          dt = dt.withZone(DateTimeZone.UTC);   // default UTC
-        }
+        } //else {
+          //dt = dt.withZone(DateTimeZone.UTC);   // default UTC
+        //}
 
-      } else {
-        dt = dt.withZone(DateTimeZone.UTC);   // default UTC
+      //} else {
+      //  dt = dt.withZone(DateTimeZone.UTC);   // default UTC
       }
 
       return dt;
