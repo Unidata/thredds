@@ -6,7 +6,7 @@ h3 {padding: 0px 0px 0px 0px; margin: 20px 0px; font-size: 14pt !important; colo
 h4 {border: none !important;}
 pre {white-space: pre-wrap; position: relative; font-family: "Lucida Console", "Courier New", monospace; margin: 0px 0px 20px 0px; padding: 5px 10px 5px 10px; background: #FAF8F0; border: 1px solid #BEBAB0; font-size: 9pt;}
 .notice {margin-top: -40px; font-size: 10pt}
-
+ol li {margin: 5px 0;}
 
 /* workshopNav */
 ul#workshopNav {list-style: none; font-size: 11px; margin: 0 0 20px 0; padding: 0; color: #696969;}
