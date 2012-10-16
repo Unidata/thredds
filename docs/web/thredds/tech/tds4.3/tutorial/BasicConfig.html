@@ -1,26 +1,26 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+ <html>
+  <head>
+   <title>Basic TDS Configuration</title>
+   <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
+   <script type="text/javascript" src="workshopNav.js"></script>
+  </head>
+  <body>
 
-  <title>TDS Tutorial: TDS Configuration</title>
-  <link rel="stylesheet" href="tutorial.css" type="text/css">
-  <script language="JavaScript1.2" src="http://www.unidata.ucar.edu/acemenu/last_mod.js"></script>
-  <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon">
-</head>
-<body>
 
-<h1>TDS Tutorial: TDS Configuration</h1>
+   <h1>Basic TDS Configuration</h1>
 
-<div id="section"><h2><a name="CatReview">THREDDS Catalog Review</a></h2>
-  <div id="subsection">
+
+<div id="section">
+<h2><a name="CatReview">THREDDS Catalog Review</a></h2>
+
     <p> THREDDS catalogs collect, organize, and describe accessible datasets. They provide a
       hierarchical structure for organizing the datasets as well as an access method (URL) and a
       human understandable name for each dataset. Further descriptive information about each
       dataset can also be added.
     </p>
-  </div>
-  <div id="subsection"><h3>Example Catalog</h3>
+
+ <h3>Example Catalog</h3>
 
 <pre>
   &lt;?xml version='1.0' encoding='UTF-8'?&gt;
@@ -92,8 +92,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       <a href="../../catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">constructing access URLs</a>.
     </p>
 
-  </div>
-  <div id="subsection"> <h3>Example Catalog - shared service name</h3>
+   <h3>Example Catalog - shared service name</h3>
 
 <pre>
   &lt;?xml version='1.0' encoding='UTF-8'?&gt;
@@ -124,10 +123,13 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
         dataset.</li>
     </ul>
 
-  </div>
+
 </div>
-<div id="section"><h2><a name="ConfigCatalogs">TDS Configuration Catalogs</a></h2>
-  <div id="subsection">
+
+
+<div id="section">
+<h2><a name="ConfigCatalogs">TDS Configuration Catalogs</a></h2>
+
 
     <p>TDS configuration catalogs are THREDDS catalogs with a few extensions.
       They contain information detailing the datasets the TDS will serve and what
@@ -148,9 +150,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       <li>The configuration information is only needed by the server.</li>
       <li>The client view of the catalogs does not contain any configuration information.</li>
     </ul>
-
-  </div>
-  <div id="subsection"><h3><code>datasetRoot</code> Element</h3>
+<h3><code>datasetRoot</code> Element</h3>
 
     <p>Each <code>datasetRoot</code> element defines a single mapping between a URL base
       path and a directory. The URL base path so defined can then be used in accessible
@@ -200,8 +200,8 @@ http://hostname:port/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2
     <p>The client catalog that results from this catalog is the same as the above without
       the datasetRoot element.</p>
 
-  </div>
-  <div id="subsection"> <h3><code>datasetScan</code> Element</h3>
+
+<h3><code>datasetScan</code> Element</h3>
 
 <p>Each <code>datasetScan</code> element also defines a single mapping between a URL base
 path and a directory. Unlike the&nbsp; <code>datasetRoot</code> element which works with&nbsp;<code>dataset</code> elements to define the datasets served, the <code>datasetScan</code> element will automatically serve some or all of the datasets found in the mapped directory. So, all the files in the above
@@ -251,8 +251,7 @@ would look&nbsp;like:</p>
 included in the scan, changing the names of datasets, sorting datasets,
 etc. We will go into more detail on this later.</p>
 
-  </div>
-  <div id="subsection"><h3>TDS Configuration Directory</h3>
+  <h3>TDS Configuration Directory</h3>
 
     <div id="note" class="info">
       <h4>Location of the TDS Configuration Directory</h4>
@@ -316,9 +315,7 @@ etc. We will go into more detail on this later.</p>
       </li>
     </ul>
 
-  </div>
-
-  <div id="subsection"><h3><a name="exampleCatalog"></a>TDS Root Catalog</h3>
+  <h3><a name="exampleCatalog"></a>TDS Root Catalog</h3>
 
     <p>The main TDS configuration catalog is at <code>${tomcat_home}/content/thredds/catalog.xml</code>.
       We ship a simple test catalog:</p>
@@ -358,13 +355,13 @@ etc. We will go into more detail on this later.</p>
                 should serve from the <code>datasetRoot</code> and <code>datasetScan</code>
                 elements.</p>
 
-        </div>
 
-  <div id="subsection" class="exercise"><h3>Exercise: Add NCEP NAM model data</h3>
+
+  <div id="expanded" class="exercise">
+<h3>Exercise: Add NCEP NAM model data</h3>
 
     <p>Modify the main TDS configuration catalog to include
-      some model data.
-    </p>
+      some model data.  </p>
 
     <ol>
       <li>Take a look at the data:
@@ -435,12 +432,8 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
   </div>
 </div>
 
-<p>
-<hr width="100%">
-<address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
-    Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
-</address>
-</p>
+  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
+
 
 </body>
 </html>
