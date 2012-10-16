@@ -84,7 +84,7 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Puerto_Rico_191km/files/latest.xml", 15, 8, 10, 6);
 
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 16, 18, 13);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_22km/files/latest.xml", 25, 8, 10, 6);
+    // TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_22km/files/latest.xml", 25, 8, 10, 6);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_45km/noaaport/files/latest.xml", 21, 6, 8, 4);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 154, -1, -1, 31);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_95km/files/latest.xml", 29, 12, 14, 9);

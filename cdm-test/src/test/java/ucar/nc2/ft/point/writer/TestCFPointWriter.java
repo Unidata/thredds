@@ -30,7 +30,7 @@ public class TestCFPointWriter {
   }
 
   // synthetic variants
-  @Test
+  // @Test
   public void testWriteProfileVariants() throws IOException {
     assert 13 ==  writeDataset(CFpointObs_topdir + "profileSingle.ncml", FeatureType.PROFILE, false);
     assert 12 ==  writeDataset(CFpointObs_topdir + "profileSingleTimeJoin.ncml", FeatureType.PROFILE, false);
