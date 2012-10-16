@@ -23,12 +23,14 @@ ul#workshopNav li a {padding: 0px 20px 0px 0px; background: transparent url('ima
 /* right floating boxes */
 #note {z-index: 10; border: 2px dashed #4682B4; padding: 10px 10px 5px 10px; margin: 0px 0px 10px 50px; float: right; position: relative; width: 250px; font-size: 10pt;}
 #note h4 {padding: 0px 0px 0px 40px; margin: 0px 0px 15px 0px; }
+#note ol, #note ul{margin-left: 25px; padding: 0;}
+
 
 
 /* full width boxes */
 #expanded {padding: 5px 5px 5px 45px; margin: 20px 0px 30px 0px; border: 1px dashed #4682B4; font-size: 10pt;}
-#expanded.exercise { padding: 5px 5px 5px 75px !important; background: #EFEFEF url('images/exercise.png') no-repeat 10px 10px; border: 3px solid #4682B4;}
-
+#expanded.exercise { padding: 5px 5px 5px 65px !important; background: #EFEFEF url('images/exercise.png') no-repeat 10px 10px; border: 3px solid #4682B4;}
+#expanded ol, #expanded ul{margin-left: 15px; padding: 0;}
 
 /* floating boxes formatting */
 .info {background: #EFEFEF url('images/info.png') no-repeat 10px 5px;}
