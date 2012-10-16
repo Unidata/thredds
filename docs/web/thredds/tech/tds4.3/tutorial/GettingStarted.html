@@ -1,130 +1,128 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
  <html>
   <head>
-   <title>TDS Tutorial: Getting Started</title>
-   <link rel="stylesheet" href="tutorial.css" type="text/css" /> 
-   <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon" />
+   <title>Getting Started: Tomcat, Java and the TDS</title>
+   <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
+   <script type="text/javascript" src="workshopNav.js"></script>
   </head>
   <body>
-
-   <h1>TDS 4.3 Tutorial: Getting Started</h1>    
+   <h1>Getting Started: Tomcat, Java and the TDS</h1>    
    <div id="section">
     <h2><a name="install">Installing Java and Tomcat</a></h2>
 
+    <h3>System requirements</h3>
 
-     <div id="subsection">
-      <h3>System requirements</h3>
+    <div id="note" class="info">
+     <h4>JDK Installation help</h4>
+     <p>Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to reference the <a href="http://www.unidata.ucar.edu/mailing_lists/archives/thredds/">THREDDS mailing list</a> for installation help.</p>
+     </div> 
 
-      <div id="note" class="info">
-       <h4>Installation help</h4>
-       <p>Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to reference the <a href="http://www.unidata.ucar.edu/mailing_lists/archives/thredds/">THREDDS mailing list</a> for installation help.</p>
-       </div> 
-
-       <ul>        
-        <li>Sun Java 1.6 or 1.7 (latest version)</li>       
-        <li>Apache Tomcat 7.x</li>  
-       </ul>
-       <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <i>Sun Java</i> and the <i>Apache Tomcat</i> servlet container.</p>
-     </div> <!-- end subsection -->
+     <ul>        
+      <li>Sun Java 7 (latest version)</li>       
+      <li>Apache Tomcat 7.x</li>  
+     </ul>
+     <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <i>Sun Java</i> and the <i>Apache Tomcat</i> servlet container.</p>
 
 
-
-     <div id="subsection">
-      <h3>Installing Java</h3>
-      <ol>
-       <li><a href="http://java.sun.com/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun. You can use the latest 1.6 or 1.7 version of the JDK.</li>
-        <p>At the time of this writing, that is version <i>1.6.0_26</i>.  We will be using the Linux x64-bit, <i>non-rpm</i>, self-extracting file:</p>
-        <p><code>jdk-6u26-linux-x64.bin</code></p>
-       <li>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>
-        <p>Copy the self-extracting file to the installation directory (<code><small>~/GettingStarted</small></code> is the installation directory in this example):</p>
+     <h3>Installing Java</h3>
+     <ol>
+      <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun. Use the latest 1.7 version of the JDK.</li>
+       <p>At the time of this workshop, that is version <i>Java SE 7u7</i>.  We will be using the Linux x64-bit tar.gz file:</p>
+       <p><code>jdk-7u7-linux-x64.tar.gz</code></p>
+      <li>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>
+        <p>Copy the binary tar.gz file into the installation directory (<code>/home/tds/GettingStarted/</code> in this example):</p>
 
 <pre>
 <b>$</b> pwd
 /home/tds
 
-<b>$</b> cp Downloads/jdk-6u26-linux-x64.bin GettingStarted/ 
-<b>$</b> cd GettingStarted
-</pre>
-
-        <p>Change the permissions on the file to be executable:</p>  
-
-<pre>
 <b>$</b> ls -l  
--rw-r--r-- 1 tds Unidata 85407904 Jul 11 17:26 jdk-6u26-linux-x64.bin
+drwxr-xr-x 2 tds ustaff 4096 Oct  8 10:39 Downloads
+drwxr-xr-x 2 tds ustaff 4096 Oct  8 10:39 GettingStarted
+drwxr-xr-x 4 tds ustaff 4096 Oct  8 10:44 workshop
 
-<b>$</b> chmod 775 jdk-6u26-linux-x64.bin  
+<b>$</b> cp Downloads/jdk-7u7-linux-x64.tar.gz GettingStarted/ 
 
-<b>$</b> ls -l  
--rwxrwxr-x 1 tds Unidata 85407904 Jul 11 17:26 jdk-6u26-linux-x64.bin
+<b>$</b> ls -l  GettingStarted/
+-rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
 </pre>
 
-        <p>Run self-extracting file and agree to the terms of the code license:</p>
+        <p>Move into the installation directory and unpack the archive file:</p>  
 
 <pre>
-<b>$</b> ./jdk-6u26-linux-x64.bin 
-</pre>
+<b>$</b> cd GettingStarted/
+<b>$</b> pwd
+/home/tds/GettingStarted
 
-        <p>This will extract the JDK in the <code><small>~/GettingStarted</small></code> directory:</p>
-
-<pre>
 <b>$</b> ls -l 
-drwxr-xr-x 10 tds Unidata     4096 Jul 11 17:35 jdk1.6.0_26
--rwxrwxr-x  1 tds Unidata 85407904 Jul 11 17:26 jdk-6u26-linux-x64.bin
+-rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
+
+<b>$</b> tar zxvf jdk-7u7-linux-x64.tar.gz 
 </pre>
-      </ol>
+
+        <p>This will extract the JDK in the installation directory:</p>
+
+<pre>
+<b>$</b> ls -l  
+drwxr-xr-x 8 tds ustaff     4096 Aug 28 19:12 jdk1.7.0_07
+-rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
+</pre>
 
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting tips</h4>
-       <ul>
-        <li>Check to make sure the JDK self-extracting file has the correct permissions and is executable.</li>
-        <li>If you receive an error while running the self-extracting file, you may have downloaded the wrong type of JDK for your machine.</li>
-        <li>Depending on your OS you may need install <i>both</i> the 32-bit and 64-bit self-extracting files.</li>
-       </ul>
+       <h4>Troubleshooting</h4>
+        <p>Depending on your OS you may need install either the 32-bit or 64-bit version of the JDK.</p>
       </div>
 
-     </div> <!-- end subsection -->
+      </ol>
 
 
 
 
 
-     <div id="subsection">
+
       <h3>Installing Tomcat</h3>
       <ol>
        <li><a href="http://tomcat.apache.org/download-70.cgi">Download</a> current version of the Tomcat 7 servlet container.</li>
-        <p>At the time of this writing, that is version <i>7.0.27</i>. We will be using the core binary tar.gz file:</p>
-        <p><code>apache-tomcat-7-0-27.tar.gz</code></p>
-       <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/setup.html">installation instructions</a>.</li>
-        <p>Copy the binary tar.gz file to the installation directory (<code><small>~/GettingStarted</small></code> is the installation directory in this example):</p>
+        <p>At the time of this workshop, that is version <i>7.0.32</i>. We will be using the binary tar.gz file:</p>
+        <p><code>apache-tomcat-7.0.32.tar.gz</code></p>
+       <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-7.0-doc/setup.html">installation instructions</a>.</li>
+        <p>Copy the binary tar.gz file into the installation directory (<code>/home/tds/GettingStarted/</code> in this example):</p>
 
 <pre>
 <b>$</b> pwd
 /home/tds/GettingStarted
 
-<b>$</b> cp ~/Downloads/apache-tomcat-7-0-27.tar.gz . 
+<b>$</b> cp ~/Downloads/apache-tomcat-7.0.32.tar.gz .
+
+<b>$</b> ls -l 
+-rw-r--r-- 1 tds ustaff  7697071 Oct  8 10:57 apache-tomcat-7.0.32.tar.gz
+drwxr-xr-x 8 tds ustaff     4096 Aug 28 19:12 jdk1.7.0_07
+-rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
 </pre>
 
-        <p>Unpack the archive to create Tomcat directory:</p>  
+        <p>Unpack the archive file:</p>  
 
 <pre>
-<b>$</b> tar xvzf apache-tomcat-7-0-27.tar.gz
+<b>$</b> tar xvzf apache-tomcat-7.0.32.tar.gz
+</pre>
 
-<b>$</b> ls -ld apache-tomcat-7-0-27
-drwxr-xr-x 9 tds Unidata 4096 Jul 11 17:47 apache-tomcat-7-0-27
+        <p>This will create a Tomcat directory:</p>
+
+<pre>
+<b>$</b> ls -l
+drwxr-xr-x 9 tds ustaff     4096 Oct  8 10:58 apache-tomcat-7.0.32
+-rw-r--r-- 1 tds ustaff  7697071 Oct  8 10:57 apache-tomcat-7.0.32.tar.gz
+drwxr-xr-x 8 tds ustaff     4096 Aug 28 19:12 jdk1.7.0_07
+-rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
 </pre>
       </ol>
-     </div> <!-- end subsection -->
 
 
 
-
-      <div id="subsection" class="exercise">
-       <h3>Exercise One: Install Java and Tomcat</h3>
-       <ol>
-        <li>Using the steps outlined in the above sections, install the JDK and Tomcat in <code>/home/tds/GettingStarted</code></li>
-
-       </ol>
-      </div>  <!-- end exercise one -->
+      <div id="expanded" class="exercise">
+       <h4>Exercise One: Install Java and Tomcat</h4>
+       <p>Using the steps outlined in the above sections, install the JDK and Tomcat in <code>/home/tds/GettingStarted</code></p>
+      </div> 
 
 
    </div> <!-- end Installing Java & Tomcat section -->
@@ -140,39 +138,37 @@ drwxr-xr-x 9 tds Unidata 4096 Jul 11 17:47 apache-tomcat-7-0-27
     <h2><a name="tour">Tomcat Directory Structure: Quick Tour</a></h2>
 
 
-     <div id="subsection">
       <h3>Exploring the Tomcat directory structure</h3>
       <ol>
        <li>Examine the Tomcat directory structure, aka <code>$CATALINA_HOME</code> (also can be called <code>${tomcat_home}</code>). </li>
-        <p>Move into <code><small>$CATALINA_HOME</small></code> and do a long listing:</p>
+        <p>Move into <code>$CATALINA_HOME</code> and do a long listing:</p>
 <pre>
-<b>$</b> cd apache-tomcat-7-0-27
+<b>$</b> cd apache-tomcat-7.0.32
 <b>$</b> ls -l 
-total 92
-drwxr-xr-x 2 tds Unidata  4096 Jul 11 17:47 bin
-drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:06 conf
-drwxr-xr-x 2 tds Unidata  4096 Jul 11 17:47 lib
--rw-r--r-- 1 tds Unidata 37951 Feb  2 12:06 LICENSE
-drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 logs
--rw-r--r-- 1 tds Unidata   558 Feb  2 12:06 NOTICE
--rw-r--r-- 1 tds Unidata  8672 Feb  2 12:04 RELEASE-NOTES
--rw-r--r-- 1 tds Unidata  6670 Feb  2 12:06 RUNNING.txt
-drwxr-xr-x 2 tds Unidata  4096 Jul 11 17:47 temp
-drwxr-xr-x 7 tds Unidata  4096 Feb  2 12:04 webapps
-drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
+drwxr-xr-x 2 tds ustaff  4096 Oct  8 10:58 bin
+drwxr-xr-x 2 tds ustaff  4096 Sep  2 02:52 conf
+drwxr-xr-x 2 tds ustaff  4096 Oct  8 10:58 lib
+-rw-r--r-- 1 tds ustaff 56812 Sep  2 02:52 LICENSE
+drwxr-xr-x 2 tds ustaff  4096 Sep  2 02:51 logs
+-rw-r--r-- 1 tds ustaff  1192 Sep  2 02:52 NOTICE
+-rw-r--r-- 1 tds ustaff  8826 Sep  2 02:52 RELEASE-NOTES
+-rw-r--r-- 1 tds ustaff 15557 Sep  2 02:52 RUNNING.txt
+drwxr-xr-x 2 tds ustaff  4096 Oct  8 10:58 temp
+drwxr-xr-x 7 tds ustaff  4096 Sep  2 02:52 webapps
+drwxr-xr-x 2 tds ustaff  4096 Sep  2 02:51 work
 </pre>
 
        <li>Familiarize yourself with the following important directories.</li>
 
         <p><code>bin/</code></p>
          <ul class="little">
-          <li>Contains <code><small>startup.sh</small></code>, <code><small>shutdown.sh</small></code> and other scripts/programs.</li>
-          <li>The <code><small>*.sh files</small></code>  (for Unix systems) are functional duplicates of the <code><small>*.bat</small></code>  files (for Windows systems).</li>
+          <li>Contains <code>startup.sh</code>, <code>shutdown.sh</code> and other scripts/programs.</li>
+          <li>The <code>*.sh files</code>  (for Unix systems) are functional duplicates of the <code>*.bat</code>  files (for Windows systems).</li>
          </ul>
         <p><code>conf/</code></p>
          <ul class="little">
           <li><i>Server-wide</i> Tomcat configuration.</li>
-          <li>You will modify <code><small>server.xml</small></code> and <code><small>tomcat-users.xml</small></code> to adjust logging, authentication and access control, enable SSL, etc.</li>
+          <li>You will modify <code>server.xml</code> and <code>tomcat-users.xml</code> to adjust logging, authentication and access control, enable SSL, etc.</li>
           <li>Web applications can override some server-wide settings in their own configuration files (more about that later).</li>
          </ul>
 
@@ -180,7 +176,7 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
          <ul class="little">
           <li>Contains web applications directories and WAR files.</li>
           <li>This is where we will be putting the TDS web application.</li>
-          <li>You will also be using the <code><small>manager</small></code> application that comes with Tomcat during this workshop.</li>
+          <li>You will also be using the <code>manager</code> application that comes with Tomcat during this workshop.</li>
          </ul>
 
         <p><code>logs/</code></p>
@@ -190,10 +186,10 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
           <li>This is one of the directories you will be looking for log files (the TDS logs elsewhere by default).</li>
           <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues.</i> (Hint, hint.)</li>
           <li>Logs files may contain useful information for assessing the security of your system.</li>
-          <li>You will become very familiar with the Tomcat-generated <code><small>catalina.out</small></code>, <code><small>catalina.yyyy-mm-dd.log</small></code> and <code><small>localhost_access_log.yyyy-mm-dd.log</small></code> files by the end of this workshop.</li>
+          <li>You will become very familiar with the Tomcat-generated <code>catalina.out</code>, <code>catalina.yyyy-mm-dd.log</code> and <code>localhost_access_log.yyyy-mm-dd.log</code> files by the end of this workshop.</li>
          </ul>
       </ol>
-     </div> <!-- end subsection -->
+
 
 
    </div> <!-- end Tomcat Directory Structure: Quick Tour section -->
@@ -206,14 +202,13 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
     <h2><a name="running">Running Tomcat</a></h2>
 
 
-     <div id="subsection">
       <h3>Starting &amp; stopping Tomcat</h3>
       <ol>
        <li>Tomcat isn't currently running so we need to start it up.</li>
-        <p>Run the <code><small>startup.sh</small></code> script in the Tomcat <code><small>bin/</small></code> directory:</p>
+        <p>Run the <code>startup.sh</code> script in the Tomcat <code>bin/</code> directory:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-7-0-27
+/home/tds/GettingStarted/apache-tomcat-7.0.32
 
 <b>$</b> bin/startup.sh
 </pre>
@@ -223,102 +218,92 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-tds      27049     1  2 17:50 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-7-0-27/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-7.0.27/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-7.0.27/bin/bootstrap.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-7.0.27 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-7.0.27 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-7.0.27/temp org.apache.catalina.startup.Bootstrap start
+tds       2688     1  5 11:01 pts/1    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-7.0.32/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-7.0.32/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-7.0.32/bin/bootstrap.jar:/home/tds/GettingStarted/apache-tomcat-7.0.32/bin/tomcat-juli.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-7.0.32 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-7.0.32 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-7.0.32/temp org.apache.catalina.startup.Bootstrap start
+tds       2711  2197  0 11:02 pts/1    00:00:00 grep tomcat
 </pre>
 
         <p>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</p>
 
-     <p><a href="../../images/congrat.png" target="_blank"><img src="../../images/congrat.png" width="400" height="415" alt="Tomcat Default Home Page" /></a></p>
+     <p><a href="images/congratulations.png" target="_blank"><img src="images/congratulations.png" width="300" alt="Tomcat Default Home Page" /></a></p>
 
-      <div id="expanded" class="question">
-       <p> Which Java is Tomcat currently using?  (Hint:  what was sent to <code><small>STDOUT</small></code> when running the <code><small>startup.sh</small></code> and <code><small>shutdown.sh</small></code>?)</p>
-      </div>
        <li>See if you can shutdown Tomcat.</li>
-        <p>Run the <code><small>shutdown.sh</small></code> script in the Tomcat <code><small>bin/</small></code> directory:</p>
+        <p>Run the <code>shutdown.sh</code> script in the Tomcat <code>bin/</code> directory:</p>
 <pre>
 <b>$</b> bin/shutdown.sh
 </pre>
       </ol>
 
       <div id="expanded" class="question">
-       <p> Which Java is Tomcat currently using?  (Hint:  what was sent to <code><small>STDOUT</small></code> when running the <code><small>startup.sh</small></code> and <code><small>shutdown.sh</small></code>?)</p>
+       <p> Which Java is Tomcat currently using?  (Hint:  what was sent to <code>STDOUT</code> when running the <code>startup.sh</code> and <code>shutdown.sh</code>?)</p>
       </div>
 
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting tips</h4>
+       <h4>Troubleshooting</h4>
        <ul>
-        <li>Check the logs mostly recently generated in the Tomcat <code><small>logs</small></code> for clues about why Tomcat failed to start or stop.</li>
-        <li>Pay particular attention to what is being reported in Tomcat's main log file: <code><small>catalina.out</small></code>. </li>
+        <li>Check the logs mostly recently generated in the Tomcat <code>logs</code> for clues about why Tomcat failed to start or stop.</li>
+        <li>Pay particular attention to what is being reported in Tomcat's main log file: <code>catalina.out</code>. </li>
        </ul>
       </div>
 
 
-     </div> <!-- end subsection -->
-
-
-
-
-     <div id="subsection">
-      <h3>Setting <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code></h3>
-
-
-       <p>We are going to create a file called <code><small>setenv.sh</small></code> in the Tomcat <code><small>bin/</small></code> directory to:</p>
-      <ul class="little">
-       <li>allow Tomcat to reference/find the location of <code><small>$JAVA_HOME</small></code>  and <code><small>$CATALINA_HOME</small></code>) during startup and shutdown; and </li>
-       <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code><small>$JAVA_OPTS</small>.</code> 
+      <h3>Setting <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_BASE</code></h3>
+      <p>We are going to create a file called <code>setenv.sh</code> in the Tomcat <code>bin/</code> directory to:</p>
+      <ul>
+       <li>allow Tomcat to reference/find the location of <code>$JAVA_HOME</code>  and <code>$CATALINA_BASE</code>) during startup and shutdown; and </li>
+       <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code>$JAVA_OPTS</small>.</code> 
       </ul>
 
       <div id="expanded" class="question">
-       <p>Why are we setting <code><small>$JAVA_HOME</small></code> and <code><small>$CATALINA_HOME</small></code> if we already have set them in our environment? </p>
+       <p>Why are we setting <code>$JAVA_HOME</code> and <code>$CATALINA_BASE</code> if we already have set them in our environment? </p>
       </div>
 
 
 
       <ol>
        <li><a name="makeSetenv"></a>Create the <code>setenv.sh</code> file.</li>
-        <p>Using your favorite text editor (gedit, vi, emacs, etc.), create a new file called <code><small>setenv.sh</small></code> in the Tomcat <code><small>bin/</small></code> directory:</p>
+        <p>Using your favorite text editor (gedit, vi, emacs, etc.), create a new file called <code>setenv.sh</code> in the Tomcat <code>bin/</code> directory:</p>
 
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-7.0.27
+/home/tds/GettingStarted/apache-tomcat-7.0.32
 
 <b>$</b> cd bin
 <b>$</b> vi setenv.sh
 </pre>
 
-        <p>Add the following information and save your <code><small>setenv.sh</small></code> file:</p>
+        <p>Add the following information and save your <code>setenv.sh</code> file:</p>
 <pre>
 #!/bin/sh
 #
 # ENVARS for Tomcat and TDS environment
 #
-JAVA_HOME="/home/tds/GettingStarted/jdk1.6.0_26"
+JAVA_HOME="/home/tds/GettingStarted/jdk1.7.0_07"
 export JAVA_HOME
 
-JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs"
+JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs"
 export JAVA_OPTS
 
-CATALINA_HOME="/home/tds/GettingStarted/apache-tomcat-7.0.27"
-export CATALINA_HOME
+CATALINA_BASE="/home/tds/GettingStarted/apache-tomcat-7.0.32"
+export CATALINA_BASE
 </pre>
 
       <div id="note" class="info">
        <h4>Settings </h4>
-       <p>Whenever possible, Unidata recommends <code><small>-Xmx1500m</small></code> for 32-bit systems, and<code><small>-Xmx4096m</small></code> (or more) for 64-bit systems.</p>
+       <p>Whenever possible, Unidata recommends <code>-Xmx1500m</code> for 32-bit systems, and<code>-Xmx4096m</code> (or more) for 64-bit systems.</p>
       </div> 
 
 
 
 
-        <p>The parameters we pass to <code><small>$JAVA_OPTS</small></code>:</p>
+        <p>The parameters we pass to <code>$JAVA_OPTS</code>:</p>
 
 
         <ul class="little">
-         <li><code><small>-Xms</small></code> is the initial allocated memory of the JVM (for performance).</li>
-         <li><code><small>-Xmx</small></code> the maximum allocated memory of the JVM (for performance).</li>
-         <li><code><small>-server</small></code> tells the Hostspot compiler to run the JVM in "server" mode.</li>
-         <li><code><small>-Djava.awt.headless=true</small></code> is needed to prevent graphics rendering code from assuming a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
-          <li><code><small>-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs</small></code> allows the <a href="../faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS service to write system preferences to a location that is writable by the user that Tomcat runs under</li>
+         <li><code>-Xms</code> is the initial allocated memory of the JVM (for performance).</li>
+         <li><code>-Xmx</code> the maximum allocated memory of the JVM (for performance).</li>
+         <li><code>-server</code> tells the Hostspot compiler to run the JVM in "server" mode.</li>
+         <li><code>-Djava.awt.headless=true</code> is needed to prevent graphics rendering code from assuming a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
+          <li><code>-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</code> allows the <a href="../faq.html#javaUtilPrefs">java.util.prefs</a> of the TDS WMS service to write system preferences to a location that is writable by the user that Tomcat runs under</li>
           .
         </ul>
  
@@ -326,37 +311,37 @@ export CATALINA_HOME
         <p>Restart Tomcat and examine the output generated to the terminal window by the startup script:</p>
 <pre>
 <b>$</b> ./startup.sh
-Using CATALINA_BASE:   /home/tds/GettingStarted/apache-tomcat-7.0.27
-Using CATALINA_HOME:   /home/tds/GettingStarted/apache-tomcat-7.0.27
-Using CATALINA_TMPDIR: /home/tds/GettingStarted/apache-tomcat-7.0.27/temp
-Using JRE_HOME:        /home/tds/GettingStarted/jdk1.6.0_26
-Using CLASSPATH:       /home/tds/GettingStarted/apache-tomcat-7.0.27/bin/bootstrap.jar
+Using CATALINA_BASE:   /home/tds/GettingStarted/apache-tomcat-7.0.32
+Using CATALINA_HOME:   /home/tds/GettingStarted/apache-tomcat-7.0.32
+Using CATALINA_TMPDIR: /home/tds/GettingStarted/apache-tomcat-7.0.32/temp
+Using JRE_HOME:        /home/tds/GettingStarted/jdk1.7.0_07
+Using CLASSPATH:       /home/tds/GettingStarted/apache-tomcat-7.0.32/bin/bootstrap.jar:/home/tds/GettingStarted/apache-tomcat-7.0.32/bin/tomcat-juli.jar
 </pre>
       <div id="expanded" class="question">
-       <p>Did you notice any difference in the what is being reported to <code><small>STDOUT</small></code> during startup?</p>
+       <p>Did you notice any difference in the what is being reported to <code>STDOUT</code> during startup?</p>
       </div>
   
-        <p>Take a look at the running Tomcat process to see the new <code><small>$JAVA_OPTS</small></code> settings:</p>
+        <p>Take a look at the running Tomcat process to see the new <code>$JAVA_OPTS</code> settings:</p>
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-tds       2697     1  7 17:59 pts/1    00:00:03 /home/tds/GettingStarted/jdk1.6.0_26/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-7.0.27/conf/logging.properties <b>-Xmx1500m -Xms512m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-7.0.27/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-7.0.27/bin/bootstrap.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-7.0.27 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-7.0.27 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-7.0.27/temp org.apache.catalina.startup.Bootstrap start
+tds       2819     1 28 11:17 pts/1    00:00:02 /home/tds/GettingStarted/jdk1.7.0_07/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-7.0.32/conf/logging.properties <b>-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/home/tds/GettingStarted/apache-tomcat-7.0.32/content/thredds/javaUtilPrefs</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-7.0.32/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-7.0.32/bin/bootstrap.jar:/home/tds/GettingStarted/apache-tomcat-7.0.32/bin/tomcat-juli.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-7.0.32 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-7.0.32 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-7.0.32/temp org.apache.catalina.startup.Bootstrap start
 </pre>
 
       <div id="expanded" class="question">
-       <p>What allows us to create the <code><small>setenv.sh</small></code> file and have its contents read?   (Hint: have a look at the <code><small>catalina.sh</small></code> file in the Tomcat <code><small>bin/</small></code> directory starting around line 117).</p>
+       <p>What allows us to create the <code>setenv.sh</code> file and have its contents read?   (Hint: have a look at the <code>catalina.sh</code> file in the Tomcat <code>bin/</code> directory at lines 24 and 133).</p>
       </div>
 
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting tips</h4>
+       <h4>Troubleshooting</h4>
        <ul>
-        <li>Do not forget include the '<code><small>m</small></code>' in your <code><small>-Xms</small></code>  and <code><small>-Xmx</small></code>  settings.</li>
-        <li>You may have allocated too much memory for the JVM settings if Tomcat fails to start and you get the following error reported in the Tomcat log <code><small>catalina.out</small></code>:</li>
+        <li>Do not forget include the '<code>m</code>' in your <code>-Xms</code>  and <code>-Xmx</code>  settings.</li>
+        <li>You may have allocated too much memory for the JVM settings if Tomcat fails to start and you get the following error reported in the Tomcat log <code>catalina.out</code>:</li>
 <pre>
 Error occurred during initialization of VM
 Could not reserve enough space for object heap
 </pre>
-        <li>Likewise, if  there is an error with your JVM memory allocation syntax in the <code><small>setenv.sh</small></code> file, it will be reported to <code><small>catalina.out</small></code>:</li>
+        <li>Likewise, if  there is an error with your JVM memory allocation syntax in the <code>setenv.sh</code> file, it will be reported to <code>catalina.out</code>:</li>
 <pre>
 Error occurred during initialization of VM
 Incompatible minimum and maximum heap sizes specified
@@ -364,15 +349,15 @@ Incompatible minimum and maximum heap sizes specified
        </ul>
       </div>
       </ol>
-     </div> <!-- end subsection -->
 
 
 
 
-      <div id="subsection" class="exercise">
-       <h3>Exercise Two: Set <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code></h3>
+
+      <div id="expanded" class="exercise">
+       <h3>Exercise Two: Set <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_BASE</code></h3>
        <ol>
-        <li>Create a <code>setenv.sh</code> file in the Tomcat <code>bin/</code> and set <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_HOME</code>.</li>
+        <li>Create a <code>setenv.sh</code> file in the Tomcat <code>bin/</code> and set <code>$JAVA_HOME</code>, <code>$JAVA_OPTS</code> and <code>$CATALINA_BASE</code>.</li>
 
        </ol>
       </div>
@@ -387,17 +372,15 @@ Incompatible minimum and maximum heap sizes specified
    <div id="section">
     <h2><a name="deploying">Deploying the TDS</a></h2>
 
-     <div id="subsection">
       <h3>About WAR files</h3>
        <ul>
         <li>WAR is short for <b>W</b>eb <b>AR</b>chive.</li>
         <li>By default, Tomcat will automatically unpack the WAR distribution into directory of the same name upon deployment.</li>
         <li>Note: the unpacked directory is overwritten each time a new WAR file is deployed.</li>
-        </ul>
-     </div> <!-- end subsection -->
+
+       </ul>
 
 
-     <div id="subsection">
       <h3>Downloading &amp; deploying <code>thredds.war</code></h3>
 
       <div id="note" class="info">
@@ -407,67 +390,67 @@ Incompatible minimum and maximum heap sizes specified
 
       <ol>
        <li><a href="http://www.unidata.ucar.edu/downloads/thredds/index.jsp">Download</a> the TDS WAR file from Unidata's web site.</li>
-        <p>We will be using the current <i>TDS 4.2 (stable) version</i> for this workshop:</p>
+        <p>We will be using the current <i>TDS 4.3 (release candidate) version</i> for this workshop:</p>
         <p><code>thredds.war</code></p>
        <li>Deploy the TDS in Tomcat.</li>
-        <p>Put <code><small>thredds.war</small></code> in the Tomcat <code><small>webapps/</small></code> directory:</p>
+        <p>Put <code>thredds.war</code> in the Tomcat <code>webapps/</code> directory:</p>
 
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-7.0.27/bin
+/home/tds/GettingStarted/apache-tomcat-7.0.32/bin
 <b>$</b> cd ../webapps
 
 <b>$</b> cp ~/Downloads/thredds.war .
 <b>$</b> ls -l
-total 24612
-drwxr-xr-x 10 tds Unidata     4096 Jul 11 17:47 docs
-drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 examples
-drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 host-manager
-drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 manager
-drwxr-xr-x  3 tds Unidata     4096 Jul 11 17:47 ROOT
--rw-r--r--  1 tds Unidata 25238961 Jul 11 18:02 thredds.war
+drwxr-xr-x 13 tds ustaff     4096 Oct  8 10:58 docs
+drwxr-xr-x  6 tds ustaff     4096 Oct  8 10:58 examples
+drwxr-xr-x  5 tds ustaff     4096 Oct  8 10:58 host-manager
+drwxr-xr-x  5 tds ustaff     4096 Oct  8 10:58 manager
+drwxr-xr-x  3 tds ustaff     4096 Oct  8 10:58 ROOT
+-rw-r--r--  1 tds ustaff 40419313 Oct  8 15:25 thredds.war
 </pre>
 
        <li>Confirm the TDS has been deployed.</li>
-        <p>If Tomcat is already running, wait a couple of seconds after placing the WAR file in the Tomcat <code><small>webapps/</small></code> and then verify the <code><small>thredds.war</small></code> file was unpacked:</p>
+        <p>If Tomcat is already running, wait a couple of seconds after placing the WAR file in the Tomcat <code>webapps/</code> and then verify the <code>thredds.war</code> file was unpacked:</p>
 
 <pre>
 <b>$</b> ls -l
-total 24616
-drwxr-xr-x 10 tds Unidata     4096 Jul 11 17:47 docs
-drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 examples
-drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 host-manager
-drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 manager
-drwxr-xr-x  3 tds Unidata     4096 Jul 11 17:47 ROOT
-drwxr-xr-x  6 tds Unidata     4096 Jul 11 18:02 thredds
--rw-r--r--  1 tds Unidata 25238961 Jul 11 18:02 thredds.war
+drwxr-xr-x 13 tds ustaff     4096 Oct  8 10:58 docs
+drwxr-xr-x  6 tds ustaff     4096 Oct  8 10:58 examples
+drwxr-xr-x  5 tds ustaff     4096 Oct  8 10:58 host-manager
+drwxr-xr-x  5 tds ustaff     4096 Oct  8 10:58 manager
+drwxr-xr-x  3 tds ustaff     4096 Oct  8 10:58 ROOT
+drwxr-xr-x  8 tds ustaff     4096 Oct  8 15:25 thredds
+-rw-r--r--  1 tds ustaff 40419313 Oct  8 15:25 thredds.war
 </pre>
 
 </pre>
 
  <p>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed:</p>
 
-     <p><a href="../../images/tds.png" target="_blank"><img src="../../images/tds.png" width="400" width="433" alt="THREDDS Distribution Catalog" /></a></p>
+     <p><a href="images/tds.png" target="_blank"><img src="images/tds.png" width="300" alt="THREDDS Distribution Catalog" /></a></p>
 
-      </ol>
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting tips</h4>
+       <h4>Troubleshooting</h4>
        <ul>
-        <li>Any error in the TDS deployment will be reported in the <code><small>catalina.out</small></code> file of the Tomcat  <code><small>logs/</small></code> directory. </li>
-        <li>Be sure you have downloaded and deployed the TDS 4.2 (stable) version for this workshop (the version number will appear in the blue bar at the bottom of TDS catalog pages).</li>
+        <li>Any error in the TDS deployment will be reported in the <code>catalina.out</code> file of the Tomcat  <code>logs/</code> directory. </li>
+        <li>Be sure you have downloaded and deployed the TDS 4.3 (release candidate) version for this workshop (the version number will appear in the blue bar at the bottom of TDS catalog pages).</li>
        </ul>
       </div>
 
-     </div> <!-- end subsection -->
+      </ol>
 
 
 
-      <div id="subsection" class="exercise">
+
+
+
+      <div id="expanded" class="exercise">
        <h3>Exercise Three: Deploy your own instance of the THREDDS Data Server</h3>
        <ol>
         <li>Deploy the TDS in your newly-installed Tomcat.</li>
         <li>Once deployed, browse the test catalogs & datasets that come with the distribution.</li>
-        <li>Look at the directory contents of the main Tomcat directory <code><small>~/GettingStarted/apache-tomcat-7.0.27</small></code> (aka <code><small>${tomcat_home}</small></code>).</li>
+        <li>Look at the directory contents of the main Tomcat directory <code>~/apache-tomcat-7.0.32</code> (aka <code>${tomcat_home}</code>).</li>
          <div class="exercise_question">
           <p>Do you notice anything new?</p>
          </div>
@@ -480,36 +463,34 @@ drwxr-xr-x  6 tds Unidata     4096 Jul 11 18:02 thredds
 
  
    <div id="section">
-
     <h2><a name="logs">Tomcat Log Files</a></h2>
 
 
-     <div id="subsection">
       <h3>Tomcat <code>logs/</code></h3>
       
       <ol>
        <li>Look at the different types of log files being generated in the Tomcat <code>logs/</code> directory.</li>
-        <p>Move into the <code><small>logs/</small></code> directory to see the type of information being logged:</p>
+        <p>Move into the <code>logs/</code> directory to see the type of information being logged:</p>
 
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-7.0.27/webapps
+/home/tds/GettingStarted/apache-tomcat-7.0.32/webapps
 <b>$</b> cd ../logs
 
 <b>$</b> ls -l
-total 20
--rw-r--r-- 1 tds Unidata 4423 Jul 11 18:02 catalina.2011-07-11.log
--rw-r--r-- 1 tds Unidata 4741 Jul 11 18:02 catalina.out
--rw-r--r-- 1 tds Unidata    0 Jul 11 17:50 host-manager.2011-07-11.log
--rw-r--r-- 1 tds Unidata 2132 Jul 11 18:02 localhost.2011-07-11.log
--rw-r--r-- 1 tds Unidata    0 Jul 11 17:50 manager.2011-07-11.log
+-rw-r--r-- 1 tds ustaff 10722 Oct  8 15:25 catalina.2012-10-08.log
+-rw-r--r-- 1 tds ustaff 10841 Oct  8 15:25 catalina.out
+-rw-r--r-- 1 tds ustaff     0 Oct  8 11:01 host-manager.2012-10-08.log
+-rw-r--r-- 1 tds ustaff  2828 Oct  8 15:25 localhost.2012-10-08.log
+-rw-r--r-- 1 tds ustaff   907 Oct  8 15:25 localhost_access_log.2012-10-08.txt
+-rw-r--r-- 1 tds ustaff     0 Oct  8 11:01 manager.2012-10-08.log
 </pre>
 
       <div id="expanded" class="question">
-       <p>Do you see a correspondence between some of the web applications in the Tomcat <code><small>webapps/</small></code> directory and the naming of certain log files?</p>
+       <p>Do you see a correspondence between some of the web applications in the Tomcat <code>webapps/</code> directory and the naming of certain log files?</p>
       </div>
       <div id="expanded" class="question">
-       <p>Is there a difference in the information being logged to <code><small>catalina.out</small></code> versus <code><small>catalina.yyyy-mm-dd.log</small></code>?</p>
+       <p>Is there a difference in the information being logged to <code>catalina.out</code> versus <code>catalina.yyyy-mm-dd.log</code>?</p>
       </div>
       <div id="expanded" class="question">
        <p>Are some log files more verbose than others?</p>
@@ -518,38 +499,37 @@ total 20
        <li>Examining <code>catalina.out</code>.</li>
         <p>Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:</p>
 <pre>
-<b>$</b> tail -f /home/tds/GettingStarted/apache-tomcat-7.0.27/logs/catalina.out
+<b>$</b> tail -f /home/tds/GettingStarted/apache-tomcat-7.0.32/logs/catalina.out
 </pre>
 <p>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</p>
       <div id="expanded" class="question">
-       <p>Is it only errors messages being reported to <code><small>catalina.out?</small></code></p>
+       <p>Is it only errors messages being reported to <code>catalina.out?</code></p>
       </div>
       <div id="expanded" class="question">
-       <p>What messages in <code><small>catalina.out</small></code> are from the TDS?</p>
+       <p>What messages in <code>catalina.out</code> are from the TDS?</p>
       </div>
       </ol>
-     </div> <!-- end subsection -->
 
 
 
-     <div id="subsection">
+
       <h3>Things to know about <code>catalina.out</code></h3>
 
       <div id="note" class="info">
        <h4><code>catalina.out</code></h4>
-       <p>The <a href="http://marc.info/?l=tomcat-user&w=2&r=1&s=catalina.out+rotate&q=b">Tomcat Users mailing list</a> has seen a lot of traffic dedicated to <code><small>catalina.out</small></code> logging and rotation.</p>
+       <p>The <a href="http://marc.info/?l=tomcat-user&w=2&r=1&s=catalina.out+rotate&q=b">Tomcat Users mailing list</a> has seen a lot of traffic dedicated to <code>catalina.out</code> logging and rotation.</p>
       </div>
 
 
        <ul>
-        <li>Tomcat <code><small>System.out</small></code> and <code><small>System.err</small></code> gets appended to <code><small>catalina.out</small></code>.  </li>
-        <li><code><small>catalina.out</small></code> can quickly grow large if the hosted web applications are not specifically catching and logging <code><small>System.out</small></code> and <code><small>System.err</small></code> to designated files.</li>
-        <li><code><small>catalina.out</small></code> is not automatically rotated in Tomcat.</li>
-        <li>You should employ an outside log rotation program (e.g., <code><small>logadm</small></code> or <code><small>logrotate</small></code>) to rotate <code><small>catalina.out</small></code>.</li>
-        <li>It is good practice to archive and remove old <code><small>catalina.out</small></code> files and other log files out of the Tomcat <code><small>logs/</small></code> on a regular basis.</li>
-        <li>On Windows, the <code><small>catalina.out</small></code> file is not automatically created. Instead only the <code><small>catalina.yyyy-mm-dd.log</small></code> files are used. These have equivalent content.</li>
+        <li>Tomcat <code>System.out</code> and <code>System.err</code> gets appended to <code>catalina.out</code>.  </li>
+        <li><code>catalina.out</code> can quickly grow large if the hosted web applications are not specifically catching and logging <code>System.out</code> and <code>System.err</code> to designated files.</li>
+        <li><code>catalina.out</code> is not automatically rotated in Tomcat.</li>
+        <li>You should employ an outside log rotation program (e.g., <code>logadm</code> or <code>logrotate</code>) to rotate <code>catalina.out</code>.</li>
+        <li>It is good practice to archive and remove old <code>catalina.out</code> files and other log files out of the Tomcat <code>logs/</code> on a regular basis.</li>
+        <li>On Windows, the <code>catalina.out</code> file is not automatically created. Instead only the <code>catalina.yyyy-mm-dd.log</code> files are used. These have equivalent content.</li>
        </ul>
-     </div> <!-- end subsection -->
+
 
    </div> <!-- end A Cursory Look at Log Files section -->
 
@@ -557,40 +537,37 @@ total 20
    <div id="section">
     <h2><a name="files">Tomcat (Server-Level) Configuration Files</a></h2>
 
-     <div id="subsection">
       <h3>About <code>server.xml</code> </h3>
 
       <div id="note" class="reminder">
        <h4>Keep in mind</h4>
-       <p>Tomcat's configuration files, including  <code><small>server.xml</small></code> can be found in in the Tomcat <code><small>conf/</small></code> directory.</p>
+       <p>Tomcat's configuration files, including  <code>server.xml</code> can be found in in the Tomcat <code>conf/</code> directory.</p>
       </div>
       <ul>
        <li>XML file (well-formed syntax is important).</li>
        <li>Tomcat's main configuration file.</li>
-       <li>Changes to <code><small>server.xml</small></code> do not take effect until Tomcat is restarted.</li>
+       <li>Changes to <code>server.xml</code> do not take effect until Tomcat is restarted.</li>
        <li>Where we make changes to enhance TDS security.</li>
 
       </ul>
-     </div> <!-- end  subsection -->
 
 
 
 
-     <div id="subsection">
       <h3>Important elements in <code>server.xml</code></h3>
        <ol>
         <li>Examine the Elements in <code>server.xml</code>.</li>
-         <p>Move into the Tomcat <code><small>conf/</small></code> directory and examine the <code><small>server.xml</small></code> file:</p>
+         <p>Move into the Tomcat <code>conf/</code> directory and examine the <code>server.xml</code> file:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-7.0.27/logs
+/home/tds/GettingStarted/apache-tomcat-7.0.32/logs
 <b>$</b> cd ../conf
 
 <b>$</b> less server.xml
 </pre>  
 
 
-         <p>Reference the table below to see how the <code><small>server.xml</small></code> elements relate to configuring TDS (mouse-over the element for a description):</p>
+         <p>Reference the table below to see how the <code>server.xml</code> elements relate to configuring TDS (mouse-over the element for a description):</p>
           <table>
            <tr>
             <th>  
@@ -606,7 +583,7 @@ total 20
 
            <tr>
             <td> 
-              <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/server.html"><code>&lt;Server&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Server</code> element represents the entire Catalina servlet container as a whole. It is the single outermost element in <code>server.xml</code></b></a>
+              <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/server.html"><code>&lt;Server&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Server</code> element represents the entire Catalina servlet container as a whole. It is the single outermost element in <code>server.xml</code></b></a>
             </td>
             <td>   
               1...1
@@ -618,7 +595,7 @@ total 20
 
            <tr>
             <td style="padding-left: 20px"> 
-              <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/globalresources.html"><code>&lt;GlobalNamingResources&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>GlobalNamingResources</code> element defines the global Java Naming and Directory Interface (JNDI) resources for the Server.</b></a>
+              <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/globalresources.html"><code>&lt;GlobalNamingResources&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>GlobalNamingResources</code> element defines the global Java Naming and Directory Interface (JNDI) resources for the Server.</b></a>
             </td>
             <td>   
              0...*
@@ -631,7 +608,7 @@ total 20
 
            <tr>
             <td style="padding-left: 40px">  
-              <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/resources.html"><code>&lt;Resource&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Resource</code> element represents a static resource from which classes will be loaded and static files will be served.</b></a>
+              <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/resources.html"><code>&lt;Resource&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Resource</code> element represents a static resource from which classes will be loaded and static files will be served.</b></a>
             </td>
             <td>   
              0...*
@@ -643,7 +620,7 @@ total 20
 
            <tr>
             <td style="padding-left: 20px"> 
-              <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/service.html"><code>&lt;Service&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Service</code> element represents the combination of one or more <code>Connector</code> components that share a single Engine component for processing incoming requests. The top Tomcat <code>service</code> is named <code>Catalina</code> (hence the log file name of <code>catalina.out</code>).</b></a>
+              <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/service.html"><code>&lt;Service&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Service</code> element represents the combination of one or more <code>Connector</code> components that share a single Engine component for processing incoming requests. The top Tomcat <code>service</code> is named <code>Catalina</code> (hence the log file name of <code>catalina.out</code>).</b></a>
             </td>
             <td>   
              1...*
@@ -655,7 +632,7 @@ total 20
 
            <tr>
             <td style="padding-left: 40px">  
-              <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/connectors.html"><code>&lt;Connector&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Connector</code> element forward requests to the <code>Engine</code> using a specific protocol and returns the results to the requesting client. </b></a>
+              <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/connectors.html"><code>&lt;Connector&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Connector</code> element forward requests to the <code>Engine</code> using a specific protocol and returns the results to the requesting client. </b></a>
             </td>
             <td>   
              1...*
@@ -667,7 +644,7 @@ total 20
 
            <tr>
             <td style="padding-left: 40px">  
-             <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/engine.html"><code>&lt;Engine&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Engine</code> element represents the entire request processing machinery associated with a particular Catalina <code>Service</code>.</b></a>
+             <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/engine.html"><code>&lt;Engine&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Engine</code> element represents the entire request processing machinery associated with a particular Catalina <code>Service</code>.</b></a>
             </td>
             <td>   
              1...1
@@ -679,7 +656,7 @@ total 20
 
            <tr>
             <td style="padding-left: 60px">  
-              <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html"><code>&lt;Realm&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Realm</code> element represents a "database" of usernames, passwords, and roles (groups) assigned to those users. </b></a>
+              <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html"><code>&lt;Realm&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Realm</code> element represents a "database" of usernames, passwords, and roles (groups) assigned to those users. </b></a>
             </td>
             <td>   
              0...*
@@ -692,7 +669,7 @@ total 20
 
            <tr>
             <td style="padding-left: 60px">  
-             <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html"><code>&lt;Valve&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Valve</code> element represents a component that will be inserted into the request processing pipeline for the associated containing element.</b></a>
+             <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html"><code>&lt;Valve&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Valve</code> element represents a component that will be inserted into the request processing pipeline for the associated containing element.</b></a>
             </td>
             <td>   
              0...*
@@ -703,7 +680,7 @@ total 20
            </tr>
            <tr>
             <td style="padding-left: 60px">  
-             <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/host.html"><code>&lt;Host&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Host</code> element represents a virtual host.</b></a>
+             <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/host.html"><code>&lt;Host&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Host</code> element represents a virtual host.</b></a>
             </td>
             <td>   
              1...*
@@ -714,7 +691,7 @@ total 20
            </tr>
            <tr>
             <td style="padding-left: 80px">  
-             <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html"><code>&lt;Realm&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Realm</code> element represents a "database" of usernames, passwords, and roles (groups) assigned to those users. </b></a>
+             <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/realm.html"><code>&lt;Realm&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Realm</code> element represents a "database" of usernames, passwords, and roles (groups) assigned to those users. </b></a>
             </td>
             <td>   
              0...*
@@ -725,7 +702,7 @@ total 20
            </tr>
            <tr>
             <td style="padding-left: 80px">  
-             <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html"><code>&lt;Valve&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Valve</code> element represents a component that will be inserted into the request processing pipeline for the associated containing element.</b></a>
+             <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html"><code>&lt;Valve&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>Valve</code> element represents a component that will be inserted into the request processing pipeline for the associated containing element.</b></a>
             </td>
             <td>   
              0...*
@@ -736,10 +713,10 @@ total 20
            </tr>
           </table>
       </ol>
-     </div> <!-- end server.xml Elements subsection -->
 
 
-     <div id="subsection">
+
+
       <h3>About <code>tomcat-users.xml</code> </h3>
       <ul>
        <li>XML file (well-formed syntax is important).</li>
@@ -747,24 +724,24 @@ total 20
        <li>Changes to <code>tomcat-users.xml</code> do not take effect until Tomcat is restarted.</li>
        <li>What the TDS uses for user authentication and access control.</li>
       </ul>
-     </div> <!-- end  subsection -->
 
 
 
 
-     <div id="subsection">
+
+
       <h3>Important elements in <code>tomcat-users.xml</code></h3>
        <ol>
         <li>Examine the Elements in <code>tomcat-users.xml</code>.</li>
-         <p>Open the <code><small>tomcat-users.xml</small></code> file:</p>
+         <p>Open the <code>tomcat-users.xml</code> file:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-7.0.27/conf
+/home/tds/GettingStarted/apache-tomcat-7.0.32/conf
 
 <b>$</b> less tomcat-users.xml
 </pre>  
 
-         <p>Reference the table below to see how the <code><small>tomcat-users.xml</small></code> elements relate to configuring TDS (mouse-over the element for a description):</p>
+         <p>Reference the table below to see how the <code>tomcat-users.xml</code> elements relate to configuring TDS (mouse-over the element for a description):</p>
           <table>
            <tr>
             <th>  
@@ -780,7 +757,7 @@ total 20
 
            <tr>
             <td> 
-             <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html"><code>&lt;tomcat-users&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>tomcat-users</code> element represents the single outermost element in <code>tomcat-users.xml</code></b>
+             <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html"><code>&lt;tomcat-users&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>tomcat-users</code> element represents the single outermost element in <code>tomcat-users.xml</code></b>
             </td>
             <td>   
              1...1
@@ -792,7 +769,7 @@ total 20
 
            <tr>
             <td style="padding-left: 20px"> 
-             <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html"><code>&lt;role&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>role</code> element defines one role or group a user can belong to.</b>
+             <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html"><code>&lt;role&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>role</code> element defines one role or group a user can belong to.</b>
             </td>
             <td>   
              1...*
@@ -804,7 +781,7 @@ total 20
 
            <tr>
             <td style="padding-left: 20px"> 
-             <a class="tooltip" href="http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html"><code>&lt;user&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>user</code> element represents one valid user.</b>
+             <a class="tooltip" href="http://tomcat.apache.org/tomcat-7.0-doc/realm-howto.html"><code>&lt;user&gt;</code><b><em class="outer"></em><em class="inner"></em><big>Description:</big> The <code>user</code> element represents one valid user.</b>
             </td>
             <td>   
              1...*
@@ -815,7 +792,7 @@ total 20
            </tr>   
           </table>
        </ol>
-      </div> <!-- end subsection -->
+
 
 
 
@@ -831,11 +808,10 @@ total 20
     <h2><a name="manager">Tomcat <code>manager</code> Application</a></h2>
 
 
-     <div id="subsection">
       <h3>About the <code>manager</code> application</h3>
       <div id="note" class="info">
        <h4>More about <code>manager</code></h4>
-       <p>For more information about the Tomcat <code><small>manager</small></code> application, see the Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/manager-howto.html">Manager App HOW-TO</a> documentation.</p>
+       <p>For more information about the Tomcat <code>manager</code> application, see the Tomcat <a href="http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html">Manager App HOW-TO</a> documentation.</p>
       </div>
 
 
@@ -847,81 +823,86 @@ total 20
        <li>Provides server status statistics for the JVM and each connector you have configured in <code>server.xml</code>.</li>
       </ul>
 
-     </div> <!-- end subsection -->
 
 
-     <div id="subsection">
       <h3>Accessing the Tomcat <code>manager</code> application</h3>
 
       <div id="note" class="info">
        <h4>Changes to the <code>manager</code> application</h4>
-       <p>The <code><small>manager</small></code> application URLs and roles has been re-structured. See the Tomcat <a href="http://tomcat.apache.org/migration.html">Migration guide</a> for more information.</p>
+       <p>The <code>manager</code> application URLs and roles has been re-structured. See the Tomcat <a href="http://tomcat.apache.org/migration.html">Migration guide</a> for more information.</p>
       </div>
-      <p>Attempt to access the Tomcat <code><small>manager</small></code> application in your browser: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a>. You will be prompted to login via BASIC authentication, which will end in failure since we do not yet have permission to access the <code><small>manager</small></code> application:</p>
+      <p>Attempt to access the Tomcat <code>manager</code> application in your browser: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a>. You will be prompted to login via BASIC authentication, which will end in failure since we do not yet have permission to access the <code>manager</code> application:</p>
 
-        <p><a href="../../images/manager401.png" target="_blank"><img src="../../images/manager401.png" width="400"  alt="Manager app with 401 response code"></a></p>
+        <p><a href="images/manager401.png" target="_blank"><img src="images/manager401.png" width="300"  alt="Manager app with 401 response code"></a></p>
 
       <div id="expanded" class="question">
-       <p>Based on what we know about Tomcat configuration, which file in the Tomcat <code><small>conf/</small></code> directory should we edit to grant ourselves access to the <code><small>manager</small></code> application?</p>
+       <p>Based on what we know about Tomcat configuration, which file in the Tomcat <code>conf/</code> directory should we edit to grant ourselves access to the <code>manager</code> application?</p>
       </div>
 
-     </div> <!-- end subsection -->
 
 
 
 
-     <div id="subsection">
+
+
+      <div id="note" class="reminder">
+       <h4>Keep in mind</h4>
+       <p>Changes to <code>tomcat-users.xml</code> do not take effect until Tomcat is restarted.</p>
+      </div>
       <h3>Granting access to the <code>manager</code> application</h3>
-
        <ol>
-        <li>Modify <code>tomcat-users.xml</code> to add a <code>user</code> element.</li>
-         <p>Using your favorite editor, open <code><small>${tomcat_home}/conf/tomcat-users.xml</small></code>:</p>
+        <li>Modify <code>tomcat-users.xml</code> to add <code>role</code> and <code>user</code> elements.</li>
+         <p>Using your favorite editor, open <code>${tomcat_home}/conf/tomcat-users.xml</code>:</p>
 <pre>
 <b>$</b> vi tomcat-users.xml
-</pre>
-           <p>The roles of &quot;manager-gui&quot;, &quot;manager-status&quot;, &quot;manager-script&quot;, and &quot;manager-jmx&quot; are pre-defined in Tomcat 7.</p>
-
-           <p>Now add a new user by adding a <code><small>user</small></code> element. Create a <code><small>username</small></code> and <code><small>password</small></code> for the new user and specify <code><small>manager-gui</small></code> as one of the <code><small>roles</small></code> (in this example we are creating a user called 'admin' with a corresponding password of 'secret'):</p>
+</pre>   
+        <p>Between the <code>&lt;tomcat-users&gt;</code> tags, add a <code>role</code> element and specify the <code>rolename</code> attribute as <code>manager</code>:</p>
+          
+<pre>
+&lt;tomcat-users&gt;
+    &lt;role rolename="manager-gui"/&gt;
+&lt;/tomcat-users&gt;
+</pre>  
+          <p>Now add a new user by adding a <code>user</code> element. Create a <code>username</code> and <code>password</code> for the new user and specify <code>manager-gui</code> as one of the <code>roles</code> (in this example we are creating a user called 'admin' with a corresponding password of 'secret'):</p>
 <pre>
 &lt;tomcat-users&gt;
     &lt;role rolename="manager-gui"/&gt;
     &lt;user username="admin" password="secret" roles="manager-gui"/&gt;   
 &lt;/tomcat-users&gt;
-</pre>
-           <li>Restart Tomcat and log into the <code>manager</code> application.</li>
+</pre>  
+        <li>Restart Tomcat and log into the <code>manager</code> application.</li>
 
-      <div id="note" class="reminder">
-       <h4>Keep in mind</h4>
-       <p>Changes to <code><small>tomcat-users.xml</small></code> do not take effect until Tomcat is restarted.</p>
-      </div>
-
-           <p>Attempt to access the <code><small>manager</small></code> application again (<a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a>), this time logging in using the <code><small>name</small></code> and <code><small>password</small></code> specified in <code><small>tomcat-users.xml</small></code>:  </p>
-
-         <p><a href="../../images/manager.png" target="_blank"><img src="../../images/manager.png" width="400" height="433" alt="Tomcat manager application"></a></p>
 
       <div id="note" class="ahead">
        <h4>Thinking ahead</h4>
-       <p>To gain access to restricted parts of the TDS, you will perform the same steps you used to grant yourself access to the <code><small>manager</small></code> application.</p>
+       <p>To gain access to restricted parts of the TDS, you will perform the same steps you used to grant yourself access to the <code>manager</code> application.</p>
       </div>
+
+           <p>Attempt to access the <code>manager</code> application again (<a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a>), this time logging in using the <code>name</code> and <code>password</code> specified in <code>tomcat-users.xml</code>:  </p>
+
+
+
+         <p><a href="images/manager.png" target="_blank"><img src="images/manager.png" width="300" alt="Tomcat manager application"></a></p>
+
 
 
          <p>Voil&#224;!  You should have access to the <code>manager</code> application.</p>
           
-       </ol>
+
 
       <div id="expanded" class="troubleshooting">
-       <h4>Troubleshooting tips</h4>
+       <h4>Troubleshooting</h4>
        <ul>
-        <li>Check the XML syntax in <code><small>tomcat-users.xml</small></code> to make sure it is well-formed and without error.</li>
-        <li>Did you restart Tomcat after you made your changes to <code><small>tomcat-users.xml</small></code>?</li>
-        <li>Any errors will be reported in the Tomcat <code><small>logs/catalina.out</small></code> file. </li>
+        <li>Check the XML syntax in <code>tomcat-users.xml</code> to make sure it is well-formed and without error.</li>
+        <li>Did you restart Tomcat after you made your changes to <code>tomcat-users.xml</code>?</li>
+        <li>Any errors will be reported in the Tomcat <code>logs/catalina.out</code> file. </li>
        </ul>
       </div>
-     </div> <!-- end subsection -->
+       </ol>
 
 
 
-      <div id="subsection" class="exercise">
+      <div id="expanded" class="exercise">
        <h3>Exercise Four: Grant yourself access to the Tomcat <code>manager</code> application</h3>
        <ol>
         <li>Using the steps outlined above, modify <code>tomcat-users.xml</code> to grant yourself access to the Tomcat <code>manager</code> application.</li>
@@ -930,37 +911,35 @@ total 20
 
 
 
-     <div id="subsection">
       <h3>Deploying the TDS using the <code>manager</code> application</h3>
       <ol>
        <li>Use the <code>manager</code> application to undeploy the TDS.</li>          
-        <p>Find the TDS in the list of web application on the <code><small>Applications</small></code> page.  <b>Stop</b> and then <b>Undeploy</b> the TDS:</p>
-        <p><img src="../../images/undeploy.gif" height="92" width="754" alt="Undeploy the TDS"></p>
-        <p>List the contents of the Tomcat <code><small>webapps/</small></code> directory to verify that both <code><small>thredds.war</small></code> and the unpacked <code><small>thredds/</small></code> directory have been removed:</p>
+        <p>Find the TDS in the list of web application on the <code>Applications</code> page.  <b>Stop</b> and then <b>Undeploy</b> the TDS:</p>
+        <p><img src="images/undeploy.png" height="92" width="754" alt="Undeploy the TDS"></p>
+        <p>List the contents of the Tomcat <code>webapps/</code> directory to verify that both <code>thredds.war</code> and the unpacked <code>thredds/</code> directory have been removed:</p>
 <pre>
 <b>$</b> pwd
-/home/tds/GettingStarted/apache-tomcat-7.0.27/conf
+/home/tds/GettingStarted/apache-tomcat-7.0.32/conf
 <b>$</b> cd ../webapps
 
 <b>$</b> ls -l
-total 20
-drwxr-xr-x 10 tds Unidata 4096 Jul 11 17:47 docs
-drwxr-xr-x  5 tds Unidata 4096 Jul 11 17:47 examples
-drwxr-xr-x  5 tds Unidata 4096 Jul 11 17:47 host-manager
-drwxr-xr-x  5 tds Unidata 4096 Jul 11 17:47 manager
-drwxr-xr-x  3 tds Unidata 4096 Jul 11 17:47 ROOT
+drwxr-xr-x 13 tds ustaff 4096 Oct  8 10:58 docs
+drwxr-xr-x  6 tds ustaff 4096 Oct  8 10:58 examples
+drwxr-xr-x  5 tds ustaff 4096 Oct  8 10:58 host-manager
+drwxr-xr-x  5 tds ustaff 4096 Oct  8 10:58 manager
+drwxr-xr-x  3 tds ustaff 4096 Oct  8 10:58 ROOT
 </pre>
        <li>Deploy the TDS using the <code>manager</code> application.</li>
-       <p>Upload the TDS WAR file using the <code><small>Deploy</small></code> section of the <code><small>manager</small></code> application:</p>
-        <p><a href="../../images/deploy.png" target="_blank"><img src="../../images/deploy.png" height="182" width="500" alt="Deploy the TDS"></a></p>
+       <p>Upload the TDS WAR file using the <code>Deploy</code> section of the <code>manager</code> application:</p>
+        <p><a href="images/deploy.png" target="_blank"><img src="images/deploy.png" height="182" width="500" alt="Deploy the TDS"></a></p>
        <p>Confirm the deployment went as planned by accessing the TDS using your browser: <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a></p>
        </ol>
-     </div> <!-- end subsection -->
 
 
 
 
-      <div id="subsection" class="exercise">
+
+      <div id="expanded" class="exercise">
        <h3>Exercise Five: Deploy the THREDDS Data Server using the <code>manager</code> application</h3>
        <ol>
         <li>Using the steps outlined above, deploy the TDS using the <code>manager</code> application.</li>
@@ -968,7 +947,6 @@ drwxr-xr-x  3 tds Unidata 4096 Jul 11 17:47 ROOT
       </div>
 
 
-     <div id="subsection">
       <h3>Caveat of the <code>manager</code> application</h3>
 
 
@@ -982,15 +960,14 @@ drwxr-xr-x  3 tds Unidata 4096 Jul 11 17:47 ROOT
            </ul>
       </div>
 
-      <p>The dreaded <code><small>java.lang.OutOfMemoryError: PermGen space failure</small></code> error:</p>
+      <p>The dreaded <code>java.lang.OutOfMemoryError: PermGen space failure</code> error:</p>
       <ul>
         <li><b>The issue: </b> The "PermGen" error happens when the JVM runs out of memory in the permanent generation. (Default PermGen size differs among Sun JDK versions, but the upper limit is typically 64MB.)</li>
-        <li><b>The cause: </b> Objects in the permanent generation are never garbage collected.  When redeploying your web application using the Tomcat <code><small>manager</small></code>  application, your WAR file is unpacked and parts of the class file definition are loaded into PermGen space, like string constants.</li>
-        <li><b>The symptom:</b> The PermGen error will manifest itself in a sluggish Tomcat <code><small>manager</small></code>  application that never completes a task, and the <code><small>java.lang.OutOfMemoryError: PermGen space failure</small></code>  error being displayed in <code><small>${tomcat_home}/logs/catalina.out</small></code> </li>
-         <li><b>A temporary fix:</b> You can add the <code><small>-XX:MaxPermSize</small></code>  switch to <code><small>$JAVA_OPTS</small></code>  to increase the amount of memory allocated for the permanent generation,  However this is only postponed the inevitable, as even an increased memory in permanent generation will eventually fill up.  When this happens, you will need to stop/start Tomcat at this point. For this reason, you may want to restart Tomcat whenever you redeploy TDS or another webapp.</li>
+        <li><b>The cause: </b> Objects in the permanent generation are never garbage collected.  When redeploying your web application using the Tomcat <code>manager</code>  application, your WAR file is unpacked and parts of the class file definition are loaded into PermGen space, like string constants.</li>
+        <li><b>The symptom:</b> The PermGen error will manifest itself in a sluggish Tomcat <code>manager</code>  application that never completes a task, and the <code>java.lang.OutOfMemoryError: PermGen space failure</code>  error being displayed in <code>${tomcat_home}/logs/catalina.out</code> </li>
+         <li><b>A temporary fix:</b> You can add the <code>-XX:MaxPermSize</code>  switch to <code>$JAVA_OPTS</code>  to increase the amount of memory allocated for the permanent generation,  However this is only postponed the inevitable, as even an increased memory in permanent generation will eventually fill up.  When this happens, you will need to stop/start Tomcat at this point. For this reason, you may want to restart Tomcat whenever you redeploy TDS or another webapp.</li>
        </ul>
 
-     </div> <!-- end subsection -->
 
 
    </div> <!-- end Tomcat manager Application section -->
@@ -1002,7 +979,7 @@ drwxr-xr-x  3 tds Unidata 4096 Jul 11 17:47 ROOT
 
    <div id="section">
     <h2><a name="next">Next Steps: Where To Go From Here</a></h2>
-     <div id="subsection">
+
       <h3>You're not finished yet</h3>
 
 
@@ -1020,26 +997,14 @@ drwxr-xr-x  3 tds Unidata 4096 Jul 11 17:47 ROOT
        <li>Additional sections of the tutorial cover how to enable <a href="AddingServices.html">OGC/ISO Services</a>, and <a href="/software/netcdf/ncml/v2.2/Tutorial.html">Using NcML in TDS</a>.</li>
       </ul>
 
-     </div> <!-- end subsection -->
-
-
-
-   </div> <!-- end Tomcat manager Application section -->
 
 
 
 
+   </div> <!-- end section -->
 
 
-
-   <p>
-   <hr width="100%">
-   <address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
-       Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
-   </address>
-   </p>
-
-   
+  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
 
 
 
