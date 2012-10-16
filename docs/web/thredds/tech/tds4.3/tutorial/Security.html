@@ -458,7 +458,7 @@ tcp        0      0 0.0.0.0:<b>8443</b>               0.0.0.0:*                 
 &lt;/tomcat-users&gt;
 </pre>  
         <li>Restart Tomcat and try to access the TDS remote management tool: <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug/</a></li>
-         <p><a href="../../images/ugly.png"><img src="../../images/ugly.png" width="400" height="433" alt="SSL warning for self-signed certificate"></a></p>
+         <p><a href="images/ugly.png"><img src="images/ugly.png" width="400" height="433" alt="SSL warning for self-signed certificate"></a></p>
        </ol>
 
 
@@ -927,7 +927,7 @@ tcp        0      0 0.0.0.0:<b>8443</b>               0.0.0.0:*                 
      <li>Verify SSL has been enabled for the Tomcat <code>manager</code> application.</li>
       <p>Restart Tomcat and verify SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li></p>
 
-      <p><a href="../../images/managerssl.png"><img src="../../images/managerssl.png" width="500" height="138" alt="Tomcat manager authentication prompt"></a></p>
+      <p><a href="images/managerssl.png"><img src="images/managerssl.png" width="500" height="138" alt="Tomcat manager authentication prompt"></a></p>
 
 
       <div id="expanded" class="troubleshooting">
@@ -1000,7 +1000,7 @@ Escape character is '^]'.
       <ul>
        <li><a href=http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables">Linux Firewalls Using  <code>iptables</code></a><br>      An article showing how to set up a firewall on a linux server.</li>
       <li>Your local systems/network administrator:<br> 
-<img src="../../images/super.png" alt="systems/network administrator"></li>
+<img src="images/super.png" alt="systems/network administrator"></li>
         
       </ul>
 
@@ -1101,7 +1101,7 @@ Escape character is '^]'.
      <h3>Rationale</h3>
       <ul>
        <li>A reverse proxy is a proxy server that appears to clients to be an ordinary server. Requests are forwarded to one or more origin servers which handle the request. The response is returned as if it came directly from the proxy server.</li>
-        <img src="../../images/tds_reverse_proxy.png" alt="Reverse Proxy For The TDS">
+        <img src="images/tds_reverse_proxy.png" alt="Reverse Proxy For The TDS">
        <li>Reverse proxies can be used to hide the existence and characteristics of the origin server(s) and can be an additional layer of defense and can protect against some OS and web server specific attacks. This additional security layer forces an attacker to attack the proxy because the firewall allows only the proxy to communicate with the back-end content servers.
 </li>
         <li>However, it does not provide any protection to attacks against vulnerabilities in the web application or proxy service itself (e.g., Apache, Tomcat).</li>
