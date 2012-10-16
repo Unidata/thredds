@@ -37,7 +37,8 @@ public class NcssIntegrationTest {
 	  @Context
 	  private Response response; // will be injected after every request
 	
-	  @HttpTest( method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=all&latitude=40&longitude=-102"  )	  
+
+	  @HttpTest( method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=all&accept=xml"  )	  
 	  public void checkBadRequest() {
 		  
 		assertBadRequest( response );
