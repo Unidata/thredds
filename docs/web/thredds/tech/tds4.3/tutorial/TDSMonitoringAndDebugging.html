@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
  <html>
   <head>
-   <title>TDS Monitoring and Debugging</title>
+   <title>TDS Tutorial: TDS Monitoring and Debugging</title>
    <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
    <script type="text/javascript" src="workshopNav.js"></script>
   </head>
@@ -14,7 +14,7 @@
     <h2><a name="access">Tomcat Access Logs</a></h2>
 
       <h3>The Tomcat access log</h3>
-       <img src="../../images/log.png" alt="Log!" style="float: right">
+       <img src="images/log.png" alt="Log!" style="float: right">
        <ul>
         <li>The access log records <i><b>all</b></i> requests processed by the server.</li>
         <li>Not enabled in Tomcat by default - must be enabled in <code>$CATALINA_HOME/conf/server.xml</code>.</li>
@@ -655,7 +655,7 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
        <li>Information is easily saved in text files.</li>
       </ul>
 
-      <p><a href="../../images/liveheaders.png"><img src="../../images/liveheaders.png" width="350" height="413" alt="Live HTTP Headers"/></a></p>
+      <p><a href="images/liveheaders.png"><img src="images/liveheaders.png" width="350" height="413" alt="Live HTTP Headers"/></a></p>
 
 
 
@@ -707,7 +707,7 @@ tds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/tds/tds/jdk1.6.0_22/bin
 thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
 </pre>
           <p>Select the local JVM process corresponding to Tomcat and connect:</p>
-          <p><a href="../../images/jconsole.png"><img src="../../images/jconsole.png" width="400" height="333" alt="Starting JConsole" /></a></p>
+          <p><a href="images/jconsole.png"><img src="images/jconsole.png" width="400" height="333" alt="Starting JConsole" /></a></p>
 
        <li>Try to create a <code>PermGen</code> error via the Tomcat <code>manager</code> application.</li>
           <p>In your browser window, continually <code>Start</code>, <code>Stop</code> and <code>reload</code> the TDS and other web applications using the <code>manager</code> application.</p>
@@ -719,7 +719,7 @@ thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
         <ol class="little">
          <li>The <code>manager</code> application stops responding.</li>
          <li><code>JConsole</code> will loose its connection with the Tomcat JVM:</li>
-          <p><a href="../../images/permgen1.png"><img src="../../images/permgen1.png" width="300" height="413" alt="PermGen Error" /></a></p>
+          <p><a href="images/permgen1.png"><img src="images/permgen1.png" width="300" height="413" alt="PermGen Error" /></a></p>
          <li>The following error is reported in <code>catalina.out</code>:</li>
 
 <pre>
@@ -728,9 +728,9 @@ Exception in thread "RMI TCP Connection(idle)" java.lang.OutOfMemoryError: PermG
 
 
          <li>In the two <code>JConsole</code> screen captures below, you can see the memory usage of <code>PermGen</code> increased with every reload of the application until it reaches the point where the JVM crashes with the <code>OutOfMemory</code> error. The default maximum <code>PermGen</code> amount of JVM is 64 MB.</p>
-          <p><a href="../../images/permgen2.png"><img src="../../images/permgen2.png" width="300" height="413" alt="PermGen Error" /></a></p>
+          <p><a href="images/permgen2.png"><img src="images/permgen2.png" width="300" height="413" alt="PermGen Error" /></a></p>
 
-          <p><a href="../../images/permgen3.png"><img src="../../images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
+          <p><a href="images/permgen3.png"><img src="images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
 
          </ol>
        <li>Please Note:  you will most likely have to forcefully kill the running tomcat process, as the <code>$CATALINA_HOME/bin/shutdown.sh</code> will be unresponsive.</li>
