@@ -14,7 +14,7 @@ dl {margin: 10px 5px 5px 15px;}
 <h1> GRIB Collection Processing</h1>
 <h2>Overview</h2>
 <p>As of CDM version 4.3, GRIB datasets are handled as collections of GRIB files. A GRIB file is a collection of GRIB records. A GRIB dataset is a therefore a collection of GRIB records in one or more files. You cannot access these files remotely, eg through an OPeNDAP server, they must be local. A THREDDS Data Server (TDS) can make  GRIB datasets remotely accessible, eg through  OPeNDAP. </p>
-<p>The CDM can only read GRIB files, it cannot write them. It can, however, rewrite GRIB into netCDF using CF Conventions. As of version 4.3, it can only write netCDF-3 format files, which are typically 4-40 times larger than GRIB. We hope in future versions to write to the netCDF-4 format, with file sizes comparable to GRIB.</p>
+<p>The CDM can only read GRIB files, it cannot write them. It can, however, rewrite GRIB into netCDF using CF Conventions. As of version 4.3.12, it can only write netCDF-3 format files, which are typically 4-40 times larger than GRIB. AS of 4.3.13, an experimental netCDF-4 format, with file sizes comparable to GRIB.</p>
 <p>A GRIB collection must follow these <em>homogeneity constraints</em>:</p>
 <ol>
   <li>The GRIB records must be either GRIB-1 or GRIB-2, you cannot mix different editions in the same collection.</li>

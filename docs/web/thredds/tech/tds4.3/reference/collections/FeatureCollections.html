@@ -15,8 +15,8 @@ dl {margin: 10px 5px 5px 15px;}
 <hr />
 <h2>Overview</h2>
 <p>The <b>featureCollection</b> element is a way to tell the TDS to serve collections of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used  for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack. This allows the TDS to automatically create logical datasets composed of  collections of files, and to allow subsetting in coordinate space  on them, eg through the WMS, WCS, and Netcdf Subsetting Service.</p>
-<p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong> = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 allows <strong>featureType</strong> =<em> GRIB</em>, which can only be used for collections of GRIB2 files. The THREDDS Data Manager (<a href="TDM.html">TDM</a>) is an experimental pogram to create indexes in the background for GRIB Collections.</p>
-<p>A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance, and in managing collections that change. For high-performance servers, its better to let a background process manage indexing, and the THREDDS Data Manager (TDM) is an experimental application for this purpose available in TDS 4.3.</p>
+<p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong> = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 also allows <strong>featureType</strong> =<em> GRIB</em>, which can only be used for collections of GRIB files. </p>
+<p>A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance, and in managing collections that change. For high-performance servers, its better to let a background process manage indexing, and the THREDDS Data Manager (<a href="TDM.html">TDM</a>) is an experimental (alpha release) application for this purpose available in TDS 4.3.</p>
 <h3>Contents:</h3>
 <ul>
   <li><a href="#example">Example catalog elements</a></li>
@@ -304,7 +304,7 @@ The XML Schema definition for the update element:
 <p></p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  June 2012 
+<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  October 2012 
 </address>
 </body>
 </html>
