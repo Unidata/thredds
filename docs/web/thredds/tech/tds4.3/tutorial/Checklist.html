@@ -1,26 +1,24 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Checklist</title>
-<style type="text/css">
-pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
-code {font-size: 11pt;}
-dl {margin: 10px 5px 5px 15px;}
-.style1 {font-style: italic}
-</style>
-</head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+ <html>
+  <head>
+   <title>TDS Installation Checklist for Production</title>
+   <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
+   <script type="text/javascript" src="workshopNav.js"></script>
+  </head>
+  <body>
 
-<body>
-<h1><img src="../../images/THREDDSlogo.jpg" alt="" width="67" height="54" /> Installation Checklist for Production</h1>
-<address>
-</address>
-<hr />
-<h2>Java Install</h2>
+
+   <h1>TDS Installation Checklist for Production</h1>
+
+   <div id="section">
+    <h2><a name="install">Installation</a></h2>
+
+
+      <h3>Install Java</h3>
 <ol>
   <li>Download and install the latest version of JDK 1.7.</li>
 </ol>
-<h2>Tomcat Install</h2>
+<h3>Tomcat Install</h3>
 <ol>
   <li>Create a user named <em>tomcat</em>, who does not have root privileges. <em>Do all your work as user tomcat.</em></li>
     <br/>
@@ -84,7 +82,7 @@ dl {margin: 10px 5px 5px 15px;}
   <br/>
   <li><a href="AdditionalSecurityConfiguration.html#removeApps">Remove unwanted applications</a></li>
 </ol>
-<h2>TDS Install</h2>
+<h3>TDS Install</h3>
 <ol>
   <li>Download the latest thredds.war file, and put it into ${tomcat_home}/webapps.</li>
   <li>Start/restart Tomcat so that it has a chance to create initial files. <em>Make sure you run as  user tomcat.</em></li>
@@ -97,7 +95,7 @@ dl {margin: 10px 5px 5px 15px;}
   </li>
   <li><a href="AdditionalSecurityConfiguration.html#restrictCrawlers">Restrict web crawlers</a></li>
 </ol>
-<h2>TDS Reinstall<a name="Reinstall" id="Reinstall"></a></h2>
+<h3>TDS Reinstall<a name="Reinstall" id="Reinstall"></a></h3>
 <p>When installing a new thredds.war, everything in<em> ${tomcat_home}/webapps/</em> is overwritten. However, nothing  in<em> ${tomcat_home}/content/</em> is overwritten.</p>
 <h3>Using the   Tomcat Web Application <a href="BasicTomcatAndTDSSecurity.html#manager">Manager</a></h3>
 <ol>
@@ -118,8 +116,14 @@ dl {margin: 10px 5px 5px 15px;}
   <li>Stop and restart tomcat again.<br />
   </li>
 </ol>
-<hr width="100%" />
-<h2>Maintainence</h2>
+
+   </div>
+
+
+   <div id="section">
+    <h2><a name="maintainence">Maintainence</a></h2>
+
+
 <h3>Monthly</h3>
 <ul>
   <li>If you have<a href="TDSMonitoringAndDebugging.html"> access logging</a> on (and you should), zip up the access logs: <strong>${tomcat_home}/logs/access.* </strong>and copy them to an archive directory.</li>
@@ -132,6 +136,12 @@ dl {margin: 10px 5px 5px 15px;}
   <li>Upgrade to latest stable TDS</li>
   <li>Delete or save all the logs in  <strong>${tomcat_home}/logs/</strong></li>
 </ul>
+
+   </div>
+
+
+
+
 <hr width="100%" />
 <h2>TroubleShooting</h2>
 <ul>
@@ -139,12 +149,7 @@ dl {margin: 10px 5px 5px 15px;}
   <li>examine  <strong>${tomcat_home}/logs/catalina.out</strong> for unexpected errors</li>
   <li>use <a href="tdsMonitor.html">tdsMonitor</a> to examine failed requests. report any 500 status errors to Unidata.</li>
 </ul>
-<hr width="100%" />
-<hr width="100%">
-<address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
-    Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
-</address>
+<p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
 
-<h3></h3>
-</body>
-</html>
+  </body>
+ </html>   

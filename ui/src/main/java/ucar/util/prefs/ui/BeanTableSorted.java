@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -34,15 +34,6 @@
 package ucar.util.prefs.ui;
 
 import ucar.util.prefs.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.*;
-import javax.swing.table.*;
 
 /**
  * BeanTableSorted adds sorting functionality to a BeanTable.

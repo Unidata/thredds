@@ -1,0 +1,10 @@
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'visadCdm'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+  compile 'edu.wisc.ssec:visad:2.0-20120411'
+}

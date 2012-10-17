@@ -14,6 +14,7 @@ import java.util.Map;
 /**
  * Implements CF calendar attribute.
  * Uses joda-time, may switch to JSP 310 at a later date.
+ * So joda-time classes are not exposed.
  *
  * @author caron
  * @since 3/22/11
@@ -80,14 +81,14 @@ public enum Calendar {
     CHRONOLOGIES.put(Calendar.uniform30day, ThreeSixtyDayChronology.getInstanceUTC());
   }
 
+  /**
+   * Return joda Chronology corresponding to this Calendar, using UTC time zone.
+   * @param cal want this Calendar, or null to use the default.
+   * @return hronology corresponding to this Calendar
+   */
   static Chronology getChronology(Calendar cal) {
-    if (cal == null) return null;
+    if (cal == null) cal = getDefault();
     return CHRONOLOGIES.get(cal);
-  }
-
-  static Chronology getChronology(String cal) {
-    if (cal == null) return null;
-    return CHRONOLOGIES.get(get(cal));
   }
 
 }

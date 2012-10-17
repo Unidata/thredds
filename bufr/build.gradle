@@ -1,0 +1,9 @@
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'bufr'
+    }
+}
+
+dependencies {
+  compile project(':cdm')
+}

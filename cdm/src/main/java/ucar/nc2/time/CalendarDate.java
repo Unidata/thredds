@@ -7,8 +7,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.ZonedChronology;
 
-import java.util.Date;
-
 /**
  * A Calendar Date. Replaces java.util.Date.
  * Allows non-standard calendars. Default is Calendar.gregorian.
@@ -22,7 +20,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * Get a CalendarDate representing the present moment
-   * @return CalendarDate representing the present moment
+   * @return CalendarDate representing the present moment in UTC
    */
   static public CalendarDate present() {
      return new CalendarDate(null, new DateTime());
@@ -33,7 +31,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   /**
-   *
+   * Get Calendar date from fields. Uses UTZ time zone
    * @param cal calendar to use, or null for default
    * @param year any integer
    * @param monthOfYear 1-12
@@ -45,10 +43,10 @@ public class CalendarDate implements Comparable<CalendarDate> {
    */
   public static CalendarDate of(Calendar cal, int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute) {
     Chronology base = Calendar.getChronology(cal);
-    if (base == null)
+    /* if (base == null)
       base = ISOChronology.getInstanceUTC(); // already in UTC
     else
-      base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC
+      base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC  */
 
     DateTime dt = new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, base);
     if (!Calendar.isDefaultChronology(cal)) dt = dt.withChronology(Calendar.getChronology(cal));
@@ -58,10 +56,10 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   public static CalendarDate withDoy(Calendar cal, int year, int doy, int hourOfDay, int minuteOfHour, int secondOfMinute) {
     Chronology base = Calendar.getChronology(cal);
-    if (base == null)
+    /* if (base == null)
       base = ISOChronology.getInstanceUTC(); // already in UTC
     else
-      base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC
+      base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC  */
 
     DateTime dt = new DateTime(year, 0, 0, hourOfDay, minuteOfHour, secondOfMinute, base);
     dt = dt.withZone(DateTimeZone.UTC);
@@ -72,11 +70,12 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   /**
-   * Create CalendarDate from a java.util.Date
+   * Create CalendarDate from a java.util.Date.
+   * Uses standard Calendar.
    * @param date java.util.Date
-   * @return CalendarDate
+   * @return CalendarDate in UTC
    */
-  public static CalendarDate of(Date date) {
+  public static CalendarDate of(java.util.Date date) {
     DateTime dt = new DateTime(date, DateTimeZone.UTC) ;
     return new CalendarDate(null, dt);
   }
@@ -84,7 +83,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
   /**
    * Create CalendarDate from msecs since epoch
    * @param msecs milliseconds from 1970-01-01T00:00:00Z
-   * @return CalendarDate
+   * @return CalendarDate in UTC
    */
   public static CalendarDate of(long msecs) {
     // Constructs an instance set to the milliseconds from 1970-01-01T00:00:00Z using ISOChronology in the specified time zone.
@@ -99,16 +98,23 @@ public class CalendarDate implements Comparable<CalendarDate> {
    * @return  CalendarDate
    */
   public static CalendarDate parseISOformat(String calendarName, String isoDateString) {
-
-    // Date date = CalendarDateFormatter.parseISODate(isoDateString);
-	  Date date = CalendarDateFormatter.isoStringToDate(isoDateString);
-	  
     Calendar cal = Calendar.get(calendarName);
-    Chronology chronology = Calendar.getChronology(cal);
-    DateTime dt = new DateTime(date, chronology);
-
-    return new CalendarDate(cal, dt);
+    if (cal == null) cal = Calendar.getDefault();
+	  return CalendarDateFormatter.isoStringToCalendarDate(cal, isoDateString);
   }
+
+  public static CalendarDate parseISOformatOld(String calendarName, String isoDateString) {
+
+     // Date date = CalendarDateFormatter.parseISODate(isoDateString);
+ 	   java.util.Date date = CalendarDateFormatter.isoStringToDate(isoDateString);
+
+     Calendar cal = Calendar.get(calendarName);
+     Chronology chronology = Calendar.getChronology(cal);
+     DateTime dt = new DateTime(date, chronology);
+
+     return new CalendarDate(cal, dt);
+   }
+
 
   /**
    * Get CalendarDate from udunit date string
@@ -265,7 +271,12 @@ public class CalendarDate implements Comparable<CalendarDate> {
     throw new UnsupportedOperationException("period units = "+period);
   }
 
-  public Date toDate() {
+  /**
+   * Get the equivilent java.util.Date
+   * @return the equivalent Date
+   * @deprecated does not handle non-standard Calendars
+   */
+  public java.util.Date toDate() {
     return dateTime.toDate();
   }
 

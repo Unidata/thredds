@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -90,10 +90,6 @@ public abstract class Field {
   protected Object previousValue;   // the previous valid value, use in propertyChangeEvent
                                     // also getEditValue() : value in the editComponent()
                                     // also getStoreValue() : value in the preference store
-
-  protected boolean showFormat = true;
-
-  protected static final boolean debugPersistence = false;
 
   /** Constructor
    *  @param name of the field; must be unique within the store
@@ -216,7 +212,7 @@ public abstract class Field {
     setEditValue(newValue);
   }
 
-  private ArrayList validators = new ArrayList();  // list of FieldValidator
+  private List<FieldValidator> validators = new ArrayList<FieldValidator>();
 
   /**
    * Add a validator to this field.
@@ -228,9 +224,7 @@ public abstract class Field {
   protected boolean validate( StringBuffer buff) {
     if (!_validate(buff)) return false;
     Object editValue = getEditValue();
-    Iterator iter = validators.iterator();
-    while (iter.hasNext()) {
-      FieldValidator v = (FieldValidator) iter.next();
+    for (FieldValidator v : validators) {
       if (!v.validate(this, editValue, buff)) return false;
     }
 
@@ -569,7 +563,7 @@ public abstract class Field {
       if (value == null)
         tf.setText("");
       else {
-        double dv = ((java.lang.Double) value).doubleValue();
+        double dv = (java.lang.Double) value;
         tf.setText( dfrac(dv, nfracDig));
       }
     }
@@ -577,7 +571,7 @@ public abstract class Field {
     // set a new value into the Store
     protected void setStoreValue( Object value) {
       if (storeData != null)
-        storeData.putDouble(name, ((java.lang.Double) value).doubleValue());
+        storeData.putDouble(name, (java.lang.Double) value);
     }
 
     /* get value from store, make copy */
@@ -586,18 +580,18 @@ public abstract class Field {
         double def = java.lang.Double.NaN;
         double value = storeData.getDouble(name, def);
         if (!java.lang.Double.isNaN(value))
-          return new java.lang.Double( value);
+          return value;
       }
-      return new java.lang.Double(((java.lang.Double) defValue).doubleValue());
+      return defValue;
     }
 
     /** Return the current value */
     public double getDouble() {
-      return ((java.lang.Double) getValue()).doubleValue();
+      return (java.lang.Double) getValue();
     }
 
     public void setDouble(double value) {
-      setValue( new java.lang.Double(value));
+      setValue(value);
     }
   }
 
@@ -667,7 +661,7 @@ public abstract class Field {
     // set a new value into the Store
     protected void setStoreValue( Object value) {
       if (storeData != null)
-        storeData.putInt(name, ((java.lang.Integer) value).intValue());
+        storeData.putInt(name, (Integer) value);
     }
 
     /* get value from store, put value into editComponent */
@@ -675,18 +669,18 @@ public abstract class Field {
       if (storeData != null) {
         int def = java.lang.Integer.MAX_VALUE;
         int value = storeData.getInt(name, def);
-        if (value != def) return new java.lang.Integer( value);
+        if (value != def) return value;
       }
-      return new java.lang.Integer(((java.lang.Integer) defValue).intValue());
+      return defValue;
     }
 
     /** Return the current value */
     public int getInt() {
-      return ((java.lang.Integer) getValue()).intValue();
+      return (Integer) getValue();
     }
 
     public void setInt(int value) {
-      setValue( new java.lang.Integer(value));
+      setValue(value);
     }
   }
 
@@ -1039,7 +1033,7 @@ public abstract class Field {
     public CheckBox( String fldName, String label, boolean defValue, PersistenceManager storeData ) {
       super( fldName, label, storeData);
 
-      validValue = getStoreValue( new Boolean(defValue));
+      validValue = getStoreValue(Boolean.valueOf(defValue));
       checkbox = new JCheckBox();
       checkbox.setSelected( isSelected());
       finish();
@@ -1053,12 +1047,12 @@ public abstract class Field {
 
     // get current value from editComponent
     protected Object getEditValue() {
-      return new Boolean(checkbox.isSelected());
+      return checkbox.isSelected();
     }
 
     // set current value of editComponent
     protected void setEditValue(Object value) {
-      boolean bv = (value == null) ? false : ((Boolean) value).booleanValue();
+      boolean bv = (value != null) && (Boolean) value;
       checkbox.setSelected(bv);
     }
 
@@ -1066,25 +1060,24 @@ public abstract class Field {
     // return true if different from old value
     protected void setStoreValue( Object value) {
       if (storeData != null)
-        storeData.putBoolean(name, ((Boolean) value).booleanValue());
+        storeData.putBoolean(name, (Boolean) value);
     }
 
     /* get value from store, put value into editComponent */
     protected Object getStoreValue( Object defValue) {
       if (storeData == null)
         return defValue;
-      boolean def = (defValue == null) ? false : ((Boolean) defValue).booleanValue();
-      boolean bv = storeData.getBoolean(name, def);
-      return new Boolean( bv);
+      boolean def = (defValue != null) && (Boolean) defValue;
+      return storeData.getBoolean(name, def);
     }
 
     /** Return the current value */
-    public boolean isSelected() { return ((Boolean) validValue).booleanValue(); }
+    public boolean isSelected() { return (Boolean) validValue; }
 
     /** Set value; if different from current value, store in PersistenceManager and
      *  send event. */
     public void setSelected(boolean v) {
-      setValue(new java.lang.Boolean(v));
+      setValue(v);
     }
   }
 
@@ -1117,15 +1110,13 @@ public abstract class Field {
       super( fldName, label, storeData);
 
       combo = new ComboBox(storeData, n); //  == null ? null : (PersistenceManager) storeData.node(name+"_ComboBox"));
-      java.util.ArrayList prevChoices = combo.getItemList();
+      java.util.List<Object> prevChoices = combo.getItemList();
 
       // add defaults : only added if not already present
       if (defValues != null) {
-        Iterator iter = defValues.iterator();
-        while (iter.hasNext()) {
-          Object o = iter.next();
+        for (Object o : defValues) {
           if (!prevChoices.contains(o))
-            prevChoices.add( o);
+            prevChoices.add(o);
         }
         combo.setItemList(prevChoices);
       }
@@ -1222,7 +1213,7 @@ public abstract class Field {
      *  @param storeData store/fetch data from here, may be null.
      *  @see PrefPanel#addTextComboField
      */
-    public EnumCombo(String fldName, String label, java.util.Collection choices, PersistenceManager storeData) {
+    public EnumCombo(String fldName, String label, java.util.Collection<Object> choices, PersistenceManager storeData) {
       super( fldName, label, storeData);
 
       combo = new ComboBox(null, 0);
@@ -1328,7 +1319,7 @@ public abstract class Field {
     /** set value of editComponent, must be List of beanClass */
     protected void setEditValue(Object value) {
       if (value == null) return;
-      table.setBeans( (ArrayList) value);
+      table.setBeans( (java.util.List<Object>) value);
     }
 
     /** Get value from Store, will be a List of beanClass, or null

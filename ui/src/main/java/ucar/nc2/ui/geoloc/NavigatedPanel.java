@@ -321,7 +321,7 @@ public class NavigatedPanel extends JPanel {
     }
 
     // send new map area event
-    lmMapArea.sendEvent( new NewMapAreaEvent( this));
+    lmMapArea.sendEvent( new NewMapAreaEvent( this, getMapArea()));
   }
 
 

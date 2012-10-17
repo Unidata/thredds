@@ -87,25 +87,26 @@ public class HtmlWriter implements InitializingBean {
 
   @Autowired
   private TdsContext tdsContext;
-  
+
   @Autowired
   private HtmlConfig htmlConfig;
-  
+
   @Autowired
   private ViewerService viewerService;
 
-  private HtmlWriter() {}
+  private HtmlWriter() {
+  }
 
-  public void setTdsContext( TdsContext tdsContext ) {
+  public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
   }
 
-  public void setHtmlConfig( HtmlConfig htmlConfig ) {
+  public void setHtmlConfig(HtmlConfig htmlConfig) {
     this.htmlConfig = htmlConfig;
   }
 
   // old
-  public void setSingleton( HtmlWriter self) {
+  public void setSingleton(HtmlWriter self) {
     this.singleton = self;
   }
 
@@ -119,271 +120,254 @@ public class HtmlWriter implements InitializingBean {
 
   public String getHtmlDoctypeAndOpenTag() {
     return new StringBuilder()
-        .append("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'\n")
-        .append("        'http://www.w3.org/TR/html4/loose.dtd'>\n")
-        .append("<html>\n")
-        .toString();
+            .append("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'\n")
+            .append("        'http://www.w3.org/TR/html4/loose.dtd'>\n")
+            .append("<html>\n")
+            .toString();
   }
 
   public String getXHtmlDoctypeAndOpenTag() {
     return new StringBuilder()
-        // .append( "<?xml version='1.0' encoding='utf-8'?>")
-        .append("<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n")
-        .append("        'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n")
-        .append("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>")
-        .toString();
+            // .append( "<?xml version='1.0' encoding='utf-8'?>")
+            .append("<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN'\n")
+            .append("        'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n")
+            .append("<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>")
+            .toString();
   }
 
   //  public static final String UNIDATA_CSS
   public String getUserCSS() {
     return new StringBuilder()
-        .append("<link rel='stylesheet' href='")
-        .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getPageCssUrl() ) )
-        .append("' type='text/css' >").toString();
+            .append("<link rel='stylesheet' href='")
+            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getPageCssUrl()))
+            .append("' type='text/css' >").toString();
   }
 
   public String getTdsCatalogCssLink() {
     return new StringBuilder()
-        .append("<link rel='stylesheet' href='")
-        .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getCatalogCssUrl() ) )
-        .append("' type='text/css' >").toString();
+            .append("<link rel='stylesheet' href='")
+            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getCatalogCssUrl()))
+            .append("' type='text/css' >").toString();
   }
 
   public String getTdsPageCssLink() {
     return new StringBuilder()
-        .append("<link rel='stylesheet' href='")
-        .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getPageCssUrl() ))
-        .append("' type='text/css' >").toString();
+            .append("<link rel='stylesheet' href='")
+            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getPageCssUrl()))
+            .append("' type='text/css' >").toString();
   }
 
   //  public static final String UNIDATA_HEAD
   public String getUserHead() {
     return new StringBuilder()
-        .append("<table width='100%'><tr><td>\n")
-        .append("  <img src='").append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstLogoUrl() ))
+            .append("<table width='100%'><tr><td>\n")
+            .append("  <img src='").append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstLogoUrl()))
             .append("'\n")
-        .append("       alt='").append( this.htmlConfig.getHostInstLogoAlt()).append("'\n")
-        .append("       align='left' valign='top'\n")
-        .append("       hspace='10' vspace='2'>\n")
-        .append("  <h3><strong>").append( this.tdsContext.getWebappName()).append("</strong></h3>\n")
-        .append("</td></tr></table>\n")
-        .toString();
+            .append("       alt='").append(this.htmlConfig.getHostInstLogoAlt()).append("'\n")
+            .append("       align='left' valign='top'\n")
+            .append("       hspace='10' vspace='2'>\n")
+            .append("  <h3><strong>").append(this.tdsContext.getWebappName()).append("</strong></h3>\n")
+            .append("</td></tr></table>\n")
+            .toString();
   }
 
-  public String getOldStyleHeader()
-  {
+  public String getOldStyleHeader() {
     StringBuilder sb = new StringBuilder();
-    appendOldStyleHeader( sb );
+    appendOldStyleHeader(sb);
     return sb.toString();
   }
 
-  public void appendOldStyleHeader( StringBuilder sb )
-  {
-    appendOldStyleHeader( sb,
-                          this.htmlConfig.getWebappName(), this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappUrl() ),
-                          this.htmlConfig.getInstallLogoAlt(), this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallLogoUrl() ),
-                          this.htmlConfig.getInstallName(), this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallUrl() ),
-                          this.htmlConfig.getHostInstName(), this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstUrl() ) );
+  public void appendOldStyleHeader(StringBuilder sb) {
+    appendOldStyleHeader(sb,
+            this.htmlConfig.getWebappName(), this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappUrl()),
+            this.htmlConfig.getInstallLogoAlt(), this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallLogoUrl()),
+            this.htmlConfig.getInstallName(), this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallUrl()),
+            this.htmlConfig.getHostInstName(), this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstUrl()));
   }
 
-  public void appendOldStyleHeader( StringBuilder sb,
-                                    String webappName, String webappUrl,
-                                    String logoAlt, String logoUrl,
-                                    String installName, String installUrl,
-                                    String hostName, String hostUrl)
-  {
+  public void appendOldStyleHeader(StringBuilder sb,
+                                   String webappName, String webappUrl,
+                                   String logoAlt, String logoUrl,
+                                   String installName, String installUrl,
+                                   String hostName, String hostUrl) {
     // Table setup.
-    sb.append( "<table width='100%'>\n" )
-            .append( "<tr><td>\n" );
+    sb.append("<table width='100%'>\n")
+            .append("<tr><td>\n");
     // Logo
-    sb.append( "<img src='" ).append( logoUrl )
-            .append( "' alt='" ).append( logoAlt )
-            .append( "' align='left' valign='top'" )
-            .append( " hspace='10' vspace='2'" )
-            .append( ">\n" );
+    sb.append("<img src='").append(logoUrl)
+            .append("' alt='").append(logoAlt)
+            .append("' align='left' valign='top'")
+            .append(" hspace='10' vspace='2'")
+            .append(">\n");
 
     // Installation name.
-    sb.append( "<h3><strong>" )
-            .append( "<a href='" ).append( installUrl ).append( "'>" )
-            .append( installName ).append( "</a>" )
-            .append( "</strong>");
-    if ( false ) sb.append( " at ").append( hostName);
-    sb.append( "</h3>\n" );
+    sb.append("<h3><strong>")
+            .append("<a href='").append(installUrl).append("'>")
+            .append(installName).append("</a>")
+            .append("</strong>");
+    if (false) sb.append(" at ").append(hostName);
+    sb.append("</h3>\n");
 
     // Webapp Name.
-    sb.append( "<h3><strong>" )
-            .append( "<a href='" ).append( webappUrl ).append( "'>" )
-            .append( webappName ).append( "</a>" )
-            .append( "</strong></h3>\n" );
+    sb.append("<h3><strong>")
+            .append("<a href='").append(webappUrl).append("'>")
+            .append(webappName).append("</a>")
+            .append("</strong></h3>\n");
 
-    sb.append( "</td></tr>\n" )
-            .append( "</table>\n" );
+    sb.append("</td></tr>\n")
+            .append("</table>\n");
   }
 
-  public void appendTableHeader( StringBuilder stringBuilder,
-                                 boolean includeInstall,
-                                 boolean includeWebapp,
-                                 boolean includeLogos)
-  {
+  public void appendTableHeader(StringBuilder stringBuilder,
+                                boolean includeInstall,
+                                boolean includeWebapp,
+                                boolean includeLogos) {
     // Table setup.
     stringBuilder
-        .append( "<table width='100%'>\n");
+            .append("<table width='100%'>\n");
 
-    if ( includeInstall )
-    {
-      stringBuilder.append( "<tr><td>\n");
-      appendInstallationInfo( stringBuilder, includeLogos );
-      stringBuilder.append( "</td><td>\n");
-      appendHostInstInfo( stringBuilder, includeLogos );
-      stringBuilder.append( "</td></tr>\n" );
+    if (includeInstall) {
+      stringBuilder.append("<tr><td>\n");
+      appendInstallationInfo(stringBuilder, includeLogos);
+      stringBuilder.append("</td><td>\n");
+      appendHostInstInfo(stringBuilder, includeLogos);
+      stringBuilder.append("</td></tr>\n");
     }
 
-    if ( includeWebapp )
-    {
+    if (includeWebapp) {
       stringBuilder
-              .append( "<tr><td>\n" );
-      appendWebappInfo( stringBuilder, includeLogos );
-      stringBuilder.append( "</td></tr>\n" );
+              .append("<tr><td>\n");
+      appendWebappInfo(stringBuilder, includeLogos);
+      stringBuilder.append("</td></tr>\n");
     }
-    stringBuilder.append( "</table><hr>\n");
+    stringBuilder.append("</table><hr>\n");
   }
 
-  private void appendWebappInfo( StringBuilder stringBuilder, boolean includeLogo )
-  {
+  private void appendWebappInfo(StringBuilder stringBuilder, boolean includeLogo) {
     // Include webapp info
-    String webappUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappUrl() );
-    String webappLogoUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappLogoUrl() );
-    if ( includeLogo && webappLogoUrl != null )
+    String webappUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappUrl());
+    String webappLogoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappLogoUrl());
+    if (includeLogo && webappLogoUrl != null)
       stringBuilder
-              .append( "<img src='" ).append( webappLogoUrl )
-              .append( "' alt='" ).append( this.htmlConfig.getWebappLogoAlt() )
-              .append( "'> " );
+              .append("<img src='").append(webappLogoUrl)
+              .append("' alt='").append(this.htmlConfig.getWebappLogoAlt())
+              .append("'> ");
     stringBuilder
-            .append( "<a href='" ).append( webappUrl ).append( "'>" )
-            .append( this.tdsContext.getWebappName() )
-            .append( "</a>");
+            .append("<a href='").append(webappUrl).append("'>")
+            .append(this.tdsContext.getWebappName())
+            .append("</a>");
   }
 
-  private void appendHostInstInfo( StringBuilder stringBuilder, boolean includeLogo )
-  {
+  private void appendHostInstInfo(StringBuilder stringBuilder, boolean includeLogo) {
     // Include host institution information
-    if ( this.htmlConfig.getHostInstName() != null )
-    {
-      String hostInstUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstUrl() );
-      String hostInstLogoUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstLogoUrl() );
-      if ( includeLogo && hostInstLogoUrl != null )
+    if (this.htmlConfig.getHostInstName() != null) {
+      String hostInstUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstUrl());
+      String hostInstLogoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstLogoUrl());
+      if (includeLogo && hostInstLogoUrl != null)
         stringBuilder
-                .append( "<img src='" ).append( hostInstLogoUrl )
-                .append( "' alt='" ).append( this.htmlConfig.getHostInstLogoAlt() )
-                .append( "'> " );
-      if ( hostInstUrl != null )
-        stringBuilder.append( "<a href='" ).append( hostInstUrl ).append( "'>" );
-      stringBuilder.append( this.htmlConfig.getHostInstName() );
-      if ( hostInstUrl != null )
-        stringBuilder.append( "</a>" );
-    }
-    else
-      stringBuilder.append( "Unknown Host Institution");
+                .append("<img src='").append(hostInstLogoUrl)
+                .append("' alt='").append(this.htmlConfig.getHostInstLogoAlt())
+                .append("'> ");
+      if (hostInstUrl != null)
+        stringBuilder.append("<a href='").append(hostInstUrl).append("'>");
+      stringBuilder.append(this.htmlConfig.getHostInstName());
+      if (hostInstUrl != null)
+        stringBuilder.append("</a>");
+    } else
+      stringBuilder.append("Unknown Host Institution");
   }
 
-  private void appendInstallationInfo( StringBuilder stringBuilder, boolean includeLogo )
-  {
+  private void appendInstallationInfo(StringBuilder stringBuilder, boolean includeLogo) {
     // Include information on this intsallation.
-    if ( this.htmlConfig.getInstallName() != null )
-    {
-      String installUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallUrl() );
-      String installLogoUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallLogoUrl() );
-      if ( includeLogo && installLogoUrl != null )
+    if (this.htmlConfig.getInstallName() != null) {
+      String installUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallUrl());
+      String installLogoUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallLogoUrl());
+      if (includeLogo && installLogoUrl != null)
         stringBuilder
-                .append( "<img src='" ).append( installLogoUrl )
-                .append( "' alt='" ).append( this.htmlConfig.getInstallLogoAlt() )
-                .append( "'> " );
-      if ( installUrl != null )
-        stringBuilder.append( "<a href='" ).append( installUrl ).append( "'>" );
-      stringBuilder.append( this.htmlConfig.getInstallName() );
-      if ( installUrl != null )
-        stringBuilder.append( "</a>" );
-    }
-    else
-    {
+                .append("<img src='").append(installLogoUrl)
+                .append("' alt='").append(this.htmlConfig.getInstallLogoAlt())
+                .append("'> ");
+      if (installUrl != null)
+        stringBuilder.append("<a href='").append(installUrl).append("'>");
+      stringBuilder.append(this.htmlConfig.getInstallName());
+      if (installUrl != null)
+        stringBuilder.append("</a>");
+    } else {
       // This installation is not named.
       stringBuilder.append("Unnamed TDS Installation");
     }
   }
 
-  private void appendSimpleFooter( StringBuilder sb )
-  {
-    sb.append( "<h3>" );
-    if ( this.htmlConfig.getInstallName() != null )
-    {
-      String installUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getInstallUrl() );
-      if ( installUrl != null )
-        sb.append( "<a href='" ).append( installUrl ).append( "'>" );
-      sb.append( this.htmlConfig.getInstallName() );
-      if ( installUrl != null )
-        sb.append( "</a>" );
+  private void appendSimpleFooter(StringBuilder sb) {
+    sb.append("<h3>");
+    if (this.htmlConfig.getInstallName() != null) {
+      String installUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getInstallUrl());
+      if (installUrl != null)
+        sb.append("<a href='").append(installUrl).append("'>");
+      sb.append(this.htmlConfig.getInstallName());
+      if (installUrl != null)
+        sb.append("</a>");
     }
-    if ( this.htmlConfig.getHostInstName() != null )
-    {
-      sb.append( " at " );
-      String hostInstUrl = this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getHostInstUrl() );
-      if ( hostInstUrl != null )
-        sb.append( "<a href='" ).append( hostInstUrl ).append( "'>" );
-      sb.append( this.htmlConfig.getHostInstName() );
-      if ( hostInstUrl != null )
-        sb.append( "</a>" );
-      sb.append( "<br>\n" );
+    if (this.htmlConfig.getHostInstName() != null) {
+      sb.append(" at ");
+      String hostInstUrl = this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getHostInstUrl());
+      if (hostInstUrl != null)
+        sb.append("<a href='").append(hostInstUrl).append("'>");
+      sb.append(this.htmlConfig.getHostInstName());
+      if (hostInstUrl != null)
+      sb.append("</a>");
+      sb.append(" see <a href='/thredds/serverInfo.html'> Info </a>");
+      sb.append("<br>\n");
     }
-    sb.append( this.tdsContext.getWebappName() )
-            .append( " [Version " ).append( this.tdsContext.getWebappVersion() );
-    if ( this.tdsContext.getWebappVersionBuildDate() != null )
-      sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
-    sb.append( "] <a href='" )
-            .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
-            .append( "'> Documentation</a>" );
-    sb.append( "</h3>\n" );
+    sb.append(this.tdsContext.getWebappName())
+            .append(" [Version ").append(this.tdsContext.getWebappVersion());
+    if (this.tdsContext.getWebappVersionBuildDate() != null)
+      sb.append(" - ").append(this.tdsContext.getWebappVersionBuildDate());
+    sb.append("] <a href='")
+            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappDocsUrl()))
+            .append("'> Documentation</a>");
+    sb.append("</h3>\n");
   }
 
-  private void appendWebappFooter( StringBuilder sb )
-  {
-    sb.append( "<h3>" )
-            .append( this.tdsContext.getWebappName() )
-            .append( " [Version " ).append( this.tdsContext.getWebappVersion() );
-    if ( this.tdsContext.getWebappVersionBuildDate() != null )
-      sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
-    sb.append( "] <a href='" )
-            .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
-            .append( "'> Documentation</a>" );
-    sb.append( "</h3>\n" );
+  private void appendWebappFooter(StringBuilder sb) {
+    sb.append("<h3>")
+            .append(this.tdsContext.getWebappName())
+            .append(" [Version ").append(this.tdsContext.getWebappVersion());
+    if (this.tdsContext.getWebappVersionBuildDate() != null)
+      sb.append(" - ").append(this.tdsContext.getWebappVersionBuildDate());
+    sb.append("] <a href='")
+            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappDocsUrl()))
+            .append("'> Documentation</a>");
+    sb.append("</h3>\n");
   }
 
   //  private static final String TOMCAT_CSS
   private String getTomcatCSS() {
-    return new StringBuilder( "<STYLE type='text/css'><!--" )
-        .append("H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} ")
-        .append("H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} ")
-        .append("H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} ")
-        .append("BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} ")
-        .append("B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} ")
-        .append("P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}")
-        .append("A {color : black;}")
-        .append("A.name {color : black;}")
-        .append("HR {color : #525D76;}")
-        .append( "--></STYLE>\r\n" )
-    .toString();
+    return new StringBuilder("<STYLE type='text/css'><!--")
+            .append("H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} ")
+            .append("H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} ")
+            .append("H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} ")
+            .append("BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} ")
+            .append("B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} ")
+            .append("P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}")
+            .append("A {color : black;}")
+            .append("A.name {color : black;}")
+            .append("HR {color : #525D76;}")
+            .append("--></STYLE>\r\n")
+            .toString();
   }
 
   /**
    * Write a file directory.
    *
-   * @param res the HttpServletResponse on which to write the file directory response.
+   * @param res  the HttpServletResponse on which to write the file directory response.
    * @param dir  directory
    * @param path the URL path reletive to the base
    * @return the number of characters (Unicode code units) in the response.
    * @throws java.io.IOException if an I/O exception occurs.
    */
   public int writeDirectory(HttpServletResponse res, File dir, String path)
-      throws IOException {
+          throws IOException {
     // error checking
     if (dir == null) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -417,7 +401,7 @@ public class HtmlWriter implements InitializingBean {
     sb.append("<title>");
     sb.append("Directory listing for ").append(path);
     sb.append("</title>\r\n");
-    sb.append(this.getTdsCatalogCssLink()).append( "\n");
+    sb.append(this.getTdsCatalogCssLink()).append("\n");
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     sb.append("<h1>");
@@ -427,7 +411,7 @@ public class HtmlWriter implements InitializingBean {
     String parentDirectory = path;
     if (parentDirectory.endsWith("/")) {
       parentDirectory =
-          parentDirectory.substring(0, parentDirectory.length() - 1);
+              parentDirectory.substring(0, parentDirectory.length() - 1);
     }
     int slash = parentDirectory.lastIndexOf('/');
     if (slash >= 0) {
@@ -450,7 +434,7 @@ public class HtmlWriter implements InitializingBean {
     sb.append("<HR size='1' noshade='noshade'>");
 
     sb.append("<table width='100%' cellspacing='0'" +
-        " cellpadding='5' align='center'>\r\n");
+            " cellpadding='5' align='center'>\r\n");
 
     // Render the column headings
     sb.append("<tr>\r\n");
@@ -474,7 +458,7 @@ public class HtmlWriter implements InitializingBean {
 
       String childname = child.getName();
       if (childname.equalsIgnoreCase("WEB-INF") ||
-          childname.equalsIgnoreCase("META-INF")) {
+              childname.equalsIgnoreCase("META-INF")) {
         continue;
       }
 
@@ -516,7 +500,7 @@ public class HtmlWriter implements InitializingBean {
     sb.append("</table>\r\n");
     sb.append("<HR size='1' noshade='noshade'>");
 
-    appendSimpleFooter( sb );
+    appendSimpleFooter(sb);
 
     sb.append("</body>\r\n");
     sb.append("</html>\r\n");
@@ -538,21 +522,20 @@ public class HtmlWriter implements InitializingBean {
   /**
    * Write an InvCatalogImpl to the HttpServletResponse, return the size in bytes of the catalog written to the response.
    *
-   * @param req the HttpServletRequest
-   * @param res the HttpServletResponse.
-   * @param cat the InvCatalogImpl to write to the HttpServletResponse.
+   * @param req            the HttpServletRequest
+   * @param res            the HttpServletResponse.
+   * @param cat            the InvCatalogImpl to write to the HttpServletResponse.
    * @param isLocalCatalog indicates whether this catalog is local to this server.
    * @return the size in bytes of the catalog written to the HttpServletResponse.
    * @throws IOException if problems writing the response.
    */
   public int writeCatalog(HttpServletRequest req, HttpServletResponse res, InvCatalogImpl cat, boolean isLocalCatalog)
-      throws IOException {
+          throws IOException {
     String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
 
     res.setContentLength(catHtmlAsString.length());
     res.setContentType("text/html; charset=UTF-8");
-    if ( ! req.getMethod().equals( "HEAD" ) )
-    {
+    if (!req.getMethod().equals("HEAD")) {
       PrintWriter writer = res.getWriter();
       writer.write(catHtmlAsString);
       writer.flush();
@@ -585,12 +568,23 @@ public class HtmlWriter implements InitializingBean {
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");
+
+    // Logo
+    String logoUrl = this.htmlConfig.getInstallLogoUrl();
+    if (logoUrl != null) {
+      sb.append("<img src='").append(logoUrl);
+      String logoAlt = this.htmlConfig.getInstallLogoAlt();
+      if (logoAlt != null) sb.append("' alt='").append(logoAlt);
+      sb.append("' align='left' valign='top'")
+      //      .append(" hspace='10' vspace='2'")
+            .append(">\n");
+    }
+
     sb.append("Catalog ").append(catname);
     sb.append("</h1>");
     sb.append("<HR size='1' noshade='noshade'>");
 
-    sb.append("<table width='100%' cellspacing='0'" +
-        " cellpadding='5' align='center'>\r\n");
+    sb.append("<table width='100%' cellspacing='0' cellpadding='5' align='center'>\r\n");
 
     // Render the column headings
     sb.append("<tr>\r\n");
@@ -614,7 +608,7 @@ public class HtmlWriter implements InitializingBean {
 
     sb.append("<HR size='1' noshade='noshade'>");
 
-    appendSimpleFooter( sb );
+    appendSimpleFooter(sb);
 
     sb.append("</body>\r\n");
     sb.append("</html>\r\n");
@@ -635,7 +629,7 @@ public class HtmlWriter implements InitializingBean {
       // Get the catalog name - we want a relative URL
       catHtml = catURI.getPath();
       int pos = catHtml.lastIndexOf("/");
-      if ( pos != -1) catHtml = catHtml.substring( pos + 1 );
+      if (pos != -1) catHtml = catHtml.substring(pos + 1);
 
       // change the ending to "catalog.html?"
       pos = catHtml.lastIndexOf('.');
@@ -682,8 +676,8 @@ public class HtmlWriter implements InitializingBean {
           log.error(href, e);
         }
 
-        sb.append("<img src='").append( htmlConfig.prepareUrlStringForHtml( htmlConfig.getFolderIconUrl() ))
-            .append("' alt='").append( htmlConfig.getFolderIconAlt()).append("'> &nbsp;");
+        sb.append("<img src='").append(htmlConfig.prepareUrlStringForHtml(htmlConfig.getFolderIconUrl()))
+                .append("' alt='").append(htmlConfig.getFolderIconAlt()).append("'> &nbsp;");
         sb.append("<a href='");
         sb.append(StringUtil2.quoteHtmlContent(href));
         sb.append("'><tt>");
@@ -692,12 +686,12 @@ public class HtmlWriter implements InitializingBean {
       } else // Not an InvCatalogRef
       {
         if (ds.hasNestedDatasets())
-            sb.append( "<img src='" ).append( htmlConfig.prepareUrlStringForHtml( htmlConfig.getFolderIconUrl() ) )
-                    .append( "' alt='" ).append( htmlConfig.getFolderIconAlt() ).append( "'> &nbsp;" );
+          sb.append("<img src='").append(htmlConfig.prepareUrlStringForHtml(htmlConfig.getFolderIconUrl()))
+                  .append("' alt='").append(htmlConfig.getFolderIconAlt()).append("'> &nbsp;");
 
-          // Check if dataset has single resolver service.
+        // Check if dataset has single resolver service.
         if (ds.getAccess().size() == 1 &&
-            (ds.getAccess().get(0)).getService().getServiceType().equals(ServiceType.RESOLVER)) {
+                (ds.getAccess().get(0)).getService().getServiceType().equals(ServiceType.RESOLVER)) {
           InvAccess access = ds.getAccess().get(0);
           String accessUrlName = access.getUnresolvedUrlName();
           int pos = accessUrlName.lastIndexOf(".xml");
@@ -719,7 +713,7 @@ public class HtmlWriter implements InitializingBean {
           sb.append("<a href='");
           sb.append(StringUtil2.quoteHtmlContent(catHtml));
           sb.append("dataset=");
-          sb.append( StringUtil2.replace(ds.getID(), '+', "%2B") );
+          sb.append(StringUtil2.replace(ds.getID(), '+', "%2B"));
           sb.append("'><tt>");
           sb.append(name);
           sb.append("</tt></a></td>\r\n");
@@ -751,7 +745,7 @@ public class HtmlWriter implements InitializingBean {
         else
           sb.append("--");// "Unknown");
       } else {
-          sb.append(lastModDateType.toDateTimeString());
+        sb.append(lastModDateType.toDateTimeString());
       }
 
       sb.append("</tt></td>\r\n");
@@ -766,51 +760,48 @@ public class HtmlWriter implements InitializingBean {
     return shade;
   }
 
-  private String convertDatasetToHtml( String catURL, InvDatasetImpl dataset,
-                                       HttpServletRequest request,
-                                       boolean isLocalCatalog)
-  {
-    StringBuilder sb = new StringBuilder( 10000 );
+  private String convertDatasetToHtml(String catURL, InvDatasetImpl dataset,
+                                      HttpServletRequest request,
+                                      boolean isLocalCatalog) {
+    StringBuilder sb = new StringBuilder(10000);
 
-    sb.append( this.getHtmlDoctypeAndOpenTag() );
-    sb.append( "<head>\r\n" );
-    sb.append( "<title> Catalog Services</title>\r\n" );
-    sb.append( "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\r\n" );
-    sb.append( this.getTdsPageCssLink() );
-    sb.append( "</head>\r\n" );
-    sb.append( "<body>\r\n" );
-    this.appendOldStyleHeader( sb );
+    sb.append(this.getHtmlDoctypeAndOpenTag());
+    sb.append("<head>\r\n");
+    sb.append("<title> Catalog Services</title>\r\n");
+    sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\r\n");
+    sb.append(this.getTdsPageCssLink());
+    sb.append("</head>\r\n");
+    sb.append("<body>\r\n");
+    this.appendOldStyleHeader(sb);
     //this.appendTableHeader( sb, true, true, true );
 
-    sb.append( "<h2> Catalog " ).append( catURL ).append( "</h2>\r\n" );
+    sb.append("<h2> Catalog ").append(catURL).append("</h2>\r\n");
 
-    InvDatasetImpl.writeHtmlDescription( sb, dataset, false, true, false, false, ! isLocalCatalog );
+    InvDatasetImpl.writeHtmlDescription(sb, dataset, false, true, false, false, !isLocalCatalog);
 
     // optional access through Viewers
-    if ( isLocalCatalog )
+    if (isLocalCatalog)
       //ViewServlet.showViewers( sb, dataset, request );
-      viewerService.showViewers(sb, dataset, request);	
-    
-    sb.append( "</body>\r\n" );
-    sb.append( "</html>\r\n" );
+      viewerService.showViewers(sb, dataset, request);
+
+    sb.append("</body>\r\n");
+    sb.append("</html>\r\n");
 
     return sb.toString();
   }
 
-  public int showDataset( String catURL, InvDatasetImpl dataset,
-                           HttpServletRequest request,
-                           HttpServletResponse response,
-                           boolean isLocalCatalog )
-          throws IOException
-  {
-    String datasetAsHtml = this.convertDatasetToHtml( catURL, dataset, request, isLocalCatalog );
+  public int showDataset(String catURL, InvDatasetImpl dataset,
+                         HttpServletRequest request,
+                         HttpServletResponse response,
+                         boolean isLocalCatalog)
+          throws IOException {
+    String datasetAsHtml = this.convertDatasetToHtml(catURL, dataset, request, isLocalCatalog);
 
-    response.setStatus( HttpServletResponse.SC_OK );
-    response.setContentType( "text/html; charset=UTF-8" );
-    if ( ! request.getMethod().equals( "HEAD" ) )
-    {
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.setContentType("text/html; charset=UTF-8");
+    if (!request.getMethod().equals("HEAD")) {
       PrintWriter pw = response.getWriter();
-      pw.write( datasetAsHtml );
+      pw.write(datasetAsHtml);
       pw.flush();
     }
 
@@ -823,7 +814,7 @@ public class HtmlWriter implements InitializingBean {
    * @param ds dataset to write
    */
   public void showCDM(HttpServletResponse res, NetcdfDataset ds)
-      throws IOException {
+          throws IOException {
     String cdmAsString = getCDM(ds);
 
     res.setContentLength(cdmAsString.length());
@@ -846,7 +837,7 @@ public class HtmlWriter implements InitializingBean {
     sb.append("<title>");
     sb.append("Common Data Model");
     sb.append("</title>\r\n");
-    sb.append(this.getTdsPageCssLink()).append( "\n");
+    sb.append(this.getTdsPageCssLink()).append("\n");
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");
@@ -855,7 +846,7 @@ public class HtmlWriter implements InitializingBean {
     sb.append("<HR size='1' noshade='noshade'>");
 
     sb.append("<table width='100%' cellspacing='0'" +
-        " cellpadding='5' align='center'>\r\n");
+            " cellpadding='5' align='center'>\r\n");
 
     //////// Axis
     sb.append("<tr>\r\n");
@@ -907,7 +898,7 @@ public class HtmlWriter implements InitializingBean {
 
     sb.append("<HR size='1' noshade='noshade'>");
 
-    appendSimpleFooter( sb );
+    appendSimpleFooter(sb);
 
     sb.append("</body>\r\n");
     sb.append("</html>\r\n");

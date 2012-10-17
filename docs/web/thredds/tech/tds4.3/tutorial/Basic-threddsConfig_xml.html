@@ -1,28 +1,28 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+ <html>
+  <head>
+   <title>threddsConfig.xml</title>
+   <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
+   <script type="text/javascript" src="workshopNav.js"></script>
+  </head>
+  <body>
 
-  <title>TDS Tutorial: threddsConfig.xml Basics</title>
-  <link rel="stylesheet" href="tutorial.css" type="text/css">
-  <script language="JavaScript1.2" src="http://www.unidata.ucar.edu/acemenu/last_mod.js"></script>
-  <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon">
-</head>
-<body>
+  <h1>threddsConfig.xml</h1>   
 
-<h1>TDS Tutorial: TDS Configuration Basics</h1>
+
 
 <div id="section">
-  <h2><a name="serverInfo">TDS Configuration File</a></h2>
+  <h2><a name="serverInfo">TDS Configuration File threddsConfig.xml</a></h2>
 
   <p>The TDS configuration file (<code>content/thredds/threddsConfig.xml</code>) allows the TDS
     administrator to set a number of parameters that control the behavior of the TDS. Most of these
-    parameters will default to reasonable default values. However, a number of them allow you to
+    parameters will be set with reasonable default values. However, a number of them allow you to
     describe your server, provide contact information, and change the "theme" of server generated
-    HTML pages.
+    HTML pages, so unless you want your server to be called "Initial TDS Installation", maintained
+    by Support at "My Group", then you <b>will</b> need to change some of these settings.
   </p>
 
-  <div id="subsection">
+
     <h3><a name="serverInfo">Server Information</a></h3>
     <p>Information describing your TDS installation and providing contact information is configured
       in the <code>serverInformation</code> element of the TDS configuration file. This includes
@@ -120,45 +120,37 @@
       <li>All generated THREDDS catalogs that don't override this information.</li>
     </ul>
 
-  </div>
 
-  <div id="subsection" class="exercise">
+
+  <div id="expanded" class="exercise">
     <h3>Exercise: Add Server Information</h3>
     <p>Change the default server information in the TDS configuration file</p>
     <ol>
-      <li>Look at the current server information:
-        <ul>
-          <li>&nbsp;&nbsp;&nbsp;&nbsp;Open the Server Info page in a browser:
+      <li>Look at the current server information by viewing the Server Info page in a browser:
             <code><a href="http://localhost:8080/thredds/serverInfo.html">
               http://localhost:8080/thredds/serverInfo.html</a></code>
-          </li>
-        </ul>
       </li>
       <li>Edit the main TDS configuration catalog:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds
-<strong>[thredds@workshop00 ~]$</strong> vi threddsConfig.xml         <var>// Use the editor of your choice</var>
+<b>$</b> cd ${tomcat_home}/content/thredds
+<b>$</b> vi threddsConfig.xml         <var>// Use the editor of your choice</var>
 </pre>
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
-<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
-<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+<b>$</b> cd ${tomcat_home}/bin
+<b>$</b> ./shutdown.sh
+<b>$</b> ./startup.sh
 </pre>
       </li>
-      <li>Check that the server information has changed:
-        <ul>
-          <li>&nbsp;&nbsp;&nbsp;&nbsp;Open the Server Info page in a browser:
-            <code><a href="http://localhost:8080/thredds/serverInfo.html">
-              http://localhost:8080/thredds/serverInfo.html</a></code>
-          </li>
-        </ul>
+      <li>Check that the server information has changed in the Server Info page:
+            <code><a href="http://localhost:8080/thredds/serverInfo.html">http://localhost:8080/thredds/serverInfo.html</a></code>
+
       </li>
     </ol>
   </div>
   
-  <div id="subsection">
+
     <h3><a name="htmlSetup">Appearance of Generated HTML Pages</a></h3>
     <p>Server and institution names, logos, and links given in the above section are used
       in all TDS generated HTML pages.</p>
@@ -185,17 +177,14 @@
     <p>More details are given in the
       <a href="../reference/ThreddsConfigXMLFile.html#Generated_HTML_Pages">
         threddsConfig.xml Reference document</a>.</p>
-  </div>
+
 
 </div>
 
-<p>
-<hr width="100%">
-<address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
-    Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
-</address>
 
-</p>
+  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
 
-</body>
-</html>
+
+
+  </body>
+ </html>   

@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Describe
+ * Test copying files with FileWriter2.
  *
  * @author caron
  * @since 7/27/12
@@ -20,27 +20,26 @@ import java.util.Formatter;
 public class TestFileWriter2 {
   int countNotOK = 0;
 
-  @Test
   public void problem() throws IOException {
     copyFile("Q:\\cdmUnitTest\\formats\\hdf5\\auraData\\HIRDLS2-Aura73p_b029_2000d275.he5", "C:/temp/Aura73p_b029_2000d275.nc4", NetcdfFileWriter.Version.netcdf4);
     //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);
   }
 
-  @Test
+  //@Test
   public void readAllNetcdf4() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files/", null, new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  @Test
+  //@Test
   public void readAllHDF5() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/hdf5/", null, new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  @Test
+  //@Test
   public void readAllNetcdf3() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", null, new MyAct());

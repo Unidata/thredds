@@ -1,29 +1,26 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-  <title>TDS Tutorial: TDS Configuration Catalogs</title>
-  <link rel="stylesheet" href="tutorial.css" type="text/css">
-  <script language="JavaScript1.2" src="http://www.unidata.ucar.edu/acemenu/last_mod.js"></script>
-  <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon">
-</head>
-<body>
+ <html>
+  <head>
+   <title>TDS Configuration Catalogs</title>
+   <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
+   <script type="text/javascript" src="workshopNav.js"></script>
+  </head>
+  <body>
 
 <h1>TDS Configuration Catalogs</h1>
 
-<div id="section"><h2><a name="CatReview">More THREDDS Catalog Review</a></h2>
+<div id="section">
+<h2><a name="serviceElement">The <code>service</code> Element</a></h2>
 
-  <div id="subsection"><h3>The <code>service</code> Element</h3>
 
-    <h4>Compound <code>service</code> Elements - Serving Datasets with Multiple Methods</h4>
+    <h3>Compound <code>service</code> Elements - Serving Datasets with Multiple Methods</h3>
 
     <p>Datasets can be made available through more than one access method by defining and then
-      referencing a <strong>compound</strong> <code>service</code> element. The following:
+      referencing a <b>compound</b> <code>service</code> element. The following:
     </p>
 
 <pre>
-&lt;service name="<strong>all</strong>" serviceType="Compound" base="" &gt;
+&lt;service name="<b>all</b>" serviceType="Compound" base="" &gt;
     &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
     &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;
 &lt;/service&gt;
@@ -35,7 +32,7 @@
 
 <pre>
 &lt;dataset name="cool data" urlPath="so/cool/data.nc" &gt;
-    &lt;serviceName&gt;<strong>all</strong>&lt;/serviceName&gt;
+    &lt;serviceName&gt;<b>all</b>&lt;/serviceName&gt;
 &lt;/dataset&gt;
 </pre>
 
@@ -52,8 +49,6 @@
 
     <pre><code>/thredds/dodsC/more/cool/data.nc</code></pre>
 
-    <h4>Unique Names Required for each <code>service</code> Element in a Catalog</h4>
-
     <div id="note" class="info"><h4>Unique Service Names</h4>
 
       <ol class="little">
@@ -65,6 +60,10 @@
       </ol>
     </div>
 
+    <h3>Unique Names Required for each <code>service</code> Element in a Catalog</h3>
+
+
+
     <p>Service names are used by datasets to reference the <code>service</code> element that
       represents the available service(s) for that dataset. So that the service reference resolves
       to a unique <code>service</code> element, all service names within a given catalog must be
@@ -74,12 +73,12 @@
 
 <pre>
 &lt;service name="any" serviceType="Compound" base="" &gt;
-    &lt;service name="<strong>service1</strong>" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
-    &lt;service name="<strong>service2</strong>" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
+    &lt;service name="<b>service1</b>" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+    &lt;service name="<b>service2</b>" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
 &lt;/service&gt;
 &lt;service name="grid" serviceType="Compound" base="" &gt;
-    &lt;service name="<strong>service1</strong>" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
-    &lt;service name="<strong>service2</strong>" serviceType="WCS" base="/thredds/wcs/" /&gt;
+    &lt;service name="<b>service1</b>" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+    &lt;service name="<b>service2</b>" serviceType="WCS" base="/thredds/wcs/" /&gt;
     &lt;service name="service3" serviceType="WMS" base="/thredds/wms/" /&gt;
     &lt;service name="service4" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
 &lt;/service&gt;
@@ -91,17 +90,19 @@
         instances have the same serviceType and base URL.</li>
       <li>A dataset that references "service2" may find either the HTTP file service or the WCS service.</li>
     </ul>
-    <br>
 
-    <h3>THREDDS Metadata</h3>
+</div>
+<div id="section">
+<h2><a name="metadata">THREDDS Metadata</a></h2>
 
-    <h4>Linking to Metadata</h4>
+
+    <h3>Linking to Metadata</h3>
     <pre>&lt;metadata xlink:title="some good metadata" xlink:href="http://my.server/md/data1.xml" /&gt;</pre>
 
-    <h4>Linking to Human Readable Metadata</h4>
+    <h3>Linking to Human Readable Metadata</h3>
     <pre>&lt;description xlink:title="My Data" xlink:href="http://my.server/md/data1.html" /&gt;</pre>
 
-    <h4>Inherited Metadata</h4>
+    <h3>Inherited Metadata</h3>
 <pre>
 ...
     &lt;dataset name="TDS Tutorial: example inherited metadata"&gt;
@@ -131,59 +132,61 @@
     <ul>
       <li>Inherited metadata can be overridden.</li>
     </ul>
-
-  </div>
-
 </div>
-<div id="section"><h2><a name="ConfigCats">TDS Configuration Catalogs</a></h2>
 
-  <div id="subsection"><h3>TDS Requirements for the <code>service</code> Elements</h3>
+<div id="section">
+
+<h2><a name="requirements">TDS Requirements for the <code>service</code> Elements</a></h2>
+
 
     <p>The TDS provides data access services at predefined URL base paths. Therefore, it is
-      <strong>required that service base URLs must exactly match the values given here</strong>
+      <b>required that service base URLs must exactly match the values given here</b>
       according to service type: </p>
 
-    <h4>OPeNDAP</h4>
-    <pre>&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/thredds/dodsC/</strong>"&nbsp;/&gt;</pre>
+    <h3>OPeNDAP</h3>
+    <pre>&lt;service name="odap" serviceType="OPeNDAP" base="<b>/thredds/dodsC/</b>"&nbsp;/&gt;</pre>
 
-    <h4>NetCDF Subset Service</h4>
-    <pre>&lt;service name="ncss" serviceType="NetcdfSubset" base="<strong>/thredds/ncss/grid/</strong>"&nbsp;/&gt;</pre>
+    <h3>NetCDF Subset Service</h3>
+    <pre>&lt;service name="ncss" serviceType="NetcdfSubset" base="<b>/thredds/ncss/grid/</b>"&nbsp;/&gt;</pre>
 
-    <h4>WCS</h4>
-    <pre> &lt;service name="wcs" serviceType="WCS" base="<strong>/thredds/wcs/</strong>"&nbsp;/&gt;</pre>
+    <h3>WCS</h3>
+    <pre> &lt;service name="wcs" serviceType="WCS" base="<b>/thredds/wcs/</b>"&nbsp;/&gt;</pre>
 
-    <h4>WMS</h4>
-    <pre> &lt;service name="wms" serviceType="WMS" base="<strong>/thredds/wms/</strong>"&nbsp;/&gt;</pre>
+    <h3>WMS</h3>
+    <pre> &lt;service name="wms" serviceType="WMS" base="<b>/thredds/wms/</b>"&nbsp;/&gt;</pre>
 
-    <h4>HTTP Bulk File Service</h4>
-    <pre>&lt;service name="fileServer" serviceType="HTTPServer" base="<strong>/thredds/fileServer/"</strong>&nbsp;/&gt;</pre>
+    <h3>HTTP Bulk File Service</h3>
+    <pre>&lt;service name="fileServer" serviceType="HTTPServer" base="<b>/thredds/fileServer/"</b>&nbsp;/&gt;</pre>
 
     <p>Notes: These base URLs are relative to the server so your catalogs are independent of your
       servers hostname or port.</p>
 
-    <div id="expanded" class="troubleshooting"><h4>Data Requirement for Each Service</h4>
+    <div id="expanded" class="troubleshooting">
+    <h4>Data Requirement for Each Service</h4>
       <ul class="little">
-        <li>The <strong>"HTTPServer"</strong> service can serve any file.</li>
-        <li>The <strong>"OPeNDAP"</strong> service can serve any data file that the
+        <li>The <b>"HTTPServer"</b> service can serve any file.</li>
+        <li>The <b>"OPeNDAP"</b> service can serve any data file that the
           netCDF-Java library can open.
         </li>
-        <li>The <strong>"WCS"</strong> service can only serve data files that the
+        <li>The <b>"WCS"</b> service can only serve data files that the
           netCDF-Java library can recognize as "gridded" data.
         </li>
-        <li>The <strong>"WMS"</strong> service also only serves "gridded" data files.</li>
-        <li>The <strong>"NetcdfSubset"</strong> service also only serves "gridded" data
+        <li>The <b>"WMS"</b> service also only serves "gridded" data files.</li>
+        <li>The <b>"NetcdfSubset"</b> service also only serves "gridded" data
           files.
         </li>
       </ul>
     </div>
+
     <p>You can check that a data file is recognized as "gridded" with netCDF-Java ToolsUI (available
       for download from the
         <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java home page</a> or you can use
         <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">webstart</a>).
     </p>
-  </div>
 
-  <div id="subsection" class="exercise"><h3>Exercise: Check that the NAM Dataset is Gridded Data</h3>
+
+  <div id="expanded" class="exercise">
+<h3>Exercise: Check that the NAM Dataset is Gridded Data</h3>
     <ol>
       <li>Open the netCDF-Java ToolsUI application
         [<a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">webstart</a>].
@@ -193,15 +196,21 @@
       <li>If variables are listed in the top section of the window, the netCDF-Java library has
         recognized the dataset as gridded data.</li>
     </ol>
-    <br>
-    <p style="margin-left: -100px"><strong>Note</strong>: While you have ToolsUI open, take a look at the
+    <p><b>Note</b>: While you have ToolsUI open, take a look at the
       "Viewer" tab and the "THREDDS" tab</p>
-    <p style="margin-left: -100px">The "Viewer" tab supports inspection of the dataset at the netCDF/CDM Data Access level
+    <p>The "Viewer" tab supports inspection of the dataset at the netCDF/CDM Data Access level
         (i.e., dimensions, variables, and attributes).</p>
-    <p style="margin-left: -100px">The "THREDDS" tab supports browsing of THREDDS catalogs and selection of datasets.</p>
+    <p>The "THREDDS" tab supports browsing of THREDDS catalogs and selection of datasets.</p>
   </div>
 
-  <div id="subsection"><h3>TDS Configuration Catalogs and Metadata</h3>
+
+</div>
+
+<div id="section">
+
+<h2><a name="config">TDS Configuration Catalogs and Metadata</a></h2>
+
+
 
     <p>The datasetScan element is an extension of the dataset element and so can contain metadata.</p>
 
@@ -209,8 +218,8 @@
 ...
       &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-<strong>2)</strong>    &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
-                   path="<strong>my/test/all</strong>" location="/my/data/testdata"&gt;
+<b>2)</b>    &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
+                   path="<b>my/test/all</b>" location="/my/data/testdata"&gt;
           &lt;metadata inherited="true"&gt;
               &lt;serviceName&gt;odap&lt;/serviceName&gt;
               &lt;keyword&gt;Ocean&lt;/keyword&gt;
@@ -227,7 +236,7 @@
       which will also contain any metadata contained in the datasetScan element. It will
       look something like:</p>
 <pre>
-&lt;catalogRef xlink:href="/thredds/catalog/<strong>my/test/all</strong>/catalog.xml"
+&lt;catalogRef xlink:href="/thredds/catalog/<b>my/test/all</b>/catalog.xml"
                xlink:name="Test all files in a directory" ID="testDatasetScan" name=""&gt;
     &lt;metadata inherited="true"&gt;
         ...
@@ -255,9 +264,9 @@
               &lt;publisher&gt;Ethan&lt;/publisher&gt;
               &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;
           &lt;/metadata&gt;
-          &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<strong>my/test/all</strong>/afile.nc"&gt;
-          &lt;dataset name="testData.nc" ID="testDatasetScan/testData.nc" urlPath="<strong>my/test/all</strong>/testData.nc"&gt;
-          &lt;dataset name="junk.nc" ID="testDatasetScan/junk.nc" urlPath="<strong>my/test/all</strong>/junk.nc"&gt;
+          &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<b>my/test/all</b>/afile.nc"&gt;
+          &lt;dataset name="testData.nc" ID="testDatasetScan/testData.nc" urlPath="<b>my/test/all</b>/testData.nc"&gt;
+          &lt;dataset name="junk.nc" ID="testDatasetScan/junk.nc" urlPath="<b>my/test/all</b>/junk.nc"&gt;
 
           &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""
                       xlink:href="grib/catalog.xml" /&gt;
@@ -266,8 +275,7 @@
 </pre>
 
 
-  </div>
-  <div id="subsection"><h3><a name="rootCatalogs">TDS Root Catalog</a></h3>
+<h3><a name="rootCatalogs">TDS Root Catalog</a></h3>
 
     <p>At startup, the TDS reads the root catalog</p>
 
@@ -279,15 +287,15 @@
     <pre>catalog.xml<br>    |<br>    |-- enhancedCatalog.xml<br></pre>
     <p>The tree of configuration catalogs can be as deeply nested as desired.</p>
 
-    <h4>Additional Root Catalogs</h4>
+    <h3>Additional Root Catalogs</h3>
 
     <p>Additional root configuration catalogs can be defined in </p>
-    <pre>${tomcat_home}/content/thredds/<strong>threddsConfig.xml</strong> </pre>
+    <pre>${tomcat_home}/content/thredds/<b>threddsConfig.xml</b> </pre>
     <p>file. For instance, to add a test catalog add the following line:</p>
     <pre>&lt;catalogRoot&gt;myTestCatalog.xml&lt;/catalogRoot&gt;<br></pre>
     <p>Each additional root configuration catalog can be the root of another tree of configuration catalogs.</p>
 
-    <h4>Tools to Manage Configuration Catalogs </h4>
+    <h3>Tools to Manage Configuration Catalogs </h3>
 
     <p>First, the TDS catalog initialization log</p>
     <pre>${tomcat_home}/content/thredds/logs/catalogInit.log </pre>
@@ -304,31 +312,30 @@
       <li>From the TDS Remote Management page
         [<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>]:
         <br><br>
-        <img alt="TDS Remote Management page (top)" src="../../images/TdsRemoteManager_top.png">
+        <img src="../../images/TdsRemoteManager_top.png" alt="TDS Remote Management page (top)" width="618" height="685">
         <br>
       </li>
       <li>Click on the "Show static catalogs" link:
         <br><br>
-        <img alt="List of Static Catalogs" src="../../images/TdsRemoteManager_staticCatalogs.png">
+        <img src="../../images/TdsRemoteManager_staticCatalogs.png" alt="List of Static Catalogs" width="738" height="502">
         <br>
       </li>
     </ul>
-  </div>
-
-  <div id="subsection"><h3>Managing <code>datasetRoot</code> and <code>datasetScan</code> Elements</h3>
+  
+<h3>Managing <code>datasetRoot</code> and <code>datasetScan</code> Elements</h3>
 
     <p>You can have as many datasetRoot and datasetScan elements as you want, for example </p>
 
 <pre>
-&lt;datasetRoot path="<strong>model</strong>" location="<strong>/data/ncep</strong>" /&gt;
-&lt;datasetRoot path="<strong>obs</strong>" location="<strong>/data/raw/metars</strong>" /&gt;
-&lt;datasetRoot path="<strong>cases/001</strong>" location="<strong>C:/casestudy/data/001</strong>" /&gt;
-&lt;datasetScan path="<strong>myData</strong>" location="<strong>/data/ncep/run0023</strong>" name="NCEP/RUN 23" serviceName="myserver" /&gt;
-&lt;datasetScan path="<strong>myData/gfs</strong>" location="<strong>/pub/ldm/gfs</strong>" name="NCEP/GFS" serviceName="myserver" /&gt;
+&lt;datasetRoot path="<b>model</b>" location="<b>/data/ncep</b>" /&gt;
+&lt;datasetRoot path="<b>obs</b>" location="<b>/data/raw/metars</b>" /&gt;
+&lt;datasetRoot path="<b>cases/001</b>" location="<b>C:/casestudy/data/001</b>" /&gt;
+&lt;datasetScan path="<b>myData</b>" location="<b>/data/ncep/run0023</b>" name="NCEP/RUN 23" serviceName="myserver" /&gt;
+&lt;datasetScan path="<b>myData/gfs</b>" location="<b>/pub/ldm/gfs</b>" name="NCEP/GFS" serviceName="myserver" /&gt;
 </pre>
     
     <p>The datasetRoot and datasetScan are said to define a
-      <strong>data root</strong>.</p>
+      <b>data root</b>.</p>
     
     <div id="expanded" class="troubleshooting">
 
@@ -338,8 +345,8 @@
           the beginning part of its URL path must match a data root path. If there
           are multiple matches, the longest match is used.
         </li>
-        <li><strong>Each data root must have a unique <code>path</code> for
-          all catalogs used by the TDS.</strong>
+        <li><b>Each data root must have a unique <code>path</code> for
+          all catalogs used by the TDS.</b>
           <p>
             Note: Because the TDS uses the set of all given path values
             to map URLs to datasets, each path value MUST be unique across all
@@ -347,7 +354,7 @@
             warning messages in the <code>catalogInit.log</code> file.
           </p>
         </li>
-        <li>The directory pointed to by <strong>location</strong> should be absolute</li>
+        <li>The directory pointed to by <b>location</b> should be absolute</li>
         <li>The locations may be used in multiple data roots</li>
       </ul>
     </div>
@@ -361,24 +368,24 @@
         <th scope="col" width="357">file</th>
       </tr>
       <tr>
-        <td><code><strong>model</strong>/run0023/mydata.nc</code></td>
-        <td><code><strong>/data/ncep</strong>/run0023/mydata.nc</code></td>
+        <td><code><b>model</b>/run0023/mydata.nc</code></td>
+        <td><code><b>/data/ncep</b>/run0023/mydata.nc</code></td>
       </tr>
       <tr>
-        <td><code><strong>obs</strong>/test.nc</code></td>
-        <td><code><strong>/data/raw/metars</strong>/test.nc</code></td>
+        <td><code><b>obs</b>/test.nc</code></td>
+        <td><code><b>/data/raw/metars</b>/test.nc</code></td>
       </tr>
       <tr>
-        <td><code><strong>myData</strong>/mydata.nc</code></td>
-        <td><code><strong>/data/ncep/run0023</strong>/mydata.nc</code></td>
+        <td><code><b>myData</b>/mydata.nc</code></td>
+        <td><code><b>/data/ncep/run0023</b>/mydata.nc</code></td>
       </tr>
       <tr>
-        <td><code><strong>myData/gfs</strong>/mydata.nc</code></td>
-        <td><code><strong>/pub/ldm/gfs</strong>/mydata.nc</code></td>
+        <td><code><b>myData/gfs</b>/mydata.nc</code></td>
+        <td><code><b>/pub/ldm/gfs</b>/mydata.nc</code></td>
       </tr>
       <tr>
-        <td><code><strong>cases/001</strong>/test/area/two</code></td>
-        <td><code><strong>C:/casestudy/data/001</strong>/test/area/two</code></td>
+        <td><code><b>cases/001</b>/test/area/two</code></td>
+        <td><code><b>C:/casestudy/data/001</b>/test/area/two</code></td>
       </tr>
       </tbody>
     </table>
@@ -397,22 +404,20 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 
     <p>where:</p>
     <ul>
-      <li><strong>http://hostname:port</strong> is the server's hostname and port. By using relative
+      <li><b>http://hostname:port</b> is the server's hostname and port. By using relative
         service base URLs, you never have to specify this explicitly in your catalogs. This means you
         can change hosts or ports without having to rewrite your catalogs. </li>
-      <li><strong>/thredds</strong> is the name of the <em><strong>web application</strong></em>, taken
-        from the <strong>thredds.war</strong> file.</li>
-      <li><strong>/dodsC</strong> maps to the servlet inside the web application, here it would be the
-        <strong>OPeNDAP</strong> servlet.</li>
-      <li><strong>/model</strong> is the <em>path</em>, associated with the directory location
-        <strong>/data/ncep/</strong>.</li>
-      <li> <strong>/run0023/mydata.nc</strong> is the relative filename, and so is mapped to
-        <strong>/data/ncep</strong>/<strong>run0023/mydata.nc</strong>.</li>
+      <li><b>/thredds</b> is the name of the <i><b>web application</b></i>, taken
+        from the <b>thredds.war</b> file.</li>
+      <li><b>/dodsC</b> maps to the servlet inside the web application, here it would be the
+        <b>OPeNDAP</b> servlet.</li>
+      <li><b>/model</b> is the <i>path</i>, associated with the directory location
+        <b>/data/ncep/</b>.</li>
+      <li> <b>/run0023/mydata.nc</b> is the relative filename, and so is mapped to
+        <b>/data/ncep</b>/<b>run0023/mydata.nc</b>.</li>
     </ul>
 
-  </div>
-
-  <div id="subsection"><h3>TDS Remote Management - List of Dataset Roots</h3>
+  <h3>TDS Remote Management - List of Dataset Roots</h3>
 
     <p>The TDS Remote Management page has a link to list all known dataset roots:</p>
     <ul>
@@ -421,35 +426,36 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       </li>
       <li>Click on the "Show data roots" link
         <br><br>
-        <img style="width: 635px; height: 359px;"
-             alt="TDS Remote Management - List of Data Roots"
-             src="../../images/TdsRemoteManager_dataRoots.png">
+        <img
+             src="../../images/TdsRemoteManager_dataRoots.png"
+             alt="TDS Remote Management - List of Data Roots" width="864" height="480" style="width: 635px; height: 359px;">
         <br>
       </li>
     </ul>
 
-  </div>
 
 
-  <div id="subsection" class="exercise"><h3>Exercise: Managing multiple roots</h3>
-    <h4>Add a few more datasetScan elements</h4>
+
+  <div id="expanded" class="exercise">
+  <h3>Exercise: Managing multiple roots</h3>
+    <p>Add a few more datasetScan elements:</p>
     <ol>
       <li>Check the /data/ldm/fsl, /data/ldm/madis, and /data/ldm/suomi data directories:
-        <pre><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm<br>bufr    dusk         dusk.080527  fsl     ldm.pq  ltng   mcidas    ngrid  nogaps    rcm      severe  surface   wseta<br>cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfiles  rtmodel  suomi   upperair</pre>
-        <pre><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/fsl<br>01hr  06min  RASS<br><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/fsl/01hr<br>20082962000.nc  20082981400.nc  20083000800.nc  20083020200.nc  20083032000.nc  20083051400.nc  20083071000.nc  20083090400.nc<br>...<br>20082981200.nc  20083000600.nc  20083020000.nc  20083031800.nc  20083051200.nc  20083070800.nc  20083090200.nc  20083102100.nc</pre>
-        <pre><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/madis<br>20081022_0700.nc  20081024_1000.nc  20081026_1300.nc  20081028_1600.nc  20081030_1900.nc  20081101_2200.nc  20081104_0100.nc<br>...<br>20081024_0300.nc  20081026_0600.nc  20081028_0900.nc  20081030_1200.nc  20081101_1500.nc  20081103_1800.nc  20081105_2100.nc</pre>
-        <pre><strong>[thredds@workshop00 ~]$</strong> ls /data/ldm/suomi<br>CsuPWVh_2008.308.18.00.0060_nc  CsuPWVh_2008.309.07.00.0060_nc  CsuPWVh_2008.309.20.00.0060_nc  CsuPWVh_2008.310.09.00.0060_nc<br>...<br>CsuPWVh_2008.309.04.00.0060_nc  CsuPWVh_2008.309.17.00.0060_nc  CsuPWVh_2008.310.06.00.0060_nc  CsuPWVh_2008.310.19.00.0060_nc</pre>
+        <pre><b>$</b> ls /data/ldm<br>bufr    dusk         dusk.080527  fsl     ldm.pq  ltng   mcidas    ngrid  nogaps    rcm      severe  surface   wseta<br>cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfiles  rtmodel  suomi   upperair</pre>
+        <pre><b>$</b> ls /data/ldm/fsl<br>01hr  06min  RASS<br><b>$</b> ls /data/ldm/fsl/01hr<br>20082962000.nc  20082981400.nc  20083000800.nc  20083020200.nc  20083032000.nc  20083051400.nc  20083071000.nc  20083090400.nc<br>...<br>20082981200.nc  20083000600.nc  20083020000.nc  20083031800.nc  20083051200.nc  20083070800.nc  20083090200.nc  20083102100.nc</pre>
+        <pre><b>$</b> ls /data/ldm/madis<br>20081022_0700.nc  20081024_1000.nc  20081026_1300.nc  20081028_1600.nc  20081030_1900.nc  20081101_2200.nc  20081104_0100.nc<br>...<br>20081024_0300.nc  20081026_0600.nc  20081028_0900.nc  20081030_1200.nc  20081101_1500.nc  20081103_1800.nc  20081105_2100.nc</pre>
+        <pre><b>$</b> ls /data/ldm/suomi<br>CsuPWVh_2008.308.18.00.0060_nc  CsuPWVh_2008.309.07.00.0060_nc  CsuPWVh_2008.309.20.00.0060_nc  CsuPWVh_2008.310.09.00.0060_nc<br>...<br>CsuPWVh_2008.309.04.00.0060_nc  CsuPWVh_2008.309.17.00.0060_nc  CsuPWVh_2008.310.06.00.0060_nc  CsuPWVh_2008.310.19.00.0060_nc</pre>
       </li>
       <li>Edit the main TDS configuration catalog:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds
-<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml     <var>// Use the editor of your choice</var>
+<b>$</b> cd ${tomcat_home}/content/thredds
+<b>$</b> vi catalog.xml     <var>// Use the editor of your choice</var>
 </pre>
       </li>
       <li>And add a <code>datasetScan</code> element for the FSL data:
 <pre>
-&lt;datasetScan name="<strong>FSL</strong>" ID="<strong>FSL</strong>"
-             path="<strong>fsl</strong>" location="<strong>/data/ldm/fsl</strong>"&gt;
+&lt;datasetScan name="<b>FSL</b>" ID="<b>FSL</b>"
+             path="<b>fsl</b>" location="<b>/data/ldm/fsl</b>"&gt;
 
     &lt;metadata inherited="true"&gt;
         &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
@@ -460,9 +466,9 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       <li>And similarly for MADIS and Suomi data</li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
-<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
-<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+<b>$</b> cd ${tomcat_home}/bin
+<b>$</b> ./shutdown.sh
+<b>$</b> ./startup.sh
 </pre>
       </li>
       </li>
@@ -477,7 +483,7 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
         </ol>
       </li>
     </ol>
-    <h4>Now that we have multiple dataset roots ...</h4>
+    <p>Now that we have multiple dataset roots ...</p>
     <ol>
       <li>Lets check the list of dataset roots:</li>
       <ol>
@@ -502,7 +508,8 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 
   </div>
 
-  <div id="subsection" class="exercise"><h3>Exercise: Duplicate Roots</h3>
+  <div id="expanded" class="exercise">
+  <h3>Exercise: Duplicate Roots</h3>
 
     <ol>
       <li>
@@ -510,15 +517,15 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
         path attribute matches the one for the NAM_12km <code>datasetScan</code>
         element.
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/content/thredds
-<strong>[thredds@workshop00 ~]$</strong> vi catalog.xml     <var>// Use the editor of your choice</var>
+<b>$</b> cd ${tomcat_home}/content/thredds
+<b>$</b> vi catalog.xml     <var>// Use the editor of your choice</var>
 </pre>
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
-<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
-<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+<b>$</b> cd ${tomcat_home}/bin
+<b>$</b> ./shutdown.sh
+<b>$</b> ./startup.sh
 </pre>
       </li>
       <li>What happens with duplicate data roots:
@@ -541,9 +548,10 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 
   </div>
 </div>
-<div id="section"><h2><a name="DatasetScan">More <code>datasetScan</code> Element</a></h2>
+<div id="section">
+  <h2><a name="DatasetScan">More <code>datasetScan</code> Element</a></h2>
 
-  <div id="subsection"><h3>Including Only the Desired Files</h3>
+ <h3>Including Only the Desired Files</h3>
 
     <p>A <code>datasetScan</code> element can specify
       which files and directories it will include with a <code>filter</code>
@@ -574,12 +582,13 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
       directory, I could exclude it by adding the following to the filter:<br>
     </p>
     <pre>&lt;exclude wildcard="badData" atomic="false" collection="true" /&gt;</pre>
-  </div>
-  <div id="subsection" class="exercise"><h3>Exercise: Filtering Files</h3>
+
+  <div id="expanded" class="exercise">
+   <h3>Exercise: Filtering Files</h3>
 
     <ol>
       <li>Browse one of the datasets you just added and find a
-        "<strong>.scour*</strong>" file. Try the OPeNDAP access method:
+        "<b>.scour*</b>" file. Try the OPeNDAP access method:
 <pre>
 Error {
     code = 500;
@@ -591,17 +600,17 @@ Error {
         elements. Something like:
 <pre>
 &lt;filter&gt;
-    &lt;include wildcard="<strong>*.nc</strong>" /&gt;
-    &lt;include wildcard="<strong>*.grib1</strong>" /&gt;
-    &lt;include wildcard="<strong>*.grib2</strong>" /&gt;
+    &lt;include wildcard="<b>*.nc</b>" /&gt;
+    &lt;include wildcard="<b>*.grib1</b>" /&gt;
+    &lt;include wildcard="<b>*.grib2</b>" /&gt;
 &lt;/filter&gt;
 </pre>
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
-<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
-<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+<b>$</b> cd ${tomcat_home}/bin
+<b>$</b> ./shutdown.sh
+<b>$</b> ./startup.sh
 </pre>
       </li>
       <li>
@@ -610,21 +619,22 @@ Error {
       </li>
     </ol>
   </div>
-  <div id="subsection" class="exercise"><h3>Exercise: Filtering Directories</h3>
+  <div id="expanded" class="exercise"
+  ><h3>Exercise: Filtering Directories</h3>
 
     <ol>
       <li>Browse around in the "FSL" dataset.</li>
       <li>Add a <code>filter</code> element to the "FSL" <code>datasetScan</code>
         element to exclude the "06min" directories. Something like:
 <pre>
-&lt;exclude wildcard="<strong>06min</strong>" atomic="false" collection="true" /&gt;
+&lt;exclude wildcard="<b>06min</b>" atomic="false" collection="true" /&gt;
 </pre>
       </li>
       <li>Restart Tomcat so the TDS is reinitialized:
 <pre>
-<strong>[thredds@workshop00 ~]$</strong> cd ${tomcat_home}/bin
-<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
-<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+<b>$</b> cd ${tomcat_home}/bin
+<b>$</b> ./shutdown.sh
+<b>$</b> ./startup.sh
 </pre>
       </li>
       <li>
@@ -633,8 +643,7 @@ Error {
       </li>
     </ol>
   </div>
-
-  <div id="subsection"><h3>Sorting Datasets</h3>
+<h3>Sorting Datasets</h3>
 
     <p>By default, datasets are listed in decreasing lexigraphic order by the dataset name.
       A <code>sort</code> element can be added to a <code>datasetScan</code> element to specify an
@@ -642,9 +651,9 @@ Error {
     <pre>&lt;sort&gt;<br>    &lt;lexigraphicByName increasing="true" /&gt;<br>&lt;/sort&gt;</pre>
     <p> Currently, the lexigraphic increasing or decreasing sort algorithm is the only one
       supported.</p>
-  </div>
+  
 
-  <div id="subsection"><h3>Dataset IDs</h3>
+<h3>Dataset IDs</h3>
 
     <p>All generated datasets are given an ID. The IDs are simply the path of the dataset appended
       to the datasetScan path value or, if one exists, the ID of the datasetScan element. So, for
@@ -652,14 +661,14 @@ Error {
     </p>
 
     <pre>
-&lt;datasetScan name="NCEP NAM 12km" ID="<strong>NAM_12km</strong>"
+&lt;datasetScan name="NCEP NAM 12km" ID="<b>NAM_12km</b>"
              path="nam_12km" location="/data/ldm/nam_12km"&gt;</pre>
 
     <p>and for the data file 2008110406f018.grib2, the value of the dataset ID would be
       "NAM_12km/2008110406f018.grib2". </p>
-  </div>
+  
 
-  <div id="subsection"><h3>Dataset Size Information</h3>
+<h3>Dataset Size Information</h3>
 
     <p>As of TDS 4.2.8, file size metadata is added to all atomic datasets, for instance:</p>
     <pre>&lt;dataSize units="Kbytes"&gt;6.08&lt;/dataSize&gt;</pre>
@@ -667,18 +676,10 @@ Error {
     <p>Prior to TDS 4.2.8, file size metadata was not added unless an <code>addDatasetSize</code>
       element was added to a <code>datasetScan</code> element, e.g.: </p>
     <pre>&lt;addDatasetSize /&gt;</pre>
-  </div>
 
-  <div id="subsection"><h3><a name="Naming_Datasets"></a>Naming Datasets</h3>
 
-    <div id="note" class="info"><h4>Naming: New Name Does Not Affect Other Operations</h4>
+<h3><a name="Naming_Datasets"></a>Naming Datasets</h3>
 
-      <p>While renaming datasets can be used to make the resulting dataset name more human readable,
-        the renaming does not affect the behavior of any of the other datasetScan operations
-        (filtering, sorting, etc.). All datasetScan operations that use or modify the dataset name
-        use the name of the underlying dataset, e.g., the data file on disk.
-    </p>
-    </div>
 
     <p> By default, all datasets are named with the name of their underlying file. By adding a
       <code>namer</code> element, you can specify more human readable dataset names. For instance,
@@ -689,6 +690,14 @@ Error {
 &lt;namer&gt;
   &lt;regExpOnName regExp="NCEP NAM 12km" replaceString="NCEP NAM 12km model data" /&gt;
 &lt;/namer&gt;</pre>
+    <div id="note" class="info"><h4>Naming: New Name Does Not Affect Other Operations</h4>
+
+      <p>While renaming datasets can be used to make the resulting dataset name more human readable,
+        the renaming does not affect the behavior of any of the other datasetScan operations
+        (filtering, sorting, etc.). All datasetScan operations that use or modify the dataset name
+        use the name of the underlying dataset, e.g., the data file on disk.
+    </p>
+    </div>
 
     <p>More complex renaming is possible as well. The namer uses a
       <a href="http://www.regular-expressions.info/">regular expression</a> match on the dataset
@@ -739,11 +748,9 @@ Error {
       - Forecast hour: 018".
     </p>
 
-  </div>
-  <div id="subsection" class="exercise"><h3>Exercise: Naming the Suomi Datasets</h3>
+  <div id="expanded" class="exercise"><h3>Exercise: Naming the Suomi Datasets</h3>
 
-    <ol>
-      <li>
+    <p>
         Add a <code>namer</code> element to the Suomi <code>datasetScan</code>
         element that extracts the date/time from the file name and uses the
         date/time in generating a new name (similar to above)
@@ -751,12 +758,9 @@ Error {
         the value of the
         path attribute matches the one for the NAM_12km <code>datasetScan</code>
         element.
-      </li>
-    </ol>
-
-  </div>
-  
-  <div id="subsection"><h3>Adding <code>timeCoverage</code> Elements</h3>
+      </p>
+</div>
+  <h3>Adding <code>timeCoverage</code> Elements</h3>
 
     <p>
       A datasetScan element may contain an <code>addTimeCoverage</code>
@@ -781,7 +785,7 @@ Error {
       <li>Either the <code>datasetNameMatchPattern</code> or the
         <code>datasetPathMatchPattern</code> attribute gives a regular expression
         used to match on the dataset name or path, respectively. If a match is
-        found, a <strong>timeCoverage</strong> element is added to the dataset.
+        found, a <b>timeCoverage</b> element is added to the dataset.
         The match pattern should include <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html#cg"
                 >capturing groups</a> which allow the match to save substrings from the
         dataset name.
@@ -818,20 +822,18 @@ Error {
 &lt;/timeCoverage&gt;
 </pre>
 
-  </div>
-  <div id="subsection" class="exercise"><h3>Exercise: Add timeCoverage to the MADIS Dataset</h3>
+  <div id="expanded" class="exercise">
+   <h3>Exercise: Add timeCoverage to the MADIS Dataset</h3>
 
-    <ol>
-      <li>
+    <p>
         Add an <code>addTimeCoverage</code> element to the MADIS <code>datasetScan</code>
         element that extracts the date/time from the file name and uses the
         date/time to generate the <code>timeCoverage</code> element (similar to above).
-      </li>
-    </ol>
+      </p>
 
   </div>
 
-  <div id="subsection"><h3>Adding a "Latest" Proxy Datasets</h3>
+  <h3>Adding a "Latest" Proxy Datasets</h3>
 
     <p>With a real-time archive, it is convenient to define a "proxy" dataset that always points
       to the most recent dataset in a collection. Other types of proxy datasets may be useful as
@@ -882,16 +884,11 @@ Error {
       attribute defaults to "latest".<br>
     </p>
 
-</div>
 
 </div>
 
-<p>
-<hr width="100%">
-<address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
-    Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
-</address>
 
+  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
 
 </body>
 </html>

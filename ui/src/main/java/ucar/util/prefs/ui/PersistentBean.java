@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -84,11 +84,11 @@ public class PersistentBean implements PersistenceManager {
 
   public boolean getBoolean(String key, boolean def) {
     Object value = getObject( key);
-    return (value == null) ? def : ((Boolean) value).booleanValue();
+    return (value == null) ? def : (Boolean) value;
   }
 
   public void putBoolean(String key, boolean value) {
-    putObject( key, new Boolean(value));
+    putObject( key, Boolean.valueOf(value));
   }
 
   public int getInt(String key, int def) {
@@ -122,7 +122,7 @@ public class PersistentBean implements PersistenceManager {
   private class BeanMap {
     private Object bean;
     private PropertyMap pmap;
-    private HashMap beanMaps = new HashMap(); // nested BeanMap
+    private Map<String, BeanMap> beanMaps = new HashMap<String, BeanMap>(); // nested BeanMap
     private Object[] args = new Object[1];
 
     BeanMap( Object bean){
@@ -147,7 +147,7 @@ public class PersistentBean implements PersistenceManager {
       if (prop == null)
         throw new IllegalArgumentException("PersistentBean: no property named "+parentName);
 
-      BeanMap nested = (BeanMap) beanMaps.get( parentName);
+      BeanMap nested = beanMaps.get( parentName);
       if (nested == null) {
         // first time - create a nested BeanMap
         Object bean = getObject( parentName);
@@ -179,7 +179,7 @@ public class PersistentBean implements PersistenceManager {
       if (prop == null)
         throw new IllegalArgumentException("PersistentBean: no property named "+parentName);
 
-      BeanMap nested = (BeanMap) beanMaps.get( parentName);
+      BeanMap nested = beanMaps.get( parentName);
       if (nested == null) {
         // first time - create a nested BeanMap
         Object bean = getObject( parentName);
@@ -261,7 +261,6 @@ public class PersistentBean implements PersistenceManager {
         System.out.println("PersistentBean error write: "+name+" "+ee);
         ee.printStackTrace();
       }
-      return;
     }
   }
 
@@ -281,18 +280,18 @@ public class PersistentBean implements PersistenceManager {
   // one for each class
   private static class PropertyMap {
     private static boolean debugBeanParser = false, debugBeanParserDetail = false;
-    private static HashMap parsers = new HashMap();
+    private static Map<Class,PropertyMap> parsers = new HashMap<Class,PropertyMap>();
 
     static PropertyMap getParser( Class beanClass) {
       PropertyMap parser;
-      if (null == (parser = (PropertyMap) parsers.get( beanClass))) {
+      if (null == (parser = parsers.get( beanClass))) {
         parser = new PropertyMap( beanClass);
         parsers.put( beanClass, parser);
       }
       return parser;
     }
 
-    private LinkedHashMap properties = new LinkedHashMap();
+    private Map<String,PropertyDescriptor> properties = new LinkedHashMap<String,PropertyDescriptor>();
 
     PropertyMap( Class beanClass) {
 
@@ -309,14 +308,13 @@ public class PersistentBean implements PersistenceManager {
 
       // properties must have read method
       PropertyDescriptor[] pds = info.getPropertyDescriptors();
-      for (int i=0; i< pds.length; i++) {
-        PropertyDescriptor prop = pds[i];
+      for (PropertyDescriptor prop : pds) {
         Class propClass = prop.getPropertyType();
 
         if ((prop.getReadMethod() != null)) { // && (prop.getWriteMethod() != null)) {
-          properties.put( prop.getName(), prop);
-          if (debugBeanParser) System.out.println( " read/write property "+prop.getName()+" "+
-                propClass.getName()+" prim= "+propClass.isPrimitive());
+          properties.put(prop.getName(), prop);
+          if (debugBeanParser) System.out.println(" read/write property " + prop.getName() + " " +
+                  propClass.getName() + " prim= " + propClass.isPrimitive());
 
           /* if (!propClass.isPrimitive() && !(propClass == java.lang.String.class)) {
             PropertyMap nestedParser = PropertyMap.getParser(propClass);
@@ -332,21 +330,21 @@ public class PersistentBean implements PersistenceManager {
 
       if (debugBeanParserDetail) {
         System.out.println( " Properties:");
-        for (int i=0; i< pds.length; i++) {
-          String name = pds[i].getName();
-          Class type = pds[i].getPropertyType();
-          Method rm = pds[i].getReadMethod();
-          Method wm = pds[i].getWriteMethod();
-          System.out.println( "  "+name+" "+type.getName()+" read= "+rm+" write= "+wm+" "+pds[i].isPreferred());
-          System.out.println( "     displayname= "+pds[i].getDisplayName());
+        for (PropertyDescriptor pd : pds) {
+          String name = pd.getName();
+          Class type = pd.getPropertyType();
+          Method rm = pd.getReadMethod();
+          Method wm = pd.getWriteMethod();
+          System.out.println("  " + name + " " + type.getName() + " read= " + rm + " write= " + wm + " " + pd.isPreferred());
+          System.out.println("     displayname= " + pd.getDisplayName());
         }
       }
     }
 
-    Iterator getProperties() { return properties.values().iterator(); }
+    Iterator<PropertyDescriptor> getProperties() { return properties.values().iterator(); }
 
     PropertyDescriptor findProperty( String name) {
-      return (PropertyDescriptor) properties.get(name);
+      return properties.get(name);
     }
  }
 

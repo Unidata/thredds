@@ -7,7 +7,7 @@ import java.util.Date;
 import org.junit.Test;
 
 /**
- * Describe
+ * Test CalendarDateFormatter
  *
  * @author caron
  * @since 5/3/12

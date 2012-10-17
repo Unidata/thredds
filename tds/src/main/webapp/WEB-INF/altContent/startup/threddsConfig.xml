@@ -5,7 +5,7 @@
   <!-- see http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/ThreddsConfigXMLFile.html -->
   <serverInformation>
     <name>Initial TDS Installation</name>
-    <logoUrl>threddsIcon.gif</logoUrl>
+    <logoUrl>/thredds/threddsIcon.gif</logoUrl>
     <logoAltText>Initial TDS Installation</logoAltText>
 
     <abstract>Scientific Data</abstract>
@@ -210,16 +210,8 @@
 
    <!--
    Add a DataSource - essentially an IOSP with access to Servlet request parameters
-   <DatsetSource>my.package.DatsetSourceImpl</DatsetSource>
+   <datasetSource>my.package.DatsetSourceImpl</datasetSource>
    -->
 
-  <!--
-  Modify Logging parameters. Normally use log4j.xml
-  <Logging>
-    <DatePattern></DatePattern>
-    <MaxFileSize></MaxFileSize>
-    <MaxFiles></MaxFiles>
-  </Logging>
-  -->
 
 </threddsConfig>

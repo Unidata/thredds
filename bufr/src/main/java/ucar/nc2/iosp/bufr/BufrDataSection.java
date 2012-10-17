@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -32,14 +32,17 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * Represents  Section 4 of a BUFR message.
  * @author caron
  * @since May 10, 2008
  */
+@Immutable
 public class BufrDataSection {
-  private long dataPos;
-  private int dataLength;
+  private final long dataPos;
+  private final int dataLength;
 
   public BufrDataSection(long dataPos, int dataLength) {
     this.dataPos = dataPos;

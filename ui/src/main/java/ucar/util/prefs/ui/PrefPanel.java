@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -33,6 +33,7 @@
 
 package ucar.util.prefs.ui;
 
+import java.util.List;
 import java.util.prefs.Preferences;
 import ucar.util.prefs.*;
 
@@ -102,21 +103,20 @@ import javax.swing.event.EventListenerList;
  */
 
 public class PrefPanel extends JPanel {
-  static private KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+  //static private KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 
   private String name;
   private Preferences prefs;
   private PersistenceManager storeData;
-  private String helpTarget = null;
 
   private boolean finished = false;
-  private HashMap flds = new HashMap(40);
+  private HashMap<String, Field> flds = new HashMap<String, Field>(40);
   // private ArrayList currentComps, colList; // track columns of components
-  private ArrayList layoutComponents; // use with form layout
+  private List<LayoutComponent> layoutComponents; // use with form layout
   private int cursorRow = 0, cursorCol = 0; // current row and column
 
   private JPanel mainPanel;
-  private ArrayList auxButtons = new ArrayList();
+  private List<JComponent> auxButtons = new ArrayList<JComponent>();
 
   // event handling
   private EventListenerList listenerList = new EventListenerList();
@@ -144,7 +144,7 @@ public class PrefPanel extends JPanel {
     //colList = new ArrayList( 5);
     //currentComps = new ArrayList( 10);
     //colList.add( currentComps);
-    layoutComponents = new ArrayList(20);
+    layoutComponents = new ArrayList<LayoutComponent>(20);
 
     /* manager.addPropertyChangeListener( "focusOwner", new PropertyChangeListener() {
        public void propertyChange(PropertyChangeEvent evt) {
@@ -201,9 +201,8 @@ public class PrefPanel extends JPanel {
   public boolean accept() {
     StringBuffer buff = new StringBuffer();
     boolean ok = true;
-    Iterator iter = flds.values().iterator();
-    while (iter.hasNext())
-      ok &= ((Field) iter.next()).accept(buff);
+    for (Object o : flds.values())
+      ok &= ((Field) o).accept(buff);
 
     if (!ok) {
       try { JOptionPane.showMessageDialog(PrefPanel.findActiveFrame(), buff.toString()); }
@@ -227,19 +226,20 @@ public class PrefPanel extends JPanel {
 
   /**
    * Set enabled on all the fields in the prefPanel
-   * @param enable
+   * @param enable enable if true
    */
   public void setEnabled( boolean enable) {
-    Iterator iter = flds.values().iterator();
-    while (iter.hasNext())
-      ((Field) iter.next()).setEnabled(enable);
+    for (Field field : flds.values())
+      field.setEnabled(enable);
   }
 
   /** Return the name of the PrefPanel. */
   public String getName() { return name; }
 
   /** Iterator over the fields */
-  public Iterator getFields() { return flds.values().iterator(); }
+  public Iterator<Field> getFields() {
+    return flds.values().iterator();
+  }
 
   /**
    * Find the field with the specified name.
@@ -247,7 +247,7 @@ public class PrefPanel extends JPanel {
    * @return Field or null if not found
    */
   public Field getField(String name) {
-    Field fld = (Field) flds.get(name);
+    Field fld = flds.get(name);
     if (fld == null) return null;
     return (fld instanceof FieldResizable) ? ((FieldResizable)fld).getDelegate() : fld;
   }
@@ -305,7 +305,7 @@ public class PrefPanel extends JPanel {
 
   public Field.BeanTable addBeanTableField(String fldName, String label, java.util.ArrayList beans, Class beanClass,
                int col, int row, String constraint) {
-    Field.BeanTable fld = new Field.BeanTable(fldName, label, beans, beanClass, (PreferencesExt) prefs, (PersistenceManager) storeData);
+    Field.BeanTable fld = new Field.BeanTable(fldName, label, beans, beanClass, (PreferencesExt) prefs, storeData);
     addField( fld, col, row, constraint);
     return fld;
   }
@@ -391,14 +391,14 @@ public class PrefPanel extends JPanel {
 
   public Field.EnumCombo addEnumComboField(String fldName, String label, java.util.Collection defValues,
                boolean editable, int col, int row, String constraint) {
-    Field.EnumCombo fld = new Field.EnumCombo(fldName, label, defValues, (PersistenceManager) storeData);
+    Field.EnumCombo fld = new Field.EnumCombo(fldName, label, defValues, storeData);
     addField( fld, col, row, constraint);
     fld.setEditable( editable);
     return fld;
   }
 
   public Field.EnumCombo addEnumComboField(String fldName, String label, java.util.Collection defValues, boolean editable) {
-    Field.EnumCombo fld = new Field.EnumCombo(fldName, label, defValues, (PersistenceManager) storeData);
+    Field.EnumCombo fld = new Field.EnumCombo(fldName, label, defValues, storeData);
     addField( fld);
     fld.setEditable( editable);
     return fld;
@@ -484,7 +484,7 @@ public class PrefPanel extends JPanel {
    * @param editable whether the user can add new entries the list to select from.
    */
   public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection defValues, int nKeep, boolean editable) {
-    Field.TextCombo fld = new Field.TextCombo(fldName, label, defValues, nKeep, (PersistenceManager) storeData);
+    Field.TextCombo fld = new Field.TextCombo(fldName, label, defValues, nKeep, storeData);
     addField( fld);
     fld.setEditable( editable);
     return fld;
@@ -492,7 +492,7 @@ public class PrefPanel extends JPanel {
 
   public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection defValues, int nKeep,
                boolean editable, int col, int row, String constraint) {
-    Field.TextCombo fld = new Field.TextCombo(fldName, label, defValues, nKeep, (PersistenceManager) storeData);
+    Field.TextCombo fld = new Field.TextCombo(fldName, label, defValues, nKeep, storeData);
     addField( fld, col, row, constraint);
     fld.setEditable( editable);
     return fld;
@@ -507,14 +507,14 @@ public class PrefPanel extends JPanel {
    * @param nrows number of rows
    */
   public Field.TextArea addTextAreaField(String fldName, String label, String def, int nrows) {
-    Field.TextArea fld = new Field.TextArea(fldName, label, def, nrows, (PersistenceManager) storeData);
+    Field.TextArea fld = new Field.TextArea(fldName, label, def, nrows, storeData);
     addField( fld);
     return fld;
   }
 
   public Field.TextArea addTextAreaField(String fldName, String label, String def, int nrows,
                                          int col, int row, String constraint) {
-    Field.TextArea fld = new Field.TextArea(fldName, label, def, nrows, (PersistenceManager) storeData);
+    Field.TextArea fld = new Field.TextArea(fldName, label, def, nrows, storeData);
     addField( fld, col, row, constraint);
     return fld;
   }
@@ -738,14 +738,12 @@ public class PrefPanel extends JPanel {
     if (finished)
       throw new IllegalStateException("PrefPanel "+name+": already called finish()");  
 
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
 
     // column layout, first sort by col
-    Collections.sort(layoutComponents, new Comparator() {
-      public int compare(Object o1, Object o2) {
-        LayoutComponent lc1 = (LayoutComponent) o1;
-        LayoutComponent lc2 = (LayoutComponent) o2;
-        return lc1.col - lc2.col;
+    Collections.sort(layoutComponents, new Comparator<LayoutComponent>() {
+      public int compare(LayoutComponent o1, LayoutComponent o2) {
+        return o1.col - o2.col;
       }
       public boolean equals(Object o1) { return o1 == this; }
     });
@@ -772,11 +770,9 @@ public class PrefPanel extends JPanel {
     int ncols = 2*currCol;
 
     // row layout, first sort by row
-    Collections.sort(layoutComponents, new Comparator() {
-      public int compare(Object o1, Object o2) {
-        LayoutComponent lc1 = (LayoutComponent) o1;
-        LayoutComponent lc2 = (LayoutComponent) o2;
-        return lc1.row - lc2.row;
+    Collections.sort(layoutComponents, new Comparator<LayoutComponent>() {
+      public int compare(LayoutComponent o1, LayoutComponent o2) {
+        return o1.row - o2.row;
       }
       public boolean equals(Object o1) { return o1 == this; }
     });
@@ -849,8 +845,8 @@ public class PrefPanel extends JPanel {
     JPanel buttPanel = new JPanel();
     JButton acceptButton = new JButton("Apply");
     buttPanel.add(acceptButton, null);
-    for (int i=0; i<auxButtons.size(); i++)
-      buttPanel.add((JComponent) auxButtons.get(i), null);
+    for (JComponent auxButton : auxButtons)
+      buttPanel.add( auxButton, null);
 
       // button listeners
     acceptButton.addActionListener(new ActionListener() {
@@ -902,10 +898,6 @@ public class PrefPanel extends JPanel {
       if (comp instanceof Field) return ((Field)comp).getName();
       return comp.getClass().getName();
     }
-
-  }
-
-  public class TabbedPanel {
 
   }
 
@@ -1054,11 +1046,9 @@ public class PrefPanel extends JPanel {
   // thanks to Heinz M. Kabutz
   static public Frame findActiveFrame() {
     Frame[] frames = JFrame.getFrames();
-    for (int i = 0; i < frames.length; i++) {
-      Frame frame = frames[i];
-      if (frame.isVisible()) {
+    for (Frame frame : frames) {
+      if (frame.isVisible())
         return frame;
-      }
     }
     return null;
   }

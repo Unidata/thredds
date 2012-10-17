@@ -487,6 +487,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     result.addDataset(top);
 
     // services need to be local
+    result.addService(InvService.latest);
     result.addService(orgService);
     top.getLocalMetadataInheritable().setServiceName(orgService.getName());
 

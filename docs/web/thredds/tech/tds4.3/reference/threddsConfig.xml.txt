@@ -5,7 +5,7 @@
   <!-- see http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/ThreddsConfigXMLFile.html -->
   <serverInformation>
     <name>Initial TDS Installation</name>
-    <logoUrl>threddsIcon.gif</logoUrl>
+    <logoUrl>/thredds/threddsIcon.gif</logoUrl>
     <logoAltText>Initial TDS Installation</logoAltText>
 
     <abstract>Scientific Data</abstract>
@@ -50,6 +50,7 @@
      * -->
     <standardCssUrl>tds.css</standardCssUrl>
     <catalogCssUrl>tdsCat.css</catalogCssUrl>
+    <openDapCssUrl>tdsDap.css</openDapCssUrl>
 
     <!--
      * The URLs (relative to "/thredds/") and alternate text for both
@@ -143,8 +144,6 @@
     <allow>false</allow>
     <scour>10 min</scour>
     <maxAge>-1 min</maxAge>
-    <metarDataDir>/opt/tomcat/content/thredds/public/stn/</metarDataDir>
-    <metarRawDir>/data/ldm/pub/decoded/netcdf/surface/metar/</metarRawDir>
   </NetcdfSubsetService>
   -->
 
@@ -176,6 +175,13 @@
   </WMS>
   -->
 
+  <!--
+  <NCISO>
+    <ncmlAllow>false</ncmlAllow>
+    <uddcAllow>false</uddcAllow>
+    <isoAllow>false</isoAllow>
+  </NCISO>
+  -->
 
   <!-- CatalogGen service is off by default.
   <CatalogGen>

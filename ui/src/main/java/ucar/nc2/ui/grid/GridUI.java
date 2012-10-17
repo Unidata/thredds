@@ -196,9 +196,9 @@ public class GridUI extends JPanel {
     store.putBoolean( "navToolbarAction", ((Boolean)navToolbarAction.getValue(BAMutil.STATE)).booleanValue());
     store.putBoolean( "moveToolbarAction", ((Boolean)moveToolbarAction.getValue(BAMutil.STATE)).booleanValue());
 
-    /* if (projManager != null)
+    if (projManager != null)
       projManager.storePersistentData();
-    if (csManager != null)
+    /* if (csManager != null)
       csManager.storePersistentData();
     if (sysConfigDialog != null)
       sysConfigDialog.storePersistentData(); */
@@ -405,7 +405,8 @@ public class GridUI extends JPanel {
       // Configure
     chooseProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        getProjectionManager().setVisible();
+
+        //getProjectionManager().setVisible();
       }
     };
     BAMutil.setActionProperties( chooseProjectionAction, null, "Projection Manager...", false, 'P', 0);
@@ -419,7 +420,7 @@ public class GridUI extends JPanel {
         //if (debug) System.out.println(" GV save projection "+ proj);
 
         // projManage.setMap(renderAll.get("Map"));   LOOK!
-        projManager.saveProjection( proj);
+        //projManager.saveProjection( proj);
       }
     };
     BAMutil.setActionProperties( saveCurrentProjectionAction, null, "save Current Projection", false, 'S', 0);
