@@ -28,10 +28,10 @@
            xmlns:xlink="http://www.w3.org/1999/xlink"
            version="1.0.2"&gt;
 <span style="font-weight: bold;">1)</span>    &lt;service name="<span style="font-weight: bold;">odap</span>" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
-      &lt;dataset name="TDS Tutorial: example 1"&gt;
+<span style="font-weight: bold;">2)</span>      &lt;dataset name="TDS Tutorial: example 1"&gt;
 
 <span style="font-weight: bold;">3)</span>        &lt;dataset name="TDS Tutorial: example data 1" <span style="font-weight: bold;">urlPath="test/example1.nc"</span> &gt;
-<span style="font-weight: bold;">2)</span>            &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
+            &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
           &lt;/dataset&gt;
           &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" &gt;
               &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
@@ -40,7 +40,7 @@
               &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
           &lt;/dataset&gt;
 
-          &lt;catalogRef xlink:title="My Other Catalog"
+<span style="font-weight: bold;">4)</span>        &lt;catalogRef xlink:title="My Other Catalog"
                       xlink:href="myOtherCatalog.xml" /&gt;
           &lt;catalogRef xlink:title="Far Away Univ catalog"
                       xlink:href="http://www.farAwayU.edu/thredds/catalog.xml" /&gt;
@@ -49,15 +49,11 @@
 </pre>
 
     <p>Notes:</p>
-    <ul>
-      <li>The service element defines an OPeNDAP service and has the
-        name "odap". </li>
-      <li>The first dataset is a container dataset.</li>
-      <li>Each child dataset has an access method due to
-        its urlPath attribute and child serviceName element.
-      </li>
-      <li>The catalogRef elements link to a relative catalog and a
-        remote catalog.</li>
+    <ul style="list-style: none">
+      <li><span style="font-weight: bold;">1)</span>  The service element defines an OPeNDAP service and has the name "odap".</li>
+      <li><span style="font-weight: bold;">2)</span>  The first dataset is a container dataset.</li>
+      <li><span style="font-weight: bold;">3)</span>  Each child dataset has an access method due to its urlPath attribute and child serviceName element.</li>
+      <li><span style="font-weight: bold;">4)</span>  The catalogRef elements link to a relative catalog and a remote catalog.</li>
     </ul>
 
     <h4>Constructing an access URL</h4>
@@ -79,11 +75,11 @@
       <li>Append the value of the urlPath attribute to the base
         service URL:
 <pre>
-http://hostname:port/thredds/dodsC/model/test/example3.nc
-|                   |             |                      |
-|&lt;---  server   ---&gt;|&lt;-----------&gt;|&lt;--------------------&gt;|
-                            |               |
-          service basePath -|               |- dataset urlPath
+http://hostname:port/thredds/dodsC/test/example3.nc
+|                   |             |                |
+|&lt;---  server   ---&gt;|&lt;-----------&gt;|&lt;--------------&gt;|
+                            |             |
+          service basePath -|             |- dataset urlPath
 </pre>
       </li>
     </ol>
@@ -99,15 +95,15 @@ http://hostname:port/thredds/dodsC/model/test/example3.nc
   &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
            xmlns:xlink="http://www.w3.org/1999/xlink"
            version="1.0.2"&gt;
-      &lt;service name="<span style="font-weight: bold;">odap</span>" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
+      &lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
       &lt;dataset name="TDS Tutorial: example 2"&gt;
-          &lt;metadata inherited="true"&gt;
-<span style="font-weight: bold;">2)</span>             &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
+          &lt;metadata <span style="font-weight: bold;">inherited</span>="true"&gt;
+<span style="font-weight: bold;">1)</span>             &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
           &lt;/metadata&gt;
 
-<span style="font-weight: bold;">3)</span>        &lt;dataset name="TDS Tutorial: example data 1" <span style="font-weight: bold;">urlPath="test/example1.nc"</span> /&gt;
-<span style="font-weight: bold;">3)</span>        &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
-<span style="font-weight: bold;">3)</span>        &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
+<span style="font-weight: bold;">2)</span>        &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
+<span style="font-weight: bold;">2)</span>        &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
+<span style="font-weight: bold;">2)</span>        &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
 
           &lt;catalogRef xlink:title="My Other Catalog"
                       xlink:href="myOtherCatalog.xml" /&gt;
@@ -118,9 +114,9 @@ http://hostname:port/thredds/dodsC/model/test/example3.nc
 </pre>
 
     <p>Notes:</p>
-    <ul>
-      <li>The serviceName element is inherited by each child dataset from the containing
-        dataset.</li>
+    <ul style="list-style: none">
+        <li><span style="font-weight: bold;">1)</span>  The serviceName element is <span style="font-weight: bold;">inherited</span> by each child dataset from the containing dataset.</li>
+        <li><span style="font-weight: bold;">2)</span>  These three child datasets all inherit the <span style="font-weight: bold;">odap</span> serviceName element.</li>
     </ul>
 
 
@@ -210,7 +206,7 @@ listing could be served with the following:</p>
 ...
       &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-<b>2)</b>    &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
+      &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
                    path="<b>my/test/all</b>" location="/my/data/testdata"&gt;
           &lt;metadata inherited="true"&gt;
               &lt;serviceName&gt;odap&lt;/serviceName&gt;
@@ -221,7 +217,7 @@ listing could be served with the following:</p>
 <pre>...
       &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-<b>2)</b>    &lt;catalogRef xlink:title="Test all files in a directory" ID="testDatasetScan"
+      &lt;catalogRef xlink:title="Test all files in a directory" ID="testDatasetScan"
                   xlink:href="/thredds/catalog/<b>my/test/all</b>/catalog.xml" name="" /&gt;
 ...</pre>
 <p>The generation of the catalog referenced by the&nbsp;<code>catalogRef</code>
@@ -327,24 +323,24 @@ etc. We will go into more detail on this later.</p>
            xmlns:xlink="http://www.w3.org/1999/xlink" &gt;
       &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
-<b>1)</b>    &lt;datasetRoot path="test" location="<b>content</b>/testdata/" /&gt;
+      &lt;datasetRoot path="test" location="<b>content</b>/testdata/" /&gt;
 
       &lt;dataset name="Test Single Dataset" ID="testDataset"
                serviceName="thisDODS" urlPath="test/testData.nc" /&gt;
 
       &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
-<b>1)</b>             path="testAll" location="<b>content</b>/testdata"&gt;
+               path="testAll" location="<b>content</b>/testdata"&gt;
           &lt;metadata inherited="true"&gt;
               &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
           &lt;/metadata&gt;
 
           &lt;filter&gt;
-<b>2) </b>          &lt;include <b>wildcard="*.nc"</b> /&gt;
+             &lt;include <b>wildcard="*.nc"</b> /&gt;
           &lt;/filter&gt;
 
       &lt;/datasetScan&gt;
     
-<b>3) </b>   &lt;catalogRef xlink:title="Test Enhanced Catalog"
+      &lt;catalogRef xlink:title="Test Enhanced Catalog"
                   xlink:href="enhancedCatalog.xml" name ="" /&gt;
     &lt;/catalog&gt;
 </pre>
@@ -432,8 +428,7 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
   </div>
 </div>
 
-  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
+   <p class="notice">This document is maintained by Unidata, and was last updated October 2012.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 
-
-</body>
+  </body>
 </html>
