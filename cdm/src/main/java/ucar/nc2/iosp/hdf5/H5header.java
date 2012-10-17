@@ -49,7 +49,6 @@ import java.text.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.*;
-import java.nio.charset.Charset;
 
 /**
  * Read all of the metadata of an HD5 file.
@@ -141,6 +140,7 @@ public class H5header {
     Q:/cdmUnitTest/formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4
    */
   boolean isNetcdf4;
+  Map<Integer, DataObjectFacade> dimIds = null; // if isNetcdf4 and all dimension scales have _Netcdf4Dimid attribute
 
   private H5Group rootGroup;
   private Map<String, DataObjectFacade> symlinkMap = new HashMap<String, DataObjectFacade>(200);
@@ -401,6 +401,28 @@ public class H5header {
       if (facade.isVariable)
         findDimensionScales(ncGroup, h5group, facade);
     }
+
+    // deal with multidim dimension scales - ugh!
+    if (dimIds != null) {
+      for (DataObjectFacade dimscale : dimIds.values()) {
+        if (dimscale.dobj.mds.ndims > 1) {
+          StringBuilder sbuff = new StringBuilder();
+          Attribute att = dimscale.netcdf4CoordinatesAtt;
+          for (int i=0; i<att.getLength(); i++) {
+            int id = att.getNumericValue(i).intValue();
+            DataObjectFacade ds2 = dimIds.get(id);
+            String name = ds2.getName();
+            int pos = name.lastIndexOf('/');
+            String dimName = (pos >= 0) ? name.substring(pos + 1) : name;
+            sbuff.append(dimName);
+            sbuff.append(" ");
+          }
+          dimscale.dimList = sbuff.toString();
+        }
+      }
+    }
+
+
     // look for references to dimension scales
     for (DataObjectFacade facade : h5group.nestedObjects) {
       if (facade.isVariable)
@@ -519,6 +541,7 @@ public class H5header {
   */
 
   // find the Dimension Scale objects, turn them into shared dimensions
+  // always has attribute CLASS = "DIMENSION_SCALE"
   // note that we dont bother looking at their REFERENCE_LIST
   private void findDimensionScales(ucar.nc2.Group g, H5Group h5group, DataObjectFacade facade) throws IOException {
     Iterator<MessageAttribute> iter = facade.dobj.attributes.iterator();
@@ -527,25 +550,72 @@ public class H5header {
       if (matt.name.equals(HDF5_CLASS)) {
         Attribute att = makeAttribute(matt);
         String val = att.getStringValue();
-        if (val.equals(HDF5_DIMENSION_SCALE)) { // create a dimension
-          int dimIndex = (facade.dobj.mds.ndims > 1) ? 0 : findCoordinateDimensionIndex(facade.dobj.attributes.iterator());
-          facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[dimIndex], facade.dobj.mds.maxLength[dimIndex] == -1);
-          if (! h5iosp.includeOriginalAttributes) iter.remove();
-          if (debugDimensionScales) System.out.printf("Found dimScale %s for group '%s' matt=%s %n",
-                  facade.dimList, g.getName(), matt);
+        if (val.equals(HDF5_DIMENSION_SCALE)) {
+          findNetcdf4DimidAttribute(facade);
+
+          if (facade.dobj.mds.ndims == 1) { // 1D dimension scale
+            // create a dimension
+            facade.dimList = addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[0], facade.dobj.mds.maxLength[0] == -1);
+            if (! h5iosp.includeOriginalAttributes) iter.remove();
+            if (debugDimensionScales)
+              System.out.printf("Found dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getName(), matt);
+
+          } else {  // multiD dimension scale
+            int dimIndex = findCoordinateDimensionIndex(facade);
+            addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[dimIndex], facade.dobj.mds.maxLength[dimIndex] == -1);
+            if (! h5iosp.includeOriginalAttributes) iter.remove();
+            if (debugDimensionScales)
+              System.out.printf("Found multidim dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getName(), matt);
+          }
+
         }
       }
     }
   }
 
-  private int findCoordinateDimensionIndex(Iterator<MessageAttribute> iter) throws IOException {
-    while (iter.hasNext()) {
-      MessageAttribute matt = iter.next();
-      if (matt.name.equals(Nc4.NETCDF4_COORDINATES)) {
-        Attribute att = makeAttribute(matt);
+  private void findNetcdf4DimidAttribute(DataObjectFacade facade) throws IOException {
+    for (MessageAttribute matt : facade.dobj.attributes) {
+      if (matt.name.equals(Nc4.NETCDF4_DIMID)) {
+        if (dimIds == null) dimIds = new HashMap<Integer, DataObjectFacade>();
+        Attribute att_dimid = makeAttribute(matt);
+        Integer dimid = (Integer) att_dimid.getNumericValue();
+        dimIds.put(dimid, facade);
+        return;
       }
     }
-    return 0; // bail out until we clarify
+    if (dimIds != null) // supposed to all have them
+      log.warn("Missing "+Nc4.NETCDF4_DIMID+" attribute on "+facade.getName());
+  }
+
+
+  /* the case of multidimensional dimension scale. We need to identify which index to use as the dimension length.
+     the pattern is, eg:
+      _Netcdf4Coordinates = 6, 4
+      _Netcdf4Dimid = 6
+  */
+  private int findCoordinateDimensionIndex(DataObjectFacade facade) throws IOException {
+    Attribute att_coord = null;
+    Attribute att_dimid = null;
+    for (MessageAttribute matt : facade.dobj.attributes) {
+      if (matt.name.equals(Nc4.NETCDF4_COORDINATES))
+        att_coord = makeAttribute(matt);
+      if (matt.name.equals(Nc4.NETCDF4_DIMID))
+        att_dimid = makeAttribute(matt);
+    }
+    if (att_coord != null && att_dimid != null) {
+      facade.netcdf4CoordinatesAtt = att_coord;
+      Integer want = (Integer) att_dimid.getNumericValue();
+      for (int i=0; i<att_coord.getLength(); i++) {
+        Integer got = (Integer) att_dimid.getNumericValue(i);
+        if (want.equals(got))
+          return i;
+      }
+      log.warn("Multidimension dimension scale attributes "+Nc4.NETCDF4_COORDINATES+" and "+Nc4.NETCDF4_DIMID+" dont match. Assume Dimension is index 0");
+      return 0;
+    }
+
+    log.warn("Multidimension dimension scale doesnt have "+Nc4.NETCDF4_COORDINATES+" and "+Nc4.NETCDF4_DIMID+" attributes. Assume Dimension is index 0");
+    return 0;
   }
 
   // look for references to dimension scales, ie the variables that use them
@@ -595,7 +665,7 @@ public class H5header {
 
   private String addDimension(ucar.nc2.Group g, H5Group h5group, String name, int length, boolean isUnlimited) {
     int pos = name.lastIndexOf('/');
-    String dimName = (pos > 0) ? name.substring(pos + 1) : name;
+    String dimName = (pos >= 0) ? name.substring(pos + 1) : name;
 
     Dimension d = h5group.dimMap.get(dimName); // first look in current group
     //if (d == null)
@@ -619,7 +689,7 @@ public class H5header {
   // look for unlimited dimensions without dimension scale - must get length from the variable
   private String extendDimension(ucar.nc2.Group g, H5Group h5group, String name, int length) {
     int pos = name.lastIndexOf('/');
-    String dimName = (pos > 0) ? name.substring(pos + 1) : name;
+    String dimName = (pos >= 0) ? name.substring(pos + 1) : name;
 
     Dimension d = h5group.dimMap.get(dimName); // first look in current group
     if (d == null)
@@ -649,7 +719,7 @@ public class H5header {
     for  (MessageAttribute matt : attList) {
       if (matt.name.equals(Nc4.NETCDF4_COORDINATES) || matt.name.equals(Nc4.NETCDF4_DIMID) || matt.name.equals(Nc4.NETCDF4_STRICT)) {
         isNetcdf4 = true;
-      } else {
+      } else  {
         result.add(matt);
       }
     }
@@ -1873,6 +1943,9 @@ public class H5header {
 
     // or a link
     String linkName = null;
+
+    // _Netcdf4Coordinates att.
+    Attribute netcdf4CoordinatesAtt;
 
     DataObjectFacade(H5Group parent, String name, String linkName) {
       this.parent = parent;
