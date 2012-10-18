@@ -16,9 +16,10 @@
 
   <p>The TDS configuration file (<code>content/thredds/threddsConfig.xml</code>) allows the TDS
     administrator to set a number of parameters that control the behavior of the TDS. Most of these
-    parameters will default to reasonable default values. However, a number of them allow you to
+    parameters will be set with reasonable default values. However, a number of them allow you to
     describe your server, provide contact information, and change the "theme" of server generated
-    HTML pages.
+    HTML pages, so unless you want your server to be called "Initial TDS Installation", maintained
+    by Support at "My Group", then you <b>will</b> need to change some of these settings.
   </p>
 
 
@@ -58,7 +59,7 @@
 
     <h4>Where is Server Information Used</h4>
     <ul>
-      <li>The header of all TDS generated catalog HTML pages. Examples:
+      <li>The headers and footers of all TDS generated catalog HTML pages. Examples:
         <ul>
           <li><a href="http://localhost:8080/thredds/catalog.html">
             http://localhost:8080/thredds/catalog.html</a></li>
@@ -102,12 +103,12 @@
       </li>
       <li>The three supported server information documents:
         <ul>
-          <li>An HTML document: <a href="http://localhost:8080/thredds/serverInfo.html">
-            http://localhost:8080/thredds/serverInfo.html</a></li>
-          <li>An XML document: <a href="http://localhost:8080/thredds/serverInfo.xml">
-            http://localhost:8080/thredds/serverInfo.xml</a> and</li>
-          <li>A version only text document: <a href="http://localhost:8080/thredds/serverVersion.txt">
-            http://localhost:8080/thredds/serverVersion.txt</a></li>
+          <li>An HTML document: <a href="http://motherlode.ucar.edu:8080/thredds/serverInfo.html">
+            http://motherlode.ucar.edu:8080/thredds/serverInfo.html</a></li>
+          <li>An XML document: <a href="http://motherlode.ucar.edu:8080/thredds/serverInfo.xml">
+            http://motherlode.ucar.edu:8080/thredds/serverInfo.xml</a> and</li>
+          <li>A version only text document: <a href="http://motherlode.ucar.edu:8080/thredds/serverVersion.txt">
+            http://motherlode.ucar.edu:8080/thredds/serverVersion.txt</a></li>
         </ul>
       </li>
     </ul>
@@ -181,8 +182,7 @@
 </div>
 
 
-  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
-
+  <p class="notice">This document is maintained by Unidata, and was last updated October 2012.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 
 
   </body>

@@ -3569,9 +3569,10 @@ class Nidsheader{
             resultLength = inflater.inflate(uncomp, offset, 4000);
           }
           catch (DataFormatException ex) {
-            System.out.println("ERROR on inflation "+ex.getMessage());
-            ex.printStackTrace();
-            throw new IOException( ex.getMessage());
+            //System.out.println("ERROR on inflation "+ex.getMessage());
+            //ex.printStackTrace();
+            log.error("nids Inflater", ex);
+            throw new IOException( ex.getMessage(), ex);
           }
           offset = offset + resultLength;
           result = result + resultLength;
