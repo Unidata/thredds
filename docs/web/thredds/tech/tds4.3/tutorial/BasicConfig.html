@@ -10,70 +10,63 @@
 
    <h1>Basic TDS Configuration</h1>
 
+   <div id="section">
+    <h2><a name="CatReview">THREDDS Catalog Review</a></h2>
 
-<div id="section">
-<h2><a name="CatReview">THREDDS Catalog Review</a></h2>
+    <p>THREDDS catalogs collect, organize, and describe accessible datasets. They provide a hierarchical structure for organizing the datasets as well as an access method (URL) and a human understandable name for each dataset. Further descriptive information about each      dataset can also be added.</p>
 
-    <p> THREDDS catalogs collect, organize, and describe accessible datasets. They provide a
-      hierarchical structure for organizing the datasets as well as an access method (URL) and a
-      human understandable name for each dataset. Further descriptive information about each
-      dataset can also be added.
-    </p>
-
- <h3>Example Catalog</h3>
+    <h3>Example Catalog</h3>
 
 <pre>
   &lt;?xml version='1.0' encoding='UTF-8'?&gt;
   &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
            xmlns:xlink="http://www.w3.org/1999/xlink"
            version="1.0.2"&gt;
-<span style="font-weight: bold;">1)</span>    &lt;service name="<span style="font-weight: bold;">odap</span>" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
-<span style="font-weight: bold;">2)</span>      &lt;dataset name="TDS Tutorial: example 1"&gt;
+<b>1)</b>    &lt;service name="<b>odap</b>" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
+<b>2)</b>      &lt;dataset name="TDS Tutorial: example 1"&gt;
 
-<span style="font-weight: bold;">3)</span>        &lt;dataset name="TDS Tutorial: example data 1" <span style="font-weight: bold;">urlPath="test/example1.nc"</span> &gt;
-            &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
+<b>3)</b>        &lt;dataset name="TDS Tutorial: example data 1" <b>urlPath="test/example1.nc"</b> &gt;
+            &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
           &lt;/dataset&gt;
           &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" &gt;
-              &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
+              &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
           &lt;/dataset&gt;
           &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" &gt;
-              &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
+              &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
           &lt;/dataset&gt;
 
-<span style="font-weight: bold;">4)</span>        &lt;catalogRef xlink:title="My Other Catalog"
+<b>4)</b>        &lt;catalogRef xlink:title="My Other Catalog"
                       xlink:href="myOtherCatalog.xml" /&gt;
           &lt;catalogRef xlink:title="Far Away Univ catalog"
                       xlink:href="http://www.farAwayU.edu/thredds/catalog.xml" /&gt;
       &lt;/dataset&gt;
   &lt;/catalog&gt;
 </pre>
+      <div id="expanded" class="troubleshooting">
+       <h4>Notes</h4>
+       <p><b>1)</b>  The service element defines an OPeNDAP service and has the name "odap".</p>
+       <p><b>2)</b>  The first dataset is a container dataset.</li>
+       <p><b>3)</b>  Each child dataset has an access method due to its urlPath attribute and child serviceName element.</p>
+       <p><b>4)</b>  The catalogRef elements link to a relative catalog and a remote catalog.</p>
+      </div>
 
-    <p>Notes:</p>
-    <ul style="list-style: none">
-      <li><span style="font-weight: bold;">1)</span>  The service element defines an OPeNDAP service and has the name "odap".</li>
-      <li><span style="font-weight: bold;">2)</span>  The first dataset is a container dataset.</li>
-      <li><span style="font-weight: bold;">3)</span>  Each child dataset has an access method due to its urlPath attribute and child serviceName element.</li>
-      <li><span style="font-weight: bold;">4)</span>  The catalogRef elements link to a relative catalog and a remote catalog.</li>
-    </ul>
-
-    <h4>Constructing an access URL</h4>
-    <ol>
-      <li>Find the service element referenced by the dataset:
-<pre>&lt;service name="odap" serviceType="OPENDAP" base="<b>/thredds/dodsC/</b>" /&gt;</pre>
-      </li>
-      <li>Get the base URL of the service element:
-<pre>/thredds/dodsC/</pre>
-      </li>
-      <li>If it is a relative URL, use the catalog's URL:
-<pre><b>http://hostname:port</b>/thredds/catalog.xml      <var>// Catalog URL</var></pre>
+      <h4>Constructing an access URL</h4>
+      <ol>
+       <li>Find the service element referenced by the dataset:
+        <pre>&lt;service name="odap" serviceType="OPENDAP" base="<b>/thredds/dodsC/</b>" /&gt;</pre>
+       </li>
+       <li>Get the base URL of the service element:
+         <pre>/thredds/dodsC/</pre>
+       </li>
+       <li>If it is a relative URL, use the catalog's URL:
+        <pre><b>http://hostname:port</b>/thredds/catalog.xml      <var>// Catalog URL</var></pre>
         to resolve the base URL:
-<pre>http://hostname:port/thredds/dodsC/           <var>// Service base URL</var></pre>
-      </li>
-      <li>Find the urlPath attribute for the accessible dataset:
-<pre>&lt;dataset name="TDS Tutorial: example data 3" urlPath="<b>test/example3.nc</b>" &gt;</pre>        
-      </li>
-      <li>Append the value of the urlPath attribute to the base
-        service URL:
+        <pre>http://hostname:port/thredds/dodsC/           <var>// Service base URL</var></pre>
+       </li>
+       <li>Find the urlPath attribute for the accessible dataset:
+        <pre>&lt;dataset name="TDS Tutorial: example data 3" urlPath="<b>test/example3.nc</b>" &gt;</pre>        
+       </li>
+       <li>Append the value of the urlPath attribute to the base service URL:
 <pre>
 http://hostname:port/thredds/dodsC/test/example3.nc
 |                   |             |                |
@@ -81,12 +74,9 @@ http://hostname:port/thredds/dodsC/test/example3.nc
                             |             |
           service basePath -|             |- dataset urlPath
 </pre>
-      </li>
-    </ol>
-
-    <p>More information is available on
-      <a href="../../catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">constructing access URLs</a>.
-    </p>
+       </li>
+      </ol>
+      <p>More information is available on <a href="../../catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">constructing access URLs</a>. </p>
 
    <h3>Example Catalog - shared service name</h3>
 
@@ -97,13 +87,13 @@ http://hostname:port/thredds/dodsC/test/example3.nc
            version="1.0.2"&gt;
       &lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
       &lt;dataset name="TDS Tutorial: example 2"&gt;
-          &lt;metadata <span style="font-weight: bold;">inherited</span>="true"&gt;
-<span style="font-weight: bold;">1)</span>             &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;
+          &lt;metadata <b>inherited</b>="true"&gt;
+<b>1)</b>             &lt;serviceName&gt;<b>odap</b>&lt;/serviceName&gt;
           &lt;/metadata&gt;
 
-<span style="font-weight: bold;">2)</span>        &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
-<span style="font-weight: bold;">2)</span>        &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
-<span style="font-weight: bold;">2)</span>        &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
+<b>2)</b>        &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
+<b>2)</b>        &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
+<b>2)</b>        &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
 
           &lt;catalogRef xlink:title="My Other Catalog"
                       xlink:href="myOtherCatalog.xml" /&gt;
@@ -113,24 +103,17 @@ http://hostname:port/thredds/dodsC/test/example3.nc
   &lt;/catalog&gt;
 </pre>
 
-    <p>Notes:</p>
-    <ul style="list-style: none">
-        <li><span style="font-weight: bold;">1)</span>  The serviceName element is <span style="font-weight: bold;">inherited</span> by each child dataset from the containing dataset.</li>
-        <li><span style="font-weight: bold;">2)</span>  These three child datasets all inherit the <span style="font-weight: bold;">odap</span> serviceName element.</li>
-    </ul>
+      <div id="expanded" class="troubleshooting">
+       <h4>Notes</h4>
+        <p><b>1)</b>  The serviceName element is <b>inherited</b> by each child dataset from the containing dataset.</p>
+        <p><b>2)</b>  These three child datasets all inherit the <b>odap</b> serviceName element.</p>
+      </div>
+   </div><!-- end section -->
 
 
-</div>
-
-
-<div id="section">
-<h2><a name="ConfigCatalogs">TDS Configuration Catalogs</a></h2>
-
-
-    <p>TDS configuration catalogs are THREDDS catalogs with a few extensions.
-      They contain information detailing the datasets the TDS will serve and what
-      services will be available for each dataset:
-    </p>
+   <div id="section">
+    <h2><a name="ConfigCatalogs">TDS Configuration Catalogs</a></h2>
+    <p>TDS configuration catalogs are THREDDS catalogs with a few extensions. They contain information detailing the datasets the TDS will serve and what services will be available for each dataset:</p>
     <ul>
       <li>The <code>datasetRoot</code> and <code>datasetScan</code> elements are extensions that:
         <ul>
@@ -146,12 +129,10 @@ http://hostname:port/thredds/dodsC/test/example3.nc
       <li>The configuration information is only needed by the server.</li>
       <li>The client view of the catalogs does not contain any configuration information.</li>
     </ul>
-<h3><code>datasetRoot</code> Element</h3>
 
-    <p>Each <code>datasetRoot</code> element defines a single mapping between a URL base
-      path and a directory. The URL base path so defined can then be used in accessible
-      datasets for files under the mapped directory. For instance, if you have a directory
-      /my/data/testdata that contains:</p>
+    <h3><code>datasetRoot</code> Element</h3>
+
+    <p>Each <code>datasetRoot</code> element defines a single mapping between a URL base path and a directory. The URL base path so defined can then be used in accessible datasets for files under the mapped directory. For instance, if you have a directory <code>/my/data/testdata</code> that contains:</p>
 
 <pre>
 afile.nc
@@ -179,29 +160,20 @@ grib/
 ...
 </pre>
 
-    <p>The datasetRoot element above (1) maps the "<b><code>my/test</code></b>" path
-      to the "<b><code>/my/data/testdata/</code></b>" directory. The URLs to access
-      the datasets (2 &amp; 3) are</p>
+    <p>The datasetRoot element above (1) maps the "<code>my/test</code>" path to the "<code>/my/data/testdata/</code>" directory. The URLs to access the datasets (2 &amp; 3) are</p>
 
 <pre>
 http://hostname:port/thredds/dodsC/<b>my/test</b>/testData.nc
 http://hostname:port/thredds/dodsC/<b>my/test</b>/grib/data1.grib2
 </pre>
 
-    <p>When the server receives a request for one of the above URLs, it uses the URL path to
-      look for a matching dataset root. In this case it finds the mapping provided by the
-      datasetRoot element above and looks in the /my/data/testdata directory for the file.
-    </p>
+    <p>When the server receives a request for one of the above URLs, it uses the URL path to look for a matching dataset root. In this case it finds the mapping provided by the datasetRoot element above and looks in the <code>/my/data/testdata</code> directory for the file.</p>
 
-    <p>The client catalog that results from this catalog is the same as the above without
-      the datasetRoot element.</p>
+    <p>The client catalog that results from this catalog is the same as the above without the datasetRoot element.</p>
 
+    <h3><code>datasetScan</code> Element</h3>
+    <p>Each <code>datasetScan</code> element also defines a single mapping between a URL base path and a directory. Unlike the <code>datasetRoot</code> element which works with <code>dataset</code> elements to define the datasets served, the <code>datasetScan</code> element will automatically serve some or all of the datasets found in the mapped directory. So, all the files in the above listing could be served with the following:</p>
 
-<h3><code>datasetScan</code> Element</h3>
-
-<p>Each <code>datasetScan</code> element also defines a single mapping between a URL base
-path and a directory. Unlike the&nbsp; <code>datasetRoot</code> element which works with&nbsp;<code>dataset</code> elements to define the datasets served, the <code>datasetScan</code> element will automatically serve some or all of the datasets found in the mapped directory. So, all the files in the above
-listing could be served with the following:</p>
 <pre>
 ...
       &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
@@ -213,20 +185,18 @@ listing could be served with the following:</p>
           &lt;/metadata&gt;
       &lt;/datasetScan&gt;
 ...</pre>
-<p>In the client view of a configuration catalog,&nbsp;<code>datasetScan</code> elements are converted to&nbsp;<code>catalogRef</code> elements. So, the resulting client view of this catalog looks like:</p>
+
+    <p>In the client view of a configuration catalog,&nbsp;<code>datasetScan</code> elements are converted to&nbsp;<code>catalogRef</code> elements. So, the resulting client view of this catalog looks like:</p>
+
 <pre>...
       &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
       &lt;catalogRef xlink:title="Test all files in a directory" ID="testDatasetScan"
                   xlink:href="/thredds/catalog/<b>my/test/all</b>/catalog.xml" name="" /&gt;
 ...</pre>
-<p>The generation of the catalog referenced by the&nbsp;<code>catalogRef</code>
-element is deferred until a request is made for that catalog. When the
-catalog is requested the location directory is scanned, directories are
-represented as <code>catalogRef</code> elements and files are represented as <code>dataset</code>
-elements. The scanning of each subdirectory is deferred until a request
-is made for the corresponding catalog. The catalog referenced above
-would look&nbsp;like:</p>
+
+    <p>The generation of the catalog referenced by the <code>catalogRef</code> element is deferred until a request is made for that catalog. When the catalog is requested the location directory is scanned, directories are represented as <code>catalogRef</code> elements and files are represented as <code>dataset</code> elements. The scanning of each subdirectory is deferred until a request is made for the corresponding catalog. The catalog referenced above would look like:</p>
+
 <pre>...
       &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
 
@@ -235,46 +205,27 @@ would look&nbsp;like:</p>
               &lt;serviceName&gt;odap&lt;/serviceName&gt;
           &lt;/metadata&gt;
           &lt;dataset name="afile.nc" ID="testDatasetScan/afile.nc" urlPath="<b>my/test/all</b>/afile.nc"&gt;
-          &lt;dataset name="testData.nc" ID="testDatasetScan/testData.nc" urlPath="<b>my/test/all</b>/testData.nc"&gt;
+          &lt;dataset name="testData.nc" ID="testDatasetScan/testData.nc" 
+                   urlPath="<b>my/test/all</b>/testData.nc"&gt;
           &lt;dataset name="junk.nc" ID="testDatasetScan/junk.nc" urlPath="<b>my/test/all</b>/junk.nc"&gt;
 
           &lt;catalogRef xlink:title="grib" ID="testDatasetScan/grib" name=""
                       xlink:href="/thredds/catalog/<code>my/test/all</code>/grib/catalog.xml" /&gt;
       &lt;/dataset&gt;
 ...
-</pre><p>Note: The
-<code>datasetScan</code> element provides ways for limiting the datasets that are
-included in the scan, changing the names of datasets, sorting datasets,
-etc. We will go into more detail on this later.</p>
+</pre>
 
-  <h3>TDS Configuration Directory</h3>
+    <p>Note: The <code>datasetScan</code> element provides ways for limiting the datasets that are included in the scan, changing the names of datasets, sorting datasets, etc. We will go into more detail on this later.</p>
+
+    <h3>TDS Configuration Directory</h3>
 
     <div id="note" class="info">
       <h4>Location of the TDS Configuration Directory</h4>
-
-      <p>
-        If desired, the location can be set to a directory outside of the Tomcat
-        install directory. See the
-        <a href="../reference/ConfigDirectory.html#ChangeTdsContentDir">TDS
-          Configuration Directory section</a>
-        of the TDS Reference for more information.
-      </p>
+      <p>If desired, the location can be set to a directory outside of the Tomcat install directory. See the <a href="../reference/ConfigDirectory.html#ChangeTdsContentDir">TDS Configuration Directory section</a> of the TDS Reference for more information.</p>
     </div>
 
-    <p>
-      All TDS configuration information is stored in the TDS configuration directory.
-      Its default location is <code>${tomcat_home}/content/thredds</code> and it is
-      created and populated with default files the first time the TDS is deployed.
-      It is persistent even when a TDS
-      installation is upgraded or re-deployed. All your configuration, modifications,
-      and additions should be made in this directory. Do not place files containing
-      passwords or anything else with security issues in this directory. Typically
-      you will only be adding and modifying catalogs and configuration files.
-    </p>
-
-    <p>For now, we will focus on the following subset of the content directory:
-    </p>
-
+    <p>All TDS configuration information is stored in the TDS configuration directory. Its default location is <code>${tomcat_home}/content/thredds</code> and it is created and populated with default files the first time the TDS is deployed. It is persistent even when a TDS installation is upgraded or re-deployed. All your configuration, modifications, and additions should be made in this directory. Do not place files containing passwords or anything else with security issues in this directory. Typically you will only be adding and modifying catalogs and configuration files.</p>
+    <p>For now, we will focus on the following subset of the content directory:</p>
     <ul>
       <li><code>${tomcat_home}/</code><code>content/thredds/</code>
         <ul>
@@ -309,9 +260,9 @@ etc. We will go into more detail on this later.</p>
           </li>
         </ul>
       </li>
-    </ul>
+     </ul>
 
-  <h3><a name="exampleCatalog"></a>TDS Root Catalog</h3>
+    <h3><a name="exampleCatalog"></a>TDS Root Catalog</h3>
 
     <p>The main TDS configuration catalog is at <code>${tomcat_home}/content/thredds/catalog.xml</code>.
       We ship a simple test catalog:</p>
@@ -345,21 +296,13 @@ etc. We will go into more detail on this later.</p>
     &lt;/catalog&gt;
 </pre>
 
-            <p>When the TDS starts, this main configuration catalog is read
-                as are all catalogs in the catalog tree defined by <code>catalogRef</code>
-                elements. The TDS gathers configuration information on what datasets it
-                should serve from the <code>datasetRoot</code> and <code>datasetScan</code>
-                elements.</p>
+    <p>When the TDS starts, this main configuration catalog is read as are all catalogs in the catalog tree defined by <code>catalogRef</code> elements. The TDS gathers configuration information on what datasets it should serve from the <code>datasetRoot</code> and <code>datasetScan</code> elements.</p>
 
 
-
-  <div id="expanded" class="exercise">
-<h3>Exercise: Add NCEP NAM model data</h3>
-
-    <p>Modify the main TDS configuration catalog to include
-      some model data.  </p>
-
-    <ol>
+    <div id="expanded" class="exercise">
+     <h3>Exercise: Add NCEP NAM model data</h3>
+     <p>Modify the main TDS configuration catalog to include some model data.  </p>
+     <ol>
       <li>Take a look at the data (note: the filenames may be different):
 
 <pre>
@@ -407,10 +350,12 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
           <li>Select the OPeNDAP link</li>
         </ol>
       </li>
-    </ol>
+     </ol>
+    </div>
 
-    <h4>Not working?</h4>
-    <ol>
+    <div id="expanded" class="troubleshooting">
+     <h4>Not working?</h4>
+     <ol>
       <li>Take a look at the catalogInit.log:
 <pre>
 <b>$</b> cd ${tomcat_home}/content/thredds/logs
@@ -423,12 +368,8 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
 <b>$</b> more threddsServlet.log
 </pre>
       </li>
-    </ol>
-
-  </div>
-</div>
-
-   <p class="notice">This document is maintained by Unidata, and was last updated October 2012.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
-
+     </ol>
+    </div>
+   </div> <!-- end section -->
   </body>
-</html>
+ </html>
