@@ -114,14 +114,14 @@
             &lt;creator&gt;Ethan&lt;/creator&gt;
             &lt;publisher&gt;Ethan&lt;/publisher&gt;
             &lt;date type="created"&gt;2008-10-30T14:22&lt;/date&gt;
-            <span style="font-weight: bold;">&lt;dataFormat&gt;netCDF&lt;/dateFormat&gt;</span>
+      <span style="font-weight: bold;">1)    &lt;dataFormat&gt;netCDF&lt;/dateFormat&gt;</span>
         &lt;/metadata&gt;
 
         &lt;dataset name="TDS Tutorial: example data 1" urlPath="test/example1.nc" /&gt;
         &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" /&gt;
         &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" /&gt;
         &lt;dataset name="TDS Tutorial: example data 4" urlPath="test/example4.grib2"&gt;
-            <span style="font-weight: bold;">&lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;</span>
+      <span style="font-weight: bold;">2)    &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;</span>
         &lt;/dataset&gt;
 
     &lt;/dataset&gt;
@@ -129,8 +129,9 @@
 </pre>
 
     <p>Notes:</p>
-    <ul>
-      <li>Inherited metadata can be overridden.</li>
+    <ul style="list-style: none">
+      <li><b>1)</b>  Child datasets inherit the netCDF dataFormat element</li>
+      <li><b>2)</b> This child's inherited metadata is overridden.</li>
     </ul>
 </div>
 
@@ -888,7 +889,13 @@ Error {
 </div>
 
 
-  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
+<address>
+    <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
+    This document is maintained by Unidata and was last updated October 2012.
+    Send comments to
+    <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+</address>
+<p>&nbsp; </p>
 
-</body>
+  </body>
 </html>

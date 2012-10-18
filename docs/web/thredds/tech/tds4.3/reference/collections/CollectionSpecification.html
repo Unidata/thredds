@@ -37,7 +37,7 @@ All files ending with &quot;.nc&quot; in the directory<em> /data/ldm/pub/native/
   <pre> GFS_Alaska_191km.........\.nc$</pre>
 </blockquote>
   <p>Remember that an unescaped &quot;.&quot; matches any character. An escaped &quot;\.&quot; matches the literal &quot;.&quot; character.</p>
-  <p>From the filename, extract the run date by applying the <a href="SimpleDateFormat.html">SimpleDateFormat</a> template <em>yyyyMMdd_HHmm</em> to the portion of the filename after </p>
+  <p>From the filename, extract the  date by applying the <a href="SimpleDateFormat.html">SimpleDateFormat</a> template <em>yyyyMMdd_HHmm</em> to the portion of the filename after </p>
 <blockquote>
     <pre>GFS_Alaska_191km_</pre>
   </blockquote>
@@ -62,7 +62,7 @@ Make sure that the name ends with &quot;grib1&quot;:
   <li>A &lsquo;$&rsquo; character matches the null string at the end of a line.</li>
 </ul>
 
-  <li>what</li>
+  <li>The <strong>date extractor</strong> can only be used on the filename in a collection specification string. If the date is part of  a directory name, use the more general <strong>dateFormatMark</strong> on the <strong><a href="FeatureCollections.html#collection">collection</a></strong> element.</li>
 </ol>
 <h3>Resources for Regular Expressions:</h3>
 <ul>
@@ -71,7 +71,7 @@ Make sure that the name ends with &quot;grib1&quot;:
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Dec 2011
+<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document was last updated  Oct 2012.
 </address>
 </body>
 </html>

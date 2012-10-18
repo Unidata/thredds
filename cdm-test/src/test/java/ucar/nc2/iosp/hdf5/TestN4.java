@@ -56,6 +56,18 @@ public class TestN4 extends TestCase {
     super(name);
   }
 
+  public void testMultiDimscale() throws IOException {
+    // Global Heap 1t 13059 runs out with no heap id = 0
+    String filename = testDir+"multiDimscale.nc4";
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+    Variable v = ncfile.findVariable("siglev");
+    v.read();
+    v = ncfile.findVariable("siglay");
+    v.read();
+    System.out.println("\n**** testMultiDimScale read ok\n\n" + ncfile);
+    ncfile.close();
+  }
+
   public void testGlobalHeapOverun() throws IOException {
     // Global Heap 1t 13059 runs out with no heap id = 0
     String filename = testDir+"globalHeapOverrun.nc4";
@@ -67,6 +79,7 @@ public class TestN4 extends TestCase {
     System.out.println("nvars = "+ncfile.getVariables().size());
     ncfile.close();
   }
+
 
   // margolis@ucar.edu
   // I really don't think this is a problem with your code
