@@ -1,15 +1,35 @@
  $(document).ready(function(){
+   addNotice();
    setWorkshopNav();
    
    function setWorkshopNav() {
       var pageTitle = $("title").html();
-      var workshopNav = '<ul id="workshopNav">' + 
-                     '<li><a href="/projects/THREDDS/tech/tutorial/workshop2012.html">TDS Workshop Home</a></li>' +
-                     '<li>' + pageTitle + '</li>' +
-                     '</ul>';
+      if (pageTitle != '2012 TDS Training Workshop Schedule') {
+         var workshopNav = '<ul id="workshopNav">' + 
+                        '<li><a href="/projects/THREDDS/tech/tutorial/workshop2012.html">TDS Workshop Home</a></li>' +
+                        '<li>' + pageTitle + '</li>' +
+                        '</ul>';
 
-      $(workshopNav).prependTo('#container');
-      $(workshopNav).appendTo('#container');
+         $(workshopNav).prependTo('#container');
+         $(workshopNav).appendTo('#container');
+      }
    }
+
+
+   function addNotice() {
+      var date_modified = "";
+      var modDate = new Date(document.lastModified)
+      var m_names = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+      if (Date.parse(document.lastModified) != 0) {
+         var modiDate = new Date(document.lastModified);
+         var monthName = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+         date_modified = "Last updated: " +  monthName[modiDate.getMonth()] + " " + modiDate.getDate() + ", " + modiDate.getFullYear();
+      }
+
+
+      var notice = '<p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. &nbsp; ' + date_modified + '</p>';
+      $(notice).appendTo('#container');
+   }
+
 
 });

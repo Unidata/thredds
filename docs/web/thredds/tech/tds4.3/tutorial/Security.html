@@ -330,7 +330,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
       <div id="note" class="info">
        <h4>CA-signed Certificates</h4>
        <p>A self-signed certificate says to your users <i>"Trust me - I am who I say I am."</i> </p>
-       <p> A certificate signed by a CA says, <i>"Trust me - the CA agrees I am who I say I am."</i></p>
+       <p>A certificate signed by a CA says, <i>"Trust me - the CA agrees I am who I say I am."</i></p>
       </div> 
 
       <h3>SSL certificates</h3>
@@ -339,7 +339,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
        <li>The certificate can be used to verify that a public key belongs to an individual.</li>
        <li>The digital signature can be signed by a Certificate Authority (CA) or the certificate user (a self-signed certificate).</li>
        <li>Unidata <i>highly recommends</i> the use of a certificate signed by a Certificate Authority (CA).</li>
-       <li>Browser warnings for self-signed certificates can be very confusing to users.</li>
+       <li>Browser warnings for self-signed certificates can be very confusing to users and make them question the legitimacy of your web site.</li>
        <li>It's about trust: CA-signed certificates verify your identify to your users.  If the traffic between your server and the client is intercepted, an attacker can inject their own self-signed cert in the place of yours and the visitor will likely not notice.</li>
        <li>Self-signed certificates cannot (by nature) be revoked,  which may allow an attacker who has already gained access to monitor and inject data into a connection to spoof an identity if a private key has been compromised. CAs on the other hand have the ability to revoke a compromised certificate, which prevents its further use.</li>
       </ul>
@@ -448,13 +448,14 @@ tcp        0      0 0.0.0.0:<b>8443</b>               0.0.0.0:*                 
         <li>Did you specify the full path to the <code>keystore</code> file in <code>server.xml</code>?</li>
        </ul>
       </div>
+      <a name="grantingAccess"></a>
         <li>Modify <code>$CATALINA_HOME/conf/tomcat-users.xml</code> to add a new role with the rolename attribute of <code>tdsConfig</code>, and add this role to your list of roles:</li>
 <pre>
 &lt;tomcat-users&gt;
     &lt;role rolename="manager-gui"/&gt;
-    &lt;role rolename="tdsConfig"/&gt;
+    <b>&lt;role rolename="tdsConfig"/&gt;</b>
     &lt;user username="admin" password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" 
-          roles="manager-gui,tdsConfig"/&gt;
+          roles="manager-gui,<b>tdsConfig</b>"/&gt;
 &lt;/tomcat-users&gt;
 </pre>  
         <li>Restart Tomcat and try to access the TDS remote management tool: <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug/</a></li>
@@ -1176,8 +1177,6 @@ Escape character is '^]'.
 
    </div> <!-- end  section -->
 
-
-  <p class="notice">This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>. Last updated <script language="JavaScript" type="text/JavaScript">document.write(date_modified);</script>  </p>
 
 
    
