@@ -19,11 +19,11 @@
 
 <p>Currently, the TDS automatically adds the following:</p>
 
-<ol>
+<ul>
   <li>a <strong>Godiva2 web-based WMS client</strong> link to any dataset that has a WMS service</li>
   <li>a <strong>NetCDF-Java ToolsUI</strong> link to any direct dataset that has an ID</li>
   <li>an <strong>IDV</strong> link to any dataset that has an OPeNDAP service and has a DataType of GRID.</li>
-</ol>
+</ul>
 <h3>Adding Viewer Links</h3>
 <p>The TDS also supports several ways to configure other viewer links and their results:</p>
 <ol>
@@ -35,10 +35,10 @@
 
 <h2><a name="Adding_a_viewer_link_with_a_viewer"></a>1. Adding viewer links with "viewer" property elements</h2>
 
-<p>Dataset viewer links can be added to dataset HTML pages using "viewer*" property elements.
+<p>Dataset viewer links can be added to dataset HTML pages using "viewer" property elements.
   To add a dataset viewer link to a specific dataset, add a <code>property</code> element that
   has a name starting with "viewer". When the TDS generates a dataset HTML page, it looks for all
-  "viewer*" property elements and uses the value of each property element to generate a viewer link.
+  "viewer" property elements and uses the value of each property element to generate a viewer link.
   The value of the "viewer" <code>property</code> element must be a string containing a URL and a
   name separated by a a comma. An HTML link is built using the URL and the name. For instance,
   the following example:</p>
