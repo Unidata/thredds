@@ -302,25 +302,25 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * called by DataRootHandler.makeDynamicCatalog()
    * @param match match.remaining
    * @param orgPath    the path for the request.
-   * @param baseURI the base URI for the catalog, used to resolve relative URLs.
+   * @param catURI the base URI for the catalog to be made, used to resolve relative URLs.
 
    * @return containing catalog
    */
-  abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI);
+  abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI);
 
   /**
    * Make the containing catalog of this feature collection
    *
-   * @param baseURI base URI of the request
+   * @param catURI base URI of the request
    * @param localState current state to use
    * @return the top FMRC catalog
    * @throws java.io.IOException         on I/O error
    * @throws java.net.URISyntaxException if path is misformed
    */
-  protected InvCatalogImpl makeCatalogTop(URI baseURI, State localState) throws IOException, URISyntaxException {
+  protected InvCatalogImpl makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
     InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
-    URI myURI = baseURI.resolve(getXlinkHref());
-    InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), myURI);
+    //URI myURI = catURI.resolve(getXlinkHref());  LOOK
+    InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), catURI);
 
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);

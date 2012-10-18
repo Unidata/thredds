@@ -124,8 +124,8 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
 
   @Override
-  public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI)  {
-    logger.debug("FMRC make catalog for " + match + " " + baseURI);
+  public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI)  {
+    logger.debug("FMRC make catalog for " + match + " " + catURI);
     State localState = null;
     try {
       localState = checkState();
@@ -136,7 +136,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
     try {
       if ((match == null) || (match.length() == 0)) {
-        InvCatalogImpl main  = makeCatalogTop(baseURI, localState);
+        InvCatalogImpl main  = makeCatalogTop(catURI, localState);
         main.addService(virtualService);
         main.getDataset().getLocalMetadataInheritable().setServiceName(virtualService.getName());
         main.finish();
@@ -144,16 +144,16 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       }
 
       else if (match.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs))
-        return makeCatalogRuns(baseURI, localState);
+        return makeCatalogRuns(catURI, localState);
 
       else if (match.equals(OFFSET) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets))
-        return makeCatalogOffsets(baseURI, localState);
+        return makeCatalogOffsets(catURI, localState);
 
       else if (match.equals(FORECAST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts))
-        return makeCatalogForecasts(baseURI, localState);
+        return makeCatalogForecasts(catURI, localState);
 
       else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files)) {
-        InvCatalogImpl files   = localState.scan.makeCatalogForDirectory(orgPath, baseURI);
+        InvCatalogImpl files   = localState.scan.makeCatalogForDirectory(orgPath, catURI);
         if (files == null) return null;
         files.addService(InvService.latest);
         files.addService(orgService);
@@ -169,11 +169,11 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     return null;
   }
 
-   private InvCatalogImpl makeCatalogRuns(URI baseURI, State localState) throws IOException {
+   private InvCatalogImpl makeCatalogRuns(URI catURI, State localState) throws IOException {
 
     InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-    URI myURI = baseURI.resolve(getCatalogHref(RUNS));
-    InvCatalogImpl runCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
+    //URI myURI = baseURI.resolve(getCatalogHref(RUNS));
+    InvCatalogImpl runCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);
     top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local
@@ -198,11 +198,12 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     return runCatalog;
   }
 
-  private InvCatalogImpl makeCatalogOffsets(URI baseURI, State localState) throws IOException {
+  private InvCatalogImpl makeCatalogOffsets(URI catURI, State localState) throws IOException {
 
     InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-    URI myURI = baseURI.resolve(getCatalogHref(OFFSET));
-    InvCatalogImpl offCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
+    //URI myURI = baseURI.resolve(getCatalogHref(OFFSET));
+    InvCatalogImpl offCatalog;
+    offCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);
     top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local
@@ -227,11 +228,11 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     return offCatalog;
   }
 
-  private InvCatalogImpl makeCatalogForecasts(URI baseURI, State localState) throws IOException {
+  private InvCatalogImpl makeCatalogForecasts(URI catURI, State localState) throws IOException {
 
     InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-    URI myURI = baseURI.resolve(getCatalogHref(FORECAST));
-    InvCatalogImpl foreCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
+    //URI myURI = baseURI.resolve(getCatalogHref(FORECAST));
+    InvCatalogImpl foreCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);
     top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local

@@ -50,7 +50,6 @@ import ucar.nc2.grib.grib2.Grib2Iosp;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -317,7 +316,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       5. path/partitionName/catalog.xml
    */
   @Override
-  public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {
+  public InvCatalogImpl makeCatalog(String match, String reqPath, URI catURI) {
     //logger.debug("{}: make catalog for {} {}", name, match, baseURI);
     StateGrib localState;
     try {
@@ -330,7 +329,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     try {
       // top catalog : uses state.datasets previously made in checkState()
       if ((match == null) || (match.length() == 0)) {
-        InvCatalogImpl main = makeCatalogTop(baseURI, localState);
+        InvCatalogImpl main = makeCatalogTop(catURI, localState);
         main.addService(virtualService);
         main.getDataset().getLocalMetadataInheritable().setServiceName(virtualService.getName());
         main.finish();
@@ -347,19 +346,19 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           group = localState.gribCollection.findGroupById(path[0]);
         }
         if (group != null) {
-          return makeFilesCatalog(localState.gribCollection, group, baseURI, localState);
+          return makeFilesCatalog(localState.gribCollection, group, catURI, localState);
         }
 
       } else { // time partitions
 
         if (match.equals(COLLECTION)) {
-          return makeGribCollectionCatalog(localState.timePartition, baseURI, localState);
+          return makeGribCollectionPartitionCatalog(localState.timePartition, catURI, localState);
         }
 
         TimePartition.Partition tpp = localState.timePartition.getPartitionByName(match);
         if (tpp != null) {
           GribCollection gc = tpp.getGribCollection();
-          InvCatalogImpl result = makeGribCollectionCatalog(gc, baseURI, localState);
+          InvCatalogImpl result = makeGribCollectionPartitionCatalog(gc, catURI, localState);
           gc.close();
           return result;
         }
@@ -382,11 +381,11 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           GribCollection gc = tpp.getGribCollection();
           if (path[1].equals(FILES)) {
             GribCollection.GroupHcs group = gc.getGroup(0);
-            result = makeFilesCatalog(gc, group, baseURI, localState);
+            result = makeFilesCatalog(gc, group, catURI, localState);
           } else {
             GribCollection.GroupHcs group = gc.findGroupById(path[1]);
             if (group == null) return null;
-            result = makeFilesCatalog(gc, group, baseURI, localState);
+            result = makeFilesCatalog(gc, group, catURI, localState);
           }
           gc.close();
           return result;
@@ -401,12 +400,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   // each partition gets its own catalog, showing the different groups (horiz coord sys)
-  private InvCatalogImpl makeGribCollectionCatalog(GribCollection gribCollection, URI baseURI, State localState) throws IOException {
+  private InvCatalogImpl makeGribCollectionPartitionCatalog(GribCollection gribCollection, URI catURI, State localState) throws IOException {
 
     String collectionName = gribCollection.getName();
     InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-    URI myURI = baseURI.resolve(getCatalogHref(collectionName));  // LOOK ??
-    InvCatalogImpl partCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
+    //URI myURI = catURI.resolve(getCatalogHref(collectionName));  // LOOK ??
+
+    InvCatalogImpl partCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);
     top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local
@@ -467,13 +467,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   // this catalog lists the individual files comprising a grib collection.
   // cant use InvDatasetScan because we might have multiple hcs
-  private InvCatalogImpl makeFilesCatalog(GribCollection gc, GribCollection.GroupHcs group, URI baseURI, State localState) throws IOException {
+  private InvCatalogImpl makeFilesCatalog(GribCollection gc, GribCollection.GroupHcs group, URI catURI, State localState) throws IOException {
 
     //String collectionName = gc.getName();
     InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
     //URI myURI = baseURI.resolve(getCatalogHref(collectionName));
-    URI myURI = baseURI.resolve(getCatalogHref(FILES));
-    InvCatalogImpl result = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
+    //URI myURI = baseURI.resolve(getCatalogHref(FILES));
+    InvCatalogImpl result = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
     InvDatasetImpl top = new InvDatasetImpl(this);
     top.setParent(null);
     top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local

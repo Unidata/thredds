@@ -47,15 +47,15 @@ import java.io.File;
  */
 public class URLnaming {
 
-@Deprecated
+  @Deprecated
   public static String escapeQuery(String urlString) {
-     urlString = urlString.trim();
-     String[] split = urlString.split("[?]");
-     return  (split[0] == null ? "" : split[0])
-              + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
+    urlString = urlString.trim();
+    String[] split = urlString.split("[?]");
+    return (split[0] == null ? "" : split[0])
+            + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
   }
 
-@Deprecated
+  @Deprecated
   private static String escapeQueryNew(String urlString) {
     urlString = urlString.trim();
     URI uri = null;
@@ -68,16 +68,16 @@ public class URLnaming {
     }
   }
 
-@Deprecated
-private   static String escapeQueryURIUtil(String urlString) {
+  @Deprecated
+  private static String escapeQueryURIUtil(String urlString) {
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ > 0) && (posQ < urlString.length() - 2)) {
-      String query = urlString.substring(posQ+1);
+      String query = urlString.substring(posQ + 1);
       if (query.indexOf("%") < 0) { // assume that its not already encoded...
-        String path = urlString.substring(0,posQ);
+        String path = urlString.substring(0, posQ);
         try {
-          urlString = path + "?" + URIUtil.encodeQuery( query);
+          urlString = path + "?" + URIUtil.encodeQuery(query);
         } catch (URIException e) {
           e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -86,14 +86,14 @@ private   static String escapeQueryURIUtil(String urlString) {
     return urlString;
   }
 
-@Deprecated
-private   static String escapeQueryEncoder(String urlString) {
+  @Deprecated
+  private static String escapeQueryEncoder(String urlString) {
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ > 0) && (posQ < urlString.length() - 2)) {
-      String query = urlString.substring(posQ+1);
+      String query = urlString.substring(posQ + 1);
       if (!query.contains("%")) { // skip if already encoded
-        String path = urlString.substring(0,posQ);
+        String path = urlString.substring(0, posQ);
         try {
           urlString = path + "?" + URLEncoder.encode(query, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -104,27 +104,27 @@ private   static String escapeQueryEncoder(String urlString) {
     return urlString;
   }
 
-@Deprecated
-private   static String unescapeQueryDODS(String urlString) {
+  @Deprecated
+  private static String unescapeQueryDODS(String urlString) {
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ >= 0) && (posQ < urlString.length() - 2)) {
-      String path = urlString.substring(0,posQ);
-      String query = urlString.substring(posQ+1);
+      String path = urlString.substring(0, posQ);
+      String query = urlString.substring(posQ + 1);
       return path + "?" + EscapeStrings.unescapeURLQuery(query);
     }
     return urlString;
   }
 
 
-@Deprecated
-private   static String unescapeQueryDecoder(String urlString) {
+  @Deprecated
+  private static String unescapeQueryDecoder(String urlString) {
 
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ >= 0) && (posQ < urlString.length() - 2)) {
-      String path = urlString.substring(0,posQ);
-      String query = urlString.substring(posQ+1);
+      String path = urlString.substring(0, posQ);
+      String query = urlString.substring(posQ + 1);
       try {
         return path + "?" + URLDecoder.decode(query, "UTF-8");
       } catch (UnsupportedEncodingException e) {
@@ -333,14 +333,24 @@ private   static String unescapeQueryDecoder(String urlString) {
     System.out.printf("%n");
   }
 
-  public static void main(String args[]) throws URISyntaxException {
-   // checkEsc("/thredds/dodsC/fmrc/FNMOC/COAMPS/Europe/FNMOC-COAMPS-Europe_best.ncd.dods?relative_vorticity.relative_vorticity[0:0][0:0][0:185][0:300]");
-    //checkEsc("path?quesry1,query2");
+  private static void decode(String esc) {
+    System.out.printf("esc =               %s%n", esc);
+    System.out.printf("URLDecoder.decode = %s%n", URLDecoder.decode(esc));
+    System.out.printf("%n");
+  }
 
-    //checkUnEsc("?stn%3DKBUF%26time_start%3D2011-07-07T05%3A22%3A39%26time_end%3D2011-07-08T14%3A42%3A39");
-    checkUnEsc("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-15T00:00:00Z.html.dods?Total_cloud_cover_low_cloud%5B1:1:1%5D%5B0:1:360%5D%5B0:1:719%5D");
-    checkEsc("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-15T00:00:00Z.html.dods?Total_cloud_cover_low_cloud[1:1:1][0:1:360][0:1:719]");
-    checkEsc("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-15T00:00:00Z.html.dods?Total_cloud_cover_low_cloud%5B1:1:1%5D%5B0:1:360%5D%5B0:1:719%5D");
+
+
+  public static void main(String args[]) throws URISyntaxException {
+    if (args.length > 0) {
+      checkUnEsc(args[0]);
+    } else {
+      String s = "catalog=http%3A%2F%2Flocalhost%3A8080%2Fthredds%2Fcatalog%2Fgrib%2FNCEP%2FGFS%2FGlobal_0p5deg%2Fcollection%2Fcatalog.html\n" +
+              "  dataset=grib%2FNCEP%2FGFS%2FGlobal_0p5deg%2FGFS-Global_0p5deg%2Fcollection";
+      decode(s);
+    }
+
+
   }
 
 

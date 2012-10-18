@@ -93,8 +93,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI)  {
-    logger.debug("FcPoint make catalog for " + match + " " + baseURI);
+  public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI)  {
+    logger.debug("FcPoint make catalog for " + match + " " + catURI);
     State localState = null;
     try {
       localState = checkState();
@@ -105,14 +105,14 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
     try {
       if ((match == null) || (match.length() == 0)) {
-        InvCatalogImpl main = makeCatalogTop(baseURI, localState);
+        InvCatalogImpl main = makeCatalogTop(catURI, localState);
         main.addService(collectionService);
         main.getDataset().getLocalMetadataInheritable().setServiceName(collectionService.getName());
         main.finish();
         return main;
 
       } else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files)) {
-        InvCatalogImpl files = localState.scan.makeCatalogForDirectory(orgPath, baseURI);
+        InvCatalogImpl files = localState.scan.makeCatalogForDirectory(orgPath, catURI);
         if (files == null) return null;
         files.addService(InvService.latest);
         files.addService(fileService);

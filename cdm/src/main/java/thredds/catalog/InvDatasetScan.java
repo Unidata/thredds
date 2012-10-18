@@ -527,15 +527,15 @@ public class InvDatasetScan extends InvCatalogRef {
    * the path of this InvDatasetScan.
    *
    * @param orgPath the part of the baseURI that is the path
-   * @param baseURI the base URL for the catalog, used to resolve relative URLs.
+   * @param catURI the base URL for the catalog, used to resolve relative URLs.
    *
    * @return the catalog for this path (uses version 1.1) or null if build unsuccessful.
    */
-  public InvCatalogImpl makeCatalogForDirectory( String orgPath, URI baseURI ) {
+  public InvCatalogImpl makeCatalogForDirectory( String orgPath, URI catURI ) {
 
     if ( log.isDebugEnabled())
     {
-      log.debug( "baseURI=" + baseURI );
+      log.debug( "baseURI=" + catURI );
       log.debug( "orgPath=" + orgPath );
       log.debug( "rootPath=" + rootPath );
       log.debug( "scanLocation=" + scanLocation );
@@ -601,7 +601,7 @@ public class InvDatasetScan extends InvCatalogRef {
 
     // Set the catalog base URI.
     if ( catalog != null )
-      catalog.setBaseURI( baseURI );
+      catalog.setBaseURI( catURI );
 
 //    InvDatasetImpl top = (InvDatasetImpl) catalog.getDataset();
 //    // if we name it carefully, can get catalogRef to useProxy == true (disappear top dataset)
