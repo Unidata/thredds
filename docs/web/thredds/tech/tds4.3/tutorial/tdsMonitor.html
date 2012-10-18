@@ -31,10 +31,10 @@
 &lt;/tomcat-users&gt;</PRE>
  <h3>4. Download the ToolsUI jar file and start tdsMonitor</h3>
 <ol>
-   <li>Download <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/toolsUI-4.2.jar">ToolsUI.jar</a> file to some convenient place on your local drive.</li>
-   <li>Start the TdsMonitor program</li>
+   <li>Download <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar">ToolsUI.jar</a> file to some convenient place on your local drive.</li>
+  <li>Start the TdsMonitor program, eg:</li>
  </ol>
- <PRE>java -Xmx1024m -classpath toolsUI-4.2.jar thredds.ui.monitor.TdsMonitor</PRE>
+ <PRE>java -Xmx4g -classpath toolsUI-4.3.jar thredds.ui.monitor.TdsMonitor</PRE>
  <p>You should see  TdsMonitor  start:</p>
  <p><img src="images/tdsMonitorStartup.png" width="800" height="450"></p>
  <h3>5. Download the current logs files into the tdsMonitor tool</h3>
@@ -156,10 +156,10 @@
  <p><br>
  In this case, the result was handled successfully (status return 200), and took 227 msecs. The size is often not known in these logs, indicated by a -1. As you can see, all of the pertinent information is summarized in the table row. Looking at the complete information is usually only done to see what the &quot;extra&quot; log messages are.</p>
  <p>The <em>Undone</em> and <em>Misc</em> tabs are used to record messages that don't have a proper start and end message, and are generally only useful to TDS support.</p>
- <hr>
  <p>
  <hr width="100%">
- <address><img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document is maintained by Unidata staff.
+<address>
+<img alt="THREDDS" src="../../images/thread.png" height="108" width="110">This document was last changed October 2012.
      Please send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
  </address>
  <br>

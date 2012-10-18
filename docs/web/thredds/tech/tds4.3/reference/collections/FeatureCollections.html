@@ -11,11 +11,12 @@ dl {margin: 10px 5px 5px 15px;}
 </head>
 
 <body>
-<h1><img src="../../../images/unidataLogo.png" alt="" width="73" height="75" align="absbottom" /> Configuring TDS with the FeatureCollection element</h1>
+<h1><img src="../../../images/unidataLogo.png" alt="" width="73" height="75" align="absbottom" /> Configuring TDS with the featureCollection element</h1>
 <hr />
 <h2>Overview</h2>
 <p>The <b>featureCollection</b> element is a way to tell the TDS to serve collections of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used  for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack. This allows the TDS to automatically create logical datasets composed of  collections of files, and to allow subsetting in coordinate space  on them, eg through the WMS, WCS, and Netcdf Subsetting Service.</p>
 <p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong> = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 also allows <strong>featureType</strong> =<em> GRIB</em>, which can only be used for collections of GRIB files. </p>
+<p>The <b>featureCollection</b> element is a subtype of <strong>dataset</strong> element. It defines a<em> logical dataset</em> for the TDS. All of the elements that can be used inside of a <strong>dataset</strong> element can be used inside of a <b>featureCollection</b> element.</p>
 <p>A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance, and in managing collections that change. For high-performance servers, its better to let a background process manage indexing, and the THREDDS Data Manager (<a href="TDM.html">TDM</a>) is an experimental (alpha release) application for this purpose available in TDS 4.3.</p>
 <h3>Contents:</h3>
 <ul>
@@ -54,12 +55,12 @@ dl {margin: 10px 5px 5px 15px;}
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot; olderThan=&quot;5 min&quot;/&gt;
   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
-    &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />      &lt;attribute name=&quot;History&quot; value=&quot;processed by Rectilyser 6.23a&quot;/&gt;<br />
-    &lt;/netcdf&gt;
+    <strong>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />      &lt;attribute name=&quot;History&quot; value=&quot;processed by Rectilyser 6.23a&quot;/&gt;<br />
+    &lt;/netcdf&gt;</strong>
   &lt;/protoDataset&gt;
   &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
 
-  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />     &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.6&quot;/&gt;<br />  &lt;/netcdf&gt;
+  <strong>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />     &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.6&quot;/&gt;<br />  &lt;/netcdf&gt;</strong>
 
 &lt;/featureCollection&gt;</pre>
 <hr />
@@ -95,7 +96,7 @@ Here is an example
   <li>Configuration specific to the Point feature type: expose a <em>cdmrRemote</em> service on the entire collection, and also serve all the component files using the default service, in this example the compound service <em>fullServices</em>.</li>
   <li>This NcML wraps each dataset in the collection. This attribute overrides any existing one in the datasets; it tells the CDM  to parse the station information using the CF Conventions.</li>
 </ol>
-<h3>collection element</h3>
+<h3>collection element<a name="collection" id="collection"></a></h3>
 <p>A <strong>collection</strong> element defines the collection of datasets. </p>
 <pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$&quot;
             <strong>name</strong>=&quot;WEST-CONUS_4km&quot; <strong></strong><strong></strong><strong>olderThan</strong>=&quot;15 min&quot; /&gt;
@@ -304,7 +305,7 @@ The XML Schema definition for the update element:
 <p></p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  October 2012 
+<img src="../../../images/thread.png" width="76" height="67" /> This document was last updated  October 2012.
 </address>
 </body>
 </html>
