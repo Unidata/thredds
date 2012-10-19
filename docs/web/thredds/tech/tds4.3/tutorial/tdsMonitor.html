@@ -68,7 +68,7 @@
       <li>Type in your username and password.</li>
       <li>You should see messages showing up in the text area:</li>
      </ol>
-     <p><a href="images/tdsMonitorDownload.png"><img src="images/tdsMonitorDownload_small.png" width="800" height="338"></a></p>
+     <p><a href="images/tdsMonitorDownload.png" target="_blank"><img src="images/tdsMonitorDownload_small.png" width="800" height="338"></a></p>
      <p>The files will be stored in <code>$USER_HOME/tdsMonitor/localhost%3A8080</code>. For production servers, you will need to manage the large number of logs stored here.</p>
      <p>The server name will be stored permanently for future use. To remove unwanted servers, right click inside the <code>server</code> comboBox, select <code>Delete</code>, and then click on the server names you want to delete.</p>
     </ol>
@@ -78,17 +78,17 @@
    <div id="section">
     <h2><a name="access">Viewing the Tomcat access logs</a></h2>
     <p>Switch to the <code>AccessLogs</code> tab, and select<code> localhost:8080</code>, which will make the <code>Start Date</code> and <code>End Date</code> fields get filled out. Press the <code>get logs</code> button <img src="images/getlogsButt.png" width="28" height="28">, and the logs in the selected time range are read in:</p>
-    <p><a href="images/AccessLogs.png"><img src="images/AccessLogs_small.png" width="800" height="260"></a></p>
+    <p><a href="images/AccessLogs.png" target="_blank"><img src="images/AccessLogs_small.png" width="800" height="260"></a></p>
     <p>Each log entry in the access logs is a row in the table. You can rearrange the columns by dragging on the column headers. You can sort by column by clicking on the column headers. </p>
     <p>Select a row, and right click to bring up the context menu. Choose &quot;<code>Resend URL</code>&quot; which takes you to the <code>UrlDump</code> screen. Choose &quot;<code>Get</code>&quot; and the URL will be resent to the server, and the results shown in the text area:</p>
-    <p><a href="images/UrlDump.png"><img src="images/UrlDump_small.png" width="800" height="385"></a></p>
+    <p><a href="images/UrlDump.png" target="_blank"><img src="images/UrlDump_small.png" width="800" height="385"></a></p>
     <p>Go to the User tab, and reverse sort by count (click on <code>count</code> column header twice), to see a summary of log access records by IP address. Press the lookup DNS button <img src="images/dns.png" width="29" height="28"> to do reverse DNS lookup on the IP address (this is very slow, and you have to scroll the table to force a refresh).</p>
-    <p><a href="images/Users.png"><img src="images/Users_small.png" width="800" height="385"></a></p>
+    <p><a href="images/Users.png" target="_blank"><img src="images/Users_small.png" width="800" height="385"></a></p>
     <p>Select a user, then right click to get the context menu. Select &quot;User requests&quot;, which takes you back to the LogTable screen, but only shows  the logs that are  from the selected user. Press <code>show All logs</code> button <img src="images/showAll.png" width="32" height="28"> to get back to showing all the logs.</p>
     <p>Similarly, the <code>Service</code> tab shows the logs summarized by service, and you can drill down to see the individual access calls for a specific service.</p>
     <p>Similarly, the <code>DataRoot </code> tab shows the logs summarized by data root, and you can drill down to see the individual access calls for a specific data root. For this to work correctly, you must have selected <code>data roots</code> in the ManageLogs when downloading. This will download<code> the dataroot file to $USER_HOME/tdsMonitor/localhost%3A8080/roots.txt</code>. You should refresh it whenever the data roots change on your server.</p>
     <p>Go to the TimeSeries tab:</p>
-    <p><a href="images/timeSeries.png"><img src="images/timeSeries_small.png" width="800" height="385"></a></p>
+    <p><a href="images/timeSeries.png" target="_blank"><img src="images/timeSeries_small.png" width="800" height="385"></a></p>
     <p>This gives a summary of activity on your server for the selected time period, using 5 minute intervals. The total number of requests, total Mbytes sent, and Average Latency in each 5 minute interval are shown.</p>
    </div> <!-- end section -->
 
@@ -97,14 +97,14 @@
     <h2><a name="servlet">Viewing the TDS servlet logs</a></h2>
     <p>The TDS Servlet logs are for debugging and are more low-level than the access logs. They are also bigger and you will want to be  careful about examining a manageable subset of them at any one time.</p>
     <p>Switch to the <code>ServletLogs</code> tab, and select<code> localhost:8080</code>, which will make the <code>Start Date</code> and <code>End Date</code> fields get filled out. Press the <code>get logs</code> button <img src="images/getlogsButt.png" alt="" width="28" height="28">, and the logs in the selected time range are read in:</p>
-    <p><a href="images/ServletLogs.png"><img src="images/ServletLogs_small.png" width="800" height="314"></a></p>
+    <p><a href="images/ServletLogs.png" target="_blank"><img src="images/ServletLogs_small.png" width="800" height="314"></a></p>
     <p>The LogTable shows the raw data. You almost always want to look just at the Merged logs, by choosing the <code>Merge</code> tab. For illustration purposes, we have switched to a larger set of logs from motherlode server:</p>
-    <p><a href="images/Merge.png"><img src="images/Merge_small.png" width="800" height="314"></a></p>
+    <p><a href="images/Merge.png" target="_blank"><img src="images/Merge_small.png" width="800" height="314"></a></p>
     <p>The top table shows groups of logs which are continuous in their <code>reqSeq</code> numbers, so each group indicates that the TDS web application (and/or Tomcat) was restarted between the endDate and startDate of the subsequent group. Select one of these groups to see the logs that are in that group in the lower table.</p>
     <p>As with the access log tables, you can rearrange and sort on the columns. Reverse sort on the <code>extra</code> column (by clicking on it twice) to show the logs that have extra information. In this example:</p>
-    <p><a href="images/extra.png"><img src="images/extra_small.png" width="800" height="315"></a></p>
+    <p><a href="images/extra.png" target="_blank"><img src="images/extra_small.png" width="800" height="315"></a></p>
     <p>Select one of the rows with extra information, and  click on it to bring up the information about that request:</p>
-    <p><a href="images/extraInfo.png"><img src="images/extraInfo_small.png" width="800" height="188"></a></p>
+    <p><a href="images/extraInfo.png" target="_blank"><img src="images/extraInfo_small.png" width="800" height="188"></a></p>
     <p>This shows all the information about request 294. The first line shows the information when the request first arrived at the server:</p>
     <table width="643" border="1">
      <tr>
