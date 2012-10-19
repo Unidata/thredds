@@ -7,6 +7,10 @@ h4 {border: none !important;}
 pre {white-space: pre-wrap; position: relative; font-family: "Lucida Console", "Courier New", monospace; margin: 0px 0px 20px 0px; padding: 5px 10px 5px 10px; background: #FAF8F0; border: 1px solid #BEBAB0; font-size: 9pt;}
 .notice {margin-top: -40px; font-size: 10pt}
 ol li {margin: 5px 0;}
+a[href*='reference']{padding-right:25px;padding-top: 4px;line-height:20px; background:transparent url(images/external_ref.png) no-repeat top right; }
+
+
+
 
 /* workshopNav */
 ul#workshopNav {list-style: none; font-size: 11px; margin: 0 0 20px 0; padding: 0; color: #696969;}
@@ -21,7 +25,7 @@ ul#workshopNav li a {padding: 0px 20px 0px 0px; background: transparent url('ima
 
 
 /* right floating boxes */
-#note {z-index: 10; border: 2px dashed #4682B4; padding: 10px 10px 5px 10px; margin: 0px 0px 10px 50px; float: right; position: relative; width: 250px; font-size: 10pt;}
+#note {z-index: 10; border: 2px dashed #4682B4; padding: 10px 10px 5px 10px; margin: 0px 0px 10px 50px; float: right; clear: right; position: relative; width: 250px; font-size: 10pt;}
 #note h4 {padding: 0px 0px 0px 40px; margin: 0px 0px 15px 0px; }
 #note ol, #note ul{margin-left: 25px; padding: 0;}
 
