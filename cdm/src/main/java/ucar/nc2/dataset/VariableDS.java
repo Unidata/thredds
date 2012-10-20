@@ -40,7 +40,6 @@ import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Formatter;
 import java.util.Set;
@@ -555,9 +554,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
   @Override
   public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
-    // LOOK
-    // if (orgVar == null)
-    //  return getMissingDataArray(section.getShape());
+    if (orgVar == null)
+      return super.readToStream(section, out);
 
     return orgVar.readToStream(section, out);
   }

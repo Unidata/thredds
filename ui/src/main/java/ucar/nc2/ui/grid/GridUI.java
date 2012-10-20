@@ -405,8 +405,7 @@ public class GridUI extends JPanel {
       // Configure
     chooseProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-
-        //getProjectionManager().setVisible();
+        getProjectionManager().setVisible();
       }
     };
     BAMutil.setActionProperties( chooseProjectionAction, null, "Projection Manager...", false, 'P', 0);
