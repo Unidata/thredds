@@ -15,7 +15,7 @@ dl {margin: 10px 5px 5px 15px;}
 <hr />
 <h2>Overview</h2>
 <p>The <b>featureCollection</b> element is a way to tell the TDS to serve collections of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used  for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack. This allows the TDS to automatically create logical datasets composed of  collections of files, and to allow subsetting in coordinate space  on them, eg through the WMS, WCS, and Netcdf Subsetting Service.</p>
-<p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong> = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 also allows <strong>featureType</strong> =<em> GRIB</em>, which can only be used for collections of GRIB files. </p>
+<p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong> = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 also allows <strong>featureType</strong> =<em> GRIB</em>, which can only be used for collections of GRIB files. <em>Currently, one should <strong>only</strong> serve GRIB files with featureCollection=GRIB.</em></p>
 <p>The <b>featureCollection</b> element is a subtype of <strong>dataset</strong> element. It defines a<em> logical dataset</em> for the TDS. All of the elements that can be used inside of a <strong>dataset</strong> element can be used inside of a <b>featureCollection</b> element.</p>
 <p>A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance, and in managing collections that change. For high-performance servers, its better to let a background process manage indexing, and the THREDDS Data Manager (<a href="TDM.html">TDM</a>) is an experimental (alpha release) application for this purpose available in TDS 4.3.</p>
 <h3>Contents:</h3>
@@ -35,13 +35,13 @@ dl {margin: 10px 5px 5px 15px;}
 <hr />
 <h2><a name="example" id="example"></a>Example catalog elements</h2>
 <p>Simple case using defaults:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;GRIB&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot;/&gt;
 
 &lt;/featureCollection&gt;
 </pre>
 <p>Fully specify the options:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Alaska_11km&quot;&gt;
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Alaska_11km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$&quot;<br />            name=&quot;NAM_Alaska_11km&quot;<br />            dateFormatMark=&quot;#NAM_Alaska_11km_#yyyyMMdd_HHmm&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;
 
 
@@ -51,7 +51,7 @@ dl {margin: 10px 5px 5px 15px;}
 &lt;/featureCollection&gt;
 </pre>
 <p>  With NcML elements:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Alaska_11km&quot;&gt;
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Alaska_11km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot; olderThan=&quot;5 min&quot;/&gt;
   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
@@ -115,7 +115,7 @@ The XML Schema:
   <li><strong>timePartition</strong> (optional): experimental, not complete yet.</li>
   <li><strong>useIndexOnly</strong> (optional): experimental, not complete yet</li>
 </ol>
-<h3>Date Extractor</h3>
+<h3>Date Extractor<a name="dateExtractor" id="dateExtractor"></a></h3>
 <p>Feature Collections  need to know how to sort the collection of files, so it is strongly recommended that you have a date in the filename, and to specify a date extractor in the specification string or include a dateFormatMark attribute. Otherwise, files will be sorted by filename.</p>
 <p>1. If the date is in the filename only, you can use  the <a href="CollectionSpecification.html">collection specification</a> string, eg a spec:</p>
 <blockquote>
@@ -248,7 +248,7 @@ The XML Schema definition for the update element:
 <hr />
 <h2>NcML Modifications<a name="ncml" id="ncml"></a> </h2>
 <p>NcML is no longer used to define the collection, but it may still be used to modify the feature collection dataset. </p>
-<p>Old way:</p>
+<p><strong>Old way:</strong></p>
 <pre>&lt;datasetFmrc name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
 
@@ -275,7 +275,7 @@ The XML Schema definition for the update element:
   <li>on the inside of the aggregation, an attribute is being added/modified for the existing variable &quot;time&quot;<em> for each dataset in the collection</em>. Typically you need to do this in order to make the component files into a gridded dataset.</li>
   <li>the collection is defined by a <em>scanFmrc</em> element, creating a <em>forecastModelRunSingleCollection</em> with one forecast time per file</li>
 </ol>
-<p>New way:</p>
+<p><strong>New way:</strong></p>
 <pre>&lt;<strong>featureCollection </strong>name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
 1) &lt;collection spec=&quot;c:/rps/cf/rtofs/.*ofs_atl.*\.grib2$&quot; <strong>recheckAfter</strong>=&quot;10 min&quot; <strong>olderThan</strong>=&quot;5 min&quot;/&gt;
 

@@ -14,7 +14,7 @@ dl {margin: 10px 5px 5px 15px;)
 <body>
 <h1>FMRC Collections</h1>
 <p> A <em><strong>Forecast Model Run Collection (FMRC) </strong></em>is a  <em><strong>collection of forecast model runs</strong></em><em><strong>, </strong></em>which can be uniquely identified by the start of the model run, called the model<em><strong> run time</strong></em>, also called the <em><strong>analysis time </strong></em>or<em><strong> generating time</strong></em>. Each model run has a series of forecast times. A collection of these runs therefore has two time coordinates, the run time and the forecast time. An FMRC creates a 2D ctime collection dataset, and then creates various 1D time subsets out of it.</p>
-<p>Previously this functionality was provided using <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">FMRC Aggregation</a> through NcML and the <strong>&lt;fmrcDataset&gt;</strong> element in the TDS caonfiguration catalog. As of TDS 4.2, that implementation is now deprecated, at least on the server, and <strong>&lt;featureCollection&gt;</strong> elements are the correct way to provide this functionality.</p>
+<p>Previously this functionality was provided using <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">FMRC Aggregation</a> through NcML and the <strong>&lt;fmrcDataset&gt;</strong> element in the TDS caonfiguration catalog. As of TDS 4.2, that implementation is now deprecated, at least on the server, and <strong>&lt;featureCollection&gt;</strong> elements are the correct way to provide this functionality. As of 4.3, <em> one should <strong>only</strong> serve GRIB files with featureCollection=GRIB.</em></p>
 <hr />
 <h3>fmrcConfig element</h3>
 <p>Defines options on feature collections with <strong> featureType</strong>=&quot;FMRC&quot;.</p>
@@ -28,7 +28,7 @@ dl {margin: 10px 5px 5px 15px;)
   <p>where:</p>
   <ol>
     <li> <strong>regularize</strong>: If true, then the runs for a given  hour (from 0Z) are assumed to have the same forecast time coordinates. For example, if you have 4 model runs per day (eg 0, 6, 12, 18Z) and many days of model runs, then all the 6Z runs for all days will have the same time coordiantes, etc. This &quot;regularizes&quot;  time coordinates, and is useful when there may be missing forecast times, instead of creating a new time coordinate. This obviates the need for the FMRC definition files which previously were used on motherlode  for models in the IDD feed. </li>
-    <li><strong>datasetTypes</strong>: list the dataset types that are  exposed in the TDS catalog. The possible values are:
+    <li><a name="datasetTypes" id="datasetTypes"></a>: list the dataset types that are  exposed in the TDS catalog. The possible values are:
       <ul>
           <li><em>TwoD</em>: dataset with two time dimensions (run time and forecast time), which contains all the data in the collection.</li>
         <li><em>Best</em>: dataset using the latest model data available for each possible forecast hour.</li>
@@ -145,13 +145,11 @@ dl {margin: 10px 5px 5px 15px;)
 </pre>
 <p>and the forecast time coordinates are extracted from the grid coordinate system.</p>
 <p>There is no need to specify <strong>forecastModelRunCollection</strong> vs <strong>forecastModelRunSingleCollectionc</strong>, nor <strong>timeUnitsChange</strong>. This is detected automatically.</p>
-<h3>Regulate</h3>
+<h3>Regular</h3>
 <p>If true, then all runs for a given offset hour (from 0Z) are assumed to have the same forecast time coordinates. This obviates the need for the FMRC definition files which previously were used on motherlode. This evens out time coordinates, and compensates for missing forecast times in the IDD feed.</p>
 <h3>Persistent Caching</h3>
 <p>An <em>fmrInv.xml</em> file is made which records the essential grid information from each file. It is cached in a persistent Berkeley Database (bdb) key/value store, so that it only has to be done the first time the file is accessed in an FMRC. Each collection becomes a seperate bdb database, and each file in the collection is an element in the database, with the filename as the key and the <em>fmrInv.xml </em>as the value. When a collection is scanned, any filenames already in the database are reused. Any new ones are read and added to the database. Any entries in the database that no longer have a filename associated with them are deleted.</p>
 <p>ToolsUI collections tab allows you to delete database or individual elements.</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
 <hr width="100%" />
 <address>
 <img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  May 2011

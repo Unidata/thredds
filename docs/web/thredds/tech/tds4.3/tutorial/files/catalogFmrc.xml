@@ -2,17 +2,28 @@
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
          xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.3">
 
-  <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+  <service name="fmrcServices" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+  </service>
   
   <dataset name="FMRC Example for tutorial">
-      <featureCollection featureType="FMRC" name="NCEP-GFS-Puerto_Rico_191km" harvest="true" path="fmrc/NCEP/GFS/Puerto_Rico_191km">
-        <metadata inherited="true">
-          <serviceName>ncdods</serviceName>
-          <dataFormat>GRIB-1</dataFormat>
-          <documentation type="summary">Specially good GFS_Puerto_Rico_191km</documentation>
-        </metadata>
-        <collection spec="/data/testdata/2010TdsTW/fmrc/GFS_Puerto_Rico_191km.*grib1$" />
-      </featureCollection>
+    <featureCollection name="BOM" featureType="FMRC" harvest="true" path="BOM">
+      <metadata inherited="true">
+         <serviceName>fmrcServices</serviceName>
+          <dataFormat>netCDF</dataFormat>
+         <documentation type="summary">Example BOM</documentation>
+      </metadata>
+
+      <collection spec="/tds2012data/fmrc/bom/**/ocean_fc_#yyyMMdd#.*\.nc$" />
+    </featureCollection>
   </dataset>
 
 </catalog>

@@ -116,7 +116,8 @@ information about the group that hosts the server.<br>
   supersedes information in the <code>htmlSetup</code> element (described below).
   The superseded information is listed as deprecated in the description of the
   <code>htmlSetup</code> element below.</p>
-<p>NOTE: URLs may be absolute or relative. The easiest way to use your own logo is to put it in the <strong>${tomcat_home}/webapps/ROOT/</strong> directory and specify it here as <strong>/logo.png</strong></p>
+<p>NOTE: The best way to use your own logo is to put it in the <strong>${tomcat_home}/content/thredds/public/ </strong>directory, and specifying it here as<strong> /thredds/&lt;name&gt;</strong>, eg:</p>
+<pre> &lt;logoUrl&gt;/thredds/yourIcon.gif&lt;/logoUrl&gt;<strong></strong></pre>
 <h3><a name="Generated_HTML_Pages"></a>Generated HTML Pages</h3>
 
  <p>In the <code>htmlSetup</code> element, you can configure which CSS
@@ -161,8 +162,8 @@ information about the group that hosts the server.<br>
 <pre style="margin-left: 40px;">&lt;<strong>catalogRoot</strong>&gt;tempCatalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;idd/catalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;catgen/subdir/enhancedCatalog-1.0.xml&lt;/catalogRoot&gt;</pre>
  <p>These elements name your root catalogs that are not referenced from your main catalog ( <strong>${tomcat_home}/content/thredds/catalog.xml</strong>).
 On startup, the TDS reads the main catalog and any root catalogs you
-list here, plus any catalogs that are referenced by them in a <strong>catalogRef</strong>. Data roots and other needed information are found and cached. All the catalogs found in this way are called <em>static catalogs</em>, and all static catalogs must live under the <strong>${tomcat_home}/content/thredds</strong> directory. When you do a <strong>Debug/Reinit</strong>, the static  catalogs are reread. </p>
- <h3>Adding Viewers<a name="Viewers"></a></h3>
+list here, plus any catalogs that are referenced by them in a <strong>catalogRef</strong>. Data roots and other needed information are found and cached. All the catalogs found in this way are called <em>static catalogs</em>, and all static catalogs must live under the <strong>${tomcat_home}/content/thredds</strong> directory. </p>
+<h3>Adding Viewers<a name="Viewers"></a></h3>
  <pre>   &lt;<strong>Viewer</strong>&gt;my.package.MyViewer&lt;/Viewer&gt;</pre>
  <p>You can place a link  to your own <em><strong>Viewer</strong></em> on the TDS HTML page, by loading a <a href="Viewers.html">viewer</a> at runtime. This line is needed in the config file only if you are writing your own Java class.</p>
  <h3>Adding Dataset Sources<a name="DatasetSource"></a> </h3>

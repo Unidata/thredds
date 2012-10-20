@@ -21,6 +21,7 @@
 <p><strong>Note that you don't include  /thredds in the url-pattern</strong>. Also note that if you are using multiple data services, you must include each service's URL pattern, for example:</p>
 <pre>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restrict by URL&lt;/web-resource-name&gt;<br>      <strong>&lt;url-pattern&gt;/dodsC/testEnhanced/*&lt;/url-pattern&gt;<br>      &lt;url-pattern&gt;/fileServer/testEnhanced/*&lt;/url-pattern&gt;</strong><br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br></pre>
 <p>Using Tomcat to provide restricted access works well when you want to restrict your entire site to a single set of users. When you want to give access to different datasets to different users, you must understand in some detail what the URLs look like.</p>
+<hr>
 <h2>2. Restrict by Dataset using TDS Catalog<br>
 </h2>
 <p>A more fine-grained approach is to modify the dataset elements in the TDS configuration catalog. To do this, you add an attribute on a dataset or datasetScan element in the TDS catalog, eg <strong>restrictAccess=&quot;</strong><strong>roleName&quot;</strong>. All services that use that dataset will be restricted to users with the named role.</p>
@@ -79,6 +80,7 @@
   <li>If your browser has cached credentials which are wrong, it will simply send them without giving you a chance to renter. Firefox, at least, doesn't seem to have a way to clear this cache. Try exiting all instances of the browser and restarting it.</li>
   <li>You are denied access when you enter in your username/password, but subsequent tests allow you to access the data. Make sure that your user has both the <strong>restrictedDatasetUser</strong> and the particular security role needed for that dataset. </li>
 </ul>
+<hr>
 <h2><a name="SSL"></a>Requiring SSL authentication </h2>
 <p>To require authentication to be done over <a href="http://en.wikipedia.org/wiki/SSL">SSL</a>, do everything in the default configuration above, plus the following: </p>
 <h3>1. Enable Tomcat Security / SSL </h3>
@@ -123,9 +125,7 @@
  <pre>  &lt;login-config&gt;
     &lt;auth-method&gt;DIGEST&lt;/auth-method&gt;
     &lt;realm-name&gt;<strong>Unidata IDD Server (motherload.ucar.edu)</strong>)&lt;/realm-name&gt;
-  &lt;/login-config&gt; 
-  </pre>
-<pre>&nbsp;  </pre>
+  &lt;/login-config&gt;</pre>
 <hr width="100%">
 <address>
     <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
