@@ -36,6 +36,7 @@ import thredds.inventory.CollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.ui.dialog.Fmrc2Dialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -468,7 +469,7 @@ public class Fmrc2Panel extends JPanel {
 
   private void showGridInv(GridBean bean) {
     Formatter out = new Formatter();
-    FmrcInv.UberGrid ugrid = ((GridBean) bean).grid;
+    FmrcInv.UberGrid ugrid = bean.grid;
     out.format("Show FmrcInv.UberGrid name= %s%n% 3d expected inventory %n%n", ugrid.getName(), ugrid.countExpected());
 
     // show actual inventory
@@ -479,7 +480,7 @@ public class Fmrc2Panel extends JPanel {
     for (int i=0; i<union.getNCoords(); i++)
       out.format("%"+w2+"d ", i);
     out.format("%n");
-    out.format("     RunTime             Total");
+    out.format("     RunTime             Total ");
     showCoords(union, out);
     out.format("%n");
 
@@ -487,7 +488,7 @@ public class Fmrc2Panel extends JPanel {
     int runidx = 0;
     for (FmrInv.GridVariable run : ugrid.getRuns()) {
       for (GridDatasetInv.Grid inv : run.getInventory()) {
-        out.format(" %3d %s ", runidx, run.getRunDate());
+        out.format(" %3d %s ", runidx, CalendarDateFormatter.toDateTimeString(run.getRunDate()));
         count += showActualInventory(inv, union, w2, out);
         out.format(" %s%n", inv.getLocation());
       }

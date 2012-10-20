@@ -89,15 +89,26 @@ public class TimeCoord implements Comparable {
     int n = (int) axis.getSize();
     if (axis.isInterval()) {
       this.isInterval = true;
-      this.bound1 = axis.getBound1();
-      this.bound2 = axis.getBound2();
+      this.bound1 = new double[n];
+      this.bound2 = new double[n];
+      double[] orgBound1 =  axis.getBound1();
+      double[] orgBound2 =  axis.getBound2();
+      this.bound2 = new double[n];
+      for (int i = 0; i < axis.getSize(); i++) {
+        this.bound1[i] = getValueInHours(unit, orgBound1[i]);
+        this.bound2[i] = getValueInHours(unit, orgBound2[i]);
+      }
     } else {
       offset = new double[n];
       for (int i = 0; i < axis.getSize(); i++) {
-        CalendarDate d = unit.makeCalendarDate(axis.getCoordValue(i));
-        offset[i] = FmrcInv.getOffsetInHours(runDate, d);
+        offset[i] = getValueInHours(unit, axis.getCoordValue(i));
       }
     }
+  }
+
+  double getValueInHours(DateUnit unit, double value) {
+    CalendarDate d = unit.makeCalendarDate(value);
+    return FmrcInv.getOffsetInHours(runDate, d);
   }
 
   void addGridInventory(GridDatasetInv.Grid grid) {

@@ -54,7 +54,7 @@ import java.util.*;
  * The various GridDatasets must be thread-safe.
  * <p/>
  * Time coordinate values come from the FmrcInv, so there is little I/O here.
- * Non-aggregation variables are either cached or have DatasetProxyReaders ser so the file is opened when the variable needs to be read.
+ * Non-aggregation variables are either cached or have DatasetProxyReaders set so the file is opened when the variable needs to be read.
  * <p/>
  * The prototype dataset is kept separate, since the common case is that just the time coordinates have changed.
  * <p/>
