@@ -25,49 +25,82 @@ for more information.
   <overrides>
     <datasetPath pathSpec="grib/NCEP/*">
       <variables>
-        <variable id="Temperature_height_above_ground">
-          <defaultColorScaleRange>280 290</defaultColorScaleRange>
+        <variable id="Absolute_vorticity_pressure">                            <!-- units: 1/s -->
+          <defaultColorScaleRange>-0.0002 0.0002</defaultColorScaleRange>
         </variable>
-        <variable id="Temperature_pressure">
-          <defaultColorScaleRange>280 290</defaultColorScaleRange>
+        <variable id="Best_4_layer_Lifted_Index_pressure_difference_layer">    <!-- units: K -->
+          <defaultColorScaleRange>-10 40</defaultColorScaleRange>
         </variable>
-        <variable id="Relative_humidity_height_above_ground">
-          <defaultColorScaleRange>280 290</defaultColorScaleRange>
+        <variable id="Best_4_layer_Lifted_Index_surface">                      <!-- units: K -->
+          <defaultColorScaleRange>-10 40</defaultColorScaleRange>
         </variable>
-        <variable id="SAL">
-          <defaultColorScaleRange>30 35</defaultColorScaleRange>
+        <variable id="Cloud_water_entire_atmosphere">                          <!-- units: kg.m-2 -->
+          <defaultColorScaleRange>0 2</defaultColorScaleRange>
+        </variable>
+        <variable id="Convective_available_potential_energy_pressure_difference_layer"> <!-- units: J/kg -->
+          <defaultColorScaleRange>0 3000</defaultColorScaleRange>
+        </variable>
+        <variable id="Convective_available_potential_energy_surface">          <!-- units: J/kg -->
+          <defaultColorScaleRange>0 3000</defaultColorScaleRange>
+        </variable>
+        <variable id="Convective_inhibition_pressure_difference_layer">        <!-- units: J/kg -->
+          <defaultColorScaleRange>-550 0</defaultColorScaleRange>
+        </variable>
+        <variable id="Convective_inhibition_surface">                          <!-- units: J/kg -->
+          <defaultColorScaleRange>-550 0</defaultColorScaleRange>
+        </variable>
+        <variable id="Geopotential_height_pressure">                           <!-- units: gpm -->
+          <defaultColorScaleRange>-300 3000</defaultColorScaleRange>
+        </variable>
+        <variable id="Geopotential_height_surface">                            <!-- units: gpm -->
+          <defaultColorScaleRange>-300 300</defaultColorScaleRange>
+        </variable>
+        <variable id="Potential_temperature_sigma">                            <!-- units: K -->
+          <defaultColorScaleRange>200 330</defaultColorScaleRange>
+        </variable>
+        <variable id="Precipitable_water_entire_atmosphere">                   <!-- units: kg.m-2 -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Pressure_height_above_ground">                           <!-- units: Pa -->
+          <defaultColorScaleRange>52000 105000</defaultColorScaleRange>
+        </variable>
+        <variable id="Pressure_surface">                                       <!-- units: Pa -->
+          <defaultColorScaleRange>52000 105000</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_height_above_ground">                  <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Relative_humidity_pressure">                             <!-- units: % -->
+          <defaultColorScaleRange>0 100</defaultColorScaleRange>
+        </variable>
+        <variable id="Surface_Lifted_Index_pressure_layer">                    <!-- units: K -->
+          <defaultColorScaleRange>-10 40</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_height_above_ground">                        <!-- units: K -->
+          <defaultColorScaleRange>200 310</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_pressure">                                   <!-- units: K -->
+          <defaultColorScaleRange>200 310</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_sigma">                                      <!-- units: K -->
+          <defaultColorScaleRange>200 310</defaultColorScaleRange>
+        </variable>
+        <variable id="Temperature_surface">                                    <!-- units: K -->
+          <defaultColorScaleRange>200 310</defaultColorScaleRange>
+        </variable>
+        <variable id="u-component_of_wind_height_above_ground">                <!-- units: m/s -->
+          <defaultColorScaleRange>-75 75</defaultColorScaleRange>
+        </variable>
+        <variable id="u-component_of_wind_pressure">                           <!-- units: m/s -->
+          <defaultColorScaleRange>-75 75</defaultColorScaleRange>
+        </variable>
+        <variable id="v-component_of_wind_height_above_ground">                <!-- units: m/s -->
+          <defaultColorScaleRange>-75 75</defaultColorScaleRange>
+        </variable>
+        <variable id="v-component_of_wind_pressure">                           <!-- units: m/s -->
+          <defaultColorScaleRange>-75 75</defaultColorScaleRange>
         </variable>
       </variables>
-      <!--
-      Absolute_vorticity_pressure                                        (1/s) [-0.0002, 0.0002]
-      Best_4_layer_Lifted_Index_pressure_difference_layer                  (K) [-10,40]
-      Best_4_layer_Lifted_Index_surface                                    (K) [-10,40]
-      Cloud_water_entire_atmosphere                                   (kg.m-2) [0, 2]
-      Convective_available_potential_energy_pressure_difference_layer   (J/kg) [0, 3000]
-      Convective_available_potential_energy_surface                     (J/kg) [0, 3000]
-      Convective_inhibition_pressure_difference_layer                   (J/kg) [-550, 0]
-      Convective_inhibition_surface                                     (J/kg) [-550, 0]
-      Geopotential_height_pressure                                       (gpm) [-300, 3000]
-      Geopotential_height_surface                                        (gpm) [-300, 300]
-      Potential_temperature_sigma                                          (K) [200, 330]
-      Precipitable_water_entire_atmosphere                            (kg.m-2) [0, 100]
-      Pressure_height_above_ground                                        (Pa) [52000, 105000]
-      Pressure_surface                                                    (Pa) [52000, 105000]
-      Relative_humidity_height_above_ground                                (%) [0, 100]
-      Relative_humidity_pressure                                           (%) [0, 100]
-      Surface_Lifted_Index_pressure_layer                                  (K) [-10,40]
-      Temperature_height_above_ground                                      (K) [200, 310]
-      Temperature_pressure                                                 (K)    "
-      Temperature_sigma (K)                                                       "
-      Temperature_surface (K)                                                     "
-      u-component_of_wind_height_above_ground  (m/s)                           [-50, 50]
-      u-component_of_wind_pressure (m/s)                                          "
-      v-component_of_wind_height_above_ground (m/s)                               "
-      v-component_of_wind_pressure (m/s)                                          "
-      -->
     </datasetPath>
-    <!--datasetPath pathSpec="foo/bar">
-      ...
-    </datasetPath-->
   </overrides>
 </wmsConfig>

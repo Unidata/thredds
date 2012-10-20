@@ -120,7 +120,7 @@ span.bold {
 			<tr>
 				<td>var</td>
 				<td>yes</td>
-				<td>Variables must be in the dataset description.<br /><span class="bold">Variables on Grid requests for a particular vertical level must have the same vertical axis.<br /> On Grid as point requests only requests on variables with the same vertical level are supported</span></td>
+				<td>Variables must be in the dataset description.<br /><span class="bold">Variables on Grid requests for a particular vertical level must have the same vertical axis.<br /></span></td>
 				<td><span>Name of variables, separated by ',' (comma) or "all" to request all variables</span></td>
 				<td>&nbsp;</td>
 			</tr>
@@ -300,7 +300,7 @@ span.bold {
 			<tr>
 				<td>vertCoord</td>
 				<td>no</td>
-				<td>On requests with vertCoord all requested variables must have the same vertical levels.</td>
+				<td>On Grid requests with vertCoord all requested variables must have the same vertical levels.</td>
 				<td>&nbsp;</td>
 				<td>If the requested variables have vertical levels, all the vertical levels will be returned</td>
 			</tr>
@@ -387,7 +387,7 @@ span.bold {
 	<h3>
 		<strong><a name="Vertical"></a> Vertical coordinate subsetting </strong>
 	</h3>
-	<p>Subset on the vertical axis of a variable or variables with the same vertical levels may be done with the vertCoord parameter.</p>
+	<p>Subset on the vertical axis of variables may be done with the vertCoord parameter. In Grid requests, vertical subsetting is allowed only on variables with the same vertical level.</p>
 	<p>By default, all vertical levels are returned.</p>		
 	
 
