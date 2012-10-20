@@ -24,8 +24,8 @@
     <h3>Installing Java</h3>
     <ol>
      <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun. Use the latest 1.7 version of the JDK.</li>
-     <p>At the time of this workshop, that is version <i>Java SE 7u7</i>.  We will be using the Linux x64-bit tar.gz file:</p>
-     <p><code>jdk-7u7-linux-x64.tar.gz</code></p>
+     <p>At the time of this workshop, that is version <i>Java SE 7u9</i>.  We will be using the Linux x64-bit tar.gz file:</p>
+     <p><code>jdk-7u9-linux-x64.tar.gz</code></p>
      <li>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>
      <p>Copy the binary tar.gz file into the installation directory (<code>/home/tds/GettingStarted/</code> in this example):</p>
 <pre>
@@ -33,14 +33,23 @@
 /home/tds
 
 <b>$</b> ls -l  
-drwxr-xr-x 2 tds ustaff 4096 Oct  8 10:39 Downloads
-drwxr-xr-x 2 tds ustaff 4096 Oct  8 10:39 GettingStarted
-drwxr-xr-x 4 tds ustaff 4096 Oct  8 10:44 workshop
+drwxr-xr-x  2 tds ustaff 4096 Oct  9 14:02 Desktop
+drwxr-xr-x  2 tds ustaff 4096 Oct  9 12:55 Documents
+drwxr-xr-x  2 tds ustaff 4096 Oct 19 17:49 Downloads
+drwxr-xr-x 14 tds ustaff 4096 Oct 19 16:02 epd
+drwxr-xr-x  2 tds ustaff 4096 Oct  8 15:52 GettingStarted
+drwxr-xr-x  2 tds ustaff 4096 Oct  9 12:55 Music
+drwxr-xr-x  2 tds ustaff 4096 Oct  9 13:48 netcdf-java-4.3
+drwxr-xr-x  2 tds ustaff 4096 Oct  9 12:55 Pictures
+drwxr-xr-x  2 tds ustaff 4096 Oct  9 12:55 Public
+drwxr-xr-x  2 tds ustaff 4096 Oct  9 12:55 Templates
+drwxr-xr-x  2 tds ustaff 4096 Oct  9 12:55 Videos
+drwxr-xr-x  2 tds ustaff 4096 Oct 19 17:52 workshop
 
-<b>$</b> cp Downloads/jdk-7u7-linux-x64.tar.gz GettingStarted/ 
+<b>$</b> cp Downloads/jdk-7u9-linux-x64.tar.gz GettingStarted/ 
 
 <b>$</b> ls -l  GettingStarted/
--rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
+-rw-r--r-- 1 tds ustaff 96043498 Oct 19 17:56 jdk-7u9-linux-x64.tar.gz
 </pre>
      <p>Move into the installation directory and unpack the archive file:</p>  
 <pre>
@@ -49,15 +58,15 @@ drwxr-xr-x 4 tds ustaff 4096 Oct  8 10:44 workshop
 /home/tds/GettingStarted
 
 <b>$</b> ls -l 
--rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
+-rw-r--r-- 1 tds ustaff 96043498 Oct 19 17:56 jdk-7u9-linux-x64.tar.gz
 
-<b>$</b> tar zxvf jdk-7u7-linux-x64.tar.gz 
+<b>$</b> tar zxvf jdk-7u9-linux-x64.tar.gz 
 </pre>
      <p>This will extract the JDK in the installation directory:</p>
 <pre>
 <b>$</b> ls -l  
-drwxr-xr-x 8 tds ustaff     4096 Aug 28 19:12 jdk1.7.0_07
--rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
+<b>drwxr-xr-x 8 tds ustaff     4096 Sep 24 21:38 jdk1.7.0_09</b>
+-rw-r--r-- 1 tds ustaff 96043498 Oct 19 17:56 jdk-7u9-linux-x64.tar.gz
 </pre>
      <div id="expanded" class="troubleshooting">
       <h4>Troubleshooting</h4>
@@ -79,9 +88,9 @@ drwxr-xr-x 8 tds ustaff     4096 Aug 28 19:12 jdk1.7.0_07
 <b>$</b> cp ~/Downloads/apache-tomcat-7.0.32.tar.gz .
 
 <b>$</b> ls -l 
--rw-r--r-- 1 tds ustaff  7697071 Oct  8 10:57 apache-tomcat-7.0.32.tar.gz
-drwxr-xr-x 8 tds ustaff     4096 Aug 28 19:12 jdk1.7.0_07
--rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
+<b>-rw-r--r-- 1 tds ustaff  7701019 Oct 19 17:59 apache-tomcat-7.0.32.tar.gz</b>
+drwxr-xr-x 8 tds ustaff     4096 Sep 24 21:38 jdk1.7.0_09
+-rw-r--r-- 1 tds ustaff 96043498 Oct 19 17:56 jdk-7u9-linux-x64.tar.gz
 </pre>
      <p>Unpack the archive file:</p>  
 <pre>
@@ -90,10 +99,10 @@ drwxr-xr-x 8 tds ustaff     4096 Aug 28 19:12 jdk1.7.0_07
      <p>This will create a Tomcat directory:</p>
 <pre>
 <b>$</b> ls -l
-drwxr-xr-x 9 tds ustaff     4096 Oct  8 10:58 apache-tomcat-7.0.32
--rw-r--r-- 1 tds ustaff  7697071 Oct  8 10:57 apache-tomcat-7.0.32.tar.gz
-drwxr-xr-x 8 tds ustaff     4096 Aug 28 19:12 jdk1.7.0_07
--rw-r--r-- 1 tds ustaff 96039818 Oct  8 10:53 jdk-7u7-linux-x64.tar.gz
+<b>drwxr-xr-x 9 tds ustaff     4096 Oct 19 18:00 apache-tomcat-7.0.32</b>
+-rw-r--r-- 1 tds ustaff  7701019 Oct 19 17:59 apache-tomcat-7.0.32.tar.gz
+drwxr-xr-x 8 tds ustaff     4096 Sep 24 21:38 jdk1.7.0_09
+-rw-r--r-- 1 tds ustaff 96043498 Oct 19 17:56 jdk-7u9-linux-x64.tar.gz
 </pre>
     </ol>    
     <div id="expanded" class="exercise">
@@ -111,17 +120,17 @@ drwxr-xr-x 8 tds ustaff     4096 Aug 28 19:12 jdk1.7.0_07
 <pre>
 <b>$</b> cd apache-tomcat-7.0.32
 <b>$</b> ls -l 
-drwxr-xr-x 2 tds ustaff  4096 Oct  8 10:58 bin
-drwxr-xr-x 2 tds ustaff  4096 Sep  2 02:52 conf
-drwxr-xr-x 2 tds ustaff  4096 Oct  8 10:58 lib
--rw-r--r-- 1 tds ustaff 56812 Sep  2 02:52 LICENSE
-drwxr-xr-x 2 tds ustaff  4096 Sep  2 02:51 logs
--rw-r--r-- 1 tds ustaff  1192 Sep  2 02:52 NOTICE
--rw-r--r-- 1 tds ustaff  8826 Sep  2 02:52 RELEASE-NOTES
--rw-r--r-- 1 tds ustaff 15557 Sep  2 02:52 RUNNING.txt
-drwxr-xr-x 2 tds ustaff  4096 Oct  8 10:58 temp
-drwxr-xr-x 7 tds ustaff  4096 Sep  2 02:52 webapps
-drwxr-xr-x 2 tds ustaff  4096 Sep  2 02:51 work
+drwxr-xr-x 2 tds ustaff  4096 Oct 19 18:00 bin
+drwxr-xr-x 2 tds ustaff  4096 Oct  3 01:52 conf
+drwxr-xr-x 2 tds ustaff  4096 Oct 19 18:00 lib
+-rw-r--r-- 1 tds ustaff 56812 Oct  3 01:52 LICENSE
+drwxr-xr-x 2 tds ustaff  4096 Oct  3 01:51 logs
+-rw-r--r-- 1 tds ustaff  1192 Oct  3 01:52 NOTICE
+-rw-r--r-- 1 tds ustaff  8826 Oct  3 01:52 RELEASE-NOTES
+-rw-r--r-- 1 tds ustaff 15557 Oct  3 01:52 RUNNING.txt
+drwxr-xr-x 2 tds ustaff  4096 Oct 19 18:00 temp
+drwxr-xr-x 7 tds ustaff  4096 Oct  3 01:52 webapps
+drwxr-xr-x 2 tds ustaff  4096 Oct  3 01:51 work
 </pre>
      <li>Familiarize yourself with the following important directories.</li>
      <p><code>bin/</code></p>
@@ -221,7 +230,7 @@ tds       2711  2197  0 11:02 pts/1    00:00:00 grep tomcat
 #
 # ENVARS for Tomcat and TDS environment
 #
-JAVA_HOME="/home/tds/GettingStarted/jdk1.7.0_07"
+JAVA_HOME="/home/tds/GettingStarted/jdk1.7.0_09"
 export JAVA_HOME
 
 JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs"
@@ -254,7 +263,7 @@ export CATALINA_BASE
 Using CATALINA_BASE:   /home/tds/GettingStarted/apache-tomcat-7.0.32
 Using CATALINA_HOME:   /home/tds/GettingStarted/apache-tomcat-7.0.32
 Using CATALINA_TMPDIR: /home/tds/GettingStarted/apache-tomcat-7.0.32/temp
-Using JRE_HOME:        /home/tds/GettingStarted/jdk1.7.0_07
+Using JRE_HOME:        /home/tds/GettingStarted/jdk1.7.0_09
 Using CLASSPATH:       /home/tds/GettingStarted/apache-tomcat-7.0.32/bin/bootstrap.jar:/home/tds/GettingStarted/apache-tomcat-7.0.32/bin/tomcat-juli.jar
 </pre>
      <div id="expanded" class="question">
@@ -264,7 +273,7 @@ Using CLASSPATH:       /home/tds/GettingStarted/apache-tomcat-7.0.32/bin/bootstr
      <p>Take a look at the running Tomcat process to see the new <code>$JAVA_OPTS</code> settings:</p>
 <pre>
 <b>$</b> ps -ef | grep tomcat
-tds       2819     1 28 11:17 pts/1    00:00:02 /home/tds/GettingStarted/jdk1.7.0_07/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-7.0.32/conf/logging.properties <b>-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/home/tds/GettingStarted/apache-tomcat-7.0.32/content/thredds/javaUtilPrefs</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-7.0.32/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-7.0.32/bin/bootstrap.jar:/home/tds/GettingStarted/apache-tomcat-7.0.32/bin/tomcat-juli.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-7.0.32 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-7.0.32 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-7.0.32/temp org.apache.catalina.startup.Bootstrap start
+tds       2819     1 28 11:17 pts/1    00:00:02 /home/tds/GettingStarted/jdk1.7.0_09/bin/java -Djava.util.logging.config.file=/home/tds/GettingStarted/apache-tomcat-7.0.32/conf/logging.properties <b>-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/home/tds/GettingStarted/apache-tomcat-7.0.32/content/thredds/javaUtilPrefs</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/GettingStarted/apache-tomcat-7.0.32/endorsed -classpath /home/tds/GettingStarted/apache-tomcat-7.0.32/bin/bootstrap.jar:/home/tds/GettingStarted/apache-tomcat-7.0.32/bin/tomcat-juli.jar -Dcatalina.base=/home/tds/GettingStarted/apache-tomcat-7.0.32 -Dcatalina.home=/home/tds/GettingStarted/apache-tomcat-7.0.32 -Djava.io.tmpdir=/home/tds/GettingStarted/apache-tomcat-7.0.32/temp org.apache.catalina.startup.Bootstrap start
 </pre>
      <div id="expanded" class="question">
       <p>What allows us to create the <code>setenv.sh</code> file and have its contents read?   (Hint: have a look at the <code>catalina.sh</code> file in the Tomcat <code>bin/</code> directory at lines 24 and 133).</p>
@@ -295,7 +304,7 @@ WARNING: Couldn't flush system prefs: java.util.prefs.BackingStoreException: /et
 #
 # ENVARS for Tomcat and TDS environment
 #
-JAVA_HOME="/home/tds/GettingStarted/jdk1.7.0_07"
+JAVA_HOME="/home/tds/GettingStarted/jdk1.7.0_09"
 export JAVA_HOME
 
 JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true <b>-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs</b>"
@@ -334,7 +343,7 @@ export CATALINA_BASE
      <p>The <a href="../reference/index.html">reference</a> documentation contains information on <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/UpgradingTo4.3.html">upgrading</a> the TDS. </p>
     </div>
     <ol>
-     <li><a href="http://www.unidata.ucar.edu/downloads/thredds/index.jsp">Download</a> the TDS WAR file from Unidata's web site.</li>
+     <li><a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.3/current/thredds.war">Download</a> the TDS WAR file from Unidata's web site.</li>
      <p>We will be using the current <i>TDS 4.3 (release candidate) version</i> for this workshop:</p>
      <p><code>thredds.war</code></p>
      <li>Deploy the TDS in Tomcat.</li>
@@ -346,24 +355,24 @@ export CATALINA_BASE
 
 <b>$</b> cp ~/Downloads/thredds.war .
 <b>$</b> ls -l
-drwxr-xr-x 13 tds ustaff     4096 Oct  8 10:58 docs
-drwxr-xr-x  6 tds ustaff     4096 Oct  8 10:58 examples
-drwxr-xr-x  5 tds ustaff     4096 Oct  8 10:58 host-manager
-drwxr-xr-x  5 tds ustaff     4096 Oct  8 10:58 manager
-drwxr-xr-x  3 tds ustaff     4096 Oct  8 10:58 ROOT
--rw-r--r--  1 tds ustaff 40419313 Oct  8 15:25 thredds.war
+drwxr-xr-x 13 tds ustaff     4096 Oct 19 18:00 docs
+drwxr-xr-x  6 tds ustaff     4096 Oct 19 18:00 examples
+drwxr-xr-x  5 tds ustaff     4096 Oct 19 18:00 host-manager
+drwxr-xr-x  5 tds ustaff     4096 Oct 19 18:00 manager
+drwxr-xr-x  3 tds ustaff     4096 Oct 19 18:00 ROOT
+-rw-r--r--  1 tds ustaff 40419313 Oct 19 18:10 thredds.war
 </pre>
      <li>Confirm the TDS has been deployed.</li>
      <p>If Tomcat is already running, wait a couple of seconds after placing the WAR file in the Tomcat <code>webapps/</code> and then verify the <code>thredds.war</code> file was unpacked:</p>
 <pre>
 <b>$</b> ls -l
-drwxr-xr-x 13 tds ustaff     4096 Oct  8 10:58 docs
-drwxr-xr-x  6 tds ustaff     4096 Oct  8 10:58 examples
-drwxr-xr-x  5 tds ustaff     4096 Oct  8 10:58 host-manager
-drwxr-xr-x  5 tds ustaff     4096 Oct  8 10:58 manager
-drwxr-xr-x  3 tds ustaff     4096 Oct  8 10:58 ROOT
-drwxr-xr-x  8 tds ustaff     4096 Oct  8 15:25 thredds
--rw-r--r--  1 tds ustaff 40419313 Oct  8 15:25 thredds.war
+drwxr-xr-x 13 tds ustaff     4096 Oct 19 18:00 docs
+drwxr-xr-x  6 tds ustaff     4096 Oct 19 18:00 examples
+drwxr-xr-x  5 tds ustaff     4096 Oct 19 18:00 host-manager
+drwxr-xr-x  5 tds ustaff     4096 Oct 19 18:00 manager
+drwxr-xr-x  3 tds ustaff     4096 Oct 19 18:00 ROOT
+drwxr-xr-x  8 tds ustaff     4096 Oct 19 18:10 thredds
+-rw-r--r--  1 tds ustaff 40419313 Oct 19 18:10 thredds.war
 </pre>
      <p>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed:</p>
      <p><a href="images/tds.png" target="_blank"><img src="images/tds.png" width="300" alt="THREDDS Distribution Catalog" /></a></p>
@@ -380,7 +389,7 @@ drwxr-xr-x  8 tds ustaff     4096 Oct  8 15:25 thredds
      <ol>
       <li>Deploy the TDS in your newly-installed Tomcat.</li>
       <li>Once deployed, browse the test catalogs & datasets that come with the distribution.</li>
-      <li>Look at the directory contents of the main Tomcat directory <code>~/workshop/apache-tomcat-7.0.32</code> (aka <code>${tomcat_home}</code>). Do you notice anything new?</li>
+      <li>Look at the directory contents of the main Tomcat directory <code>~/GettingStarted/apache-tomcat-7.0.32</code> (aka <code>${tomcat_home}</code>). Do you notice anything new?</li>
      </ol>
     </div>
    </div> <!-- end section -->
@@ -398,12 +407,12 @@ drwxr-xr-x  8 tds ustaff     4096 Oct  8 15:25 thredds
 <b>$</b> cd ../logs
 
 <b>$</b> ls -l
--rw-r--r-- 1 tds ustaff 10722 Oct  8 15:25 catalina.2012-10-08.log
--rw-r--r-- 1 tds ustaff 10841 Oct  8 15:25 catalina.out
--rw-r--r-- 1 tds ustaff     0 Oct  8 11:01 host-manager.2012-10-08.log
--rw-r--r-- 1 tds ustaff  2828 Oct  8 15:25 localhost.2012-10-08.log
--rw-r--r-- 1 tds ustaff   907 Oct  8 15:25 localhost_access_log.2012-10-08.txt
--rw-r--r-- 1 tds ustaff     0 Oct  8 11:01 manager.2012-10-08.log
+-rw-r--r-- 1 tds ustaff 10635 Oct 19 18:10 catalina.2012-10-19.log
+-rw-r--r-- 1 tds ustaff 10748 Oct 19 18:10 catalina.out
+-rw-r--r-- 1 tds ustaff     0 Oct 19 18:02 host-manager.2012-10-19.log
+-rw-r--r-- 1 tds ustaff  2820 Oct 19 18:10 localhost.2012-10-19.log
+-rw-r--r-- 1 tds ustaff     0 Oct 19 18:02 localhost_access_log.2012-10-19.txt
+-rw-r--r-- 1 tds ustaff     0 Oct 19 18:02 manager.2012-10-19.log
 </pre>
      <div id="expanded" class="question">
       <p>Do you see a correspondence between some of the web applications in the Tomcat <code>webapps/</code> directory and the naming of certain log files?</p>
@@ -759,11 +768,11 @@ drwxr-xr-x  8 tds ustaff     4096 Oct  8 15:25 thredds
 <b>$</b> cd ../webapps
 
 <b>$</b> ls -l
-drwxr-xr-x 13 tds ustaff 4096 Oct  8 10:58 docs
-drwxr-xr-x  6 tds ustaff 4096 Oct  8 10:58 examples
-drwxr-xr-x  5 tds ustaff 4096 Oct  8 10:58 host-manager
-drwxr-xr-x  5 tds ustaff 4096 Oct  8 10:58 manager
-drwxr-xr-x  3 tds ustaff 4096 Oct  8 10:58 ROOT
+drwxr-xr-x 13 tds ustaff 4096 Oct 19 18:00 docs
+drwxr-xr-x  6 tds ustaff 4096 Oct 19 18:00 examples
+drwxr-xr-x  5 tds ustaff 4096 Oct 19 18:00 host-manager
+drwxr-xr-x  5 tds ustaff 4096 Oct 19 18:00 manager
+drwxr-xr-x  3 tds ustaff 4096 Oct 19 18:00 ROOT
 </pre>
      <li>Deploy the TDS using the <code>manager</code> application.</li>
      <p>Upload the TDS WAR file using the <code>Deploy</code> section of the <code>manager</code> application:</p>
