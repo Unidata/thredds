@@ -8,22 +8,113 @@
   <body>
 
   <h1>NcML Sample Datasets</h1>
+   Our goal in this section is to make the two sample datasets <a href=http://cf-pcmdi.llnl.gov>CF</a> compliant. The first dataset is gridded output from the <a href=www.wrf-model.org>Weather Research and Forecasting</a> (WRF) model, a very popular atmospheric model among educators and researchers. The second dataset is observational time series data from the <a href=http://stellwagen.er.usgs.gov>USGS Coastal and Marine Program</a>. In the first example, we will be 'fixing' a file that resides on disk; the file in the second example resides on an OPeNDAP server.
+  <div id="section">
+  <h2><a name="PointCF">NcML Examples</a></h2>
+  <div id="expanded" class="exercise">
+    <h3>Example 1: Local WRF output</h3>
+    <ol>
+      <li><p>In the ToolsUI "Viewer" tab, open <code>/tds2012data/ncml/wrf/wrfout_d01_2000-01-25_00--00--00</code> Note that the model output are on an <a href=http://mitgcm.org/sealion/online_documents/node45.html>Arakawa C grid</a>, so we have 'regular' and 'stag' dimensions.</p>
+      </li>
+      <li><p>Open the following link in your browser: <a href=http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf>WRF goes CF</a></p>
+      </li>
+      <li><p>In ToolsUI "NcML" tab, open <code>/tds2012data/ncml/wrf/wrfout_d01_2000-01-25_00--00--00</code>, and save an 'untouched' version of the NcML. Now, resave the NcML but give it a different name to indicate it has been modified.</p>
+      </li>
+      <li><p>We will not be changing any of the dimensions or global attributes, so remove them from the NcML. Also, many of the variable attribues will not be changed, so they can be removed as well (e.g. FieldType, MemoryOrder, description,...).</p>
+      </li>
+      <li><p>Some variables (notably 2D) have an atribute called 'coordinates', while others do not. See <a href=http://www.unidata.ucar.edu/blogs/developer/en/entry/wrf_goes_cf_two>WRF Goes CF - Part Two</a></p>
+      </li>
+      <li><p>Pay attention to units (for example, see the variable XTIME).</p>
+      </li>
+      <li>To see a partial WRF NcML file, open <code>/tds2012data/ncml/wrf/fix/ wrf-cf.ncml</code>, which was provided by <a href=http://rsignell.tiddlyspot.com/#%5B%5BMaking%20WRF%20files%20CF-Compliant%5D%5D>Rich Signell</a>. Note the addition of the Conventions attribute.
+      </li>
+    </ol>
+  </div>
 
-   <div id="section">
-    <h2><a name="Dataset1">Sample Dataset 1</a></h2>
-    <p>In ToolsUI "Viewer" tab, open <code>/data/2011TdsTW/ncml/MSG8_2006213_1200_AWG_OZONE.nc</code></p>
-   </div> <!-- end section -->
+  <div id="expanded" class="exercise">
+    <h3>Example 2: Remote USGS Point Data</h3>
+    <p>In this example, we will follow the CF 1.6 standard for <a href=http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#idp8320208>Single timeseries</a> data.
+    <ol>
+      <li><p>In the ToolsUI "Viewer" tab, open <code>dods://stellwagen.er.usgs.gov/opendap/MBAY_LT/3391ats-a1h.nc</code></p>
+      </li>
+      <li><p>In ToolsUI "NcML" tab, open <code>dods://stellwagen.er.usgs.gov/opendap/MBAY_LT/3391ats-a1h.nc</code>, and save an 'untouched' version of the NcML as <code>3391ats-a1h_untouched.ncml</code>. Now, resave the NcML but give it a different name to indicate it has been modified.</p>
+      <li><p>We will not be changing any of the dimensions or global attributes, so remove them from the NcML. Also, many of the variable attribues will not be changed, so they can be removed as well (e.g. FORTRAN_format, epic_code, generic_name,...).</p>
+      </li>
+      <li><p>Add the following pieces of global metadata:</p>
+<pre>
+&lt;attribute name="Conventions" value="CF-1.6" /&gt;
+&lt;attribute name="featureType" value="timeSeries" /&gt;
+</pre>
+      </li>
+      <li><p>The Global Metadata indicated that this is data from station 3391, so let's create a variable called site which has the special attribute "cf_role" = "timeseries_id" (required by CF 1.6):</p>
+<pre>  
+&lt;variable name="site" type="String" shape=""&gt;
+  &lt;attribute name="standard_name" value="station_id"/&gt;
+  &lt;attribute name="cf_role" value="timeseries_id"/&gt;
+  &lt;values&gt;"USGS/CMGP-339"&lt;/values&gt;
+&lt;/variable&gt;
+</pre>
+      </li>
+      
+      <li><p>We are not interested in the ATTN_55 variable, and time2 is meaningless, at least given its units, so let's remove both of them:</p>
+<pre>
+&lt;remove type="variable" name="ATTN_55" /&gt;
+&lt;remove type="variable" name="time2" /&gt;
+</pre>
+      </li>
 
-   <div id="section">
-    <h2><a name="Dataset2">Sample Dataset 2</a></h2>
-    <p>In ToolsUI "Viewer" tab, open <code>/data/2011TdsTW/ncml/Q2011026.L3m_DAY_SCIB1_V1.0_scat_wind_speed_1deg</code> </p>
-   </div> <!-- end section -->
+      <li><p>We have a variable called time, but its units are "True Julian Day", which is kind of tricky. However, the data are sampled at a regular interval, and I just happen to know that the first sample is 4135604400000 milliseconds since 1858-11-17 00:00:00 UTC (ok, well, someone knew that). So let's modify the time variable like so:</p>
+<pre>
+&lt;variable name="time" shape="time" &gt;
+  &lt;attribute name="units" value="milliseconds since 1858-11-17 00:00:00 UTC" /&gt;
+  &lt;attribute name="long_name" value="Modified Julian Day" /&gt;
+  &lt;values start="4135604400000" increment="3600000" /&gt;
+&lt;/variable&gt;
+</pre>
+      </li>
+            
+      <li><p>The variables <code>lat</code> and <code>lon</code> look ok, but they need an attribute called <code>standard_name</code> equal to latitude (longitude) in order to be CF compliant, so change their variable tags to look like the following:      
+<pre>  
+&lt;variable name="lon" shape=""&gt;
+  &lt;attribute name="standard_name" value="longitude"/&gt;
+&lt;/variable&gt;
 
-   <div id="section">
-    <h2><a name="Dataset3">Sample Dataset 3</a></h2>
-    <p>In ToolsUI "Viewer" tab, open <code>/data/2011TdsTW/ncml/A-A-2007-06-25-040000-g1.h5m</code></p>
-   </div> <!-- end section -->
+&lt;variable name="lat" shape=""&gt;
+  &lt;attribute name="standard_name" value="latitude"/&gt;
+&lt;/variable&gt;
+</pre>
+      </li>
+      
+      </li>
+      
+      <li><p>Finally, let's rename the variables <code>T_20</code> and <code>S_40</code> to something a little more readable, and give them some CF <a href=http://cf-pcmdi.llnl.gov/documents/cf-standard-names><code>standard_name</code></a> attributes. Also, the units are incorrect; units must be <a href="http://www.unidata.ucar.edu/software/udunits/">UDUNITS</a> compatible, and C is Coulomb, not Celsius, and PPT is...well...parts per thousand? trillion? triceratops? It's salinity, so parts per thousand is probably correct:</p>
+<pre>  
+&lt;variable name="sea_water_temperature" orgName="T_20" shape="time"&gt;
+  &lt;attribute name="standard_name" value="sea_water_temperature" /&gt;
+  &lt;attribute name="units" value="Celsius" /&gt;
+&lt;/variable&gt;
 
+&lt;variable name="sea_water_salinity" orgName="S_40"  shape="time""&gt;
+  &lt;attribute name="standard_name" value="sea_water_salinity" /&gt;
+  &lt;attribute name="units" value="1/1e3" /&gt;
+&lt;/variable&gt;
+</pre>
+    </li>
 
+    <li><p>Now, open the modified NcML file through the ToolsUI FeatureTypes &rarr; PointFeature tab. How do things look? (Hint: look at the "obsDate" column in the bottom panel...oops)</p>
+    </li>
+    
+    <li>To fix the "obsDate" issue, return to the NcML tab and change the opening time variable tag from:<p>
+<pre>
+&lt;variable name="time" shape="time" &gt;
+</pre>
+<p>to:</p>
+<pre>
+&lt;variable name="time" shape="time" type="long"&gt;
+</pre>
+<p>and retry opening the NcML file through the ToolsUI FeatureTypes &rarr; PointFeature tab.</p>
+    </ol>
+  </div>
+  </div>  
   </body>
  </html>
