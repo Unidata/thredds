@@ -432,7 +432,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
          <p>Look for the following in the output:</p>
 <pre>
-tcp        0      0 0.0.0.0:<b>8443</b>               0.0.0.0:*                   LISTEN
+tcp        0      0 :::<b>8443</b>                    :::*                        LISTEN
 </pre>
 
 
@@ -503,7 +503,6 @@ tcp        0      0 0.0.0.0:<b>8443</b>               0.0.0.0:*                 
       &lt;web-resource-name&gt;sensitive read access&lt;/web-resource-name&gt;
       <b>&lt;url-pattern&gt;/admin/*&lt;/url-pattern&gt;</b>
       &lt;http-method&gt;GET&lt;/http-method&gt;
-      &lt;!-- http-method&gt;PUT&lt;/http-method --&gt;
     &lt;/web-resource-collection&gt;
     &lt;auth-constraint&gt;
       &lt;role-name&gt;tdsConfig&lt;/role-name&gt;
@@ -1110,7 +1109,7 @@ Escape character is '^]'.
 
       <h3>Resources</h3>
       <ul>
-       <li><a href="/projects/THREDDS/tech/tds4.2/reference/TomcatBehindProxyServer.html">Running The TDS Behind a Proxy Server</a><br>      How to set up a reverse proxy for the TDS using Tomcat and the Apache HTTP server.</li>
+       <li><a href="/projects/THREDDS/tech/tds4.3/reference/TomcatBehindProxyServer.html">Running The TDS Behind a Proxy Server</a><br>      How to set up a reverse proxy for the TDS using Tomcat and the Apache HTTP server.</li>
       </ul>
 
    </div> <!-- end Reverse Proxy section -->
