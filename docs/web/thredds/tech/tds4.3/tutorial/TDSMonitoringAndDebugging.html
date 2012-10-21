@@ -17,8 +17,8 @@
        <img src="images/log.png" alt="Log!" style="float: right">
        <ul>
         <li>The access log records <i><b>all</b></i> requests processed by the server.</li>
-        <li>Not enabled in Tomcat by default - must be enabled in <code>$CATALINA_HOME/conf/server.xml</code>.</li>
-        <li>Information it contains is different from other logs in <code>$CATALINA_HOME/logs</code>.</li>
+        <li>Enabled in Tomcat by default in <code>${tomcat_home}/conf/server.xml</code>.</li>
+        <li>Information it contains is different from other logs in <code>${tomcat_home}/logs</code>.</li>
         <li>Used for monitoring who is using your server and as a way of obtaining "feedback" about the activity and performance of the server.</li>
       </ul>
 
@@ -26,7 +26,7 @@
       <h3>Configuring Tomcat to enable access logging</h3>
        <ol>
         <li>Modify <code>server.xml</code> to enable the <code>AccessLogValve</code>.</li>
-         <p>Using your favorite editor open <code>$CATALINA_HOME/conf/server.xml</code>:</li>
+         <p>Using your favorite editor open <code>${tomcat_home}/conf/server.xml</code>:</li>
 <pre>
 <b>$</b> vi server.xml
 </pre>  
@@ -37,17 +37,20 @@
         Note: XML Schema validation will not work with Xerces 2.2.
 --&gt;
 &lt;Host name="localhost"  appBase="webapps"
-      unpackWARs="true" autoDeploy="true"
-      xmlValidation="false" xmlNamespaceAware="false"&gt;
+      unpackWARs="true" autoDeploy="true"&gt;
 
-  . . .
-  
-  <b>&lt;!-- Access log processes all example.
-          Documentation at: /docs/config/valve.html --&gt;
+  &lt;!-- SingleSignOn valve, share authentication between web applications
+       Documentation at: /docs/config/valve.html --&gt;
   &lt;!--
-  &lt;Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"  
-            prefix="localhost_access_log." suffix=".txt" pattern="common" resolveHosts="false"/&gt;
-  --&gt;</b>
+  &lt;Valve className="org.apache.catalina.authenticator.SingleSignOn" /&gt;
+  --&gt;
+
+  <b>&lt;!-- Access log processes all example.
+       Documentation at: /docs/config/valve.html
+       Note: The pattern used is equivalent to using pattern="common" --&gt;
+  &lt;Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
+         prefix="localhost_access_log." suffix=".txt"
+         pattern="%h %l %u %t &quot;%r&quot; %s %b" /&gt;</b>
 
 &lt;/Host&gt;
 </pre>  
@@ -69,21 +72,19 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
    directory="logs"  
    prefix="access." 
    suffix=".log"
-   pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"
-   resolveHosts="false" /&gt;
+   pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D" /&gt;
 </pre> 
 
         <li>Verify the access log has been enabled.</li>
-         <p>Restart Tomcat and verify an access log has been generated in the <code>$CATALINA_HOME/logs/</code> directory:</li>
+         <p>Restart Tomcat and verify an access log has been generated in the <code>${tomcat_home}/logs/</code> directory:</li>
 <pre>
-<b>$</b> ls -l /home/tds/tds/apache-tomcat-6.0.32/logs
-total 52
--rw-r--r-- 1 tds   Unidata  20034 Jul 19 16:38 catalina.2011-07-19.log
--rw-r--r-- 1 tds   Unidata  20551 Jul 19 16:38 catalina.out
--rw-r--r-- 1 tds   Unidata      0 Jul 19 16:31 host-manager.2011-07-19.log
--rw-r--r-- 1 tds   Unidata   4537 Jul 19 16:38 localhost.2011-07-19.log
--rw-r--r-- 1 tds   Unidata      0 Jul 19 16:38 access.2011-07-19.log
--rw-r--r-- 1 tds   Unidata      0 Jul 19 16:31 manager.2011-07-19.log
+<b>$</b> ls -l /home/tds/workshop/apache-tomcat-7.0.32/logs
+-rw-r--r-- 1 tds ustaff 2444 Oct 21 12:26 access.2012-10-21.log
+-rw-r--r-- 1 tds ustaff 7470 Oct 21 12:26 catalina.2012-10-21.log
+-rw-r--r-- 1 tds ustaff 7583 Oct 21 12:26 catalina.out
+-rw-r--r-- 1 tds ustaff    0 Oct 21 12:26 host-manager.2012-10-21.log
+-rw-r--r-- 1 tds ustaff 2160 Oct 21 12:26 localhost.2012-10-21.log
+-rw-r--r-- 1 tds ustaff    0 Oct 21 12:26 manager.2012-10-21.log
 </pre>  
       </ol>
    
@@ -91,7 +92,6 @@ total 52
        <h3>Exercise One: Enable the access logging in Tomcat</h3>
        <ol>
         <li>Using the steps outlined in the above section, enable access logging in Tomcat via the <code>AccessLogValve</code>.</li>
-
        </ol>
       </div>  <!-- end exercise one -->
 
@@ -109,7 +109,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
 </pre> 
       <div id="note" class="info">
        <h4>Access log format</h4>
-       <p>For more information on access log format configuration, see the Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html">Valve Component</a> Documentation.</p>
+       <p>For more information on access log format configuration, see the Tomcat <a href="http://tomcat.apache.org/tomcat-7.0-doc/config/valve.html">Valve Component</a> Documentation.</p>
       </div> 
 
 
@@ -127,7 +127,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
          </ul>
   <p>The above pattern translates into:</p>
 <pre>
-127.0.0.1 - admin [19/Jul/2011:16:44:31 -0700] "GET /manager/html/ HTTP/1.1" 200 13740 "http://localhost:8080/" "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.7) Gecko/20100723 Fedora/3.6.7-1.fc13 Firefox/3.6.7" 25
+27.0.0.1 - admin [21/Oct/2012:12:31:59 -0600] "GET /manager/html HTTP/1.1" 200 17578 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:10.0.7) Gecko/20120829 Firefox/10.0.7" 8
 </pre>
 
 
@@ -347,7 +347,7 @@ cise63.cise-nsf.gov.
      <h2><a name="tds">Log Files Generated by the TDS</a></h2>
 
    
-      <h3>Introducing the TDS logging directory: <code>$CATALINA_HOME/content/thredds/logs</code></h3>    
+      <h3>Introducing the TDS logging directory: <code>${tomcat_home}/content/thredds/logs</code></h3>    
 
 
 
@@ -355,13 +355,13 @@ cise63.cise-nsf.gov.
        <h4>Keep in Mind</h4>
        <p>There are <b>two</b> locations of log files you will reference:</p>
        <ol class="little">
-        <li><code>$CATALINA_HOME/logs/</code> is where you go to look at <i>Tomcat-generated</i> log files; and</li>
+        <li><code>${tomcat_home}/logs/</code> is where you go to look at <i>Tomcat-generated</i> log files; and</li>
         <li>the TDS logging directory which is where you go to look at <i>TDS-generated</i> log files.</li>
        </ol>
       </div>
 
 
-      <p>The log files generated by the TDS are located in the <code>$CATALINA_HOME/content/thredds/logs</code> directory: </p>
+      <p>The log files generated by the TDS are located in the <code>${tomcat_home}/content/thredds/logs</code> directory: </p>
 
    <table>
     <tr>
@@ -424,9 +424,9 @@ cise63.cise-nsf.gov.
        
        <ol>
         <li>Look at the logging configurations for <code>threddsServlet.log</code>.</li>
-         <p>Navigate to the unpacked <code>thredds</code> directory in <code>$CATALINA_HOME/webapps</code>, and view the <code>WEB-INF/log4j.xml</code>: </p>
+         <p>Navigate to the unpacked <code>thredds</code> directory in <code>${tomcat_home}/webapps</code>, and view the <code>WEB-INF/log4j.xml</code>: </p>
 <pre>
-<b>$</b> cd /home/tds/tds/apache-tomcat-6.0.32/webapps/thredds
+<b>$</b> cd /home/tds/workshop/apache-tomcat-7.0.32/webapps/thredds
 <b>$</b> less WEB-INF/log4j.xml
 </pre>
          <p>The TDS uses the OpenSource Apache <code>Log4J</code> library (hence, the name of the file: <code>WEB-INF/log4j.xml</code>). </p>
@@ -614,7 +614,7 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
        <ol>
         <li>Use the <code>grep</code> command to find out which <code>threddsServlet.log</code> file contains the error message:</li>
 <pre>
-<b>$</b> cd /home/tds/tds/apache-tomcat-6.0.32/content/thredds/logs
+<b>$</b> cd /home/tds/workshop/apache-tomcat-7.0.32/content/thredds/logs
 <b>$</b> grep ERROR threddsServlet.log*
 </pre>   
        <li>Open the <code>threddsServlet.log</code> file which contains the error message and find all the message transaction entries that correspond to that error.</li>
@@ -703,8 +703,8 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
         <p>If you happen to be running more than one JVM on your machine, look to see what Process ID # for the JVM running Tomcat:</p>
 <pre>
 <b>$</b> ps -ef | grep tomcat
-tds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/tds/tds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/tds/tds/apache-tomcat-6.0.32/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/tds/apache-tomcat-6.0.32/endorsed -classpath :/home/tds/tds/apache-tomcat-6.0.32/bin/bootstrap.jar -Dcatalina.base=/home/tds/tds/apache-tomcat-6.0.32 -Dcatalina.home=/home/tds/tds/apache-tomcat-6.0.32 -Djava.io.tmpdir=/home/tds/tds/apache-tomcat-6.0.32/temp org.apache.catalina.startup.Bootstrap start
-thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
+tds      <b>22122</b>     1 12 12:37 pts/2    00:00:29 /home/tds/workshop/jdk1.7.0_09/bin/java -Djava.util.logging.config.file=/home/tds/workshop/apache-tomcat-7.0.32/conf/logging.properties -Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/home/tds/workshop/apache-tomcat-7.0.32/content/thredds/javaUtilPrefs -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/workshop/apache-tomcat-7.0.32/endorsed -classpath /home/tds/workshop/apache-tomcat-7.0.32/bin/bootstrap.jar:/home/tds/workshop/apache-tomcat-7.0.32/bin/tomcat-juli.jar -Dcatalina.base=/home/tds/workshop/apache-tomcat-7.0.32 -Dcatalina.home=/home/tds/workshop/apache-tomcat-7.0.32 -Djava.io.tmpdir=/home/tds/workshop/apache-tomcat-7.0.32/temp org.apache.catalina.startup.Bootstrap start
+tds      22225 21243  0 12:41 pts/1    00:00:00 grep tomcat
 </pre>
           <p>Select the local JVM process corresponding to Tomcat and connect:</p>
           <p><a href="images/jconsole.png"><img src="images/jconsole.png" width="400" height="333" alt="Starting JConsole" /></a></p>
@@ -733,12 +733,12 @@ Exception in thread "RMI TCP Connection(idle)" java.lang.OutOfMemoryError: PermG
           <p><a href="images/permgen3.png"><img src="images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
 
          </ol>
-       <li>Please Note:  you will most likely have to forcefully kill the running tomcat process, as the <code>$CATALINA_HOME/bin/shutdown.sh</code> will be unresponsive.</li>
+       <li>Please Note:  you will most likely have to forcefully kill the running tomcat process, as the <code>${tomcat_home}/bin/shutdown.sh</code> will be unresponsive.</li>
         <ol>
         <li>Find the Tomcat process running and get the process ID number:</li>
 <pre>
 <b>$</b> ps -ef | grep tomcat
-tds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/tds/tds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/tds/tds/apache-tomcat-6.0.32/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/tds/apache-tomcat-6.0.32/endorsed -classpath :/home/tds/tds/apache-tomcat-6.0.32/bin/bootstrap.jar -Dcatalina.base=/home/tds/tds/apache-tomcat-6.0.32 -Dcatalina.home=/home/tds/tds/apache-tomcat-6.0.32 -Djava.io.tmpdir=/home/tds/tds/apache-tomcat-6.0.32/temp org.apache.catalina.startup.Bootstrap start
+tds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/tds/tds/jdk1.7.0_09/bin/java -Djava.util.logging.config.file=/home/tds/workshop/apache-tomcat-7.0.32/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/workshop/apache-tomcat-7.0.32/endorsed -classpath :/home/tds/workshop/apache-tomcat-7.0.32/bin/bootstrap.jar -Dcatalina.base=/home/tds/workshop/apache-tomcat-7.0.32 -Dcatalina.home=/home/tds/workshop/apache-tomcat-7.0.32 -Djava.io.tmpdir=/home/tds/workshop/apache-tomcat-7.0.32/temp org.apache.catalina.startup.Bootstrap start
 tds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
 </pre>
         <li>Kill it!</li>
