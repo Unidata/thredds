@@ -70,7 +70,6 @@ public class TestFmrc {
 
       // spec
       doOne(datadir + "toms/hiig_#yyyyMMdd#.nc", 25, 11, 13, 2, "u", 4, 25, 58);
-      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$", 1, 1, 8, 0, "eta_t", 2, 7, 14); // Q:/cdmUnitTest/fmrc/bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$
       doOne(TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure_tropopause", 3, 9, 9);
 
       // really a joinExisting
@@ -106,11 +105,20 @@ public class TestFmrc {
     }
   }
 
-  public void utestProblem() throws Exception {
-    doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcGribRunseq.ncml", 13, 5, 7, 2, "Temperature_height_above_ground", 4, 29, 35);
-    doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcGrib.ncml", 54, 19, 21, 12, "Temperature_height_above_ground", 8, 29, 72);
-    doOne(TestDir.cdmUnitTestDir + "ncml/AggFmrcNonuniform.ncml", 48, 12, 16, 6, "Temperature_height_above_ground", 3, 9, 9);
-    doOne(TestDir.cdmUnitTestDir + "ncml/aggForecastModel.ncml", 41, 6, 10, 4, "u", 14, 11, 37);     //*/
+  @Test
+   public void testCollectionsNotRegular() throws Exception {
+     try {
+       FeatureCollectionConfig.setRegularizeDefault(false);
+       doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$", 1, 1, 8, 0, "eta_t", 2, 7, 7); // Q:/cdmUnitTest/fmrc/bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$
+
+     } finally {
+ //      MetadataManager.closeAll();
+     }
+   }
+
+   @Test
+  public void testProblem() throws Exception {
+    doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$", 1, 1, 8, 0, "eta_t", 2, 7, 14); // Q:/cdmUnitTest/fmrc/bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$
   }
 
 
@@ -194,7 +202,7 @@ public class TestFmrc {
     if (nruns >= 0)
       assert time.getDimension(0).getLength() == nruns : " nruns should be " + nruns;
     if (ntimes >= 0)
-      assert time.getDimension(1).getLength() == ntimes : " ntimes should be " + ntimes;
+      assert time.getDimension(1).getLength() == ntimes : " ntimes should be " + ntimes+" actual "+time.getDimension(1).getLength();
 
     gridDs.close();
   }
@@ -267,7 +275,7 @@ public class TestFmrc {
     if (nVertCooordAxes >= 0)
       assert nVertCooordAxes == countVertCooordAxes : "VertAxes" + nVertCooordAxes + " != " + countVertCooordAxes;  */
     if (ntimes >= 0)
-      assert time.getDimension(0).getLength() == ntimes : " ntimes should be " + ntimes + "instead = " + time.getDimension(0).getLength();
+      assert time.getDimension(0).getLength() == ntimes : " ntimes should be " + ntimes + " instead = " + time.getDimension(0).getLength();
 
 
     gridDs.close();
