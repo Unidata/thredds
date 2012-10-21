@@ -117,7 +117,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     result.add(new GribTableId("NDFD",8,0,-1,-1));
     result.add(new GribTableId("KMA",40,-1,-1,-1));
     // result.add(new GribTableId("DSS",7,-1,2,1)); // ??
-    result.add(new GribTableId("FSL2",59,-1,-1,0)); // fake
+    // result.add(new GribTableId("FSL2",59,-1,-1,0)); // fake
     result.add(new GribTableId("FSL",59,-1,-1,-1));
     return result;
   }

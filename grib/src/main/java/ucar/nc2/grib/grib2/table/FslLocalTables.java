@@ -51,7 +51,7 @@ import java.util.Map;
  */
 public class FslLocalTables extends LocalTables {
   private static final String tableName = "resources/grib2/local/Fsl-hrrr.csv";
-  private static final String tableName2 = "resources/grib2/local/Fsl-hrrr2.csv";
+  //private static final String tableName2 = "resources/grib2/local/Fsl-hrrr2.csv";
   private static boolean debug = false;
 
   static FslLocalTables localFactory(int center, int subCenter, int masterVersion, int localVersion) {
@@ -134,7 +134,7 @@ public class FslLocalTables extends LocalTables {
 
   @Override
   protected void initLocalTable() {
-    local = initLocalTable((this.localVersion == 0) ? tableName2 : tableName, null);
+    local = initLocalTable(tableName, null); // (this.localVersion == 0) ? tableName2 : tableName, null);
   }
 
   // debugging
