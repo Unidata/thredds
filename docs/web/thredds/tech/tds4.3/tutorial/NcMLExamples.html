@@ -1,14 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
  <html>
   <head>
-   <title>NcML Sample Datasets</title>
+   <title>NcML Examples</title>
    <link rel="stylesheet" href="tutorial2.css" type="text/css" /> 
    <script type="text/javascript" src="workshopNav.js"></script>
   </head>
   <body>
 
-  <h1>NcML Sample Datasets</h1>
-   Our goal in this section is to make the two sample datasets <a href=http://cf-pcmdi.llnl.gov>CF</a> compliant. The first dataset is gridded output from the <a href=www.wrf-model.org>Weather Research and Forecasting</a> (WRF) model, a very popular atmospheric model among educators and researchers. The second dataset is observational time series data from the <a href=http://stellwagen.er.usgs.gov>USGS Coastal and Marine Program</a>. In the first example, we will be 'fixing' a file that resides on disk; the file in the second example resides on an OPeNDAP server.
+  <h1>NcML Examples</h1>
+   Our goal in this section is to make two sample datasets <a href=http://cf-pcmdi.llnl.gov>CF</a> compliant. The first dataset is gridded output from the <a href=www.wrf-model.org>Weather Research and Forecasting</a> (WRF) model, a very popular atmospheric model among educators and researchers. The second dataset is observational time series data from the <a href=http://stellwagen.er.usgs.gov>USGS Coastal and Marine Program</a>. In the first example, we will be 'fixing' a file that resides on disk; the file in the second example resides on an OPeNDAP server.
   <div id="section">
   <h2><a name="PointCF">NcML Examples</a></h2>
   <div id="expanded" class="exercise">
@@ -85,8 +85,15 @@
 </pre>
       </li>
       
+      <li><p>We are not really using the variable depth, but if we were, we would need to add the following:</p>
+<pre>
+&lt;variable name="depth" shape=""&gt;
+  &lt;attribute name="positive" value="down" /&gt;
+  &lt;attribute name="standard_name" value="depth" /&gt;
+&lt;/variable&gt</pre>
+</pre>
       </li>
-      
+            
       <li><p>Finally, let's rename the variables <code>T_20</code> and <code>S_40</code> to something a little more readable, and give them some CF <a href=http://cf-pcmdi.llnl.gov/documents/cf-standard-names><code>standard_name</code></a> attributes. Also, the units are incorrect; units must be <a href="http://www.unidata.ucar.edu/software/udunits/">UDUNITS</a> compatible, and C is Coulomb, not Celsius, and PPT is...well...parts per thousand? trillion? triceratops? It's salinity, so parts per thousand is probably correct:</p>
 <pre>  
 &lt;variable name="sea_water_temperature" orgName="T_20" shape="time"&gt;
