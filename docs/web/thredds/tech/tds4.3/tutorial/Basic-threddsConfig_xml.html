@@ -10,7 +10,7 @@
    <h1>Basic threddsConfig.xml</h1>   
    <div id="section">
     <h2><a name="serverInfo">TDS Configuration File threddsConfig.xml</a></h2>
-    <p>The TDS configuration file (<code>content/thredds/threddsConfig.xml</code>) allows the TDS administrator to set a number of parameters that control the behavior of the TDS. Most of these parameters will be set with reasonable default values. However, a number of them allow you to describe your server, provide contact information, and change the "theme" of server generated HTML pages, so unless you want your server to be called "Initial TDS Installation", maintained by Support at "My Group", then you <b>will</b> need to change some of these settings. </p>
+    <p>The TDS configuration file (<code>content/thredds/threddsConfig.xml</code>) allows the TDS administrator to set a number of parameters that control the behavior of the TDS. Most of these parameters will be set with reasonable default values. However, a number of them allow you to describe your server, provide contact information, and change the "theme" of server generated HTML pages, so unless you want your server to be called "Test TDS", maintained by Support at "Unidata" with contact email support-thredds@unidata.ucar.edu (please, please say that you do not want this!), then you <b>will</b> need to change some of these settings.</p>
     <h3><a name="serverInfo">Server Information</a></h3>
     <p>Information describing your TDS installation and providing contact information is configured in the <code>serverInformation</code> element of the TDS configuration file. This includes </p>
     <ul>
@@ -19,27 +19,28 @@
     </ul>
     <p>Here is what the default version of the <code>serverInformation</code> element looks like</p>
 
+<!-- Taken from threddsConfig.xml updated 2012-10-22 by Sean Arms -->
 <pre>
 &lt;serverInformation&gt;
-    &lt;name&gt;Initial TDS Installation&lt;/name&gt;
-    &lt;logoUrl&gt;threddsIcon.gif&lt;/logoUrl&gt;
-    &lt;logoAltText&gt;Initial TDS Installation&lt;/logoAltText&gt;
+  &lt;name&gt;Test TDS&lt;/name&gt;
+  &lt;logoUrl&gt;threddsIcon.gif&lt;/logoUrl&gt;
+  &lt;logoAltText&gt;Motherlode TDS&lt;/logoAltText&gt;
 
-    &lt;abstract&gt;Scientific Data&lt;/abstract&gt;
-    &lt;keywords&gt;meteorology, atmosphere, climate, ocean, earth science&lt;/keywords&gt;
+  &lt;abstract&gt;Scientific Data&lt;/abstract&gt;
+  &lt;keywords&gt;meteorology, atmosphere, climate, ocean, earth science&lt;/keywords&gt;
 
-    &lt;contact&gt;
-      &lt;name&gt;Support&lt;/name&gt;
-      &lt;organization&gt;My Group&lt;/organization&gt;
-      &lt;email&gt;support@my.group&lt;/email&gt;
-      &lt;phone&gt;&lt;/phone&gt;
-    &lt;/contact&gt;
-    &lt;hostInstitution&gt;
-      &lt;name&gt;My Group&lt;/name&gt;
-      &lt;webSite&gt;http://www.my.group/&lt;/webSite&gt;
-      &lt;logoUrl&gt;myGroup.gif&lt;/logoUrl&gt;
-      &lt;logoAltText&gt;My Group&lt;/logoAltText&gt;
-    &lt;/hostInstitution&gt;
+  &lt;contact&gt;
+    &lt;name&gt;THREDDS Support&lt;/name&gt;
+    &lt;organization&gt;Unidata&lt;/organization&gt;
+    &lt;email&gt;support-thredds@unidata.ucar.edu&lt;/email&gt;
+    &lt;!--phone&gt;&lt;/phone--&gt;
+  &lt;/contact&gt;
+  &lt;hostInstitution&gt;
+    &lt;name&gt;Unidata&lt;/name&gt;
+    &lt;webSite&gt;http://www.unidata.ucar.edu/&lt;/webSite&gt;
+    &lt;logoUrl&gt;unidataIcon.gif&lt;/logoUrl&gt;
+    &lt;logoAltText&gt;Unidata&lt;/logoAltText&gt;
+  &lt;/hostInstitution&gt;
 &lt;/serverInformation&gt;
 </pre>
 
@@ -52,39 +53,9 @@
       </ul> 
      </li>
      <li>The <code>Server</code> element of the WMS GetCapabilities document:
-      <ul>
+     <ul>
        <li><a href="http://motherlode.ucar.edu:8080/thredds/wms/fmrc/NCEP/GFS/Hawaii_160km/NCEP-GFS-Hawaii_160km_best.ncd?service=WMS&version=1.3.0&request=GetCapabilities">http://motherlode.ucar.edu:8080/thredds/wms/fmrc/NCEP/GFS/Hawaii_160km/NCEP-GFS-Hawaii_160km_best.ncd?service=WMS&version=1.3.0&request=GetCapabilities</a></li>
-      </ul>
-
-        <!--<pre>-->
-<!--&lt;Service&gt;-->
-    <!--&lt;Name&gt;WMS&lt;/Name&gt;-->
-    <!--&lt;Title&gt;Motherlode TDS&lt;/Title&gt;-->
-    <!--&lt;Abstract&gt;Scientific Data&lt;/Abstract&gt;-->
-    <!--&lt;KeywordList&gt;-->
-        <!--&lt;Keyword&gt;meteorology&lt;/Keyword&gt;-->
-        <!--&lt;Keyword&gt;atmosphere&lt;/Keyword&gt;-->
-        <!--&lt;Keyword&gt;climate&lt;/Keyword&gt;-->
-        <!--&lt;Keyword&gt;ocean&lt;/Keyword&gt;-->
-        <!--&lt;Keyword&gt;earth science&lt;/Keyword&gt;-->
-    <!--&lt;/KeywordList&gt;-->
-    <!--&lt;OnlineResource xlink:type="simple" xlink:href="http://www.unidata.ucar.edu/"/&gt;-->
-    <!--&lt;ContactInformation&gt;-->
-        <!--&lt;ContactPersonPrimary&gt;-->
-            <!--&lt;ContactPerson&gt;Support&lt;/ContactPerson&gt;-->
-            <!--&lt;ContactOrganization&gt;Unidata&lt;/ContactOrganization&gt;-->
-        <!--&lt;/ContactPersonPrimary&gt;-->
-        <!--&lt;ContactVoiceTelephone&gt;&lt;/ContactVoiceTelephone&gt;-->
-        <!--&lt;ContactElectronicMailAddress&gt;support-thredds@unidata.ucar.edu&lt;/ContactElectronicMailAddress&gt;-->
-    <!--&lt;/ContactInformation&gt;-->
-    <!--&lt;Fees&gt;none&lt;/Fees&gt;-->
-    <!--&lt;AccessConstraints&gt;none&lt;/AccessConstraints&gt;-->
-    <!--&lt;LayerLimit&gt;1&lt;/LayerLimit&gt;-->
-    <!--&lt;MaxWidth&gt;5000&lt;/MaxWidth&gt;-->
-    <!--&lt;MaxHeight&gt;5000&lt;/MaxHeight&gt;-->
-<!--&lt;/Service&gt;-->
-        <!--</pre>-->
-
+       </ul>
      </li>
      <li>The three supported server information documents:
       <ul>
@@ -130,16 +101,25 @@
     <p>You can also specify the CSS files and several icons used in the HTML pages. These are configured in the <code>htmlSetup</code> element of the TDS configuration file.  Default CSS files are provided with the thredds.war distribution, and should not be modified. Instead, these can be overridden by placing the appropriate CSS files in the ${tomcat_home}/content/thredds/public/ directory.</p>
     <p>The following shows the default configuration of the <code>htmlSetup</code> element:</p>
 
+<!-- Taken from threddsConfig.xml updated 2012-10-22 by Sean Arms -->
 <pre>
 &lt;htmlSetup&gt;
-    &lt;standardCssUrl&gt;tds.css&lt;/standardCssUrl&gt;
-    &lt;CatalogCssUrl&gt;tdsCat.css&lt;/CatalogCssUrl&gt;
-    &lt;openDapCssUrl&gt;tdsDap.css&lt;/openDapCssUrl&gt;
-
-    &lt;folderIconUrl&gt;folder.gif&lt;/folderIconUrl&gt;
-    &lt;folderIconAlt&gt;Folder&lt;/folderIconAlt&gt;
-    &lt;datasetIconUrl&gt;dataset.gif&lt;/datasetIconUrl&gt; &lt;!-- Not currently used. --&gt;
-    &lt;datasetIconAlt&gt;Dataset&lt;/datasetIconAlt&gt;     &lt;!-- Not currently used. --&gt;
+  &lt;!--
+  * CSS documents used in generated HTML pages.
+  * The CSS document given in the "catalogCssUrl" element is used for all pages
+  * that are HTML catalog views. The CSS document given in the "standardCssUrl"
+  * element is used in all other generated HTML pages.
+  * --&gt;
+  &lt;standardCssUrl&gt;tds.css&lt;/standardCssUrl&gt;
+  &lt;catalogCssUrl&gt;tdsCat.css&lt;/catalogCssUrl&gt;
+  &lt;!--
+  * The URLs (relative to "/thredds/") and alternate text for both
+  * folder and dataset icons used in HTML catalog views.
+  * --&gt;
+  &lt;folderIconUrl&gt;folder.gif&lt;/folderIconUrl&gt;
+  &lt;folderIconAlt&gt;Folder&lt;/folderIconAlt&gt;
+  &lt;datasetIconUrl&gt;dataset.gif&lt;/datasetIconUrl&gt;
+  &lt;datasetIconAlt&gt;Dataset&lt;/datasetIconAlt&gt;
 &lt;/htmlSetup&gt;
 </pre>
 
