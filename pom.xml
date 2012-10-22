@@ -728,7 +728,7 @@
     <commons-logging.version>1.1.1</commons-logging.version>
     <javax.servlet.version>2.5</javax.servlet.version>
     <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
-    <jaxen.version>1.1.3</jaxen.version>
+    <jaxen.version>1.1.4</jaxen.version>
     <jfree.jcommon.version>1.0.15</jfree.jcommon.version>
     <jfree.version>1.0.13</jfree.version>
     <joda-time.version>2.0</joda-time.version>
