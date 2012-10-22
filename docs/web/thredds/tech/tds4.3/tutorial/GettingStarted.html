@@ -115,8 +115,8 @@ drwxr-xr-x 8 tds ustaff     4096 Sep 24 21:38 jdk1.7.0_09
     <h2><a name="tour">Tomcat Directory Structure: Quick Tour</a></h2>
     <h3>Exploring the Tomcat directory structure</h3>
     <ol>
-     <li>Examine the Tomcat directory structure, aka <code>$CATALINA_HOME</code> (also can be called <code>${tomcat_home}</code>). </li>
-     <p>Move into <code>$CATALINA_HOME</code> and do a long listing:</p>
+     <li>Examine the Tomcat directory structure, aka <code>${tomcat_home}</code>. </li>
+     <p>Move into <code>${tomcat_home}</code> and do a long listing:</p>
 <pre>
 <b>$</b> cd apache-tomcat-7.0.32
 <b>$</b> ls -l 
@@ -209,10 +209,6 @@ tds       2711  2197  0 11:02 pts/1    00:00:00 grep tomcat
      <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code>$JAVA_OPTS</code>; and </li> 
      <li>add additional settings to the JVM via <code>$JAVA_OPTS</code> to enable more advanced services we will be learning about later on in this workshop.</li>
     </ul>
-
-    <div id="expanded" class="question">
-     <p>Why are we setting <code>$JAVA_HOME</code> and <code>$CATALINA_BASE</code> if we already have set them in our environment? </p>
-    </div>
 
     <ol>
      <li><a name="makeSetenv"></a>Create the <code>setenv.sh</code> file.</li>
@@ -389,7 +385,7 @@ drwxr-xr-x  8 tds ustaff     4096 Oct 19 18:10 thredds
      <ol>
       <li>Deploy the TDS in your newly-installed Tomcat.</li>
       <li>Once deployed, browse the test catalogs & datasets that come with the distribution.</li>
-      <li>Look at the directory contents of the main Tomcat directory <code>~/GettingStarted/apache-tomcat-7.0.32</code> (aka <code>${tomcat_home}</code>). Do you notice anything new?</li>
+      <li>Look at the directory contents of the main Tomcat directory <code>~/GettingStarted/apache-tomcat-7.0.32</code>. Do you notice anything new?</li>
      </ol>
     </div>
    </div> <!-- end section -->
