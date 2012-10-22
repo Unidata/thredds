@@ -267,33 +267,44 @@ http://hostname:port/thredds/dodsC/<b>my/test</b>/grib/data1.grib2
     <p>The main TDS configuration catalog is at <code>${tomcat_home}/content/thredds/catalog.xml</code>.
       We ship a simple test catalog:</p>
 
+<!-- catalog.xml updated 2012-10-22 by Sean Arms -->
 <pre>
-  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-  &lt;catalog name="THREDDS Server Default Catalog : You must change this to fit your server!"
-           xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-           xmlns:xlink="http://www.w3.org/1999/xlink" &gt;
-      &lt;service name="thisDODS" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;catalog name="THREDDS Server Default Catalog : You must change this to fit your server!"
+        xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+        xmlns:xlink="http://www.w3.org/1999/xlink"&gt;
 
-      &lt;datasetRoot path="test" location="<b>content</b>/testdata/" /&gt;
+  &lt;service name="all" base="" serviceType="compound"&gt;
+    &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+    &lt;service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
+    &lt;!--service name="wcs" serviceType="WCS" base="/thredds/wcs/" /--&gt;
+    &lt;!--service name="wms" serviceType="WMS" base="/thredds/wms/" /--&gt;
+    &lt;!--service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" /--&gt;
+  &lt;/service&gt;
 
-      &lt;dataset name="Test Single Dataset" ID="testDataset"
-               serviceName="thisDODS" urlPath="test/testData.nc" /&gt;
+  &lt;datasetRoot path="test" location="<b>content</b>/testdata/" /&gt;
 
-      &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan"
-               path="testAll" location="<b>content</b>/testdata"&gt;
-          &lt;metadata inherited="true"&gt;
-              &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
-          &lt;/metadata&gt;
+  &lt;dataset name="Test Single Dataset" ID="testDataset" serviceName="odap"
+           urlPath="test/testData.nc" dataType="Grid"/&gt;
 
-          &lt;filter&gt;
-             &lt;include <b>wildcard="*.nc"</b> /&gt;
-          &lt;/filter&gt;
+  &lt;dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="test/testData2.grib2" dataType="Grid"/&gt;
 
-      &lt;/datasetScan&gt;
-    
-      &lt;catalogRef xlink:title="Test Enhanced Catalog"
-                  xlink:href="enhancedCatalog.xml" name ="" /&gt;
-    &lt;/catalog&gt;
+  &lt;datasetScan name="Test all files in a directory" ID="testDatasetScan" path="testAll" location="<b>content</b>/testdata"&gt;
+
+    &lt;metadata inherited="true"&gt;
+      &lt;serviceName&gt;all&lt;/serviceName&gt;
+      &lt;dataType&gt;Grid&lt;/dataType&gt;
+    &lt;/metadata&gt;
+
+    &lt;filter&gt;
+      &lt;include <b>wildcard="*eta_211.nc"</b>/&gt;
+    &lt;/filter&gt;
+
+  &lt;/datasetScan&gt;
+
+  &lt;catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/&gt;
+
+&lt;/catalog&gt;
 </pre>
 
     <p>When the TDS starts, this main configuration catalog is read as are all catalogs in the catalog tree defined by <code>catalogRef</code> elements. The TDS gathers configuration information on what datasets it should serve from the <code>datasetRoot</code> and <code>datasetScan</code> elements.</p>
@@ -329,7 +340,7 @@ cosmic  dusk.080522  forecasts    gempak  logs    madis  nam_12km  nldn   rawfil
              path="<b>nam_12km</b>" location="<b>/data/ldm/nam_12km</b>"&gt;
 
     &lt;metadata inherited="true"&gt;
-        &lt;serviceName&gt;thisDODS&lt;/serviceName&gt;
+        &lt;serviceName&gt;odap&lt;/serviceName&gt;
     &lt;/metadata&gt;
 
 &lt;/datasetScan&gt;
