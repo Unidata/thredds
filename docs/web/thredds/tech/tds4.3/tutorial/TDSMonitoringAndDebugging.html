@@ -17,15 +17,16 @@
        <img src="images/log.png" alt="Log!" style="float: right">
        <ul>
         <li>The access log records <i><b>all</b></i> requests processed by the server.</li>
-        <li>Enabled in Tomcat by default in <code>${tomcat_home}/conf/server.xml</code>.</li>
+        <li>As of Tomcat 7, enabled in Tomcat by default in <code>${tomcat_home}/conf/server.xml</code>.</li>
         <li>Information it contains is different from other logs in <code>${tomcat_home}/logs</code>.</li>
         <li>Used for monitoring who is using your server and as a way of obtaining "feedback" about the activity and performance of the server.</li>
+        <li><b>In order to use the <code><a href="tdsMonitor.html">TdsMonitor</a></code> tool, you will need to change the default configuration of the <code>AccessLogValve</code>.</b></li>
       </ul>
 
 
-      <h3>Configuring Tomcat to enable access logging</h3>
+      <h3>Configuring Tomcat access logging for the <code>TdsMonitor</code></h3>
        <ol>
-        <li>Modify <code>server.xml</code> to enable the <code>AccessLogValve</code>.</li>
+        <li>Modify the <code>prefix</code>, <code>suffix</code>, and <code>pattern</code> attributes of the <code>AccessLogValve</code> element.</li>
          <p>Using your favorite editor open <code>${tomcat_home}/conf/server.xml</code>:</li>
 <pre>
 <b>$</b> vi server.xml
@@ -55,7 +56,7 @@
 &lt;/Host&gt;
 </pre>  
 
-        <p>Change the <code>prefix</code> and  <code>suffix</code> attributes to customize the access log name. (We are customizing the name of the access log for the sake of a future exercise that requires the log files to begin with <code>access</code>.  In reality, you can modify these attributes to your own chosen values or leave defaults when you configure Tomcat at your home institution.)</p> 
+        <p>Change the <code>prefix</code> and  <code>suffix</code> attributes to customize the access log name. (The <code><a href="tdsMonitor.html">TdsMonitor</a></code> tool looks for log files to begin with <code>access</code>.)</p> 
 <pre>
 prefix="access." 
 suffix=".log"
@@ -75,7 +76,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
    pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D" /&gt;
 </pre> 
 
-        <li>Verify the access log has been enabled.</li>
+        <li>Verify the changes to the access log have taken affect.</li>
          <p>Restart Tomcat and verify an access log has been generated in the <code>${tomcat_home}/logs/</code> directory:</li>
 <pre>
 <b>$</b> ls -l /home/tds/workshop/apache-tomcat-7.0.32/logs
@@ -88,16 +89,6 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
 </pre>  
       </ol>
    
-      <div id="expanded" class="exercise">
-       <h3>Exercise One: Enable the access logging in Tomcat</h3>
-       <ol>
-        <li>Using the steps outlined in the above section, enable access logging in Tomcat via the <code>AccessLogValve</code>.</li>
-       </ol>
-      </div>  <!-- end exercise one -->
-
-
-
-
       <h3>Access log format</h3>      
 
 
@@ -127,7 +118,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
          </ul>
   <p>The above pattern translates into:</p>
 <pre>
-27.0.0.1 - admin [21/Oct/2012:12:31:59 -0600] "GET /manager/html HTTP/1.1" 200 17578 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:10.0.7) Gecko/20120829 Firefox/10.0.7" 8
+127.0.0.1 - admin [21/Oct/2012:12:31:59 -0600] "GET /manager/html HTTP/1.1" 200 17578 "-" "Mozilla/5.0 (X11; Linux x86_64; rv:10.0.7) Gecko/20120829 Firefox/10.0.7" 8
 </pre>
 
 
@@ -163,7 +154,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
        Time and date of request
     </td>
      <td>
-       <code>[19/Jul/2011:16:44:31 -0700]</code>
+       <code>[21/Oct/2012:12:31:59 -0600]</code>
      </td>
     </tr>
     <tr>
@@ -203,7 +194,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       Bytes transferred
     </td>
      <td>
-      <code>13740</code>
+      <code>17578</code>
      </td>
     </tr>
     <tr>
@@ -211,7 +202,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       Referer
     </td>
      <td>
-       <code>http://localhost:8080/</code>
+       <code>-</code>
      </td>
     </tr>
     <tr>
@@ -219,7 +210,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       User Agent
     </td>
      <td>
-       <code>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.7) Gecko/20100723 Fedora/3.6.7-1.fc13 Firefox/3.6.7</code>
+       <code>Mozilla/5.0 (X11; Linux x86_64; rv:10.0.7) Gecko/20120829 Firefox/10.0.7</code>
      </td>
     </tr>
     <tr>
@@ -227,113 +218,10 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       Response time (in millis)
     </td>
      <td>
-     <code>25</code>
+     <code>8</code>
      </td>
     </tr>
    </table>
-
-
-      <h3>Looking at access log data</h3>       
-       <p>Storing the information in the access log is only the start of log management. The next step is to analyze this information to produce useful statistics.</p>
-       <ol>
-        <li>Looking at raw access log data.</li>
-         <p>Locate the <code>access.2011-07-17.log</code> file in your home directory which contains an access log file taken from one of our production servers.</p>
-<pre>
-<b>$</b> cd
-<b>$</b> ls -l access* 
--rw-r--r-- 1 tds   Unidata 344507 Jul 19 15:25 access.2011-07-17.log
-</pre>  
-         <p>Have a look at the log file and try to examine the data stored there.  (Kind of hard to sort through it all, isn't it)?</p>
-<pre>
-<b>$</b> less access.2011-07-17.log
-</pre>  
-        <li>Analyzing data subsets with  <code>awk</code> and <code>dig</code>.</li>
-         <p>Sometimes we don't need to see the "whole picture" and just need some quick statistics.  E.g., we need to find the host that has made the most requests to the server.</p>
-         <p>Run the following command:</p>
-<pre>
-<b>$</b> cat access.2011-07-17.log | awk '{print $1}' | sort | uniq -c | sort -n
-</pre>  
-          <p>The output of the access log file is piped into <code>awk</code>, which prints the first "field variable" <code>$1</code>.  The result is sorted, identical lines are counted, and finally sorted again in descending order.</p>
-
-        <p><code>192.12.209.243</code> is the host that has made the most requests to the server during this particular access log's period. </p>
-
-        <div id="expanded" class="question">
-         <p>But who is <code>192.12.209.243</code>?  (IPs are not too meaningful by themselves.) </p>
-        </div>
-         <p>Run <code>dig</code> to find out the host information for <code>192.12.209.243</code>:</p>
-<pre>
-<b>$</b>  dig +short -x 192.12.209.243
-harper1.cise-nsf.gov.
-</pre>  
-
-         <p><code>harper1.cise-nsf.gov</code> is the host name for <code>192.12.209.243</code> (a bit more meaningful).</p>
-
-
-        <div id="expanded" class="question">
-         <p>Looking at the other IP addresses from the <code>awk</code> output.  Without running <code>dig</code>, what do you think the domain of <code>192.12.209.63</code> is going to be?  </p>
-        </div>
-         <p>See if your assumption is correct:</p>
-<pre>
-<b>$</b>  dig +short -x 192.12.209.63
-cise63.cise-nsf.gov.
-</pre>  
-
-        <p>You can use the <code>awk</code> command sequence to find out if any authenticated users were responsible for making these requests.</p>
-<pre>
-<b>$</b> cat access.2011-07-17.log | awk '{print $3}' | sort | uniq -c | sort -n
-</pre>    
-      </ol>
-
-
-      <div id="expanded" class="exercise">
-      <h3>Exercise Two: Using parsed access log data.</h3>       
-       <ol>
-        <li>Parse log data.</li>
-         <p>Run <code>parse_logs.pl</code> file in the thredds home directory to parse the <code>access.2011-07-17.log</code> file:</p> 
-<pre>
-<b>$</b> cd
-<b>$</b> ./parse_logs.pl
-</pre> 
-         <p>The resulting file <code>parsed_access_log.csv</code> will contain the log data in <i>tab-delimited format</i>:</p>
-<pre>
-<b>$</b> ls -l *.txt 
--rw-r--r-- 1 tds   Unidata 332843 Jul 19 16:35 parsed_access_log.csv
-</pre>  
-       <li>Examine the log data.</li>
-        <p>Open the <code>parsed_access_log.csv</code> file in the OpenOffice spreadsheet utility.</p> 
-
-        <div id="expanded" class="question">
-         <p>What Requested URL took the most time to process?</p>
-        </div>
-
-      <div id="note" class="info" style="background-color: #FFFFFF;">
-       <h4>Response Codes</h4>
-       <p>See <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</a> for a reference to server response codes.</p>
-      </div> 
-
-
-
-        <div id="expanded" class="question">
-         <p>What types of Request Methods are recorded?  What type of server Response/Status Codes did these Request Methods return?  </p>
-        </div>
-
-
-        <div id="expanded" class="question">
-         <p>What was the most prevalent Referer data?  What were the corresponding User Agents for these values?  Does this make sense?</p>
-        </div>
-
-        <div id="expanded" class="question">
-         <p>Are there any entries that might be of interest from a security point of view?  Is there a common data element among these entries?  What do you think caused these entries? </p>
-        </div>
-       </ol>
-     </div> <!-- end  exercise -->
-
-
-
-
-
-
-
 
 
 
@@ -424,12 +312,12 @@ cise63.cise-nsf.gov.
        
        <ol>
         <li>Look at the logging configurations for <code>threddsServlet.log</code>.</li>
-         <p>Navigate to the unpacked <code>thredds</code> directory in <code>${tomcat_home}/webapps</code>, and view the <code>WEB-INF/log4j.xml</code>: </p>
+         <p>Navigate to the unpacked <code>thredds</code> directory in <code>${tomcat_home}/webapps/WEB-INF</code>, and view the <code>log4j.xml</code>: </p>
 <pre>
-<b>$</b> cd /home/tds/workshop/apache-tomcat-7.0.32/webapps/thredds
-<b>$</b> less WEB-INF/log4j.xml
+<b>$</b> cd /home/tds/workshop/apache-tomcat-7.0.32/webapps/thredds/WEB-INF
+<b>$</b> less log4j.xml
 </pre>
-         <p>The TDS uses the OpenSource Apache <code>Log4J</code> library (hence, the name of the file: <code>WEB-INF/log4j.xml</code>). </p>
+         <p>The TDS uses the OpenSource Apache <code>Log4J</code> library (hence, the name of the file: <code>log4j.xml</code>). </p>
 
          <p>Find the first <i>uncommented</i> <code>Appender</code> element with a name of <code>threddsServlet</code> and a class of <code>org.apache.log4j.DailyRollingFileAppender</code>, and note the <code>ConversionPattern</code>: </p>
 <pre>
@@ -468,7 +356,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
 
   <p>The above pattern translates into:</p>
 <pre>
-2011-07-19T16:03:29.055 -0700 [     30146][      13] INFO  - thredds.server.catalogservice.LocalCatalogServiceController - handleRequestInternal(): Remote host: 127.0.0.1 - Request: "GET /thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico_191km/catalog.html HTTP/1.1"
+2012-10-21T12:26:23.727 -0600 [      5887][       8] INFO  - threddsServlet - Remote host: 127.0.0.1 - Request: "GET /thredds/catalog/testAll/catalog.html?dataset=testDatasetScan/2004050412_eta_211.nc HTTP/1.1"
 </pre>
 
 
@@ -480,7 +368,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        Time and date 
      </td>
      <td>
-       <code>2011-07-19T16:03:29.055 -0700</code>
+       <code>2012-10-21T12:26:23.727 -0600</code>
     </td>
     </tr>
     <tr>
@@ -488,7 +376,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        The number of milliseconds since the server was started
      </td>
      <td>
-      <code>[     30146]</code>
+      <code>[     5887]</code>
     </td>
     </tr>
     <tr>
@@ -496,7 +384,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        Request ID
      </td>
      <td>
-      <code>[     13]</code>
+      <code>[     8]</code>
      </td>
     </tr>
     <tr>
@@ -512,7 +400,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        Location in the TDS code where the message was generated
     </td>
      <td>
-      <code>thredds.server.catalogservice.LocalCatalogServiceController - handleRequestInternal()</code>
+      <code>threddsServlet</code>
     </td>
     </tr>
     <tr>
@@ -520,7 +408,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        Content of the log message
      </td>
      <td>
-      <code>Remote host: 127.0.0.1 - Request: "GET /thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico_191km/catalog.html HTTP/1.1"</code>
+      <code>Remote host: 127.0.0.1 - Request: "GET /thredds/catalog/testAll/catalog.html?dataset=testDatasetScan/2004050412_eta_211.nc HTTP/1.1"</code>
     </td>
     </tr>
 
@@ -579,16 +467,30 @@ connection or a request is forwarded to another TDS internal service, one of thr
       <h3>Looking at <code>threddsServlet.log</code> data</h3>  
       <p>Here is an example of some log messages from a request that resulted in error messages:</p>
 <pre>
-2011-07-19T15:05:41.886 -0700 [    131421][      16] INFO  - thredds.server.opendap.OpendapServlet - doGet(): Remote host: 127.
-0.0.1 - Request: "GET /thredds/dodsC/fsl/.scour*.html HTTP/1.1"
-2011-07-19T15:05:41.981 -0700 [    131516][      16] ERROR - thredds.server.opendap.OpendapServlet - path= /fsl/.scour*.html
-java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
-        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:743)
-        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:387)
- ...
-        at org.apache.tomcat.util.net.JIoEndpoint$Worker.run(JIoEndpoint.java:489)
-        at java.lang.Thread.run(Thread.java:662)
-2011-07-19T15:05:41.982 -0700 [    131517][      16] INFO  - thredds.server.opendap.OpendapServlet - Request Completed - 500 - -1 - 96
+2012-10-22T17:31:52.705 -0600 [      5790][       4] INFO  - threddsServlet - Remote host: 127.0.0.1 - Request: "GET /thredds/dodsC/badAggy.html HTTP/1.1"
+
+2012-10-22T17:31:52.732 -0600 [      5817][       4] INFO  - ucar.nc2.util.log.LogStream - sv=/dodsC
+
+2012-10-22T17:31:52.732 -0600 [      5817][       4] INFO  - ucar.nc2.util.log.LogStream - url=/thredds/dodsC/badAggy.html
+
+2012-10-22T17:31:52.732 -0600 [      5817][       4] INFO  - ucar.nc2.util.log.LogStream - path=/badAggy.html
+
+2012-10-22T17:31:52.733 -0600 [      5818][       4] INFO  - ucar.nc2.util.log.LogStream - this.datasetname.1=/badAggy.html
+
+2012-10-22T17:31:52.733 -0600 [      5818][       4] INFO  - ucar.nc2.util.log.LogStream - this.datasetname.2=badAggy
+
+2012-10-22T17:31:52.733 -0600 [      5818][       4] INFO  - ucar.nc2.util.log.LogStream - datasetname=|badAggy|
+
+2012-10-22T17:31:52.752 -0600 [      5837][       4] ERROR - thredds.server.opendap.OpendapServlet - path= /badAggy.html
+java.lang.IllegalStateException: There are no datasets in the aggregation DatasetCollectionManager{ collectionName='/data/model/**/.nc' recheck=null 
+ dir=/data/model/ filter=WildcardMatchOnPath{wildcard=*.nc$ regexp=.*\.nc$}
+	at ucar.nc2.ncml.Aggregation.makeDatasets(Aggregation.java:475)
+	at ucar.nc2.ncml.Aggregation.finish(Aggregation.java:401)
+...
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:603)
+	at java.lang.Thread.run(Thread.java:722)
+
+2012-10-22T17:31:52.755 -0600 [      5840][       4] INFO  - threddsServlet - Request Completed - 500 - -1 - 50
 </pre>
 
       <div id="note" class="reminder">
@@ -598,7 +500,7 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
 
       <p>In the above example, note:<p>
       <ul>
-       <li>the request ID (<b>16</b>) matches in all messages;</li>
+       <li>the request ID (<b>4</b>) matches in all messages;</li>
        <li>the ERROR message contains a stack trace; and </li>
        <li>the status code in the end of transaction message is <code>500 (Internal Server Error)</code> .</li>
       </ul>
@@ -607,20 +509,39 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
 
 
       <div id="expanded" class="exercise">
-       <h3>Exercise Three: Find an example of error transition bracketing in your own <code>threddsServlet.log</code>.</h3>
-        <ul>
-        <li>Yesterday afternoon you performed an exercise specify which datasets are to be included in the generated catalogs (via the <code>filter</code> element in the <code>datasetscan</code> element).  During the exercise, errors were generated and logged to the <code>threddsServlet.log</code>.</li>
-       </ul>
+       <h3>Exercise One: Find an example of error transition bracketing in your own <code>threddsServlet.log</code>.</h3>
        <ol>
+        <li>Let's generate an error and look at the result in the <code>threddsServlet.log</code>. We are going to tell the TDS to aggregate multiple datasets into a single dataset, BUT we are erroneously going to configure it to scan a directory that doesn't exist.</li>
+       <p>Open up <code>${tomcat_home/content/thredds/catalog.xml</code> and add the following: </p> 
+<pre>
+&lt;dataset name="badAggy" ID="badAggy" urlPath="badAggy"&gt;
+   &lt;metadata inherited="true"&gt;
+        &lt;serviceName&gt;odap&lt;serviceName&gt;
+   &lt;metadata&gt;
+   &lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"&gt;
+       &lt;aggregation dimName="time" type="joinExisting"&gt;
+           &lt;scan location="/data/model/" suffix=".nc" /&gt;
+       &lt;aggregation&gt;
+   &lt;netcdf&gt;
+&lt;dataset&gt;
+</pre>
+        <p>Stop and restart Tomcat and view the result of your addition the TDS main catalog: <a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a>. You should see a new dataset listed with the name of <code>badAggy</code>: </p>
+        <a href="images/badAggy1.png" target="_blank"><img src="images/badAggy1.png" alt="Bad Aggregation" width="600"></a>
+        <p>Click on the <code>badAggy</code> dataset and try to access it via OPeNDAP:</p>
+        <a href="images/badAggy2.png" target="_blank"><img src="images/badAggy2.png" alt="Bad Aggregation Access via OPeNDAP" width="600"></a>
+        <p>The result should be a <code>500 (Internal Server Error)</code> (which is the error we sought to create):</p>
+        <a href="images/badAggy3.png" target="_blank"><img src="images/badAggy3.png" alt="500 (Internal Server Error)" width="600"></a>
         <li>Use the <code>grep</code> command to find out which <code>threddsServlet.log</code> file contains the error message:</li>
 <pre>
 <b>$</b> cd /home/tds/workshop/apache-tomcat-7.0.32/content/thredds/logs
 <b>$</b> grep ERROR threddsServlet.log*
 </pre>   
        <li>Open the <code>threddsServlet.log</code> file which contains the error message and find all the message transaction entries that correspond to that error.</li>
+       <li>Extra credit: do you see any requests in the <code>threddsServlet.log</code> resulting in a <code>404 (File Not Found)</code>?</li>
+       <li>Delete the erroneous entry you made to <code>${tomcat_home/content/thredds/catalog.xml</code> and stop/restart Tomcat.</li>
  
        </ol>
-      </div> <!-- end exercise one -->
+      </div> <!-- end exercise -->
 
 
 
@@ -635,13 +556,7 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
 
       <h3>Log analyzers</h3>    
    
-      <p>There are a variety of OpenSource and commercial log analysis packages you may wish to employ.  Below are some resources to help locate a package:</p>
-     <ul>
-      <li><a href="http://www.dmoz.org/Computers/Software/Internet/Site_Management/Log_Analysis/">Log Analysis category at Open Directory Project</a></li>
-      <li><a href="http://counterguide.com/listing/logs.dir.html">List of log analysis tools at Counterguide.com</a></li>
-      <li><a href="http://dir.yahoo.com/Business_and_Economy/Business_to_Business/Communications_and_Networking/Internet_and_World_Wide_Web/Network_Management/Traffic_Management/Log_Analysis_Tools/Titles/">Log Analysis Tools category at Yahoo Directory</a></li>
-
-     </ul>
+      <p>There are a variety of OpenSource and commercial <a href="http://lmgtfy.com/?q=log+analyzers">log analysis packages</a> you may wish to employ. </p>
 
 
       <h3>Firefox Add-on: Live HTTP Headers</h3>  
@@ -655,29 +570,26 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
        <li>Information is easily saved in text files.</li>
       </ul>
 
-      <p><a href="images/liveheaders.png"><img src="images/liveheaders.png" width="350" height="413" alt="Live HTTP Headers"/></a></p>
+      <p><a href="images/liveheaders.png" target="_blank"><img src="images/liveheaders.png" width="350" alt="Live HTTP Headers"/></a></p>
 
 
 
 
 
       <div id="expanded" class="exercise">
-       <h3>Exercise Four: Use Live HTTP Headers.</h3>
- 
-
+       <h3>Exercise Two: Use Live HTTP Headers.</h3>
        <ol>
         <li>Clear any authenticated browser sessions you may have running.</li>
         <li>Open Live HTTP Headers</li>
         <li>Go to the Tomcat <code>manager</code> application in your browser: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a> and login.</li>
         <li>Look at the resulting output in the Live HTTP Headers window.</li>
-     
        </ol>
-      </div> <!-- end exercise one -->
+      </div> <!-- end exercise -->
 
 
 
 
-      <h3>Tools that come with the JDK: <code>JConsole</code> and <code>JVisualVM</code></h3>    
+      <h3>Tools that come with the JDK: <code>JVisualVM</code> and <code>JConsole</code></h3>    
     <div id="note" class="info">
 
        <h4><code>JVM</code> monitoring tools</h4>
@@ -690,77 +602,37 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
        <ul>
         <li>Both come packaged with the JDK (found in <code>$JAVA_HOME/bin</code>).</li>
         <li>Both GUI tools to provide information about the JVM  in a visual format.</li>
-         <li>Used for monitoring, troubleshooting, and profiling what is happening in the JVM.</li>
+        <li>Used for monitoring, troubleshooting, and profiling what is happening in the JVM:</li>
+        <ul>
+         <li>generate and analyze heap data</li>
+         <li>track down memory leaks</li>
+         <li>monitor the garbage collector and perform memory and CPU profiling</li>
+         <li>browse and operate on MBeans</li>
+        </ul>
        </ul>
-
-     <ol>
-       <li>Use <code>JConsole</code> to track the JVM running Tomcat.</li>
-        <p>Invoke the <code>jconsole</code> program in <code>$JAVA_HOME/bin</code>: </p>
-<pre>
-<b>$</b> cd $JAVA_HOME/bin
-<b>$</b> ./jconsole
-</pre>
-        <p>If you happen to be running more than one JVM on your machine, look to see what Process ID # for the JVM running Tomcat:</p>
-<pre>
-<b>$</b> ps -ef | grep tomcat
-tds      <b>22122</b>     1 12 12:37 pts/2    00:00:29 /home/tds/workshop/jdk1.7.0_09/bin/java -Djava.util.logging.config.file=/home/tds/workshop/apache-tomcat-7.0.32/conf/logging.properties -Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/home/tds/workshop/apache-tomcat-7.0.32/content/thredds/javaUtilPrefs -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/workshop/apache-tomcat-7.0.32/endorsed -classpath /home/tds/workshop/apache-tomcat-7.0.32/bin/bootstrap.jar:/home/tds/workshop/apache-tomcat-7.0.32/bin/tomcat-juli.jar -Dcatalina.base=/home/tds/workshop/apache-tomcat-7.0.32 -Dcatalina.home=/home/tds/workshop/apache-tomcat-7.0.32 -Djava.io.tmpdir=/home/tds/workshop/apache-tomcat-7.0.32/temp org.apache.catalina.startup.Bootstrap start
-tds      22225 21243  0 12:41 pts/1    00:00:00 grep tomcat
-</pre>
-          <p>Select the local JVM process corresponding to Tomcat and connect:</p>
-          <p><a href="images/jconsole.png"><img src="images/jconsole.png" width="400" height="333" alt="Starting JConsole" /></a></p>
-
-       <li>Try to create a <code>PermGen</code> error via the Tomcat <code>manager</code> application.</li>
-          <p>In your browser window, continually <code>Start</code>, <code>Stop</code> and <code>reload</code> the TDS and other web applications using the <code>manager</code> application.</p>
-          <p>In the meantime, chart the <b>Memory Pool "PS Perm Gen"</b> in the <code>JConsole</code> <b>Memory</b> tab.  Also monitor the <b>Heap Memory Usage</b> and <b>Class Loading</b> displays in the <b>Overview</b> tab.  </p>
-        <li>Try to create a <code>PermGen</code> error via the Tomcat <code>manager</code> application.</li>
-
-       <li>Identify <code>PermGen</code> as it happens.</li>
-        <p>The <code>PermGen</code> error manifests itself in the following ways:</p>
-        <ol class="little">
-         <li>The <code>manager</code> application stops responding.</li>
-         <li><code>JConsole</code> will loose its connection with the Tomcat JVM:</li>
-          <p><a href="images/permgen1.png"><img src="images/permgen1.png" width="300" height="413" alt="PermGen Error" /></a></p>
-         <li>The following error is reported in <code>catalina.out</code>:</li>
-
-<pre>
-Exception in thread "RMI TCP Connection(idle)" java.lang.OutOfMemoryError: PermGen space
-</pre>
-
-
-         <li>In the two <code>JConsole</code> screen captures below, you can see the memory usage of <code>PermGen</code> increased with every reload of the application until it reaches the point where the JVM crashes with the <code>OutOfMemory</code> error. The default maximum <code>PermGen</code> amount of JVM is 64 MB.</p>
-          <p><a href="images/permgen2.png"><img src="images/permgen2.png" width="300" height="413" alt="PermGen Error" /></a></p>
-
-          <p><a href="images/permgen3.png"><img src="images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
-
-         </ol>
-       <li>Please Note:  you will most likely have to forcefully kill the running tomcat process, as the <code>${tomcat_home}/bin/shutdown.sh</code> will be unresponsive.</li>
-        <ol>
-        <li>Find the Tomcat process running and get the process ID number:</li>
-<pre>
-<b>$</b> ps -ef | grep tomcat
-tds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/tds/tds/jdk1.7.0_09/bin/java -Djava.util.logging.config.file=/home/tds/workshop/apache-tomcat-7.0.32/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/workshop/apache-tomcat-7.0.32/endorsed -classpath :/home/tds/workshop/apache-tomcat-7.0.32/bin/bootstrap.jar -Dcatalina.base=/home/tds/workshop/apache-tomcat-7.0.32 -Dcatalina.home=/home/tds/workshop/apache-tomcat-7.0.32 -Djava.io.tmpdir=/home/tds/workshop/apache-tomcat-7.0.32/temp org.apache.catalina.startup.Bootstrap start
-tds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
-</pre>
-        <li>Kill it!</li>
-<pre>
-<b>$</b> kill -9 5168
-<b>$</b> ps -ef | grep tomcat
-tds   5694  4285  0 14:20 pts/2    00:00:00 grep tomcat
-</pre>
-      </ol>
-     </ol>
-
-
-
+       <p><a href="images/jvisualvm2.png" target="_blank"><img src="images/jvisualvm2.png" width="600" alt="JVisualVM"/></a></p>
+       <p><a href="images/permgen3.png" target="_blank"><img src="images/permgen3.png" width="200" alt="JConsole"/></a></p>
 
 
       <div id="expanded" class="exercise">
-       <h3>Exercise Five: Use <code>JConsole</code> to monitor the JVM during a <code>manager</code>-induced  <code>PermGen</code> error.</h3>
+       <h3>Exercise Three: Use either <code>JVisualVM</code> or <code>JConsole</code></h3>
        <ol>
-        <li>Using the steps outlined above, try to induce a <code>PermGen</code> error using the <code>manager</code> application and monitor it via <code>JConsole</code>.</li>
-    
+        <li>Launch either <code>JVisualVM</code> or <code>JConsole</code> to track the JVM running Tomcat.</li>
+        <p>Move into the <code>$JAVA_HOME/bin</code> directory and invoke either <code>jvisualvm</code> or <code>jconsole</code>: </p>
+<pre>
+<b>$</b> cd /home/tds/workshop/jdk1.7.0_09/bin
+<b>$</b> ./jvisualvm
+</pre>
+        <p>or</p>
+<pre>
+<b>$</b> cd /home/tds/workshop/jdk1.7.0_09/bin
+<b>$</b> ./jconsole
+</pre>
+        <li>Find and examine at the JVM arguments and System properties for the Tomcat JVM.</li>
+        <li>Start and stop the TDS using the Tomcat <code>manager</code> application and examine the result in the <code>CPU</code> usage, <code>Class loading</code>, live <code>Threads</code> count, <code>Heap</code>  memory and <code>PermGen</code> memory.</li>
+        <li>What is the <code>PermGen</code> memory limit?  Try to drive the <code>PermGen</code> to it's limit via the <code>manager</code> application.  Are you successful?</li>
        </ol>
-      </div> <!-- end exercise one -->
+      </div> <!-- end exercise -->
 
 
 
