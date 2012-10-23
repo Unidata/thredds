@@ -512,18 +512,18 @@ java.lang.IllegalStateException: There are no datasets in the aggregation Datase
        <h3>Exercise One: Find an example of error transition bracketing in your own <code>threddsServlet.log</code>.</h3>
        <ol>
         <li>Let's generate an error and look at the result in the <code>threddsServlet.log</code>. We are going to tell the TDS to aggregate multiple datasets into a single dataset, BUT we are erroneously going to configure it to scan a directory that doesn't exist.</li>
-       <p>Open up <code>${tomcat_home/content/thredds/catalog.xml</code> and add the following: </p> 
+       <p>Open up <code>${tomcat_home}/content/thredds/catalog.xml</code> and add the following: </p> 
 <pre>
 &lt;dataset name="badAggy" ID="badAggy" urlPath="badAggy"&gt;
    &lt;metadata inherited="true"&gt;
-        &lt;serviceName&gt;odap&lt;serviceName&gt;
-   &lt;metadata&gt;
+        &lt;serviceName&gt;odap&lt;/serviceName&gt;
+   &lt;/metadata&gt;
    &lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"&gt;
        &lt;aggregation dimName="time" type="joinExisting"&gt;
            &lt;scan location="/data/model/" suffix=".nc" /&gt;
-       &lt;aggregation&gt;
-   &lt;netcdf&gt;
-&lt;dataset&gt;
+       &lt;/aggregation&gt;
+   &lt;/netcdf&gt;
+&lt;/dataset&gt;
 </pre>
         <p>Stop and restart Tomcat and view the result of your addition the TDS main catalog: <a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a>. You should see a new dataset listed with the name of <code>badAggy</code>: </p>
         <a href="images/badAggy1.png" target="_blank"><img src="images/badAggy1.png" alt="Bad Aggregation" width="600"></a>
@@ -538,7 +538,7 @@ java.lang.IllegalStateException: There are no datasets in the aggregation Datase
 </pre>   
        <li>Open the <code>threddsServlet.log</code> file which contains the error message and find all the message transaction entries that correspond to that error.</li>
        <li>Extra credit: do you see any requests in the <code>threddsServlet.log</code> resulting in a <code>404 (File Not Found)</code>?</li>
-       <li>Delete the erroneous entry you made to <code>${tomcat_home/content/thredds/catalog.xml</code> and stop/restart Tomcat.</li>
+       <li>Delete the erroneous entry you made to <code>${tomcat_home}/content/thredds/catalog.xml</code> and stop/restart Tomcat.</li>
  
        </ol>
       </div> <!-- end exercise -->
