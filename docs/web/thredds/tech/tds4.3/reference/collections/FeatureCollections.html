@@ -35,13 +35,13 @@ dl {margin: 10px 5px 5px 15px;}
 <hr />
 <h2><a name="example" id="example"></a>Example catalog elements</h2>
 <p>Simple case using defaults:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;GRIB&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;GRIB&quot; path=&quot;grib/NCEP/NAM/Polar_90km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot;/&gt;
 
 &lt;/featureCollection&gt;
 </pre>
 <p>Fully specify the options:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Alaska_11km&quot;&gt;
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$&quot;<br />            name=&quot;NAM_Alaska_11km&quot;<br />            dateFormatMark=&quot;#NAM_Alaska_11km_#yyyyMMdd_HHmm&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;
 
 
@@ -51,8 +51,8 @@ dl {margin: 10px 5px 5px 15px;}
 &lt;/featureCollection&gt;
 </pre>
 <p>  With NcML elements:</p>
-<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Alaska_11km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot; olderThan=&quot;5 min&quot;/&gt;
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Alaska_11km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/NAM/Alaska_11km&quot;&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/Alaska_11km_#yyyyMMdd_HHmm#.grib2$&quot; olderThan=&quot;5 min&quot;/&gt;
   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
     <strong>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />      &lt;attribute name=&quot;History&quot; value=&quot;processed by Rectilyser 6.23a&quot;/&gt;<br />
@@ -142,7 +142,7 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
 <h3>protoDataset element</h3>
 <p>Provides control over the choice of the <strong><em>prototype dataset</em></strong> for the collection. The protype dataset is used to populate the metadata for the feature collection.</p>
 <pre>&lt;protoDataset <strong>choice</strong>=&quot;Penultimate&quot; param=&quot;0&quot; <strong>change</strong>=&quot;expr&quot;&gt;
-  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />    &lt;attribute name=&quot;CF:FeatureType&quot; value=&quot;station&quot;/&gt;<br />
+  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />    &lt;attribute name=&quot;featureType&quot; value=&quot;timeSeries&quot;/&gt;<br />
   &lt;/netcdf&gt;
 &lt;/protoDataset&gt;
 </pre>
@@ -183,10 +183,10 @@ dateFormatMark=&quot;yyyyMMdd#<em>/Experiment</em>#&quot;</pre>
 <ol>
   <li>Global and variable attributes are taken from the prototype dataset.</li>
   <li>If a variable appears in the prototype dataset, it will appear in the feature collection dataset. If it doesnt appear in other datasets, it will have missing data for those times.</li>
-  <li>If a variable does not appears in the prototype dataset, it will not appear in the feature collection dataset, even if it appeats in other datasets.</li>
+  <li>If a variable does not appears in the prototype dataset, it will not appear in the feature collection dataset, even if it appears in other datasets.</li>
 </ol>
 <h3>update element</h3>
-<p>For collections that change, the <strong>update</strong> element provides options to update the collection, either synchronously (while a user request waits) or aynchronously (in a background task, so that requests do not wait). If there is no update element, then the dataset is considered <em>static</em>, and  the indexes are never updated by the TDS. To force updated indices, delete the collection index, ususally<strong> &lt;collection root directory&gt; / &lt;dataset name&gt;.ncx</strong>.</p>
+<p>For collections that change, the <strong>update</strong> element provides options to update the collection, either synchronously (while a user request waits) or asynchronously (in a background task, so that requests do not wait). If there is no update element, then the dataset is considered <em>static</em>, and  the indexes are never updated by the TDS. (To force updated indices, delete the collection index, ususally<strong> &lt;collection root directory&gt; / &lt;dataset name&gt;.ncx</strong>.)</p>
 <pre>&lt;update startup=&quot;true&quot; rescan=&quot;cron expr&quot;<strong> </strong>trigger=&quot;allow&quot; <strong></strong>/&gt;
 
 &lt;update <strong>recheckAfter</strong>=&quot;15 min&quot;<strong></strong> <strong></strong>/&gt;</pre>
@@ -276,17 +276,18 @@ The XML Schema definition for the update element:
   <li>the collection is defined by a <em>scanFmrc</em> element, creating a <em>forecastModelRunSingleCollection</em> with one forecast time per file</li>
 </ol>
 <p><strong>New way:</strong></p>
-<pre>&lt;<strong>featureCollection </strong>name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
+<pre>&lt;<strong>featureCollection featureType=&quot;FMRC&quot; </strong>name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
 1) &lt;collection spec=&quot;c:/rps/cf/rtofs/.*ofs_atl.*\.grib2$&quot; <strong>recheckAfter</strong>=&quot;10 min&quot; <strong>olderThan</strong>=&quot;5 min&quot;/&gt;
 
 2) &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
     &lt;variable name=&quot;time&quot;&gt;
-      &lt;attribute name=&quot;units&quot; value=&quot;hours since &quot;/&gt;
+      &lt;attribute name=&quot;units&quot; value=&quot;hours since 1953-11-29T08:57&quot;/&gt;
      &lt;/variable&gt;
    &lt;/netcdf&gt;
 
    &lt;protoDataset&gt;
 3)  &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+      &lt;attribute name=&quot;speech&quot; value=&quot;I'd like to thank all the little people...&quot;/&gt;
       &lt;variable name=&quot;mixed_layer_depth&quot;&gt;
        &lt;attribute name=&quot;long_name&quot; value=&quot;mixed_layer_depth @ surface&quot;/&gt;
        &lt;attribute name=&quot;units&quot; value=&quot;m&quot;/&gt;
