@@ -116,7 +116,6 @@ public class TestFmrc {
      }
    }
 
-   @Test
   public void testProblem() throws Exception {
     doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$", 1, 1, 8, 0, "eta_t", 2, 7, 14); // Q:/cdmUnitTest/fmrc/bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$
   }
