@@ -50,57 +50,62 @@ import java.util.HashMap;
  * @author John Caron
  */
 public class EsriShapefileRenderer extends GisFeatureRendererMulti {
-  private static java.util.Map sfileHash = new HashMap(); // map of (filename -> EsriShapefileRenderer)
+  private static java.util.Map<String, EsriShapefileRenderer> sfileHash;
   private static double defaultCoarseness = 0.0; // expose later?
 
   /**
    * Use factory to obtain a EsriShapefileRenderer.  This caches the EsriShapefile for reuse.
-   * <p>
+   * <p/>
    * Implementation note: should switch to weak references.
    */
   static public EsriShapefileRenderer factory(String filename) {
+    if (sfileHash == null)
+      sfileHash = new HashMap<String, EsriShapefileRenderer>();
+
     if (sfileHash.containsKey(filename))
-      return (EsriShapefileRenderer) sfileHash.get(filename);
+      return sfileHash.get(filename);
 
     try {
       EsriShapefileRenderer sfile = new EsriShapefileRenderer(filename);
       sfileHash.put(filename, sfile);
       return sfile;
     } catch (Exception ex) {
-      System.err.println("EsriShapefileRenderer failed on " + filename+"\n"+ex);
+      //System.err.println("EsriShapefileRenderer failed on " + filename + "\n" + ex);
       //ex.printStackTrace();
       return null;
     }
   }
 
   static public EsriShapefileRenderer factory(String key, InputStream stream) {
+    if (sfileHash == null)
+      sfileHash = new HashMap<String, EsriShapefileRenderer>();
+
     if (sfileHash.containsKey(key))
-      return (EsriShapefileRenderer) sfileHash.get(key);
+      return sfileHash.get(key);
 
     try {
       EsriShapefileRenderer sfile = new EsriShapefileRenderer(stream);
       sfileHash.put(key, sfile);
       return sfile;
     } catch (Exception ex) {
-      System.err.println("EsriShapefileRenderer failed on " + stream+"\n"+ex);
+      // System.err.println("EsriShapefileRenderer failed on " + stream + "\n" + ex);
       return null;
     }
   }
 
   ////////////////////////////////////////
   private EsriShapefile esri = null;
-  private ProjectionImpl dataProject = new LatLonProjection ("Cylindrical Equidistant");
+  private ProjectionImpl dataProject = new LatLonProjection("Cylindrical Equidistant");
 
   private EsriShapefileRenderer(InputStream stream) throws IOException {
-    super();
     esri = new EsriShapefile(stream, null, defaultCoarseness);
 
     double avgD = getStats(esri.getFeatures().iterator());
     createFeatureSet(avgD);
-    createFeatureSet(2*avgD);
-    createFeatureSet(3*avgD);
-    createFeatureSet(5*avgD);
-    createFeatureSet(8*avgD);
+    createFeatureSet(2 * avgD);
+    createFeatureSet(3 * avgD);
+    createFeatureSet(5 * avgD);
+    createFeatureSet(8 * avgD);
   }
 
   private EsriShapefileRenderer(String filename) throws IOException {
@@ -108,14 +113,13 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
   }
 
   private EsriShapefileRenderer(String filename, double coarseness) throws IOException {
-    super();
     esri = new EsriShapefile(filename, coarseness);
 
     double avgD = getStats(esri.getFeatures().iterator());
-    createFeatureSet(2*avgD);
-    createFeatureSet(4*avgD);
-    createFeatureSet(8*avgD);
-    createFeatureSet(16*avgD);
+    createFeatureSet(2 * avgD);
+    createFeatureSet(4 * avgD);
+    createFeatureSet(8 * avgD);
+    createFeatureSet(16 * avgD);
   }
 
   public LatLonRect getPreferredArea() {
@@ -127,6 +131,8 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
     return esri.getFeatures();
   }
 
-  protected ProjectionImpl getDataProjection() { return dataProject; }
+  protected ProjectionImpl getDataProjection() {
+    return dataProject;
+  }
 
 }

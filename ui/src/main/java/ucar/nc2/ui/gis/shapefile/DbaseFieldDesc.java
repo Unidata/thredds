@@ -73,9 +73,7 @@ class DbaseFieldDesc {
     }
     // put the name into the header
     byte[] headerName = Name.getBytes();
-    for (int i = 0; i < headerName.length; i++) {
-      Header[i] = headerName[i];
-    }
+    System.arraycopy(headerName, 0, Header, 0, headerName.length);
 
     Header[11] = Type;
     Header[16] = (byte) FieldLength;
@@ -90,15 +88,13 @@ class DbaseFieldDesc {
     try {
       String os = System.getProperty("java.version");
       ver = Double.valueOf(os).doubleValue();
-    }
-    catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
       ver = 1.02;
     }
     Header = new byte[32];
     try {
       in.readFully(Header, 0, 32);
-    }
-    catch (java.io.IOException e) {
+    } catch (java.io.IOException e) {
       return -1;
     }
     /*

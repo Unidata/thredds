@@ -58,8 +58,7 @@ public class BeLeDataInputStream extends DataInputStream {
    *
    * @param inputStream from which to read
    */
-  public BeLeDataInputStream(InputStream inputStream)
-          throws IOException {
+  public BeLeDataInputStream(InputStream inputStream) throws IOException {
     super(inputStream);
   }
 
@@ -69,8 +68,7 @@ public class BeLeDataInputStream extends DataInputStream {
    *
    * @param filename of file
    */
-  public BeLeDataInputStream(String filename)
-          throws IOException {
+  public BeLeDataInputStream(String filename) throws IOException {
     this(new BufferedInputStream(new FileInputStream(filename)));
   }
 
@@ -81,8 +79,7 @@ public class BeLeDataInputStream extends DataInputStream {
    * @param url of remote data
    * @throws IOException if there was a problem reading the file.
    */
-  public BeLeDataInputStream(URL url)
-          throws IOException {
+  public BeLeDataInputStream(URL url) throws IOException {
     this(new BufferedInputStream(new DataInputStream(url.openStream())));
   }
 
@@ -95,11 +92,10 @@ public class BeLeDataInputStream extends DataInputStream {
   public int readLEInt()
           throws IOException {
     readFully(w, 0, 4);
-    return
-            (w[3] & 0xff) << 24 |
-                    (w[2] & 0xff) << 16 |
-                    (w[1] & 0xff) << 8 |
-                    (w[0] & 0xff);
+    return (w[3] & 0xff) << 24 |
+            (w[2] & 0xff) << 16 |
+            (w[1] & 0xff) << 8 |
+            (w[0] & 0xff);
   }
 
   /**
@@ -107,8 +103,7 @@ public class BeLeDataInputStream extends DataInputStream {
    *
    * @return double from next 8 bytes in stream, littleEndian order
    */
-  public double readLEDouble()
-          throws IOException {
+  public double readLEDouble() throws IOException {
     return Double.longBitsToDouble(readLELong());
   }
 
@@ -142,8 +137,7 @@ public class BeLeDataInputStream extends DataInputStream {
    *
    * @return long from next 8 bytes in stream, littleEndian order
    */
-  public long readLELong()
-          throws IOException {
+  public long readLELong() throws IOException {
     readFully(w, 0, 8);
     return
             (long) (w[7] & 0xff) << 56 |

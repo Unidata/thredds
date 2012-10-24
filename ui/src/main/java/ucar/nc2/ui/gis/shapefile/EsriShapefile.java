@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -33,7 +33,6 @@
 package ucar.nc2.ui.gis.shapefile;
 
 import ucar.nc2.ui.gis.AbstractGisFeature;
-import ucar.nc2.ui.gis.GisFeature;
 import ucar.nc2.ui.gis.GisPart;
 
 import java.awt.geom.Rectangle2D;
@@ -44,7 +43,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Formatter;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -59,43 +58,30 @@ import java.util.zip.ZipInputStream;
  */
 public class EsriShapefile {
 
-  public final static int SHAPEFILE_CODE = 9994; // shapefile magic number
-
   // these are only shape types handled by this package, so far
-  public final static int NULL = 0;
-  public final static int POINT = 1;
-  public final static int POLYLINE = 3;
-  public final static int POLYGON = 5;
-  public final static int MULTIPOINT = 8;
+  enum Type {none, point, polyline, polygon, multipoint}
 
-  // Eventually we should handle these new types also (is anyone using these?)
-  public final static int POINTZ = 11;
-  public final static int POLYLINEZ = 13;
-  public final static int POLYGONZ = 15;
-  public final static int MULTIPOINTZ = 18;
-  public final static int POINTM = 21;
-  public final static int POLYLINEM = 23;
-  public final static int POLYGONM = 25;
-  public final static int MULTIPOINTM = 28;
-  public final static int MULTIPATCH = 31;
+  private final static int SHAPEFILE_CODE = 9994; // shapefile magic number
+  private final static double defaultCoarseness = 0.0;
 
   private BeLeDataInputStream bdis; // the shapefile data stream
   private int fileBytes;         // bytes in file, according to header
   private int bytesSeen = 0;         // so far, in bytes.
   private int version;         // of shapefile format (currently 1000)
-  private int fileShapeType;         // not used here
-  private ArrayList features;        // EsriFeatures in List
+  private Type type;
+
+  private List<EsriFeature> features;        // EsriFeatures in List
   private Rectangle2D listBounds;    // bounds from shapefile
   private double resolution;         // computed from coarseness
-  private final static double defaultCoarseness = 0.0;
+
   /*
-* Relative accuracy of plotting.  Larger means coarser but
-* faster, 0.0 is all available resolution.  Anything less than 1
-* is wasted sub-pixel plotting, but retains quality for closer
-* zooming.  Anything over about 2.0 is ugly.  1.50 makes things
-* faster than 1.0 at the cost of barely discernible ugliness, but
-* for best quality (without zooms), set to 1.0.  If you still
-* want quality at 10:1 zooms, set to 1/10, etc.  */
+    * Relative accuracy of plotting.  Larger means coarser but
+    * faster, 0.0 is all available resolution.  Anything less than 1
+    * is wasted sub-pixel plotting, but retains quality for closer
+    * zooming.  Anything over about 2.0 is ugly.  1.50 makes things
+    * faster than 1.0 at the cost of barely discernible ugliness, but
+    * for best quality (without zooms), set to 1.0.  If you still
+    * want quality at 10:1 zooms, set to 1/10, etc.  */
   private double coarseness = defaultCoarseness;
 
   /**
@@ -105,8 +91,7 @@ public class EsriShapefile {
    * @param filename name of ESRI shapefile (typically has ".shp"
    *                 extension)
    */
-  public EsriShapefile(String filename)
-          throws IOException {
+  public EsriShapefile(String filename) throws IOException {
     this(filename, null);
   }
 
@@ -116,8 +101,7 @@ public class EsriShapefile {
    *
    * @param url URL of ESRI shapefile
    */
-  public EsriShapefile(URL url)
-          throws IOException {
+  public EsriShapefile(URL url) throws IOException {
     this(url, null);
   }
 
@@ -130,8 +114,7 @@ public class EsriShapefile {
    *                   extension)
    * @param coarseness to tradeoff plot quality versus speed.
    */
-  public EsriShapefile(String filename, double coarseness)
-          throws IOException {
+  public EsriShapefile(String filename, double coarseness) throws IOException {
     this(filename, null, coarseness);
   }
 
@@ -142,8 +125,7 @@ public class EsriShapefile {
    * @param url        URL of ESRI shapefile
    * @param coarseness to tradeoff plot quality versus speed.
    */
-  public EsriShapefile(URL url, double coarseness)
-          throws IOException {
+  public EsriShapefile(URL url, double coarseness) throws IOException {
     this(url, null, coarseness);
   }
 
@@ -158,8 +140,7 @@ public class EsriShapefile {
    *                   bounding box of whole shapefile is used
    * @param coarseness to tradeoff plot quality versus speed.
    */
-  public EsriShapefile(URL url, Rectangle2D bBox, double coarseness)
-          throws IOException {
+  public EsriShapefile(URL url, Rectangle2D bBox, double coarseness) throws IOException {
     this(new DataInputStream(url.openStream()), bBox, coarseness);
   }
 
@@ -174,8 +155,7 @@ public class EsriShapefile {
    *                   bounding box of whole shapefile is used
    * @param coarseness to tradeoff plot quality versus speed.
    */
-  public EsriShapefile(String filename, Rectangle2D bBox, double coarseness)
-          throws IOException {
+  public EsriShapefile(String filename, Rectangle2D bBox, double coarseness) throws IOException {
     this(new FileInputStream(filename), bBox, coarseness);
   }
 
@@ -188,8 +168,7 @@ public class EsriShapefile {
    *             namely those whose bounding boxes intersect this one. If null,
    *             bounding box of whole shapefile is used
    */
-  public EsriShapefile(URL url, Rectangle2D bBox)
-          throws IOException {
+  public EsriShapefile(URL url, Rectangle2D bBox) throws IOException {
     this(new DataInputStream(url.openStream()), bBox, 0.0f);
   }
 
@@ -203,8 +182,7 @@ public class EsriShapefile {
    *                 namely those whose bounding boxes intersect this one. If null,
    *                 bounding box of whole shapefile is used
    */
-  public EsriShapefile(String filename, Rectangle2D bBox)
-          throws IOException {
+  public EsriShapefile(String filename, Rectangle2D bBox) throws IOException {
     this(new FileInputStream(filename), bBox, 0.0f);
   }
 
@@ -219,23 +197,21 @@ public class EsriShapefile {
    *                namely those whose bounding boxes intersect this one. If null,
    *                bounding box of whole shapefile is used
    */
-  public EsriShapefile(InputStream iStream, Rectangle2D bBox,
-                       double coarseness)
-          throws IOException {
+  public EsriShapefile(InputStream iStream, Rectangle2D bBox, double coarseness) throws IOException {
     BufferedInputStream bin = new BufferedInputStream(iStream);
 
     if (coarseness < 0.0f)
       this.coarseness = defaultCoarseness;
     else
       this.coarseness = coarseness;
+
     if (isZipStream(bin)) {
       ZipInputStream zin = new ZipInputStream(bin);
-      ZipEntry ze = null;
+      ZipEntry ze;
       while ((ze = zin.getNextEntry()) != null) {
-        if (ze.getName().endsWith(".shp") ||
-                ze.getName().endsWith(".SHP")) {
+        if (ze.getName().endsWith(".shp") || ze.getName().endsWith(".SHP")) {
           bdis = new BeLeDataInputStream(zin);
-          Init(bBox);
+          init(bBox);
           return;
         }
         zin.closeEntry();
@@ -243,13 +219,11 @@ public class EsriShapefile {
       throw new IOException("no .shp entry found in zipped input");
     } else {
       bdis = new BeLeDataInputStream(bin);
-      Init(bBox);
+      init(bBox);
     }
   }
 
-
-  static boolean isZipStream(InputStream is)
-          throws IOException {
+  static boolean isZipStream(InputStream is) throws IOException {
     is.mark(5);
     int c1 = is.read();
     int c2 = is.read();
@@ -261,22 +235,21 @@ public class EsriShapefile {
     return false;
   }
 
-  private void Init(Rectangle2D bBox)
-          throws IOException {
+  private void init(Rectangle2D bBox) throws IOException {
     int fileCode = readInt();
-    if (fileCode != SHAPEFILE_CODE) {
+    if (fileCode != SHAPEFILE_CODE)
       throw (new IOException("Not a shapefile"));
-    }
+
     skipBytes(20);    // 5 unused ints
     fileBytes = 2 * readInt();
     version = readLEInt();
-    fileShapeType = readLEInt();
+
+    type = assignType(readLEInt());
     listBounds = readBoundingBox();
 
     // if no bounds specified, use shapefile bounds
-    if (bBox == null) {
+    if (bBox == null)
       bBox = listBounds;
-    }
 
     double xu = bBox.getMaxX();
     double yu = bBox.getMaxY();
@@ -284,21 +257,30 @@ public class EsriShapefile {
     double yl = bBox.getMinY();
     double w = 1000; // for resolution, just assume 1000x1000 display
     double h = 1000;
-    resolution = 1.0 / (coarseness * Math.min(Math.abs(xu - xl) / w,
-            Math.abs(yu - yl) / h));
+    resolution = 1.0 / (coarseness * Math.min(Math.abs(xu - xl) / w, Math.abs(yu - yl) / h));
 
     skipBytes(32); // skip to start of first record header
 
     /* Read through file, filtering out features that don't
- intersect bounding box. */
-    features = new ArrayList();
+       intersect bounding box. */
+    features = new ArrayList<EsriFeature>();
     while (bytesSeen < fileBytes) {
-      GisFeature gf = nextFeature();
+      EsriFeature gf = nextFeature();
       if (gf.getBounds2D().intersects(bBox))
         features.add(gf);
     }
   }
 
+  private Type assignType(int type) {
+    switch (type) {
+      case 1 : return Type.point;
+      case 3 : return Type.polyline;
+      case 5 : return Type.polygon;
+      case 8 : return Type.multipoint;
+      default:
+        throw new RuntimeException("shapefile type "+type+" not supported");
+    }
+  }
 
   /**
    * Return percent of file read, so far.
@@ -316,16 +298,7 @@ public class EsriShapefile {
     return features.size();
   }
 
-  /**
-   * @return number of features in shapefile
-   * @deprecated
-   */
-  public int numShapes() {
-    return features.size();
-  }
-
-  private Rectangle2D readBoundingBox()
-          throws IOException {
+  private Rectangle2D readBoundingBox() throws IOException {
 
     double xMin = readLEDouble();
     double yMin = readLEDouble();
@@ -341,18 +314,16 @@ public class EsriShapefile {
 
     int recordNumber = readInt(); // starts at 1, not 0
     int contentLength = readInt(); // in 16-bit words
-    int featureType = readLEInt();
-
+    int type = readLEInt();
+    Type featureType = assignType(type);
     switch (featureType) {
-      case EsriShapefile.NULL:      // placeholder
-        return new EsriNull();
-      case EsriShapefile.POINT:      // point data
+      case point:
         return new EsriPoint();
-      case EsriShapefile.MULTIPOINT:    // multipoint, only 1 part
+      case multipoint:    // multipoint, only 1 part
         return new EsriMultipoint();
-      case EsriShapefile.POLYLINE:    // arcs
+      case polyline:
         return new EsriPolyline();
-      case EsriShapefile.POLYGON:    // polygon
+      case polygon:
         return new EsriPolygon();
       default:
         throw new IOException("can't handle shapefile shape type " + featureType);
@@ -426,12 +397,12 @@ public class EsriShapefile {
    * @return a new list of features in the shapefile whose bounding
    *         boxes intersect the specified bounding box.
    */
-  public java.util.List getFeatures(Rectangle2D bBox) {
+  public List<EsriFeature> getFeatures(Rectangle2D bBox) {
     if (bBox == null)
       return features;
-    List list = new ArrayList();
-    for (Iterator i = features.iterator(); i.hasNext();) {
-      EsriFeature gf = (EsriFeature) i.next();
+
+    List<EsriFeature> list = new ArrayList<EsriFeature>();
+    for (EsriFeature gf : features) {
       if (gf.getBounds2D().intersects(bBox))
         list.add(gf);
     }
@@ -446,12 +417,11 @@ public class EsriShapefile {
    *
    * @author Russ Rew
    */
-  public abstract class EsriFeature
-          extends AbstractGisFeature {
+  public abstract class EsriFeature extends AbstractGisFeature {
     protected Rectangle2D bounds;
     protected int numPoints;
     protected int numParts;
-    protected List partsList = new ArrayList();
+    protected List<GisPart> partsList = new ArrayList<GisPart>();
 
     // private DbaseFile dbfile;
     // private int recordNumber;
@@ -496,6 +466,15 @@ public class EsriShapefile {
       return partsList.iterator();
     }
 
+    @Override
+    public String toString() {
+      return "EsriFeature{" +
+              "numPoints=" + numPoints +
+              ", numParts=" + numParts +
+      //        ", npartsList=" + partsList +
+              ", bounds=" + bounds +
+              '}';
+    }
   } // EsriFeature
 
 
@@ -580,8 +559,8 @@ public class EsriShapefile {
    * @author Russ Rew
    */
   public class EsriPolyline extends EsriFeature {
-    public EsriPolyline()
-            throws java.io.IOException {
+
+    public EsriPolyline() throws java.io.IOException {
       bounds = readBoundingBox();
       numParts = readLEInt();
       numPoints = readLEInt();
@@ -628,9 +607,7 @@ public class EsriShapefile {
    */
   public class EsriMultipoint extends EsriFeature {
 
-    public EsriMultipoint()
-            throws java.io.IOException {
-
+    public EsriMultipoint() throws java.io.IOException {
       bounds = readBoundingBox();
       int numPoints = readLEInt();
       if (xyPoints.length < 2 * numPoints)
@@ -652,8 +629,7 @@ public class EsriShapefile {
    */
   public class EsriPoint extends EsriFeature {
 
-    public EsriPoint()
-            throws java.io.IOException {
+    public EsriPoint() throws java.io.IOException {
 
       int numPoints = 1;
       readLEDoubles(xyPoints, 2 * numPoints);
@@ -673,11 +649,7 @@ public class EsriShapefile {
    * @author Russ Rew
    */
   public class EsriNull extends EsriFeature {
-
-    public EsriNull() {
-      int numPoints = 0;
-    }
-  } // EsriNull
+  }
 
   class EsriPart implements GisPart {
     private int numPoints = 0;
@@ -744,5 +716,20 @@ public class EsriShapefile {
       return y;
     }
 
+  }
+
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    f.format("Type=%s version=%d bounds=%s resolution=%f%n", type, version, listBounds, resolution);
+    for (EsriFeature ft : features)
+      f.format(" %s%n", ft);
+    return f.toString();
+  }
+
+  static public void main(String args[]) throws IOException {
+    String fname = "C:\\data\\g4g/EcoAtlas_modern_baylands.shp";
+    EsriShapefile esri = new EsriShapefile(fname);
+    System.out.printf("%s%n",esri);
   }
 }

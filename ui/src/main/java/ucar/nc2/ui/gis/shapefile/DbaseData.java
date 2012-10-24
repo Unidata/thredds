@@ -84,7 +84,6 @@ public class DbaseData {
         break;
     }
 
-
   }
 
   /**
@@ -110,8 +109,7 @@ public class DbaseData {
     */
     try {
       ds.readFully(field, 0, desc.FieldLength);
-    }
-    catch (java.io.IOException e) {
+    } catch (java.io.IOException e) {
       return -1;
     }
     switch (desc.Type) {
@@ -120,7 +118,7 @@ public class DbaseData {
         character[n] = new String(field);
         break;
       case 'N':
-        numeric[n] = Double.valueOf(new String(field)).doubleValue();
+        numeric[n] = Double.valueOf(new String(field));
         break;
       case 'F':  /* binary floating point */
         if (desc.FieldLength == 4) {
@@ -216,9 +214,9 @@ public class DbaseData {
       case TYPE_CHAR:
         return character[i];
       case TYPE_NUMERIC:
-        return new Double(numeric[i]);
+        return numeric[i];
       case TYPE_BOOLEAN:
-        return new Boolean(logical[i]);
+        return logical[i];
     }
     return null;
   }
