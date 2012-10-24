@@ -154,6 +154,65 @@
    </div> <!-- end section -->
 
    <div id="section">
+     <h2><a name="wmsConfig">More WMS Configuration</a></h2>
+     <p>Besides the basic WMS configuration available in the <code>threddsConfig.xml</code>
+       file, there are additional configuration settings in the
+       <code>wmsConfig.xml</code> file. These settings can be applied globally, by
+       dataset, or by variable in a dataset, or to variables in any dataset by CF standard
+       name.
+     </p>
+     <h3>Default Image Styling</h3>
+     <p>There are additional configuration settings for default image styling including settings for
+       the default values of color scale range, palette name, and number of color bands as
+       well as whether to use a linear or logarithmic scale.
+     </p>
+     <p>Detailed information is available from the ncWMS/MyOcean
+       <a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">WMS Detailed Configuration</a>
+       web page.
+     </p>
+
+     <h3>Interval Time vs Full Time List in GetCapabilities Documents</h3>
+     <p>By default, the WMS will list all time values in a GetCapabilities document. For long time-series, this
+       list can cause the GetCapabilities document to be quite large. Datasets/variables can be configured to
+       use time intervals with the addition of an <code>intervalTime</code> element in the <code>wmsConfig.xml</code>
+       file. For instance:
+     </p>
+     <pre>
+&lt;intervalTime&gt;true&lt;/intervalTime&gt;
+     </pre>
+     <p>Unfortunately, though time intervals are part of the WMS specification, not all WMS clients
+       know how to interpret time intervals in the GetCapabilities document.
+     </p>
+
+     <div id="expanded" class="exercise">
+       <h3>Exercise: Try Modifying the <code>wmsConfig.xml</code> File</h3>
+       <ol>
+         <li>Open a NAM dataset in Godiva2 and plot a parameter.</li>
+         <li>Notice the default color scale range is [-50,50]. Decide on a better color scale range.</li>
+         <li>Open the
+           "<a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">
+             WMS Detailed Configuration</a>" page in your browser.</li>
+         <li>Edit the wmsConfig.xml file
+<pre>
+<b>$</b> cd ${tomcat_home}/content/thredds
+<b>$</b> vi wmsConfig.xml
+</pre>
+           and change the color scale range for the target parameter in the NAM datasets.</li>
+         <li>Reopen Godiva2 on another NAM dataset and plot the target parameter. Check the new
+           default color scale range.</li>
+       </ol>
+     </div>
+   </div> <!-- end section -->
+
+   <div id="section">
+     <h2><a name="wmsConfig">Vector Styles</a></h2>
+     <p>The WMS tries to identify vector components that it can combine and display as a single vector layer.
+       It looks for CF <code>standard_name</code> attributes with values of the form "eastward_*" and "northward_*"
+       and combines those that match into a vector layer.
+     </p>
+   </div>
+
+     <div id="section">
     <h2><a name="Using">Using WCS and WMS</a></h2>
     <h3>Various WCS and WMS Clients</h3>
     <ul>
@@ -184,29 +243,5 @@
     <a href="images/Godiva2_screenshot.png" target="_blank"><img src="images/Godiva2_screenshot_small.png" alt="Godiva2" height="502" width="600" /></a>  
    </div> <!-- end section -->
 
-
-   <div id="section">
-    <h2><a name="wmsConfig">More WMS Configuration</a></h2>
-    <p>Besides the basic WMS configuration available in the <code>threddsConfig.xml</code> file, there are additional configuration settings for default image styling in the <code>wmsConfig.xml</code> file. This additional configuration includes settings for the default values of color scale range, palette name, and number of color bands as well as whether to use a linear or logarithmic scale. These settings can be applied globally, by dataset, or by variable in a dataset, or to variables in any dataset by CF standard name.</p>
-    <p>Detailed information is available from the ncWMS/MyOcean <a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">WMS Detailed Configuration</a> web page.</p>
-    <div id="expanded" class="exercise">
-     <h3>Exercise: Try Modifying the <code>wmsConfig.xml</code> File</h3>
-     <ol>
-      <li>Open a NAM dataset in Godiva2 and plot a parameter.</li>
-      <li>Notice the default color scale range is [-50,50]. Decide on a better color scale range.</li>
-      <li>Open the
-        "<a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">
-          WMS Detailed Configuration</a>" page in your browser.</li>
-      <li>Edit the wmsConfig.xml file
-<pre>
-<b>$</b> cd ${tomcat_home}/content/thredds
-<b>$</b> vi wmsConfig.xml
-</pre>
-        and change the color scale range for the target parameter in the NAM datasets.</li>
-      <li>Reopen Godiva2 on another NAM dataset and plot the target parameter. Check the new
-        default color scale range.</li>
-     </ol>
-    </div>
-   </div> <!-- end section -->
   </body>
  </html>
