@@ -1305,7 +1305,7 @@ public class ToolsUI extends JPanel {
 
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + ioe.getMessage());
-      ioe.printStackTrace();
+      if (!(ioe instanceof java.io.FileNotFoundException)) ioe.printStackTrace();
       return null;
     }
 
