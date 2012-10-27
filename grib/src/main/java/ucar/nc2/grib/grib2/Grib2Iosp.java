@@ -780,7 +780,7 @@ public class Grib2Iosp extends GribIosp {
 
           if (recordIndex >= 0)  {
             GribCollection.Record record = vindex.records[recordIndex];
-            dataReader.addRecord(vindex, partno, record.fileno, record.pos, resultIndex);  // add this record to be read
+            dataReader.addRecord(vindex, partno, record.fileno, record.pos, record.bitmapPos, resultIndex);  // add this record to be read
           }
         }
       }
@@ -801,8 +801,8 @@ public class Grib2Iosp extends GribIosp {
     private DataReaderPartitioned() {
     }
 
-    void addRecord(GribCollection.VariableIndex vindex, int partno, int fileno, long drsPos, int resultIndex) {
-      records.add(new DataRecord(partno, vindex, resultIndex, fileno, drsPos));
+    void addRecord(GribCollection.VariableIndex vindex, int partno, int fileno, long drsPos, long bmsPos, int resultIndex) {
+      records.add(new DataRecord(partno, vindex, resultIndex, fileno, drsPos, bmsPos));
     }
 
     void read(DataReceiver dataReceiver) throws IOException {
@@ -825,7 +825,7 @@ public class Grib2Iosp extends GribIosp {
           show( Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.vindex.group.hcs.gdsNumberPoints, dr.vindex.group.hcs.scanMode, dr.vindex.group.hcs.nx);
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, dr.vindex.group.hcs.gdsNumberPoints, dr.vindex.group.hcs.scanMode, dr.vindex.group.hcs.nx, dr.bmsPos);
         dataReceiver.addData(data, dr.resultIndex, dr.vindex.group.hcs.nx);
       }
       if (rafData != null) rafData.close();
@@ -837,13 +837,15 @@ public class Grib2Iosp extends GribIosp {
       int resultIndex; // where does this record go in the result array?
       int fileno;
       long drsPos;
+      long bmsPos;
 
-      DataRecord(int partno, GribCollection.VariableIndex vindex, int resultIndex, int fileno, long drsPos) {
+      DataRecord(int partno, GribCollection.VariableIndex vindex, int resultIndex, int fileno, long drsPos, long bmsPos) {
         this.partno = partno;
         this.vindex = vindex;
         this.resultIndex = resultIndex;
         this.fileno = fileno;
         this.drsPos = (drsPos == 0) ? GribCollection.MISSING_RECORD : drsPos; // 0 also means missing in Grib2
+        this.bmsPos = (bmsPos == 0) ? GribCollection.MISSING_RECORD : bmsPos;
       }
 
       @Override
@@ -939,7 +941,7 @@ public class Grib2Iosp extends GribIosp {
     void addRecord(int ensIdx, int timeIdx, int levIdx, int resultIndex) {
       int recordIndex = GribCollection.calcIndex(timeIdx, ensIdx, levIdx, vindex.nens, vindex.nverts);
       GribCollection.Record record = vindex.records[recordIndex];
-      records.add(new DataRecord(timeIdx, ensIdx, levIdx, resultIndex, record.fileno, record.pos));
+      records.add(new DataRecord(timeIdx, ensIdx, levIdx, resultIndex, record.fileno, record.pos, record.bitmapPos));
     }
 
     void read(DataReceiverIF dataReceiver) throws IOException {
@@ -960,7 +962,7 @@ public class Grib2Iosp extends GribIosp {
           show(Grib2RecordScanner.findRecordByDrspos(rafData, dr.drsPos), dr.drsPos);
         }
 
-        float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
+        float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx, dr.bmsPos);
         dataReceiver.addData(data, dr.resultIndex, vindex.group.hcs.nx);
       }
       if (rafData != null) rafData.close();
@@ -971,14 +973,16 @@ public class Grib2Iosp extends GribIosp {
       int resultIndex; // index in the ens / time / vert array
       int fileno;
       long drsPos;
+      long bmsPos;
 
-      DataRecord(int timeIdx, int ensIdx, int levIdx, int resultIndex, int fileno, long drsPos) {
+      DataRecord(int timeIdx, int ensIdx, int levIdx, int resultIndex, int fileno, long drsPos, long bmsPos) {
         this.ensIdx = ensIdx;
         this.timeIdx = timeIdx;
         this.levIdx = levIdx;
         this.resultIndex = resultIndex;
         this.fileno = fileno;
         this.drsPos = drsPos;
+        this.bmsPos = bmsPos;
       }
 
       @Override

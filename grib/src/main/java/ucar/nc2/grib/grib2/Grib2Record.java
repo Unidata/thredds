@@ -231,19 +231,31 @@ public class Grib2Record {
   /**
    * Read data array: use when you want to be independent of the GribRecord
    *
+   *
    * @param raf             from this RandomAccessFile
    * @param drsPos          Grib2SectionDataRepresentation starts here
    * @param gdsNumberPoints gdss.getNumberPoints()
    * @param scanMode        gds.scanMode
    * @param nx              gds.nx
+   * @param bmsPos          Grib2SectionBitmap starts here (0 uses inline bitmap)
    * @return data as float[] array
    * @throws IOException on read error
    */
-  static public float[] readData(RandomAccessFile raf, long drsPos, int gdsNumberPoints, int scanMode, int nx) throws IOException {
+  static public float[] readData(RandomAccessFile raf, long drsPos, int gdsNumberPoints, int scanMode, int nx, long bmsPos) throws IOException {
     raf.seek(drsPos);
     Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(raf);
+    long inlineBmsPos = raf.getFilePointer();
     Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
     Grib2SectionData dataSection = new Grib2SectionData(raf);
+
+    // were we directed to a different bitmap?
+    if (bmsPos != 0 && bmsPos != inlineBmsPos) {
+        // read it without clobbering the raf cursor
+        long currentPos = raf.getFilePointer();
+        raf.seek(bmsPos);
+        bms = new Grib2SectionBitMap(raf);
+        raf.seek(currentPos);
+    }
 
     Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
             scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());

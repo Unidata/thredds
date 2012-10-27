@@ -1,5 +1,6 @@
 package ucar.nc2.grib.grib2;
 
+import ucar.grib.grib2.Grib2BitMapSection;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
@@ -175,6 +176,9 @@ public class Grib2RecordScanner {
   private boolean nextRepeating() throws IOException {
     raf.seek(repeatPos);
 
+    // hold onto the previous bitmap, just in case we need it
+    Grib2SectionBitMap previousBitmap = repeatRecord.getBitmapSection();
+
     // octets 1-4 (Length of GDS)
     int length = GribNumbers.int4(raf);
     int section = raf.read();
@@ -206,6 +210,11 @@ public class Grib2RecordScanner {
       repeatPos = -1;
       repeatRecord = null;
       return false;
+    }
+
+    // is the new bitmap a pointer to the last one?
+    if (repeatRecord.getBitmapSection().usePreviousBitmap()) {
+      repeatRecord.setBms(previousBitmap);
     }
 
     if ((section == 2) || (section == 3)) {
