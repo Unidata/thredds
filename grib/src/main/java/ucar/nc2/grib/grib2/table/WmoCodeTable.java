@@ -564,12 +564,12 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
     @Override
     public int getDiscipline() {
-      return m1;
+      return discipline;
     }
 
     @Override
     public int getCategory() {
-      return m2;
+      return category;
     }
 
     @Override

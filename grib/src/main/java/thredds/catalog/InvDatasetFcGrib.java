@@ -751,7 +751,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
       String paramDisc = cust2.getTableValue("0.0", vindex.discipline);
       if (paramDisc == null) paramDisc = "Unknown";
-      String paramCategory = cust2.getTableValue("4.1." + vindex.discipline, vindex.category);
+      String paramCategory = cust2.getCategory(vindex.discipline, vindex.category);
       if (paramCategory == null) paramCategory = "Unknown";
       String paramName = cust2.getVariableName(vindex.discipline, vindex.category, vindex.parameter);
       tv.setVocabularyName(paramDisc + " / " + paramCategory + " / " + paramName);

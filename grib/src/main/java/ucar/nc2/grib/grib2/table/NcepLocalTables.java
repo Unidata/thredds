@@ -453,10 +453,18 @@ public class NcepLocalTables extends Grib2Customizer {
   // GRIB1 TableA - can share (?)
   private static Map<Integer, String> genProcessMap;  // shared by all instances
 
+  @Override
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null) genProcessMap = NcepTables.getNcepGenProcess();
     if (genProcessMap == null) return null;
     return genProcessMap.get(genProcess);
+  }
+
+  @Override
+  public String getCategory(int discipline, int category) {
+    String catName = NcepLocalParams.getCategory(discipline, category);
+    if (catName != null) return catName;
+    return super.getCategory(discipline, category);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

@@ -122,7 +122,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return result;
   }
 
-  static protected int makeHash(int discipline, int category, int number) {
+  static public int makeHash(int discipline, int category, int number) {
     return (discipline << 16) + (category << 8) + number;
   }
 
@@ -479,5 +479,13 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     return getTableValue("4.3", genProcess);
   }
 
+  public String getCategory(int discipline, int category) {
+    return getTableValue("4.1." + discipline, category);
+  }
 
+  public static void main(String[] args) {
+    Grib2Customizer cust = factory(0, 0, 0, 0);
+    String c = cust.getCategory(0, 14);
+    System.out.printf("%s%n", c);
+  }
 }

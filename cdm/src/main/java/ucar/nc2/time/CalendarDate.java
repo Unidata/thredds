@@ -26,10 +26,6 @@ public class CalendarDate implements Comparable<CalendarDate> {
      return new CalendarDate(null, new DateTime());
   }
 
-  static CalendarDate of(Calendar cal, DateTime dateTime) {
-     return new CalendarDate(cal, dateTime);
-  }
-
   /**
    * Get Calendar date from fields. Uses UTZ time zone
    * @param cal calendar to use, or null for default
@@ -82,6 +78,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   /**
    * Create CalendarDate from msecs since epoch
+   * Uses standard Calendar.
    * @param msecs milliseconds from 1970-01-01T00:00:00Z
    * @return CalendarDate in UTC
    */
@@ -115,7 +112,6 @@ public class CalendarDate implements Comparable<CalendarDate> {
      return new CalendarDate(cal, dt);
    }
 
-
   /**
    * Get CalendarDate from udunit date string
    * @param calendarName get Calendar from Calendar.get(calendarName). may be null
@@ -131,6 +127,11 @@ public class CalendarDate implements Comparable<CalendarDate> {
     CalendarDateUnit cdu = CalendarDateUnit.of(calendarName, unitString);
     double val = Double.parseDouble(valString);
     return cdu.makeCalendarDate(val);
+  }
+
+  // internal use only
+  static CalendarDate of(Calendar cal, DateTime dateTime) {
+     return new CalendarDate(cal, dateTime);
   }
 
   ////////////////////////////////////////////////

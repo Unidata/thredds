@@ -278,7 +278,7 @@ public class Grib2TablesViewer extends JPanel {
     public TableBean(Grib2Customizer.GribTableId table) {
       this.table = table;
       Grib2Customizer t1 = Grib2Customizer.factory(table.center, table.subCenter, table.masterVersion, table.localVersion);
-      filename = t1.getTablePath(0, 192,192); // local
+      filename = t1.getTablePath(0, 192, 192); // local
     }
 
     public String getName() {
@@ -333,6 +333,10 @@ public class Grib2TablesViewer extends JPanel {
 
     public String getId() {
       return param.getDiscipline() + "-" + param.getCategory() + "-" + param.getNumber();
+    }
+
+    public int getKey() {
+      return Grib2Customizer.makeHash(param.getDiscipline(),param.getCategory(),param.getNumber());
     }
 
     public String getUnit() {

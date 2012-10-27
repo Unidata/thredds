@@ -73,6 +73,7 @@ class TdsConfigMapper
   {
     HTML_STANDARD_CSS_URL( "htmlSetup.standardCssUrl", null,""),
     HTML_CATALOG_CSS_URL( "htmlSetup.catalogCssUrl", null,""),
+    GOOGLE_TRACKING_CODE( "htmlSetup.googleTrackingCode", null,""),
 
     HTML_FOLDER_ICON_URL( "htmlSetup.folderIconUrl", null,""),
     HTML_FOLDER_ICON_ALT( "htmlSetup.folderIconAlt", null,""),
@@ -181,7 +182,8 @@ class TdsConfigMapper
 
     this.htmlConfig.setPageCssUrl( HtmlConfigMappings.HTML_STANDARD_CSS_URL.getValueFromThreddsConfig() );
     this.htmlConfig.setCatalogCssUrl( HtmlConfigMappings.HTML_CATALOG_CSS_URL.getValueFromThreddsConfig() );
-
+    this.htmlConfig.setGoogleTrackingCode( HtmlConfigMappings.GOOGLE_TRACKING_CODE.getValueFromThreddsConfig() );
+    
     this.htmlConfig.setFolderIconUrl( HtmlConfigMappings.HTML_FOLDER_ICON_URL.getValueFromThreddsConfig() );
     this.htmlConfig.setFolderIconAlt( HtmlConfigMappings.HTML_FOLDER_ICON_ALT.getValueFromThreddsConfig() );
     this.htmlConfig.setDatasetIconUrl( HtmlConfigMappings.HTML_DATASET_ICON_URL.getValueFromThreddsConfig() );

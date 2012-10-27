@@ -37,10 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -142,6 +139,28 @@ public class HtmlWriter implements InitializingBean {
             .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getPageCssUrl()))
             .append("' type='text/css' >").toString();
   }
+  
+  
+  public String getGoogleTrackingContent() {
+      if (this.htmlConfig.getGoogleTrackingCode().isEmpty()){
+          return "";
+      } else {
+          return new StringBuilder()            
+	        .append("<script type='text/javascript'>")
+	        .append("var _gaq = _gaq || [];")
+	        .append("_gaq.push(['_setAccount', '")
+	        .append( this.htmlConfig.getGoogleTrackingCode() )
+	        .append("']);")
+	        .append("_gaq.push(['_trackPageview']);")
+
+	        .append("(function() {")
+	        .append("var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;")
+	        .append("ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';")
+	        .append("    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);")
+	        .append("})();")
+	        .append("</script>").toString();
+      }
+}
 
   public String getTdsCatalogCssLink() {
     return new StringBuilder()
@@ -319,26 +338,29 @@ public class HtmlWriter implements InitializingBean {
       sb.append(" see <a href='/thredds/serverInfo.html'> Info </a>");
       sb.append("<br>\n");
     }
-    sb.append(this.tdsContext.getWebappName())
-            .append(" [Version ").append(this.tdsContext.getWebappVersion());
-    if (this.tdsContext.getWebappVersionBuildDate() != null)
-      sb.append(" - ").append(this.tdsContext.getWebappVersionBuildDate());
-    sb.append("] <a href='")
-            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappDocsUrl()))
-            .append("'> Documentation</a>");
-    sb.append("</h3>\n");
+
+    sb.append( this.tdsContext.getWebappName() )
+            .append( " [Version " ).append( this.tdsContext.getWebappVersion() );
+    if ( this.tdsContext.getWebappVersionBuildDate() != null )
+      sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
+    sb.append( "] <a href='" )
+            .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
+            .append( "'> Documentation</a>" );
+    sb.append( "</h3>\n" );
+    sb.append( this.getGoogleTrackingContent() );
   }
 
-  private void appendWebappFooter(StringBuilder sb) {
-    sb.append("<h3>")
-            .append(this.tdsContext.getWebappName())
-            .append(" [Version ").append(this.tdsContext.getWebappVersion());
-    if (this.tdsContext.getWebappVersionBuildDate() != null)
-      sb.append(" - ").append(this.tdsContext.getWebappVersionBuildDate());
-    sb.append("] <a href='")
-            .append(this.htmlConfig.prepareUrlStringForHtml(this.htmlConfig.getWebappDocsUrl()))
-            .append("'> Documentation</a>");
-    sb.append("</h3>\n");
+  private void appendWebappFooter( StringBuilder sb )
+  {
+    sb.append( "<h3>" )
+            .append( this.tdsContext.getWebappName() )
+            .append( " [Version " ).append( this.tdsContext.getWebappVersion() );
+    if ( this.tdsContext.getWebappVersionBuildDate() != null )
+      sb.append( " - " ).append( this.tdsContext.getWebappVersionBuildDate() );
+    sb.append( "] <a href='" )
+            .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
+            .append( "'> Documentation</a>" );
+    sb.append( "</h3>\n" );
   }
 
   //  private static final String TOMCAT_CSS
@@ -452,7 +474,7 @@ public class HtmlWriter implements InitializingBean {
     // Render the directory entries within this directory
     boolean shade = false;
     File[] children = dir.listFiles();
-    List<File> fileList = Arrays.asList(children);
+    List<File> fileList = (children == null) ? new ArrayList<File>() : Arrays.asList(children);
     Collections.sort(fileList);
     for (File child : fileList) {
 
@@ -781,11 +803,12 @@ public class HtmlWriter implements InitializingBean {
 
     // optional access through Viewers
     if (isLocalCatalog)
-      //ViewServlet.showViewers( sb, dataset, request );
-      viewerService.showViewers(sb, dataset, request);
-
-    sb.append("</body>\r\n");
-    sb.append("</html>\r\n");
+      viewerService.showViewers(sb, dataset, request);	
+    
+    sb.append( this.getGoogleTrackingContent() );
+    
+    sb.append( "</body>\r\n" );
+    sb.append( "</html>\r\n" );
 
     return sb.toString();
   }

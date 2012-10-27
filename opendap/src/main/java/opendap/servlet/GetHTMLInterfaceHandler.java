@@ -111,6 +111,7 @@ public class GetHTMLInterfaceHandler {
         requestURL = rs.getRequest().getRequestURL().substring(0, suffixIndex);
 
         String dapCssUrl = "/" + requestURL.split("/",5)[3] + "/" + "tdsDap.css";
+        
 
         try {
 

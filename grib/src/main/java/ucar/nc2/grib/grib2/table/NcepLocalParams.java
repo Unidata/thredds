@@ -69,6 +69,13 @@ public class NcepLocalParams {
     return params.getParameter(number);
   }
 
+  public static String getCategory(int discipline, int category) {
+    int key = (discipline << 8) + category;
+    NcepLocalParams params = tableMap.get( key);
+    return (params == null) ? null : params.title;
+  }
+
+
   static NcepLocalParams factory(String path) {
     NcepLocalParams params = new NcepLocalParams();
     if (!params.readParameterTableXml(path)) return null;
@@ -81,6 +88,7 @@ public class NcepLocalParams {
     return params;
   }
 
+  ////////////////////////////////////////////////////
   private String title;
   private String source;
   private String tableName;
