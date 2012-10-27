@@ -53,7 +53,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Describe
+ * Show Grib2 Tables
  *
  * @author caron
  * @since 6/17/11

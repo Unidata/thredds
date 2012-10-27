@@ -64,7 +64,6 @@ public class TestJustReadGrib  {
     TestDir.actOnAll(dirName, new GribFilter(), new GribAct(), recurse);
   }
 
-  @Test
   public void testProblem() throws IOException {
     String filename = "Q:/cdmUnitTest/tds/ncep/RUC2_CONUS_20km_pressure_20100509_1300.grib2";
     System.out.println("read file= "+filename);

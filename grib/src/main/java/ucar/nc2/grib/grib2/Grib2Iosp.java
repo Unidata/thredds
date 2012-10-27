@@ -536,9 +536,15 @@ public class Grib2Iosp extends GribIosp {
       }
 
       v.addAttribute(new Attribute(VARIABLE_ID_ATTNAME, makeVariableNameFromRecord(vindex)));
-
       int[] param = new int[] {vindex.discipline,vindex.category,vindex.parameter};
       v.addAttribute(new Attribute("Grib2_Parameter", Array.factory(param)));
+      String disc =  cust.getTableValue("0.0", vindex.discipline);
+      if (disc != null) v.addAttribute(new Attribute("Grib2_Parameter_Discipline", disc));
+      String cat =  cust.getTableValue("4.1" + vindex.discipline, vindex.category);
+      if (disc != null) v.addAttribute(new Attribute("Grib2_Parameter_Category", cat));
+      Grib2Customizer.Parameter entry = cust.getParameter(vindex.discipline,vindex.category,vindex.parameter);
+      if (entry != null) v.addAttribute(new Attribute("Grib2_Parameter_Name", entry.getName()));
+
       v.addAttribute(new Attribute("Grib2_Level_Type", vindex.levelType));
       if ( vindex.intvName != null && vindex.intvName.length() != 0)
         v.addAttribute(new Attribute(CDM.TIME_INTERVAL, vindex.intvName));
