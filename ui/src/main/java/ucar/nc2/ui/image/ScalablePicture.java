@@ -15,6 +15,8 @@ See http://www.gnu.org/copyleft/gpl.html for the details.
 */
 package ucar.nc2.ui.image;
 
+import org.imgscalr.Scalr;
+
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
@@ -131,10 +133,6 @@ public class ScalablePicture implements SourcePictureListener {
    */
   public static final int ERROR = READY + 1;
 
-  /**
-   * thingy to scale the image
-   */
-  private AffineTransformOp op;
 
   /**
    * the object to notify when the image operation changes the status.
@@ -151,7 +149,7 @@ public class ScalablePicture implements SourcePictureListener {
   /**
    * which method to use on scaling, a fast one or a good quality one
    */
-  public boolean fastScale = true;
+  public boolean fastScale = false;
 
 
   /**
@@ -379,10 +377,53 @@ public class ScalablePicture implements SourcePictureListener {
     t.start();
   }
 
+  public void scalePicture() {
+    if ((sourcePicture == null) || (sourcePicture.getSourceBufferedImage() == null)) {
+      ScaleFactor = 1.0;
+      return;
+    }
+
+    setStatus(SCALING, "Scaling picture.");
+    BufferedImage org = sourcePicture.getSourceBufferedImage();
+    int w = sourcePicture.getWidth();
+    int h = sourcePicture.getHeight();
+
+    calcScale();
+    scaledPicture =
+      Scalr.resize(org, Scalr.Method.QUALITY, Scalr.Mode.AUTOMATIC,
+              (int) (ScaleFactor * w), (int) (ScaleFactor * h), Scalr.OP_ANTIALIAS);
+
+    // System.out.printf("scaled=%d,%d%n", scaledPicture.getWidth(), scaledPicture.getHeight());
+    setStatus(READY, "Scaled Picture is ready.");
+  }
+
+  private void calcScale() {
+
+    int WindowWidth = TargetSize.width;
+    int WindowHeight = TargetSize.height;
+    int PictureWidth = sourcePicture.getWidth();
+    int PictureHeight = sourcePicture.getHeight();
+
+    // Scale so that the entire picture fits in the component.
+    if ((WindowWidth == 0) || (WindowHeight == 0)) { // jc added: window not ready
+      ScaleFactor = 1.0;
+    } else if (((double) PictureHeight / WindowHeight) > ((double) PictureWidth / WindowWidth)) {
+      // Vertical scaling
+      ScaleFactor = ((double) WindowHeight / PictureHeight);
+    } else {
+      // Horizontal scaling
+      ScaleFactor = ((double) WindowWidth / PictureWidth);
+    }
+
+    //System.out.printf("pix=%d,%d%n", sourcePicture.getWidth(), sourcePicture.getHeight());
+    //System.out.printf("target=%d,%d%n", TargetSize.width, TargetSize.height);
+    //System.out.printf("ScaleFactor=%f%n", ScaleFactor);
+  }
+
   /**
    * method that is called to create a scaled version of the image.
    */
-  public void scalePicture() {
+  public void scalePictureOld() {
     Tools.log("ScalablePicture.scalePicture invoked");
     try {
       setStatus(SCALING, "Scaling picture.");
@@ -415,7 +456,11 @@ public class ScalablePicture implements SourcePictureListener {
         }
 
         Tools.log("ScalablePicture.scalePicture: doing an AffineTransform with Factor: " + Double.toString(ScaleFactor));
-        AffineTransform af = AffineTransform.getScaleInstance((double) ScaleFactor, (double) ScaleFactor);
+        AffineTransform af = AffineTransform.getScaleInstance(ScaleFactor, ScaleFactor);
+        /*
+    thingy to scale the image
+   */
+        AffineTransformOp op;
         if (fastScale)
           op = new AffineTransformOp(af, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         else
@@ -602,7 +647,7 @@ public class ScalablePicture implements SourcePictureListener {
    * return the filename of the original image
    */
   public String getFilename() {
-    return imageUrl.toString();
+    return (imageUrl == null) ? "" : imageUrl.toString();
   }
 
 

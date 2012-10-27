@@ -442,29 +442,19 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 			// clear damaged component area
 		 	Rectangle clipBounds = g2d.getClipBounds();
 			g2d.setColor(Color.black); // getBackground());
-			g2d.fillRect(clipBounds.x, 
-				     clipBounds.y,
-			             clipBounds.width, 
-			      	     clipBounds.height);
+			g2d.fillRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height);
 				     
-
-			g2d.drawRenderedImage(sclPic.getScaledPicture(), AffineTransform.getTranslateInstance((int) X_Offset, (int) Y_Offset));
+			g2d.drawRenderedImage(sclPic.getScaledPicture(), AffineTransform.getTranslateInstance( X_Offset, Y_Offset));
+			//g2d.drawImage(sclPic.getScaledPicture(), null, 0, 0);
 
 			if (showInfo) {
 				g2d.setColor(Color.white);
 				g2d.drawString(legend, infoPoint.x, infoPoint.y);
-				g2d.drawString("Size: " 
-						+ Integer.toString(sclPic.getOriginalWidth())
-						+ " x " 
-						+ Integer.toString(sclPic.getOriginalHeight()) 
-						+ " Mid: " 
-						+ Integer.toString(focusPoint.x)
-						+ " x "
-						+ Integer.toString(focusPoint.y) 
-						+ " Scale: " 
-						+ twoDecimalFormatter.format(sclPic.getScaleFactor())
-						,infoPoint.x, infoPoint.y + lineSpacing);
-				g2d.drawString("File: " + sclPic.getFilename()
+				g2d.drawString("Size: " + Integer.toString(sclPic.getOriginalWidth()) + " x " + Integer.toString(sclPic.getOriginalHeight())
+						+ " Offset: " + X_Offset + " x " + Y_Offset
+						+ " Mid: " + Integer.toString(focusPoint.x) + " x " + Integer.toString(focusPoint.y)
+						+ " Scale: " + twoDecimalFormatter.format(sclPic.getScaleFactor()), infoPoint.x, infoPoint.y + lineSpacing);
+				/* g2d.drawString("File: " + sclPic.getFilename()
 						, infoPoint.x
 						, infoPoint.y + (2 * lineSpacing) );
 				g2d.drawString("Loaded in: " 
@@ -476,7 +466,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 						+ Long.toString( Runtime.getRuntime().freeMemory( )/1024/1024, 0 ) 
 						+ " MB"
 						, infoPoint.x
-						, infoPoint.y + (4 * lineSpacing) );
+						, infoPoint.y + (4 * lineSpacing) ); */
 			}
 		} else {
 			// paint a black square
