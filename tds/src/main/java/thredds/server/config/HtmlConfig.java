@@ -61,6 +61,7 @@ public class HtmlConfig
 
   private String pageCssUrl;
   private String catalogCssUrl;
+  private String googleTrackingCode;
 
   private String folderIconUrl;
   private String folderIconAlt;
@@ -199,6 +200,20 @@ public class HtmlConfig
   public void setCatalogCssUrl( String catalogCssUrl ) {
     this.catalogCssUrl = catalogCssUrl;
   }
+  
+  /**
+   * Return the google tracking code for google analytics.
+   *
+   * @return the google tracking code for google analytics.
+   */
+  public String getGoogleTrackingCode() {
+    return googleTrackingCode;
+  }
+
+  public void setGoogleTrackingCode( String googleTrackingCode ) {
+    this.googleTrackingCode = googleTrackingCode;
+  }
+
 
   /**
    * Return the URL to the icon document used for folders in HTML catalog views.
@@ -399,6 +414,7 @@ public class HtmlConfig
   {
     model.put( "catalogCssUrl", this.getCatalogCssUrl());
     model.put( "standardCssUrl", this.getPageCssUrl());
+    model.put( "googleTrackingCode", this.getGoogleTrackingCode());
     model.put( "datasetIconAlt", this.getDatasetIconAlt());
     model.put( "datasetIconUrl", this.getDatasetIconUrl());
     model.put( "folderIconAlt", this.getFolderIconAlt());
