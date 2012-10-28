@@ -96,7 +96,7 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_80km/files/latest.xml", 41, 11, 13, 8);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);
 
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RAP/CONUS_13km/files/latest.xml", 52, -1, -1, 9);
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RAP/CONUS_13km/files/latest.xml", 53, -1, -1, 9);
     //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_13km/files/latest.xml", 52, 13, 15, 9);        
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RAP/CONUS_20km/files/latest.xml", 74, 15, 17, 11);
     //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/files/latest.xml", 74, 15, 17, 11); // now Rapid refresh 5/4/2012
@@ -111,15 +111,7 @@ public class TestReadAndCountDods extends TestCase {
   }
 
   public void utestProblem() throws Exception {
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_13km/files/latest.xml", 52, 13, 15, 9);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/files/latest.xml", 74, 15, 17, 11); // now Rapid refresh 5/4/2012
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/pressure/files/latest.xml", -1, 12, 14, 9);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/files/latest.xml", 55, 10, 12, 8);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_40km/files/latest.xml", 48, 15, 17, 10);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC/CONUS_80km/files/latest.xml", 31, 9, 11, 5);  // */
-
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/DGEX/CONUS_12km/files/latest.xml", 23, 11, 13, 8);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/DGEX/Alaska_12km/files/latest.xml", 23, 11, 13, 8);
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RAP/CONUS_13km/files/latest.xml", 52, -1, -1, 9);
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
