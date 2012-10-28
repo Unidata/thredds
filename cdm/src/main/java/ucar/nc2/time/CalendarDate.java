@@ -89,6 +89,19 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   /**
+   * Create CalendarDate from msecs since epoch
+   * Uses the given  Calendar.
+   * @param cal calendar to use, or null for default
+   * @param msecs milliseconds from 1970-01-01T00:00:00Z
+   * @return CalendarDate in UTC time zone.
+   */
+  public static CalendarDate of(Calendar cal, long msecs) {
+    Chronology base = Calendar.getChronology(cal);
+    DateTime dt = new DateTime(msecs, base) ;
+    return new CalendarDate(cal, dt);
+  }
+
+  /**
    * Get CalendarDate from ISO date string
    * @param calendarName get Calendar from Calendar.get(calendarName). may be null
    * @param isoDateString ISO date string
