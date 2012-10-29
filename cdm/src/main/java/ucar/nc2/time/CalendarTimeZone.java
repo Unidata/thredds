@@ -3,6 +3,7 @@ package ucar.nc2.time;
 import org.joda.time.DateTimeZone;
 
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Encapsolate TimeZone functionality.
@@ -35,6 +36,10 @@ public class CalendarTimeZone {
     */
   public CalendarTimeZone(String id) {
     jodaTimeZone = DateTimeZone.forID(id);
+  }
+
+  public CalendarTimeZone(TimeZone zone) {
+    jodaTimeZone = DateTimeZone.forTimeZone(zone);
   }
 
   // package private

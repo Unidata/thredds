@@ -161,6 +161,16 @@ public class CalendarDate implements Comparable<CalendarDate> {
     return cal;
   }
 
+  /**
+   * Gets the milliseconds of the datetime instant from the Java epoch
+   * of 1970-01-01T00:00:00Z.
+   *
+   * @return the number of milliseconds since 1970-01-01T00:00:00Z
+   */
+  public long getMillis() {
+    return dateTime.getMillis();
+  }
+
   // package private
   DateTime getDateTime() {
     return dateTime;

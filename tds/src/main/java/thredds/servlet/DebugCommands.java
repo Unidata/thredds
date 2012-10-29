@@ -483,18 +483,4 @@ public class DebugCommands {
     }
   }  */
 
-  /* private class CacheScourTask extends TimerTask {
-    long maxBytes;
-
-    CacheScourTask(long maxBytes) {
-      this.maxBytes = maxBytes;
-    }
-
-    public void run() {
-      StringBuilder sbuff = new StringBuilder();
-      DiskCache.cleanCache(maxBytes, sbuff); // 1 Gbyte
-      sbuff.append("----------------------\n");
-      cacheLog.info(sbuff.toString());
-    }
-  } */
 }
