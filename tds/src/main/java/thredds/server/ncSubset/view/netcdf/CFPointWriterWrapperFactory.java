@@ -51,7 +51,8 @@ public final class CFPointWriterWrapperFactory {
 			return WriterCFStationCollectionWrapper.createWrapper(filePath, atts);
 		}
 		if (featureType == CF.FeatureType.point ) {
-			return WriterCFPointCollectionWrapper.createWrapper(filePath, atts);
+			//return WriterCFPointCollectionWrapper.createWrapper(filePath, atts);
+			return WriterPointCollectionNoTimeWrapper.createWrapper(filePath, atts);
 		}
 		
 		if (featureType == CF.FeatureType.profile ) {

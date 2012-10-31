@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,31 +15,17 @@ import org.springframework.http.HttpHeaders;
 
 import thredds.server.ncSubset.controller.AbstractNcssController;
 import thredds.server.ncSubset.controller.NcssDiskCache;
-import thredds.server.ncSubset.dataservice.StructureDataFactory;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapper;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapperFactory;
-import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
-import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridAsPointDataset;
-import ucar.nc2.ft.point.writer.CFPointWriter;
-import ucar.nc2.ft.point.writer.WriterCFPointCollection;
-import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
-import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.LatLonPoint;
 
 public class NetCDFPointDataWriter implements PointDataWriter {
@@ -75,7 +62,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point) {
 		
 		boolean headerDone = false;
-		if( groupedVars.size() > 1 ){ //Variables with different vertical levels
+		if( groupedVars.size() > 1 && !wDates.isEmpty()){ //Variables with different vertical levels
 			//featureType = CF.FeatureType.profile;
 			featureType = CF.FeatureType.timeSeriesProfile;
 			
@@ -83,7 +70,11 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 			List<String> keys = new ArrayList<String>(groupedVars.keySet());
 			List<String> varsForRequest = groupedVars.get(keys.get(0));
 			CoordinateAxis1D zAxis = gridDataset.findGridDatatype( varsForRequest.get(0)).getCoordinateSystem().getVerticalAxis();
-			if( zAxis == null ){//Station
+			
+			if( wDates.isEmpty()){// Point feature with no time axis!!!
+				featureType = CF.FeatureType.point;
+			
+			}else if( zAxis == null ){//Station
 				featureType = CF.FeatureType.timeSeries; 
 			}else{//Point collection
 				//featureType = CF.FeatureType.point;
@@ -107,11 +98,15 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	
 	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord){
 		
+		if(wDates.isEmpty()){
+			return write( groupedVars, gds, CalendarDate.of(new Date()), point, vertCoord);
+		}
+		
 		//loop over wDates
 		CalendarDate date;
 		Iterator<CalendarDate> it = wDates.iterator();
-		boolean pointRead =true;
-
+		boolean pointRead =true;		
+		
 		while( pointRead && it.hasNext() ){
 			date = it.next();
 			pointRead = write( groupedVars, gds, date, point, vertCoord);

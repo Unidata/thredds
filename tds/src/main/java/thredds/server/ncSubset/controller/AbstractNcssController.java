@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -111,6 +112,10 @@ public abstract class AbstractNcssController implements LastModified{
 	protected List<CalendarDate> getRequestedDates(GridDataset gds, RequestParamsBean params) throws OutOfBoundariesException, ParseException, TimeOutOfWindowException{
 		
 		GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gds, params.getVar());
+		List<CalendarDate> dates = gap.getDates();	
+		
+		if(dates.isEmpty() ) return dates;
+		
 		long time_window =0;
 		if( params.getTime_window() != null ){
 			TimeDuration dTW = new TimeDuration(params.getTime_window());
@@ -119,15 +124,15 @@ public abstract class AbstractNcssController implements LastModified{
 				
 		//Check param temporal=all (ignore any other value) --> returns all dates
 		if(params.getTemporal()!= null && params.getTemporal().equals("all") ){			
-			return gap.getDates();			
+			return dates;			
 		}else{ //Check if some time param was provided, if not closest time to current
 			if(params.getTime()==null && params.getTime_start()==null && params.getTime_end()==null && params.getTime_duration()==null ){
 				//Closest to present
 				List<CalendarDate> closestToPresent = new ArrayList<CalendarDate>();
 				
 				CalendarDate now = CalendarDate.of(new Date());
-				CalendarDate start = gap.getDates().get(0);
-				CalendarDate end  = gap.getDates().get(gap.getDates().size()-1);
+				CalendarDate start = dates.get(0);
+				CalendarDate end  = dates.get(dates.size()-1);
 				if( now.isBefore(start) ){ 
 					//now = start;
 					if( time_window <= 0 || Math.abs(now.getDifferenceInMsecs(start)) < time_window ){
@@ -156,8 +161,8 @@ public abstract class AbstractNcssController implements LastModified{
 			DateRange dr = new DateRange( new DateType(params.getTime(), null, null ), null, new TimeDuration(params.getTime_window()), null );
 			time_window = CalendarDateRange.of(dr).getDurationInSecs()*1000;			
 		}
-		CalendarDateRange dates = getRequestedDateRange(params);		
-		return NcssRequestUtils.wantedDates(gap, dates, time_window );
+		CalendarDateRange dateRange = getRequestedDateRange(params);		
+		return NcssRequestUtils.wantedDates(gap, dateRange, time_window );
 	}
 	
 	/** 

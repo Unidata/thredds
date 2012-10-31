@@ -162,6 +162,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
   private void createObsVariables(DateUnit timeUnit) throws IOException {
     // time variable
+	  
     time = writer.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
     writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
     writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));

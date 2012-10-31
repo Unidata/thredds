@@ -73,9 +73,12 @@ public class GridAsPointDataset {
       if ((timeAxis != null) && !timeAxes.contains(timeAxis)) {
         timeAxes.add(timeAxis);
 
-        Date[] timeDates = timeAxis.getTimeDates();
-        for (Date timeDate : timeDates)
-          dateHash.add( CalendarDate.of( timeDate) );
+        //Date[] timeDates = timeAxis.getTimeDates();
+        List<CalendarDate> timeDates = timeAxis.getCalendarDates();
+        //for (Date timeDate : timeDates)
+        for (CalendarDate timeDate : timeDates)
+          //dateHash.add( CalendarDate.of( timeDate) );
+        	dateHash.add( timeDate );
       }
     }
     
@@ -103,8 +106,12 @@ public class GridAsPointDataset {
 
     //CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
     //int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
-
-    int tidx = findTimeIndexForCalendarDate(gcs, date);
+    
+    int tidx =-1;
+    //Date may be null if the grid does not have time axis 
+    if(date != null)
+    	tidx = findTimeIndexForCalendarDate(gcs, date);
+    
     //int[] xy = gcs.findXYindexFromLatLonBounded(lat, lon, null);
     int[] xy = gcs.findXYindexFromLatLon(lat, lon, null);
 
@@ -132,7 +139,10 @@ public class GridAsPointDataset {
 
     //CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
     //int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
-    int tidx = findTimeIndexForCalendarDate(gcs, date);
+    int tidx = -1;
+    //Date may be null if the grid does not have time axis 
+    if(date != null)
+    	tidx= findTimeIndexForCalendarDate(gcs, date);
     
     CoordinateAxis1D zAxis = gcs.getVerticalAxis();
     int zidx = zAxis.findCoordElement( zCoord);

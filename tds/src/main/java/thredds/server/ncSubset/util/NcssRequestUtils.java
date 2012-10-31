@@ -37,6 +37,7 @@ public final class NcssRequestUtils implements ApplicationContextAware{
 		List<GridDatatype> grids = new ArrayList<GridDatatype>();
 		for (String gridName : vars) {
 			GridDatatype grid = gds.findGridDatatype(gridName);
+			
 			if (grid == null)
 				continue;
 			grids.add(grid);
