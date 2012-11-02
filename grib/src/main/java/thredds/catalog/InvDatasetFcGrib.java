@@ -77,7 +77,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
   static private final String VARIABLES = "?metadata=variableMap";
-  static private final boolean addLatest = false;  // not ready for use
+  static private final boolean addLatest = true;  // not ready for use
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {

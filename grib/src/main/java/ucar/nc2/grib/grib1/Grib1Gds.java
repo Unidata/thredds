@@ -344,13 +344,35 @@ public abstract class Grib1Gds {
 
       deltaLat = getOctet2(26);
       calcDelta = (la2 - la1) / (ny-1); // more accurate - deltaLon may have roundoff
-      if (deltaLat != GribNumbers.UNDEFINED) {
+      /*if (deltaLat != GribNumbers.UNDEFINED) {
         deltaLat *= scale3; // undefined for thin grids
         if (la2 < la1) deltaLat *= -1.0;
-      } else deltaLat = calcDelta;
+      } else deltaLat = calcDelta; */
+
+      ////  thanks to johann.sorel@geomatys.com 11/1/2012
+      if (deltaLat != GribNumbers.UNDEFINED) {
+        deltaLat *= scale3; // undefined for thin grids
+        if (la2 < la1) {
+          //flip declaration order
+          float latemp = la1;
+          la1 = la2;
+          la2 = latemp;
+          calcDelta *= -1.0;
+
+          //we must also consider the cell corner, since we flipped the order
+          //we should specify that the true value is at the BOTTOM-LEFT corner
+          //but we can't show this information so we make a one cell displacement
+          //to move the value on a TOP-LEFT corner.
+          la1 -= calcDelta;
+          la2 -= calcDelta;
+        }
+      } else {
+        deltaLat = calcDelta;
+      }
+
       if (!Misc.closeEnough(deltaLat, calcDelta)) {
         log.debug("deltaLat != calcDeltaLat");
-        deltaLon = calcDelta;
+        deltaLat = calcDelta;
       }
 
       scanMode = (byte) getOctet(28);

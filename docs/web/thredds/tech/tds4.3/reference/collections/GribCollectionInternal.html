@@ -195,5 +195,272 @@ message Variable {
   <li>We could throw out that variable, or split in pieces.</li>
 </ol>
 <p>Thi isnt a problem for GribCOllection, since all the records from all the files a re thrown into the bag and rectilyser turns them into a rectangular array with missing values if needed. It occurs because we want to compute each Time Partition independent of the others, for scalability.</p>
+<hr />
+<h3>currently (10/31)</h3>
+<h3>simple</h3>
+<table width="546" border="1">
+  <tr>
+    <th width="129" scope="col">dataset</th>
+    <th width="105" scope="col">catalogRef</th>
+    <th width="105" scope="col">name</th>
+    <th width="179" scope="col">path</th>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>&nbsp;</td>
+    <td>name</td>
+    <td>path/<em>collection</em></td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>path/<em>files/catalog.xml</em></td>
+    <td>filename</td>
+    <td>path/<em>files</em>/filename</td>
+  </tr>
+</table>
+<p>path =  grib/NCEP/GFS/CONUS_191km</p>
+<p>dataset catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html</a> </p>
+<p>server://thredds/catalog/path/catalog.xml</p>
+<p>collection dataset <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km"> http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km</a></p>
+<p>best dataset <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection</a></p>
+<p>files catalog <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html</a></p>
+<p>&nbsp;</p>
+<h3>time partition</h3>
+<table width="793" border="1">
+  <tr>
+    <th width="129" scope="col">dataset</th>
+    <th width="259" scope="col">catalogRef</th>
+    <th width="157" scope="col">name</th>
+    <th width="220" scope="col">path</th>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>path/<em>collection/catalog.xml</em></td>
+    <td>name</td>
+    <td>path/name<em>/collection</em></td>
+  </tr>
+  <tr>
+    <td>partitions</td>
+    <td>path/partitionName<em>/catalog.xml</em></td>
+    <td>partitionName</td>
+    <td>path/partitionName/<em>collection</em></td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>path/partitionName/<em>files/catalog.xml</em></td>
+    <td>filename</td>
+    <td>path/<em>files</em>/filename</td>
+  </tr>
+</table>
+<p>path =  grib/NCEP/GFS/Global_0p5deg</p>
+<p>dataset catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html</a></p>
+<p>collection  dataset = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg</a></p>
+<p>best dataset catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html</a></p>
+<p>best dataset = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg/collection</a></p>
+<p>partition catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html</a></p>
+<p>partition dataset = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/collection</a></p>
+<p>partittion files catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html</a></p>
+<p>partittion files  = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121010_0000.grib2">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121010_0000.grib2</a></p>
+<p>&nbsp;</p>
+<h3>multiple groups</h3>
+<table width="795" border="1">
+  <tr>
+    <th width="131" scope="col">dataset</th>
+    <th width="229" scope="col">catalogRef</th>
+    <th width="122" scope="col">name</th>
+    <th width="285" scope="col">path</th>
+  </tr>
+  <tr>
+    <td>group collection</td>
+    <td>&nbsp;</td>
+    <td>groupName<em></em></td>
+    <td>path/groupName/<em>collection</em></td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>path/groupName/<em>files/catalog.xml</em></td>
+    <td>filename</td>
+    <td>path/<em>files</em>/filename</td>
+  </tr>
+</table>
+<h3>time partition and groups</h3>
+<table width="937" border="1">
+  <tr>
+    <th width="215" scope="col">dataset</th>
+    <th width="302" scope="col">catalogRef</th>
+    <th width="188" scope="col">name</th>
+    <th width="204" scope="col">path</th>
+  </tr>
+  <tr>
+    <td>overall collection for group</td>
+    <td>path/groupName/<em>collection/catalog.xml</em></td>
+    <td>groupName</td>
+    <td>path/name/groupName</td>
+  </tr>
+  <tr>
+    <td>collection for partition and group</td>
+    <td>path/partitionName<em>/catalog.xml</em></td>
+    <td>groupName</td>
+    <td>path/partitionName/groupName</td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>path/partitionName/groupName/<em>files/catalog.xml</em></td>
+    <td>partitionName/filename</td>
+    <td>path/<em>files</em>/filename</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<hr />
+<h3>simple</h3>
+<pre>&lt;featureCollection name=&quot;GFS-CONUS_191km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/CONUS_191km&quot;&gt;
+  &lt;metadata inherited=&quot;true&quot;&gt;
+   &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;
+  &lt;/metadata&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/GFS_CONUS_191km_#yyyyMMdd_HHmm#.grib1&quot; olderThan=&quot;5 min&quot;/&gt;
+  &lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
+&lt;/featureCollection&gt;
+</pre>
+<table width="580" border="1">
+  <tr>
+    <th width="152" scope="col">dataset</th>
+    <th width="306" scope="col">url</th>
+    <th width="100" scope="col">type</th>
+  </tr>
+  <tr>
+    <td>overall</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
+    <td>catalog</td>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
+    <td>dataset</td>
+  </tr>
+  <tr>
+    <td>best</td>
+    <td>cat?<em>dataset</em>=path/<em>best</em></td>
+    <td>dataset</td>
+  </tr>
+  <tr>
+    <td>latest catalog</td>
+    <td>cat/<em>latest.xml (fcat/<em>latest.xml BC ?</em>)</em></td>
+    <td>resolver</td>
+  </tr>
+  <tr>
+    <td>latest dataset</td>
+    <td>cat?<em>dataset</em>=path/<em>latest</em></td>
+    <td>dataset</td>
+  </tr>
+  <tr>
+    <td>files catalog</td>
+    <td>path<em>/files/catalog.xml</em></td>
+    <td>catalog</td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>fcat?<em>dataset</em>=path/<em>files</em>/filename</td>
+    <td>dataset</td>
+  </tr>
+  <tr>
+    <td>latest file</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<p>path =  grib/NCEP/GFS/CONUS_191km</p>
+<p>dataset catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html</a></p>
+<p>collection dataset <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km"> http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km</a></p>
+<p>best dataset <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection</a></p>
+<p>latest catalog = <a href="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.html">http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.html</a></p>
+<p>latest datset = <a href="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.html?dataset=fmrc/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121031_1200.grib2">http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.html?dataset=fmrc/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121031_1200.grib2</a></p>
+<p>files catalog <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html</a></p>
+<p>&nbsp;</p>
+<hr />
+<h3>time partition</h3>
+<table width="793" border="1">
+  <tr>
+    <th width="129" scope="col">dataset</th>
+    <th width="259" scope="col">catalogRef</th>
+    <th width="157" scope="col">name</th>
+    <th width="220" scope="col">path</th>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>path/<em>collection/catalog.xml</em></td>
+    <td>name</td>
+    <td>path/name<em>/collection</em></td>
+  </tr>
+  <tr>
+    <td>partitions</td>
+    <td>path/partitionName<em>/catalog.xml</em></td>
+    <td>partitionName</td>
+    <td>path/partitionName/<em>collection</em></td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>path/partitionName/<em>files/catalog.xml</em></td>
+    <td>filename</td>
+    <td>path/<em>files</em>/filename</td>
+  </tr>
+</table>
+<table width="580" border="1">
+  <tr>
+    <th width="152" scope="col">dataset</th>
+    <th width="306" scope="col">url</th>
+    <th width="100" scope="col">type</th>
+  </tr>
+  <tr>
+    <td>overall</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
+    <td>catalog</td>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>cat?<em>dataset</em>=path/<em>collection</em></td>
+    <td>dataset</td>
+  </tr>
+  <tr>
+    <td>best</td>
+    <td>cat?<em>dataset</em>=path/<em>best</em></td>
+    <td>dataset</td>
+  </tr>
+  <tr>
+    <td>latest</td>
+    <td>cat?<em>dataset</em>=path/<em>latest</em></td>
+    <td>dataset</td>
+  </tr>
+  <tr>
+    <td>partition catalog</td>
+    <td>path/partitionName/<em>catalog.xml</em></td>
+    <td>catalog</td>
+  </tr>
+  <tr>
+    <td>partition dataset</td>
+    <td>pcat?<em>dataset</em>=partitionName</td>
+    <td>dataset</td>
+  </tr>
+  <tr>
+    <td>partition files catalog</td>
+    <td>path/partitionName<em>/files/catalog.xml</em></td>
+    <td>catalog</td>
+  </tr>
+  <tr>
+    <td>partition  files</td>
+    <td>fcat?dataset=path/<em>files</em>/filename</td>
+    <td>dataset</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>path =  grib/NCEP/GFS/Global_0p5deg</p>
+<p>dataset catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html</a></p>
+<p>collection  dataset = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg</a></p>
+<p>best dataset catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html</a> (WHY)</p>
+<p>best dataset = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg/collection</a></p>
+<p>partition catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html</a></p>
+<p>partition dataset = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/collection</a></p>
+<p>partittion files catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html</a></p>
+<p>partittion files  = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121010_0000.grib2">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121010_0000.grib2</a></p>
+<p></p>
 </body>
 </html>

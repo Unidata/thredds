@@ -41,6 +41,7 @@ import java.net.*;
 import java.util.*;
 
 /*
+LOOK: not being used, can we delet? JC 10/29/2012
  VERSION notes
 
   Havent been able to detect how to know what version parser you have. may be new feature in JAXP 1.3
