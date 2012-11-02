@@ -326,12 +326,23 @@ public class CalendarDateFormatter {
     dflocal = DateTimeFormat.forPattern(pattern).withZoneUTC();
   }
 
+  public CalendarDateFormatter(String pattern, CalendarTimeZone tz, Calendar cal) {
+    Chronology chron = Calendar.getChronology(cal);
+    dflocal = DateTimeFormat.forPattern(pattern).withChronology(chron).withZone(tz.getJodaTimeZone());
+  }
+
   public CalendarDateFormatter(String pattern, CalendarTimeZone tz) {
     dflocal = DateTimeFormat.forPattern(pattern).withZone( tz.getJodaTimeZone());
   }
 
   public String toString(CalendarDate cd) {
     return dflocal.print(cd.getDateTime());
+  }
+
+  public CalendarDate parse(String timeString) {
+    DateTime dt = dflocal.parseDateTime(timeString);
+    Calendar cal = Calendar.get(dt.getChronology().toString());
+    return new CalendarDate(cal, dt);
   }
 
    public static void main(String arg[]) {
