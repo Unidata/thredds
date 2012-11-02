@@ -344,12 +344,12 @@ public abstract class Grib1Gds {
 
       deltaLat = getOctet2(26);
       calcDelta = (la2 - la1) / (ny-1); // more accurate - deltaLon may have roundoff
-      /*if (deltaLat != GribNumbers.UNDEFINED) {
+      if (deltaLat != GribNumbers.UNDEFINED) {
         deltaLat *= scale3; // undefined for thin grids
         if (la2 < la1) deltaLat *= -1.0;
-      } else deltaLat = calcDelta; */
+      } else deltaLat = calcDelta;
 
-      ////  thanks to johann.sorel@geomatys.com 11/1/2012
+      /*  thanks to johann.sorel@geomatys.com 11/1/2012. withdrawn for now 11/2/2012
       if (deltaLat != GribNumbers.UNDEFINED) {
         deltaLat *= scale3; // undefined for thin grids
         if (la2 < la1) {
@@ -368,7 +368,7 @@ public abstract class Grib1Gds {
         }
       } else {
         deltaLat = calcDelta;
-      }
+      }  */
 
       if (!Misc.closeEnough(deltaLat, calcDelta)) {
         log.debug("deltaLat != calcDeltaLat");
