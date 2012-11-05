@@ -49,7 +49,7 @@ public class GridServletTest
   public void checkCacheUrl()
   {
     GridServlet gs = new GridServlet();
-    assertEquals( "/thredds/ncSubset/cache/junk", gs.buildCacheUrl( "junk" ));
+    assertEquals( "/thredds/ncServer/cache/junk", gs.buildCacheUrl( "junk" ));
 
     GridServlet.setServletCachePath( "/my/couch" );
     assertEquals( "/thredds/my/couch/junk", gs.buildCacheUrl( "junk" ) );
