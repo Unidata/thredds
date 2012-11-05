@@ -19,27 +19,27 @@
     </ul>
     <p>Here is what the default version of the <code>serverInformation</code> element looks like</p>
 
-<!-- Taken from threddsConfig.xml updated 2012-10-22 by Sean Arms -->
+<!-- Taken from threddsConfig.xml updated 2012-11-05 by Sean Arms -->
 <pre>
 &lt;serverInformation&gt;
-  &lt;name&gt;Test TDS&lt;/name&gt;
+  &lt;name&gt;Initial TDS Installation&lt;/name&gt;
   &lt;logoUrl&gt;threddsIcon.gif&lt;/logoUrl&gt;
-  &lt;logoAltText&gt;Motherlode TDS&lt;/logoAltText&gt;
+  &lt;logoAltText&gt;Initial TDS Installation&lt;/logoAltText&gt;
 
   &lt;abstract&gt;Scientific Data&lt;/abstract&gt;
   &lt;keywords&gt;meteorology, atmosphere, climate, ocean, earth science&lt;/keywords&gt;
-
+    
   &lt;contact&gt;
-    &lt;name&gt;THREDDS Support&lt;/name&gt;
-    &lt;organization&gt;Unidata&lt;/organization&gt;
-    &lt;email&gt;support-thredds@unidata.ucar.edu&lt;/email&gt;
+    &lt;name&gt;Support&lt;/name&gt;
+    &lt;organization&gt;My Group&lt;/organization&gt;
+    &lt;email&gt;support@my.group&lt;/email&gt;
     &lt;!--phone&gt;&lt;/phone--&gt;
   &lt;/contact&gt;
   &lt;hostInstitution&gt;
-    &lt;name&gt;Unidata&lt;/name&gt;
-    &lt;webSite&gt;http://www.unidata.ucar.edu/&lt;/webSite&gt;
-    &lt;logoUrl&gt;unidataIcon.gif&lt;/logoUrl&gt;
-    &lt;logoAltText&gt;Unidata&lt;/logoAltText&gt;
+    &lt;name&gt;My Group&lt;/name&gt;
+    &lt;webSite&gt;http://www.my.site/&lt;/webSite&gt;
+    &lt;logoUrl&gt;myGroup.gif&lt;/logoUrl&gt;
+    &lt;logoAltText&gt;My Group&lt;/logoAltText&gt;
   &lt;/hostInstitution&gt;
 &lt;/serverInformation&gt;
 </pre>
@@ -101,25 +101,18 @@
     <p>You can also specify the CSS files and several icons used in the HTML pages. These are configured in the <code>htmlSetup</code> element of the TDS configuration file.  Default CSS files are provided with the thredds.war distribution, and should not be modified. Instead, these can be overridden by placing the appropriate CSS files in the ${tomcat_home}/content/thredds/public/ directory.</p>
     <p>The following shows the default configuration of the <code>htmlSetup</code> element:</p>
 
-<!-- Taken from threddsConfig.xml updated 2012-10-22 by Sean Arms -->
+<!-- Taken from threddsConfig.xml ref docs updated 2012-11-05 by Sean Arms -->
 <pre>
 &lt;htmlSetup&gt;
   &lt;!--
-  * CSS documents used in generated HTML pages.
-  * The CSS document given in the "catalogCssUrl" element is used for all pages
-  * that are HTML catalog views. The CSS document given in the "standardCssUrl"
-  * element is used in all other generated HTML pages.
-  * --&gt;
-  &lt;standardCssUrl&gt;tds.css&lt;/standardCssUrl&gt;
-  &lt;catalogCssUrl&gt;tdsCat.css&lt;/catalogCssUrl&gt;
-  &lt;!--
-  * The URLs (relative to "/thredds/") and alternate text for both
-  * folder and dataset icons used in HTML catalog views.
-  * --&gt;
-  &lt;folderIconUrl&gt;folder.gif&lt;/folderIconUrl&gt;
-  &lt;folderIconAlt&gt;Folder&lt;/folderIconAlt&gt;
-  &lt;datasetIconUrl&gt;dataset.gif&lt;/datasetIconUrl&gt;
-  &lt;datasetIconAlt&gt;Dataset&lt;/datasetIconAlt&gt;
+   * CSS documents used in generated HTML pages.
+   * The CSS document given in the "catalogCssUrl" element is used for all pages
+   * that are HTML catalog views. The CSS document given in the "standardCssUrl"
+   * element is used in all other generated HTML pages.
+   * --&gt;
+  &lt;standardCssUrl&gt;tds.css&lt;/standard CssUrl&gt;
+  &lt;CatalogCssUrl&gt;tdsCat.css&lt;/CatalogCssUrl&gt;
+  &lt;openDapCssUrl&gt;tdsDap.css&lt;/openDapCssUrl&gt;
 &lt;/htmlSetup&gt;
 </pre>
 
