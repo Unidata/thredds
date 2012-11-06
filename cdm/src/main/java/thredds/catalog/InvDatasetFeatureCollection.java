@@ -70,9 +70,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
 
   static protected final String FILES = "files";
-  static protected final String LATEST_DATASET = "latest.xml";
-  static protected final String LATEST_DATASET_NAME = "latest";
-  static protected final String LATEST_SERVICE = "latest";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
 
   static protected String context = "/thredds";
@@ -108,7 +105,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       result = new InvDatasetFcFmrc(parent, name, path, featureType, config);
 
     else if (featureType == FeatureType.GRIB) {
-
       // use reflection to decouple from grib.jar
       try {
         Class c = InvDatasetFeatureCollection.class.getClassLoader().loadClass("thredds.catalog.InvDatasetFcGrib");
@@ -121,8 +117,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
         return null;
       }
 
-    } else if (featureType.isPointFeatureType())
+    } else if (featureType.isPointFeatureType()) {
       result =  new InvDatasetFcPoint(parent, name, path, featureType, config);
+    }
 
     if (result != null) {
       result.finishConstruction(); // stuff that shouldnt be done in a constructor
@@ -308,8 +305,13 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    */
   abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI catURI);
 
+  public InvCatalogImpl makeLatest(String match, String orgPath, URI catURI) {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
   /**
    * Make the containing catalog of this feature collection
+   * "http://server:port/thredds/catalog/path/catalog.xml"
    *
    * @param catURI base URI of the request
    * @param localState current state to use

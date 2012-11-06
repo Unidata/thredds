@@ -243,6 +243,9 @@ public String NC_check_name(String name) {
   /////////////////////////////////////////////////////////////////
   // I think these go together - consider deprecated
 
+  /**
+   * @deprecated use makeValidNetcdfObjectName
+   */
   static public String makeValidNetcdf3ObjectName(String name) {
     StringBuilder sb = new StringBuilder(name);
 
@@ -286,6 +289,7 @@ public String NC_check_name(String name) {
    * Should match makeValidNetcdf3ObjectName.
    * @param name test this.
    * @return  true if valid name.
+   * @deprecated use isValidNetcdfObjectName
    */
   static public boolean isValidNetcdf3ObjectName(String name) {
     Matcher m = objectNamePatternOld.matcher(name);

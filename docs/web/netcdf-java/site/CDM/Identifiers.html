@@ -34,7 +34,7 @@ dl {margin: 10px 5px 5px 15px;)
 Variable, Attribute, user-defined Type, compound type Member, </em>or<em> enumeration type Symbol</em>.</p>
 <p wrap="">A netCDF identifier is stored in a netCDF file as <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8</a> <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a> characters, <a href="http://unicode.org/reports/tr15/">NFC normalized</a>. There are some restrictions on the valid characters used in a netCDF identifier:</p>
 <pre wrap="">
-  ID = ([a-zA-Z0-9_]|{MUTF8})([^\x00-\x1F/\x7F-\xFF]|{MUTF8})* 
+  ID = ([a-zA-Z0-9_]|{MUTF8})([^\x00-\x1F\x2F/\x7F]|{MUTF8})* 
 
 where:
   MUTF8 = multibyte UTF8 encoded char</pre>

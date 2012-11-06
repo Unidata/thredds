@@ -60,7 +60,7 @@ public class FeatureCollectionConfig {
   }
 
   static public enum GribDatasetType {
-    Collection, Files
+    Best, Latest, Files
   }
 
   public static void setRegularizeDefault(boolean t) {
@@ -297,7 +297,7 @@ public class FeatureCollectionConfig {
   }
 
   static private Set<GribDatasetType> defaultGribDatasetTypes =
-          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.Collection, GribDatasetType.Files));
+          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.Best, GribDatasetType.Files));
 
   static public class GribConfig {
     public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
@@ -381,6 +381,11 @@ public class FeatureCollectionConfig {
         }
       }
     }
+
+    public boolean hasDatasetType(GribDatasetType type) {
+      return datasets.contains(type);
+    }
+
 
     public void addGdsHash(String fromS, String toS) {
       if (fromS == null || toS == null) return;

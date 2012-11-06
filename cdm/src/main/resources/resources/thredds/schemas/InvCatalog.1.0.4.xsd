@@ -464,8 +464,20 @@
       </xsd:element>
     </xsd:sequence>
 
-    <xsd:attribute name="datasetTypes" type="xsd:string"/>
+    <xsd:attribute name="datasetTypes" type="gribDatasetTypes"/>
   </xsd:complexType>
+
+  <xsd:simpleType name="gribDatasetTypes">
+     <xsd:union memberTypes="xsd:token">
+       <xsd:simpleType>
+         <xsd:restriction base="xsd:token">
+           <xsd:enumeration value="Best"/>
+           <xsd:enumeration value="Latest"/>
+           <xsd:enumeration value="Files"/>
+         </xsd:restriction>
+       </xsd:simpleType>
+     </xsd:union>
+   </xsd:simpleType>
 
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
   <!-- DatasetFmrc element DEPRECATED - use featureCollection -->

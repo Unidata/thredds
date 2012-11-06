@@ -46,10 +46,10 @@ dl {margin: 10px 5px 5px 15px;}
      &lt;/metadata&gt;
 4)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/.*grib1$&quot;&gt;
 5)   &lt;update startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
-6)   &lt;gribConfig datasetTypes=&quot;collection Files&quot; /&gt;
+6)   &lt;gribConfig datasetTypes=&quot;Best Latest Files&quot; /&gt;
    &lt;/featureCollection&gt;</pre>
 <ol>
-  <li>A featureCollection must have a <em>name</em> and a <em>path</em> (do not set an <em>ID</em> attribute<em>)</em>. The <em>featureType</em> attribute is set to <em>GRIB</em>. Its best to avaoid the words <em>collection</em> and <em>files</em> in the name.</li>
+  <li>A featureCollection must have a <em>name</em> and a <em>path</em> (do <strong>not</strong> set an <em>ID</em> attribute<em>)</em>. The <em>featureType</em> attribute is set to <em>GRIB</em>. Its best to avaoid the words <em>collection</em> and <em>files</em> in the name.</li>
   <li>A featureCollection is a InvDataset, so it can contain any elements an InvDataset can contain. It must have or inherit a default service.</li>
   <li>The collection must consist of either GRIB-1 or GRIB-2 files. You <strong>must</strong> set the dataFormat element to indicate which.</li>
   <li>The <a href="CollectionSpecification.html">collection specification</a> defines the collection of files that are in this dataset.</li>
@@ -335,7 +335,7 @@ de-referencing the catalogRefs, and simplifying:
 </table>
 <p>&nbsp;</p>
 <hr />
-<h3><a name="gribConfig" id="gribConfig"></a> gribConfig element</h3>
+<h2><a name="gribConfig" id="gribConfig"></a> gribConfig element</h2>
 <p>The gribConfig schema definition:</p>
 <blockquote>
   <pre>&lt;xsd:complexType name=&quot;gribConfigType&quot;&gt;
@@ -379,11 +379,25 @@ de-referencing the catalogRefs, and simplifying:
      &lt;/xsd:complexType&gt;
    &lt;/xsd:element&gt;
  &lt;/xsd:sequence&gt;
- 
-7)&lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;
+
+7)&lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;gribDatasetTypes&quot;/&gt;
+
 &lt;/xsd:complexType&gt;
-  </pre>
-  <h4>1) gdsHash<a name="gdsHash" id="gdsHash"></a>: Fix errors in GDS encoding</h4>
+
+&lt;xsd:simpleType name=&quot;gribDatasetTypes&quot;&gt;
+ &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
+   &lt;xsd:simpleType&gt;
+    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
+7)   &lt;xsd:enumeration value=&quot;Best&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Latest&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Files&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+   &lt;/xsd:simpleType&gt;
+  &lt;/xsd:union&gt;
+&lt;/xsd:simpleType&gt;
+ </pre>
+  
+<h4>1) gdsHash<a name="gdsHash" id="gdsHash"></a>: Fix errors in GDS encoding</h4>
   <blockquote>
     <p>The CDM creates a different group for each different GDS used in the GRIB collection. It identifies the GDS by creating a hashcode for it, and then creates a separate group for each unique hashcode. Unfortunately, in some cases, GRIB records have GDSs that differ inminor ways, such as the fifth decimal place in the starting x and/or y coordinate. Its clear that these are minor defects in the writing of the GRIB records. If desired, the user can fix these problems through NcML or in the TDS gribConfig element</p>
     <p>First, one must find the GDS hashcodes by using ToolsUI. In the IOSP/GRIB1(2)/GribCollection tab, enter the file name to show the records in the file. Select the GDS (at the bottom) right click for the context menu and choose: compare GDS. This will show the differences in the GDS and the corresponding hashcodes. If you confirm that they are, in fact, the same GDS, then you can  fix this problem, for example:</p>
@@ -430,7 +444,8 @@ de-referencing the catalogRefs, and simplifying:
   <h4>7) datasetTypes: Define which 
   datasets are available in the TDS catalog</h4>
   <ol>
-    <li><strong>Collection</strong>: the collection level dataset</li>
+    <li><strong>Best</strong>: the &quot;best timeseries: of the collection  dataset</li>
+    <li><strong>Latest</strong>: the latest model run</li>
     <li><strong>Files</strong>:
       each physical file
       is exposed as a seperate dataset.</li>

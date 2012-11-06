@@ -1442,7 +1442,7 @@ public final class DataRootHandler implements InitializingBean{
     String workPath = path;
 
     // Make sure this is a dynamic catalog request.
-    if (!path.endsWith("/catalog.xml"))
+    if (!path.endsWith("/catalog.xml") && !path.endsWith("/latest.xml"))
       return null;
 
     // strip off the filename
@@ -1450,7 +1450,7 @@ public final class DataRootHandler implements InitializingBean{
     if (pos >= 0)
       workPath = workPath.substring(0, pos);
 
-    // now look through the InvDatasetScans for a maximal match
+    // now look through the data roots for a maximal match
     DataRootMatch match = findDataRootMatch(workPath);
     if (match == null)
       return null;
@@ -1462,7 +1462,11 @@ public final class DataRootHandler implements InitializingBean{
 
     // look for the feature Collection
     if (match.dataRoot.featCollection != null) {
-      return match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
+      boolean isLatest = path.endsWith("/latest.xml");
+      if (isLatest)
+        return match.dataRoot.featCollection.makeLatest(match.remaining, path, baseURI);
+      else
+        return match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
     }
 
     // Check that path is allowed, ie not filtered out

@@ -321,60 +321,108 @@ message Variable {
   &lt;tdm startup=&quot;true&quot; rescan=&quot;0 0/15 * * * ? *&quot; trigger=&quot;allow&quot;/&gt;
 &lt;/featureCollection&gt;
 </pre>
-<table width="580" border="1">
+<table width="1553" border="1">
   <tr>
-    <th width="152" scope="col">dataset</th>
-    <th width="306" scope="col">url</th>
-    <th width="100" scope="col">type</th>
+    <th width="146" scope="col">dataset</th>
+    <th width="296" scope="col">url</th>
+    <th width="87" scope="col">type</th>
+    <th width="996" scope="col">example</th>
   </tr>
   <tr>
     <td>overall</td>
     <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
     <td>catalog</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html</a></td>
   </tr>
   <tr>
     <td>collection</td>
     <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
     <td>dataset</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg">cat?</a><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/collection">dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/collection</a></td>
   </tr>
   <tr>
     <td>best</td>
     <td>cat?<em>dataset</em>=path/<em>best</em></td>
     <td>dataset</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/best">cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/best</a></td>
   </tr>
   <tr>
-    <td>latest catalog</td>
-    <td>cat/<em>latest.xml (fcat/<em>latest.xml BC ?</em>)</em></td>
+    <td>latest catalog X</td>
+    <td>cat/<em>latest.xml </em></td>
     <td>resolver</td>
+    <td>&nbsp;</td>
   </tr>
   <tr>
-    <td>latest dataset</td>
+    <td>latest dataset X</td>
     <td>cat?<em>dataset</em>=path/<em>latest</em></td>
     <td>dataset</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/latest">cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/latest</a></td>
   </tr>
   <tr>
     <td>files catalog</td>
     <td>path<em>/files/catalog.xml</em></td>
     <td>catalog</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html</a></td>
   </tr>
   <tr>
     <td>individual files</td>
     <td>fcat?<em>dataset</em>=path/<em>files</em>/filename</td>
     <td>dataset</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/files/GFS_Puerto_Rico_0p5deg_20111116_0000.grib2">fcat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/files/GFS_Puerto_Rico_0p5deg_20111116_0000.grib2</a></td>
+  </tr>
+  <tr>
+    <td>latest file catalog</td>
+    <td>fcat<em>/<em>latest.xml BC ?</em></em></td>
+    <td>catalog</td>
+    <td><p>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.html</p>    </td>
+  </tr>
+</table>
+<h3>time partition</h3>
+<p>path -&gt; path/partitionName</p>
+<table width="1551" border="1">
+  <tr>
+    <th width="146" scope="col">dataset</th>
+    <th width="296" scope="col">url</th>
+    <th width="87" scope="col">type</th>
+    <th width="994" scope="col">example</th>
+  </tr>
+  <tr>
+    <td>overall</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html</a></td>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
+    <td>dataset</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg">cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg</a></td>
+  </tr>
+  <tr>
+    <td>best</td>
+    <td>cat?<em>dataset</em>=path/<em>best</em></td>
+    <td>dataset</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/best">cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/best</a></td>
+  </tr>
+  <tr>
+    <td>files catalog</td>
+    <td>path<em>/files/catalog.xml</em></td>
+    <td>catalog</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html</a></td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>fcat?<em>dataset</em>=path/<em>files</em>/filename</td>
+    <td>dataset</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/files/GFS_Puerto_Rico_0p5deg_20111116_0000.grib2">fcat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/files/GFS_Puerto_Rico_0p5deg_20111116_0000.grib2</a></td>
   </tr>
   <tr>
     <td>latest file</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
+    <td>fcat<em>/<em>latest.xml BC ?</em></em></td>
+    <td>dataset</td>
+    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.html</a></td>
   </tr>
 </table>
-<p>path =  grib/NCEP/GFS/CONUS_191km</p>
-<p>dataset catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html</a></p>
-<p>collection dataset <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km"> http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km</a></p>
-<p>best dataset <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection</a></p>
-<p>latest catalog = <a href="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.html">http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.html</a></p>
-<p>latest datset = <a href="http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.html?dataset=fmrc/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121031_1200.grib2">http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.html?dataset=fmrc/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121031_1200.grib2</a></p>
-<p>files catalog <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html</a></p>
 <p>&nbsp;</p>
 <hr />
 <h3>time partition</h3>

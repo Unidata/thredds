@@ -177,7 +177,7 @@ public class OpendapServlet extends AbstractServlet {
         log.debug("doGet(): baseURI was set = {}", baseURI);
       }
 
-      if (path.endsWith("latest.xml")) {
+      if (path.endsWith("latest.xml")) {   // LOOK: WTF ??
         DataRootHandler.getInstance().processReqForLatestDataset(this, request, response);
         return;
       }

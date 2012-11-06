@@ -54,6 +54,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -76,13 +77,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
   static private final String COLLECTION = "collection";
+  static private final String BEST_DATASET = "best";
+  static private final String BEST_DATASET_NAME = "Best Timeseries";
+  static private final String LATEST_DATASET_CATALOG = "latest.xml";
+  static private final String LATEST_DATASET = "latest";
+  static private final String LATEST_DATASET_NAME = "Latest Run";
+  static private final String LATEST_FILE_NAME = "Latest File";
+  static private final String LATEST_SERVICE = "latest";
   static private final String VARIABLES = "?metadata=variableMap";
-  static private final boolean addLatest = true;  // not ready for use
+
+  static private final boolean addLatest = true;  // ready for use ?
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
     TimePartition timePartition;
     GribCollection gribCollection;
+    InvDatasetImpl top;
 
     protected StateGrib(StateGrib from) {
       super(from);
@@ -227,6 +237,28 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   /////////////////////////////////////////////////////////////////////////
 
   private void makeTopDatasets(StateGrib localState) {
+    InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
+    if (parent != null)
+      top.transferMetadata(parent, true); // make all inherited metadata local
+
+    /*String id = getID();
+    if (id == null)
+      id = getPath();  */
+    top.setID(getPath()+"/"+COLLECTION);
+
+    // add Variables, GeospatialCoverage, TimeCoverage LOOK doesnt seem to work
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.vars != null) tmi.addVariables(localState.vars);
+    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
+
+    // any referenced services need to be local
+    // remove http service for virtual datasets
+    //mainCatalog.addService(virtualService);
+    //top.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+
     List<InvDataset> datasets = new ArrayList<InvDataset>();
 
     if (localState.timePartition == null) {
@@ -241,9 +273,38 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         String dpath;
 
         if (isSingleGroup) {
-          ds = new InvDatasetImpl(this, getName());
-          groupId = null;
-          dpath = getPath() + "/" + COLLECTION;
+
+          top.tmi.setGeospatialCoverage(extractGeospatial(group));
+          CalendarDateRange cdr = extractCalendarDateRange(group);
+          if (cdr != null) top.tmi.setTimeCoverage(cdr);
+
+          if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Best)) {
+            InvDatasetImpl best = new InvDatasetImpl(this, BEST_DATASET_NAME);
+            groupId = null;
+            dpath = getPath() + "/" + BEST_DATASET;
+            best.setUrlPath(dpath);
+            best.setID(dpath);
+            best.tmi.addVariableMapLink(makeMetadataLink(dpath, VARIABLES));
+            datasets.add(best);
+          }
+
+          /* if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest)) {
+            InvDatasetImpl latest = new InvDatasetImpl(this, LATEST_DATASET_NAME);
+            groupId = null;
+            dpath = getPath() + "/" + LATEST_DATASET;
+            latest.setUrlPath(dpath);
+            latest.setID(dpath);
+            latest.tmi.addVariableMapLink(makeMetadataLink(dpath, VARIABLES));
+            datasets.add(latest);
+          } */
+
+          if (gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
+            String name = FILES;
+            InvCatalogRef filesCat = new InvCatalogRef(this, FILES, getCatalogHref(name));
+            filesCat.finish();
+            datasets.add(filesCat);
+          }
+
 
         } else {
           ds = new InvDatasetImpl(this, group.getDescription());
@@ -251,18 +312,17 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           dpath = getPath() + "/" + groupId + "/" + COLLECTION;
         }
 
-        ds.setUrlPath(dpath);
-        ds.setID(dpath);
-        ds.tmi.addVariableMapLink(makeMetadataLink(dpath, VARIABLES));
-        addFileDatasets(ds, groupId);
+       // ds.setUrlPath(dpath);
+       // ds.setID(dpath);
+       // ds.tmi.addVariableMapLink(makeMetadataLink(dpath, VARIABLES));
+       // addFileDatasets(ds, groupId);
 
-        // metadata is specific to each group
-        ds.tmi.setGeospatialCoverage(extractGeospatial(group));
-        CalendarDateRange cdr = extractCalendarDateRange(group);
-        if (cdr != null) ds.tmi.setTimeCoverage(cdr);
+        //ds.tmi.setGeospatialCoverage(extractGeospatial(group));
+        //CalendarDateRange cdr = extractCalendarDateRange(group);
+        //if (cdr != null) ds.tmi.setTimeCoverage(cdr);
 
-        ds.finish();
-        datasets.add(ds);
+        //ds.finish();
+        //datasets.add(ds);
       }
 
     } else { // is a time partition
@@ -291,9 +351,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
     }
 
+    for (InvDataset ds : datasets)
+      top.addDataset((InvDatasetImpl) ds);
+
+    localState.top = top;
     localState.datasets = datasets;
     this.datasets = datasets;
-    finish();
+    top.finish();
   }
 
   // file datasets of the partition catalog are InvCatalogRef pointing to "FileCatalogs"
@@ -307,7 +371,15 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   // called by DataRootHandler.makeDynamicCatalog() when a catref is requested
-  /* Possible catref paths:
+  /* Possible catref paths: (OLD)
+      1. path/files/catalog.xml
+      2. path/partitionName/files/catalog.xml
+      3. path/groupName/files/catalog.xml
+
+      4. path/collection/catalog.xml
+      5. path/partitionName/catalog.xml
+
+     Possible catref paths: (NEW)
       1. path/files/catalog.xml
       2. path/partitionName/files/catalog.xml
       3. path/groupName/files/catalog.xml
@@ -397,6 +469,45 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     }
 
     return null;
+  }
+
+
+  @Override
+  protected InvCatalogImpl makeCatalogTop(URI catURI, State localState) throws IOException, URISyntaxException {
+    InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
+    //URI myURI = catURI.resolve(getXlinkHref());  LOOK
+    InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), catURI);
+
+    /* InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
+    if (parent != null)
+      top.transferMetadata(parent, true); // make all inherited metadata local
+
+    String id = getID();
+    if (id == null)
+      id = getPath();
+    top.setID(id);
+
+    // add Variables, GeospatialCoverage, TimeCoverage LOOK doesnt seem to work
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.vars != null) tmi.addVariables(localState.vars);
+    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange); */
+
+    mainCatalog.addDataset(((StateGrib)localState).top);
+
+    // any referenced services need to be local
+    // remove http service for virtual datasets
+    //mainCatalog.addService(virtualService);
+    //top.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+
+    //for (InvDataset ds : getDatasets())
+    //  top.addDataset((InvDatasetImpl) ds);
+
+    mainCatalog.finish();
+
+    return mainCatalog;
   }
 
   // each partition gets its own catalog, showing the different groups (horiz coord sys)
@@ -491,13 +602,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     result.addService(orgService);
     top.getLocalMetadataInheritable().setServiceName(orgService.getName());
 
-    String id = getID();
-    if (id == null) id = getPath();
+    //String id = getID();
+    //if (id == null) id = getPath();
 
     if (addLatest) {
-      InvDatasetImpl ds = new InvDatasetImpl(this, LATEST_DATASET_NAME);
-      ds.setUrlPath(this.path + "/" + FILES + "/" + LATEST_DATASET);
-      ds.setID(id + "/" + FILES + "/" + LATEST_DATASET);
+      InvDatasetImpl ds = new InvDatasetImpl(this, LATEST_FILE_NAME);
+      ds.setUrlPath(LATEST_DATASET_CATALOG);
+      // ds.setID(getPath() + "/" + FILES + "/" + LATEST_DATASET_CATALOG);
       ds.setServiceName(LATEST_SERVICE);
       ds.finish();
       top.addDataset(ds);
@@ -520,6 +631,70 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       ds.finish();
       top.addDataset(ds);
     }
+
+    result.finish();
+    return result;
+  }
+
+  @Override
+  public InvCatalogImpl makeLatest(String match, String reqPath, URI catURI) {
+    //logger.debug("{}: make catalog for {} {}", name, match, baseURI);
+    StateGrib localState;
+    try {
+      localState = checkState();
+    } catch (IOException e) {
+      logger.error("Error in checkState", e);
+      return null;
+    }
+
+    try {
+      GribCollection.GroupHcs group = localState.gribCollection.getGroup(0);
+      return makeLatestCatalog(localState.gribCollection, group, catURI, localState);
+
+    } catch (Exception e) {
+      logger.error("Error making catalog for " + path, e);
+    }
+
+    return null;
+  }
+
+    // this catalog lists the individual files comprising a grib collection.
+  // cant use InvDatasetScan because we might have multiple hcs
+  private InvCatalogImpl makeLatestCatalog(GribCollection gc, GribCollection.GroupHcs group, URI catURI, State localState) throws IOException {
+
+    InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
+    InvCatalogImpl result = new InvCatalogImpl(getFullName(), parent.getVersion(), catURI);
+    InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    top.transferMetadata((InvDatasetImpl) this.getParent(), true); // make all inherited metadata local
+    top.setName(LATEST_FILE_NAME);
+
+    // add Variables, GeospatialCoverage, TimeCoverage
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
+
+    result.addDataset(top);
+
+    // services need to be local
+    // result.addService(InvService.latest);
+    result.addService(orgService);
+    top.getLocalMetadataInheritable().setServiceName(orgService.getName());
+
+    boolean isSingleGroup = gc.getGroups().size() == 1;
+    List<String> filenames = isSingleGroup ? gc.getFilenames() : group.getFilenames();
+    String f = filenames.get(filenames.size()-1);
+    if (!f.startsWith(topDirectory))
+      logger.warn("File {} doesnt start with topDir {}", f, topDirectory);
+
+    String fname = f.substring(topDirectory.length() + 1);
+    String path = FILES + "/" + fname;
+    //InvDatasetImpl ds = new InvDatasetImpl(this, fname);
+    top.setUrlPath(this.path + "/" + path);
+    top.setID(this.path + "/" + path);
+    top.tmi.addVariableMapLink(makeMetadataLink(this.path + "/" + path, VARIABLES));
+    File file = new File(f);
+    top.tm.setDataSize(file.length());
 
     result.finish();
     return result;
@@ -599,6 +774,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       else
         return localState.timePartition.getGridDataset(dp.group, dp.filename, gribConfig);
     }
+
+    // push title into the dataset object
+    // gds.setTitle();
   }
 
   @Override
@@ -630,9 +808,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   /* possible forms of path:
-    regular:
-      1. COLLECTION               single group
-      2. groupName/COLLECTION     multiple groups
+    regular, single group:
+      1. COLLECTION or BEST
+      1b. LATEST
+
+     regular, multiple group:
+      2. groupName/COLLECTION
 
    time partition, single group:
       3. name/COLLECTION              overall collection for all partitions
@@ -654,9 +835,10 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return new DatasetParse(paths[1]); // case 7
 
     if (localState.timePartition == null) {
-      boolean isCollection = paths[0].equals(COLLECTION);
+      boolean isCollection = paths[0].equals(COLLECTION) || paths[0].equals(BEST_DATASET);
+      boolean isLatest = paths[0].equals(LATEST_DATASET);
       String groupName = isCollection ? localState.gribCollection.getGroup(0).getId() : paths[0];
-      return new DatasetParse(null, groupName, isCollection); // case 1 and 2
+      return new DatasetParse(null, groupName, isCollection, isLatest); // case 1 and 2
 
     } else { // is a time partition
 
@@ -668,21 +850,22 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         }
       } */
 
-      if (paths.length == 2) {
+      if (paths.length == 2) {   // LOOK WTF ??
         boolean isCollection = paths[1].equals(COLLECTION);
+        boolean isLatest = paths[1].equals(LATEST_DATASET);
         TimePartition.Partition tpp = localState.timePartition.getPartitionByName(paths[0]);
         String name = localState.timePartition.getName();
         if (isCollection) {
           if (tpp != null)
-            return new DatasetParse(tpp, localState.timePartition.getGroup(0).getId(), true); // case 4 :  overall collection for partition, one group
+            return new DatasetParse(tpp, localState.timePartition.getGroup(0).getId(), true, isLatest); // case 4 :  overall collection for partition, one group
           else if (paths[0].equals(name))
-            return new DatasetParse(null, localState.timePartition.getGroup(0).getId(), true); // case 3 :  overall collection for partition, one group
+            return new DatasetParse(null, localState.timePartition.getGroup(0).getId(), true, isLatest); // case 3 :  overall collection for partition, one group
 
         } else {
           if (tpp != null)
-            return new DatasetParse(tpp, paths[1], false); // case 6
+            return new DatasetParse(tpp, paths[1], false, isLatest); // case 6
           else
-            return new DatasetParse(null, paths[1], true);  // case 5 : overall collection for group, multiple partitions
+            return new DatasetParse(null, paths[1], true, isLatest);  // case 5 : overall collection for group, multiple partitions
         }
       }
     }
@@ -694,12 +877,13 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     TimePartition.Partition partition; // missing for collection level
     String group;
     String filename; // only for isFile
-    boolean isCollection, isFile;
+    boolean isCollection, isFile, isLatest;
 
-    private DatasetParse(TimePartition.Partition tpp, String group, boolean collection) {
+    private DatasetParse(TimePartition.Partition tpp, String group, boolean collection, boolean latest) {
       this.partition = tpp;
       this.group = group;
       isCollection = collection;
+      isLatest = latest;
     }
 
     private DatasetParse(String filename) {
