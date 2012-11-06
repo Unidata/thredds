@@ -52,7 +52,8 @@ import ucar.unidata.geoloc.*;
 
 public class UtmProjection extends ProjectionImpl {
   public static final String GRID_MAPPING_NAME = "universal_transverse_mercator";
-  public static final String UTM_ZONE = "UTM_zone";
+  public static final String UTM_ZONE1 = "utm_zone_number";
+  public static final String UTM_ZONE2 = "UTM_zone";
 
   private final Utm_To_Gdc_Converter convert2latlon;
   private final Gdc_To_Utm_Converter convert2xy;
@@ -97,7 +98,7 @@ public class UtmProjection extends ProjectionImpl {
     addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
     addParameter(CF.SEMI_MAJOR_AXIS, convert2latlon.getA());
     addParameter(CF.INVERSE_FLATTENING, convert2latlon.getF());
-    addParameter(UTM_ZONE, zone);
+    addParameter(UTM_ZONE1, zone);
   }
 
   /**
@@ -118,7 +119,7 @@ public class UtmProjection extends ProjectionImpl {
     addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
     addParameter(CF.SEMI_MAJOR_AXIS, a);
     addParameter(CF.INVERSE_FLATTENING, f);
-    addParameter(UTM_ZONE, zone);
+    addParameter(UTM_ZONE1, zone);
   }
 
   /**
