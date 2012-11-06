@@ -155,7 +155,7 @@ public String NC_check_name(String name) {
 
 	assert(name != NULL);
 
-	if(*name == 0		// empty names disallowed
+	if (*name == 0		// empty names disallowed
 	   || strchr(cp, '/'))	// '/' can't be in a name
 		return NC_EBADNAME;
 
@@ -180,27 +180,26 @@ public String NC_check_name(String name) {
 	}
 
 	while(*cp != 0) {
-	    ch = (uchar)*cp;
-	    /* handle simple 0x00-0x7f characters here
-	    if(ch <= 0x7f) {
-                if( ch < ' ' || ch > 0x7E) /* control char or DEL
-		  return NC_EBADNAME;
-		cp++;
-	    } else {
-		if((skip = nextUTF8(cp)) < 0) return NC_EBADNAME;
-		cp += skip;
-	    }
-	    if(cp - name > NC_MAX_NAME)
+	  ch = (uchar)*cp;
+	  /* handle simple 0x00-0x7f characters here
+	  if (ch <= 0x7f) {
+      if( ch < ' ' || ch > 0x7E) /* control char or DEL
+		    return NC_EBADNAME;
+		  cp++;
+	  } else {
+		  if((skip = nextUTF8(cp)) < 0) return NC_EBADNAME;
+		  cp += skip;
+	  }
+	  if(cp - name > NC_MAX_NAME)
 		return NC_EMAXNAME;
 	}
-	if(ch <= 0x7f && isspace(ch)) // trailing spaces disallowed
+	if (ch <= 0x7f && isspace(ch)) // trailing spaces disallowed
 	    return NC_EBADNAME;
 	return NC_NOERR;
 } */
 
   /**
    * Convert a name to a legal netcdf-3 name.
-   * ([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*
    * @param name convert this name
    * @return converted name
    */
@@ -216,7 +215,7 @@ public String NC_check_name(String name) {
     int pos = 1;
     while (pos < sb.length()) {
       int c = sb.codePointAt(pos);
-      if (((c >= 0) && (c < 0x20)) || (c == 0x7f)) {
+      if (((c >= 0) && (c < 0x20)) || (c == 0x2f) || (c == 0x7f)) {
         sb.delete(pos, pos + 1);
         pos--;
       }
@@ -228,7 +227,23 @@ public String NC_check_name(String name) {
     return sb.toString();
   }
 
-  static public String makeValidNetcdfObjectNameOld(String name) {
+  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][^\\x00-\\x1F\\x2F\\x7F]*");
+
+   /**
+    * Determine if the given name can be used for a Dimension, Attribute, or Variable name.
+    * Should match makeValidNetcdfObjectName()
+    * @param name test this.
+    * @return  true if valid name.
+    */
+   static public boolean isValidNetcdfObjectName(String name) {
+     Matcher m = objectNamePattern.matcher(name);
+     return m.matches();
+   }
+
+  /////////////////////////////////////////////////////////////////
+  // I think these go together - consider deprecated
+
+  static public String makeValidNetcdf3ObjectName(String name) {
     StringBuilder sb = new StringBuilder(name);
 
     while (sb.length() > 0) {
@@ -261,22 +276,22 @@ public String NC_check_name(String name) {
     return sb.toString();
   }
 
-  /////////////////////////////////////////////////
-  // name pattern matching
   //static private final String special1 = "_\\.@\\+\\-";
   //static private final String special2 = " ";
   //static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\.\\-\\+]*");
-  static private final Pattern objectNamePattern = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\:\\(\\)\\.\\-\\+]*");
+  static private final Pattern objectNamePatternOld = Pattern.compile("[a-zA-Z0-9_][a-zA-Z0-9_@\\:\\(\\)\\.\\-\\+]*");
 
   /**
    * Determine if the given name can be used for a Dimension, Attribute, or Variable name.
+   * Should match makeValidNetcdf3ObjectName.
    * @param name test this.
    * @return  true if valid name.
    */
   static public boolean isValidNetcdf3ObjectName(String name) {
-    Matcher m = objectNamePattern.matcher(name);
+    Matcher m = objectNamePatternOld.matcher(name);
     return m.matches();
   }
+
 
   /**
    * Valid Netcdf Object name as a regular expression.
@@ -285,6 +300,8 @@ public String NC_check_name(String name) {
   static public Pattern getValidNetcdf3ObjectNamePattern() {
     return objectNamePattern;
   }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Convert a name to a legal netcdf name.
@@ -301,6 +318,7 @@ public String NC_check_name(String name) {
    * </ol>
    * @param name convert this name
    * @return converted name
+   * @deprecated use makeValidNetcdfObjectName
    */
   static public String createValidNetcdf3ObjectName(String name) {
     StringBuilder sb = new StringBuilder(name);
@@ -340,10 +358,6 @@ public String NC_check_name(String name) {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    return N3header.isValidFile(raf);
-  }
-
   protected ucar.nc2.NetcdfFile ncfile;
   protected boolean readonly;
 
@@ -358,6 +372,10 @@ public String NC_check_name(String name) {
 
   protected boolean debug = false, debugSize = false, debugSPIO = false, debugRecord = false, debugSync = false;
   protected boolean showHeaderBytes = false;
+
+  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+    return N3header.isValidFile(raf);
+  }
 
   @Override
   public String getDetailInfo() {
@@ -922,5 +940,26 @@ public String NC_check_name(String name) {
   abstract protected void _open(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException;
 
   abstract protected void _create(ucar.unidata.io.RandomAccessFile raf) throws java.io.IOException;
+
+  private static void testValid(String test) {
+    //boolean isValid = isValidNetcdf3ObjectName(test);
+    //String convert = makeValidNetcdf3ObjectName(test);
+    //boolean isValid2 = isValidNetcdf3ObjectName(convert);
+    //System.out.printf("old: %s (%s) == %s (%s) %n", test, isValid, convert, isValid2);
+
+    boolean isValid = isValidNetcdfObjectName(test);
+    String convert = makeValidNetcdfObjectName(test);
+    boolean isValid2 = isValidNetcdfObjectName(convert);
+    System.out.printf("new: %s (%s) == %s (%s) %n%n", test, isValid, convert, isValid2);
+  }
+
+  public static void main(String[] args) {
+
+    testValid("MOD_Grid_MOD17A3/Data Fields/XDim");
+    testValid("MOD_Grid_MOD17A3/47Data Fields47XDim");
+    testValid("MOD_Grid_MOD17A347Data Fields47XDim");
+
+
+  }
 
 }

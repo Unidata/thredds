@@ -61,7 +61,7 @@ import ucar.ma2.*;
 
 public class FileWriter2 {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
-  static private boolean debug = false, debugWrite = false;
+  static private boolean debug = true, debugWrite = false;
   static private long maxSize = 50 * 1000 * 1000; // 50 Mbytes
 
   /**
@@ -86,10 +86,11 @@ public class FileWriter2 {
 
   /**
    * Use this constructor to copy entire file. Use this.write() to do actual copy.
-   * @param fileIn          copy this file
-   * @param fileOutName     to this output file
-   * @param version         output file version
-   * @throws IOException    on read/write error
+   *
+   * @param fileIn      copy this file
+   * @param fileOutName to this output file
+   * @param version     output file version
+   * @throws IOException on read/write error
    */
   public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version) throws IOException {
     this.fileIn = fileIn;
@@ -98,7 +99,7 @@ public class FileWriter2 {
   }
 
   public void addProgressListener(FileWriterProgressListener listener) {
-    if (progressListeners == null) progressListeners= new ArrayList<FileWriterProgressListener>();
+    if (progressListeners == null) progressListeners = new ArrayList<FileWriterProgressListener>();
     progressListeners.add(listener);
   }
 
@@ -108,13 +109,15 @@ public class FileWriter2 {
 
   /////////////////////////////////////////////////////////////////////////////////////////////
   // might be better to push these next up int NetcdfCFWriter, but we want to use copyVarData
+
   /**
    * Use this constructor to copy specific variables to new file.
    * Only supports classic mode
-   *
+   * <p/>
    * Use addVariable() to load in variables, then this.write().
+   *
    * @param fileWriter this encapsolates new file.
-   * @throws IOException    on read/write error
+   * @throws IOException on read/write error
    */
   public FileWriter2(NetcdfFileWriter fileWriter) throws IOException {
     this.fileIn = null;
@@ -124,6 +127,7 @@ public class FileWriter2 {
 
   /**
    * Specify which variable will get written
+   *
    * @param oldVar add this variable, and all parent groups
    * @return new Variable.
    */
@@ -142,18 +146,18 @@ public class FileWriter2 {
   private List<Dimension> getNewDimensions(Variable oldVar) {
     List<Dimension> result = new ArrayList<Dimension>(oldVar.getRank());
 
-        // dimensions
+    // dimensions
     for (Dimension oldD : oldVar.getDimensions()) {
-      Dimension newD =  gdimHash.get(oldD.getName());
+      Dimension newD = gdimHash.get(oldD.getName());
       if (newD == null) {
         newD = writer.addDimension(null, oldD.getName(), oldD.isUnlimited() ? 0 : oldD.getLength(),
-              oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+                oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
         gdimHash.put(oldD.getName(), newD);
         if (debug) System.out.println("add dim= " + newD);
       }
       result.add(newD);
     }
-   return result;
+    return result;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +227,7 @@ public class FileWriter2 {
             dims.add(dim);
           else
             throw new IllegalStateException("Unknown dimension= " + oldD.getName());
-    }
+        }
       }
 
       DataType newType = oldVar.getDataType();
@@ -292,7 +296,7 @@ public class FileWriter2 {
         if (newD == null)
           newD = newParent.findDimension(oldD.getName());
         if (newD == null)
-          throw new IllegalStateException("Cant find dimension "+ oldD.getName());
+          throw new IllegalStateException("Cant find dimension " + oldD.getName());
         dims.add(newD);
       }
 
@@ -443,7 +447,8 @@ public class FileWriter2 {
           }
 
           writer.write(newVar, chunkOrigin, data);
-          if (debugWrite) System.out.println(" write " + data.getSize() + " bytes at " + new Section(chunkOrigin, chunkShape));
+          if (debugWrite)
+            System.out.println(" write " + data.getSize() + " bytes at " + new Section(chunkOrigin, chunkShape));
 
           byteWriteTotal += data.getSize();
 
@@ -480,9 +485,9 @@ public class FileWriter2 {
   }
 
   private boolean hasRecordStructure(NetcdfFile file) {
-     Variable v = file.findVariable("record");
-     return (v != null) && (v.getDataType() == DataType.STRUCTURE);
-   }
+    Variable v = file.findVariable("record");
+    return (v != null) && (v.getDataType() == DataType.STRUCTURE);
+  }
 
   /*
    * Add a Variable to the file. The data is copied when finish() is called.

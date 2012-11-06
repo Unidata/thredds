@@ -48,6 +48,7 @@ dl {margin: 10px 5px 5px 15px;)
 <h3>Comparision to netCDF-4<a name="netcdf4"></a></h3>
 <p>The CDM data model is close to, but not identical to the <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">netCDF-4 data model</a>. However there is a complete 2-way mapping between the two models. In the CDM:</p>
 <ul>
+  <li>Non-shared dimensions are allowed, but netCDF-4 does not support these.</li>
   <li>An attribute type may only be a scalar or 1D array of byte, short, int, long, float, double, or String.</li>
   <li>Variables that are members of Structures may have attributes attached directly to them.</li>
   <li>The opaque type does include the length of the opaque object, so an array of opaque may have different lengths for each object in the array.</li>
@@ -179,7 +180,7 @@ With these Feature Types objects, mapping into other data models like ISO/OGC be
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated August 2012
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated November 2012
 </address>
 <p>&nbsp;</p>
 </body>

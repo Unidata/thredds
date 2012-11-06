@@ -1870,8 +1870,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     finishGroup(rootGroup);
   }
 
-  private void finishGroup(Group g)
-  {
+  private void finishGroup(Group g) {
 
     variables.addAll(g.variables);
 
@@ -1885,7 +1884,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       }
     }
 
-    // LOOK this wont match the variables' dimensions if there are groups
+    // LOOK this wont match the variables' dimensions if there are groups: what happens if we remove this ??
     for (Dimension oldDim : g.dimensions) {
       if (oldDim.isShared()) {
         if (g == rootGroup) {
@@ -1908,7 +1907,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent, null);
     sbuff.append(name);
-    return sbuff.toString();
+    return makeValidCdmObjectName(sbuff.toString());
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

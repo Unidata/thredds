@@ -259,7 +259,8 @@ public class NetcdfFileWriter {
    */
   public Dimension addDimension(Group g, String dimName, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
     if (!defineMode) throw new UnsupportedOperationException("not in define mode");
-    if (!isValidObjectName(dimName)) throw new IllegalArgumentException("illegal dimension name "+dimName);
+    if (!isValidObjectName(dimName))
+      throw new IllegalArgumentException("illegal dimension name "+dimName);
 
     Dimension dim = new Dimension(dimName, length, isShared, isUnlimited, isVariableLength);
     ncfile.addDimension(g, dim);
@@ -276,7 +277,7 @@ public class NetcdfFileWriter {
   }
 
   private boolean isValidObjectName(String name) {
-    return N3iosp.isValidNetcdf3ObjectName(name);
+    return N3iosp.isValidNetcdfObjectName(name);
   }
 
   private boolean isValidDataType(DataType dt) {
@@ -284,7 +285,7 @@ public class NetcdfFileWriter {
   }
 
   private String createValidObjectName(String name) {
-    return N3iosp.createValidNetcdf3ObjectName(name);
+    return N3iosp.makeValidNetcdfObjectName(name);
   }
 
   /**

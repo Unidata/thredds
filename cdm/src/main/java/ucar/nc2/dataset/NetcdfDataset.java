@@ -1685,6 +1685,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     ncfileIn.close();
     ncfileOut.close();
     System.out.println("NetcdfFile written = " + ncfileOut);
+    System.out.println("Success");
   }
 
 }
