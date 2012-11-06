@@ -13,8 +13,7 @@
 
   <datasetRoot path="test" location="content/testdata/" />
 
-  <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap"
-           urlPath="test/testData.nc" dataType="Grid"/>
+  <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap"  urlPath="test/testData.nc" dataType="Grid"/>
 
   <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="test/testData2.grib2" dataType="Grid"/>
 

@@ -33,7 +33,6 @@ package thredds.server.ncSubset.view.netcdf;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayStructureW;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
@@ -104,7 +102,6 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 
 	void writeHeader(List<Station> stns, Map<String, List<String>> groupedVars,
 			GridDataset gds, DateUnit timeUnit, int timeDimLength) throws IOException{
-		//What I want here?
 
 		//--> Create dimensions and variables:
 		//
