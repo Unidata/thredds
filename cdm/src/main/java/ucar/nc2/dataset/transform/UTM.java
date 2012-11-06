@@ -58,7 +58,13 @@ public class UTM extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    int zone = (int) readAttributeDouble( ctv, UtmProjection.UTM_ZONE, Double.NaN);
+    double zoned = readAttributeDouble( ctv, UtmProjection.UTM_ZONE1, Double.NaN);
+    if (Double.isNaN(zoned))
+      zoned = readAttributeDouble( ctv, UtmProjection.UTM_ZONE2, Double.NaN);
+    if (Double.isNaN(zoned))
+      throw new IllegalArgumentException("No zone was specified") ;
+
+    int zone = (int) zoned;
     boolean isNorth = zone > 0;
     zone = Math.abs(zone);
 
