@@ -131,7 +131,7 @@
         <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       </featureCollection>
 
-      <featureCollection name="GEFS-Global_1p0deg_Ensemble-derived" featureType="GRIB" harvest="true"
+      <featureCollection name="GEFS-Global_1p0deg_Ensemble-derived_products" featureType="GRIB" harvest="true"
                          path="grib/NCEP/GEFS/Global_1p0deg_Ensemble/derived">
         <metadata inherited="true">
           <documentation type="summary">
@@ -993,11 +993,11 @@
         <documentation xlink:href="http://w1.spc.woc.noaa.gov/exper/sref/" xlink:title="NCEP/SREF Website"/>
       </metadata>
 
-      <featureCollection name="SREF-CONUS_40km-derived" featureType="GRIB" harvest="true"
+      <featureCollection name="SREF-CONUS_40km_Ensemble-derived_products" featureType="GRIB" harvest="true"
                          path="grib/NCEP/SREF/CONUS_40km/ensprod">
         <metadata inherited="true">
           <documentation type="summary">
-            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: mean, spread, and probability.
+            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: mean, spread, and probability,
             over CONUS with 185 by 129 points, resolution 40 km.
             Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours from 3 to 87 hours.
           </documentation>
@@ -1017,11 +1017,11 @@
         </gribConfig>
       </featureCollection>
 
-      <featureCollection name="SREF-CONUS_40km-biasCorrected-derived" featureType="GRIB" harvest="true"
+      <featureCollection name="SREF-CONUS_40km_biasCorrected_Ensemble-derived_products" featureType="GRIB" harvest="true"
                          path="grib/NCEP/SREF/CONUS_40km/ensprod_biasc">
         <metadata inherited="true">
           <documentation type="summary">
-            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: bias-corrected mean, spread, and probability.
+            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: bias-corrected mean, spread, and probability,
             over CONUS with 185 by 129 points, resolution 40 km.
             Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours from 3 to 87 hours.
           </documentation>
@@ -1034,11 +1034,11 @@
       </featureCollection>
 
       <!-- apparently SREF members are incorectly encoded - dont have the ensemble info in them -->
-      <!-- featureCollection name="SREF-CONUS_40km-biasCorrected-members" featureType="GRIB" harvest="true"
+      <!-- featureCollection name="SREF-CONUS_40km_biasCorrected_Ensemble-members" featureType="GRIB" harvest="true"
                          path="grib/NCEP/SREF/CONUS_40km/pgrb_biasc">
         <metadata inherited="true">
           <documentation type="summary">
-            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: bias-corrected ensemble members.
+            NCEP Short Range Ensemble Forecast (SREF) 40km bias-corrected ensemble members,
             over CONUS with 185 by 129 points, resolution 40 km.
             Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours from 3 to 87 hours.
           </documentation>
