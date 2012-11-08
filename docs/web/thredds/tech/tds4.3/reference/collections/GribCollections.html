@@ -389,8 +389,8 @@ de-referencing the catalogRefs, and simplifying:
    &lt;xsd:simpleType&gt;
     &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
 7)   &lt;xsd:enumeration value=&quot;Best&quot;/&gt;
-     &lt;xsd:enumeration value=&quot;Latest&quot;/&gt;
      &lt;xsd:enumeration value=&quot;Files&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;LatestFile&quot;/&gt;
     &lt;/xsd:restriction&gt;
    &lt;/xsd:simpleType&gt;
   &lt;/xsd:union&gt;
@@ -445,10 +445,10 @@ de-referencing the catalogRefs, and simplifying:
   datasets are available in the TDS catalog</h4>
   <ol>
     <li><strong>Best</strong>: the &quot;best timeseries: of the collection  dataset</li>
-    <li><strong>Latest</strong>: the latest model run</li>
     <li><strong>Files</strong>:
       each physical file
-      is exposed as a seperate dataset.</li>
+    is exposed as a seperate dataset.</li>
+    <li><strong>LatestFile</strong>: add latest resolver dataset to Files catalog (<strong>Files</strong> must also be selected)</li>
   </ol>
   <p>If you make changes to these parameters (except <strong>datasetTypes</strong>), you need to delete the cdm index files (<strong>*.ncx</strong>) to force them to be recreated.</p>
 </blockquote>

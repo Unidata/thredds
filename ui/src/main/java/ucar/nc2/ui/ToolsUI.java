@@ -2883,6 +2883,18 @@ public class ToolsUI extends JPanel {
       gribTable = new ucar.nc2.ui.Grib1CollectionPanel(buttPanel, prefs);
       add(gribTable, BorderLayout.CENTER);
 
+      AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+      showButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          gribTable.showCollection(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(showButt);
+
       AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
       writeButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {

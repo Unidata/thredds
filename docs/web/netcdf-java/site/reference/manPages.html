@@ -12,7 +12,7 @@
 <hr />
 <h2>ncdump</h2>
 <p>Approximate  functionality to <em>ncdump</em> c utility, but with different arguments.</p>
-<pre><em><strong>  ucar.nc2.NCdumpW</strong> filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</em></pre>
+<pre><em><strong>  </strong>java -classpath netcdfAll-4.3.jar <strong>ucar.nc2.NCdumpW</strong> filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</em></pre>
 <p>where:</p>
 <ul>
   <li> <em>filepath</em> : pathname of any CDM file. </li>
@@ -26,7 +26,7 @@
 <hr />
 <h2>nccopy</h2>
 <p>Copy a CDM dataset to a    netcdf-3 (default) or netcdf-4 format. Datasets using features from the extended model require netcdf-4.</p>
-<pre><em><strong> ucar.nc2.dataset.NetcdfDataset -in &lt;fileIn&gt; -out &lt;fileOut&gt; [-isLargeFile] [-netcdf4]</strong></em></pre>
+<pre><em><strong> </strong>java -classpath netcdfAll-4.3.jar <strong>ucar.nc2.dataset.NetcdfDataset -in &lt;fileIn&gt; -out &lt;fileOut&gt; [-isLargeFile] [-netcdf4]</strong></em></pre>
 <p>where:</p>
 <ul>
   <li><em>filein</em> : the existing file to copy</li>
@@ -37,7 +37,7 @@
 <hr />
 <h2>nccompare</h2>
 <p>Compare 2 CDM files for semantic equivilence..</p>
-<pre> ucar.nc2.util.CompareNetcdf2 file1 file2 [-showEach] [-compareData] </pre>
+<pre> <em>java -classpath netcdfAll-4.3.jar </em>ucar.nc2.util.CompareNetcdf2 file1 file2 [-showEach] [-compareData] </pre>
 <p>where</p>
 <ul>
   <li>-<em>showEach</em> : show details of comparing each object</li>
@@ -48,7 +48,7 @@
 <hr />
 <h2><strong>FeatureScan</strong></h2>
 <p>Scans all the files in a directory to see if they are CDM files and can be identified as a particular feature type</p>
-<pre><strong>  </strong>usage: ucar.nc2.ft.scan.FeatureScan directory [-subdirs]</pre>
+<pre><strong>  </strong> <em>java -classpath netcdfAll-4.3.jar </em>ucar.nc2.ft.scan.FeatureScan directory [-subdirs]</pre>
 <p>where</p>
 <ul>
   <li>directory : scan this directory</li>
@@ -56,7 +56,7 @@
 </ul>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document  was last updated August 2012
+<img src="../nc.gif" alt="" width="64" height="64" /> This document  was last updated Nov 2012
 </address>
 <p></p>
 <p>&nbsp;</p>

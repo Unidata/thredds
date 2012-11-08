@@ -45,6 +45,7 @@ import java.util.*;
  * @since Mar 30, 2010
  */
 public class FeatureCollectionConfig {
+  // keys for storing AuxInfo objects
   static public final String AUX_GRIB_CONFIG = "gribConfig";
 
   static public enum ProtoChoice {
@@ -60,7 +61,7 @@ public class FeatureCollectionConfig {
   }
 
   static public enum GribDatasetType {
-    Best, Latest, Files
+    Best, Files, LatestFile
   }
 
   public static void setRegularizeDefault(boolean t) {
@@ -76,6 +77,7 @@ public class FeatureCollectionConfig {
 
   //////////////////////////////////////////////
 
+  public FeatureCollectionType type;
   public String name, spec, dateFormatMark, olderThan, timePartition;
   public UpdateConfig tdmConfig;
   public UpdateConfig updateConfig = new UpdateConfig();
@@ -91,9 +93,10 @@ public class FeatureCollectionConfig {
 
   // <collection spec="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$"
   //          name="WEST-CONUS_4km" olderThan="1 min" recheckAfter="15 min" />
-  public FeatureCollectionConfig(String name, String spec, String dateFormatMark, String olderThan, String recheckAfter,
+  public FeatureCollectionConfig(String name, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String recheckAfter,
                                  String timePartition, String useIndexOnlyS, Element innerNcml) {
     this.name = name;
+    this.type = fcType;
     this.spec = spec;
     this.dateFormatMark = dateFormatMark;
     this.olderThan = olderThan;
@@ -110,19 +113,38 @@ public class FeatureCollectionConfig {
 
   @Override
   public String toString() {
-    return "FeatureCollectionConfig{" +
-            "name='" + name + '\'' +
-            ", spec='" + spec + '\'' +
-            ", dateFormatMark='" + dateFormatMark + '\'' +
-            ", olderThan='" + olderThan + '\'' +
-            ", timePartition=" + timePartition +
-            ", updateConfig=" + updateConfig +
-            ", tdmConfig=" + tdmConfig +
-            ", protoConfig=" + protoConfig +
-            ", fmrcConfig=" + fmrcConfig +
-            ", pointConfig=" + pointConfig +
-            ", hasInnerNcml=" + (innerNcml != null) +
-            '}';
+    Formatter f = new Formatter();
+    f.format("name ='%s' type='%s'%n", name, type);
+    f.format("  spec='%s'%n", spec);
+    if (dateFormatMark != null)
+      f.format("  dateFormatMark ='%s'%n", dateFormatMark);
+    if (olderThan != null)
+      f.format("  olderThan =%s%n", olderThan);
+    if (timePartition != null)
+      f.format("  timePartition =%s%n", timePartition);
+    if (updateConfig != null)
+      f.format("  updateConfig =%s%n", updateConfig);
+    if (tdmConfig != null)
+      f.format("  tdmConfig =%s%n", tdmConfig);
+    if (protoConfig != null)
+      f.format("  protoConfig =%s%n", protoConfig);
+    f.format("  hasInnerNcml =%s%n", innerNcml != null);
+
+    switch (type) {
+      case GRIB:
+        f.format("  gribConfig =%s%n", gribConfig);
+        break;
+      case FMRC:
+        f.format("  fmrcConfig =%s%n", fmrcConfig);
+        break;
+      case Point:
+      case Station:
+      case Station_Profile:
+        f.format("  pointConfig =%s%n", pointConfig);
+        break;
+    }
+
+    return f.toString();
   }
 
   // <update startup="true" rescan="cron expr" trigger="allow" append="true"/>

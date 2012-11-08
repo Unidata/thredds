@@ -265,7 +265,8 @@ public class TimePartitionCollection extends MFileCollectionManager {
     TimePartitionCollectionManager curr = null;
     for (DatedMFile dmf : files) {
       if ((curr == null) || (!curr.endPartition.isAfter(dmf.cdate))) {
-        String name = collectionName+"_"+ cdf.toString(dmf.cdate);
+        // String name = collectionName+"_"+ cdf.toString(dmf.cdate);
+        String name = cdf.toString(dmf.cdate);
         curr = new TimePartitionCollectionManager(name, dmf, getRoot(), this.auxInfo);
         result.add(curr);
       }

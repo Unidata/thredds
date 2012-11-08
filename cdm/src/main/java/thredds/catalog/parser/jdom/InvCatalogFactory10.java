@@ -34,6 +34,7 @@
 package thredds.catalog.parser.jdom;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.util.PathAliasReplacement;
 import thredds.catalog.*;
 import thredds.crawlabledataset.*;
@@ -325,7 +326,13 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
   protected InvDatasetImpl readFeatureCollection( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {
     String name = dsElem.getAttributeValue("name");
     String path = dsElem.getAttributeValue("path");
-    String featureType = dsElem.getAttributeValue("featureType");
+    String fcTypeS = dsElem.getAttributeValue("featureType");
+
+    FeatureCollectionType fcType = FeatureCollectionType.valueOf(fcTypeS);
+    if (fcType == null) {
+      logger.error( "featureCollection "+name+" must have a valid FeatureCollectionType attribute, found '"+fcTypeS+"'");
+      return null;
+    }
 
     // collection element required
     Element collElem = dsElem.getChild( "collection", defNS );
@@ -350,7 +357,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
     String collName = (specName != null) ? specName : name;
     Element innerNcml = dsElem.getChild( "netcdf", ncmlNS );
-    FeatureCollectionConfig config = new FeatureCollectionConfig(collName, spec, dateFormatMark, olderThan, recheckAfter,
+    FeatureCollectionConfig config = new FeatureCollectionConfig(collName, fcType, spec, dateFormatMark, olderThan, recheckAfter,
             timePartition, useIndexOnly, innerNcml);
 
     Element tdmElem = dsElem.getChild( "tdm", defNS );
@@ -404,12 +411,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       config.gribConfig.configFromXml(gribConfig, defNS);
     }
 
-    FeatureType ft = FeatureType.getType(featureType);
-    if (ft == null) {
-      logger.error( "featureCollection "+name+" must have a valid featureType attribute, found '"+featureType+"'");
-      return null;
-    }
-    InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory( parent, name, path, ft, config);
+    InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory( parent, name, path, fcType, config);
     if (ds == null) {
       logger.error( "featureCollection "+name+" has fatal error ");
       return null;

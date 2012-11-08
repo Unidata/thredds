@@ -472,8 +472,8 @@
        <xsd:simpleType>
          <xsd:restriction base="xsd:token">
            <xsd:enumeration value="Best"/>
-           <xsd:enumeration value="Latest"/>
            <xsd:enumeration value="Files"/>
+           <xsd:enumeration value="LatestFile"/>
          </xsd:restriction>
        </xsd:simpleType>
      </xsd:union>

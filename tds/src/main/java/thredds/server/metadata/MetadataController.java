@@ -28,7 +28,7 @@ import java.util.Formatter;
 import java.util.List;
 
 @Controller
-@RequestMapping("/medadata")
+@RequestMapping("/metadata")
 public class MetadataController {
   private static Logger log = LoggerFactory.getLogger(MetadataController.class);
 

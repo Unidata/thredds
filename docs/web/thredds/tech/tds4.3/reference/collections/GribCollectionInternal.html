@@ -224,7 +224,7 @@ message Variable {
 <p>collection dataset <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km"> http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km</a></p>
 <p>best dataset <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection</a></p>
 <p>files catalog <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html</a></p>
-<p>&nbsp;</p>
+<p>latest http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Alaska_191km/files/latest.html</p>
 <h3>time partition</h3>
 <table width="793" border="1">
   <tr>
@@ -312,6 +312,7 @@ message Variable {
 </table>
 <p>&nbsp;</p>
 <hr />
+<h3>11/7/2012</h3>
 <h3>simple</h3>
 <pre>&lt;featureCollection name=&quot;GFS-CONUS_191km&quot; featureType=&quot;GRIB&quot; harvest=&quot;true&quot; path=&quot;grib/NCEP/GFS/CONUS_191km&quot;&gt;
   &lt;metadata inherited=&quot;true&quot;&gt;
@@ -332,183 +333,201 @@ message Variable {
     <td>overall</td>
     <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
     <td>catalog</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html</a></td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html</td>
   </tr>
   <tr>
     <td>collection</td>
     <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
     <td>dataset</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg">cat?</a><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/collection">dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/collection</a></td>
+    <td>cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/collection</td>
   </tr>
   <tr>
     <td>best</td>
     <td>cat?<em>dataset</em>=path/<em>best</em></td>
     <td>dataset</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/best">cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/best</a></td>
-  </tr>
-  <tr>
-    <td>latest catalog X</td>
-    <td>cat/<em>latest.xml </em></td>
-    <td>resolver</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td>latest dataset X</td>
-    <td>cat?<em>dataset</em>=path/<em>latest</em></td>
-    <td>dataset</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/latest">cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/latest</a></td>
+    <td>cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/best</td>
   </tr>
   <tr>
     <td>files catalog</td>
     <td>path<em>/files/catalog.xml</em></td>
     <td>catalog</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html</a></td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html</td>
   </tr>
   <tr>
     <td>individual files</td>
     <td>fcat?<em>dataset</em>=path/<em>files</em>/filename</td>
     <td>dataset</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/files/GFS_Puerto_Rico_0p5deg_20111116_0000.grib2">fcat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/files/GFS_Puerto_Rico_0p5deg_20111116_0000.grib2</a></td>
+    <td>fcat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/files/GFS_Puerto_Rico_0p5deg_20111116_0000.grib2</td>
   </tr>
   <tr>
     <td>latest file catalog</td>
-    <td>fcat<em>/<em>latest.xml BC ?</em></em></td>
+    <td>path<em>/files/latest.xml</em></td>
     <td>catalog</td>
     <td><p>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.html</p>    </td>
   </tr>
 </table>
-<h3>time partition</h3>
-<p>path -&gt; path/partitionName</p>
-<table width="1551" border="1">
+<h3>groups</h3>
+<table width="1553" border="1">
   <tr>
     <th width="146" scope="col">dataset</th>
     <th width="296" scope="col">url</th>
     <th width="87" scope="col">type</th>
-    <th width="994" scope="col">example</th>
+    <th width="996" scope="col">example</th>
   </tr>
   <tr>
     <td>overall</td>
     <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
     <td>catalog</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html</a></td>
+    <td>http://localhost:8080/thredds/catalog/grib/carlosMoraga/catalog.html</td>
   </tr>
   <tr>
     <td>collection</td>
     <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
     <td>dataset</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg">cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg</a></td>
+    <td>cat?dataset=grib/carlosMoraga/collection</td>
   </tr>
   <tr>
-    <td>best</td>
-    <td>cat?<em>dataset</em>=path/<em>best</em></td>
+    <td>group best</td>
+    <td>cat?<em>dataset</em>=path/group/<em>best</em></td>
     <td>dataset</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/best">cat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/best</a></td>
+    <td>cat?dataset=grib/carlosMoraga/domain1/best</td>
   </tr>
   <tr>
-    <td>files catalog</td>
-    <td>path<em>/files/catalog.xml</em></td>
+    <td>group files catalog</td>
+    <td>path<em>/group/files/catalog.xml</em></td>
     <td>catalog</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html</a></td>
+    <td>http://localhost:8080/thredds/catalog/grib/carlosMoraga/domain1/files/catalog.html</td>
   </tr>
   <tr>
     <td>individual files</td>
-    <td>fcat?<em>dataset</em>=path/<em>files</em>/filename</td>
+    <td>fcat?<em>dataset</em>=path/group/<em>files</em>/filename</td>
     <td>dataset</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/catalog.html?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/files/GFS_Puerto_Rico_0p5deg_20111116_0000.grib2">fcat?dataset=grib/NCEP/GFS/Puerto_Rico_0p5deg/files/GFS_Puerto_Rico_0p5deg_20111116_0000.grib2</a></td>
+    <td>fcat?dataset=grib/carlosMoraga/files/ECMWF_GNERA_d0001.20121001</td>
   </tr>
   <tr>
-    <td>latest file</td>
-    <td>fcat<em>/<em>latest.xml BC ?</em></em></td>
-    <td>dataset</td>
-    <td><a href="http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.html">http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.html</a></td>
+    <td>latest file catalog</td>
+    <td>path<em>/</em>group<em>/files/<em>latest.xml</em></em></td>
+    <td>catalog</td>
+    <td><p>http://localhost:8080/thredds/catalog/grib/carlosMoraga/domain1/files/latest.html</p></td>
   </tr>
 </table>
-<p>&nbsp;</p>
-<hr />
 <h3>time partition</h3>
-<table width="793" border="1">
+<p>path -&gt; path/partitionName</p>
+<table width="1740" border="1">
   <tr>
-    <th width="129" scope="col">dataset</th>
-    <th width="259" scope="col">catalogRef</th>
-    <th width="157" scope="col">name</th>
-    <th width="220" scope="col">path</th>
-  </tr>
-  <tr>
-    <td>collection</td>
-    <td>path/<em>collection/catalog.xml</em></td>
-    <td>name</td>
-    <td>path/name<em>/collection</em></td>
-  </tr>
-  <tr>
-    <td>partitions</td>
-    <td>path/partitionName<em>/catalog.xml</em></td>
-    <td>partitionName</td>
-    <td>path/partitionName/<em>collection</em></td>
-  </tr>
-  <tr>
-    <td>individual files</td>
-    <td>path/partitionName/<em>files/catalog.xml</em></td>
-    <td>filename</td>
-    <td>path/<em>files</em>/filename</td>
-  </tr>
-</table>
-<table width="580" border="1">
-  <tr>
-    <th width="152" scope="col">dataset</th>
-    <th width="306" scope="col">url</th>
-    <th width="100" scope="col">type</th>
+    <th width="133" scope="col">dataset</th>
+    <th width="370" scope="col">url</th>
+    <th width="50" scope="col">type</th>
+    <th width="1159" scope="col">example</th>
   </tr>
   <tr>
     <td>overall</td>
     <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
     <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html</td>
   </tr>
   <tr>
     <td>collection</td>
-    <td>cat?<em>dataset</em>=path/<em>collection</em></td>
+    <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
     <td>dataset</td>
+    <td>cat?dataset=grib/NCEP/GFS/Global_0p5deg/collection</td>
   </tr>
   <tr>
-    <td>best</td>
-    <td>cat?<em>dataset</em>=path/<em>best</em></td>
+    <td>best overall</td>
+    <td>cat?<em>dataset</em>=path/<em>best </em></td>
     <td>dataset</td>
-  </tr>
-  <tr>
-    <td>latest</td>
-    <td>cat?<em>dataset</em>=path/<em>latest</em></td>
-    <td>dataset</td>
+    <td>cat?dataset=grib/NCEP/GFS/Global_0p5deg/best</td>
   </tr>
   <tr>
     <td>partition catalog</td>
-    <td>path/partitionName/<em>catalog.xml</em></td>
+    <td>server<em>://thredds/catalog</em>/path<em>/</em>partitionName<em>/catalog.xml</em></td>
     <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/20120518/catalog.html</td>
   </tr>
   <tr>
-    <td>partition dataset</td>
-    <td>pcat?<em>dataset</em>=partitionName</td>
+    <td>best in partition</td>
+    <td>pcat?<em>dataset</em>=path/partitionName/<em>best</em></td>
     <td>dataset</td>
+    <td>pcat?dataset=grib/NCEP/GFS/Global_0p5deg/20120518/best</td>
   </tr>
   <tr>
     <td>partition files catalog</td>
     <td>path/partitionName<em>/files/catalog.xml</em></td>
     <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/20120518/files/catalog.html </td>
   </tr>
   <tr>
-    <td>partition  files</td>
-    <td>fcat?dataset=path/<em>files</em>/filename</td>
+    <td>individual files</td>
+    <td>pfcat?<em>dataset</em>=path/<em>files</em>/filename</td>
     <td>dataset</td>
+    <td>pfcat?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20120518_0000.grib2</td>
+  </tr>
+  <tr>
+    <td>latest file catalog</td>
+    <td>path<em>/</em>partition<em>/files/<em>latest.xml</em></em></td>
+    <td>catalog</td>
+    <td><p>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/20120518/files/latest.html</p></td>
+  </tr>
+</table>
+<h3>time partition with groups</h3>
+<p>path -&gt; path/group/partition ??</p>
+<table width="1740" border="1">
+  <tr>
+    <th width="133" scope="col">dataset</th>
+    <th width="370" scope="col">url</th>
+    <th width="50" scope="col">type</th>
+    <th width="1159" scope="col">example</th>
+  </tr>
+  <tr>
+    <td>overall</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html</td>
+  </tr>
+  <tr>
+    <td>collection</td>
+    <td>cat?<em>dataset</em>=path/<em>collection (no access)</em></td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/NCEP/GFS/Global_0p5deg/collection</td>
+  </tr>
+  <tr>
+    <td>best overall</td>
+    <td>cat?<em>dataset</em>=path/<em>best </em></td>
+    <td>dataset</td>
+    <td>cat?dataset=grib/NCEP/GFS/Global_0p5deg/best</td>
+  </tr>
+  <tr>
+    <td>partition catalog</td>
+    <td>server<em>://thredds/catalog</em>/path<em>/</em>partitionName<em>/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/20120518/catalog.html</td>
+  </tr>
+  <tr>
+    <td>best in partition</td>
+    <td>pcat?<em>dataset</em>=path/partitionName/<em>best</em></td>
+    <td>dataset</td>
+    <td>pcat?dataset=grib/NCEP/GFS/Global_0p5deg/20120518/best</td>
+  </tr>
+  <tr>
+    <td>partition files catalog</td>
+    <td>path/partitionName<em>/files/catalog.xml</em></td>
+    <td>catalog</td>
+    <td>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/20120518/files/catalog.html </td>
+  </tr>
+  <tr>
+    <td>individual files</td>
+    <td>pfcat?<em>dataset</em>=path/<em>files</em>/filename</td>
+    <td>dataset</td>
+    <td>pfcat?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20120518_0000.grib2</td>
+  </tr>
+  <tr>
+    <td>latest file catalog</td>
+    <td>path<em>/</em>partition<em>/files/<em>latest.xml</em></em></td>
+    <td>catalog</td>
+    <td><p>http://localhost:8080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/20120518/files/latest.html</p></td>
   </tr>
 </table>
 <p>&nbsp;</p>
-<p>path =  grib/NCEP/GFS/Global_0p5deg</p>
-<p>dataset catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html</a></p>
-<p>collection  dataset = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg</a></p>
-<p>best dataset catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html</a> (WHY)</p>
-<p>best dataset = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg/collection</a></p>
-<p>partition catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html</a></p>
-<p>partition dataset = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/collection">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/collection</a></p>
-<p>partittion files catalog = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html</a></p>
-<p>partittion files  = <a href="http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121010_0000.grib2">http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121010_0000.grib2</a></p>
 <p></p>
 </body>
 </html>

@@ -2,6 +2,7 @@ package thredds.catalog;
 
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
@@ -37,12 +38,12 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   private final FeatureDatasetPoint fd;
   private final Set<FeatureCollectionConfig.PointDatasetType> wantDatasets;
 
-  public InvDatasetFcPoint(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
-    super(parent, name, path, featureType, config);
+  public InvDatasetFcPoint(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
+    super(parent, name, path, fcType, config);
 
     Formatter errlog = new Formatter();
     try {
-      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(name, featureType, dcm, errlog);
+      fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(name, fcType.getFeatureType(), dcm, errlog);
     } catch (Exception e) {
       // e.printStackTrace(); // not showing up in logs
       throw new RuntimeException("InvDatasetFcPoint", e);

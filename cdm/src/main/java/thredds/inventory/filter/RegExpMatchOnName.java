@@ -54,4 +54,9 @@ public  class RegExpMatchOnName implements MFileFilter {
       java.util.regex.Matcher matcher = this.pattern.matcher(file.getName());
       return matcher.matches();
     }
+
+  @Override
+  public String toString() {
+    return regExpString;
   }
+}

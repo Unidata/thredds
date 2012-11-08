@@ -3,6 +3,7 @@ package thredds.catalog;
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionManager;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -51,8 +52,8 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   private final Fmrc fmrc;
   private final Set<FeatureCollectionConfig.FmrcDatasetType> wantDatasets;
 
-  public InvDatasetFcFmrc(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
-    super(parent, name, path, featureType, config);
+  public InvDatasetFcFmrc(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
+    super(parent, name, path, fcType, config);
     tmi.setDataType( FeatureType.GRID); // override FMRC
     finish(); // ??
 

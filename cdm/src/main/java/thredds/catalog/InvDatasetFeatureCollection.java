@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -99,26 +100,26 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return buildCatalogServiceHref( path + "/" + what );
   }
 
-  static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
+  static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     InvDatasetFeatureCollection result = null;
-    if (featureType == FeatureType.FMRC)
-      result = new InvDatasetFcFmrc(parent, name, path, featureType, config);
+    if (fcType == FeatureCollectionType.FMRC)
+      result = new InvDatasetFcFmrc(parent, name, path, fcType, config);
 
-    else if (featureType == FeatureType.GRIB) {
+    else if (fcType == FeatureCollectionType.GRIB) {
       // use reflection to decouple from grib.jar
       try {
         Class c = InvDatasetFeatureCollection.class.getClassLoader().loadClass("thredds.catalog.InvDatasetFcGrib");
       // public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
-        Constructor ctor = c.getConstructor(InvDatasetImpl.class, String.class, String.class, FeatureType.class, FeatureCollectionConfig.class);
-        result = (InvDatasetFeatureCollection) ctor.newInstance(parent, name, path, featureType, config);
+        Constructor ctor = c.getConstructor(InvDatasetImpl.class, String.class, String.class, FeatureCollectionType.class, FeatureCollectionConfig.class);
+        result = (InvDatasetFeatureCollection) ctor.newInstance(parent, name, path, fcType, config);
 
       } catch (Throwable e) {
         logger.error("Failed to open "+name+ " path= "+path, e);
         return null;
       }
 
-    } else if (featureType.isPointFeatureType()) {
-      result =  new InvDatasetFcPoint(parent, name, path, featureType, config);
+    } else  {
+      result =  new InvDatasetFcPoint(parent, name, path, fcType, config);
     }
 
     if (result != null) {
@@ -162,7 +163,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   // from the config catalog
   protected final String path;
-  protected final FeatureType featureType;
+  protected final FeatureCollectionType fcType;
   protected final FeatureCollectionConfig config;
   protected final String topDirectory;
   protected CollectionManager dcm; // defines the collection of datasets in this feature collection; actually final after subclass constructor is done.
@@ -171,11 +172,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected State state;
   protected final Object lock = new Object();
 
-  protected InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
+  protected InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, FeatureCollectionType fcType, FeatureCollectionConfig config) {
     super(parent, name, buildCatalogServiceHref( path) );
     this.path = path;
-    this.featureType = featureType;
-    this.getLocalMetadataInheritable().setDataType(featureType);
+    this.fcType = fcType;
+    this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
 
     this.config = config;
 

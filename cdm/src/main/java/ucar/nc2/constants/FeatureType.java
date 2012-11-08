@@ -125,7 +125,6 @@ public enum FeatureType {
    */
   STATION_RADIAL,
   FMRC,
-  GRIB,
   UGRID, // unstructured grids
 
   /**

@@ -84,7 +84,7 @@ public class Grib1CollectionPanel extends JPanel {
   public Grib1CollectionPanel(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
 
-    AbstractButton xmlButt = BAMutil.makeButtcon("Info", "generate gds xml", false);
+    AbstractButton xmlButt = BAMutil.makeButtcon("Information", "generate gds xml", false);
     xmlButt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
@@ -287,6 +287,46 @@ public class Grib1CollectionPanel extends JPanel {
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
+  public void showCollection(Formatter f) {
+    if (dcm == null) {
+      if (spec == null) return;
+      dcm = scanCollection(spec, f);
+      if (dcm == null) return;
+    }
+
+    // just a list of the files
+    f.format("dcm = %s%n", dcm);
+    for (MFile mfile : dcm.getFiles()) {
+      f.format("  %s%n", mfile.getPath());
+    }
+
+    // divided by group
+    Map<Integer, Set<Integer>> groups = new HashMap<Integer, Set<Integer>>();
+    for (Object o : param1BeanTable.getBeans()) {
+      ParameterBean p = (ParameterBean) o;
+      Set<Integer> group = groups.get(p.getGds());
+      if (group == null) {
+        group = new TreeSet<Integer>();
+        groups.put(p.getGds(), group);
+      }
+      for (RecordBean r : p.getRecordBeans())
+        group.add(r.gr.getFile());
+    }
+
+    for (Object o : gds1Table.getBeans()) {
+      Gds1Bean gds = (Gds1Bean) o;
+      Set<Integer> group = groups.get(gds.getHash());
+      f.format("%nGroup %s %n", gds.getGridName());
+      if (group == null) continue;
+      Iterator<Integer> iter = group.iterator();
+      while (iter.hasNext()) {
+        int fileno = iter.next();
+        f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
+      }
+      f.format("%n");
+    }
+  }
+
   /*
   <gribConfig datasetTypes="Collection Files" >
 2)   <gdsHash from="-2121584860" to="28944332"/>
@@ -313,7 +353,6 @@ public class Grib1CollectionPanel extends JPanel {
     }
     f.format("</gribConfig>%n");
   }
-
 
   public boolean writeIndex(Formatter f) throws IOException {
     MFileCollectionManager dcm = scanCollection(spec, f);

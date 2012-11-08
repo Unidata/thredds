@@ -39,7 +39,6 @@ package ucar.nc2.ft;
  * @since Mar 20, 2008
  */
 public interface FeatureCollection {
-
   /**
    * Get the name of this feature collection.
    * @return the name of this feature collection
