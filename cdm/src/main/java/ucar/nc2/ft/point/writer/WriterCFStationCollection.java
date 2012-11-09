@@ -174,6 +174,9 @@ public class WriterCFStationCollection  extends CFPointWriter {
 
   private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
     String coordNames = latName + " " + lonName + " " + altName + " " + timeName;
+    if(!useAlt){
+    	coordNames = latName + " " + lonName + " " + timeName;
+    }
 
     // find all dimensions needed by the data variables
     for (VariableSimpleIF var : dataVars) {
@@ -190,6 +193,7 @@ public class WriterCFStationCollection  extends CFPointWriter {
     // find all variables already in use 
     List<VariableSimpleIF> useDataVars = new ArrayList<VariableSimpleIF>(dataVars.size());
     for (VariableSimpleIF var : dataVars) {
+      
       if (writer.findVariable(var.getShortName()) == null) useDataVars.add(var);
     }
 

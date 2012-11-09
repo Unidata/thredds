@@ -30,7 +30,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 class XMLPointDataWriter implements PointDataWriter {
 
 	static private Logger log = LoggerFactory.getLogger(XMLPointDataWriter.class);
-	
+
 	private Map<String,List<String>> allVars;	
 	private Map<String, GridAsPointDataset> gridAsPointDatasets=new HashMap<String, GridAsPointDataset>();	
 	private XMLStreamWriter xmlStreamWriter;
@@ -39,20 +39,18 @@ class XMLPointDataWriter implements PointDataWriter {
 
 		xmlStreamWriter = createXMLStreamWriter(os);
 	}	
-	
+
 	public static XMLPointDataWriter createXMLPointDataWriter(OutputStream os){
 		return new XMLPointDataWriter(os);
 	}
-	
-	//@Override
-	//public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, CoordinateAxis1D zAxis) {
+
 	public boolean header(Map<String, List<String>> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point) {
-		
+
 		allVars = vars; 
 		for(String key : vars.keySet() ){
 			gridAsPointDatasets.put(key, NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(key)	)  );
 		}		
-		
+
 		boolean headerWritten = false;
 		try {
 			xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
@@ -66,13 +64,12 @@ class XMLPointDataWriter implements PointDataWriter {
 
 		return headerWritten;
 	}
-	
 
-	//private boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
+
 	private boolean write(List<String> groupsKeys,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
-		
+
 		boolean allDone = true;
-		
+
 		//List<String> keys =new ArrayList<String>(groupedVars.keySet());
 		//loop over variable groups
 		//for(String key : keys){
@@ -95,20 +92,20 @@ class XMLPointDataWriter implements PointDataWriter {
 						/////Fix axis!!!!
 						if(verticalAxisForGroup.getCoordValues().length ==1  )
 							vertCoord =NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, vertCoord);
-						
+
 						allDone = allDone && write(varsGroup, gridDataset, gap, date, point, vertCoord, verticalAxisForGroup.getUnitsString() );
-						
+
 					}
 				}				
-				
+
 			}			
-			
+
 		}
 		return allDone;
 	}	
-	
+
 	public boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord){
-		
+
 		//loop over wDates
 		CalendarDate date;
 		Iterator<CalendarDate> it = wDates.iterator();
@@ -119,20 +116,20 @@ class XMLPointDataWriter implements PointDataWriter {
 			//pointRead = write(groupedVars, gds, point, vertCoord);
 			pointRead = write(keysAsList, gds, point, vertCoord);
 		}else{
-		while( pointRead && it.hasNext() ){
-			date = it.next();
-			//pointRead = write(groupedVars, gds, date, point, vertCoord);
-			pointRead = write(keysAsList , gds, date, point, vertCoord);
-		}		
+			while( pointRead && it.hasNext() ){
+				date = it.next();
+				//pointRead = write(groupedVars, gds, date, point, vertCoord);
+				pointRead = write(keysAsList , gds, date, point, vertCoord);
+			}		
 		}
 		return pointRead;
 	}	
 
 	//private boolean write(Map<String, List<String>> groupedVars, GridDataset gds, LatLonPoint point, Double targetLevel) {
 	private boolean write(List<String> groupsKeys, GridDataset gds, LatLonPoint point, Double targetLevel) {
-		
+
 		boolean allDone = true;
-		
+
 		//List<String> keys =new ArrayList<String>(groupedVars.keySet());
 		//loop over variable groups
 		for(String key : groupsKeys){
@@ -155,19 +152,19 @@ class XMLPointDataWriter implements PointDataWriter {
 						/////Fix axis!!!!
 						if(verticalAxisForGroup.getCoordValues().length ==1  )
 							vertCoord =NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, vertCoord);
-						
+
 						allDone = allDone && write(varsGroup, gds, gap, point, vertCoord, verticalAxisForGroup.getUnitsString() );
-						
+
 					}
 				}				
-				
+
 			}			
-			
+
 		}
 		return allDone;		
-		
+
 	}
-	
+
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double targetLevel, String zUnits) {
 
 		Iterator<String> itVars = vars.iterator();
@@ -182,32 +179,48 @@ class XMLPointDataWriter implements PointDataWriter {
 			while (itVars.hasNext()) {
 				String varName = itVars.next();
 				GridDatatype grid = gridDataset.findGridDatatype(varName);
-								
-				if (gap.hasTime(grid, date) && gap.hasVert(grid, targetLevel)) {
-					GridAsPointDataset.Point p = gap.readData(grid, date, targetLevel, point.getLatitude(),	point.getLongitude());
-					if (contVars == 0) {
-						writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
-						attributes.put("name", "vertCoord");
-						attributes.put("units", zUnits);
-						writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.z).toString());
+				//Handling the ensemble dimension...
+				CoordinateAxis1D ensembleAxis = grid.getCoordinateSystem().getEnsembleAxis();
+				boolean hasEnsembleDim = false;
+				double[] ensCoords = new double[]{-1};
+				if(ensembleAxis !=null ){
+					ensCoords = ensembleAxis.getCoordValues();
+					hasEnsembleDim = true;
+				}
+
+				for(double ensCoord : ensCoords){
+
+					if (gap.hasTime(grid, date) && gap.hasVert(grid, targetLevel)) {
+						GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, targetLevel, point.getLatitude(),	point.getLongitude());
+
+						if (contVars == 0) {
+							writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+							attributes.put("name", "vertCoord");
+							attributes.put("units", zUnits);						
+							writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.z).toString());
+							attributes.clear();
+						}
+						attributes.put("name", varName);
+						attributes.put("units", grid.getUnitsString());
+						if(hasEnsembleDim)
+							//attributes.put("ensMember", Integer.valueOf((int)ensCoord).toString() );
+							attributes.put("ensMember", Double.valueOf(p.ens).toString() );
+
+						writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.dataValue).toString());
+						attributes.clear();
+
+					} else {
+						// write missingvalues!!!
+						if (contVars == 0) {
+							writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
+						}
+						attributes.put("name", varName);
+						attributes.put("units", grid.getUnitsString());
+						writeDataTag(xmlStreamWriter, attributes, Double.valueOf(gap.getMissingValue(grid)).toString());
 						attributes.clear();
 					}
-					attributes.put("name", varName);
-					attributes.put("units", grid.getUnitsString());
-					writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.dataValue).toString());
-					attributes.clear();
-
-				} else {
-					// write missingvalues!!!
-					if (contVars == 0) {
-						writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
-					}
-					attributes.put("name", varName);
-					attributes.put("units", grid.getUnitsString());
-					writeDataTag(xmlStreamWriter, attributes, Double.valueOf(gap.getMissingValue(grid)).toString());
-					attributes.clear();
+					contVars++;
 				}
-				contVars++;
 			}
 			xmlStreamWriter.writeEndElement(); //Closes point
 			pointDone = true;
@@ -219,7 +232,7 @@ class XMLPointDataWriter implements PointDataWriter {
 
 		return pointDone;
 	}
-	
+
 	/**
 	 * 
 	 * Write method when the grid has no time axis but has vertical axis
@@ -246,7 +259,7 @@ class XMLPointDataWriter implements PointDataWriter {
 			while (itVars.hasNext()) {
 				String varName = itVars.next();
 				GridDatatype grid = gridDataset.findGridDatatype(varName);
-								
+
 				if ( gap.hasVert(grid, targetLevel)) {
 					GridAsPointDataset.Point p = gap.readData(grid, null, targetLevel, point.getLatitude(),	point.getLongitude());
 					if (contVars == 0) {
@@ -283,7 +296,7 @@ class XMLPointDataWriter implements PointDataWriter {
 
 		return pointDone;
 	}	
-	
+
 	/**
 	 * 
 	 * Write method when the grid has no time axis and no vertical axis
@@ -295,7 +308,7 @@ class XMLPointDataWriter implements PointDataWriter {
 	 * @return
 	 */
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, LatLonPoint point){
-		
+
 		Iterator<String> itVars = vars.iterator();
 		boolean pointDone=false;
 		try {
@@ -328,9 +341,9 @@ class XMLPointDataWriter implements PointDataWriter {
 		}
 
 		return pointDone;
-		
+
 	}
-	
+
 	/**
 	 * 
 	 * Write method for grids with time axis but not vertical level
@@ -343,7 +356,7 @@ class XMLPointDataWriter implements PointDataWriter {
 	 * @return
 	 */
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point){
-		
+
 		Iterator<String> itVars = vars.iterator();
 		boolean pointDone=false;
 		try {
@@ -357,28 +370,44 @@ class XMLPointDataWriter implements PointDataWriter {
 				String varName = itVars.next();
 				GridDatatype grid = gridDataset.findGridDatatype(varName);
 
-				if (gap.hasTime(grid, date) ) {
-					GridAsPointDataset.Point p = gap.readData(grid, date, point.getLatitude(),	point.getLongitude());
-					if (contVars == 0) {
-						writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+				//Handling the ensemble dimension...
+				CoordinateAxis1D ensembleAxis = grid.getCoordinateSystem().getEnsembleAxis();
+				boolean hasEnsembleDim = false;
+				double[] ensCoords = new double[]{-1};
+				if(ensembleAxis !=null ){
+					ensCoords = ensembleAxis.getCoordValues();
+					hasEnsembleDim = true;
+				}
+
+				for(double ensCoord : ensCoords){				
+
+					if (gap.hasTime(grid, date) ) {
+						GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, -1, point.getLatitude(),	point.getLongitude());
+						if (contVars == 0) {
+							writeCoordinates(xmlStreamWriter, Double.valueOf(p.lat), Double.valueOf(p.lon));
+							attributes.clear();
+						}
+						attributes.put("name", varName);
+						attributes.put("units", grid.getUnitsString());
+						if(hasEnsembleDim)
+							attributes.put("ensMember", Double.valueOf(p.ens).toString() );
+						
+							writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.dataValue).toString());
+						
+						attributes.clear();
+
+					} else {
+						// write missingvalues!!!
+						if (contVars == 0) {
+							writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
+						}
+						attributes.put("name", varName);
+						attributes.put("units", grid.getUnitsString());
+						writeDataTag(xmlStreamWriter, attributes, Double.valueOf(gap.getMissingValue(grid)).toString());
 						attributes.clear();
 					}
-					attributes.put("name", varName);
-					attributes.put("units", grid.getUnitsString());
-					writeDataTag(xmlStreamWriter, attributes, Double.valueOf(p.dataValue).toString());
-					attributes.clear();
-
-				} else {
-					// write missingvalues!!!
-					if (contVars == 0) {
-						writeCoordinates(xmlStreamWriter, Double.valueOf(point.getLatitude()), Double.valueOf(point.getLongitude()));
-					}
-					attributes.put("name", varName);
-					attributes.put("units", grid.getUnitsString());
-					writeDataTag(xmlStreamWriter, attributes, Double.valueOf(gap.getMissingValue(grid)).toString());
-					attributes.clear();
+					contVars++;
 				}
-				contVars++;
 			}
 			xmlStreamWriter.writeEndElement(); //Closes point
 			pointDone = true;
@@ -389,10 +418,10 @@ class XMLPointDataWriter implements PointDataWriter {
 		}
 
 		return pointDone;
-		
+
 	}
-	
-	
+
+
 
 	@Override
 	public boolean trailer() {
@@ -407,7 +436,7 @@ class XMLPointDataWriter implements PointDataWriter {
 
 		return endDocument;
 	}
-	
+
 	@Override
 	public HttpHeaders getResponseHeaders(){
 		return new HttpHeaders();
@@ -417,7 +446,7 @@ class XMLPointDataWriter implements PointDataWriter {
 
 		XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
 		XMLStreamWriter writer = null;
-	
+
 		try {
 			writer = outputFactory.createXMLStreamWriter(os, "UTF-8");
 		} catch (XMLStreamException xse) {
@@ -427,15 +456,15 @@ class XMLPointDataWriter implements PointDataWriter {
 		return writer;
 
 	}
-	
+
 	@Override
 	public void setHTTPHeaders(GridDataset gds){
-		
+
 	}
 
 	private void writeDataTag(XMLStreamWriter writer,
 			Map<String, String> attributes, String content)
-			throws XMLStreamException {
+					throws XMLStreamException {
 
 		writer.writeStartElement("data");
 		Set<String> attNames = attributes.keySet();

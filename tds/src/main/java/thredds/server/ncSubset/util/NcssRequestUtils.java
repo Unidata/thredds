@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import thredds.server.config.TdsContext;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
 import thredds.server.ncSubset.exception.TimeOutOfWindowException;
+import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
@@ -105,13 +106,15 @@ public final class NcssRequestUtils implements ApplicationContextAware{
         
         //And wantedVars must be in the dataset 
         for(String var : wantedVars){        	
-        	VariableEnhanced ve = gds.findGridDatatype(var).getVariable();        	
-        	/*List<Dimension> lDims =ve.getDimensions();
-        	StringBuilder dims = new StringBuilder("");
-        	for(Dimension d: lDims){
-        		dims.append(" ").append(d.getName());
-        	}*/
+        	VariableEnhanced ve = gds.findGridDatatype(var).getVariable();
+        	
+        	//List<Dimension> lDims =ve.getDimensions();
+        	//StringBuilder dims = new StringBuilder("");
+        	//for(Dimension d: lDims){
+        	//	dims.append(" ").append(d.getName());
+        	//}
             String dims = ""; // always scalar ????
+        	
             VariableSimpleIF want = new VariableDS( ncfile, null, null, ve.getShortName(), ve.getDataType(), dims, ve.getUnitsString(), ve.getDescription());
             
             varList.add( want);        	

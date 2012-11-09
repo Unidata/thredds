@@ -20,7 +20,7 @@ public class GridServletTest
     // ToDo LOOK Convert GridServlet to use Spring MVC Controller and TdsConfig
     GridServlet.setContextPath( "/thredds" );
     GridServlet.setServletPath( "/ncss/grid" );
-    GridServlet.setServletCachePath( "/ncSubset/cache" );
+    GridServlet.setServletCachePath( "/ncServer/cache" );
   }
 
   @Test

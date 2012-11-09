@@ -90,7 +90,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 	private double lastTimeCoordValue=-1; //Keep track of the last written time
 	private int recno = -1; // Keeps track of the record number (profile)
 	private int[] origin = new int[1];
-	private Variable stnName, stnDesc, lat, lon; 
+	private Variable stnName, stnDesc, lat, lon, ensVar; 
 
 	WriterCFTimeSeriesProfileCollection(String fileOut,
 			List<Attribute> atts) throws IOException {
@@ -106,12 +106,11 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 		//--> Create dimensions and variables:
 		//
 		// Dimensions:
-		//  - profile: unlimited
+		//  - profile: 
 		//  - vertical dimensions: one for each different vertical level: zn
 		//  - station (we only have station but keep this dimension)
 
 		// add the dimensions
-		//Dimension profile = writer.addUnlimitedDimension(PROFILE_DIM_NAME);
 		Dimension profile = writer.addDimension(null,PROFILE_DIM_NAME, timeDimLength);
 		Dimension station = writer.addDimension(null, STATION_DIM_NAME, stns.size());
 
@@ -121,16 +120,32 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 		List<Dimension> dims = new ArrayList<Dimension>();		
 		dims.add(station);	    	    
 		dims.add(profile);
+        
+		List<Dimension> timeDims = new ArrayList<Dimension>();
+		timeDims.addAll(dims);
 
-		//Vertical dimensions and variables
-		Set<String> keys = groupedVars.keySet();
-
+		List<String> keys = new ArrayList<String>(groupedVars.keySet());
+		//Ensemble dimension (all variables should have it, if present)...
+		CoordinateAxis1D ensAxis = gds.findGridDatatype( groupedVars.get(keys.get(0)).get(0)).getCoordinateSystem().getEnsembleAxis(); 
+		if(ensAxis != null ){
+			Dimension d = writer.addDimension(null, ensAxis.getShortName(), ensAxis.getCoordValues().length);
+			dims.add(d);
+			List<Dimension> ensDim = new ArrayList<Dimension>();
+			ensDim.add(d);
+			ensVar = writer.addVariable(null, ensAxis.getShortName() , ensAxis.getDataType() ,  ensDim );
+			
+		}		
+		
+		//Vertical dimensions and variables				 
 		for(String key : keys){
 			List<String> vars = groupedVars.get(key);    	
-			CoordinateAxis1D zAxis = gds.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
+						
 			List<Dimension> tempDims = new ArrayList<Dimension>();
 			tempDims.addAll(dims);
 			String coordinates ="time "+lonName+" "+latName;
+						
+			//Vertical
+			CoordinateAxis1D zAxis = gds.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
 			if(zAxis != null){
 				Dimension d = writer.addDimension(null, zAxis.getShortName(), zAxis.getCoordValues().length);							
 				tempDims.add(d);    		
@@ -184,7 +199,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 		writer.addVariableAttribute(lon, new Attribute(CDM.LONG_NAME, "profile longitude"));	    
 
 		//TIME
-		Variable time = writer.addVariable(null, timeName, DataType.DOUBLE, dims);
+		Variable time = writer.addVariable(null, timeName, DataType.DOUBLE, timeDims);
 		writer.addVariableAttribute(time, new Attribute(CDM.UNITS, timeUnit.getUnitsString()));
 		writer.addVariableAttribute(time, new Attribute(CDM.LONG_NAME, "time of measurement"));	    
 
@@ -243,7 +258,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 			for( Member m : sm.getMembers() ){
 
 				Variable v = writer.findVariable(m.getName());
-
+						
 				if(v != null && !v.getShortName().equals("time")){
 					//DataType v_dt =v.getDataType();
 					DataType m_dt =m.getDataType();
@@ -274,8 +289,6 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 
 	void writeRecord(String profileName, double timeCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata, int vIndex)  throws IOException{
 		trackBB(loc, obsDate);
-
-
 
 		try{
 
@@ -318,14 +331,123 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 
 			}	    	
 
+		}catch(InvalidRangeException ire){
+			log.error("Error writing data: "+ire); 
+		}	
+	}
+	
+	void writeRecord(String profileName, double timeCoordValue, double ensCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata, int vIndex)  throws IOException{
+		trackBB(loc, obsDate);
+
+		try{
+
+			updateRecno(timeCoordValue);
+			// write the recno record
+			origin[0] = recno;
+
+			int[] tmp4D= new int[4];					
+			tmp4D[0] = 0; //Station -> one single station!!
+			tmp4D[1] = recno;
+			tmp4D[2] =  (int) ensCoordValue;
+			tmp4D[3] = vIndex;			
+					
+			StructureMembers sm = sdata.getStructureMembers();
+			for( Member m : sm.getMembers() ){
+
+				Variable v = writer.findVariable(m.getName());
+
+				//Its a variable --> 4D (profile, ensemble, station, z)
+				if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time")){
+
+					DataType m_dt =m.getDataType();
+
+					if(m_dt == DataType.DOUBLE ){
+						Double data = m.getDataArray().getDouble(0);
+						//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+						ArrayDouble.D4 tmpArray = new ArrayDouble.D4(1,1,1,1);
+						tmpArray.setDouble(0, data);
+						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+						writer.write( writer.findVariable(m.getName()) , tmp4D, tmpArray );
+					}
+
+					if(m_dt == DataType.FLOAT){
+						Float data = m.getDataArray().getFloat(0);
+						ArrayFloat.D4 tmpArray = new ArrayFloat.D4(1,1,1,1);
+						tmpArray.setFloat(0, data);
+						writer.write( writer.findVariable(m.getName()) , tmp4D, tmpArray );
+					}					
+
+				}
+
+			}	    	
 
 		}catch(InvalidRangeException ire){
 			log.error("Error writing data: "+ire); 
 		}	
-
-
 	}
+	
+	
+	void writeRecord( double timeCoordValue, double ensCoordValue, CalendarDate obsDate, EarthLocation loc, StructureData sdata)  throws IOException{
+		trackBB(loc, obsDate);
 
+		try{
+
+			updateRecno(timeCoordValue);
+			// write the recno record
+			origin[0] = recno;
+
+			int[] tmp3D= new int[3];					
+			tmp3D[0] = 0; //Station -> one single station!!
+			tmp3D[1] = recno;
+			tmp3D[2] =  (int) ensCoordValue;			
+					
+			StructureMembers sm = sdata.getStructureMembers();
+			for( Member m : sm.getMembers() ){
+
+				Variable v = writer.findVariable(m.getName());
+
+				//Its a variable --> 3D (profile, ensemble, station)
+				if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time")){
+
+					DataType m_dt =m.getDataType();
+
+					if(m_dt == DataType.DOUBLE ){
+						Double data = m.getDataArray().getDouble(0);
+						//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+						ArrayDouble.D3 tmpArray = new ArrayDouble.D3(1,1,1);
+						tmpArray.setDouble(0, data);
+						//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
+					}
+
+					if(m_dt == DataType.FLOAT){
+						Float data = m.getDataArray().getFloat(0);
+						ArrayFloat.D3 tmpArray = new ArrayFloat.D3(1,1,1);
+						tmpArray.setFloat(0, data);
+						writer.write( writer.findVariable(m.getName()) , tmp3D, tmpArray );
+					}					
+
+				}
+
+			}	    	
+
+		}catch(InvalidRangeException ire){
+			log.error("Error writing data: "+ire); 
+		}	
+	}	
+	
+
+	void writeEnsCoord(int ensIdx, double ensCoord) throws IOException{
+		
+		ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+		tmpArray.setDouble(0, ensCoord);
+		int[] idx = new int[]{ensIdx};
+		try {			
+			writer.write( ensVar , idx, tmpArray );
+		}catch(InvalidRangeException ire){
+			log.error("Error writing data: "+ire); 
+		}		
+	}
 
 	private void  updateRecno( double timeCoordValue ) throws IOException, InvalidRangeException{
 
