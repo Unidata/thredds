@@ -214,7 +214,8 @@ public abstract class GribCollection implements FileCacheable {
    */
   public File getIndexFile() {
     if (indexFile == null) {
-      File f = new File(directory, name + IDX_EXT);
+      String nameNoBlanks = StringUtil2.replace(name, ' ', "_");
+      File f = new File(directory, nameNoBlanks + IDX_EXT);
       indexFile = DiskCache.getFileStandardPolicy(f.getPath());
     }
     return indexFile;

@@ -259,6 +259,10 @@ public abstract class TimePartition extends GribCollection {
     return partitionMap.get(name);
   }
 
+  public Partition getPartitionLast() {
+    return partitions.get( partitions.size()-1);
+  }
+
   public void cleanup() throws IOException {
     if (partitions == null) return;
     for (TimePartition.Partition p : partitions)

@@ -52,6 +52,8 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Element;
 
+import javax.swing.plaf.metal.MetalTheme;
+
 /**
  * Metadata for "enhanced catalogs", type THREDDS.
  *
@@ -75,7 +77,7 @@ public class ThreddsMetadata {
 
   // singles
   protected GeospatialCoverage gc;
-  protected DateRange timeCoverage;
+  protected CalendarDateRange timeCoverage;
   //protected CalendarDateRange cdateCoverage;
   protected String authorityName, serviceName;
   protected FeatureType dataType;
@@ -124,7 +126,7 @@ public class ThreddsMetadata {
 
     // LOOK! should be copies ??!!
     if (gc == null) gc = tmd.getGeospatialCoverage();
-    if (timeCoverage == null) timeCoverage = tmd.getTimeCoverage();
+    if (timeCoverage == null) timeCoverage = tmd.getCalendarDateCoverage();
     if (serviceName == null) serviceName = tmd.getServiceName();
     if (dataType == null) dataType = tmd.getDataType();
     if (dataSize == 0.0) dataSize = tmd.getDataSize();
@@ -363,7 +365,7 @@ public class ThreddsMetadata {
    * @param tc set TimeCoverage to this
    */
   public void setTimeCoverage(DateRange tc) {
-    this.timeCoverage = tc;
+    this.timeCoverage = CalendarDateRange.of(tc);
   }
 
   /**
@@ -371,21 +373,21 @@ public class ThreddsMetadata {
    * @param cdc set CalendarDateRange to this
    */
   public void setTimeCoverage(CalendarDateRange cdc) {
-    this.timeCoverage = cdc.toDateRange();
+    this.timeCoverage = cdc;
   }
 
   /**
-   * @return TimeCoverage element
+   * @return TimeCoverage element  as DateRange
    */
   public DateRange getTimeCoverage() {
-    return timeCoverage;
+    return timeCoverage == null ? null : timeCoverage.toDateRange();
   }
 
   /**
    * @return TimeCoverage element as CalendarDateRange
    */
   public CalendarDateRange getCalendarDateCoverage() {
-    return CalendarDateRange.of(timeCoverage);
+    return timeCoverage;
   }
 
   /**
@@ -942,11 +944,8 @@ public class ThreddsMetadata {
     private String zpositive = "up";
     private List<Vocab> names = new ArrayList<Vocab>(); // Vocab
 
-    // need no-arg constructor for bean handling LOOK ranges should be null ?
+    // need no-arg constructor for bean handling
     public GeospatialCoverage() {
-      //this.eastwest = new Range(defaultEastwest);
-      //this.northsouth = new Range(defaultNorthsouth);
-      //this.updown = new Range(defaultUpdown);
     }
 
     public GeospatialCoverage(Range eastwest, Range northsouth, Range updown, List<Vocab> names, String zpositive) {
@@ -962,6 +961,11 @@ public class ThreddsMetadata {
           if (elem.equalsIgnoreCase("global")) isGlobal = true;
         }
       }
+    }
+
+    public void extend(GeospatialCoverage gc) {
+      this.eastwest.extend(gc.getEastWestRange());
+      this.northsouth.extend(gc.getNorthSouthRange());
     }
 
     public boolean isEmpty() {
@@ -1389,6 +1393,12 @@ public class ThreddsMetadata {
 
     public boolean hasResolution() {
       return (resolution != 0.0) && !Double.isNaN(resolution);
+    }
+
+    public void extend(Range r) {
+      double stop = Math.max(this.start+this.size, r.start+r.size);
+      this.start = Math.min(this.start, r.start);
+      this.size = this.start - stop;
     }
 
     public boolean equals(Object o) {

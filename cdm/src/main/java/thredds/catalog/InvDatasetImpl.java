@@ -237,14 +237,14 @@ public class InvDatasetImpl extends InvDataset {
     }
 
     if (tc == null) {
-      DateRange ttc = tmd.getTimeCoverage();
+      CalendarDateRange ttc = tmd.getCalendarDateCoverage();
       if (ttc != null) {
         tc = ttc;
       }
     }
 
     if (tc == null)
-      tc = tmd.getTimeCoverage();
+      tc = tmd.getCalendarDateCoverage();
 
     for (InvProperty item : tmd.getProperties()) {
       if (!properties.contains(item)) { // dont add properties with same name
@@ -554,6 +554,11 @@ public class InvDatasetImpl extends InvDataset {
 
   public void setGeospatialCoverage(ThreddsMetadata.GeospatialCoverage gc) {
     tm.setGeospatialCoverage(gc);
+    hashCode = 0;
+  }
+
+  public void setTimeCoverage(CalendarDateRange tc) {
+    tm.setTimeCoverage(tc);
     hashCode = 0;
   }
 
