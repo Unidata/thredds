@@ -27,7 +27,8 @@ public final class PointDataParameters {
 
 			vars = new ArrayList<List<String>>();			
 			//Variables with no vertical level
-			vars.add(Arrays.asList(new String[]{"Pressure", "Pressure_reduced_to_MSL"}));			
+			vars.add(Arrays.asList(new String[]{"Pressure", "Pressure_reduced_to_MSL"}));
+			//vars.add(Arrays.asList(new String[]{"Pressure"}));
 			//Variables with one vertical level
 			vars.add(Arrays.asList(new String[]{"Relative_humidity_height_above_ground", "Temperature_height_above_ground"}));			
 			//Variables with multiple vertical levels (hPa)
