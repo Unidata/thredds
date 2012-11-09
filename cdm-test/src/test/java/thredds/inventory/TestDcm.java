@@ -33,6 +33,7 @@
 package thredds.inventory;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.TestDir;
 
@@ -89,7 +90,10 @@ public class TestDcm {
 
   //@Test
   public void testScanFromConfig() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", TestDir.cdmUnitTestDir + "agg/updating/.*nc$",
+    //public FeatureCollectionConfig(String name, FeatureCollectionType fcType, String spec, String dateFormatMark, String olderThan, String recheckAfter,
+    //                               String timePartition, String useIndexOnlyS, Element innerNcml) {
+
+    FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", FeatureCollectionType.FMRC, TestDir.cdmUnitTestDir + "agg/updating/.*nc$",
             null, "10 sec", null, null, null, null);
 
     assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");
