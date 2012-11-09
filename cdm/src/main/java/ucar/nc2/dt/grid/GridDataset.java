@@ -191,8 +191,12 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
   // stuff to satisfy ucar.nc2.dt.TypedDataset
   public String getTitle() {
-    String title = ds.findAttValueIgnoreCase(null, CDM.TITLE, null);
-    return (title == null) ? getName() : title;
+    String title = ds.getTitle();
+    if (title == null)
+      title = ds.findAttValueIgnoreCase(null, CDM.TITLE, null);
+    if (title == null)
+      title = getName();
+    return title;
   }
 
   public String getDescription() {
@@ -298,10 +302,15 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   /**
+   * the name of the dataset is the last part of the location
    * @return the name of the dataset
    */
   public String getName() {
-    return ds.getLocation();
+    String loc = ds.getLocation();
+    int pos = loc.lastIndexOf('/');
+    if (pos < 0)
+      pos = loc.lastIndexOf('\\');
+    return (pos < 0) ? loc : loc.substring(pos+1);
   }
 
   /**

@@ -237,14 +237,14 @@ public class InvDatasetImpl extends InvDataset {
     }
 
     if (tc == null) {
-      CalendarDateRange ttc = tmd.getCalendarDateCoverage();
+      DateRange ttc = tmd.getTimeCoverage();
       if (ttc != null) {
         tc = ttc;
       }
     }
 
     if (tc == null)
-      tc = tmd.getCalendarDateCoverage();
+      tc = tmd.getTimeCoverage();
 
     for (InvProperty item : tmd.getProperties()) {
       if (!properties.contains(item)) { // dont add properties with same name

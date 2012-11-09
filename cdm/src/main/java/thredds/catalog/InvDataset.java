@@ -82,7 +82,7 @@ public abstract class InvDataset {
   protected List<ThreddsMetadata.Source> publishers;
   protected List<ThreddsMetadata.Variables> variables;
   public ThreddsMetadata.GeospatialCoverage gc;
-  public CalendarDateRange tc;
+  public DateRange tc;
   protected String variableMapLink;
 
   // for subclassing
@@ -547,7 +547,7 @@ public abstract class InvDataset {
    * @return time coverage, or null if none
    */
   public CalendarDateRange getCalendarDateCoverage() {
-    return tc;
+    return CalendarDateRange.of(tc);
   }
 
   /**
@@ -556,7 +556,7 @@ public abstract class InvDataset {
    * @return time coverage, or null if none
    */
   public DateRange getTimeCoverage() {
-    return tc.toDateRange();
+    return tc;
   }
 
   /**

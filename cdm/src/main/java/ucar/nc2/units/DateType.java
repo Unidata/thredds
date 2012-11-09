@@ -273,15 +273,15 @@ public class DateType {
   }
 
   /**
-   * Same as DateFormatter.toDateTimeString()
+   * Same as CalendarDateFormatter.toDateTimeStringISO
    *
    * @return formatted date
    */
   public String toDateTimeString() {
    if (isPresent())
-      return CalendarDateFormatter.toDateTimeStringPresent();
+      return CalendarDateFormatter.toDateTimeStringISO(new Date());
     else
-      return CalendarDateFormatter.toDateTimeString(date);
+      return CalendarDateFormatter.toDateTimeStringISO(date);
   }
 
   /**

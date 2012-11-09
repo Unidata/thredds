@@ -789,8 +789,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         return localState.timePartition.getGridDataset(dp.group, dp.filename, gribConfig);
     }
 
-    // push title into the dataset object
-    // gds.setTitle();
   }
 
   @Override

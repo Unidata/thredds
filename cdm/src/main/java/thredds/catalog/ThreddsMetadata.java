@@ -77,7 +77,7 @@ public class ThreddsMetadata {
 
   // singles
   protected GeospatialCoverage gc;
-  protected CalendarDateRange timeCoverage;
+  protected DateRange timeCoverage;
   //protected CalendarDateRange cdateCoverage;
   protected String authorityName, serviceName;
   protected FeatureType dataType;
@@ -126,7 +126,7 @@ public class ThreddsMetadata {
 
     // LOOK! should be copies ??!!
     if (gc == null) gc = tmd.getGeospatialCoverage();
-    if (timeCoverage == null) timeCoverage = tmd.getCalendarDateCoverage();
+    if (timeCoverage == null) timeCoverage = tmd.getTimeCoverage();
     if (serviceName == null) serviceName = tmd.getServiceName();
     if (dataType == null) dataType = tmd.getDataType();
     if (dataSize == 0.0) dataSize = tmd.getDataSize();
@@ -365,7 +365,7 @@ public class ThreddsMetadata {
    * @param tc set TimeCoverage to this
    */
   public void setTimeCoverage(DateRange tc) {
-    this.timeCoverage = CalendarDateRange.of(tc);
+    this.timeCoverage = tc;
   }
 
   /**
@@ -373,21 +373,21 @@ public class ThreddsMetadata {
    * @param cdc set CalendarDateRange to this
    */
   public void setTimeCoverage(CalendarDateRange cdc) {
-    this.timeCoverage = cdc;
+    this.timeCoverage = cdc.toDateRange();
   }
 
   /**
    * @return TimeCoverage element  as DateRange
    */
   public DateRange getTimeCoverage() {
-    return timeCoverage == null ? null : timeCoverage.toDateRange();
+    return timeCoverage;
   }
 
   /**
    * @return TimeCoverage element as CalendarDateRange
    */
   public CalendarDateRange getCalendarDateCoverage() {
-    return timeCoverage;
+    return timeCoverage == null ? null : CalendarDateRange.of(timeCoverage);
   }
 
   /**
