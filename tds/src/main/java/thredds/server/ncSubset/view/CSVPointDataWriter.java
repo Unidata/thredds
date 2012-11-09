@@ -26,9 +26,9 @@ class CSVPointDataWriter implements PointDataWriter {
 	private PrintWriter printWriter;
 
 	private Map<String,List<String>> allVars;
-	
+
 	private Map<String, GridAsPointDataset> gridAsPointDatasets=new HashMap<String, GridAsPointDataset>();
-	
+
 	private boolean headersSet = false;
 
 
@@ -51,45 +51,8 @@ class CSVPointDataWriter implements PointDataWriter {
 		for(String key : groupedVars.keySet() ){
 			gridAsPointDatasets.put(key, NcssRequestUtils.buildGridAsPointDataset(gridDataset, groupedVars.get(key)	)  );
 		}
-		
-		//		allVars = new ArrayList<String>();
-		//	
-		//		boolean headerWritten=false;		
-		//		StringBuilder sb = new StringBuilder();		
-		//		sb.append("date,");
-		//		sb.append("lat[unit=\"degrees_north\"],");
-		//		sb.append("lon[unit=\"degrees_east\"],");
-		//		
-		//		List<String> keys = new ArrayList<String>(groupedVars.keySet());
-		//		for(String key : keys){
-		//			List<String> groupVars = groupedVars.get(key);
-		//			allVars.addAll(groupVars);			
-		//		    CoordinateAxis1D zAxis = gridDataset.findGridDatatype(groupVars.get(0)).getCoordinateSystem().getVerticalAxis();
-		//			//multiple vertical axis are possible!!!
-		//		    if(zAxis != null)
-		//		    	sb.append("vertCoord[unit=\""+zAxis.getUnitsString() +"\"],");
-		//		
-		//		    Iterator<String> it = groupVars.iterator();
-		//		    while(it.hasNext()){
-		//		    	GridDatatype grid = gridDataset.findGridDatatype(it.next());
-		//		    	sb.append(grid.getName());			
-		//		    	if( grid.getUnitsString()!=null ) sb.append("[unit=\"" + grid.getUnitsString() + "\"]");			
-		//		    	if(it.hasNext()) sb.append(",");
-		//		    }
-		//						
-		//		}
-		//		printWriter.write(sb.toString());
-		//		printWriter.println();
-		//		headerWritten=true;
-		//		
-		//		return headerWritten;
 
-		//Back to the restriction with only variables with same vertical level!!! --> only one header
-		//List<String> keys =new ArrayList<String>(groupedVars.keySet());
-		//List<String> varsGroup = groupedVars.get(keys.get(0));
-		//writeGroupHeader(varsGroup, gridDataset);
-
-		return true; //Does nothing
+		return true;
 
 	}
 
@@ -108,8 +71,10 @@ class CSVPointDataWriter implements PointDataWriter {
 		List<String> keys =new ArrayList<String>(groupedVars.keySet());
 		//loop over variable groups
 		for(String key : keys){
+
 			List<String> varsGroup = groupedVars.get(key);
-			writeGroupHeader(varsGroup, gds, !wDates.isEmpty());
+			boolean hasEnsembleDim =gds.findGridByShortName(varsGroup.get(0)).getEnsembleDimension() !=null;			
+			writeGroupHeader(varsGroup, gds, hasEnsembleDim, !wDates.isEmpty());
 			boolean pointRead =true;
 			if(wDates.isEmpty()){
 				//pointRead = write(varsGroup, gds, point, vertCoord);
@@ -131,16 +96,15 @@ class CSVPointDataWriter implements PointDataWriter {
 	}	
 
 
-	//private boolean write(List<String> varsGroup, GridDataset gridDataset, LatLonPoint point, Double targetLevel) {
 	private boolean write(String keyVarsGroup, GridDataset gridDataset, LatLonPoint point, Double targetLevel) {
-		
+
 		boolean allDone = true;
 
 		List<String> varsGroup = allVars.get(keyVarsGroup);
 		GridAsPointDataset gap = gridAsPointDatasets.get(keyVarsGroup);
 		//GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset,	varsGroup);
-				
-		
+
+
 		CoordinateAxis1D verticalAxisForGroup = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();
 		if(verticalAxisForGroup ==null){
 			//Read and write vars--> point
@@ -167,43 +131,45 @@ class CSVPointDataWriter implements PointDataWriter {
 
 		return allDone;
 	}	
-	
-	
-	//private boolean write(List<String> varsGroup,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
+
+
 	private boolean write(String keyVarsGroup,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel) {
 		boolean allDone = true;
 
-		//List<String> keys =new ArrayList<String>(groupedVars.keySet());
-		//loop over variable groups
-		//for(String key : keys){
-
-		//List<String> varsGroup = groupedVars.get(key);
-		//writeGroupHeader(varsGroup, gridDataset);
-
-		//GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset,	varsGroup);
 		List<String> varsGroup = allVars.get(keyVarsGroup);
 		GridAsPointDataset gap = gridAsPointDatasets.get(keyVarsGroup) ;
-		
+
 		CoordinateAxis1D verticalAxisForGroup = gridDataset.findGridDatatype( varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();
+
+		//Ensemble handling...
+		CoordinateAxis1D ensembleAxisForGroup = gridDataset.findGridDatatype( varsGroup.get(0)).getCoordinateSystem().getEnsembleAxis();
+		double[] ensCoords = new double[]{-1};
+		if(ensembleAxisForGroup != null){
+			ensCoords = ensembleAxisForGroup.getCoordValues(); 
+		}
+
+		for(double ensCoord : ensCoords){		
+		
 		if(verticalAxisForGroup ==null){
 			//Read and write vars--> time, point
-			allDone = allDone && write(varsGroup, gridDataset, gap, date, point);
+			allDone = allDone && write(varsGroup, gridDataset, gap, date, point, ensCoord);
 		}else{
-			//read and write time, verCoord for each variable in group
-			if(targetLevel != null){
-				Double vertCoord = NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, targetLevel);
-				allDone = write(varsGroup, gridDataset, gap, date, point, vertCoord, verticalAxisForGroup.getUnitsString() );
-			}else{//All levels
-				for(Double vertCoord : verticalAxisForGroup.getCoordValues() ){
-					/////Fix axis!!!!
-					if(verticalAxisForGroup.getCoordValues().length ==1  )
-						vertCoord =NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, vertCoord);
 
-					allDone = allDone && write(varsGroup, gridDataset, gap, date, point, vertCoord, verticalAxisForGroup.getUnitsString() );
+				//read and write [ensCoord], time, verCoord for each variable in group			
+				if(targetLevel != null){
+					Double vertCoord = NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, targetLevel);
+					allDone = write(varsGroup, gridDataset, gap, date, point, ensCoord, vertCoord, verticalAxisForGroup.getUnitsString() );
+				}else{//All levels
+					for(Double vertCoord : verticalAxisForGroup.getCoordValues() ){
+						/////Fix axis!!!!
+						if(verticalAxisForGroup.getCoordValues().length ==1  )
+							vertCoord =NcssRequestUtils.getTargetLevelForVertCoord(verticalAxisForGroup, vertCoord);
 
-				}
-			}				
+						allDone = allDone && write(varsGroup, gridDataset, gap, date, point, ensCoord, vertCoord, verticalAxisForGroup.getUnitsString() );
 
+					}
+				}				
+			}
 		}			
 		//printWriter.println();
 		//}
@@ -211,13 +177,16 @@ class CSVPointDataWriter implements PointDataWriter {
 		return allDone;
 	}	
 
-	private void writeGroupHeader(List<String> varGroup, GridDataset gridDataset, boolean hasTimeAxis){
+	private void writeGroupHeader(List<String> varGroup, GridDataset gridDataset, boolean hasEnsAxis, boolean hasTimeAxis){
 
 		StringBuilder sb = new StringBuilder();		
 		if(hasTimeAxis)
 			sb.append("date,");
 		sb.append("lat[unit=\"degrees_north\"],");
 		sb.append("lon[unit=\"degrees_east\"],");
+
+		if(hasEnsAxis)
+			sb.append("ensMember,");
 
 		CoordinateAxis1D zAxis = gridDataset.findGridDatatype(varGroup.get(0)).getCoordinateSystem().getVerticalAxis();
 
@@ -236,34 +205,11 @@ class CSVPointDataWriter implements PointDataWriter {
 		printWriter.println();					
 	}
 
-	/*@Override
-	public boolean header(List<String> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point) {
 
-		boolean headerWritten=false;		
-		StringBuilder sb = new StringBuilder();
-		sb.append("date,");
-		sb.append("lat[unit=\"degrees_north\"],");
-		sb.append("lon[unit=\"degrees_east\"],");
-		Iterator<String> it = vars.iterator();
-		while(it.hasNext()){
-			GridDatatype grid = gridDataset.findGridDatatype(it.next());
-			sb.append(grid.getName());			
-			if( grid.getUnitsString()!=null ) sb.append("[unit=\"" + grid.getUnitsString() + "\"]");			
-			if(it.hasNext()) sb.append(",");
-		}
-
-		printWriter.write(sb.toString());
-		printWriter.println();
-		headerWritten=true;
-
-		return headerWritten;
-	}*/
-
-	
 	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap,  LatLonPoint point,	Double targetLevel, String zUnits) {
 
 		boolean allDone = false;
-		
+
 		int contVars= 0;					 
 		Iterator<String> itVars = vars.iterator();
 		try{
@@ -298,8 +244,8 @@ class CSVPointDataWriter implements PointDataWriter {
 		return allDone;
 
 	}	
-	
-	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point,	Double targetLevel, String zUnits) {
+
+	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point,	Double ensCoord,Double targetLevel, String zUnits) {
 
 		boolean allDone = false;
 		printWriter.write(date.toString()+",");
@@ -308,11 +254,15 @@ class CSVPointDataWriter implements PointDataWriter {
 		try{
 			while (itVars.hasNext()) {
 				GridDatatype grid = gridDataset.findGridDatatype(itVars.next());
+
 				if ( gap.hasTime(grid, date) && gap.hasVert(grid, targetLevel) ) {
-					GridAsPointDataset.Point p = gap.readData(grid, date, targetLevel, point.getLatitude(), point.getLongitude());
-					if(contVars == 0){
+					GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, targetLevel, point.getLatitude(), point.getLongitude());
+					if(contVars == 0){							
 						printWriter.write(Double.valueOf(p.lat).toString()+"," );
 						printWriter.write(Double.valueOf(p.lon).toString()+"," );
+						if( ensCoord >= 0 )
+							printWriter.write(Double.valueOf(p.ens).toString()+"," );
+
 						printWriter.write(Double.valueOf(p.z).toString()+"," );
 					}							
 					printWriter.write(Double.valueOf(p.dataValue).toString());
@@ -328,6 +278,7 @@ class CSVPointDataWriter implements PointDataWriter {
 					printWriter.write( Double.valueOf(gap.getMissingValue(grid)).toString() );
 				}					
 				contVars++;
+
 			}
 			allDone = true;
 		}catch(IOException ioe){
@@ -348,16 +299,16 @@ class CSVPointDataWriter implements PointDataWriter {
 			while (itVars.hasNext()) {
 				GridDatatype grid = gridDataset.findGridDatatype(itVars.next());
 				//if (gap.hasTime(grid, date) ) {
-					GridAsPointDataset.Point p = gap.readData(grid, null, point.getLatitude(), point.getLongitude());
-					if(contVars == 0){
-						printWriter.write(Double.valueOf(p.lat).toString()+"," );
-						printWriter.write(Double.valueOf(p.lon).toString()+"," );
-					}							
-					printWriter.write(Double.valueOf(p.dataValue).toString());
-					if(itVars.hasNext()) printWriter.write(",");
+				GridAsPointDataset.Point p = gap.readData(grid, null, point.getLatitude(), point.getLongitude());
+				if(contVars == 0){
+					printWriter.write(Double.valueOf(p.lat).toString()+"," );
+					printWriter.write(Double.valueOf(p.lon).toString()+"," );
+				}							
+				printWriter.write(Double.valueOf(p.dataValue).toString());
+				if(itVars.hasNext()) printWriter.write(",");
 
 				//} else {
-					// write missingvalues!!!
+				// write missingvalues!!!
 				//	if(contVars==0){
 				//		printWriter.write( point.getLatitude()+"," );
 				//		printWriter.write( point.getLongitude() +"," );
@@ -374,9 +325,9 @@ class CSVPointDataWriter implements PointDataWriter {
 		return allDone;
 
 	}	
-	
-	
-	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point) {
+
+
+	private boolean write(List<String> vars, GridDataset gridDataset, GridAsPointDataset gap, CalendarDate date, LatLonPoint point, Double ensCoord) {
 
 		boolean allDone = false;
 		printWriter.write(date.toString()+",");
@@ -386,10 +337,13 @@ class CSVPointDataWriter implements PointDataWriter {
 			while (itVars.hasNext()) {
 				GridDatatype grid = gridDataset.findGridDatatype(itVars.next());
 				if (gap.hasTime(grid, date) ) {
-					GridAsPointDataset.Point p = gap.readData(grid, date, point.getLatitude(), point.getLongitude());
+					GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, -1, point.getLatitude(), point.getLongitude());
 					if(contVars == 0){
 						printWriter.write(Double.valueOf(p.lat).toString()+"," );
 						printWriter.write(Double.valueOf(p.lon).toString()+"," );
+						
+						if(ensCoord >= 0)
+							printWriter.write(Double.valueOf(p.ens).toString()+"," );
 					}							
 					printWriter.write(Double.valueOf(p.dataValue).toString());
 					if(itVars.hasNext()) printWriter.write(",");

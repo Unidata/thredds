@@ -31,7 +31,6 @@
  */
 package thredds.server.ncSubset.view.netcdf;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,11 +45,11 @@ import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridAsPointDataset;
-import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -60,111 +59,124 @@ import ucar.unidata.geoloc.LatLonPoint;
  *
  */
 public final class WriterCFStationCollectionWrapper implements CFPointWriterWrapper {
-	
+
 	static private Logger log = LoggerFactory.getLogger(WriterCFStationCollectionWrapper.class);
-	
+
 	private WriterCFStationCollection writerCFStationCollection;
-	
+
 	private GridAsPointDataset gap;
-	
+
 	private WriterCFStationCollectionWrapper(){}
-	
+
 	private WriterCFStationCollectionWrapper(String filePath, List<Attribute> atts) throws IOException{
-		
+
 		writerCFStationCollection = new WriterCFStationCollection( filePath, atts);
 
 	}
 
 	@Override
 	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point) {
-		
+
 		boolean headerDone = false;
-    	String stnName = "GridPoint";
-    	String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
-    	ucar.unidata.geoloc.Station s = new ucar.unidata.geoloc.StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
-    	List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
-    	stnList.add(s);
-    	
-    	NetcdfDataset ncfile = (NetcdfDataset) gridDataset.getNetcdfFile(); // fake-arino
-    	List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);    	
-    	gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars);
-    	
-    	List<VariableSimpleIF> wantedVars = NcssRequestUtils.wantedVars2VariableSimple( vars , gridDataset, ncfile);
-    	try {
-			writerCFStationCollection.writeHeader(stnList, wantedVars, dateUnit, "");
+		String stnName = "GridPoint";
+		String desc = "Grid Point at lat/lon="+point.getLatitude()+","+point.getLongitude();
+		ucar.unidata.geoloc.Station s = new ucar.unidata.geoloc.StationImpl( stnName, desc, "", point.getLatitude(), point.getLongitude(), Double.NaN);
+		List<ucar.unidata.geoloc.Station> stnList  = new ArrayList<ucar.unidata.geoloc.Station>();
+		stnList.add(s);
+
+		NetcdfDataset ncfile = (NetcdfDataset) gridDataset.getNetcdfFile(); // fake-arino
+		List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);    	
+		gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars);
+
+		List<VariableSimpleIF> wantedVars = NcssRequestUtils.wantedVars2VariableSimple( vars , gridDataset, ncfile);
+		try {
+			writerCFStationCollection.writeHeader(stnList, wantedVars, gridDataset, dateUnit, "");
 			headerDone= true;
 		} catch (IOException ioe) {
 			log.error("Error writing header", ioe);
 		}
-		
-		
+
+
 		return headerDone;
 	}
 
 	@Override
 	public boolean write(Map<String, List<String>> groupedVars,	GridDataset gridDataset, CalendarDate date, LatLonPoint point, Double targetLevel){
-		
+
 		boolean allDone = false;	
-	
+
 		List<String> vars =  (new ArrayList<List<String>>(groupedVars.values())).get(0);
 		StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, vars);		
-		//sdata.findMember("date").getDataArray().setObject(0, date.toString());
+
 		Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( vars.get(0) ), date);
 		sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
-		// Iterating vars		
-		Iterator<String> itVars = vars.iterator();
-		int cont =0;
+
+		//Ensemble...
+		CoordinateAxis1D ensAxis =  gridDataset.findGridDatatype(vars.get(0)).getCoordinateSystem().getEnsembleAxis();
+		double[] ensCoords = new double[]{-1}; 
+		if( ensAxis != null ){
+			ensCoords = ensAxis.getCoordValues();
+		}		
+
+
+		
 		try{
-			while (itVars.hasNext()) {
-				String varName = itVars.next();
-				GridDatatype grid = gridDataset.findGridDatatype(varName);
-								
-				if (gap.hasTime(grid, date) ) {
-					GridAsPointDataset.Point p = gap.readData(grid, date,	point.getLatitude(), point.getLongitude());
-					//sdata.findMember("latitude").getDataArray().setDouble(0, p.lat );
-					//sdata.findMember("longitude").getDataArray().setDouble(0, p.lon );		
-					sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );						
-			
-				}else{ //Set missing value
-					//sdata.findMember("latitude").getDataArray().setDouble(0, point.getLatitude() );
-					//sdata.findMember("longitude").getDataArray().setDouble(0, point.getLongitude() );
-					sdata.findMember(varName).getDataArray().setDouble(0, gap.getMissingValue(grid) );						
-				
+
+			for(double ensCoord : ensCoords){
+				//int cont =0;
+				// Iterating vars		
+				Iterator<String> itVars = vars.iterator();				
+				while (itVars.hasNext()) {
+					String varName = itVars.next();
+					GridDatatype grid = gridDataset.findGridDatatype(varName);
+
+					if (gap.hasTime(grid, date) ) {
+						GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, -1, point.getLatitude(), point.getLongitude());
+						sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );						
+
+					}else{ //Set missing value
+						sdata.findMember(varName).getDataArray().setDouble(0, gap.getMissingValue(grid) );						
+
+					}
+					//cont++;
 				}
-				cont++;
+				
+				if(ensCoord < 0)
+					writerCFStationCollection.writeRecord((String)sdata.findMember("station").getDataArray().getObject(0), timeCoordValue, date, sdata);
+				else
+					writerCFStationCollection.writeRecord((String)sdata.findMember("station").getDataArray().getObject(0), timeCoordValue, date, ensCoord, sdata);
+				
+				allDone = true;
+
 			}
-			
-			//sobsWriter.writeRecord( (String)sdata.findMember("station").getDataArray().getObject(0), date.toDate() , sdata);			
-			writerCFStationCollection.writeRecord((String)sdata.findMember("station").getDataArray().getObject(0), timeCoordValue, date, sdata);
-			allDone = true;
-			
+
 		}catch(IOException ioe){
 			log.error("Error writing data", ioe);
 		}
-			
-					  		
+
+
 		return allDone;	
-		
+
 	}
-	
+
 	public boolean trailer(){
 		boolean finished = false;
 		try {
 			writerCFStationCollection.finish();
 			finished = true;
-			
+
 		} catch (IOException ioe) {
 			log.error("Error finishing  WriterCFStationCollection"+ioe); 
 		}
-		
+
 		return finished;
-		
+
 	}
 
 	public static WriterCFStationCollectionWrapper createWrapper(String filePath, List<Attribute> atts ) throws IOException{
-		
+
 		return new WriterCFStationCollectionWrapper(filePath, atts);
 	} 	
-	
+
 
 }

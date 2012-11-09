@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import thredds.server.ncSubset.exception.NcssException;
 import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
+import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
 import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.PointDataRequestParamsBean;
 import thredds.server.ncSubset.params.RequestParamsBean;
@@ -34,6 +34,7 @@ import thredds.server.ncSubset.view.PointDataStream;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDataset.Gridset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -57,13 +58,12 @@ class PointDataController extends AbstratNcssDataRequestController{
 			
 			//Checking request format...			
 			SupportedFormat sf = getSupportedFormat(params, SupportedOperation.POINT_REQUEST  );			
-						
-						
+												
 			LatLonPoint point = params.getLatLonPoint(); //Check if the point is within boundaries!!
 					
 			checkRequestedVars(gridDataset,  params);
 			Map<String, List<String>> groupVars= groupVarsByVertLevels(gridDataset, params);
-
+					
 			if( !isPointWithinBoundaries(params.getLatLonPoint(), groupVars ) ){			
 			throw  new OutOfBoundariesException("Requested Lat/Lon Point (+" + point + ") is not contained in the Data. "+
 					"Data Bounding Box = " + getGridDataset().getBoundingBox().toString2());
@@ -174,7 +174,8 @@ class PointDataController extends AbstratNcssDataRequestController{
 			}			
 			
 		
-			CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();
+			CoordinateAxis1D axis = grid.getCoordinateSystem().getVerticalAxis();					
+			
 			String axisKey = null;
 			if(axis == null){
 				axisKey = no_vert_levels;

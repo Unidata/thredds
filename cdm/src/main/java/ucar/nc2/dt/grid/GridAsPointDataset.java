@@ -150,7 +150,7 @@ public class GridAsPointDataset {
     int[] xy = gcs.findXYindexFromLatLon(lat, lon, null);
 
     Array data  = grid.readDataSlice(tidx, zidx, xy[1], xy[0]);
-
+    
     // use actual grid midpoint
     LatLonPoint latlon = gcs.getLatLon(xy[0], xy[1]);
 
@@ -161,6 +161,61 @@ public class GridAsPointDataset {
     p.dataValue = data.getDouble( data.getIndex());
     return p;
   }
+  
+  /**
+   * 
+   * Reads one single data for one point.
+   * Takes the ensemble and elevation coordinates allowing them to be < 0 and in that case they'll be ignored. 
+   * 
+   * @param grid
+   * @param date
+   * @param ensCoord
+   * @param zCoord
+   * @param lat
+   * @param lon
+   * @return
+   * @throws java.io.IOException
+   */
+  public Point readData(GridDatatype grid, CalendarDate date, double ensCoord, double zCoord, double lat, double lon)  throws java.io.IOException {
+	    GridCoordSystem gcs = grid.getCoordinateSystem();
+
+	    //CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
+	    //int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
+	    int tidx = -1;
+	    //Date may be null if the grid does not have time axis 
+	    if(date != null)
+	    	tidx= findTimeIndexForCalendarDate(gcs, date);
+	    
+	    Point p = new Point();
+	    int zidx = -1;
+	    if(zCoord != -1){
+	    	CoordinateAxis1D zAxis = gcs.getVerticalAxis();
+	    	zidx = zAxis.findCoordElement( zCoord);
+	    	p.z = zAxis.getCoordValue(zidx);
+	    }
+	    	    
+	    int eidx =-1;	    
+	    if(ensCoord != -1){
+	    	CoordinateAxis1D ensAxis = gcs.getEnsembleAxis();
+	    	eidx = ensAxis.findCoordElement( ensCoord);
+	    	p.ens = ensAxis.getCoordValue(eidx);
+	    }
+	    
+	    int[] xy = gcs.findXYindexFromLatLon(lat, lon, null);
+
+	    //Array data  = grid.readDataSlice(tidx, zidx, xy[1], xy[0]);
+	    Array data  = grid.readDataSlice(0, eidx, tidx, zidx, xy[1], xy[0]);
+	    
+	    // use actual grid midpoint
+	    LatLonPoint latlon = gcs.getLatLon(xy[0], xy[1]);
+
+	    
+	    p.lat = latlon.getLatitude();
+	    p.lon = latlon.getLongitude();	    
+	    
+	    p.dataValue = data.getDouble( data.getIndex());
+	    return p;
+	  }  
   
   /**
    * Reads data for the given point (earthlocation) and if bounded is true returns data for the closest point within the grid, for points outside of the grid
@@ -207,7 +262,7 @@ public class GridAsPointDataset {
   }
 
   public class Point {
-    public double lat,lon,z,dataValue;
+    public double lat,lon,z,ens,dataValue;
   }
   
   private int findTimeIndexForCalendarDate(GridCoordSystem gcs, CalendarDate date){	  

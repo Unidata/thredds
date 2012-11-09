@@ -64,7 +64,6 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 		} catch (IOException ioe) {
 			log.error("Error writing header", ioe);
 		}
-
 		return headerDone;
 	}
 
@@ -76,90 +75,111 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 		boolean allDone = false;
 		List<String> keys =new ArrayList<String>(groupedVars.keySet());
 
-
 		try{
 
 			for(String key : keys){
 
 				List<String> varsGroup = groupedVars.get(key);
-				CoordinateAxis1D zAxis = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();			
-				//String profileName = NO_VERT_LEVEL;				
-				EarthLocation earthLocation=null;	
 
-				GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
-				Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
-				if(zAxis == null){ //Variables without vertical levels
-					
-					//Write no vert levels
-					StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup );		
-					sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);				
-					//sdata.findMember("time").getDataArray().setObject(0, date.toString());
-					gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
-					Iterator<String> itVars = varsGroup.iterator();
-					int cont =0;
-					while (itVars.hasNext()) {
-						String varName = itVars.next();
-						GridDatatype grid = gridDataset.findGridDatatype(varName);
-										
-						if (gap.hasTime(grid, date) ) {
-							GridAsPointDataset.Point p = gap.readData(grid, date,	point.getLatitude(), point.getLongitude());
-							//sdata.findMember("latitude").getDataArray().setDouble(0, p.lat );
-							//sdata.findMember("longitude").getDataArray().setDouble(0, p.lon );		
-							sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );							
-							if(cont ==0){
-								earthLocation = new EarthLocationImpl(p.lat, p.lon, Double.NaN );
-							}							
-							
-					
-						}else{ //Set missing value
-							//sdata.findMember("latitude").getDataArray().setDouble(0, point.getLatitude() );
-							//sdata.findMember("longitude").getDataArray().setDouble(0, point.getLongitude() );
-							sdata.findMember(varName).getDataArray().setDouble(0, gap.getMissingValue(grid) );						
-							earthLocation = new EarthLocationImpl(point.getLatitude(), point.getLongitude(), Double.NaN );
-						}					
-					}
-					
-					writerCFTimeSeriesProfileCollection.writeRecord( timeCoordValue, date, earthLocation , sdata);					
-					
+				//Ensemble...
+				CoordinateAxis1D ensAxis = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getEnsembleAxis();
+				double[] ensCoords = new double[]{-1};
+				if(ensAxis != null){
+					ensCoords = ensAxis.getCoordValues();	
+				}
 
-				}else{
-					String profileName =zAxis.getShortName();
-					//Loop over vertical levels
-					double[] vertCoords= new double[]{0.0};
-					if(zAxis.getCoordValues().length > 1) vertCoords = zAxis.getCoordValues();
-					int vertCoordsIndex = 0;
-					for(double vertLevel : vertCoords){
-						//The zAxis was added to the variables and we need a structure data that contains z-levels  
-						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis);		
-						//sdata.findMember("date").getDataArray().setObject(0, date.toString());						
-						sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
-						sdata.findMember(zAxis.getShortName()).getDataArray().setDouble(0, zAxis.getCoordValues()[vertCoordsIndex]  );
-						vertCoordsIndex++;
-						int cont =0;
-						// Iterating vars						
+				int ensIdx =0;
+				for(double ensCoord : ensCoords){
+
+					if(ensCoord >=0){
+						writerCFTimeSeriesProfileCollection.writeEnsCoord(ensIdx, ensCoord);
+						ensIdx++;
+					}	
+					
+					CoordinateAxis1D zAxis = gridDataset.findGridDatatype(varsGroup.get(0)).getCoordinateSystem().getVerticalAxis();			
+					//String profileName = NO_VERT_LEVEL;				
+					EarthLocation earthLocation=null;	
+
+					GridAsPointDataset gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
+					Double timeCoordValue = NcssRequestUtils.getTimeCoordValue(gridDataset.findGridDatatype( varsGroup.get(0) ), date);
+					if(zAxis == null){ //Variables without vertical levels
+
+						//Write no vert levels
+						StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup );		
+						sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);				
+						//sdata.findMember("time").getDataArray().setObject(0, date.toString());
+						gap = NcssRequestUtils.buildGridAsPointDataset(gridDataset, varsGroup);
 						Iterator<String> itVars = varsGroup.iterator();
+						int cont =0;
 						while (itVars.hasNext()) {
 							String varName = itVars.next();
 							GridDatatype grid = gridDataset.findGridDatatype(varName);
 
-							if (gap.hasTime(grid, date) && gap.hasVert(grid, vertLevel)) {
-								GridAsPointDataset.Point p = gap.readData(grid, date,	vertLevel, point.getLatitude(), point.getLongitude() );
-								sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );
-
+							if (gap.hasTime(grid, date) ) {
+								GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord, -1,  point.getLatitude(), point.getLongitude());
+								sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );							
 								if(cont ==0){
-									earthLocation = new EarthLocationImpl(p.lat, p.lon, p.z);
-								}
+									earthLocation = new EarthLocationImpl(p.lat, p.lon, Double.NaN );
+								}							
+
 
 							}else{ //Set missing value
 								sdata.findMember(varName).getDataArray().setDouble(0, gap.getMissingValue(grid) );						
-								earthLocation = new EarthLocationImpl(point.getLatitude(), point.getLongitude() , vertLevel);
+								earthLocation = new EarthLocationImpl(point.getLatitude(), point.getLongitude(), Double.NaN );
+							}					
+						}
+						
+						if(ensCoord >=0)
+							writerCFTimeSeriesProfileCollection.writeRecord( timeCoordValue, ensCoord, date, earthLocation , sdata);
+						else	
+							writerCFTimeSeriesProfileCollection.writeRecord( timeCoordValue, date, earthLocation , sdata);
+						
+
+
+					}else{
+						String profileName =zAxis.getShortName();
+						//Loop over vertical levels
+						double[] vertCoords= new double[]{0.0};
+						if(zAxis.getCoordValues().length > 1) vertCoords = zAxis.getCoordValues();
+						int vertCoordsIndex = 0;
+						for(double vertLevel : vertCoords){
+							//The zAxis was added to the variables and we need a structure data that contains z-levels  
+							StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis);		
+							//sdata.findMember("date").getDataArray().setObject(0, date.toString());						
+							sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
+							sdata.findMember(zAxis.getShortName()).getDataArray().setDouble(0, zAxis.getCoordValues()[vertCoordsIndex]  );
+							vertCoordsIndex++;
+							int cont =0;
+							// Iterating vars						
+							Iterator<String> itVars = varsGroup.iterator();
+							while (itVars.hasNext()) {
+								String varName = itVars.next();
+								GridDatatype grid = gridDataset.findGridDatatype(varName);
+
+								if (gap.hasTime(grid, date) && gap.hasVert(grid, vertLevel)) {
+									GridAsPointDataset.Point p = gap.readData(grid, date, ensCoord,	vertLevel, point.getLatitude(), point.getLongitude() );
+									sdata.findMember(varName).getDataArray().setDouble(0, p.dataValue );
+
+									if(cont ==0){
+										earthLocation = new EarthLocationImpl(p.lat, p.lon, p.z);
+									}
+
+								}else{ //Set missing value
+									sdata.findMember(varName).getDataArray().setDouble(0, gap.getMissingValue(grid) );						
+									earthLocation = new EarthLocationImpl(point.getLatitude(), point.getLongitude() , vertLevel);
+								}
+								cont++;
 							}
-							cont++;
-						}			
-						writerCFTimeSeriesProfileCollection.writeRecord(profileName, timeCoordValue, date, earthLocation , sdata, vertCoordsIndex-1);
-						allDone = true;
+							if(ensCoord >=0){
+								writerCFTimeSeriesProfileCollection.writeRecord(profileName, timeCoordValue, ensCoord, date, earthLocation , sdata, vertCoordsIndex-1);
+							}else{
+								writerCFTimeSeriesProfileCollection.writeRecord(profileName, timeCoordValue, date, earthLocation , sdata, vertCoordsIndex-1);
+							}	
+							allDone = true;
+						}
 					}
-				}
+
+				}	
 			}
 
 		}catch(IOException ioe){
@@ -174,23 +194,17 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 	public boolean trailer(){
 
 		boolean allDone =false;
-
 		try{
 			writerCFTimeSeriesProfileCollection.finish();
-			//writerCFTimeSeriesProfileCollection.close();
 			allDone =true;
 		}catch(IOException ioe){
 			log.error("Error finishing  WriterCFTimeSeriesProfileCollection: "+ioe); 
 		}
-
 		return allDone;
-
-		//return true;
 	}
 
 
 	public static WriterCFTimeSeriesProfileCollectionWrapper createWrapper(String filePath, List<Attribute> atts ) throws IOException{
-
 		return new WriterCFTimeSeriesProfileCollectionWrapper(filePath, atts);
 	}	
 

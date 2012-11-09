@@ -42,42 +42,18 @@ public final class PointDataStream {
 			vars.addAll(groupedVars.get(key));
 
 		}				
-		
-		//Keep this restriction for all requests as we don't figure out how to write variables with different vertical levels in netcdf files 		
-		//if(groupedVars.size() > 1){
-			//throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. For vertical subsetting only requests on variables with same vertical levels are supported.");
-		//	throw new UnsupportedOperationException("The variables requested: "+ vars  +" have different vertical levels. Only requests on variables with same vertical levels are supported.");
-		//}
-
-		
-			
-			
+				
 		//Assuming all variables have same time dimension!!!			
 		GridDatatype gridForTimeUnits= gds.findGridDatatype(vars.get(0));
 		
 		if(pointDataWriter.header(groupedVars, gds, wDates, getDateUnit(gridForTimeUnits) , point)){ 
-			//loop over wDates
-//			CalendarDate date;
-//			Iterator<CalendarDate> it = wDates.iterator();
-//			boolean pointRead =true;
-//			while( pointRead && it.hasNext() ){
-//				date = it.next();
-//				pointRead = pointDataWriter.write(groupedVars, gds, date, point, vertCoord);
-//			}
 			
-			//Changing write method in PointDataWriters. Now they will get all the wanted dates and all the grouped variables by vert. levels
-			//so they can iterate over time (NetCDF and XML) or over variables (csv)
 			boolean allPointsRead = false;
 			allPointsRead = pointDataWriter.write(groupedVars, gds, wDates, point, vertCoord);
-			
-			//allDone = pointDataWriter.trailer() && pointRead;
 			allDone = pointDataWriter.trailer() && allPointsRead;
 		}
 		return allDone;
 	}
-	
-
-	
 	
 	private DateUnit getDateUnit(GridDatatype grid) throws DateUnitException{
 
@@ -87,8 +63,7 @@ public final class PointDataStream {
 
 		// Asuming all vars have the same time axis and it is 1D...
 		String timeUnitString = grid.getCoordinateSystem().getTimeAxis().getUnitsString();
-			
-		
+					
 		DateUnit du =null;
 		
 		try{
