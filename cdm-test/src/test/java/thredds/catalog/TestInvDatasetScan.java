@@ -838,7 +838,6 @@ public class TestInvDatasetScan
     String inFileName = "testInvDsScan.subsetCatOnDs.input.xml";
     File expectedCatalogFile = new File(expectedResultsDir, "testInvDsScan.subsetCatOnDs.result.xml");
 
-
     String targetDatasetID = "NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_1800.grib1";
     File inFile = new File( filePath, inFileName );
 

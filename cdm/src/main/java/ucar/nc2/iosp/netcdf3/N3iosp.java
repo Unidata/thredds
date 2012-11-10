@@ -670,7 +670,6 @@ public String NC_check_name(String name) {
   // write
 
   public void writeData(Variable v2, Section section, Array values) throws java.io.IOException, InvalidRangeException {
-
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
