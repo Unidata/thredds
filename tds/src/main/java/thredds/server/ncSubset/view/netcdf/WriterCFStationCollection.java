@@ -329,15 +329,50 @@ class WriterCFStationCollection  extends CFPointWriter {
 
 	    // write the recno record
 	    origin[0] = recno;
-	    try {
-	      writer.write(record, origin, sArray);
-	      writer.write(time, origin, timeArray);
-	      writer.write(stationIndex, origin, parentArray);
+	      
+		    try {
+			      //writer.write(record, twoDIdx, sArray);
+			      writer.write(time, origin, timeArray);
+			      writer.write(stationIndex, origin, parentArray);
+			      
+					StructureMembers sm = sdata.getStructureMembers();
+					for( Member m : sm.getMembers() ){
+						Variable v = writer.findVariable(m.getName());
+						
+						//Its a variable --> 3D (profile, ensemble, station)
+						if( v != null && !v.getShortName().equals(lonName) && !v.getShortName().equals(latName) && !v.getShortName().equals("time")){
 
-	    } catch (InvalidRangeException e) {
-	      e.printStackTrace();
-	      throw new IllegalStateException(e);
-	    }
+							DataType m_dt =m.getDataType();
+
+							if(m_dt == DataType.DOUBLE ){
+								Double data = m.getDataArray().getDouble(0);
+								//ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+								ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+								tmpArray.setDouble(0, data);
+								//writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+								writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+							}
+
+							if(m_dt == DataType.FLOAT){
+								Float data = m.getDataArray().getFloat(0);
+								ArrayFloat.D1 tmpArray = new ArrayFloat.D1(1);
+								tmpArray.setFloat(0, data);
+								writer.write( writer.findVariable(m.getName()) , origin, tmpArray );
+							}					
+
+						}					
+						
+						
+						
+					}
+
+			    } catch (InvalidRangeException e) {
+			      e.printStackTrace();
+			      throw new IllegalStateException(e);
+			    }	      
+	      
+	      
+
 
 	    recno++;
 	  }
