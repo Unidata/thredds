@@ -100,8 +100,8 @@ public class TestCalendars {
     System.out.printf("%s%n", cd1);
     System.out.printf("%s%n", cd2);
 
-    assert cd1.toString().equals("2359-12-01T00:00:00.000Z");
-    assert cd2.toString().equals("2419-12-01T00:00:00.000Z");
+    assert cd1.toString().equals("2359-12-01T00:00:00Z");
+    assert cd2.toString().equals("2419-12-01T00:00:00Z");
   }
 
   @Test
