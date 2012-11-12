@@ -37,81 +37,57 @@ import junit.framework.*;
 /** Count geogrid objects - sanity check when anything changes. */
 
 public class TestReadAndCountDods extends TestCase {
-  static String base = "thredds:resolve:http://motherlode.ucar.edu:8080/thredds/";
+  static String base = "thredds:resolve:http://motherlode.ucar.edu:9080/thredds/";
 
   public TestReadAndCountDods( String name) {
     super(name);
   }
 
   public void testRead() throws Exception {
-
-    /* this has a Grid that returns a structure
-    try {
-      doOne("dods://iridl.ldeo.columbia.edu/SOURCES/.CAYAN/dods", "", 5, 1, 3, 0);
-    } catch (Throwable e) {
-      System.out.println(" -- barf");
-    }  // */
-
-    /* this has a Grid that returns a bare array
-    try {
-      doOne("dods://usgodae2.usgodae.org:80/dods/GDS/coamps_cent_am/COAMPS_cent_am_0001_000000-000000ltnt_heat_flux", "", 1, 1, 3, 0);
-    } catch (Throwable e) {
-      System.out.println(" -- barf");
-    }  // */
-
-    /* IDV netcdf files, one from each model
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?nam_211", 41, 7, 9, 5);
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_211", 31, 6, 8, 4);
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_37-44", 31, 4, 8, 4);
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_25-26", 4, 2, 5, 1);
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?ruc_211", 31, 5, 7, 3);
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?ruc2_236", 48, 4, 7, 3);
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?sst_21-24", 1, 1, 4, 0);
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?sst_61-64", 1, 1, 4, 0);
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?ocean_21-24", 5, 1, 4, 0);  // */
-
-    // Problem with latest showing incomplete files !!
     // Grib files, one from each model
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Alaska_191km/files/latest.xml", 22, 10, 12, 7); //
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/CONUS_80km/files/latest.xml", 31, 12, 15, 8);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/CONUS_95km/files/latest.xml", 30, 10, 12, 8);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/CONUS_191km/files/latest.xml", 20, 8, 10, 7);    
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Global_0p5deg/files/latest.xml", 133, 26, 27, 21);    
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Global_onedeg/files/latest.xml", 133, 26, 27, 21);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Global_2p5deg/files/latest.xml", 133, 24, 25, 21);    
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Hawaii_160km/files/latest.xml", 15, -1, 10, 6);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/N_Hemisphere_381km/files/latest.xml", 23, 9, 11, 6);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/GFS/Puerto_Rico_191km/files/latest.xml", 15, -1, -1, 6);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml", 23, 11, 13, 8);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/DGEX/Alaska_12km/files/latest.xml", 23, 11, 13, 8);
 
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 16, 18, 13);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_22km/files/latest.xml", 25, -1, 10, 6);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_45km/noaaport/files/latest.xml", 21, 6, 8, 4);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 154, -1, -1, 31);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_95km/files/latest.xml", 29, 12, 14, 9);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 16, 18, 13);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_20km/surface/files/latest.xml", 54, -1, -1, 12);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_20km/selectsurface/files/latest.xml", 54, -1, -1, 12);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_40km/conduit/files/latest.xml", 176, -1, -1, 25);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_80km/files/latest.xml", 41, 11, 13, 8);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GEFS/Global_1p0deg_Ensemble/members/files/latest.xml", 35, 11, 13, 6);
+    TestReadandCount.doOne(base,"grib/NCEP/GEFS/Global_1p0deg_Ensemble/derived/files/latest.xml", 70, 11, 12, 6);
 
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RAP/CONUS_13km/files/latest.xml", 53, -1, -1, 9);
-    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_13km/files/latest.xml", 52, 13, 15, 9);        
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RAP/CONUS_20km/files/latest.xml", 74, 15, 17, 11);
-    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/files/latest.xml", 74, 15, 17, 11); // now Rapid refresh 5/4/2012
-    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/pressure/files/latest.xml", -1, 12, 14, 9);
-    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/files/latest.xml", 55, 10, 12, 8);
-    
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_40km/files/latest.xml", 47, -1, -1, 10);
-    //TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC/CONUS_80km/files/latest.xml", 31, 9, 11, 5);  // */
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_0p5deg/files/latest.xml", 133, 26, 27, 21);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_onedeg/files/latest.xml", 133, 26, 27, 21);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Global_2p5deg/files/latest.xml", 133, 24, 25, 21);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/N_Hemisphere_381km/files/latest.xml", 23, 9, 11, 6);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Pacific_40km/files/latest.xml", 50, 11, 13, 8);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Puerto_Rico_0p5deg/files/latest.xml", 50, 11, 13, 8);
 
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/DGEX/CONUS_12km/files/latest.xml", 23, 11, 13, 8);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/DGEX/Alaska_12km/files/latest.xml", 23, 11, 13, 8);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Alaska_191km/files/latest.xml", 22, 10, 12, 7);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Hawaii_160km/files/latest.xml", 15, 8, 10, 6);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/CONUS_80km/files/latest.xml", 31, 12, 15, 8);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/CONUS_95km/files/latest.xml", 30, 10, 12, 8);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/CONUS_191km/files/latest.xml", 20, 8, 10, 7);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/GFS/Puerto_Rico_191km/files/latest.xml", 15, 8, 10, 6);
+
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 15, 17, 13);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 154, 34, 36, 31);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 15, 17, 13);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/surface/files/latest.xml", 54, 16, 18, 12);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/selectsurface/files/latest.xml", 54, 16, 18, 12);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_40km/conduit/files/latest.xml", 176, 29, 31, 25);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Polar_90km/files/latest.xml", 133, 28, 30, 25);
+
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_22km/files/latest.xml", 25, 8, 10, 6);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_45km/noaaport/files/latest.xml", 21, 6, 8, 4);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/Alaska_95km/files/latest.xml", 29, 12, 14, 9);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/NAM/CONUS_80km/files/latest.xml", 41, 11, 13, 8);
+
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml", 53, 12, 14, 9);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_20km/files/latest.xml", 74, 15, 17, 11);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 74, 15, 17, 11);
+
   }
 
   public void utestProblem() throws Exception {
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RAP/CONUS_13km/files/latest.xml", 52, -1, -1, 9);
+    TestReadandCount.doOne(base,"catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml", 52, -1, -1, 9);
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {

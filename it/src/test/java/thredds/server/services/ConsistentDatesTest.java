@@ -15,6 +15,8 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -108,7 +110,13 @@ public class ConsistentDatesTest {
 			String xml = response.getBody(String.class);
 			Reader in = new StringReader(xml);		
 			SAXBuilder sb=new SAXBuilder();
-			Document doc=sb.build(in);		
+			Document doc=sb.build(in);
+
+      if (true) {
+        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+        fmt.output(doc, System.out);
+      }
+
 			XPath xPath = XPath.newInstance("/grid/point/data[@name='date']");
 			List<Element> dataTimeNodes = xPath.selectNodes(doc);
 			List<DateTime>  timePositionDateTime = new ArrayList<DateTime>();
