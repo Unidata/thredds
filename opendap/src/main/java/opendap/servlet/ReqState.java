@@ -40,8 +40,6 @@
 
 package opendap.servlet;
 
-import ucar.nc2.util.log.LogStream;
-
 import ucar.nc2.util.net.HTTPSession;
 
 import java.util.Enumeration;
@@ -141,11 +139,10 @@ public class ReqState {
         this.myServletContext = sv.getServletContext();
         this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));
         if(this.rootpath == null) {
-            LogStream.err.println("ReqState: cannot locate dts root path");
-	    LogStream.err.flush();
+            AbstractServlet.log.error("ReqState: cannot locate dts root path");
             this.rootpath = "";
         }
-        LogStream.out.println("RootPath: "+this.rootpath);
+        AbstractServlet.log.debug("RootPath: "+this.rootpath);
 
         this.myHttpRequest = myRequest;
         this.response = response;
@@ -156,7 +153,7 @@ public class ReqState {
         if (this.CE == null) this.CE = "";
 
         processDodsURL();
-        LogStream.out.println("datasetname=|"+this.dataSetName+"|");
+        AbstractServlet.log.debug("datasetname=|"+this.dataSetName+"|");
 
         defaultDDXcache  = rootpath + testdatasetspath + "/ddx";
         defaultDDScache  = rootpath + testdatasetspath + "/dds";
@@ -177,7 +174,6 @@ public class ReqState {
 
         requestURL = (encodedurl);
 
-	LogStream.out.flush();
     }
 
     public String getDataSet() {
@@ -459,11 +455,10 @@ public class ReqState {
         String path2 = myHttpRequest.getServletPath();
         String path3 = myHttpRequest.getRequestURI();
         String path4 = myHttpRequest.getPathInfo();
-        LogStream.out.println("cxt="+path1);
-        LogStream.out.println("sv="+path2);
-        LogStream.out.println("url="+path3);
-        LogStream.out.println("path="+path4);
-	LogStream.out.flush();
+        AbstractServlet.log.debug("cxt="+path1);
+        AbstractServlet.log.debug("sv="+path2);
+        AbstractServlet.log.debug("url="+path3);
+        AbstractServlet.log.debug("path="+path4);
 
         this.dataSetName = HTTPSession.canonicalpath(myHttpRequest.getPathInfo());
         String cxtpath = HTTPSession.canonicalpath(myHttpRequest.getContextPath());
@@ -489,7 +484,7 @@ public class ReqState {
 	    }
         }
 
-        LogStream.out.println("this.datasetname.1="+this.dataSetName);
+        AbstractServlet.log.debug("this.datasetname.1="+this.dataSetName);
 
         this.requestSuffix = null;
         if (this.dataSetName != null) {
@@ -521,8 +516,7 @@ public class ReqState {
                 }
             }
         }
-        LogStream.out.println("this.datasetname.2="+this.dataSetName);
-	LogStream.err.flush();
+        AbstractServlet.log.debug("this.datasetname.2="+this.dataSetName);
     }
 
     /**

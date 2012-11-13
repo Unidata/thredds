@@ -40,8 +40,6 @@
 
 package ucar.nc2.util.net;
 
-import ucar.nc2.util.log.LogStream;
-
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +51,13 @@ import java.util.regex.Pattern;
  * Date: Jul 7, 2006
  * Time: 10:23:19 AM
  */
-public class EscapeStrings {
+public class EscapeStrings
+{
+
+    //////////////////////////////////////////////////////////////////////////
+    static public org.slf4j.Logger log
+                = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
+    //////////////////////////////////////////////////////////////////////////
 
     // Sets of ascii characters
     static final String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -570,8 +574,8 @@ public class EscapeStrings {
 
   public static void main2(String[] args) {
     String s = "http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-15T00:00:00Z.html.asc?Total_cloud_cover_low_cloud%5B1:1:1%5D%5B0:1:360%5D%5B0:1:719%5D";
-    LogStream.out.printf("%s%n", s);
-    LogStream.out.printf("%s%n", unescapeURL(s));
+    log.debug("%s%n", s);
+    log.debug("%s%n", unescapeURL(s));
   }
 
   public static void main(String[] args) {

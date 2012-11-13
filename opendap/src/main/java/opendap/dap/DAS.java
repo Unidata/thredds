@@ -39,7 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.log.LogStream;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -232,10 +231,8 @@ public class DAS extends AttributeTable
             String aName = (String) e.nextElement();
 
             if (Debug.isSet("DAS")) {
-		LogStream.dbg.println("DAS.resolveAliases() - aName: " + aName);
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("DAS.resolveAliases() - aName: " + aName);
 	    }
-
             Attribute at = getAttribute(aName);
             if (at == null || !at.isContainer()) {
 
@@ -271,8 +268,7 @@ public class DAS extends AttributeTable
         currentAT = at;
 
         if (Debug.isSet("DAS")) {
-		LogStream.dbg.println("DAS.resolveAliases(at=" + at + ")");
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("DAS.resolveAliases(at=" + at + ")");
 	    }
 
         //getall of the Attributes from the table.
@@ -281,23 +277,20 @@ public class DAS extends AttributeTable
 
             String aName = (String) aNames.nextElement();
             if (Debug.isSet("DAS")) {
-		LogStream.dbg.println("DAS.resolveAliases(at=" + at + ") - aName: " + aName);
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("DAS.resolveAliases(at=" + at + ") - aName: " + aName);
 	    }
 
             opendap.dap.Attribute thisA = currentAT.getAttribute(aName);
 
             if (Debug.isSet("DAS")) {
-		LogStream.dbg.println("thisA.getClass().getName(): " + thisA.getClass().getName());
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("thisA.getClass().getName(): " + thisA.getClass().getName());
 	    }
 
             if (thisA.isAlias()) {
                 //Is Alias? Resolve it!
                 resolveAlias((Alias) thisA);
                 if (Debug.isSet("DAS")) {
-		LogStream.dbg.println("Resolved Alias: '" + thisA.getEncodedName() + "'\n");
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("Resolved Alias: '" + thisA.getEncodedName() + "'\n");
 	    }
             } else if (thisA.isContainer()) {
                 //Is AttributeTable (container)? Search it!
@@ -343,9 +336,8 @@ public class DAS extends AttributeTable
         currentAlias = alias;
 
         if (Debug.isSet("DAS")) {
-		LogStream.dbg.println("\n\nFound: Alias " + name +
+		DAPNode.log.debug("\n\nFound: Alias " + name +
                     "  " + attribute);
-		LogStream.dbg.logflush();
 	    }
 
         // Let's go
@@ -360,8 +352,7 @@ public class DAS extends AttributeTable
 
 
         if (Debug.isSet("DAS")) {
-		LogStream.dbg.println("Attribute: `" + attribute + "'");
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("Attribute: `" + attribute + "'");
 	    }
 
         // Tokenize the attribute field.
@@ -369,13 +360,12 @@ public class DAS extends AttributeTable
         Vector aNames = opendap.dap.DDS.tokenizeAliasField(attribute);
 
         if (Debug.isSet("DAS")) {
-	    LogStream.dbg.println("Attribute name tokenized to " + aNames.size() + " elements");
+	    DAPNode.log.debug("Attribute name tokenized to " + aNames.size() + " elements");
             e = aNames.elements();
             while (e.hasMoreElements()) {
                 String aname = (String) e.nextElement();
-                LogStream.dbg.println("name: " + aname);
+                DAPNode.log.debug("name: " + aname);
             }
-	    LogStream.dbg.logflush();
         }
 
 

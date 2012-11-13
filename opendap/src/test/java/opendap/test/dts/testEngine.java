@@ -46,8 +46,6 @@ import java.io.*;
 import opendap.dap.*;
 import opendap.servers.*;
 
-import ucar.nc2.util.log.LogStream;
-
 /**
  * Used by the test server to reset the server output
  * for each new client request.
@@ -196,9 +194,9 @@ public class testEngine {
             IOException {
 
 
-        if (_Debug) LogStream.out.println("testEngine.newLoadTestArray(" + datasetName + "): ");
+        if (_Debug) DTSServlet.log.debug("testEngine.newLoadTestArray(" + datasetName + "): ");
         try {
-            if (_Debug) LogStream.out.println("Loading: " +
+            if (_Debug) DTSServlet.log.debug("Loading: " +
                     ta.getEncodedName() +
                     " an SDArray of " +
                     ta.numDimensions() +
@@ -208,12 +206,12 @@ public class testEngine {
 
             if (_Debug) {
                 Class cl = pv.getClass();
-                LogStream.out.println("PrimitiveVector is a: " + cl.getName());
+                DTSServlet.log.debug("PrimitiveVector is a: " + cl.getName());
             }
 
 
             pv.setLength(getLength(ta, 0, true));
-            if (_Debug) LogStream.out.println("Length: " + pv.getLength());
+            if (_Debug) DTSServlet.log.debug("Length: " + pv.getLength());
 
             newLoadArray(datasetName, ta);
 
@@ -222,9 +220,8 @@ public class testEngine {
         catch (DAP2Exception e) {
             // Don't bother to do a thing.
         }
-        if (_Debug) LogStream.out.println("---------------------------------------------------");
+        if (_Debug) DTSServlet.log.debug("---------------------------------------------------");
 
-	if(_Debug)  LogStream.out.flush();
 
     }
 
@@ -242,7 +239,7 @@ public class testEngine {
         int sizeofThisDim;
 
         if (constrained) {
-            if (_Debug) LogStream.out.print("Scanning Dimension " + dim +
+            if (_Debug) DTSServlet.log.debug("Scanning Dimension " + dim +
                     "  start: " + dad.getStart() +
                     "  stop: " + dad.getStop() +
                     "  stride: " + dad.getStride());
@@ -254,9 +251,8 @@ public class testEngine {
 
         int eCount = sizeofThisDim * sizeofOtherDims;
 
-        if (_Debug) LogStream.out.println("  length: " + sizeofThisDim);
+        if (_Debug) DTSServlet.log.debug("  length: " + sizeofThisDim);
 
-        if(_Debug) LogStream.out.flush();
         return (eCount);
     }
 
@@ -272,7 +268,7 @@ public class testEngine {
         int uDimSteps[] = new int[ta.numDimensions()];
 
 
-        if (_Debug) LogStream.out.println("ConstrainedIndex: " + constrainedIndex);
+        if (_Debug) DTSServlet.log.debug("ConstrainedIndex: " + constrainedIndex);
 
 
         dim = ta.numDimensions() - 1;
@@ -285,18 +281,18 @@ public class testEngine {
         }
 
         if (_Debug) {
-            LogStream.out.println("DimSteps: ");
+            DTSServlet.log.debug("DimSteps: ");
             for (dim = 0; dim < ta.numDimensions(); dim++) {
-                LogStream.out.println("    cDimSteps[" + dim + "]: " + cDimSteps[dim]);
+                DTSServlet.log.debug("    cDimSteps[" + dim + "]: " + cDimSteps[dim]);
             }
-            LogStream.out.println("");
+            DTSServlet.log.debug("");
             for (dim = 0; dim < ta.numDimensions(); dim++) {
-                LogStream.out.println("    uDimSteps[" + dim + "]: " + uDimSteps[dim]);
+                DTSServlet.log.debug("    uDimSteps[" + dim + "]: " + uDimSteps[dim]);
             }
         }
 
 
-        if (_Debug) LogStream.out.println("cIndices: ");
+        if (_Debug) DTSServlet.log.debug("cIndices: ");
 
         k = 0;
         for (dim = 0; dim < (ta.numDimensions() - 1); dim++) {
@@ -305,30 +301,29 @@ public class testEngine {
 
             cIndices[dim] = (constrainedIndex - k) / cDimSteps[dim];
 
-            if (_Debug) LogStream.out.println("cIndices[" + dim + "]: " + cIndices[dim] + "  k: " + k);
+            if (_Debug) DTSServlet.log.debug("cIndices[" + dim + "]: " + cIndices[dim] + "  k: " + k);
 
             k += cIndices[dim] * cDimSteps[dim];
 
         }
 
         cIndices[dim] = (constrainedIndex - k);
-        if (_Debug) LogStream.out.println("cIndices[" + dim + "]: " + cIndices[dim] + "  k: " + k);
+        if (_Debug) DTSServlet.log.debug("cIndices[" + dim + "]: " + cIndices[dim] + "  k: " + k);
 
 
-        if (_Debug) LogStream.out.print("uIndices: (");
+        if (_Debug) DTSServlet.log.debug("uIndices: (");
         for (dim = 0; dim < ta.numDimensions(); dim++) {
             dad = ta.getDimension(dim);
             uIndices[dim] = dad.getStart() + cIndices[dim] * dad.getStride();
-            if (_Debug) LogStream.out.print(uIndices[dim] + ", ");
+            if (_Debug) DTSServlet.log.debug(uIndices[dim] + ", ");
         }
-        if (_Debug) LogStream.out.println(")");
+        if (_Debug) DTSServlet.log.debug(")");
 
         uI = 0;
         for (dim = 0; dim < ta.numDimensions(); dim++) {
             uI += uIndices[dim] * uDimSteps[dim];
         }
 
-        if(_Debug) LogStream.out.flush();
         return (uI);
 
 
@@ -340,15 +335,15 @@ public class testEngine {
 
         PrimitiveVector pv = ta.getPrimitiveVector();
 
-        if (_Debug) LogStream.out.println("Loading Array... ");
+        if (_Debug) DTSServlet.log.debug("Loading Array... ");
 
         for (int j = 0; j < pv.getLength(); j++) {
-            if (_Debug) LogStream.out.print("..\n");
+            if (_Debug) DTSServlet.log.debug("..\n");
 
 
             int i = nuAI(j, ta);
 
-            if (_Debug) LogStream.out.println("ConstrainedIndex: " + j + "   UnconstrainedIndex: " + i);
+            if (_Debug) DTSServlet.log.debug("ConstrainedIndex: " + j + "   UnconstrainedIndex: " + i);
 
             if (pv instanceof BaseTypePrimitiveVector) {
 
@@ -405,8 +400,6 @@ public class testEngine {
             }
 
         }
-        if (_Debug) LogStream.out.println("");
-        if(_Debug) LogStream.out.flush();
     }
     //**************************************************************************
 
@@ -441,7 +434,7 @@ public class testEngine {
             }
 
             SDArray sam = (SDArray) tg.getVar(i + 1);
-            //LogStream.out.println("The Map Vector Elements are: " + sam.getName());
+            //log.debug("The Map Vector Elements are: " + sam.getName());
 
             if (sam.isProject())
                 sam.read(datasetName, this);

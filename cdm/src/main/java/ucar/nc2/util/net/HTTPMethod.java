@@ -51,13 +51,17 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.*;
 
 import org.apache.commons.httpclient.protocol.Protocol;
-import ucar.nc2.util.log.LogStream;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 @NotThreadSafe
 public class HTTPMethod
 {
+//////////////////////////////////////////////////////////////////////////
+static public org.slf4j.Logger log = HTTPSession.log;
+
+//////////////////////////////////////////////////////////////////////////
+
 // Define static factory methods
 
 static public HTTPMethod Get(HTTPSession session) throws HTTPException
@@ -292,7 +296,7 @@ public void close()
 {
     // try to release underlying resources
     if (closed) {
-        LogStream.err.println("HTTPMethod: attempt to close already closed method.");
+        log.error("HTTPMethod: attempt to close already closed method.");
         return;
     }
     if(methodstream != null) {

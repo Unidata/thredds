@@ -33,8 +33,6 @@
 
 package ucar.nc2.util.rc;
 
-import ucar.nc2.util.log.LogStream;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,6 +45,9 @@ import java.util.*;
 public class RC
 {
 static boolean showlog = false; /* do not do any logging */
+static public org.slf4j.Logger log
+                = org.slf4j.LoggerFactory.getLogger(RC.class);
+
 //////////////////////////////////////////////////
 // Predefined flags
 // To add a new flag:
@@ -284,7 +285,7 @@ loadDefaults()
 	}
     }
     if(!found1)
-      if(showlog) LogStream.getLog().info("No .rc file found");
+      if(showlog) log.debug("No .rc file found");
     dfaltRC = rc0;
 }
 
@@ -320,12 +321,12 @@ load(String abspath)
     if(!rcFile.exists() || !rcFile.canRead()) {
 	return false;
     }
-    if(showlog) LogStream.getLog().info("Loading rc file: "+abspath);
+    if(showlog) log.debug("Loading rc file: "+abspath);
     FileReader frdr = null;
     try {
         frdr = new FileReader(rcFile);
     } catch (FileNotFoundException fe) {
-        if(showlog) LogStream.getLog().info("Loading rc file: "+abspath);
+        if(showlog) log.debug("Loading rc file: "+abspath);
         return false;
     }
     BufferedReader rdr = new BufferedReader(frdr);
@@ -342,12 +343,12 @@ load(String abspath)
             if(line.charAt(0) == LTAG) {
                 int rindex = line.indexOf(RTAG);
                 if(rindex < 0) return false;
-                if(showlog) LogStream.getLog().error("Malformed [url] at "+abspath+"."+lineno);
+                if(showlog) log.error("Malformed [url] at "+abspath+"."+lineno);
                 String surl = line.substring(1,rindex);
                 try {
                     url = new URL(surl);
                 } catch (MalformedURLException mue) {
-                    if(showlog) LogStream.getLog().error("Malformed [url] at "+abspath+"."+lineno);
+                    if(showlog) log.error("Malformed [url] at "+abspath+"."+lineno);
                 }
                 line = line.substring(rindex+1);
                 // trim again
@@ -368,7 +369,7 @@ load(String abspath)
         rdr.close();
         frdr.close();
     } catch (IOException ioe) {
-        if(showlog) LogStream.getLog().error("File "+abspath+": IO exception: "+ioe.getMessage());
+        if(showlog) log.error("File "+abspath+": IO exception: "+ioe.getMessage());
         return false;
     }
     return true;

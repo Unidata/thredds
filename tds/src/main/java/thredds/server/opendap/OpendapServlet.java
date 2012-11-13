@@ -67,7 +67,9 @@ import ucar.nc2.util.net.EscapeStrings;
 public class OpendapServlet extends AbstractServlet {
   static final String DEFAULTCONTEXTPATH = "/thredds";
   static final String GDATASET = "guarded_dataset";
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
+
+  static public org.slf4j.Logger log
+             = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
 
   private boolean allowSessions = false;
   private boolean allowDeflate = false; // handled by Tomcat

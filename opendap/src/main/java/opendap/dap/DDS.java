@@ -39,7 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.log.LogStream;
 import ucar.nc2.util.net.EscapeStrings;
 
 import java.util.Enumeration;
@@ -518,14 +517,14 @@ public class DDS extends DStructure
             }
 
             if (_Debug) {
-		LogStream.dbg.println("Found " + countLooseAttributes + " top level Attributes.");
+		DAPNode.log.debug("Found " + countLooseAttributes + " top level Attributes.");
 	    }
 
-            if (_Debug) myDAS.print(LogStream.dbg);
+            //if (_Debug) myDAS.print(LogStream.dbg);
 
             // Only add this AttributeTable if actually contains Attributes!
             if (countLooseAttributes > 0) {
-                if (_Debug) LogStream.dbg.println("Creating looseEnds table: " + looseEnds.getEncodedName());
+                if (_Debug) DAPNode.log.debug("Creating looseEnds table: " + looseEnds.getEncodedName());
                 myDAS.addAttributeTable(looseEnds.getEncodedName(), looseEnds);
             }
 
@@ -537,14 +536,13 @@ public class DDS extends DStructure
                 buildDASAttributeTable(bt, myDAS);
             }
 
-            if (_Debug) myDAS.print(LogStream.dbg);
+            //if (_Debug) myDAS.print(LogStream.dbg);
 
             // Make sure that the Aliases resolve correctly. Since we are moving from a
             // DDS/DDX space to a DFAS space the Aliases may not be resolvable. In that
             // case an exception will get thrown...
             myDAS.resolveAliases();
 
-	    LogStream.dbg.logflush();
         } catch (Exception e) {
             e.printStackTrace();
             throw new DASException(opendap.dap.DAP2Exception.UNKNOWN_ERROR,
@@ -672,8 +670,7 @@ public class DDS extends DStructure
     private String repairLooseEndsTableConflict(String badName, int attempt)
     {
 
-        LogStream.dbg.println("Repairing toplevel attribute table name conflict. Attempt: " + attempt);
-	LogStream.dbg.logflush();
+        DAPNode.log.debug("Repairing toplevel attribute table name conflict. Attempt: " + attempt);
 
         String name = "";
 
@@ -720,8 +717,7 @@ public class DDS extends DStructure
         AttributeTable newAT = atbl.appendContainer(tBTAT.getEncodedName());
 
         if (_Debug) {
-		LogStream.dbg.println("newAT.getName(): " + newAT.getEncodedName());
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("newAT.getName(): " + newAT.getEncodedName());
 	    }
 
         // Get each Attribute in the AttributeTable that we are copying,
@@ -768,7 +764,7 @@ public class DDS extends DStructure
 
             String alias = attr.getEncodedName();
             String attribute = ((Alias) attr).getAliasedToAttributeFieldAsClearString();
-            if (_Debug) LogStream.dbg.println("Adding Alias name: " + alias);
+            if (_Debug) DAPNode.log.debug("Adding Alias name: " + alias);
             atTable.addAlias(alias, convertDDSAliasFieldsToDASAliasFields(attribute));
         } else if (attr.isContainer()) {
             // If this Attribute is a container of other Attributes (an AttributeTable)
@@ -782,7 +778,7 @@ public class DDS extends DStructure
 
             // Start a new (child) AttributeTable (using the name of the one we are
             // copying) in the (parent) AttributeTable we are working on.
-            if (_Debug) LogStream.dbg.println("Appending AttributeTable name: " + thisTable.getEncodedName());
+            if (_Debug) DAPNode.log.debug("Appending AttributeTable name: " + thisTable.getEncodedName());
             AttributeTable newTable = atTable.appendContainer(thisTable.getEncodedName());
 
             // Get each Attribute in the AttributeTable that we are copying,
@@ -802,11 +798,10 @@ public class DDS extends DStructure
             while (v.hasMoreElements()) {
                 String value = (String) v.nextElement();
                 if (_Debug)
-                    LogStream.dbg.println("AtributeTable: " + atTable.getEncodedName() + " Appending Attribute name: " + name + "  type: " + type + " value: " + value);
+                    DAPNode.log.debug("AtributeTable: " + atTable.getEncodedName() + " Appending Attribute name: " + name + "  type: " + type + " value: " + value);
                 atTable.appendAttribute(name, type, value);
             }
         }
-	LogStream.dbg.logflush();
     }
 
 
@@ -1217,8 +1212,7 @@ public class DDS extends DStructure
             throws BadSemanticsException
     {
         if (getEncodedName() == null) {
-            LogStream.err.println("A dataset must have a name");
-	    LogStream.err.logflush();
+            DAPNode.log.error("A dataset must have a name");
             throw new BadSemanticsException("DDS.checkSemantics(): A dataset must have a name");
         }
         Util.uniqueNames(vars, getEncodedName(), "Dataset");
@@ -1329,7 +1323,7 @@ public class DDS extends DStructure
 
 
         if (Debug.isSet("DDS.resolveAliases"))
-            LogStream.dbg.println("Searching for Aliases in the Attributes of Variable: " + bt.getEncodedName());
+            DAPNode.log.debug("Searching for Aliases in the Attributes of Variable: " + bt.getEncodedName());
 
         // Process the Attributes of this BaseType.
         resolveAliases(bt.getAttributeTable());
@@ -1338,7 +1332,7 @@ public class DDS extends DStructure
         // search and resolve Aliases in it's children.
         if (bt instanceof DConstructor) {
             if (Debug.isSet("DDS.resolveAliases"))
-                LogStream.dbg.println("Searching for Aliases in the children of Variable: " + bt.getEncodedName());
+                DAPNode.log.debug("Searching for Aliases in the children of Variable: " + bt.getEncodedName());
 
             Enumeration bte = ((DConstructor) bt).getVariables();
 
@@ -1352,7 +1346,6 @@ public class DDS extends DStructure
 
         // Restore the previous current BaseType state.
         currentBT = cacheBT;
-	LogStream.dbg.logflush();
     }
 
 
@@ -1391,8 +1384,7 @@ public class DDS extends DStructure
                 //Is Alias? Resolve it!
                 resolveAlias((Alias) thisA);
                 if (Debug.isSet("DDS.resolveAliases")) {
-		LogStream.dbg.println("Resolved Alias: '" + thisA.getEncodedName() + "'\n");
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("Resolved Alias: '" + thisA.getEncodedName() + "'\n");
 	    }
             } else if (thisA.isContainer()) {
                 //Is AttributeTable (container)? Search it!
@@ -1432,9 +1424,8 @@ public class DDS extends DStructure
         String attribute = alias.getAliasedToAttributeFieldAsClearString();
 
         if (Debug.isSet("DDS.resolveAliases")) {
-		LogStream.dbg.println("\n\nFound: Alias " + name +
+		DAPNode.log.debug("\n\nFound: Alias " + name +
                     "  " + attribute);
-		LogStream.dbg.logflush();
 	    }
 
         // The Attribute field MAY NOT be empty.
@@ -1445,19 +1436,18 @@ public class DDS extends DStructure
 
 
         if (Debug.isSet("DDS.resolveAliases")) {
-		LogStream.dbg.println("Attribute: `" + attribute + "'");
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("Attribute: `" + attribute + "'");
 	    }
 
         // Tokenize the attribute field.
         Vector aNames = tokenizeAliasField(attribute);
 
         if (Debug.isSet("DDS.resolveAliases")) {
-            LogStream.dbg.println("Attribute name tokenized to " + aNames.size() + " elements");
+            DAPNode.log.debug("Attribute name tokenized to " + aNames.size() + " elements");
             Enumeration e = aNames.elements();
             while (e.hasMoreElements()) {
                 String aname = (String) e.nextElement();
-                LogStream.dbg.println("name: " + aname);
+                DAPNode.log.debug("name: " + aname);
             }
         }
 
@@ -1696,8 +1686,7 @@ public class DDS extends DStructure
 
         }
         if (Debug) {
-		LogStream.dbg.println("String: `" + field + "` normalized to: `" + sb + "`");
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("String: `" + field + "` normalized to: `" + sb + "`");
 	    }
 
         return (sb.toString());
@@ -1741,8 +1730,7 @@ public class DDS extends DStructure
 
 
         if (Debug) {
-		LogStream.dbg.println("lastIndexOf(dot): " + field.lastIndexOf(dot) + "   lastIndex: " + lastIndex);
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("lastIndexOf(dot): " + field.lastIndexOf(dot) + "   lastIndex: " + lastIndex);
 	    }
 
         // Does this thing start with a quote?
@@ -1989,8 +1977,7 @@ public class DDS extends DStructure
 
         } catch (DASException de) {
 
-            LogStream.err.println("DDS.ingestDAS(): " + de.getMessage());
-	    LogStream.err.logflush();
+            DAPNode.log.error("DDS.ingestDAS(): " + de.getMessage());
         }
 
     }
@@ -2158,8 +2145,7 @@ public class DDS extends DStructure
     {
 
 	if(_Debug) {
-		LogStream.dbg.println("Checking "+dc.getTypeName()+" "+dc.getClearName()+" for name conflicts.");
-		LogStream.dbg.logflush();
+		DAPNode.log.debug("Checking "+dc.getTypeName()+" "+dc.getClearName()+" for name conflicts.");
 	    }
 
         Enumeration bte = dc.getVariables();

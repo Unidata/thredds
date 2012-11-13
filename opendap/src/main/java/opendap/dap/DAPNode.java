@@ -65,7 +65,11 @@ import java.util.Map;
 
 public class DAPNode implements Cloneable, Serializable
 {
-    
+    //////////////////////////////////////////////////////////////////////////
+    static public org.slf4j.Logger log
+                = org.slf4j.LoggerFactory.getLogger(DAPNode.class);
+    //////////////////////////////////////////////////////////////////////////
+
     static final long serialVersionUID = 1;
 
     // Define a singleton value for which we can test with ==

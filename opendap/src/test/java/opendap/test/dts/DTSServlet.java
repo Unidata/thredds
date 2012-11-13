@@ -47,7 +47,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import opendap.dap.*;
-import ucar.nc2.util.log.LogStream;
 import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 import opendap.servlet.*;
@@ -209,6 +208,9 @@ import ucar.nc2.util.net.EscapeStrings;
 
 public class DTSServlet extends AbstractServlet
 {
+  static public org.slf4j.Logger log
+             = org.slf4j.LoggerFactory.getLogger(DTSServlet.class);
+
   // Class variables
   static final String DEFAULTCONTEXTPATH = "/dts";
 
@@ -354,7 +356,7 @@ public class DTSServlet extends AbstractServlet
    {
     super.init();
     setLog(DTSLog.class);
-    LogStream.out.println("**************** DTS INIT ***********************");
+    log.debug("**************** DTS INIT ***********************");
 
     // debugging
     String debugOn = getInitParameter("DebugOn");
@@ -367,8 +369,7 @@ public class DTSServlet extends AbstractServlet
     servletConfig = this.getServletConfig();
     servletContext = servletConfig.getServletContext();
     rootpath = servletContext.getRealPath("/");
-    LogStream.out.println("rootpath="+rootpath);
-    LogStream.out.flush();
+    log.debug("rootpath="+rootpath);
   }
   /***************************************************************************/
 
@@ -384,13 +385,12 @@ public class DTSServlet extends AbstractServlet
     //log.error("DODSServlet.parseExceptionHandler", pe);
 
     if(Debug.isSet("showException")) {
-      LogStream.err.println(pe);
-      pe.printStackTrace(LogStream.err);
+      log.error(pe.toString());
+      pe.printStackTrace();
       printThrowable(pe);
-      LogStream.err.flush();      
     }
 
-    //LogStream.out.println(pe);
+    //log.debug(pe);
     //pe.printStackTrace();
 
     try {
@@ -401,7 +401,7 @@ public class DTSServlet extends AbstractServlet
       // C++ slients don't barf as they would if I sent "plain" AND
       // the C++ don't expect compressed data if I do this...
       response.setHeader("Content-Encoding", "");
-      // response.setContentType("text/plain");  LOOK do we needLogStream.err
+      // response.setContentType("text/plain");
 
       // Strip any double quotes out of the parser error message.
       // These get stuck in auto-magically by the javacc generated parser
@@ -411,8 +411,7 @@ public class DTSServlet extends AbstractServlet
       DAP2Exception de2 = new DAP2Exception(opendap.dap.DAP2Exception.CANNOT_READ_FILE, msg);
       de2.print(eOut);
     } catch (IOException ioe) {
-      LogStream.err.println("Cannot respond to client! IO Error: " + ioe.getMessage());
-      LogStream.err.flush();
+      log.error("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
 
   }
@@ -429,10 +428,9 @@ public class DTSServlet extends AbstractServlet
 
     if(Debug.isSet("showException"))
     {
-      de.print(LogStream.err);
-      de.printStackTrace(LogStream.err);
+      log.error(de.toString());
+      de.printStackTrace();
       printDODSException(de);
-      LogStream.err.flush();
     }
 
     try {
@@ -448,8 +446,7 @@ public class DTSServlet extends AbstractServlet
       de.print(eOut);
 
     } catch (IOException ioe) {
-      LogStream.err.println("Cannot respond to client! IO Error: " + ioe.getMessage());
-      LogStream.err.flush();
+      log.error("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
 
   }
@@ -484,20 +481,18 @@ public class DTSServlet extends AbstractServlet
       de2.print(eOut);
 
       if(Debug.isSet("showException")) { // Error message
-        LogStream.err.println("DODServlet ERROR (IOExceptionHandler): " + e);
-        LogStream.err.println(rs);
+        log.error("DODServlet ERROR (IOExceptionHandler): " + e);
+        log.error(rs.toString());
         if(track) {
           RequestDebug reqD = (RequestDebug) rs.getUserObject();
-          LogStream.err.println("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
+          log.error("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
         }
-        e.printStackTrace(LogStream.err);
+        e.printStackTrace();
         printThrowable(e);
-        LogStream.err.flush();
       }
 
     } catch (IOException ioe) {
-      LogStream.err.println("Cannot respond to client! IO Error: " + ioe.getMessage());
-      LogStream.err.flush();
+      log.error("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
 
   }
@@ -512,8 +507,8 @@ public class DTSServlet extends AbstractServlet
   public void anyExceptionHandler(Throwable e, ReqState rs)
   {
     try {
-      LogStream.err.println("DODServlet ERROR (anyExceptionHandler): " + e);
-      e.printStackTrace(LogStream.err);
+      log.error("DODServlet ERROR (anyExceptionHandler): " + e);
+      e.printStackTrace();
       printThrowable(e);
       // Strip any double quotes out of the parser error message.
       // These get stuck in auto-magically by the javacc generated parser
@@ -524,10 +519,10 @@ public class DTSServlet extends AbstractServlet
 
       if(rs != null) {
         HttpServletResponse response = rs.getResponse();
-        LogStream.err.println(rs+"");
+        log.error(rs+"");
         if(track) {
           RequestDebug reqD = (RequestDebug) rs.getUserObject();
-          LogStream.err.println("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
+          log.error("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
         }
         BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
         response.setHeader("Content-Description", "dods-error");
@@ -539,12 +534,10 @@ public class DTSServlet extends AbstractServlet
 
         DAP2Exception de2 = new DAP2Exception(opendap.dap.DAP2Exception.UNDEFINED_ERROR, msg);
         de2.print(eOut);
-        LogStream.err.flush();
     }
 
     } catch (IOException ioe) {
-      LogStream.err.println("Cannot respond to client! IO Error: " + ioe.getMessage());
-        LogStream.err.flush();
+      log.error("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
 
   }
@@ -577,8 +570,7 @@ public class DTSServlet extends AbstractServlet
 
     rs.getResponse().setStatus(HttpServletResponse.SC_OK);
 
-    LogStream.err.println(serverMsg);
-    LogStream.err.flush();
+    log.error(serverMsg);
 
   }
 
@@ -598,8 +590,7 @@ public class DTSServlet extends AbstractServlet
           throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.err.println("doGetDAS for dataset: " + rs.getDataSet());
-      LogStream.out.flush();
+      log.error("doGetDAS for dataset: " + rs.getDataSet());
     }
 
     GuardedDataset ds = null;
@@ -619,9 +610,8 @@ public class DTSServlet extends AbstractServlet
       myDAS.print(Out);
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if(Debug.isSet("showResponse")) {
-        LogStream.out.println("DAS=\n");
-        myDAS.print(LogStream.out);
-	LogStream.out.flush();
+        log.debug("DAS=\n");
+        myDAS.print(System.out);
       }
 
     } catch (DAP2Exception de) {
@@ -652,8 +642,7 @@ public class DTSServlet extends AbstractServlet
           throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.out.println("doGetDDS for dataset: " + rs.getDataSet());
-      LogStream.out.flush();
+      log.debug("doGetDDS for dataset: " + rs.getDataSet());
     }
 
     GuardedDataset ds = null;
@@ -690,13 +679,12 @@ public class DTSServlet extends AbstractServlet
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if(Debug.isSet("showResponse")) {
         if(rs.getConstraintExpression().equals("")) { // No Constraint Expression?
-          LogStream.out.println("Unconstrained DDS=\n");
-          myDDS.print(LogStream.out);
+          log.debug("Unconstrained DDS=\n");
+         // myDDS.print();
         } else {
-          LogStream.out.println("Constrained DDS=\n");
-          myDDS.printConstrained(LogStream.out);
+          log.debug("Constrained DDS=\n");
+          //myDDS.printConstrained();
         }
-	LogStream.out.flush();
       }
 
     } catch (ParseException pe) {
@@ -728,7 +716,7 @@ public class DTSServlet extends AbstractServlet
           throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.out.println("doGetDDX for dataset: " + rs.getDataSet());
+      log.debug("doGetDDX for dataset: " + rs.getDataSet());
     }
 
     GuardedDataset ds = null;
@@ -767,13 +755,12 @@ public class DTSServlet extends AbstractServlet
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
       if(Debug.isSet("showResponse")) {
         if(rs.getConstraintExpression().equals("")) { // No Constraint Expression?
-          LogStream.out.println("Unconstrained DDX=\n");
-          myDDS.printXML(LogStream.out);
+          log.debug("Unconstrained DDX=\n");
+          myDDS.printXML(System.out);
         } else {
-          LogStream.out.println("Constrained DDX=\n");
-          myDDS.printConstrainedXML(LogStream.out);
+          log.debug("Constrained DDX=\n");
+          myDDS.printConstrainedXML(System.out);
         }
-	LogStream.out.flush();
       }
     } catch (ParseException pe) {
       parseExceptionHandler(pe, rs.getResponse());
@@ -806,8 +793,7 @@ public class DTSServlet extends AbstractServlet
           throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.out.println("doGetBLOB For: " + rs.getDataSet());
-      LogStream.out.flush();
+      log.debug("doGetBLOB For: " + rs.getDataSet());
     }
     GuardedDataset ds = null;
     try {
@@ -898,8 +884,7 @@ public class DTSServlet extends AbstractServlet
           throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.out.println("doGetDAP2Data For: " + rs.getDataSet());
-      LogStream.out.flush();
+      log.debug("doGetDAP2Data For: " + rs.getDataSet());
     }
     GuardedDataset ds = null;
     try {
@@ -937,8 +922,8 @@ public class DTSServlet extends AbstractServlet
     ce.parseConstraint(rs);
     
     // debug
-    // LogStream.out.println("CE DDS = ");
-    // myDDS.printConstrained(LogStream.out);
+    // log.debug("CE DDS = ");
+    // myDDS.printConstrained(System.out);
     
     // Send the constrained DDS back to the client
     PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut));
@@ -1030,8 +1015,7 @@ public class DTSServlet extends AbstractServlet
           throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.out.println("Sending Version Tag.");
-      LogStream.out.flush();
+      log.debug("Sending Version Tag.");
     }
     rs.getResponse().setContentType("text/plain");
     rs.getResponse().setHeader("XDODS-Server", getServerVersion());
@@ -1059,8 +1043,7 @@ public class DTSServlet extends AbstractServlet
           throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.out.println("Sending Help Page.");
-      LogStream.out.flush();
+      log.debug("Sending Help Page.");
     }
 
     rs.getResponse().setContentType("text/html");
@@ -1088,8 +1071,7 @@ public class DTSServlet extends AbstractServlet
           throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.out.println("Sending Bad URL Page.");
-      LogStream.out.flush();
+      log.debug("Sending Bad URL Page.");
     }
 
     //log.info("DODSServlet.badURL " + rs.getRequest().getRequestURI());
@@ -1124,7 +1106,7 @@ public class DTSServlet extends AbstractServlet
 	throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.out.println("doGetASC For: " + rs.getDataSet());
+      log.debug("doGetASC For: " + rs.getDataSet());
     }
 
     GuardedDataset ds = null;
@@ -1139,7 +1121,7 @@ public class DTSServlet extends AbstractServlet
 
       boolean debug = false;
       if(debug)
-        LogStream.out.println("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
+        log.debug("Sending OPeNDAP ASCII Data For: " + rs + "  CE: '" + rs.getConstraintExpression() + "'");
 
       ServerDDS dds = ds.getDDS();
       cacheArrayShapes(dds);
@@ -1156,7 +1138,7 @@ public class DTSServlet extends AbstractServlet
       if(sls != null) {
           seqLength = Integer.valueOf(sls);
       }
-      LogStream.out.println("Sequence Length: "+seqLength);
+      log.debug("Sequence Length: "+seqLength);
 
       testEngine te = new testEngine(seqLength);
 
@@ -1168,9 +1150,7 @@ public class DTSServlet extends AbstractServlet
       writer.toASCII(pw,dds,te);
       pw.flush();
 
-      LogStream.out.println("ASCII Response Sent");
-
-      LogStream.out.flush();
+      log.debug("ASCII Response Sent");
 
       // the way that getDAP2Data works
       // DataOutputStream sink = new DataOutputStream(bOut);
@@ -1203,8 +1183,7 @@ public class DTSServlet extends AbstractServlet
           throws Exception
   {
     if(Debug.isSet("showResponse")) {
-      LogStream.out.println("doGetINFO For: " + rs.getDataSet());
-      LogStream.out.flush();
+      log.debug("doGetINFO For: " + rs.getDataSet());
     }
 
     GuardedDataset ds = null;
@@ -1650,10 +1629,10 @@ public class DTSServlet extends AbstractServlet
                     HttpServletResponse response)
   {
 
-    LogStream.out.println("DTS doGet()");
+    log.debug("DTS doGet()");
 
     long tid = Thread.currentThread().getId();
-    LogStream.out.println("thread="+tid);
+    log.debug("thread="+tid);
 
     // setHeader("Last-Modified", (new Date()).toString() );
 
@@ -1662,7 +1641,7 @@ public class DTSServlet extends AbstractServlet
     RequestDebug reqD = null;
     try {
       if(Debug.isSet("probeRequest"))
-        probeRequest(LogStream.out, rs);
+        probeRequest(System.out, rs);
 
       rs = getRequestState(request, response);
         assert(rs != null);
@@ -1684,16 +1663,15 @@ public class DTSServlet extends AbstractServlet
           }
 
           if(Debug.isSet("showRequest")) {
-            LogStream.out.println("-------------------------------------------");
-            LogStream.out.println("Server: " + getServerName() + "   Request #" + reqno);
-            LogStream.out.println("Client: " + request.getRemoteHost());
-            LogStream.out.println(rs.toString());
-            LogStream.out.println("Request dataset: '" + rs.getDataSet() + "' suffix: '" + rs.getRequestSuffix() +
+            log.debug("-------------------------------------------");
+            log.debug("Server: " + getServerName() + "   Request #" + reqno);
+            log.debug("Client: " + request.getRemoteHost());
+            log.debug(rs.toString());
+            log.debug("Request dataset: '" + rs.getDataSet() + "' suffix: '" + rs.getRequestSuffix() +
                     "' CE: '" + rs.getConstraintExpression() + "'");
           }
         }
       } // synch
-      LogStream.out.flush();
 
       if(rs != null) {
         String dataSet = rs.getDataSet();
@@ -1782,12 +1760,11 @@ public class DTSServlet extends AbstractServlet
     //long maxMemory = Runtime.getRuntime ().maxMemory ();
     long usedMemory = (totalMemory - freeMemory);
 
-    LogStream.out.println("****showMemUsed " + from);
-    LogStream.out.println(" totalMemory " + totalMemory);
-    LogStream.out.println(" freeMemory " + freeMemory);
-    //LogStream.out.println(" maxMemory "+maxMemory);
-    LogStream.out.println(" usedMemory " + usedMemory);
-    LogStream.out.flush();
+    log.debug("****showMemUsed " + from);
+    log.debug(" totalMemory " + totalMemory);
+    log.debug(" freeMemory " + freeMemory);
+    //log.debug(" maxMemory "+maxMemory);
+    log.debug(" usedMemory " + usedMemory);
   }
 
 

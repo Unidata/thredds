@@ -39,7 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.log.LogStream;
 
 import java.util.Enumeration;
 
@@ -305,7 +304,7 @@ public class AttributeTable extends DAPNode
                     "It is a duplicat name in this AttributeTable");
         }
         if (Debug.isSet("AttributTable")) {
-            LogStream.out.println("Adding alias '" + alias + "' to AttributeTable '" + getClearName() + "'");
+            log.debug("Adding alias '" + alias + "' to AttributeTable '" + getClearName() + "'");
         }
 
         Alias newAlias = new Alias(alias, attributeName);

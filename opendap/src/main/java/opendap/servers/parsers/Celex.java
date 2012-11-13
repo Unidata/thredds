@@ -43,9 +43,6 @@ import static opendap.servers.parsers.CeParser.*;
 
 import java.io.*;
 
-import ucar.nc2.util.log.LogStream;
-
-
 class Celex implements Lexer, ExprParserConstants
 {
 
@@ -339,15 +336,12 @@ class Celex implements Lexer, ExprParserConstants
      */
     public void yyerror(String s)
     {
-        LogStream.err.print("yyerror: constraint parse error:" + s + "; char " + charno);
+        Ceparse.log.error("yyerror: constraint parse error:" + s + "; char " + charno);
         if (yytext.length() > 0)
-            LogStream.err.print(" near |" + yytext + "|");
-        LogStream.err.println();
+            Ceparse.log.error(" near |" + yytext + "|");
         // Add extra info
-        if (parsestate.getURL() != null) LogStream.err.println("\turl=" + parsestate.getURL());
-        LogStream.err.println("\tconstraint=" + (constraint == null ? "none" : constraint));
-        new Exception().printStackTrace(LogStream.err);
-        LogStream.err.logflush();
+        if (parsestate.getURL() != null) Ceparse.log.error("\turl=" + parsestate.getURL());
+        Ceparse.log.error("\tconstraint=" + (constraint == null ? "none" : constraint));
     }
 
     public void lexerror(String msg)

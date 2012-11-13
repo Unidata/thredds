@@ -38,7 +38,6 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
-import ucar.nc2.util.log.LogStream;
 
 import java.io.*;
 
@@ -57,25 +56,25 @@ class UIntTest {
         long l;
 
         s = ((short) 65500);
-        LogStream.out.println("\nShort assigned to 65500.    System thinks of it as: " + s);
+        DAPNode.log.debug("\nShort assigned to 65500.    System thinks of it as: " + s);
         fp.writeShort(s);
-        LogStream.out.println("Wrote it to disk. ");
+        DAPNode.log.debug("Wrote it to disk. ");
 
         s = ((short) 65537);
-        LogStream.out.println("\nShort assigned to 65537.    System thinks of it as: " + s);
+        DAPNode.log.debug("\nShort assigned to 65537.    System thinks of it as: " + s);
         fp.writeShort(s);
-        LogStream.out.println("Wrote it to disk. ");
+        DAPNode.log.debug("Wrote it to disk. ");
 
 
         i = ((int) 4294967040L);
-        LogStream.out.println("\nInt assigned to 4294967040. System thinks of it as: " + i);
+        DAPNode.log.debug("\nInt assigned to 4294967040. System thinks of it as: " + i);
         fp.writeInt(i);
-        LogStream.out.println("Wrote it to disk. ");
+        DAPNode.log.debug("Wrote it to disk. ");
 
         i = ((int) 4294967298L);
-        LogStream.out.println("\nInt assigned to 4294967298. System thinks of it as: " + i);
+        DAPNode.log.debug("\nInt assigned to 4294967298. System thinks of it as: " + i);
         fp.writeInt(i);
-        LogStream.out.println("Wrote it to disk. ");
+        DAPNode.log.debug("Wrote it to disk. ");
 
     }
 
@@ -87,38 +86,38 @@ class UIntTest {
         long l;
 
 
-        LogStream.out.println("\nReading data...");
+        DAPNode.log.debug("\nReading data...");
         s = fp.readShort();
-        LogStream.out.println("System read short from file as: " + s);
+        DAPNode.log.debug("System read short from file as: " + s);
         i1 = ((int) s);
-        LogStream.out.println("Converted short to int: " + i1);
+        DAPNode.log.debug("Converted short to int: " + i1);
         i1 = i1 & 0xFFFF;
-        LogStream.out.println("And'd with 0xFFFF (represented as an int in memory): " + i1);
+        DAPNode.log.debug("And'd with 0xFFFF (represented as an int in memory): " + i1);
 
-        LogStream.out.println("\nReading data...");
+        DAPNode.log.debug("\nReading data...");
         s = fp.readShort();
-        LogStream.out.println("System read short from file as: " + s);
+        DAPNode.log.debug("System read short from file as: " + s);
         i1 = ((int) s);
-        LogStream.out.println("Converted short to int: " + i1);
+        DAPNode.log.debug("Converted short to int: " + i1);
         i1 = i1 & 0xFFFF;
-        LogStream.out.println("And'd with 0xFFFF (represented as an int in memory): " + i1);
+        DAPNode.log.debug("And'd with 0xFFFF (represented as an int in memory): " + i1);
 
 
-        LogStream.out.println("\nReading data...");
+        DAPNode.log.debug("\nReading data...");
         i2 = fp.readInt();
-        LogStream.out.println("\nSystem read int from file as: " + i2);
+        DAPNode.log.debug("\nSystem read int from file as: " + i2);
         l = ((long) i2);
-        LogStream.out.println("Converted int to long: " + l);
+        DAPNode.log.debug("Converted int to long: " + l);
         l = l & 0xFFFFFFFFL;
-        LogStream.out.println("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
+        DAPNode.log.debug("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
 
-        LogStream.out.println("\nReading data...");
+        DAPNode.log.debug("\nReading data...");
         i2 = fp.readInt();
-        LogStream.out.println("\nSystem read int from file as: " + i2);
+        DAPNode.log.debug("\nSystem read int from file as: " + i2);
         l = ((long) i2);
-        LogStream.out.println("Converted int to long: " + l);
+        DAPNode.log.debug("Converted int to long: " + l);
         l = l & 0xFFFFFFFFL;
-        LogStream.out.println("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
+        DAPNode.log.debug("And'd with 0xFFFFFFFFL (represented as a long in memory): " + l);
 
 
     }

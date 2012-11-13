@@ -33,8 +33,6 @@
 
 package ucar.nc2.util.net;
 
-import ucar.nc2.util.log.LogStream;
-
 import java.net.*;
 
 /**
@@ -42,6 +40,10 @@ import java.net.*;
  */
 
 public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory {
+
+  static public org.slf4j.Logger log = HTTPSession.log;
+
+  //////////////////////////////////////////////////////////////////////////
   static private java.util.HashMap hash = new java.util.HashMap();
   static private boolean installed = false;
 
@@ -52,7 +54,7 @@ public class URLStreamHandlerFactory implements java.net.URLStreamHandlerFactory
         installed = true;
       }
     } catch (Error e) {
-      LogStream.out.println("Error installing URLStreamHandlerFactory "+e.getMessage());
+      log.error("Error installing URLStreamHandlerFactory "+e.getMessage());
       // Log.errorG("Error installing URLStreamHandlerFactory "+e.getMessage());
     }
   }

@@ -39,7 +39,6 @@
 
 
 package opendap.dap;
-import ucar.nc2.util.log.LogStream;
 
 import java.net.*;
 import java.io.*;
@@ -429,50 +428,49 @@ public String getLastExtendedHeader() {
 
 private void checkHeaders(HTTPMethod method) {
   if (debugHeaders) {
-    LogStream.dbg.println("\nOpenConnection Headers for " + method.getPath());
-    LogStream.dbg.println("Status Line: " + method.getStatusLine());
+    DAPNode.log.debug("\nOpenConnection Headers for " + method.getPath());
+    DAPNode.log.debug("Status Line: " + method.getStatusLine());
   }
 
   Header[] responseHeaders = method.getResponseHeaders();
   for (int i1 = 0; i1 < responseHeaders.length; i1++) {
     Header responseHeader = responseHeaders[i1];
-    if (debugHeaders) LogStream.out.print("  " + responseHeader);
+    if (debugHeaders) DAPNode.log.debug("  " + responseHeader);
     String key = responseHeader.getName();
     String value = responseHeader.getValue();
 
     if (key.equals("Last-Modified")) {
       lastModified = value;
       if (debugHeaders)
-        LogStream.dbg.println(" **found lastModified = " + lastModified);
+        DAPNode.log.debug(" **found lastModified = " + lastModified);
 
     } else if (key.equals("X-Last-Extended")) {
       lastExtended = value;
       if (debugHeaders)
-        LogStream.dbg.println(" **found lastExtended = " + lastExtended);
+        DAPNode.log.debug(" **found lastExtended = " + lastExtended);
 
     } else if (key.equals("X-Last-Modified-Invalid")) {
       lastModifiedInvalid = value;
       if (debugHeaders)
-        LogStream.dbg.println(" **found lastModifiedInvalid = " + lastModifiedInvalid);
+        DAPNode.log.debug(" **found lastModifiedInvalid = " + lastModifiedInvalid);
     }
   }
 
   if (debugHeaders)
-    LogStream.dbg.println("OpenConnection Headers for " + method.getPath());
+    DAPNode.log.debug("OpenConnection Headers for " + method.getPath());
 
       Cookie[] cookies = HTTPSession.getGlobalCookies();
 
       if (cookies.length > 0) {
-        if (debugHeaders) LogStream.dbg.println("Cookies= ");
+        if (debugHeaders) DAPNode.log.debug("Cookies= ");
 
         for (int i = 0; i < cookies.length; i++) {
           Cookie cooky = cookies[i];
-          if (debugHeaders) LogStream.dbg.println("  " + cooky);
+          if (debugHeaders) DAPNode.log.debug("  " + cooky);
           if (cooky.getName().equalsIgnoreCase("jsessionid"))
             hasSession = true;
         }
       }
-  if (debugHeaders) LogStream.dbg.logflush();
 }
 
 private interface Command {
@@ -630,12 +628,11 @@ private String getCompleteCE(String CE) {
   if (ce.length() > 0) ce = "?" + ce;
 
   if (false) {
-    LogStream.dbg.println("projString: '" + projString + "'");
-    LogStream.dbg.println("localProjString: '" + localProjString + "'");
-    LogStream.dbg.println("selString: '" + selString + "'");
-    LogStream.dbg.println("localSelString: '" + localSelString + "'");
-    LogStream.dbg.println("Complete CE: " + ce);
-    LogStream.dbg.logflush();
+    DAPNode.log.debug("projString: '" + projString + "'");
+    DAPNode.log.debug("localProjString: '" + localProjString + "'");
+    DAPNode.log.debug("selString: '" + selString + "'");
+    DAPNode.log.debug("localSelString: '" + localSelString + "'");
+    DAPNode.log.debug("Complete CE: " + ce);
   }
   return ce;   // escaping will happen elsewhere
 }
@@ -969,7 +966,7 @@ ParseException, DDSException, DAP2Exception {
 
 /* boolean dumpStreamErr = false; // opendap.util.util.Debug.isSet("dumpStreamErr");
 
-LogStream.dbg.println("dds.getBlobURL(): " + dds.getBlobContentID());
+DAPNode.debug("dds.getBlobURL(): " + dds.getBlobContentID());
 LogStream.dbg.logflush();
 
 if (dds.getBlobContentID() == null) {
@@ -980,7 +977,7 @@ throw new MalformedURLException("Blob URL was 'null'. " +
 
 URL blobURL = new URL(dds.getBlobContentID());
 
-LogStream.dbg.println("Opening BLOB URL: " + blobURL);
+DAPNode.debug("Opening BLOB URL: " + blobURL);
 LogStream.dbg.logflush();
 
 InputStream is = openConnection(blobURL);
@@ -1048,7 +1045,7 @@ public DataDDS getDDXDataFromURL(URL url, StatusUI statusUI, BaseTypeFactory btf
 throws IOException,
 ParseException, DDSException, DAP2Exception {
 
-LogStream.dbg.println("Opening DDX URL: " + url);
+DAPNode.debug("Opening DDX URL: " + url);
 LogStream.dbg.logflush();
 
 InputStream is = openConnection(url);

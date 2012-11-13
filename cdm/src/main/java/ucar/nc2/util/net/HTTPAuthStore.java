@@ -39,7 +39,6 @@ import java.util.*;
 import java.io.*;
 
 import org.apache.commons.httpclient.auth.*;
-import ucar.nc2.util.log.LogStream;
 
 import javax.crypto.*;
 import javax.crypto.spec.*;
@@ -60,6 +59,12 @@ and
 //Package local scope
 class HTTPAuthStore implements Serializable
 {
+
+
+//////////////////////////////////////////////////////////////////////////
+static public org.slf4j.Logger log
+                = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
+//////////////////////////////////////////////////////////////////////////
 
 
 //////////////////////////////////////////////////
@@ -273,7 +278,7 @@ static {
         try {
             insert(new Entry(HTTPAuthScheme.SSL,ANY_URL,creds));
         }   catch (HTTPException he) {
-            LogStream.err.println("HTTPAuthStore: could not insert default SSL data");
+            log.error("HTTPAuthStore: could not insert default SSL data");
         }
      }
 

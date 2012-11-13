@@ -26,7 +26,7 @@
 package ucar.nc2.util.net;
 
 
-import ucar.nc2.util.log.LogStream;
+import thredds.logs.ServletLogParser;
 import ucar.nc2.util.rc.RC;
 
 import java.security.KeyStore;
@@ -68,14 +68,13 @@ import javax.net.ssl.X509TrustManager;
 public class EasyX509TrustManager implements X509TrustManager {
   private X509TrustManager standardTrustManager = null;
 
-  static public org.slf4j.Logger logger = LogStream.getLog();
+  static public org.slf4j.Logger logger = HTTPSession.log;
 
   /**
    * Constructor for EasyX509TrustManager.
    */
   public EasyX509TrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
     super();
-    if(logger == null) logger = LogStream.getLog();
     TrustManagerFactory factory = TrustManagerFactory.getInstance("SunX509");
     factory.init(keystore);
     TrustManager[] trustmanagers = factory.getTrustManagers();

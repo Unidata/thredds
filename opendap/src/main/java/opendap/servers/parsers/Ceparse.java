@@ -10,11 +10,9 @@ import opendap.servers.*;
 import opendap.dap.parsers.*;
 import ucar.nc2.util.net.EscapeStrings;
 
-
 import static opendap.servers.parsers.CeParser.*;
 
 import java.util.*;
-
 
 /**
  * The constraint expression parser class. <p>
@@ -31,6 +29,10 @@ import java.util.*;
 
 public abstract class Ceparse implements ExprParserConstants
 {
+    //////////////////////////////////////////////////////////////////////////
+    static public org.slf4j.Logger log
+            = org.slf4j.LoggerFactory.getLogger(Ceparse.class);
+     //////////////////////////////////////////////////////////////////////////
 
     BaseTypeFactory factory;
 

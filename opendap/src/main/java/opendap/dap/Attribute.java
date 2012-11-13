@@ -38,7 +38,6 @@
 /////////////////////////////////////////////////////////////////////////////
 
 package opendap.dap;
-import ucar.nc2.util.log.LogStream;
 
 import opendap.dap.parsers.DDSXMLParser;
 
@@ -515,8 +514,7 @@ public class Attribute extends DAPNode
       // Byte.parseByte() can't be used because values > 127 are allowed
       short val = Short.parseShort(s);
       if (DebugValueChecking) {
-	LogStream.dbg.println("Attribute.checkByte() - string: '" + s + "'   value: " + val);
-	LogStream.dbg.logflush();
+	  log.debug("Attribute.checkByte() - string: '" + s + "'   value: " + val);
       }
       if (val > 0xFF || val < 0)
         return false;
@@ -538,8 +536,7 @@ public class Attribute extends DAPNode
     try {
       short val = Short.parseShort(s);
       if (DebugValueChecking) {
-	LogStream.dbg.println("Attribute.checkShort() - string: '" + s + "'   value: " + val);
-	LogStream.dbg.logflush();
+	DAPNode.log.debug("Attribute.checkShort() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -559,8 +556,7 @@ public class Attribute extends DAPNode
     try {
       long val = Long.parseLong(s);
       if (DebugValueChecking) {
-	LogStream.dbg.println("Attribute.checkUShort() - string: '" + s + "'   value: " + val);
-	LogStream.dbg.logflush();
+	DAPNode.log.debug("Attribute.checkUShort() - string: '" + s + "'   value: " + val);
       }
       if (val > 0xFFFFL)
         return false;
@@ -582,8 +578,7 @@ public class Attribute extends DAPNode
     try {
       int val = Integer.parseInt(s);
       if (DebugValueChecking) {
-	LogStream.dbg.println("Attribute.checkInt() - string: '" + s + "'   value: " + val);
-	LogStream.dbg.logflush();
+	DAPNode.log.debug("Attribute.checkInt() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -603,8 +598,7 @@ public class Attribute extends DAPNode
     try {
       long val = Long.parseLong(s);
       if (DebugValueChecking) {
-	LogStream.dbg.println("Attribute.checkUInt() - string: '" + s + "'   value: " + val);
-	LogStream.dbg.logflush();
+	DAPNode.log.debug("Attribute.checkUInt() - string: '" + s + "'   value: " + val);
       }
       if (val > 0xFFFFFFFFL)
         return false;
@@ -626,8 +620,7 @@ public class Attribute extends DAPNode
     try {
       float val = Float.parseFloat(s);
       if (DebugValueChecking) {
-	LogStream.dbg.println("Attribute.checkFloat() - string: '" + s + "'   value: " + val);
-	LogStream.dbg.logflush();
+	DAPNode.log.debug("Attribute.checkFloat() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -649,8 +642,7 @@ public class Attribute extends DAPNode
     try {
       double val = Double.parseDouble(s);
       if (DebugValueChecking) {
-	LogStream.dbg.println("Attribute.checkDouble() - string: '" + s + "'   value: " + val);
-	LogStream.dbg.logflush();
+	DAPNode.log.debug("Attribute.checkDouble() - string: '" + s + "'   value: " + val);
       }
       return true;
     }
@@ -699,8 +691,7 @@ public class Attribute extends DAPNode
   private void checkContainerUsage() throws NoSuchAttributeException {
 
     if (_Debug) {
-	LogStream.dbg.print("Attribute.checkContainerUsage(): ");
-	LogStream.dbg.logflush();
+	DAPNode.log.debug("Attribute.checkContainerUsage(): ");
       }
 
     if (!(attr instanceof AttributeTable)) {
@@ -709,8 +700,7 @@ public class Attribute extends DAPNode
                       "It's content is made up of values, not other Attributes.");
     }
     if (_Debug) {
-	LogStream.dbg.println("The Attribute is a container");
-	LogStream.dbg.logflush();
+	DAPNode.log.debug("The Attribute is a container");
       }
   }
 
