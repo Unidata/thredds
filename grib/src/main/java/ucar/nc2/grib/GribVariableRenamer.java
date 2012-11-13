@@ -99,6 +99,7 @@ public class GribVariableRenamer {
     }
 
     // not unique, no unique match against dataset - check existence in the dataset
+    result.clear();
     if (mbean != null) {
       for (VariableRenamerBean r : mbean.newVarsMap.values()) {
         if (contains(gds, r.newName)) result.add(r.newName);
@@ -107,6 +108,7 @@ public class GribVariableRenamer {
     }
     
     // try to map oldName -> new prefix
+    result.clear();
     String oldMunged = munge(oldName);
     for (GridDatatype grid : gds.getGrids()) {
       String newMunged = munge(grid.getShortName());
@@ -118,7 +120,39 @@ public class GribVariableRenamer {
     // return empty list
     return result;
   }
-  
+
+  public List<String> matchNcepNames(String datasetType, String oldName) {
+    boolean isGrib1 = datasetType.endsWith("grib1");
+    List<String> result = new ArrayList<String>();
+
+    HashMap<String, Renamer> map;
+    if (isGrib1) {
+      if (map1 == null) initMap1();
+      map = map1;
+
+    } else {
+      if (map2 == null) initMap2();
+      map = map2;
+    }
+
+    // look in our renamer map
+    Renamer mbean = map.get(oldName);
+    if (mbean != null && mbean.newName != null)  {
+      result.add(mbean.newName); // if its unique, then we are done
+      return result;
+    }
+
+    // not unique - match against NCEP datasetType
+    if (mbean != null) {
+      for (VariableRenamerBean r : mbean.newVars) {
+        if (r.getDatasetType().equals(datasetType)) result.add(r.newName);
+      }
+    }
+
+    return result;
+  }
+
+
   private String munge(String old) {
     StringBuilder oldLower = new StringBuilder( old.toLowerCase());
     StringUtil2.remove(oldLower, "_-");
@@ -310,6 +344,13 @@ public class GribVariableRenamer {
       return oldName;
     }
 
+  }
+
+  public static void main(String[] args) throws IOException {
+    ucar.nc2.dt.grid.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open("Q:/cdmUnitTest/tds/ncep/GFS_CONUS_80km_20100513_0600.grib1");
+
+    GribVariableRenamer r = new GribVariableRenamer();
+    List<String> result = r.matchNcepNames(gds, "Precipitable_water");
   }
 
 

@@ -162,6 +162,10 @@ public class Grib1Index extends GribIndex {
       log.error("GribIndex failed on " + filename, e);
       return false;
 
+    } catch (IOException e) {
+      log.error("GribIndex failed on "+filename, e);
+      return false;
+
     } finally {
       fin.close();
     }
