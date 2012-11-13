@@ -201,7 +201,7 @@ public class TestSubset extends TestCase {
 
     GridDataset dataset = (GridDataset) result.featureDataset;
 
-    GeoGrid grid = dataset.findGridByName("Temperature");
+    GeoGrid grid = dataset.findGridByName("Temperature_pressure");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
     assert null != gcs;
