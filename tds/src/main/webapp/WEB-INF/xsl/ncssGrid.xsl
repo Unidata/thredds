@@ -24,6 +24,14 @@
 	</xsl:variable>
 
 	<xsl:template match="/">
+	
+	<xsl:variable name="hasTimeAxis">
+		<xsl:value-of select="count(/gridForm/timeSet/time)" />
+	</xsl:variable>
+	
+	<xsl:variable name="hasVertAxis">
+		<xsl:value-of select="count(/gridForm/timeSet/vertSet/values)" />
+	</xsl:variable>	
 
 		<html>
 			<head>
@@ -274,7 +282,8 @@
 										<span class="bold">Horizontal Stride:</span>
 										<input type="text" name="horizStride" size="5" value="1" />
 									</div>
-
+									
+									<xsl:if test="$hasTimeAxis>0">
 									<h3>Choose Time Subset:</h3>
 									<div id="inputTimeRange" class="selected">
 										<span class="bold">Time range</span>
@@ -305,7 +314,9 @@
 											</div>
 										</div>
 									</div>
-
+									</xsl:if>
+									
+									<xsl:if test="$hasVertAxis>0">	
 									<h3>Choose Vertical Level:</h3>
 									<div id="inputSingleLevel" class="selected">
 										<span class="bold">Single Level</span>
@@ -327,6 +338,8 @@
 											</div>
 										</div>
 									</div>
+									</xsl:if>
+									
 									<div class="borderLightGrey">
 										<span class="bold">Add 2D Lat/Lon to file (if needed for CF
 											compliance)</span>

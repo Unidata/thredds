@@ -33,6 +33,15 @@
 
 
 	<xsl:template match="/">
+	
+	<xsl:variable name="hasTimeAxis">
+		<xsl:value-of select="count(/gridForm/timeSet/time)" />
+	</xsl:variable>
+	
+	<xsl:variable name="hasVertAxis">
+		<xsl:value-of select="count(/gridForm/timeSet/vertSet/values)" />
+	</xsl:variable>	
+	
 		<html>
 			<head>
 				<title>NetCDF Subset Service for Grids as Point Data</title>
@@ -244,7 +253,8 @@
 											<span>south</span>
 										</div>
 									</div>
-
+									
+									<xsl:if test="$hasTimeAxis>0">
 									<h3>Choose Time Subset:</h3>
 									<div id="inputTimeRange" class="selected">
 										<span class="bold">Time range</span>
@@ -275,13 +285,16 @@
 											</div>
 										</div>
 									</div>
-
+									</xsl:if>
+									
+									<xsl:if test="$hasVertAxis>0">
 									<h3>Choose Vertical Level:</h3>
 									<div class="borderLightGrey">
 										<label class="sized">Level:</label>
 										<input type="text" name="vertCoord" size="10" />
 										<br />
 									</div>
+									</xsl:if>
 
 									<h3>Choose Output Format:</h3>
 									<div class="borderLightGrey">
