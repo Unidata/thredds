@@ -44,7 +44,7 @@ class XMLPointDataWriter implements PointDataWriter {
 		return new XMLPointDataWriter(os);
 	}
 
-	public boolean header(Map<String, List<String>> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point) {
+	public boolean header(Map<String, List<String>> vars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
 
 		allVars = vars; 
 		for(String key : vars.keySet() ){

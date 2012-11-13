@@ -45,7 +45,7 @@ public final class WriterCFPointCollectionWrapper implements CFPointWriterWrappe
 	}
 	
 	@Override
-	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point) {
+	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, Double vertCoord) {
 		
 		boolean headerDone = false;
     	List<Attribute> atts = new ArrayList<Attribute>();

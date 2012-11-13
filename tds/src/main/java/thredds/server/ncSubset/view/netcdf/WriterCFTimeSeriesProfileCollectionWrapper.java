@@ -45,7 +45,7 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 	@Override
 	public boolean header(Map<String, List<String>> groupedVars,
 			GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit,
-			LatLonPoint point) {
+			LatLonPoint point, Double vertCoord) {
 
 		boolean headerDone = false;
 		List<Attribute> atts = new ArrayList<Attribute>();
@@ -59,7 +59,7 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 		stnList.add(s);		
 
 		try {
-			writerCFTimeSeriesProfileCollection.writeHeader(stnList, groupedVars, gds, dateUnit, wDates.size() );
+			writerCFTimeSeriesProfileCollection.writeHeader(stnList, groupedVars, gds, dateUnit, wDates.size(), vertCoord );
 			headerDone = true;
 		} catch (IOException ioe) {
 			log.error("Error writing header", ioe);
@@ -140,8 +140,16 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 						String profileName =zAxis.getShortName();
 						//Loop over vertical levels
 						double[] vertCoords= new double[]{0.0};
-						if(zAxis.getCoordValues().length > 1) vertCoords = zAxis.getCoordValues();
 						int vertCoordsIndex = 0;
+						if(targetLevel != null){
+							vertCoords[0] = targetLevel;
+							vertCoordsIndex = zAxis.findCoordElementBounded(targetLevel);
+						}else{
+							if(zAxis.getCoordValues().length > 1) vertCoords = zAxis.getCoordValues();
+						}	
+						
+						 
+						int vertCoordsIndexForFile =0;
 						for(double vertLevel : vertCoords){
 							//The zAxis was added to the variables and we need a structure data that contains z-levels  
 							StructureData sdata = StructureDataFactory.getFactory().createSingleStructureData(gridDataset, point, varsGroup, zAxis);		
@@ -149,6 +157,7 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 							sdata.findMember("time").getDataArray().setDouble(0, timeCoordValue);
 							sdata.findMember(zAxis.getShortName()).getDataArray().setDouble(0, zAxis.getCoordValues()[vertCoordsIndex]  );
 							vertCoordsIndex++;
+							vertCoordsIndexForFile++;
 							int cont =0;
 							// Iterating vars						
 							Iterator<String> itVars = varsGroup.iterator();
@@ -171,9 +180,9 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 								cont++;
 							}
 							if(ensCoord >=0){
-								writerCFTimeSeriesProfileCollection.writeRecord(profileName, timeCoordValue, ensCoord, date, earthLocation , sdata, vertCoordsIndex-1);
+								writerCFTimeSeriesProfileCollection.writeRecord(profileName, timeCoordValue, ensCoord, date, earthLocation , sdata, vertCoordsIndexForFile-1);
 							}else{
-								writerCFTimeSeriesProfileCollection.writeRecord(profileName, timeCoordValue, date, earthLocation , sdata, vertCoordsIndex-1);
+								writerCFTimeSeriesProfileCollection.writeRecord(profileName, timeCoordValue, date, earthLocation , sdata, vertCoordsIndexForFile-1);
 							}	
 							allDone = true;
 						}

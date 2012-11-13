@@ -101,7 +101,7 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 	}
 
 	void writeHeader(List<Station> stns, Map<String, List<String>> groupedVars,
-			GridDataset gds, DateUnit timeUnit, int timeDimLength) throws IOException{
+			GridDataset gds, DateUnit timeUnit, int timeDimLength, Double vertCoord) throws IOException{
 
 		//--> Create dimensions and variables:
 		//
@@ -147,7 +147,12 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 			//Vertical
 			CoordinateAxis1D zAxis = gds.findGridDatatype(vars.get(0)).getCoordinateSystem().getVerticalAxis();
 			if(zAxis != null){
-				Dimension d = writer.addDimension(null, zAxis.getShortName(), zAxis.getCoordValues().length);							
+				int zAxisLength = zAxis.getCoordValues().length;
+				if(vertCoord != null){
+					zAxisLength = 1;
+				}
+				
+				Dimension d = writer.addDimension(null, zAxis.getShortName(), zAxisLength);							
 				tempDims.add(d);    		
 				Variable zVar = writer.addVariable(null, zAxis.getShortName() , zAxis.getDataType() , tempDims);
 				//Variable atts

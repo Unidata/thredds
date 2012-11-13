@@ -16,7 +16,7 @@ interface PointDataWriter {
 
 	void setHTTPHeaders(GridDataset gds);
 	
-	boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point);
+	boolean header(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, Double vertCoord);
 	
 	boolean write(Map<String, List<String>> groupedVars, GridDataset gds, List<CalendarDate> wDates, LatLonPoint point, Double vertCoord);
 
