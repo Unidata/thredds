@@ -46,7 +46,7 @@ public final class PointDataStream {
 		//Assuming all variables have same time dimension!!!			
 		GridDatatype gridForTimeUnits= gds.findGridDatatype(vars.get(0));
 		
-		if(pointDataWriter.header(groupedVars, gds, wDates, getDateUnit(gridForTimeUnits) , point)){ 
+		if(pointDataWriter.header(groupedVars, gds, wDates, getDateUnit(gridForTimeUnits) , point, vertCoord)){ 
 			
 			boolean allPointsRead = false;
 			allPointsRead = pointDataWriter.write(groupedVars, gds, wDates, point, vertCoord);

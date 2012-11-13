@@ -4,6 +4,7 @@
          name="Unidata THREDDS Data Server"
          version="1.0.4">
   <service name="thisDODS" serviceType="OPENDAP" base="/thredds/dodsC/" />
+  <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
   <datasetRoot path="restrict" location="content/" />
   <dataset name="Realtime data from IDD">
     <!-- catalogRef xlink:href="idd/models.xml" xlink:title="NCEP Model Data" name="" / -->
@@ -19,6 +20,14 @@
   <dataset name="Other Unidata Data">
     <catalogRef xlink:href="idd/rtmodel.xml" xlink:title="Unidata Real-time Regional Model" name="" />
     <catalogRef xlink:href="galeon/catalog.xml" xlink:title="Unidata GALEON Experimental Web Coverage Service (WCS) datasets" name="" />
+ 
+    <datasetScan name="NCSS Test Data" path="subsetService/testdata" location="/data/thredds/ncss/" >
+      <serviceName>ncss</serviceName>
+      <filter>
+        <include wildcard="*.nc"/>
+      </filter>
+    </datasetScan>
+
     <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="restrict/testdata/testData.nc" restrictAccess="tiggeData">
       <serviceName>thisDODS</serviceName>
       <dataType>Grid</dataType>

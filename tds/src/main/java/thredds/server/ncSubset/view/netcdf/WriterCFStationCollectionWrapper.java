@@ -75,7 +75,7 @@ public final class WriterCFStationCollectionWrapper implements CFPointWriterWrap
 	}
 
 	@Override
-	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point) {
+	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit, LatLonPoint point, Double vertCoord) {
 
 		boolean headerDone = false;
 		String stnName = "GridPoint";

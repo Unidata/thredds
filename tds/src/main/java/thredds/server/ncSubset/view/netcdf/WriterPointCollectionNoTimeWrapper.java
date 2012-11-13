@@ -42,7 +42,7 @@ class WriterPointCollectionNoTimeWrapper implements CFPointWriterWrapper {
 	@Override
 	public boolean header(Map<String, List<String>> groupedVars,
 			GridDataset gds, List<CalendarDate> wDates, DateUnit dateUnit,
-			LatLonPoint point) {
+			LatLonPoint point, Double vertCoord) {
 		
 		boolean headerDone = false;
 		List<Attribute> atts = new ArrayList<Attribute>();

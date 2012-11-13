@@ -59,7 +59,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 		return new NetCDFPointDataWriter(outputStream);
 	}
 	
-	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point) {
+	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
 		
 		boolean headerDone = false;
 		if( groupedVars.size() > 1 && !wDates.isEmpty()){ //Variables with different vertical levels
@@ -85,7 +85,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 			List<Attribute> atts = new ArrayList<Attribute>();
 			atts.add(new Attribute( CDM.TITLE,  "Extract Points data from Grid file "+ gridDataset.getLocationURI()) );		
 			pointWriterWrapper = CFPointWriterWrapperFactory.getWriterForFeatureType(featureType, netcdfResult.getAbsolutePath(), atts);			
-			headerDone = pointWriterWrapper.header(groupedVars, gridDataset, wDates, dateUnit, point);			
+			headerDone = pointWriterWrapper.header(groupedVars, gridDataset, wDates, dateUnit, point, vertCoord);			
 		}catch(IOException ioe){
 			log.error("Error writing header", ioe);
 		}	
