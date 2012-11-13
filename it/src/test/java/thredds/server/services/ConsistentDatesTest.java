@@ -53,19 +53,19 @@ public class ConsistentDatesTest {
           new DateTime("0000-11-15T14:51:00Z"),
           new DateTime("0000-12-16T01:20:06Z")};
 
-  private final DateTime[] expectedWMSDateTime ={
-		  new DateTime("0000-01-16T06:00:00Z"),
-		  new DateTime("0000-02-15T16:29:05Z"),
-		  new DateTime("0000-03-17T02:58:12Z"),
-		  new DateTime("0000-04-16T13:27:18Z"),
-             new DateTime("0000-05-16T23:56:24Z"),
-             new DateTime("0000-06-16T10:25:30Z"),
-             new DateTime("0000-07-16T20:54:36Z"),
-             new DateTime("0000-08-16T07:23:42Z"),
-             new DateTime("0000-09-15T17:52:48Z"),
-             new DateTime("0000-10-16T04:21:53Z"),
-             new DateTime("0000-11-15T14:51:00Z"),
-             new DateTime("0000-12-16T01:20:06Z")};
+  private final DateTime[] expectedWMSDateTime = {
+          new DateTime("0000-01-16T06:00:00Z"),
+          new DateTime("0000-02-15T16:29:05.999Z"),
+          new DateTime("0000-03-17T02:58:12Z"),
+          new DateTime("0000-04-16T13:27:18Z"),
+          new DateTime("0000-05-16T23:56:24Z"),
+          new DateTime("0000-06-16T10:25:30Z"),
+          new DateTime("0000-07-16T20:54:36Z"),
+          new DateTime("0000-08-16T07:23:42Z"),
+          new DateTime("0000-09-15T17:52:48Z"),
+          new DateTime("0000-10-16T04:21:53.999Z"),
+          new DateTime("0000-11-15T14:51:00Z"),
+          new DateTime("0000-12-16T01:20:06Z")};
 
 
   private final List<DateTime> expectedDatesAsDateTime = Collections.unmodifiableList(Arrays.asList(expectedDateTime));
