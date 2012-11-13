@@ -67,7 +67,7 @@ public class TestGroups extends UnitTestCommon
   }
 
   public void
-  utestGroup() throws Exception
+  testGroup() throws Exception
   {
     boolean usegroups = RC.getUseGroups();
 
