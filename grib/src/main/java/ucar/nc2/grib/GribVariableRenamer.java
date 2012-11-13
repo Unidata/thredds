@@ -65,8 +65,8 @@ public class GribVariableRenamer {
     }
     
     Attribute att = gds.findGlobalAttributeIgnoreCase(CDM.FILE_FORMAT);
-    boolean isGrib1 = (att != null) && att.getStringValue().startsWith("GRIB1");
-    boolean isGrib2 = (att != null) && att.getStringValue().startsWith("GRIB2");
+    boolean isGrib1 = (att != null) && att.getStringValue().startsWith("GRIB-1");
+    boolean isGrib2 = (att != null) && att.getStringValue().startsWith("GRIB-2");
     HashMap<String, Renamer> map;
     if (isGrib1) {
       if (map1 == null) initMap1();
