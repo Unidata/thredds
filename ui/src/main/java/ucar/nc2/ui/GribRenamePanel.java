@@ -30,6 +30,7 @@ public class GribRenamePanel extends JPanel {
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
   private JComboBox kind;
+  private GribVariableRenamer renamer;
 
   public GribRenamePanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -66,11 +67,11 @@ public class GribRenamePanel extends JPanel {
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
 
-    kind = new JComboBox(new String[] {"GRIB1", "GRIB2"});
+    kind = new JComboBox(new String[] {"GRIB-1", "GRIB-2"});
     buttPanel.add(kind);
     kind.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        GribVariableRenamer renamer = new GribVariableRenamer();
+        renamer = new GribVariableRenamer();
         List<GribVariableRenamer.VariableRenamerBean> vbeans = renamer.readVariableRenamerBeans( (String) kind.getSelectedItem());
         varTable.setBeans(vbeans);
         makeMapBeans();
@@ -88,6 +89,20 @@ public class GribRenamePanel extends JPanel {
     //prefs.putInt("splitPos2", split2.getDividerLocation());
     // if (fileChooser != null) fileChooser.save();
   }
+
+  public boolean matchNcepName(String oldName) {
+    if (renamer == null) return false;
+    GribVariableRenamer.VariableRenamerBean bean = (GribVariableRenamer.VariableRenamerBean) varTable.getSelectedBean();
+    List<String> result = renamer.matchNcepNames(bean.getDatasetType(), oldName);
+    Formatter f = new Formatter();
+    f.format("Match '%s'%n", oldName);
+    for (String s : result) f.format("  %s%n", s);
+    infoTA.setText(f.toString());
+    infoTA.gotoTop();
+    infoWindow.setVisible(true);
+    return true;
+  }
+
 
   private void showVariable(MapBean bean) {
     infoTA.setText(bean.show());
