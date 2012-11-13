@@ -61,7 +61,7 @@ import ucar.ma2.*;
 
 public class FileWriter2 {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter2.class);
-  static private boolean debug = true, debugWrite = false;
+  static private boolean debug = false, debugWrite = false;
   static private long maxSize = 50 * 1000 * 1000; // 50 Mbytes
 
   /**

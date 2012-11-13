@@ -63,6 +63,9 @@ public class TestGroups extends UnitTestCommon
     }
   }
 
+  public void testFake() throws Exception {
+  }
+
   public void
   utestGroup() throws Exception
   {

@@ -17,7 +17,7 @@ dl {margin: 10px 5px 5px 15px;)
 <p align="justify">In order to write netCDF-4 files, you must have the <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">netCDF-4 C library</a>, version 4.2.1 or above, compiled and available on your system, along with all supporting libraries (HDF5 etc). The details of this differ for each operating system, and our experience (so far) is documented below.</p>
 <p align="justify">The libraries must be in a directory that the operating system knows to look in, and the CDM needs to know the netcdf-4 library name.<a name="pass" id="pass"></a> </p>
 <ul>
-  <li>For TDS users, we recommend setting  the library path and name in <em><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/ThreddsConfigXMLFile.html#netcdf4Clibrary">threddsConfig.xml.</a></em></li>
+  <li>For TDS users, we recommend setting  the library path and name in <em><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.3/reference/ThreddsConfigXMLFile.html#netcdfCLibrary">threddsConfig.xml.</a></em></li>
   <li>For stand-alone CDM library use, you can set   the library path and name in the <em><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html#XML">RuntimeConfiguration</a></em> file, or directly call <strong>ucar.nc2.jni.netcdf.Nc4Iosp.setLibraryAndPath</strong>()<em>.</em></li>
 </ul>
 <p align="justify">We strongly recommend using   64-bit Java. We also recommend using Java 7 (Java 6 is acceptable for CDM version 4.3). In any case, use the lastest update for Java, because security improvements are constantly being made.</p>
