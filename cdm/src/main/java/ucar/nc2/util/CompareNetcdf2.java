@@ -168,7 +168,8 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkAll(org.getDimensions(), copy.getDimensions(), null);
+    ok &= checkDimensions(org.getDimensions(), copy.getDimensions());
+    ok &= checkDimensions(copy.getDimensions(), org.getDimensions());
 
     // attributes
     ok &= checkAttributes(null, org.getAttributes(), copy.getAttributes(), filter);
@@ -227,7 +228,8 @@ public class CompareNetcdf2 {
     }
 
     // dimensions
-    ok &= checkAll(org.getDimensions(), copy.getDimensions(), null);
+    ok &= checkDimensions(org.getDimensions(), copy.getDimensions());
+    ok &= checkDimensions(copy.getDimensions(), org.getDimensions());
 
     // attributes
     ok &= checkAttributes(org, org.getAttributes(), copy.getAttributes(), filter);
@@ -304,6 +306,17 @@ public class CompareNetcdf2 {
     for (Attribute att2 : list2) {
       if (filter == null || filter.attOk(v, att2))
       ok &= checkEach(att2, "file2", list2, "file1", list1, null);
+    }
+
+    return ok;
+  }
+
+  private boolean checkDimensions(List<Dimension> list1, List<Dimension> list2) {
+    boolean ok = true;
+
+    for (Dimension d1 : list1) {
+      if (d1.isShared())
+        ok &= list2.contains(d1);
     }
 
     return ok;

@@ -422,6 +422,17 @@ public class H5header {
       }
     }
 
+    // deal with multidim dimension scales part two - double ugh!
+    for (DataObjectFacade facade : h5group.nestedObjects) {
+      if (facade.isVariable && facade.netcdf4CoordinatesAtt != null && facade.dimList.equals("%REDO%")) {
+        Formatter f = new Formatter();
+        for (int i=0 ;i<facade.netcdf4CoordinatesAtt.getLength(); i++) {
+          int dimIndex = facade.netcdf4CoordinatesAtt.getNumericValue(i).intValue();
+          f.format("%s ", h5group.dimList.get(dimIndex).getName());
+        }
+        facade.dimList = f.toString();
+      }
+    }
 
     // look for references to dimension scales
     for (DataObjectFacade facade : h5group.nestedObjects) {
@@ -561,7 +572,7 @@ public class H5header {
               System.out.printf("Found dimScale %s for group '%s' matt=%s %n", facade.dimList, g.getName(), matt);
 
           } else {  // multiD dimension scale
-            int dimIndex = findCoordinateDimensionIndex(facade);
+            int dimIndex = findCoordinateDimensionIndex(facade, h5group);
             addDimension(g, h5group, facade.name, facade.dobj.mds.dimLength[dimIndex], facade.dobj.mds.maxLength[dimIndex] == -1);
             if (! h5iosp.includeOriginalAttributes) iter.remove();
             if (debugDimensionScales)
@@ -593,7 +604,7 @@ public class H5header {
       _Netcdf4Coordinates = 6, 4
       _Netcdf4Dimid = 6
   */
-  private int findCoordinateDimensionIndex(DataObjectFacade facade) throws IOException {
+  private int findCoordinateDimensionIndex(DataObjectFacade facade, H5Group h5group) throws IOException {
     Attribute att_coord = null;
     Attribute att_dimid = null;
     for (MessageAttribute matt : facade.dobj.attributes) {
@@ -610,11 +621,21 @@ public class H5header {
         if (want.equals(got))
           return i;
       }
-      log.warn("Multidimension dimension scale attributes "+Nc4.NETCDF4_COORDINATES+" and "+Nc4.NETCDF4_DIMID+" dont match. Assume Dimension is index 0");
+      log.warn("Multidimension dimension scale attributes "+Nc4.NETCDF4_COORDINATES+" and "+Nc4.NETCDF4_DIMID+" dont match. Assume Dimension is index 0 (!)");
+      return 0;
+    }
+    if (att_coord != null) {
+      facade.netcdf4CoordinatesAtt = att_coord;
+      int n = h5group.dimList.size(); // how many dimensions are already defined
+      facade.dimList = "%REDO%";  // token to create list when all dimensions found
+      for (int i=0 ;i<att_coord.getLength(); i++) {
+        if (att_coord.getNumericValue(i).intValue() == n) return i;
+      }
+      log.warn("Multidimension dimension scale attribute "+Nc4.NETCDF4_DIMID+" missing. Dimension ordering is not found. Assume index 0 (!)");
       return 0;
     }
 
-    log.warn("Multidimension dimension scale doesnt have "+Nc4.NETCDF4_COORDINATES+" and "+Nc4.NETCDF4_DIMID+" attributes. Assume Dimension is index 0");
+    log.warn("Multidimension dimension scale doesnt have "+Nc4.NETCDF4_COORDINATES+" attribute. Assume Dimension is index 0 (!)");
     return 0;
   }
 

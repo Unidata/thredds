@@ -1,6 +1,5 @@
 package ucar.nc2.jni.netcdf;
 
-import org.junit.Test;
 import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
@@ -75,7 +74,7 @@ public class TestFileWriter2 {
   private boolean compare(NetcdfFile nc1, NetcdfFile nc2, boolean showCompare, boolean showEach, boolean compareData) throws IOException {
     Formatter f= new Formatter();
     CompareNetcdf2 tc = new CompareNetcdf2(f, showCompare, showEach, compareData);
-    boolean ok = tc.compare(nc1, nc2, new TestNc4Iosp.Netcdf4ObjectFilter(), showCompare, showEach, compareData);
+    boolean ok = tc.compare(nc1, nc2, new TestNc4IospReading.Netcdf4ObjectFilter(), showCompare, showEach, compareData);
     System.out.printf(" %s compare %s to %s ok = %s%n", ok ? "" : "***", nc1.getLocation(), nc2.getLocation(), ok);
     if (!ok) System.out.printf(" %s%n", f);
     return ok;

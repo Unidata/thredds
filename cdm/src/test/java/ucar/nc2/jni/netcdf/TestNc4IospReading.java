@@ -17,14 +17,16 @@ import java.util.Formatter;
 
 /**
  * Test JNI netcdf-4 iosp
+ * Compare reading with native java reading
  *
  * @author caron
  * @since 7/3/12
  */
-public class TestNc4Iosp {
+public class TestNc4IospReading {
   private boolean showCompareResults = true;
   private int countNotOK = 0;
 
+  @Test
   public void testReadSubsection() throws IOException, InvalidRangeException {
     String location = TestDir.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4";
     NetcdfFile ncfile = NetcdfFile.open(location);
@@ -37,6 +39,7 @@ public class TestNc4Iosp {
     System.out.printf("Read from jni%n");
     Array data2 = read(jni, "salinity", "0,11:12,22,:");
     assert MAMath.isEqual(data1, data2);
+    System.out.printf("data is equal%n");
     ncfile.close();
     jni.close();
   }
@@ -47,11 +50,12 @@ public class TestNc4Iosp {
     return v.read(section) ;
   }
 
+  //@Test
   public void problem() throws IOException {
-    doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\testEmptyAtts.nc", true, true, true);
+    doCompare("Q:\\cdmUnitTest\\formats\\hdf5\\grid_1_3d_xyz_aug.h5", true, true, true);
   }
 
-  //@Test
+  @Test
   public void readAllNetcdf4() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/", new MyFileFilter(), new MyAct(), true);
@@ -65,7 +69,7 @@ public class TestNc4Iosp {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  //@Test
+  @Test
   public void readAllNetcdf3() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", new MyFileFilter(), new MyAct());
