@@ -1,0 +1,6 @@
+dataset {
+    Byte	b31;
+    string	b32;
+} SimpleTypes;
+
+

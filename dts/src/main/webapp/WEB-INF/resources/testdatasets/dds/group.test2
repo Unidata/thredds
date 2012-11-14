@@ -1,0 +1,7 @@
+#Test duplicate names
+Dataset {
+  int32   g1/i32;
+  int32   g2/i32;
+} Group.test2;
+
+

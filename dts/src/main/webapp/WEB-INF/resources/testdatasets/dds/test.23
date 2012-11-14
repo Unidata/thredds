@@ -1,0 +1,35 @@
+dataset {
+    Structure {
+	    Int32 j;
+	    Int32 i[3];
+
+            Sequence {
+
+                Structure {
+	            int32 i;
+	            float64 f[10];
+	        } data;
+
+                float32 lat;
+                float32 lng;
+		
+		Grid {
+                    Array:
+                        float64 fluor[10];
+                    Maps:
+                        float64 depth[10];
+                } profile;
+
+            } ComplexSequence;
+		
+            Grid {
+                Array:
+                    float64 amp[10][10][10];
+                Maps:
+                    float64 x[10];
+                    float64 y[10];
+                    float64 z[10];
+            } ThreeD;
+
+    } exp;
+} ComplexStructure03;

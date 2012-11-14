@@ -532,6 +532,13 @@
         <type>war</type>
       </dependency>
 
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>dts</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+
       <!-- test -->
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -686,6 +693,7 @@
     <module>bufr</module>
     <module>grib</module>
     <module>opendap</module>
+    <module>dts</module>
     <module>visad</module>
     <module>ui</module>
     <module>tds</module>

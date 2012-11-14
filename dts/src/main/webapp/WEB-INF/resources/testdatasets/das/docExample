@@ -1,0 +1,32 @@
+Attributes {
+    lat {
+        String fullName "latitude";
+        String units "degrees North";
+    }
+    lon {
+        String fullName "longitude";
+        String units "degrees East";
+    }
+    time {
+        String units "seconds";
+    }
+    sst {
+	String fullName "Sea Surface Temperature";
+	String units "degrees centigrade";
+        sst {
+	    Alias fullName .sst.fullName;
+	    Alias units .sst.units;
+        }
+        time {
+            Alias units .time.units;
+        }
+        lat {
+	    Alias fullName .lat.fullName;
+	    Alias units .lat.units;
+        }
+        lon {
+	    Alias fullName .lon.fullName;
+	    Alias units .lon.units;
+        }
+    }
+}

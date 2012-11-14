@@ -1,0 +1,13 @@
+dataset {
+    Sequence {
+        Byte	b;
+        Structure {
+	    Int32 j;
+	    Int32 i[3];
+	    Structure {
+	        int32 i;
+	        float64 f[10];
+	    } data;
+        }foo;
+    } ralph;
+} SequenceofStructs;

@@ -1,0 +1,90 @@
+
+TO RUN THE TESTS:
+
+To run the tests, goto the top level DODS directory (typically Java-DODS) and
+do "make server-check". The tests are currently pointed at the test server
+running at OSU. To chenge the target, edit the Makefile in Java-DODS: Change the
+definition of TESTDIR at the top of the file to point to the server you wish to
+test.
+
+
+
+
+These are the test DDS files for testing the Java Server output. 
+
+
+
+test.01		SimpleTypes
+
+test.02		OneDimensionalSimpleArrays
+test.03		MultiDimensionalSimpleArrays
+
+test.04		SimpleStructure
+test.05		NestedStructure
+
+test.06		SimpleGrids
+
+test.07		SimpleSequences
+
+test.08		SimpleLists
+
+test.21		ComplexStructure01
+test.22		ComplexStructure02
+test.23		ComplexStructure03
+
+test.31		ComplexSequence01
+test.32		ComplexSequence02
+
+test.40		ListOfStructures
+test.41		ListOfArrays
+test.42		ListOfSequences
+
+test.50		ArrayOfStructures
+test.51		ArrayOfSequences
+test.52		WackyArray01
+test.53		WackyArray02
+
+
+test.60		DualList01
+test.61		ListAndStructure
+test.62		ListAndNestedStructure01
+test.63		ListAndNestedStructure02
+test.64		ListStructGrid
+test.65		KitchenSink01
+test.66		long_identifier_test_data_set
+test.67		NamedDimensions
+test.68		NullDataset
+test.69		ArraysAndStructure
+
+test.80 	BadNamedDimension
+test.81		ListOfSequences
+test.82		ListOfLists
+
+
+The following are Jakes test DDS's
+
+test.GridFile
+test.PointFile
+test.SwathFile
+test.an1
+test.dfp1
+test.dfr1
+test.dfr2
+test.dfr3
+test.gr1
+test.gr2
+test.gr3
+test.gr4
+test.gr5
+test.sds1
+test.sds2
+test.sds3
+test.sds4
+test.sds5
+test.sds6
+test.sds7
+test.vs1
+test.vs2
+test.vs3
+test.vs4
+test.vs5
