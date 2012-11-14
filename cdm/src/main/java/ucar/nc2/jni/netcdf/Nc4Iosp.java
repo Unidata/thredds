@@ -72,6 +72,7 @@ import com.sun.jna.ptr.NativeLongByReference;
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
+  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private Nc4prototypes nc4;
   static private final String JNA_PATH = "jna.library.path";
   static private String jnaPath;
@@ -88,12 +89,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     try {
       load();
       if (warn) {
-        log.info("netcdf4 c library loaded jna_path='"+jnaPath+"' libname='"+libName+"'");
+        startupLog.info("netcdf4 c library loaded jna_path= '{}' libname='{}'", jnaPath, libName);
         warn = false;
       }
     } catch (Throwable t) {
       if (warn) {
-        log.warn("netcdf4 c library not present jna_path='"+jnaPath+"' libname='"+libName+"'", t);
+        startupLog.warn("netcdf4 c library not present jna_path='"+jnaPath+"' libname='"+libName+"' "+t.getMessage());
         warn = false;
       }
     }

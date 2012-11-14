@@ -140,7 +140,7 @@ public class OpendapServlet extends AbstractServlet {
     else
       return -1;
 
-    // if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox beahviour?
+    // if (null != DatasetHandler.findResourceControl( path)) return -1; // LOOK weird Firefox behviour?
 
     File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(path);
     if ((file != null) && file.exists())
@@ -179,7 +179,7 @@ public class OpendapServlet extends AbstractServlet {
         log.debug("doGet(): baseURI was set = {}", baseURI);
       }
 
-      if (path.endsWith("latest.xml")) {   // LOOK: WTF ??
+      if (path.endsWith("latest.xml")) {   // LOOK: used ??
         DataRootHandler.getInstance().processReqForLatestDataset(this, request, response);
         return;
       }
@@ -190,7 +190,7 @@ public class OpendapServlet extends AbstractServlet {
         return;
       }
 
-      // Make sure catalog requests match a dataRoot before trying to handle.
+      // Make sure catalog requests match a dataRoot before trying to handle.  LOOK: used?
       if (path.endsWith("/") || path.endsWith("/catalog.html") || path.endsWith("/catalog.xml")) {
         if (!DataRootHandler.getInstance().hasDataRootMatch(path)) {
           response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -257,7 +257,7 @@ public class OpendapServlet extends AbstractServlet {
     } catch (DAP2Exception de) {
       int status = (de.getErrorCode() == DAP2Exception.NO_SUCH_FILE) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
       if ((de.getErrorCode() != DAP2Exception.NO_SUCH_FILE) && (de.getErrorMessage() != null))
-        log.debug(de.getErrorMessage());
+        log.info(de.getErrorMessage());
       response.setStatus(status);
       dap2ExceptionHandler(de, rs);
 

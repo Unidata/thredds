@@ -25,7 +25,7 @@ public class TdsServletResponseWrapper extends HttpServletResponseWrapper
     return this.httpStatusCode;
   }
 
-  public void setHttpStatusCode( int statusCode ) {
+  private void setHttpStatusCode( int statusCode ) {
     this.httpStatusCode = statusCode;
   }
 
@@ -33,7 +33,7 @@ public class TdsServletResponseWrapper extends HttpServletResponseWrapper
     return this.httpResponseBodyLength;
   }
 
-  public void setHttpResponseBodyLength( long responseBodyLength ) {
+  private void setHttpResponseBodyLength( long responseBodyLength ) {
     this.httpResponseBodyLength = responseBodyLength;
   }
 

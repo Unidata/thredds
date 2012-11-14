@@ -363,10 +363,10 @@ public class Grib2Iosp extends GribIosp {
     }
 
     String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
-    ncfile.addAttribute(null, new Attribute("Originating/generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
+    ncfile.addAttribute(null, new Attribute("Originating or generating Center", val == null ? Integer.toString(gribCollection.getCenter()) : val));
     val = cust.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
-    ncfile.addAttribute(null, new Attribute("Originating/generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
-    ncfile.addAttribute(null, new Attribute("GRIB table version (master/local)", gribCollection.getMaster() + "/" + gribCollection.getLocal())); // LOOK
+    ncfile.addAttribute(null, new Attribute("Originating or generating Subcenter", val == null ? Integer.toString(gribCollection.getSubcenter()) : val));
+    ncfile.addAttribute(null, new Attribute("GRIB table version (master,local)", gribCollection.getMaster() + "," + gribCollection.getLocal())); // LOOK
 
     val = cust.getTableValue("4.3", gribCollection.getGenProcessType());
     if (val != null)
