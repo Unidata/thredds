@@ -87,8 +87,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public boolean isClibraryPresent() {
     try {
       load();
+      if (warn) {
+        log.info("netcdf4 c library loaded jna_path='"+jnaPath+"' libname='"+libName+"'");
+        warn = false;
+      }
     } catch (Throwable t) {
-      if (warn) log.warn("netcdf4 c library not present jna_path='{}' libname='{}'", jnaPath, libName);
+      if (warn) {
+        log.warn("netcdf4 c library not present jna_path='"+jnaPath+"' libname='"+libName+"'", t);
+        warn = false;
+      }
     }
     return  (nc4 != null);
   }

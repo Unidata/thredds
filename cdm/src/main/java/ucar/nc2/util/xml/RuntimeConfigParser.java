@@ -39,15 +39,12 @@ import org.jdom.input.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.ListIterator;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
-import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Read Runtime Configuration
