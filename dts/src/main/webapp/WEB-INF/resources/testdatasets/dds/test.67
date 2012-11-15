@@ -1,0 +1,6 @@
+# test arrays with named dimensions.
+
+dataset {
+    int32 i;
+    float64 f[latitude=20][ longitude = 10 ];
+} NamedDimensions;

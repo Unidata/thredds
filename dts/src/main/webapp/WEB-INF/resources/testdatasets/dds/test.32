@@ -1,0 +1,27 @@
+dataset {
+
+    Sequence {
+
+	Structure {
+		float64 windW[10];
+		float64 windN[10];
+		String  name;
+	} station;
+		
+	Grid {
+		Array:
+			float64 fluor[10][10][10];
+		Maps:
+			float64 lat[10];
+			float64 lon[10];
+			float64 depth[10];
+	} profile;
+
+	float32 sst;
+	float32 light;
+
+
+
+    } CS02;
+
+} ComplexSequence02;

@@ -1,0 +1,35 @@
+Dataset {
+
+    Sequence {
+        String   Image_Name;
+        Float64  Date_Sampled;
+        Float64  North_Lat;
+        Float64  South_Lat;
+        Float64  West_Lon;
+        Float64  East_Lon;
+        String   Version;
+        String   Satellite;
+        String   Instrument;
+        String   Channel;
+        String   Resolution;
+        Int32    Image_Size;
+        String   Image_Type;
+        Int32    Image_Bits_Per_Pixel;
+        Int32    Image_Width;
+        Int32    Image_Height;
+
+        Byte     Image[512][512];
+
+        Int32    Raw_Image_Size;
+
+        Byte     Raw_Image_Data[512][512];
+
+        Int32    Year;
+        String   Month;
+        Int32    Day;
+        Int32    Hour;
+    } Sat_Images;
+
+} Sat_Images;
+
+

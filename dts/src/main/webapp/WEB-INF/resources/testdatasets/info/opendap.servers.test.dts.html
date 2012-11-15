@@ -1,0 +1,25 @@
+<h2>DODS Test Server</h2>
+
+<p>
+    This data is being served by the Java-DODS Test Server. This server was created to allow <i>any</i> possible DODS
+    data structure to be tested for viablity in both the client and server software components of DODS.
+</p>
+
+<p>
+    This server will take any DODS DDS and attempt serve it to clients with all implemented modes of functionality. It
+    will populate it with data (created from thin air!) and hand it back to a requesting client. It can also be
+    intergogated using the other DODS server interfaces such as the ASCII interface (.asc) the DDS (.dds) interface, the
+    DAS interface (.das), and the HTML interface (.html, also know as the interface from hell...)
+</p>
+
+<p>
+    The key word in the preceding paragraph is <i>attempt</i>. Since the DODS dataset specification allows for a
+    virtually unlimited range of dataset structures, it certainly possible to create datasets that break existing code,
+    either on the client or the server side. We have, to the best of our abilities, made the DODS core software capable
+    of handling all possible syntactically correct DODS datasets as described by a DDS. However, it is possible to
+    construct dataset definitions (DDS's) so weird and twisted that the DODS core software cannot handle them well.
+    Ultimately that's why this server exists: <h3><i>To explore the boundaries of what DODS can and cannot do.</i></h3>
+</p>
+<p>
+    Hopefully, you will find it useful too.
+</p>

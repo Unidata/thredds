@@ -1,0 +1,13 @@
+ Dataset {
+     Float64 lat[lat = 180];
+     Float64 lon[lon = 360];
+     Float64 time[time = 404];
+     Grid {
+      ARRAY:
+         Int32 sst[time = 404][lat = 180][lon = 360];
+      MAPS:
+         Float64 time[time = 404];
+         Float64 lat[lat = 180];
+         Float64 lon[lon = 360];
+     } sst;
+ } weekly;

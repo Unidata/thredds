@@ -148,14 +148,19 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	
 	
 	@Override
-	public void setHTTPHeaders(GridDataset gridDataset){
+	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo){
 
     	//Set the response headers...
-    	String filename = gridDataset.getLocationURI();
-        int pos = filename.lastIndexOf("/");
-        filename = filename.substring(pos + 1);
-        if (!filename.endsWith(".nc"))
-          filename = filename + ".nc";
+//    	String filename = gridDataset.getLocationURI();
+//        int pos = filename.lastIndexOf("/");
+//        filename = filename.substring(pos + 1);
+//        if (!filename.endsWith(".nc"))
+//          filename = filename + ".nc";
+        
+        String[] tmp = pathInfo.split("/"); 
+        StringBuilder sb = new StringBuilder();
+        sb.append(tmp[tmp.length-2]).append("_").append(tmp[tmp.length-1]);
+        String filename= sb.toString().split("\\.")[0]+".nc";        
                 
         String url = AbstractNcssController.buildCacheUrl(netcdfResult.getName());
     	httpHeaders.set("Content-Location", url );

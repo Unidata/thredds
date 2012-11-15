@@ -152,7 +152,7 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>RadarServer</servlet-name>
+    <servlet-name>radarServer</servlet-name>
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
@@ -398,8 +398,9 @@
 
   <!-- Radar Server -->
   <servlet>
-    <servlet-name>RadarServer</servlet-name>
-    <servlet-class>thredds.server.radarServer.RadarServer</servlet-class>
+    <servlet-name>radarServer</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
 
   <!-- OGC Web Coverage server -->
@@ -607,7 +608,7 @@
   </servlet-mapping-->
 
   <servlet-mapping>
-    <servlet-name>RadarServer</servlet-name>
+    <servlet-name>radarServer</servlet-name>
     <url-pattern>/radarServer/*</url-pattern>
   </servlet-mapping>
 

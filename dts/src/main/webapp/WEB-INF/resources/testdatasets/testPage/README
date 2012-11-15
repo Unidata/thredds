@@ -1,0 +1,9 @@
+To use this test page run the script:
+
+./mkTestPage
+
+and then point your browser at the file:
+
+DODStest.html
+
+Have fun!
