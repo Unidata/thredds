@@ -72,6 +72,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+	
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.time.CalendarDate;
@@ -143,7 +144,10 @@ class GridDataController extends AbstratNcssDataRequestController {
         zRange = getZRange(getGridDataset(), params.getVertCoord(), params.getVertStride(), params.getVar());
 
       List<CalendarDate> wantedDates = getRequestedDates(gridDataset, params);
-      CalendarDateRange wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
+      CalendarDateRange wantedDateRange=null;
+      
+      if(!wantedDates.isEmpty())
+    	  wantedDateRange = CalendarDateRange.of(wantedDates.get(0), wantedDates.get(wantedDates.size() - 1));
 
       NetcdfCFWriter writer = new NetcdfCFWriter();
       maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
@@ -376,30 +380,21 @@ class GridDataController extends AbstratNcssDataRequestController {
                             Range zRange, CalendarDateRange dateRange, Integer timeStride, boolean addLatLon, NetcdfFileWriter.Version version)
           throws RequestTooLargeException, InvalidRangeException, IOException {
 	  		 
-    //String filename = req.getRequestURI();
-    String filename = gds.getLocationURI();
-    int pos = filename.lastIndexOf("/");
-    filename = filename.substring(pos + 1);
-    if (!filename.endsWith(".nc"))
-      filename = filename + ".nc";
-
     Random random = new Random(System.currentTimeMillis());
     int randomInt = random.nextInt();
-
+    
+    String filename = getFileNameForResponse();
     String pathname = Integer.toString(randomInt) + "/" + filename;
     File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
-    String cacheFilename = ncFile.getPath();
+       
+    String cacheFilename = ncFile.getPath();    
 
     String url = buildCacheUrl(pathname);
 
-    //httpHeaders.set("Content-Type", "application/octet-stream" );
-    //httpHeaders.set("Content-Type", "application/x-netcdf");
     httpHeaders.set("Content-Location", url);
     httpHeaders.set("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-
-    //try {
-
-      writer.makeFile(cacheFilename, gds, vars,
+    
+    writer.makeFile(cacheFilename, gds, vars,
               bbox,
               horizStride,
               zRange,
@@ -408,12 +403,16 @@ class GridDataController extends AbstratNcssDataRequestController {
               addLatLon,
               version);
 
-    //} catch (IllegalArgumentException e) { // file too big
-    //  throw new RequestTooLargeException("Request too large", e);
-    //}
-
     netcdfResult = new File(cacheFilename);
 
+  }
+  
+  private String getFileNameForResponse(){
+	    String[] tmp = requestPathInfo.split("/"); 
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(tmp[tmp.length-2]).append("_").append(tmp[tmp.length-1]);
+	    String filename= sb.toString().split("\\.")[0]+".nc";
+	    return filename; 
   }
 
   //Exception handlers

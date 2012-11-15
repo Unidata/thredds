@@ -458,7 +458,7 @@ class XMLPointDataWriter implements PointDataWriter {
 	}
 
 	@Override
-	public void setHTTPHeaders(GridDataset gds){
+	public void setHTTPHeaders(GridDataset gds, String pathInfo){
 
 	}
 

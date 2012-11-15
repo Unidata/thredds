@@ -381,7 +381,7 @@ class CSVPointDataWriter implements PointDataWriter {
 	}
 
 	@Override
-	public void setHTTPHeaders(GridDataset gridDataset){
+	public void setHTTPHeaders(GridDataset gridDataset, String pathInfo){
 
 		if(!headersSet){
 			httpHeaders = new HttpHeaders();
