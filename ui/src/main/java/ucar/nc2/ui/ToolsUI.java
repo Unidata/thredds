@@ -3296,7 +3296,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.GribRenamePanel panel;
 
     GribRenamePanel(PreferencesExt p) {
-      super(p, "matchNcepName", true, false, false);
+      super(p, "matchNcepName: ", true, false, false);
       panel = new ucar.nc2.ui.GribRenamePanel(prefs, buttPanel);
       add(panel, BorderLayout.CENTER);
     }

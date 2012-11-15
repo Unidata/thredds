@@ -148,9 +148,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private boolean isClosed = false;
   private Map<Integer, UserType> userTypes = new HashMap<Integer, UserType>();  // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<Group, Integer>();  // group, nc4 grpid
+  private Nc4Chunking chunker = new Nc4ChunkingDefault();
 
   public Nc4Iosp(NetcdfFileWriter.Version version) {
     this.version = version;
+  }
+
+  public void setChunker(Nc4Chunking chunker) {
+    if (chunker != null)
+      this.chunker = chunker;
   }
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
@@ -1622,6 +1628,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       case ENUM2:
       case ENUM4:
         return Nc4prototypes.NC_ENUM;
+      case OPAQUE:
+        log.warn("Skipping Opaque Type");
+        return -1;
     }
     throw new IllegalArgumentException("unimplemented type == " + dt);
   }
@@ -1828,10 +1837,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       IntByReference varidp = new IntByReference();
       int typid = convertDataType(v.getDataType());
+      if (typid < 0) continue;
+
       int ret = nc4.nc_def_var(grpid, v.getShortName(), typid, dimids.length, dimids, varidp);
       if (ret != 0)
         throw new IOException(nc4.nc_strerror(ret));
       int varid = varidp.getValue();
+
+      //   int nc_def_var_chunking(int ncid, int varid, int storage, long[] chunksizesp); // const size_t *   ??
+      int storage = v.isUnlimited() ? Nc4prototypes.NC_CHUNKED : Nc4prototypes.NC_CONTIGUOUS;
+      long[] chunking = chunker.computeChunking(v);
+      ret = nc4.nc_def_var_chunking(grpid, varid, storage, chunking );
+      if (ret != 0)
+        throw new IOException(nc4.nc_strerror(ret));
 
       v.setSPobject(new Vinfo(grpid, varid, typid));
 
@@ -1891,14 +1909,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     Array values = att.getValues();
     switch (att.getDataType()) {
       case STRING:
-        if (att.getLength() == 1) {
+        /* if (att.getLength() == 1) {
           byte[] svalb = att.getStringValue().getBytes(CDM.utf8Charset);
           ret = nc4.nc_put_att_text(grpid, varid, att.getName(), svalb.length, svalb);
-        } else {
+        } else {   */
           String[] svalues = new String[att.getLength()];
           for (int i = 0; i < att.getLength(); i++) svalues[i] = (String) att.getValue(i);
           ret = nc4.nc_put_att_string(grpid, varid, att.getName(), att.getLength(), svalues);
-        }
+        // }
         break;
       case BYTE:
         ret = nc4.nc_put_att_schar(grpid, varid, att.getName(), Nc4prototypes.NC_BYTE, att.getLength(), (byte[]) values.getStorage());
@@ -1931,8 +1949,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   @Override
   public void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
-    if (vinfo == null)
+    if (vinfo == null) {
       log.error("HEY vinfo null for " + v2);
+      return;
+    }
     writeData(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, section, values.getStorage());
   }
 
@@ -2015,7 +2035,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_STRING:
-        String[] valss = (String[]) data;
+        String[] valss = convertStringData(data);
         assert valss.length == sectionLen;
         ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss);
         if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
@@ -2042,6 +2062,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
     // System.out.printf("OK var %s%n", v);
 
+  }
+
+  private String[] convertStringData(Object org) throws IOException {
+    if (org instanceof String[]) return (String[]) org;
+    if (org instanceof Object[]) {
+      Object[] oo = (Object []) org;
+      String[] result = new String[oo.length];
+      int count = 0;
+      for (Object s : oo)
+        result[count++] = (String) s;
+      return result;
+    }
+    throw new IOException("convertStringData failed on class = " + org.getClass().getName());
   }
 
   /////////////////////////////////////////////////////////////////////////

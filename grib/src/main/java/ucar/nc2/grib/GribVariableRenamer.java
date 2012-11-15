@@ -195,7 +195,7 @@ public class GribVariableRenamer {
 
   // debugging only
   public List<VariableRenamerBean> readVariableRenamerBeans(String which) {
-    if (which.equals("GRIB1"))
+    if (which.equals("GRIB-1"))
       return readVariableRenameFile("resources/grib1/grib1VarMap.xml");
     else
       return readVariableRenameFile("resources/grib2/grib2VarMap.xml");

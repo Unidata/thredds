@@ -39,6 +39,10 @@ import java.util.List;
 import java.util.Map;
 
 import ucar.ma2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.dmsp.DMSPHeader;
+import ucar.nc2.jni.netcdf.Nc4Chunking;
+import ucar.nc2.jni.netcdf.Nc4ChunkingDefault;
 
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
@@ -81,8 +85,10 @@ public class FileWriter2 {
   private List<FileWriterProgressListener> progressListeners;
 
   private final Map<Variable, Variable> varMap = new HashMap<Variable, Variable>();  // oldVar, newVar
-  private final List<Variable> varList = new ArrayList<Variable>();                  // old Vars
-  private final Map<String, Dimension> gdimHash = new HashMap<String, Dimension>();  // name, newDim : global dimensions (classic mode)
+  private final List<Variable> varList = new ArrayList<Variable>();        // old Vars
+  private final Map<String, Dimension> gdimHash = new HashMap<String, Dimension>(); // name, newDim : global dimensions (classic mode)
+
+  private Nc4Chunking chunker = new Nc4ChunkingDefault();
 
   /**
    * Use this constructor to copy entire file. Use this.write() to do actual copy.
@@ -92,9 +98,9 @@ public class FileWriter2 {
    * @param version     output file version
    * @throws IOException on read/write error
    */
-  public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version) throws IOException {
+  public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker) throws IOException {
     this.fileIn = fileIn;
-    this.writer = NetcdfFileWriter.createNew(version, fileOutName);
+    this.writer = NetcdfFileWriter.createNew(version, fileOutName, chunker);
     this.version = version;
   }
 
@@ -195,6 +201,10 @@ public class FileWriter2 {
 
   private void addNetcdf3() throws IOException {
 
+    if (fileIn.getRootGroup().getGroups().size() != 0) {
+      throw new IllegalStateException("Input file has nested groups: cannot write to netcdf-3 format");
+    }
+
     // attributes
     for (Attribute att : fileIn.getGlobalAttributes()) {
       writer.addGroupAttribute(null, att); // atts are immutable
@@ -287,7 +297,6 @@ public class FileWriter2 {
     }
 
     // Variables
-    int anonCount = 0;
     for (Variable oldVar : oldGroup.getVariables()) {
       List<Dimension> dims = new ArrayList<Dimension>();
       for (Dimension oldD : oldVar.getDimensions()) {
@@ -305,6 +314,10 @@ public class FileWriter2 {
       varMap.put(oldVar, v);
       varList.add(oldVar);
       if (debug) System.out.println("add var= " + v);
+
+      // set chunking using the oldVar
+      long[] chunk = chunker.computeChunking(oldVar);
+      v.addAttribute(new Attribute(CDM.CHUNK_SIZE, Array.factory(chunk)));
 
       // attributes
       for (Attribute att : oldVar.getAttributes())
@@ -709,7 +722,7 @@ public class FileWriter2 {
     System.out.printf("copy %s to%s%n", datasetIn, datasetOut);
     // NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);
     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
-    FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version);
+    FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null); // currently only the default chunker
     NetcdfFile ncfileOut = writer2.write();
     ncfileIn.close();
     ncfileOut.close();

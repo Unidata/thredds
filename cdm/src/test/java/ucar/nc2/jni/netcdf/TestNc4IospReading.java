@@ -1,5 +1,6 @@
 package ucar.nc2.jni.netcdf;
 
+import org.junit.Before;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -25,6 +26,12 @@ import java.util.Formatter;
 public class TestNc4IospReading {
   private boolean showCompareResults = true;
   private int countNotOK = 0;
+
+  @Before
+  public void setLibrary() {
+    Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+  }
+
 
   @Test
   public void testReadSubsection() throws IOException, InvalidRangeException {

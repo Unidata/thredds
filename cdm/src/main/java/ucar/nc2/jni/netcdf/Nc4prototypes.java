@@ -92,6 +92,10 @@ public interface Nc4prototypes extends Library {
   static public final int NC_CLASSIC_MODEL = 0x0100; /**< Enforce classic model. Mode flag for nc_create(). */
   static public final int NC_DISKLESS      = 0x0002;  /**< Create a diskless file. Mode flag for nc_create(). */
 
+  //  nc_def_var_chunking()
+  static public final int NC_CHUNKED    = 0;
+  static public final int NC_CONTIGUOUS = 1;
+
   static public class Vlen_t extends Structure {
     public static class ByValue extends Vlen_t implements Structure.ByValue { }
     public int len; /* Length of VL data (in base type units) */
@@ -226,6 +230,8 @@ public interface Nc4prototypes extends Library {
   int nc_put_vars_ulonglong(int ncid, int varid, long[] startp, long[] countp, long[] stridep, long[] ip);
   int nc_put_vars_float(int ncid, int varid, long[] startp, long[] countp, long[] stridep, float[] ip);
   int nc_put_vars_double(int ncid, int varid, long[] startp, long[] countp, long[] stridep, double[] ip);
+
+/*int nc_get_vars_string(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, char **ip);  */
   int nc_put_vars_string(int ncid, int varid, long[] startp, long[] countp, long[] stridep, String[] ip);
 
   // nc_put_vars_double(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const double *op);
@@ -266,6 +272,7 @@ public interface Nc4prototypes extends Library {
   int nc_inq_var_fletcher32(int ncid, int varid, IntByReference fletcher32p);
   
   /* Define chunking for a variable. This must be done after nc_def_var and before nc_enddef. */
+  // int nc_def_var_chunking(int ncid, int varid, int *chunkalgp, int *chunksizesp, int *extend_incrementsp);
   int nc_def_var_chunking(int ncid, int varid, int storage, long[] chunksizesp); // const size_t *   ??
   
   /* Inq chunking stuff for a var. */

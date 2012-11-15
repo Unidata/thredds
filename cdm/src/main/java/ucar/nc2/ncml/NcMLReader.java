@@ -1488,7 +1488,7 @@ public class NcMLReader {
   public static void writeNcMLToFile(String ncmlLocation, String fileOutName) throws IOException {
     NetcdfFile ncd = NetcdfDataset.acquireFile(ncmlLocation, null);
 
-    FileWriter2 writer = new FileWriter2(ncd, fileOutName, NetcdfFileWriter.Version.netcdf3);
+    FileWriter2 writer = new FileWriter2(ncd, fileOutName, NetcdfFileWriter.Version.netcdf3, null);
     NetcdfFile result = writer.write();
     result.close();
     ncd.close();
@@ -1507,7 +1507,7 @@ public class NcMLReader {
    */
   public static void writeNcMLToFile(InputStream ncml, String fileOutName) throws IOException {
     NetcdfDataset ncd = NcMLReader.readNcML(ncml, null);
-    FileWriter2 writer = new FileWriter2(ncd, fileOutName, NetcdfFileWriter.Version.netcdf3);
+    FileWriter2 writer = new FileWriter2(ncd, fileOutName, NetcdfFileWriter.Version.netcdf3, null);
     NetcdfFile result = writer.write();
     result.close();
     ncd.close();

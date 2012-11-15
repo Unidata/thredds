@@ -261,7 +261,7 @@ public class NetcdfCFWriter {
 
     // check size is ok
     boolean isLargeFile = isLargeFile(total_size);
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location);
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, null);
     writer.setLargeFile(isLargeFile);
 
     writeGlobalAttributes(writer, gds);
@@ -386,7 +386,7 @@ public class NetcdfCFWriter {
 
     if (version == NetcdfFileWriter.Version.netcdf4)
       version = NetcdfFileWriter.Version.netcdf4_classic;
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location);
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, null);
     writer.setLargeFile(isLargeFile);
 
     writeGlobalAttributes(writer, gds);

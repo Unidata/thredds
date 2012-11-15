@@ -161,7 +161,7 @@ public class CFPointWriter {
 
   protected CFPointWriter(String fileOut, List<Attribute> atts) throws IOException {
 	  
-    writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut);
+    writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut, null);
 	  
     writer.setFill(false);
 
