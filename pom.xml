@@ -292,6 +292,13 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
         <version>${org.springframework.version}</version>
+        <exclusions>
+          <!-- Replaced with jcl-over-slf4j. -->
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
@@ -386,15 +393,16 @@
 
       <!-- UI -->
       <dependency>
-        <groupId>jfree</groupId>
-        <artifactId>jfreechart</artifactId>
-        <version>${jfree.version}</version>
+        <groupId>org.jfree</groupId>
+        <artifactId>jcommon</artifactId>
+        <version>${org.jfree.jcommon.version}</version>
       </dependency>
       <dependency>
-        <groupId>jfree</groupId>
-        <artifactId>jcommon</artifactId>
-        <version>${jfree.jcommon.version}</version>
+        <groupId>org.jfree</groupId>
+        <artifactId>jfreechart</artifactId>
+        <version>${org.jfree.jfreechart.version}</version>
       </dependency>
+
       <dependency>
         <groupId>com.jgoodies</groupId>
         <artifactId>forms</artifactId>
@@ -416,6 +424,13 @@
         <groupId>cas</groupId>
         <artifactId>casclient</artifactId>
         <version>${cas.version}</version>
+        <exclusions>
+          <!-- Replaced with jcl-over-slf4j. -->
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>oro</groupId>
@@ -426,6 +441,20 @@
         <groupId>uk.ac.rdg.resc</groupId>
         <artifactId>ncwms</artifactId>
         <version>${uk.ac.rdg.resc.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jfree</groupId>
+            <artifactId>jcommon</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.geotoolkit</groupId>
@@ -441,12 +470,12 @@
         <scope>provided</scope>
       </dependency>
       
-      <!-- dependency>
+      <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>${javax.servlet.jstl.version}</version>
         <scope>runtime</scope>
-      </dependency-->
+      </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
@@ -455,17 +484,11 @@
       </dependency>
       
       <dependency>
-        <groupId>taglibs</groupId>
-        <artifactId>standard</artifactId>
-        <version>${taglibs.version}</version>
-      </dependency>
-      
-      <!-- dependency>
-        <groupId>atg.taglib.json</groupId>
+        <groupId>json-taglib</groupId>
         <artifactId>json-taglib</artifactId>
         <version>${atg.taglib.json.version}</version>
         <scope>runtime</scope>
-      </dependency-->
+      </dependency>
 
       <dependency>
         <groupId>jaxen</groupId>
@@ -490,6 +513,13 @@
         <artifactId>threddsIso</artifactId>
         <version>${eds.threddsIso.version}</version>
         <scope>runtime</scope>
+        <exclusions>
+          <!-- TODO Ask Dave to scope servlet-api as "provided". -->
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- THREDDS - END -->
 
@@ -733,12 +763,11 @@
     <commons-httpclient.version>3.1</commons-httpclient.version>
     <commons-fileupload.version>1.2.1</commons-fileupload.version>
     <commons-io.version>1.4</commons-io.version>
-    <commons-logging.version>1.1.1</commons-logging.version>
     <javax.servlet.version>2.5</javax.servlet.version>
     <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
     <jaxen.version>1.1.4</jaxen.version>
-    <jfree.jcommon.version>1.0.15</jfree.jcommon.version>
-    <jfree.version>1.0.13</jfree.version>
+    <org.jfree.jcommon.version>1.0.17</org.jfree.jcommon.version>
+    <org.jfree.jfreechart.version>1.0.14</org.jfree.jfreechart.version>
     <joda-time.version>2.0</joda-time.version>
     <junit.version>4.8.2</junit.version>
     <log4j.version>1.2.17</log4j.version>
@@ -751,7 +780,6 @@
     <org.slf4j.version>1.6.4</org.slf4j.version>
     <org.springframework.version>3.1.1.RELEASE</org.springframework.version>
     <oro.version>2.0.8</oro.version>
-    <taglibs.version>1.1.2</taglibs.version>
 
     <!-- Plugins versions -->
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
