@@ -165,6 +165,24 @@
         <module>it</module>
       </modules>
     </profile>
+
+    <profile>
+      <id>tomcat-debug</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-catalina</artifactId>
+          <version>${org.apache.tomcat.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.tomcat</groupId>
+          <artifactId>tomcat-jasper</artifactId>
+          <version>${org.apache.tomcat.version}</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 
   <distributionManagement>
@@ -464,25 +482,18 @@
 
       <!-- server -->
       <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-catalina</artifactId>
-        <version>${org.apache.tomcat.version}</version>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>${javax.servlet.version}</version>
         <scope>provided</scope>
       </dependency>
-      
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>${javax.servlet.jstl.version}</version>
         <scope>runtime</scope>
       </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>${javax.servlet.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      
+
       <dependency>
         <groupId>json-taglib</groupId>
         <artifactId>json-taglib</artifactId>

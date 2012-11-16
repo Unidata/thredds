@@ -171,13 +171,6 @@
       <artifactId>json-taglib</artifactId>
     </dependency-->
 
-    <!-- tomcat -->
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-catalina</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -278,7 +271,6 @@
           <skip>${skipTests}</skip>
           <excludes>
             <exclude>thredds/cataloggen/**</exclude>
-            <exclude>thredds/servlet/tomcat/**</exclude>
           </excludes>
         </configuration>
       </plugin>
