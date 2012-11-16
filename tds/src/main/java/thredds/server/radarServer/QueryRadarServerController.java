@@ -164,7 +164,7 @@ public class QueryRadarServerController extends AbstractController  {
     catch ( Throwable e )
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
-      throw new RadarServerException( "handleRequestInternal(): Problem handling request." );
+      throw new RadarServerException( "handleRequestInternal(): Problem handling request.", e );
     }
   }
 
@@ -185,7 +185,7 @@ public class QueryRadarServerController extends AbstractController  {
         radarType = DatasetRepository.RadarType.valueOf( rt );
       } catch ( Exception e ) {
         log.info( "Invalid dataset url reference "+ pathInfo );
-        throw new RadarServerException( "Invalid dataset url reference "+ pathInfo );
+        throw new RadarServerException( "Invalid dataset url reference "+ pathInfo, e );
       }
       Boolean level2 = pathInfo.contains( "level2" );
 
@@ -565,7 +565,7 @@ public class QueryRadarServerController extends AbstractController  {
     catch ( Throwable e )
     {
       log.error( "Invalid dataset ="+ dataset +" or var ="+ var, e );
-      throw new RadarServerException( "Invalid dataset ="+ dataset +" or var ="+ var );
+      throw new RadarServerException( "Invalid dataset ="+ dataset +" or var ="+ var, e );
     }
   }
 

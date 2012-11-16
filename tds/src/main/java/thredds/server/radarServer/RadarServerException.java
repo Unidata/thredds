@@ -49,4 +49,14 @@ public class RadarServerException extends Exception {
     public RadarServerException(String msg) {
       super(msg);
     }
+
+  /**
+   * Construct a new RadarServerException.
+   *
+   * @param message the detailed exception message
+   * @param cause the cause of this exception
+   */
+  public RadarServerException( String message, Throwable cause) {
+    super(message, cause);
+  }
 }
