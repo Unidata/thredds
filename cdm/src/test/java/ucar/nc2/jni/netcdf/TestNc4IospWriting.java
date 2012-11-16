@@ -26,18 +26,18 @@ public class TestNc4IospWriting {
 
   @Before
   public void setLibrary() {
-    // Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+    Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
     //FileWriter2.setDebugFlags(new DebugFlagsImpl("ncfileWriter2/debug"));
   }
 
   @Test
   public void problem() throws IOException {
-    copyFile("Q:\\cdmUnitTest\\formats\\netcdf4\\files\\nc_test_netcdf4.nc4", "C:/temp/nc_test_netcdf4.nc4", NetcdfFileWriter.Version.netcdf4);
+    copyFile("Q:\\cdmUnitTest\\formats\\netcdf4\\files\\tst_string_data.nc", "C:/temp/tst_string_data.nc4", NetcdfFileWriter.Version.netcdf4);
     //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);
   }
 
   @Test
-  public void readAllNetcdf4() throws IOException {
+  public void writeAllNetcdf4() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files/", new MyFileFilter(), new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
@@ -51,7 +51,7 @@ public class TestNc4IospWriting {
   }
 
   @Test
-  public void readAllNetcdf3() throws IOException {
+  public void writeAllNetcdf3() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", null, new MyAct());
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
@@ -72,8 +72,8 @@ public class TestNc4IospWriting {
 
     @Override
     public boolean accept(File pathname) {
-      if (pathname.getName().equals("tst_string_data.nc")) return false;
-      if (pathname.getName().equals("tst_strings.nc")) return false;
+      //if (pathname.getName().equals("tst_string_data.nc")) return false;
+      //if (pathname.getName().equals("tst_strings.nc")) return false;
       return true;
     }
   }

@@ -146,10 +146,11 @@ public class DatasetViewer extends JPanel {
       }
       String location = ds.getLocation();
       if (location == null) location = "test";
+      if (location.startsWith("file:")) location = location.substring(5);
       int pos = location.lastIndexOf(".");
       if (pos > 0)
         location = location.substring(0, pos);
-        location += ".nc";
+      location += ".nc";
       outChooser.setOutputFilename(location);
       outChooser.setVisible(true);
       //String filename = fileChooser.chooseFilenameToSave(location + ".nc");

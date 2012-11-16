@@ -234,6 +234,20 @@ public interface Nc4prototypes extends Library {
 /*int nc_get_vars_string(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, char **ip);  */
   int nc_put_vars_string(int ncid, int varid, long[] startp, long[] countp, long[] stridep, String[] ip);
 
+  int nc_put_var_uchar(int ncid, int varid, byte[] ip);
+  int nc_put_var_schar(int ncid, int varid,  byte[] ip);
+  int nc_put_var_text(int ncid, int varid, byte[] ip);
+  int nc_put_var_short(int ncid, int varid, short[] ip);
+  int nc_put_var_ushort(int ncid, int varid, short[] ip);
+  int nc_put_var_int(int ncid, int varid, int[] ip);
+  int nc_put_var_uint(int ncid, int varid, int[] ip);
+  int nc_put_var_longlong(int ncid, int varid, long[] ip);
+  int nc_put_var_ulonglong(int ncid, int varid, long[] ip);
+  int nc_put_var_float(int ncid, int varid, float[] ip);
+  int nc_put_var_double(int ncid, int varid, double[] ip);
+  int nc_put_var_string(int ncid, int varid, String[] op);
+
+
   // nc_put_vars_double(int ncid, int varid, const size_t *startp, const size_t *countp, const ptrdiff_t *stridep, const double *op);
 
   // nc_put_att_string(int ncid, int varid, const char *name, long len, const char **op);
