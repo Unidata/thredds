@@ -53,6 +53,7 @@ import java.util.regex.Matcher;
  * servlet.
  */
 public class RadarDayCollection implements Serializable {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
   private static final long serialVersionUID = 20100109L;
@@ -168,7 +169,7 @@ public class RadarDayCollection implements Serializable {
     ArrayList<String> stations = new ArrayList<String>();
     File dir = new File(stnDir);
     if (dir.exists() && dir.isDirectory()) {
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      log.debug("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String aChild : children) {
         File child = new File(dir, aChild);
@@ -190,7 +191,7 @@ public class RadarDayCollection implements Serializable {
 
     File dir = new File(stnDir);
     if (dir.exists() && dir.isDirectory()) {
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      log.debug("In directory " + dir.getParent() + "/" + dir.getName());
       ArrayList<String> hhmm = new ArrayList<String>();
       String[] children = dir.list();
       if( children.length > 0 ) { // check for standard name
@@ -293,7 +294,7 @@ public class RadarDayCollection implements Serializable {
           in.close();
         }
         catch (IOException e) {
-          System.out.println("radarServer reading DayCollection "+ sfile );
+          log.debug("radarServer reading DayCollection "+ sfile );
         }
       }
     }

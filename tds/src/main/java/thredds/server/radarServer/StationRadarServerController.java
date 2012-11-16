@@ -116,7 +116,7 @@ public class StationRadarServerController extends AbstractController {
         radarType = DatasetRepository.RadarType.valueOf( rt );
       } catch ( Exception e ) {
         log.info( "Invalid dataset url reference "+ pathInfo );
-        throw new RadarServerException( "Invalid dataset url reference "+ pathInfo );
+        throw new RadarServerException( "Invalid dataset url reference "+ pathInfo, e );
       }
       // return stations of dataset
       Map<String,Object> model = new HashMap<String,Object>();
@@ -146,7 +146,7 @@ public class StationRadarServerController extends AbstractController {
     catch ( Throwable e )
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
-      throw new RadarServerException( "handleRequestInternal(): Problem handling request." );
+      throw new RadarServerException( "handleRequestInternal(): Problem handling request.", e );
     }
   }
   /*
