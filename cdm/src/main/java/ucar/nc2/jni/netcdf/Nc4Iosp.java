@@ -1774,7 +1774,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (debug) System.out.println("open " + ncfile.getLocation());
     IntByReference ncidp = new IntByReference();
     int ret = nc4.nc_create(filename, createMode(), ncidp);
-    if (ret != 0) throw new IOException(nc4.nc_strerror(ret));
+    if (ret != 0) throw new IOException(ret+": "+nc4.nc_strerror(ret));
     ncid = ncidp.getValue();
 
     // turn off fill mode for the moment

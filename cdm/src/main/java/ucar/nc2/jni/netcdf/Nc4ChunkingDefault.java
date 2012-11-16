@@ -31,7 +31,7 @@ public class Nc4ChunkingDefault implements Nc4Chunking {
       return result;
     }
 
-    // use entire
+    // use entire if small enough
     long size = v.getSize();
     if (size < DEFAULT_CHUNKSIZE) return convert(v.getShape()); // all of it
 

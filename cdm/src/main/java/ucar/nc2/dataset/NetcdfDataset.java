@@ -1637,8 +1637,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         if (orgVar.getRank() != vds.getRank())
           f.format("Variable %s has rank %d, org = %d%n", vds.getFullName(), vds.getRank(), orgVar.getRank());
       }
-
-
     }
   }
 

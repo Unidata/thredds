@@ -180,6 +180,11 @@ public class DatasetViewer extends JPanel {
   ///////////////////////////////////////
 
   void writeNetcdf(NetcdfOutputChooser.Data data) {
+    if (data.version == NetcdfFileWriter.Version.ncstream) {
+      writeNcstream(data.outputFilename);
+      return;
+    }
+
     try {
       FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version, null);
       NetcdfFile result = writer.write();

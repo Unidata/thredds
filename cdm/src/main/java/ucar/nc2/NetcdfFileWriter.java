@@ -39,7 +39,6 @@ import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.N3raf;
 import ucar.nc2.jni.netcdf.Nc4Chunking;
-import ucar.nc2.jni.netcdf.Nc4ChunkingDefault;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 import java.io.File;
@@ -60,12 +59,14 @@ public class NetcdfFileWriter {
           DataType.DOUBLE, DataType.FLOAT);
   static private final boolean debug = false, debugWrite = false;
 
+
   public enum Version {
     netcdf3,             // java iosp
     netcdf4,             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4
     netcdf4_classic,     // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
-    netcdf3c,            // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC
-    netcdf3c64;           // jni netcdf4 iosp mode = NC_FORMAT_64BIT
+    netcdf3c,            // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC   (nc3)
+    netcdf3c64,          // jni netcdf4 iosp mode = NC_FORMAT_64BIT     (nc3 64 bit)
+    ncstream;            // ncstream iosp
 
     public boolean isNetdf4format() {
       return this == netcdf4 || this == netcdf4_classic;

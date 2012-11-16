@@ -99,6 +99,7 @@ public class CompareDialog extends JDialog {
     String filename = fileChooser.chooseFilename();
     if (filename == null) return;
     datasetCombo.insertItemAt(filename, 0);
+    datasetCombo.setSelectedIndex(0);
   }
 
   private void datasetComboActionPerformed(ActionEvent e) {
@@ -141,6 +142,7 @@ public class CompareDialog extends JDialog {
         fileBrowser.setIcon(UIManager.getIcon("FileView.directoryIcon"));
         fileBrowser.setToolTipText("open Local dataset");
         fileBrowser.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             fileBrowserActionPerformed(e);
           }
@@ -178,6 +180,7 @@ public class CompareDialog extends JDialog {
         //---- datasetCombo ----
         datasetCombo.setEditable(true);
         datasetCombo.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             datasetComboActionPerformed(e);
           }
@@ -186,6 +189,7 @@ public class CompareDialog extends JDialog {
         //---- cancelButton ----
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             cancelButtonActionPerformed(e);
           }
@@ -194,6 +198,7 @@ public class CompareDialog extends JDialog {
         //---- okButton ----
         okButton.setText("OK");
         okButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             okButtonActionPerformed(e);
           }
