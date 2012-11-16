@@ -52,7 +52,7 @@
       <artifactId>spring-context</artifactId>
     </dependency>
     <dependency>
-      <groupId>jfree</groupId>
+      <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>
     </dependency>
     <dependency>
@@ -60,7 +60,7 @@
       <artifactId>forms</artifactId>
     </dependency>
     <dependency>
-      <groupId>jfree</groupId>
+      <groupId>org.jfree</groupId>
       <artifactId>jcommon</artifactId>
     </dependency>
     <dependency>
