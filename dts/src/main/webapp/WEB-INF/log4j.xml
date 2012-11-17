@@ -3,7 +3,6 @@
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
   <appender name="logcdm" class="org.apache.log4j.DailyRollingFileAppender">
-<!-- logs/cdm.log = logs/cdm.log | ${tds.log.dir}/cdm.log -->
     <param name="File" value="webapps/dts/dts.log"/>
     <param name="DatePattern" value=".yyyy-MM-dd-HH"/>
     <layout class="org.apache.log4j.PatternLayout">
@@ -17,14 +16,9 @@
     </layout>
   </appender>
 
-  <logger name="opendap.servlet.DTSLog" additivity="false">
+  <logger name="opendap.dts.DTSServlet" additivity="false">
     <level value="INFO" />
-    <appender-ref ref="logcdm"/>
-  </logger>
-
-  <logger name="opendap.servlet.LogStream" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="logcdm"/>
+    <appender-ref ref="stdout"/>
   </logger>
 
   <root>
