@@ -54,13 +54,8 @@ import org.springframework.validation.BindingResult;
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.exception.InvalidBBOXException;
 import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import thredds.server.ncSubset.exception.RequestTooLargeException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
-import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
@@ -87,6 +82,7 @@ public class VerticalStrideSubsettingTest {
 	private BindingResult validationResult;
 	private MockHttpServletResponse response ;	
 	
+	private String accept;
 	private String pathInfo;
 	private int[][] expectedShapes;	
 	private List<String> vars;
@@ -96,16 +92,23 @@ public class VerticalStrideSubsettingTest {
 	public static Collection<Object[]> getTestParameters(){
 				
 		return Arrays.asList( new Object[][]{
-				{ new int[][]{ {1,65,93}, {1,65,93} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), 1 }, //No vertical levels 
-				{ new int[][]{ {1,1,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), 1}, //Same vertical level (one level)
-				{ new int[][]{ {1,10,65,93}, {1,10,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), 3}, //Same vertical level (multiple level)
-				{ new int[][]{ {1,65,93}, {1,10,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), 3 }, //No vertical levels and vertical levels
-				{ new int[][]{ {1,1,65,93}, {1,6,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), 5}, //Different vertical levels
+				{SupportedFormat.NETCDF3, new int[][]{ {1,65,93}, {1,65,93} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), 1 }, //No vertical levels 
+				{SupportedFormat.NETCDF3, new int[][]{ {1,1,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), 1}, //Same vertical level (one level)
+				{SupportedFormat.NETCDF3, new int[][]{ {1,10,65,93}, {1,10,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), 3}, //Same vertical level (multiple level)
+				{SupportedFormat.NETCDF3, new int[][]{ {1,65,93}, {1,10,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), 3 }, //No vertical levels and vertical levels
+				{SupportedFormat.NETCDF3, new int[][]{ {1,1,65,93}, {1,6,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), 5}, //Different vertical levels
+				
+//				{SupportedFormat.NETCDF4, new int[][]{ {1,65,93}, {1,65,93} } , PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), 1 }, //No vertical levels 
+//				{SupportedFormat.NETCDF4, new int[][]{ {1,1,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), 1}, //Same vertical level (one level)
+//				{SupportedFormat.NETCDF4, new int[][]{ {1,10,65,93}, {1,10,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), 3}, //Same vertical level (multiple level)
+//				{SupportedFormat.NETCDF4, new int[][]{ {1,65,93}, {1,10,65,93}, {1,1,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), 3 }, //No vertical levels and vertical levels
+//				{SupportedFormat.NETCDF4, new int[][]{ {1,1,65,93}, {1,6,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), 5}, //Different vertical levels				
 								
 			});
 	}
 	
-	public VerticalStrideSubsettingTest(int[][] result, String pathInfo, List<String> vars, Integer vertStride){
+	public VerticalStrideSubsettingTest(SupportedFormat format, int[][] result, String pathInfo, List<String> vars, Integer vertStride){
+		this.accept = format.getAliases().get(0);
 		this.expectedShapes= result;
 		this.pathInfo = pathInfo;
 		this.vars = vars;
@@ -117,9 +120,11 @@ public class VerticalStrideSubsettingTest {
 		
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		gridDataController.setGridDataset(gds);
+		gridDataController.setRequestPathInfo(pathInfo);
 		params = new GridDataRequestParamsBean(); 
 		params.setVar(vars);
 		params.setVertStride(vertStride);
+		params.setAccept(accept);
 		
 		validationResult = new BeanPropertyBindingResult(params, "params");
 		response = new MockHttpServletResponse();

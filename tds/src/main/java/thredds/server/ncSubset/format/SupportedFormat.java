@@ -14,7 +14,7 @@ public enum SupportedFormat{
 	CSV("CSV", true, "text/plain", "text/csv", "csv"  ),
 	XML("XML", true, "application/xml", "text/xml", "xml"),
 	NETCDF3("NETCDF3", true, "application/x-netcdf","netcdf"),	
-	NETCDF4("NETCDF4", Netcdf4AvailabilityChecker.isNetcdf4Available() , "application/x-netcdf","netcdf4");
+	NETCDF4("NETCDF4", Netcdf4AvailabilityChecker.isNetcdf4Available() ,  "application/x-netcdf4" , "netcdf4");
 	
 	/*
 	 * First alias is used as content-type in the http headers

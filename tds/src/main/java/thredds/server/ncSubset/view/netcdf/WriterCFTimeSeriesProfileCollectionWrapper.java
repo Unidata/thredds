@@ -13,6 +13,7 @@ import thredds.server.ncSubset.dataservice.StructureDataFactory;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridDataset;
@@ -37,9 +38,9 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 
 	private WriterCFTimeSeriesProfileCollection writerCFTimeSeriesProfileCollection; 
 
-	private WriterCFTimeSeriesProfileCollectionWrapper(String filePath, List<Attribute> atts ) throws IOException{
+	private WriterCFTimeSeriesProfileCollectionWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
 
-		writerCFTimeSeriesProfileCollection = new WriterCFTimeSeriesProfileCollection(filePath, atts); 
+		writerCFTimeSeriesProfileCollection = new WriterCFTimeSeriesProfileCollection(version, filePath, atts); 
 	}
 
 	@Override
@@ -213,8 +214,8 @@ public final class WriterCFTimeSeriesProfileCollectionWrapper implements CFPoint
 	}
 
 
-	public static WriterCFTimeSeriesProfileCollectionWrapper createWrapper(String filePath, List<Attribute> atts ) throws IOException{
-		return new WriterCFTimeSeriesProfileCollectionWrapper(filePath, atts);
+	public static WriterCFTimeSeriesProfileCollectionWrapper createWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
+		return new WriterCFTimeSeriesProfileCollectionWrapper(version, filePath, atts);
 	}	
 
 }

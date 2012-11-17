@@ -59,6 +59,7 @@ import thredds.server.ncSubset.exception.RequestTooLargeException;
 import thredds.server.ncSubset.exception.UnsupportedOperationException;
 import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
 import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
@@ -95,20 +96,21 @@ public class TemporalSpaceSubsettingTest {
 		
 		
 		return Arrays.asList( new Object[][]{
-				{ 1, PathInfoParams.getPatInfo().get(4), null , null, null, null, null, null }, //No time subset provided
-				{ 6, PathInfoParams.getPatInfo().get(3), "all", null, null, null, null, null }, //Requesting all
-				{ 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T12:00:00.000Z", null, null, null, null }, //Single time on singleDataset
-				{ 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T15:30:00.000Z", "PT3H", null, null, null }, //Single time in range with time_window 
-				{ 6, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", "2012-04-19T18:00:00.000Z", null }, //Time series on Best time series
-				{ 5, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", null, "PT24H" } //Time series on Best time series
+				{ SupportedFormat.NETCDF3,  1, PathInfoParams.getPatInfo().get(4), null , null, null, null, null, null }, //No time subset provided
+				{ SupportedFormat.NETCDF3, 6, PathInfoParams.getPatInfo().get(3), "all", null, null, null, null, null }, //Requesting all
+				{ SupportedFormat.NETCDF3, 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T12:00:00.000Z", null, null, null, null }, //Single time on singleDataset
+				{ SupportedFormat.NETCDF3, 1, PathInfoParams.getPatInfo().get(0), ""   , "2012-04-19T15:30:00.000Z", "PT3H", null, null, null }, //Single time in range with time_window 
+				{ SupportedFormat.NETCDF3, 6, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", "2012-04-19T18:00:00.000Z", null }, //Time series on Best time series
+				{ SupportedFormat.NETCDF3, 5, PathInfoParams.getPatInfo().get(3), ""   , null, null, "2012-04-18T12:00:00.000Z", null, "PT24H" } //Time series on Best time series
 				
 			});
 	}
 	
-	public TemporalSpaceSubsettingTest(int expectedLengthTimeDim, String pathInfoForTest,String temporal, String time, String time_window, String time_start, String time_end, String time_duration){
+	public TemporalSpaceSubsettingTest(SupportedFormat format, int expectedLengthTimeDim, String pathInfoForTest,String temporal, String time, String time_window, String time_start, String time_end, String time_duration){
 		lengthTimeDim = expectedLengthTimeDim;
 		pathInfo = pathInfoForTest;		
 		params = new GridDataRequestParamsBean();
+		params.setAccept(format.getAliases().get(0));
 		params.setTemporal(temporal);
 		params.setTime(time);
 		params.setTime_window(time_window);
@@ -123,7 +125,7 @@ public class TemporalSpaceSubsettingTest {
 		
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		gridDataController.setGridDataset(gds);
-		
+		gridDataController.setRequestPathInfo(pathInfo);
 		List<String> var = new ArrayList<String>();
 		//var.add("Pressure");
 		var.add("Temperature");				

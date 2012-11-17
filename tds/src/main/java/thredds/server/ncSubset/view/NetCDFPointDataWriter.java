@@ -18,6 +18,7 @@ import thredds.server.ncSubset.controller.NcssDiskCache;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapper;
 import thredds.server.ncSubset.view.netcdf.CFPointWriterWrapperFactory;
 import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -40,6 +41,8 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	
 	//private boolean isProfile = false;
 	
+	private NetcdfFileWriter.Version version;  
+	
 	private CF.FeatureType featureType;
 	
 	private CFPointWriterWrapper pointWriterWrapper;
@@ -48,15 +51,16 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 	
 	//private List<VariableSimpleIF> wantedVars;
 	
-	private NetCDFPointDataWriter(OutputStream outputStream){
+	private NetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream){
 		
-		this.outputStream = outputStream;		
+		this.outputStream = outputStream;
+		this.version = version;
 		diskCache = NcssDiskCache.getInstance().getDiskCache();
 		netcdfResult = diskCache.createUniqueFile("ncss", ".nc");		
 	}
 	
-	public static NetCDFPointDataWriter createNetCDFPointDataWriter(OutputStream outputStream){
-		return new NetCDFPointDataWriter(outputStream);
+	public static NetCDFPointDataWriter createNetCDFPointDataWriter(NetcdfFileWriter.Version version, OutputStream outputStream){
+		return new NetCDFPointDataWriter(version, outputStream);
 	}
 	
 	public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, DateUnit dateUnit,LatLonPoint point, Double vertCoord) {
@@ -84,7 +88,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
 		try{
 			List<Attribute> atts = new ArrayList<Attribute>();
 			atts.add(new Attribute( CDM.TITLE,  "Extract Points data from Grid file "+ gridDataset.getLocationURI()) );		
-			pointWriterWrapper = CFPointWriterWrapperFactory.getWriterForFeatureType(featureType, netcdfResult.getAbsolutePath(), atts);			
+			pointWriterWrapper = CFPointWriterWrapperFactory.getWriterForFeatureType(version, featureType, netcdfResult.getAbsolutePath(), atts);			
 			headerDone = pointWriterWrapper.header(groupedVars, gridDataset, wDates, dateUnit, point, vertCoord);			
 		}catch(IOException ioe){
 			log.error("Error writing header", ioe);

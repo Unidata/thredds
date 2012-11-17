@@ -13,6 +13,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
@@ -43,9 +44,9 @@ class WriterPointCollectionNoTime extends CFPointWriter {
 
 	static private Logger log = LoggerFactory.getLogger(WriterPointCollectionNoTime.class);
 
-	protected WriterPointCollectionNoTime(String fileOut, List<Attribute> atts)
+	protected WriterPointCollectionNoTime(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts)
 			throws IOException {
-		super(fileOut, atts);
+		super(fileOut, atts, version);
 
 	}
 

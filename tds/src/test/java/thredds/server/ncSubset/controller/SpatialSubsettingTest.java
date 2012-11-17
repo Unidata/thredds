@@ -53,13 +53,8 @@ import org.springframework.validation.BindingResult;
 import thredds.mock.params.GridDataParameters;
 import thredds.mock.params.PathInfoParams;
 import thredds.mock.web.MockTdsContextLoader;
-import thredds.server.ncSubset.exception.InvalidBBOXException;
 import thredds.server.ncSubset.exception.NcssException;
-import thredds.server.ncSubset.exception.OutOfBoundariesException;
-import thredds.server.ncSubset.exception.RequestTooLargeException;
-import thredds.server.ncSubset.exception.UnsupportedOperationException;
-import thredds.server.ncSubset.exception.UnsupportedResponseFormatException;
-import thredds.server.ncSubset.exception.VariableNotContainedInDatasetException;
+import thredds.server.ncSubset.format.SupportedFormat;
 import thredds.server.ncSubset.params.GridDataRequestParamsBean;
 import thredds.servlet.DatasetHandlerAdapter;
 import thredds.test.context.junit4.SpringJUnit4ParameterizedClassRunner;
@@ -86,6 +81,7 @@ public class SpatialSubsettingTest {
 	private BindingResult validationResult;
 	private MockHttpServletResponse response ;	
 	
+	private String accept;
 	private String pathInfo;
 	private List<String> vars;
 	private double[] latlonRectParams;
@@ -96,15 +92,20 @@ public class SpatialSubsettingTest {
 	public static Collection<Object[]> getTestParameters(){
 				
 		return Arrays.asList( new Object[][]{
-				{ PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
-				{ PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
-				//{ PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(2) } //bounding box that contains data but doesn't intersect the declared bbox
+				{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
+				{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
+				//{ SupportedFormat.NETCDF3, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(2) }, //bounding box that contains data but doesn't intersect the declared bbox
+				
+				//{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(0) },//bounding box contained in the declared dataset bbox
+				//{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(1) }, //bounding box that intersects the declared bbox
+				//{ SupportedFormat.NETCDF4, PathInfoParams.getPatInfo().get(4), GridDataParameters.getVars().get(0), GridDataParameters.getLatLonRect().get(2) } //bounding box that contains data but doesn't intersect the declared bbox				
 								
 			});
 	}
 	
-	public SpatialSubsettingTest( String pathInfo, List<String> vars, double[] latlonRectParams){
+	public SpatialSubsettingTest( SupportedFormat format, String pathInfo, List<String> vars, double[] latlonRectParams){
 
+		this.accept = format.getAliases().get(0);
 		this.pathInfo = pathInfo;
 		this.vars = vars;
 		this.latlonRectParams = latlonRectParams;
@@ -115,6 +116,7 @@ public class SpatialSubsettingTest {
 		
 		GridDataset gds = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		gridDataController.setGridDataset(gds);
+		gridDataController.setRequestPathInfo(pathInfo);
 		params = new GridDataRequestParamsBean(); 
 		params.setVar(vars);
 		
@@ -122,6 +124,9 @@ public class SpatialSubsettingTest {
 		params.setSouth(latlonRectParams[1]);
 		params.setEast(latlonRectParams[2]);
 		params.setNorth(latlonRectParams[3]);
+		
+		params.setAccept(accept);
+		
 		requestedBBOX = new LatLonRect(new LatLonPointImpl(latlonRectParams[1], latlonRectParams[0]), new LatLonPointImpl(latlonRectParams[3], latlonRectParams[2]) );
 		datasetBBOX = gds.getBoundingBox();
 		validationResult = new BeanPropertyBindingResult(params, "params");

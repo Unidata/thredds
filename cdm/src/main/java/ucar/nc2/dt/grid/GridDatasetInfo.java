@@ -299,9 +299,7 @@ public class GridDatasetInfo {
 	    gridAsPoint.addContent(new Element("accept").addContent("xml"));
 	    gridAsPoint.addContent(new Element("accept").addContent("csv"));
 	    gridAsPoint.addContent(new Element("accept").addContent("netcdf"));
-	    
-	    elem.addContent(gridAsPoint);
-	    
+	    	    	   
 	    //accept list for Grid requests
 	    Element grids = new Element("Grid");
 	    grids.addContent(new Element("accept").addContent("netcdf"));
@@ -309,10 +307,14 @@ public class GridDatasetInfo {
 	    try{
 	    	if( Nc4Iosp.isClibraryPresent() ){
 	    		grids.addContent(new Element("accept").addContent("netcdf4"));
+	    		//Not yet...
+	    		//gridAsPoint.addContent(new Element("accept").addContent("netcdf4"));
 	    	}    
 	    }catch(UnsatisfiedLinkError e){
 	    	//So far swallowing the exception...
 	    }
+	    
+	    elem.addContent(gridAsPoint);
 	    elem.addContent(grids);	  
 	    rootElement.addContent(elem);
   }

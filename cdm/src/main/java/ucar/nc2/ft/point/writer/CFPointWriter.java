@@ -159,28 +159,59 @@ public class CFPointWriter {
   protected CalendarDate minDate = null;
   protected CalendarDate maxDate = null;
 
+  public CFPointWriter(String fileOut, List<Attribute> atts, NetcdfFileWriter.Version version) throws IOException{
+
+	    createWriter(fileOut, version);    
+	    addAtts(atts);
+	    addDefaultAtts();	  
+	  
+//<<<<<<< HEAD
+//    writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut, null);
+//=======
+  }
+  
   protected CFPointWriter(String fileOut, List<Attribute> atts) throws IOException {
+//>>>>>>> 448c34e... Tested netcdf4 support in Grid As Point request, but still getting core
 	  
-    writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut, null);
-	  
-    writer.setFill(false);
-
-    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
-    writer.addGroupAttribute(null, new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
-    for (Attribute att : atts) {
-      if (!reservedAttsList.contains(att.getName()))
-        writer.addGroupAttribute(null, att);
-    }
-
-    // dummys, update in finish()
-    writer.addGroupAttribute(null, new Attribute(CDM.TIME_START, CalendarDateFormatter.toDateStringPresent()));
-    writer.addGroupAttribute(null, new Attribute(CDM.TIME_END, CalendarDateFormatter.toDateStringPresent()));
-    writer.addGroupAttribute(null, new Attribute(CDM.LAT_MIN, 0.0));
-    writer.addGroupAttribute(null, new Attribute(CDM.LAT_MAX, 0.0));
-    writer.addGroupAttribute(null, new Attribute(CDM.LON_MIN, 0.0));
-    writer.addGroupAttribute(null, new Attribute(CDM.LON_MAX, 0.0));
+      //writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut);
+	  //writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4 , fileOut);	  
+      //writer.setFill(false);
+    
+    createWriter(fileOut, NetcdfFileWriter.Version.netcdf3);    
+    addAtts(atts);
+    addDefaultAtts();
   }
 
+  private void createWriter(String fileOut, NetcdfFileWriter.Version version) throws IOException{
+	  writer = NetcdfFileWriter.createNew(version, fileOut, null);
+	  writer.setFill(false);
+  }
+  
+  private void addAtts(List<Attribute> atts){
+	  
+	  	if(writer == null) throw new IllegalStateException("NetcdfFileWriter must be created");
+	  		
+	    writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
+	    writer.addGroupAttribute(null, new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
+	    for (Attribute att : atts) {
+	      if (!reservedAttsList.contains(att.getName()))
+	        writer.addGroupAttribute(null, att);
+	    }	  
+	  
+  }
+  
+  private void addDefaultAtts(){
+	  
+	    if(writer == null) throw new IllegalStateException("NetcdfFileWriter must be created");
+	    // dummys, update in finish()
+	    writer.addGroupAttribute(null, new Attribute(CDM.TIME_START, CalendarDateFormatter.toDateStringPresent()));
+	    writer.addGroupAttribute(null, new Attribute(CDM.TIME_END, CalendarDateFormatter.toDateStringPresent()));
+	    writer.addGroupAttribute(null, new Attribute(CDM.LAT_MIN, 0.0));
+	    writer.addGroupAttribute(null, new Attribute(CDM.LAT_MAX, 0.0));
+	    writer.addGroupAttribute(null, new Attribute(CDM.LON_MIN, 0.0));
+	    writer.addGroupAttribute(null, new Attribute(CDM.LON_MAX, 0.0));	  
+  }
+  
   public void setLength(long size) {
     writer.setLength(size);
   }

@@ -49,6 +49,7 @@ import ucar.ma2.StructureMembers;
 import ucar.ma2.StructureMembers.Member;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
@@ -104,12 +105,14 @@ class WriterCFStationCollection  extends CFPointWriter {
 	  private boolean useAlt = false;
 	  private boolean useWmoId = false;
 
-	  WriterCFStationCollection(String fileOut, String title) throws IOException {
-	    this(fileOut, Arrays.asList(new Attribute[]{new Attribute(CDM.TITLE, title)}));
-	  }
+	  //WriterCFStationCollection(String fileOut, String title) throws IOException {
+	  //  this(fileOut, Arrays.asList(new Attribute[]{new Attribute(CDM.TITLE, title)}));
+	  //}
 	  
-	  WriterCFStationCollection(String fileOut, List<Attribute> atts) throws IOException {
-	    super(fileOut, atts);
+	  
+	  
+	  WriterCFStationCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
+	    super(fileOut, atts, version);
 	    writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeries.name()));
 	  }
 

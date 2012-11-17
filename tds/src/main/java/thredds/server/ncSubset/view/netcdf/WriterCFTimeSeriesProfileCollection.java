@@ -50,6 +50,7 @@ import ucar.ma2.StructureMembers;
 import ucar.ma2.StructureMembers.Member;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -92,9 +93,9 @@ class WriterCFTimeSeriesProfileCollection extends CFPointWriter {
 	private int[] origin = new int[1];
 	private Variable stnName, stnDesc, lat, lon, ensVar; 
 
-	WriterCFTimeSeriesProfileCollection(String fileOut,
+	WriterCFTimeSeriesProfileCollection(NetcdfFileWriter.Version version, String fileOut,
 			List<Attribute> atts) throws IOException {
-		super(fileOut, atts);
+		super( fileOut, atts, version);
 
 		writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.timeSeriesProfile.name() ));
 

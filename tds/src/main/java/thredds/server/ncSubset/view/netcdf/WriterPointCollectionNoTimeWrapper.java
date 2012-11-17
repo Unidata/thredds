@@ -13,6 +13,7 @@ import thredds.server.ncSubset.dataservice.StructureDataFactory;
 import thredds.server.ncSubset.util.NcssRequestUtils;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -34,9 +35,9 @@ class WriterPointCollectionNoTimeWrapper implements CFPointWriterWrapper {
 	
 	private GridAsPointDataset gap;
 	
-	private WriterPointCollectionNoTimeWrapper(String filePath, List<Attribute> atts) throws IOException{
+	private WriterPointCollectionNoTimeWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts) throws IOException{
 
-		writerPointCollectionNoTime = new WriterPointCollectionNoTime(filePath, atts);
+		writerPointCollectionNoTime = new WriterPointCollectionNoTime(version, filePath, atts);
 	}
 	
 	@Override
@@ -136,9 +137,9 @@ class WriterPointCollectionNoTimeWrapper implements CFPointWriterWrapper {
 	}
 
 	
-	static WriterPointCollectionNoTimeWrapper createWrapper(String filePath, List<Attribute> atts ) throws IOException{
+	static WriterPointCollectionNoTimeWrapper createWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts ) throws IOException{
 
-		return new WriterPointCollectionNoTimeWrapper(filePath, atts);
+		return new WriterPointCollectionNoTimeWrapper(version, filePath, atts);
 		
 	} 
 	

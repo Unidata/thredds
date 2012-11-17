@@ -13,8 +13,12 @@ final class AbstractPointDataWriterFactory {
 		}
 		
 		if( supportedFormat.getFormatName().equals("NETCDF3") ){
-			return NetCDFPointDataWriterFactory.getInstance() ;
+			return NetCDF3PointDataWriterFactory.getInstance() ;
 		}
+		
+		if( supportedFormat.getFormatName().equals("NETCDF4") ){
+			return NetCDF4PointDataWriterFactory.getInstance() ;
+		}		
 		
 		if( supportedFormat.getFormatName().equals("CSV") ){
 			return CSVPointDataWriterFactory.getInstance() ;
