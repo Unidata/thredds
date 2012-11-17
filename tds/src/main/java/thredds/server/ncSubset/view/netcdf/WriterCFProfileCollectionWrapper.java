@@ -43,7 +43,7 @@ public final class WriterCFProfileCollectionWrapper implements CFPointWriterWrap
 	
 	private WriterCFProfileCollectionWrapper(NetcdfFileWriter.Version version, String filePath, List<Attribute> atts) throws IOException{
 		
-		writerCFProfileCollection = new WriterCFProfileCollection(filePath, atts);
+		writerCFProfileCollection = new WriterCFProfileCollection(filePath, atts, version);
 	}
 
 	@Override

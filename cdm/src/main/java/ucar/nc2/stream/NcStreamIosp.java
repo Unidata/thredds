@@ -210,7 +210,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
           IO.copy(in, bout);
           byte[] resultb = bout.toByteArray();
           result = ByteBuffer.wrap(resultb); // look - an extra copy !! override ByteArrayOutputStream to fix
-          System.out.printf(" uncompressedLen header=%d actual=%d%n", dataStorage.uncompressedLen , resultb.length);
+          if (debug) System.out.printf(" uncompressedLen header=%d actual=%d%n", dataStorage.uncompressedLen , resultb.length);
           //result.order(ByteOrder.LITTLE_ENDIAN); // LOOK
         } else {
           result = ByteBuffer.wrap(data);

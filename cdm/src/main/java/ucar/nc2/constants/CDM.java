@@ -44,8 +44,6 @@ public interface CDM {
   public static final Charset utf8Charset = Charset.forName("UTF-8");
 
   // structural
-  public static final String FILL_VALUE = "_FillValue";
-  public static final String UNSIGNED = "_Unsigned";
   public static final String CHUNK_SIZE = "_ChunkSize";
   public static final String COMPRESS = "_Compress";
   public static final String COMPRESS_DEFLATE = "deflate";
@@ -56,6 +54,7 @@ public interface CDM {
   public static final String ADD_OFFSET = "add_offset";
   public static final String CONVENTIONS = "Conventions";
   public static final String DESCRIPTION = "description";
+  public static final String FILL_VALUE = "_FillValue";
   public static final String HISTORY = "history";
   public static final String LONG_NAME = "long_name";
   public static final String MISSING_VALUE = "missing_value";
@@ -63,6 +62,7 @@ public interface CDM {
   public static final String TIME_INTERVAL = "time_interval";
   public static final String TITLE = "title";
   public static final String UNITS = "units";
+  public static final String UNSIGNED = "_Unsigned";
 
   // UACDD
   // http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html

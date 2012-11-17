@@ -44,6 +44,7 @@ import ucar.nc2.dataset.*;
 
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.ft.fmrc.GridDatasetInv;
+import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.*;
@@ -78,6 +79,7 @@ public class GeoGridTable extends JPanel {
   private JSplitPane split = null, split2 = null;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
+  private NetcdfOutputChooser outChooser;
 
   public GeoGridTable(PreferencesExt prefs, boolean showCS) {
     this.prefs = prefs;
@@ -218,7 +220,7 @@ public class GeoGridTable extends JPanel {
     });
     buttPanel.add(invButton);
 
-    AbstractAction writeAction = new AbstractAction() {
+    AbstractAction netcdfAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (gridDataset == null) return;
         List<String> gridList = getSelectedGrids();
@@ -226,26 +228,64 @@ public class GeoGridTable extends JPanel {
           JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
           return;
         }
-        String location = gridDataset.getLocationURI();
-        if (location == null) location = "test";
-        String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
-        int pos = location.lastIndexOf(".");
-        if (pos > 0)
-          location = location.substring(0, pos);
-        String filename = fileChooser.chooseFilenameToSave(location + suffix);
-        if (filename == null) return;
 
-        try {
-          NetcdfCFWriter.makeFile(filename, gridDataset, gridList, null, null);
-          JOptionPane.showMessageDialog(GeoGridTable.this, "File successfully written");
-        } catch (Exception ioe) {
-          JOptionPane.showMessageDialog(GeoGridTable.this, "ERROR: " + ioe.getMessage());
-          ioe.printStackTrace();
+        if (outChooser == null) {
+          outChooser = new NetcdfOutputChooser((Frame) null);
+          outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+              writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
+            }
+          });
         }
+        outChooser.setOutputFilename(gridDataset.getLocationURI());
+        outChooser.setVisible(true);
       }
     };
-    BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
-    BAMutil.addActionToContainer(buttPanel, writeAction);
+    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF file", false, 'S', -1);
+    BAMutil.addActionToContainer(buttPanel, netcdfAction);
+
+    /*
+ AbstractAction writeAction = new AbstractAction() {
+   public void actionPerformed(ActionEvent e) {
+     if (gridDataset == null) return;
+     List<String> gridList = getSelectedGrids();
+     if (gridList.size() == 0) {
+       JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
+       return;
+     }
+     String location = gridDataset.getLocationURI();
+     if (location == null) location = "test";
+     String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
+     int pos = location.lastIndexOf(".");
+     if (pos > 0)
+       location = location.substring(0, pos);
+
+     String filename = fileChooser.chooseFilenameToSave(location + suffix);
+     if (filename == null) return;
+
+     try {
+       NetcdfCFWriter.makeFileVersioned(filename, gridDataset, gridList, null, null);
+       JOptionPane.showMessageDialog(GeoGridTable.this, "File successfully written");
+     } catch (Exception ioe) {
+       JOptionPane.showMessageDialog(GeoGridTable.this, "ERROR: " + ioe.getMessage());
+       ioe.printStackTrace();
+     }
+   }
+ };
+ BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
+ BAMutil.addActionToContainer(buttPanel, writeAction);  */
+  }
+
+  private void writeNetcdf(NetcdfOutputChooser.Data data) {
+    if (data.version == NetcdfFileWriter.Version.ncstream) return;
+
+    try {
+      NetcdfCFWriter.makeFileVersioned(data.outputFilename, gridDataset, getSelectedGrids(), null, null, data.version);
+      JOptionPane.showMessageDialog(this, "File successfully written");
+    } catch (Exception ioe) {
+      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+      ioe.printStackTrace();
+    }
   }
 
   public PreferencesExt getPrefs() {

@@ -144,18 +144,8 @@ public class DatasetViewer extends JPanel {
            }
          });
       }
-      String location = ds.getLocation();
-      if (location == null) location = "test";
-      if (location.startsWith("file:")) location = location.substring(5);
-      int pos = location.lastIndexOf(".");
-      if (pos > 0)
-        location = location.substring(0, pos);
-      location += ".nc";
-      outChooser.setOutputFilename(location);
+      outChooser.setOutputFilename(ds.getLocation());
       outChooser.setVisible(true);
-      //String filename = fileChooser.chooseFilenameToSave(location + ".nc");
-      //if (filename == null) return;
-      //writeNetCDF(filename);
       }
     };
     BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF file", false, 'S', -1);

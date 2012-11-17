@@ -28,7 +28,21 @@ public class NetcdfOutputChooser extends JDialog {
   }
 
   public void setOutputFilename(String filename) {
-    outputFilename.setText(filename);
+    if (filename == null) filename = "test";
+    String location = filename;
+    if (location.startsWith("file:")) location = location.substring(5);
+    int pos = location.lastIndexOf(".");
+    if (pos > 0)
+      location = location.substring(0, pos);
+
+    // change suffix
+    NetcdfFileWriter.Version version = (NetcdfFileWriter.Version) netcdfVersion.getSelectedItem();
+    String suffix = (version == null) ? ".nc" : version.getSuffix();
+    if (filename.endsWith(".nc") && suffix.equals(".nc"))
+      suffix = ".sub.nc";
+    location += suffix;
+
+    outputFilename.setText(location);
   }
 
   public class Data {

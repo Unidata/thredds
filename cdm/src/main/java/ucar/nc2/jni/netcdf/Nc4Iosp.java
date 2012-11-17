@@ -2209,14 +2209,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public boolean rewriteHeader(boolean largeFile) throws IOException {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false;  // LOOK !!
   }
 
   @Override
   public void updateAttribute(Variable v2, Attribute att) throws IOException {
-    //To change body of implemented methods use File | Settings | File Templates.
+    Vinfo vinfo = (Vinfo) v2.getSPobject();
+    writeAttribute(vinfo.grpid, vinfo.varid, att, v2);
   }
-
 
   /////////////////////////////////////////////////////////////////////////
 

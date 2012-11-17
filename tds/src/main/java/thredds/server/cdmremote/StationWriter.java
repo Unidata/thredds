@@ -635,7 +635,7 @@ public class StationWriter {
       netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
       atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS using CDM remote subsetting" ));      
-      cfWriter = new WriterCFStationCollection(netcdfResult.getAbsolutePath(), atts);
+      cfWriter = new WriterCFStationCollection(null, netcdfResult.getAbsolutePath(), atts);
 
       // verify SpatialSelection has some stations
       if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.bb) {

@@ -61,12 +61,18 @@ public class NetcdfFileWriter {
 
 
   public enum Version {
-    netcdf3,             // java iosp
-    netcdf4,             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4
-    netcdf4_classic,     // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
-    netcdf3c,            // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC   (nc3)
-    netcdf3c64,          // jni netcdf4 iosp mode = NC_FORMAT_64BIT     (nc3 64 bit)
-    ncstream;            // ncstream iosp
+    netcdf3(".nc"),              // java iosp
+    netcdf4(".nc4"),             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4
+    netcdf4_classic(".nc4"),     // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
+    netcdf3c(".nc"),             // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC   (nc3)
+    netcdf3c64(".nc"),           // jni netcdf4 iosp mode = NC_FORMAT_64BIT     (nc3 64 bit)
+    ncstream(".ncs");            // ncstream iosp
+
+    private String suffix;
+
+    private Version(String suffix) {
+      this.suffix = suffix;
+    }
 
     public boolean isNetdf4format() {
       return this == netcdf4 || this == netcdf4_classic;
@@ -76,6 +82,9 @@ public class NetcdfFileWriter {
       return this != netcdf3;
     }
 
+    public String getSuffix() {
+      return suffix;
+    }
   }
 
   /**
@@ -146,7 +155,7 @@ public class NetcdfFileWriter {
   protected NetcdfFileWriter(Version version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
           String location, boolean isExisting, Nc4Chunking chunker) throws IOException {
 
-    this.version = version;
+    this.version = version == null ? Version.netcdf3 : version;
     this.location = location;
 
     if (isExisting) {

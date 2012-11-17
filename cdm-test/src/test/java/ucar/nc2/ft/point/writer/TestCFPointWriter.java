@@ -72,7 +72,7 @@ public class TestCFPointWriter {
 
     assert fdataset instanceof FeatureDatasetPoint;
     FeatureDatasetPoint fdpoint = (FeatureDatasetPoint) fdataset;
-    int count = CFPointWriter.writeFeatureCollection(fdpoint, fileOut.getPath());
+    int count = CFPointWriter.writeFeatureCollection(fdpoint, fileOut.getPath(), null);
     System.out.printf(" nrecords written = %d%n%n", count);
 
     ////////////////////////////////

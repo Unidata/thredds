@@ -651,7 +651,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (redefineMode && !defineMode) {
       defineMode = true;
 
-    } else if (!redefineMode && defineMode) {
+    } else if (!redefineMode && defineMode) {  // we were in defineMode, and now we are ending.
       defineMode = false;
       finish();
 
