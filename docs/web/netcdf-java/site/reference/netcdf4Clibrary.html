@@ -12,7 +12,7 @@ dl {margin: 10px 5px 5px 15px;)
 </head>
 
 <body>
-<h1>Netcdf4 C Library Loading </h1>
+<h1>NetCDF-4 C Library Loading </h1>
 <p align="justify"><em>Since version 4.3.13</em></p>
 <p align="justify">In order to write netCDF-4 files, you must have the <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">netCDF-4 C library</a>, version 4.2.1 or above, compiled and available on your system, along with all supporting libraries (HDF5 etc). The details of this differ for each operating system, and our experience (so far) is documented below.</p>
 <p align="justify">The libraries must be in a directory that the operating system knows to look in, and the CDM needs to know the netcdf-4 library name.<a name="pass" id="pass"></a> </p>
@@ -35,11 +35,29 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Compile the library. See <a href="http://www.unidata.ucar.edu/software/netcdf/docs/building.html" > instructions.</a></li>  
   <li>Set the <em>library path</em> to the directory where the libraries were built in and the library name to <strong><em>netcdf</em></strong>.</li> 
 </ol>
-<p>&nbsp;</p>
+<hr />
+<h2>Writing netCDF-4 files</h2>
+<ul>
+  <li>From the command line: see <a href="manPages.html#nccopy">nccopy man page</a></li>
+  <li>From ToolsUI v4.3.14: in <strong>Viewer</strong> tab, bring up the file to copy, then click &quot;write Netcdf File&quot; button to get dialog.</li>
+  <li>From TDS Netcdf Subset Service: choose <strong>netcdf-4</strong> output type.</li>
+  <li>From a Java program (see <em>ucar.nc2.dataset.NetcdfDataset.main()</em> for complete example) :
+    <pre> FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, filenameOut, version, chunker);
 
+ NetcdfFile ncfileOut = writer.write();
+
+ ncfileIn.close();<br /> ncfileOut.close();</pre>
+  </li>
+</ul>
+<h3>Default chunk algorithm</h3>
+<ol>
+  <li>Look for Variable attribute named &quot;<strong>_ChunkSize&quot;</strong>, whose value is a vector of integer chunk sizes, one for each dimension. If it exists, use it.</li>
+  <li>Otherwise,  if entire variable size &lt; 4,194,304 elements, use one chunk for entire variable.</li>
+  <li>Otherwise, set unlimited dimensions to 1, all other dimensions to actual size.</li>
+</ol>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document was last updated  August 2012
+<img src="../nc.gif" alt="" width="64" height="64" /> This document was last updated  November 2012
 </address>
 </body>
 </html>

@@ -1,33 +1,45 @@
 package ucar.nc2.jni.netcdf;
 
+import org.junit.Before;
+import org.junit.Test;
 import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Test copying files with FileWriter2.
+ * Test copying files to netcdf4 with FileWriter2.
+ * Compare original.
  *
  * @author caron
  * @since 7/27/12
  */
-public class TestFileWriter2 {
+public class TestNc4IospWriting {
   int countNotOK = 0;
 
+  @Before
+  public void setLibrary() {
+    Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+    //FileWriter2.setDebugFlags(new DebugFlagsImpl("ncfileWriter2/debug"));
+  }
+
+  @Test
   public void problem() throws IOException {
-    copyFile("Q:\\cdmUnitTest\\formats\\hdf5\\auraData\\HIRDLS2-Aura73p_b029_2000d275.he5", "C:/temp/Aura73p_b029_2000d275.nc4", NetcdfFileWriter.Version.netcdf4);
+    copyFile("Q:\\cdmUnitTest\\formats\\netcdf4\\files\\tst_string_data.nc", "C:/temp/tst_string_data.nc4", NetcdfFileWriter.Version.netcdf4);
     //copyFile("C:/dev/github/thredds/cdm/src/test/data/testWriteRecord.nc", "C:/temp/testWriteRecord.classic.nc3", NetcdfFileWriter.Version.netcdf3c);
   }
 
-  //@Test
-  public void readAllNetcdf4() throws IOException {
+  @Test
+  public void writeAllNetcdf4() throws IOException {
     int count = 0;
-    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files/", null, new MyAct(), true);
+    count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf4/files/", new MyFileFilter(), new MyAct(), true);
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
@@ -38,8 +50,8 @@ public class TestFileWriter2 {
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
   }
 
-  //@Test
-  public void readAllNetcdf3() throws IOException {
+  @Test
+  public void writeAllNetcdf3() throws IOException {
     int count = 0;
     count += TestDir.actOnAll(TestDir.cdmUnitTestDir + "formats/netcdf3/", null, new MyAct());
     System.out.printf("***READ %d files FAIL = %d%n", count, countNotOK);
@@ -56,13 +68,23 @@ public class TestFileWriter2 {
     }
   }
 
+  private class MyFileFilter implements FileFilter {
+
+    @Override
+    public boolean accept(File pathname) {
+      //if (pathname.getName().equals("tst_string_data.nc")) return false;
+      //if (pathname.getName().equals("tst_strings.nc")) return false;
+      return true;
+    }
+  }
+
+
   private String tempDir = TestDir.temporaryLocalDataDir; // "C:/temp/";
   private boolean copyFile(String datasetIn, String datasetOut, NetcdfFileWriter.Version version) throws IOException {
-     //Nc4Iosp.setMine(); // fake
 
      System.out.printf("copy %s to %s%n", datasetIn, datasetOut);
      NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
-     FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut,  version);
+     FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null);
      NetcdfFile ncfileOut = writer2.write();
      compare(ncfileIn, ncfileOut, true, false, false);
      ncfileIn.close();

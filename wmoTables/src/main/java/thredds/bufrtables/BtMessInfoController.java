@@ -56,6 +56,8 @@ import java.io.*;
  * @since Oct 2, 2008
  */
 public class BtMessInfoController extends AbstractController {
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
   private DiskCache2 diskCache = null;
 
   public void setCache(DiskCache2 cache) {
@@ -310,7 +312,7 @@ public class BtMessInfoController extends AbstractController {
         new Bufr2Xml(message, ncd, out, false);
         out.flush();
       } catch (Exception e) {
-        logger.warn("Exception on file " + cacheName, e);
+        log.warn("Exception on file " + cacheName, e);
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "message at pos=" + messPos + " cant be read, filename= " + cacheName);
       }
 

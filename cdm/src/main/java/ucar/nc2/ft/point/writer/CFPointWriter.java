@@ -26,19 +26,19 @@ import java.util.*;
 public class CFPointWriter {
   private static boolean debug = false;
 
-  public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut) throws IOException {
+  public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileWriter.Version version) throws IOException {
     int count = 0;
     for (FeatureCollection fc : fdpoint.getPointFeatureCollectionList()) {
       assert (fc instanceof PointFeatureCollection) || (fc instanceof NestedPointFeatureCollection) : fc.getClass().getName();
 
       if (fc instanceof PointFeatureCollection) {
-        return writePointFeatureCollection(fdpoint, (PointFeatureCollection) fc, fileOut);
+        return writePointFeatureCollection(fdpoint, (PointFeatureCollection) fc, fileOut, version);
 
       } else if (fc instanceof StationTimeSeriesFeatureCollection) {
-        return writeStationFeatureCollection(fdpoint, (StationTimeSeriesFeatureCollection) fc, fileOut);
+        return writeStationFeatureCollection(fdpoint, (StationTimeSeriesFeatureCollection) fc, fileOut, version);
 
       } else if (fc instanceof ProfileFeatureCollection) {
-        return writeProfileFeatureCollection(fdpoint, (ProfileFeatureCollection) fc, fileOut);
+        return writeProfileFeatureCollection(fdpoint, (ProfileFeatureCollection) fc, fileOut, version);
 
       } /* else if (fc instanceof StationProfileFeatureCollection) {
         count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, show);
@@ -55,10 +55,11 @@ public class CFPointWriter {
     return 0;
   }
 
-  private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut) throws IOException {
+  private static int writePointFeatureCollection(FeatureDatasetPoint fdpoint, PointFeatureCollection pfc, String fileOut,
+                                                 NetcdfFileWriter.Version version) throws IOException {
     if (debug) System.out.printf("write to file %s%n ", fileOut);
 
-    WriterCFPointCollection writer = new WriterCFPointCollection(fileOut, fdpoint.getGlobalAttributes());
+    WriterCFPointCollection writer = new WriterCFPointCollection(version, fileOut, fdpoint.getGlobalAttributes());
 
     int count = 0;
     while (pfc.hasNext()) {
@@ -76,10 +77,11 @@ public class CFPointWriter {
     return count;
   }
 
-  private static int writeStationFeatureCollection(FeatureDatasetPoint fdpoint, StationTimeSeriesFeatureCollection fds, String fileOut) throws IOException {
+  private static int writeStationFeatureCollection(FeatureDatasetPoint fdpoint, StationTimeSeriesFeatureCollection fds,
+                                                   String fileOut, NetcdfFileWriter.Version version) throws IOException {
     if (debug) System.out.printf("write to file %s%n ", fileOut);
 
-    WriterCFStationCollection writer = new WriterCFStationCollection(fileOut, fdpoint.getGlobalAttributes());
+    WriterCFStationCollection writer = new WriterCFStationCollection(version, fileOut, fdpoint.getGlobalAttributes());
 
     ucar.nc2.ft.PointFeatureCollection pfc = fds.flatten(null, (CalendarDateRange) null);
 
@@ -101,10 +103,11 @@ public class CFPointWriter {
     return count;
   }
 
-  private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection pds, String fileOut) throws IOException {
+  private static int writeProfileFeatureCollection(FeatureDatasetPoint fdpoint, ProfileFeatureCollection pds,
+                                                   String fileOut, NetcdfFileWriter.Version version) throws IOException {
     if (debug) System.out.printf("write to file %s%n ", fileOut);
 
-    WriterCFProfileCollection writer = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes());
+    WriterCFProfileCollection writer = new WriterCFProfileCollection(fileOut, fdpoint.getGlobalAttributes(), version);
 
     int count = 0;
 
@@ -139,12 +142,12 @@ public class CFPointWriter {
   }
 
   /////////////////////////////////////////////////
-  private static final String[] reservedAtts = new String[] {CDM.CONVENTIONS,
+  private static final String[] reservedAtts = new String[]{CDM.CONVENTIONS,
           CDM.LAT_MIN, CDM.LAT_MAX, CDM.LON_MIN, CDM.LON_MAX, CDM.TIME_START, CDM.TIME_END,
-          _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3} ;
+          _Coordinate._CoordSysBuilder, CF.featureTypeAtt2, CF.featureTypeAtt3};
 
   private static final List<String> reservedAttsList = Arrays.asList(reservedAtts);
-          
+
   protected static final String recordDimName = "obs";
   protected static final String latName = "latitude";
   protected static final String lonName = "longitude";
@@ -159,11 +162,20 @@ public class CFPointWriter {
   protected CalendarDate minDate = null;
   protected CalendarDate maxDate = null;
 
-  protected CFPointWriter(String fileOut, List<Attribute> atts) throws IOException {
-	  
-    writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileOut);
-	  
+  public CFPointWriter(String fileOut, List<Attribute> atts, NetcdfFileWriter.Version version) throws IOException {
+    createWriter(fileOut, version);
+    addAtts(atts);
+    addDefaultAtts();
+  }
+
+  private void createWriter(String fileOut, NetcdfFileWriter.Version version) throws IOException {
+    writer = NetcdfFileWriter.createNew(version, fileOut, null);
     writer.setFill(false);
+  }
+
+  private void addAtts(List<Attribute> atts) {
+
+    if (writer == null) throw new IllegalStateException("NetcdfFileWriter must be created");
 
     writer.addGroupAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
     writer.addGroupAttribute(null, new Attribute(CDM.HISTORY, "Written by CFPointWriter"));
@@ -172,6 +184,11 @@ public class CFPointWriter {
         writer.addGroupAttribute(null, att);
     }
 
+  }
+
+  private void addDefaultAtts() {
+
+    if (writer == null) throw new IllegalStateException("NetcdfFileWriter must be created");
     // dummys, update in finish()
     writer.addGroupAttribute(null, new Attribute(CDM.TIME_START, CalendarDateFormatter.toDateStringPresent()));
     writer.addGroupAttribute(null, new Attribute(CDM.TIME_END, CalendarDateFormatter.toDateStringPresent()));

@@ -145,16 +145,6 @@
     <dependency>
       <groupId>uk.ac.rdg.resc</groupId>
       <artifactId>ncwms</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-jdk14</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     
     <dependency>
@@ -172,7 +162,7 @@
       <artifactId>jaxen</artifactId>
     </dependency>
     <dependency>
-      <groupId>jfree</groupId>
+      <groupId>org.jfree</groupId>
       <artifactId>jfreechart</artifactId>
     </dependency>
 
@@ -181,28 +171,16 @@
       <artifactId>json-taglib</artifactId>
     </dependency-->
 
-    <!-- tomcat -->
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-catalina</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!-- dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
-    </dependency-->
-    
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
     </dependency>
-
+    
     <!-- JSR 303 with Hibernate Validator -->
     <dependency>
       <groupId>javax.validation</groupId>
@@ -293,7 +271,6 @@
           <skip>${skipTests}</skip>
           <excludes>
             <exclude>thredds/cataloggen/**</exclude>
-            <exclude>thredds/servlet/tomcat/**</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -301,9 +278,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <!-- version>2.1.1</version-->
         <configuration>
           <attachClasses>true</attachClasses>
+          <!-- This packagingExcludes doesn't seem to work. Now done in dependency/exclusions. -->
+          <!--
           <packagingExcludes>
             WEB-INF/lib/commons-logging*.jar,
             WEB-INF/lib/javax.servlet*.jar,
@@ -311,6 +289,7 @@
             WEB-INF/lib/slf4j-jdk14*.jar,
             WEB-INF/lib/visad-*.jar
           </packagingExcludes>
+          -->
           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>

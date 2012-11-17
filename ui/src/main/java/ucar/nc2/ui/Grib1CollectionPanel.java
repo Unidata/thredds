@@ -41,6 +41,7 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -728,6 +729,14 @@ public class Grib1CollectionPanel extends JPanel {
       return cust.makeVariableName(pds);
     }
 
+    public String getOldName() {
+      GridParameter oldParam = ucar.grib.grib1.GribPDSParamTable.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
+      if (oldParam == null) return "";
+      String oldName = oldParam.getDescription();
+      boolean diff = !oldName.equalsIgnoreCase(getName());
+      return diff ? "*" + oldName : oldName;
+    }
+
     public String getUnit() {
       return (param == null) ? null : param.getUnit();
     }
@@ -740,9 +749,9 @@ public class Grib1CollectionPanel extends JPanel {
       return pds.getGenProcess();
     }
 
-    public String getSubcenter() {
+    /* public String getSubcenter() {
       return cust.getSubCenterName(pds.getSubCenter());
-    }
+    } */
 
     public final String getLevelName() {
       Grib1ParamLevel plevel = cust.getParamLevel(pds);

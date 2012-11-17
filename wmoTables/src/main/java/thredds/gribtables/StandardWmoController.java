@@ -76,7 +76,7 @@ public class StandardWmoController extends AbstractController {
       Document doc = makeXml(path);
       return new ModelAndView("xsltView", "source", new JDOMSource(doc));
     } catch (Exception e) {
-      logger.warn("Exception on file " + path, e);
+      log.warn("Exception on file " + path, e);
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, "File=" + path);
       return null;
     }

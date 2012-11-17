@@ -163,7 +163,7 @@ public class BtValidateController extends AbstractCommandController {
         return new ModelAndView("xsltView", "source", new JDOMSource(doc));
       }
     } catch (Exception e) {
-      logger.warn("Exception on file " + fname, e);
+      log.warn("Exception on file " + fname, e);
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "File=" + fname);
       return null;
     }

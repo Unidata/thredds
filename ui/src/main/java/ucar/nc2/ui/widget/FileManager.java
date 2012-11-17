@@ -85,7 +85,7 @@ public class FileManager {
   // for override
   protected JPanel main;
   protected boolean selectedURL = false;
-  protected ComboBox urlComboBox;
+  //protected ComboBox urlComboBox;
 
   private boolean readOk = true, selectedFile = false;
   private static boolean debug = false, test = false;
@@ -210,7 +210,7 @@ public class FileManager {
     main.add(dirPanel, BorderLayout.NORTH);
     main.add(chooser, BorderLayout.CENTER);
 
-    urlComboBox = new ComboBox(prefs);
+    /* urlComboBox = new ComboBox(prefs);
     urlComboBox.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
           selectedURL = true;
@@ -220,7 +220,7 @@ public class FileManager {
     JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     p.add( new JLabel("or a URL:"));
     p.add( urlComboBox);
-    main.add(urlComboBox, BorderLayout.SOUTH);
+    main.add(urlComboBox, BorderLayout.SOUTH); */
 
     //w = new IndependentWindow("FileChooser", BAMutil.getImage("FileChooser"), main);
     w = new IndependentDialog(parent, true, "FileChooser", main);
@@ -301,9 +301,9 @@ public class FileManager {
       } // return null
     }
 
-    if (selectedURL) {
+    /* if (selectedURL) {
       return (String) urlComboBox.getSelectedItem();
-    }
+    }  */
 
     return null;
   }

@@ -1637,8 +1637,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         if (orgVar.getRank() != vds.getRank())
           f.format("Variable %s has rank %d, org = %d%n", vds.getFullName(), vds.getRank(), orgVar.getRank());
       }
-
-
     }
   }
 
@@ -1679,7 +1677,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     System.out.println("Read from " + datasetIn + " write to " + datasetOut);
 
     NetcdfFileWriter.Version version = netcdf4? NetcdfFileWriter.Version.netcdf4 : NetcdfFileWriter.Version.netcdf3;
-    FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, version);
+    FileWriter2 writer = new ucar.nc2.FileWriter2(ncfileIn, datasetOut, version, null);
     writer.getNetcdfFileWriter().setLargeFile(isLargeFile);
     NetcdfFile ncfileOut = writer.write();
     ncfileIn.close();

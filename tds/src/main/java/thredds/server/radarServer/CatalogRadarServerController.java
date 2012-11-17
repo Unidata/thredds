@@ -159,7 +159,7 @@ public class CatalogRadarServerController extends AbstractController {
     catch ( Throwable e )
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
-      throw new RadarServerException( "handleRequestInternal(): Problem handling request." );
+      throw new RadarServerException( "handleRequestInternal(): Problem handling request.", e );
     }
   }
 
@@ -214,7 +214,7 @@ public class CatalogRadarServerController extends AbstractController {
       }
     } catch (Throwable e) {
       log.error("RadarServer.level2level3catalog", "Invalid url request" );
-      throw new RadarServerException( "Invalid catalog request" );
+      throw new RadarServerException( "Invalid catalog request", e );
     }
     return tCat;
   }
@@ -265,7 +265,7 @@ public class CatalogRadarServerController extends AbstractController {
       }
     } catch (Throwable e) {
       log.error("RadarServer.datasetInfoXml", e);
-      throw new RadarServerException( "CatalogRadarServerController.datasetInfoXml" );
+      throw new RadarServerException( "CatalogRadarServerController.datasetInfoXml", e );
     }
     if ( ! found ) {
       log.error("RadarServer.datasetInfoXml", "Invalid url request" );

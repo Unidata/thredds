@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.List;
 
 import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.CF;
 
 /**
@@ -45,22 +46,22 @@ public final class CFPointWriterWrapperFactory {
 
 	private CFPointWriterWrapperFactory(){}
 	
-	public static final CFPointWriterWrapper getWriterForFeatureType( CF.FeatureType featureType, String filePath, List<Attribute> atts   ) throws IOException{
+	public static final CFPointWriterWrapper getWriterForFeatureType( NetcdfFileWriter.Version version, CF.FeatureType featureType, String filePath, List<Attribute> atts   ) throws IOException{
 		
 		if(featureType == CF.FeatureType.timeSeries){		
-			return WriterCFStationCollectionWrapper.createWrapper(filePath, atts);
+			return WriterCFStationCollectionWrapper.createWrapper(version, filePath, atts);
 		}
 		if (featureType == CF.FeatureType.point ) {
 			//return WriterCFPointCollectionWrapper.createWrapper(filePath, atts);
-			return WriterPointCollectionNoTimeWrapper.createWrapper(filePath, atts);
+			return WriterPointCollectionNoTimeWrapper.createWrapper(version, filePath, atts);
 		}
 		
 		if (featureType == CF.FeatureType.profile ) {
-			return WriterCFProfileCollectionWrapper.createWrapper(filePath, atts);
+			return WriterCFProfileCollectionWrapper.createWrapper(version, filePath, atts);
 		}
 		
 		if (featureType == CF.FeatureType.timeSeriesProfile ) {
-			return WriterCFTimeSeriesProfileCollectionWrapper.createWrapper(filePath, atts);
+			return WriterCFTimeSeriesProfileCollectionWrapper.createWrapper(version, filePath, atts);
 		}		
 		
 		throw new UnsupportedOperationException("Unsupported FeatureType: "+featureType.name());

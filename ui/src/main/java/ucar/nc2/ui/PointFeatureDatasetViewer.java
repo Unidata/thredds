@@ -33,7 +33,10 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft.*;
+import ucar.nc2.ft.point.writer.CFPointWriter;
+import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.ui.point.PointController;
 import ucar.nc2.ui.widget.BAMutil;
@@ -50,12 +53,13 @@ import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
-import java.awt.BorderLayout;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
 import java.io.*;
 import java.util.*;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -87,6 +91,9 @@ public class PointFeatureDatasetViewer extends JPanel {
   private TextHistoryPane infoTA;
 
   private PointController pointController;
+  private NetcdfOutputChooser outChooser;
+
+  private FeatureDatasetPoint pfDataset;
 
 
   private DateFormatter df = new DateFormatter();
@@ -96,7 +103,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
   private int maxCount = Integer.MAX_VALUE;
 
-  public PointFeatureDatasetViewer(PreferencesExt prefs) {
+  public PointFeatureDatasetViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     stationMap = new StationRegionDateChooser();
@@ -164,6 +171,26 @@ public class PointFeatureDatasetViewer extends JPanel {
     };
     BAMutil.setActionProperties(getallAction, "GetAll", "get ALL data", false, 'A', -1);
     stationMap.addToolbarAction(getallAction);
+
+    AbstractAction netcdfAction = new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+       if (pfDataset == null) return;
+
+       if (outChooser == null) {
+         outChooser = new NetcdfOutputChooser((Frame)null);
+         outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+              writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
+            }
+          });
+       }
+       outChooser.setOutputFilename(pfDataset.getLocation());
+       outChooser.setVisible(true);
+       }
+     };
+     BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF file", false, 'S', -1);
+     BAMutil.addActionToContainer(buttPanel, netcdfAction);
+
 
     // feature collection table
     fcTable = new BeanTableSorted(FeatureCollectionBean.class, (PreferencesExt) prefs.node("FeatureCollectionBean"), false);
@@ -285,23 +312,21 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.saveState();
   }
 
-  public void showCollectionInfo(Formatter f) {
-    /* CollectionSpecParser sp = null;
-    CollectionManager cm = fmrc.getManager();
-    if (cm instanceof DatasetCollectionManager) {
-      sp = ((DatasetCollectionManager) cm).getCollectionSpecParser();
-    }
-    if (sp != null) {
-      infoTA.appendLine("CollectionSpecParser= "+sp);
-      File dir = new File(sp.getTopDir());
-      infoTA.appendLine(" topdir exists = = "+dir.exists());
-    }
+  private void writeNetcdf(NetcdfOutputChooser.Data data) {
+    if (data.version == NetcdfFileWriter.Version.ncstream) return;
 
-    infoTA.appendLine("CollectionManager= ");
-    infoTA.appendLine(cm.toString());   */ 
+    try {
+      int count = CFPointWriter.writeFeatureCollection(pfDataset, data.outputFilename, data.version);
+      JOptionPane.showMessageDialog(this, count + " records written");
+    } catch (Exception ioe) {
+      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+      ioe.printStackTrace();
+    }
   }
 
   public void setDataset(FeatureDatasetPoint dataset) {
+    this.pfDataset = dataset;
+
     infoTA.clear();
     stnTable.setBeans(new ArrayList());
     stationMap.setStations(new ArrayList());

@@ -231,7 +231,7 @@ public class RadarDatasetCollection {
     ArrayList<String> stations = new ArrayList<String>();
     File dir = new File(stnDir);
     if (dir.exists() && dir.isDirectory()) {
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      log.debug( "In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
       for (String aChild : children) {
         File child = new File(dir, aChild);
@@ -322,10 +322,8 @@ public class RadarDatasetCollection {
     sb.append( "/" ).append( rsc.stnName ).append( "/" ).append( currentDay );
     File dir = new File( sb.toString() );
     if (dir.exists() && dir.isDirectory()) {
-      // TODO: make a log message / comment out
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       sb.insert( 0, "In directory ");
-      System.out.println( sb.toString() );
+      log.debug( sb.toString() );
       ArrayList<String> currenthhmm = new ArrayList<String>();
       String[] children = dir.list();
       Matcher m;
@@ -346,11 +344,11 @@ public class RadarDatasetCollection {
         rsc.yyyymmdd.add( currentDay );
         rsc.hhmm.put( currentDay, currenthhmm );
       }
-      if ( debug ) {
+      if ( log.isDebugEnabled() ) {
         for ( String hm : currenthhmm ) {
           sb.setLength( 0 );
           sb.append( currentDay ).append( "_" ).append( hm );
-          System.out.println( sb.toString() );
+          log.debug( sb.toString() );
         }
       }
     }
@@ -365,11 +363,11 @@ public class RadarDatasetCollection {
       sb.append( rsc.stnName ).append( day );
       ArrayList<String> tal = hhmm.get( sb.toString() );
       rsc.hhmm.put( day, tal );
-      if ( debug ) {
+      if ( log.isDebugEnabled() ) {
         for ( String hm : tal ) {
           sb.setLength( 0 );
           sb.append( day ).append( "_" ).append( hm );
-          System.out.println( sb.toString() );
+          log.debug( sb.toString() );
         }
       }
     }

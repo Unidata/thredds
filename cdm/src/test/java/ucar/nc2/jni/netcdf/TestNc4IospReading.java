@@ -1,5 +1,6 @@
 package ucar.nc2.jni.netcdf;
 
+import org.junit.Before;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -26,6 +27,13 @@ public class TestNc4IospReading {
   private boolean showCompareResults = true;
   private int countNotOK = 0;
 
+  @Before
+  public void setLibrary() {
+    //Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+    Nc4Iosp.setLibraryAndPath("C:/cdev/lib", "netcdf");
+    System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
+  }
+
   @Test
   public void testReadSubsection() throws IOException, InvalidRangeException {
     String location = TestDir.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4";
@@ -50,9 +58,9 @@ public class TestNc4IospReading {
     return v.read(section) ;
   }
 
-  //@Test
+  @Test
   public void problem() throws IOException {
-    doCompare("Q:\\cdmUnitTest\\formats\\hdf5\\grid_1_3d_xyz_aug.h5", true, true, true);
+    doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\files\\tst_strings.nc", true, true, true);
   }
 
   @Test

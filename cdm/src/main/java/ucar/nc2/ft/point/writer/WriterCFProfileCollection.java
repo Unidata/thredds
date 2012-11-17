@@ -47,10 +47,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.StructureMembers.Member;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.ft.PointFeature;
@@ -84,8 +81,8 @@ public class WriterCFProfileCollection extends CFPointWriter {
   private int name_strlen = 1;
   private Variable id, index, time, record;
 
-  public WriterCFProfileCollection(String fileOut, List<Attribute> atts) throws IOException {
-    super(fileOut, atts);
+  public WriterCFProfileCollection(String fileOut, List<Attribute> atts, NetcdfFileWriter.Version version) throws IOException {
+    super(fileOut, atts, version);
 
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.profile.name()));
   }

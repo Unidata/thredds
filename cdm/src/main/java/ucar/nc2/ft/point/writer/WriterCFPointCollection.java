@@ -61,11 +61,11 @@ public class WriterCFPointCollection extends CFPointWriter {
   private Variable time, lat, lon, alt, record;
 
   public WriterCFPointCollection(String fileOut, String title) throws IOException {
-    this(fileOut, Arrays.asList(new Attribute[]{new Attribute(CDM.TITLE, title)}));
+    this(null, fileOut, Arrays.asList(new Attribute[]{new Attribute(CDM.TITLE, title)}));
   }
 
-  public WriterCFPointCollection(String fileOut, List<Attribute> atts) throws IOException {
-    super(fileOut, atts);
+  public WriterCFPointCollection(NetcdfFileWriter.Version version, String fileOut, List<Attribute> atts) throws IOException {
+    super(fileOut, atts, version);
 
     writer.addGroupAttribute(null, new Attribute(CF.FEATURE_TYPE, CF.FeatureType.point.name()));
   }

@@ -38,6 +38,7 @@ import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.N3raf;
+import ucar.nc2.jni.netcdf.Nc4Chunking;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 import java.io.File;
@@ -45,7 +46,8 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Writing Netcdf 3 or 4 disk files.
+ * Writing Netcdf 3 or 4 formatted files to disk.
+ * Replaces NetcdfFileWriteable
  *
  * @author caron
  * @since 7/25/12
@@ -57,12 +59,20 @@ public class NetcdfFileWriter {
           DataType.DOUBLE, DataType.FLOAT);
   static private final boolean debug = false, debugWrite = false;
 
+
   public enum Version {
-    netcdf3,             // java iosp
-    netcdf4,             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4
-    netcdf4_classic,     // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
-    netcdf3c,            // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC
-    netcdf3c64;           // jni netcdf4 iosp mode = NC_FORMAT_64BIT
+    netcdf3(".nc"),              // java iosp
+    netcdf4(".nc4"),             // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4
+    netcdf4_classic(".nc4"),     // jni netcdf4 iosp mode = NC_FORMAT_NETCDF4_CLASSIC
+    netcdf3c(".nc"),             // jni netcdf4 iosp mode = NC_FORMAT_CLASSIC   (nc3)
+    netcdf3c64(".nc"),           // jni netcdf4 iosp mode = NC_FORMAT_64BIT     (nc3 64 bit)
+    ncstream(".ncs");            // ncstream iosp
+
+    private String suffix;
+
+    private Version(String suffix) {
+      this.suffix = suffix;
+    }
 
     public boolean isNetdf4format() {
       return this == netcdf4 || this == netcdf4_classic;
@@ -72,6 +82,9 @@ public class NetcdfFileWriter {
       return this != netcdf3;
     }
 
+    public String getSuffix() {
+      return suffix;
+    }
   }
 
   /**
@@ -89,12 +102,14 @@ public class NetcdfFileWriter {
   /**
    * Create a new Netcdf file, with fill mode true.
    *
+   * @param version netcdf3 or 4
    * @param location name of new file to open; if it exists, will overwrite it.
-   * @return new file that can be written to
+   * @param chunker used only for netcdf4, or null for default
+   * @return new NetcdfFileWriter
    * @throws IOException on I/O error
    */
-  static public NetcdfFileWriter createNew(Version version, String location) throws IOException {
-    return new NetcdfFileWriter(version, location, false);
+  static public NetcdfFileWriter createNew(Version version, String location, Nc4Chunking chunker) throws IOException {
+    return new NetcdfFileWriter(version, null, null, location, false, chunker);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -116,12 +131,13 @@ public class NetcdfFileWriter {
   /**
    * Open or create a new Netcdf file, put it into define mode to allow writing.
    *
+   * @param version netcdf3 or 4
    * @param location open a new file at this location
    * @param isExisting true if file already exists
    * @throws IOException on I/O error
    */
   private NetcdfFileWriter(Version version, String location, boolean isExisting) throws IOException {
-    this(version, null, null, location, isExisting);
+    this(version, null, null, location, isExisting, null);
   }
 
   /**
@@ -133,12 +149,13 @@ public class NetcdfFileWriter {
    * @param raf Random access file to use, may be null if iospw is, otherwise must be opened read/write
    * @param location open a new file at this location
    * @param isExisting true if file already exists
+   * @param chunker used only for netcdf4, or null for default
    * @throws IOException on I/O error
    */
   protected NetcdfFileWriter(Version version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
-          String location, boolean isExisting) throws IOException {
+          String location, boolean isExisting, Nc4Chunking chunker) throws IOException {
 
-    this.version = version;
+    this.version = version == null ? Version.netcdf3 : version;
     this.location = location;
 
     if (isExisting) {
@@ -160,7 +177,14 @@ public class NetcdfFileWriter {
     }
 
     if (iospw == null) {
-      spiw = version.useJniIosp() ? new Nc4Iosp(version) : new N3raf();
+      if (version.useJniIosp()) {
+        Nc4Iosp nc4iosp = new Nc4Iosp(version);
+        nc4iosp.setChunker(chunker);
+        spiw = nc4iosp;
+      } else {
+        spiw = new N3raf();
+      }
+
     } else {
       spiw = iospw;
     }
@@ -425,6 +449,7 @@ public class NetcdfFileWriter {
   public Variable addVariable(Group g, String shortName, DataType dataType, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
+
     shortName = makeValidObjectName(shortName);
     if (!isValidDataType(dataType))
       throw new IllegalArgumentException("illegal dataType: "+dataType);
@@ -662,7 +687,7 @@ public class NetcdfFileWriter {
       if (oldVar != null)
         oldList.add(oldVar);
     }
-    FileWriter2 fileWriter2 = new FileWriter2(oldFile, location, version);
+    FileWriter2 fileWriter2 = new FileWriter2(oldFile, location, version, null);
     fileWriter2.copyVarData(oldList, recordVar);  // LOOK ??
     flush();
 

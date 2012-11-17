@@ -288,7 +288,7 @@ public class PointWriter {
       netcdfResult = diskCache.createUniqueFile("CdmrFeature", ".nc");
       List<Attribute> atts = new ArrayList<Attribute>();
       atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS Feature Collection " + fd.getLocation() ));
-      cfWriter = new WriterCFPointCollection(netcdfResult.getAbsolutePath(), atts );
+      cfWriter = new WriterCFPointCollection(null, netcdfResult.getAbsolutePath(), atts );
     }
 
     public void header() {

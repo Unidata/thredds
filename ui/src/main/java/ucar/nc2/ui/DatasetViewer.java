@@ -35,22 +35,25 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 
+import ucar.nc2.Dimension;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
+import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.ma2.Array;
 
-import java.awt.BorderLayout;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.io.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -127,39 +130,26 @@ public class DatasetViewer extends JPanel {
     dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200)));
   }
 
+  NetcdfOutputChooser outChooser;
   public void addActions(JPanel buttPanel) {
 
     AbstractAction netcdfAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        String location = ds.getLocation();
-        if (location == null) location = "test";
-        int pos = location.lastIndexOf(".");
-        if (pos > 0)
-          location = location.substring(0, pos);
-
-        String filename = fileChooser.chooseFilenameToSave(location + ".nc");
-        if (filename == null) return;
-        writeNetCDF(filename);
+      if (ds == null) return;
+      if (outChooser == null) {
+        outChooser = new NetcdfOutputChooser((Frame)null);
+        outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
+           public void propertyChange(PropertyChangeEvent evt) {
+             writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
+           }
+         });
+      }
+      outChooser.setOutputFilename(ds.getLocation());
+      outChooser.setVisible(true);
       }
     };
-    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-3 file", false, 'S', -1);
+    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF file", false, 'S', -1);
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
-
-    AbstractAction ncstreamAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        String location = ds.getLocation();
-        if (location == null) location = "test";
-        int pos = location.lastIndexOf(".");
-        if (pos > 0)
-          location = location.substring(0, pos);
-
-        String filename = fileChooser.chooseFilenameToSave(location + ".ncs");
-        if (filename == null) return;
-        writeNcstream(filename);
-      }
-    };
-    BAMutil.setActionProperties(ncstreamAction, "netcdf", "Write ncstream file", false, 'S', -1);
-    BAMutil.addActionToContainer(buttPanel, ncstreamAction);
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to another file", false);
     compareButton.addActionListener(new ActionListener() {
@@ -180,9 +170,14 @@ public class DatasetViewer extends JPanel {
 
   ///////////////////////////////////////
 
-  void writeNetCDF(String filename) {
+  void writeNetcdf(NetcdfOutputChooser.Data data) {
+    if (data.version == NetcdfFileWriter.Version.ncstream) {
+      writeNcstream(data.outputFilename);
+      return;
+    }
+
     try {
-      FileWriter2 writer = new FileWriter2(ds, filename, NetcdfFileWriter.Version.netcdf3);
+      FileWriter2 writer = new FileWriter2(ds, data.outputFilename, data.version, null);
       NetcdfFile result = writer.write();
       result.close();
       JOptionPane.showMessageDialog(this, "File successfully written");

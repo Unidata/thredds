@@ -53,13 +53,17 @@ public class PointCollectionStreamTest {
 	public static List<Object[]> getTestParameters(){
 		
 		return Arrays.asList(new Object[][]{  
-				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) }
-				//{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
+				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(2) , PointDataParameters.getPathInfo().get(2), PointDataParameters.getPoints().get(2), PointDataParameters.getVerticalLevels().get(2) },
+				{SupportedFormat.NETCDF3, PointDataParameters.getGroupedVars().get(1) , PointDataParameters.getPathInfo().get(1), PointDataParameters.getPoints().get(1), PointDataParameters.getVerticalLevels().get(1) }				
 
 		});				
 	}
 	
 	public PointCollectionStreamTest(SupportedFormat supportedFormat,  Map<String,List<String>> vars ,  String pathInfo, LatLonPoint point, Double verticalLevel){
+		
+		//Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+		
 		this.supportedFormat = supportedFormat;
 		this.vars = vars;
 		this.pathInfo = pathInfo;
@@ -70,7 +74,7 @@ public class PointCollectionStreamTest {
 	@Before
 	public void setUp() throws IOException, OutOfBoundariesException, Exception{
 		
-		Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+		//Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "libnetcdf");
 		
 		gridDataset = DatasetHandlerAdapter.openGridDataset(pathInfo);
 		List<String> keys = new ArrayList<String>( vars.keySet());		
@@ -82,9 +86,9 @@ public class PointCollectionStreamTest {
 		int randIntNext = rand.nextInt(dates.size());
 		int start = Math.min(randInt, randIntNext);
 		int end = Math.max(randInt, randIntNext);
-		//CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));
+		CalendarDateRange range = CalendarDateRange.of( dates.get(start), dates.get(end));
 		
-		CalendarDateRange range = CalendarDateRange.of( dates.get(0), dates.get(0));
+		//CalendarDateRange range = CalendarDateRange.of( dates.get(0), dates.get(0));
 		wantedDates = NcssRequestUtils.wantedDates(gridAsPointDataset, range,0);
 		
 		/*if(verticalLevel >= 0){

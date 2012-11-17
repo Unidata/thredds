@@ -53,7 +53,6 @@ import ucar.nc2.*;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.point.writer.CFPointWriter;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ncml.NcMLWriter;
@@ -3296,7 +3295,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.GribRenamePanel panel;
 
     GribRenamePanel(PreferencesExt p) {
-      super(p, "matchNcepName", true, false, false);
+      super(p, "matchNcepName: ", true, false, false);
       panel = new ucar.nc2.ui.GribRenamePanel(prefs, buttPanel);
       add(panel, BorderLayout.CENTER);
     }
@@ -5249,7 +5248,7 @@ public class ToolsUI extends JPanel {
 
     PointFeaturePanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
-      pfViewer = new PointFeatureDatasetViewer(dbPrefs);
+      pfViewer = new PointFeatureDatasetViewer(dbPrefs, buttPanel);
       add(pfViewer, BorderLayout.CENTER);
 
       types = new JComboBox();
@@ -5273,7 +5272,7 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton);
 
-      AbstractButton collectionButton = BAMutil.makeButtcon("Information", "Collection Parsing Info", false);
+      /* AbstractButton collectionButton = BAMutil.makeButtcon("Information", "Collection Parsing Info", false);
       collectionButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
@@ -5283,7 +5282,7 @@ public class ToolsUI extends JPanel {
           detailWindow.show();
         }
       });
-      buttPanel.add(collectionButton);
+      buttPanel.add(collectionButton); */
 
       AbstractButton xmlButton = BAMutil.makeButtcon("XML", "pointConfig.xml", false);
       xmlButton.addActionListener(new ActionListener() {
@@ -5319,22 +5318,6 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(calcButton);
-
-      AbstractAction netcdfAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          String location = pfDataset.getLocation();
-          if (location == null) location = "test";
-          int pos = location.lastIndexOf(".");
-          if (pos > 0)
-            location = location.substring(0, pos);
-
-          String filename = fileChooser.chooseFilenameToSave(location + ".nc");
-          if (filename == null) return;
-          doWriteCF(filename);
-        }
-      };
-      BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF", false, 'N', -1);
-      BAMutil.addActionToContainer(buttPanel, netcdfAction);
     }
 
     boolean process(Object o) {
@@ -5350,16 +5333,6 @@ public class ToolsUI extends JPanel {
     void save() {
       super.save();
       pfViewer.save();
-    }
-
-    void doWriteCF(String filename) {
-      try {
-        int count = CFPointWriter.writeFeatureCollection(pfDataset, filename);
-        JOptionPane.showMessageDialog(this, count + " records written");
-      } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
-        e.printStackTrace();
-      }
     }
 
     private boolean setPointFeatureDataset(FeatureType type, String location) {

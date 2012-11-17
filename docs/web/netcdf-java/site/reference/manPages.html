@@ -8,11 +8,11 @@
 <body>
 <h1>CDM  man pages</h1>
 <p>Useful applications that can be called from the CDM library, eg:</p>
-<pre> <em>java -classpath netcdfAll-4.3.jar ucar.nc2.NCdumpW Q:/cdmUnitTest/ncml/nc/test_7.nc</em></pre>
+<pre> <em>java -Xmx1g -classpath netcdfAll-4.3.jar ucar.nc2.NCdumpW Q:/cdmUnitTest/ncml/nc/test_7.nc</em></pre>
 <hr />
-<h2>ncdump</h2>
+<h2>ncdump<a name="ncdump" id="ncdump"></a></h2>
 <p>Approximate  functionality to <em>ncdump</em> c utility, but with different arguments.</p>
-<pre><em><strong>  </strong>java -classpath netcdfAll-4.3.jar <strong>ucar.nc2.NCdumpW</strong> filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</em></pre>
+<pre><em><strong>  </strong>java -Xmx1g -classpath netcdfAll-4.3.jar <strong>ucar.nc2.NCdumpW</strong> filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</em></pre>
 <p>where:</p>
 <ul>
   <li> <em>filepath</em> : pathname of any CDM file. </li>
@@ -24,9 +24,9 @@
   <li><em>-v varName(0:1,:,12)</em>  : show data for a section of this variable only, using F90 section specificiation</li>
 </ul>
 <hr />
-<h2>nccopy</h2>
+<h2>nccopy<a name="nccopy" id="nccopy"></a></h2>
 <p>Copy a CDM dataset to a    netcdf-3 (default) or netcdf-4 format. Datasets using features from the extended model require netcdf-4.</p>
-<pre><em><strong> </strong>java -classpath netcdfAll-4.3.jar <strong>ucar.nc2.dataset.NetcdfDataset -in &lt;fileIn&gt; -out &lt;fileOut&gt; [-isLargeFile] [-netcdf4]</strong></em></pre>
+<pre><em><strong> </strong>java -Xmx1g -classpath netcdfAll-4.3.jar <strong>ucar.nc2.dataset.NetcdfDataset -in &lt;fileIn&gt; -out &lt;fileOut&gt; [-isLargeFile] [-netcdf4]</strong></em></pre>
 <p>where:</p>
 <ul>
   <li><em>filein</em> : the existing file to copy</li>
@@ -35,9 +35,9 @@
   <li>-<em>netcdf4</em>: write to netcdf-4 format. You must have the <a href="netcdf4Clibrary.html">netcdf-4 C library loaded</a>.</li>
 </ul>
 <hr />
-<h2>nccompare</h2>
+<h2>nccompare<a name="nccompare" id="nccompare"></a></h2>
 <p>Compare 2 CDM files for semantic equivilence..</p>
-<pre> <em>java -classpath netcdfAll-4.3.jar </em>ucar.nc2.util.CompareNetcdf2 file1 file2 [-showEach] [-compareData] </pre>
+<pre> <em>java -Xmx1g -classpath netcdfAll-4.3.jar </em>ucar.nc2.util.CompareNetcdf2 file1 file2 [-showEach] [-compareData] </pre>
 <p>where</p>
 <ul>
   <li>-<em>showEach</em> : show details of comparing each object</li>
@@ -48,7 +48,7 @@
 <hr />
 <h2><strong>FeatureScan</strong></h2>
 <p>Scans all the files in a directory to see if they are CDM files and can be identified as a particular feature type</p>
-<pre><strong>  </strong> <em>java -classpath netcdfAll-4.3.jar </em>ucar.nc2.ft.scan.FeatureScan directory [-subdirs]</pre>
+<pre><strong>  </strong> <em>java -Xmx1g -classpath netcdfAll-4.3.jar </em>ucar.nc2.ft.scan.FeatureScan directory [-subdirs]</pre>
 <p>where</p>
 <ul>
   <li>directory : scan this directory</li>

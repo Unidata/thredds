@@ -92,6 +92,13 @@ public class NetcdfCFWriter {
     writer.makeFile(location, gds, gridList, llbb, range, false, 1, 1, 1);
   }
 
+  static public void makeFileVersioned(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb,
+                                       CalendarDateRange dateRange, NetcdfFileWriter.Version version)
+  throws IOException, InvalidRangeException {
+    NetcdfCFWriter writer = new NetcdfCFWriter();
+    writer.makeOrTestSize(location, gds, gridList, llbb, 1, null, dateRange, 1, false, false, version);
+  }
+
   /**
    * Write a netcdf-3 file from a subset of a grid dataset, as long as it doesnt exceed a certain file size.
    *
@@ -261,7 +268,7 @@ public class NetcdfCFWriter {
 
     // check size is ok
     boolean isLargeFile = isLargeFile(total_size);
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location);
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, null);
     writer.setLargeFile(isLargeFile);
 
     writeGlobalAttributes(writer, gds);
@@ -386,7 +393,7 @@ public class NetcdfCFWriter {
 
     if (version == NetcdfFileWriter.Version.netcdf4)
       version = NetcdfFileWriter.Version.netcdf4_classic;
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location);
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, location, null);
     writer.setLargeFile(isLargeFile);
 
     writeGlobalAttributes(writer, gds);

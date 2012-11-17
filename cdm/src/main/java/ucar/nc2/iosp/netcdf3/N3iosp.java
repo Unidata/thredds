@@ -665,7 +665,6 @@ public String NC_check_name(String name) {
     return header.rewriteHeader(largeFile, null);
   }
 
-
   //////////////////////////////////////////////////////////////////////////////////////
   // write
 

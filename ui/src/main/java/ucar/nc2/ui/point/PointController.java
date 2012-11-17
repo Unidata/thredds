@@ -42,7 +42,7 @@ import java.awt.event.ActionEvent;
 import ucar.nc2.ui.widget.BAMutil;
 
 /**
- * Describe
+ * Widget for drawing point data
  *
  * @author caron
  * @since Nov 17, 2009
