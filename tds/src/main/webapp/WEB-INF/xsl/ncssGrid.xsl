@@ -229,18 +229,26 @@
 													<br />
 													<input type="text" name="north" size="8"
 														value="{gridForm/LatLonBox/north}" />
+													<input type="hidden" disabled="disabled" name="dis_north" size="8"
+														value="{gridForm/LatLonBox/north}" />														
 												</div>
 												<div>
 													west
 													<input type="text" name="west" size="8"
 														value="{gridForm/LatLonBox/west}" />
+                                                    <input type="hidden" disabled="disabled" name="dis_west" size="8"
+														value="{gridForm/LatLonBox/west}" />  														
 													<input type="text" name="east" size="8"
 														value="{gridForm/LatLonBox/east}" />
+													<input type="hidden" disabled="disabled" name="dis_east" size="8"
+														value="{gridForm/LatLonBox/east}" />														
 													east
 												</div>
 												<div class="top">
 													<input type="text" name="south" size="8"
 														value="{gridForm/LatLonBox/south}" />
+													<input type="hidden" disabled="disabled" name="dis_south" size="8"
+														value="{gridForm/LatLonBox/south}" />														
 													<br />
 													<span>south</span>
 												</div>
@@ -257,18 +265,26 @@
 													<br />
 													<input type="text" disabled="disabled" name="maxy"
 														size="8" value="{gridForm/projectionBox/maxy}" />
+													<input type="hidden" disabled="disabled" name="dis_maxy"
+														size="8" value="{gridForm/projectionBox/maxy}" />														
 												</div>
 												<div>
 													minx
 													<input type="text" disabled="disabled" name="minx"
 														size="8" value="{gridForm/projectionBox/minx}" />
+													<input type="hidden" disabled="disabled" name="dis_minx"
+														size="8" value="{gridForm/projectionBox/minx}" />														
 													<input type="text" disabled="disabled" name="maxx"
 														size="8" value="{gridForm/projectionBox/maxx}" />
+													<input type="hidden" disabled="disabled" name="dis_maxx"
+														size="8" value="{gridForm/projectionBox/maxx}" />														
 													maxx
 												</div>
 												<div class="top">
 													<input type="text" disabled="disabled" name="miny"
 														size="8" value="{gridForm/projectionBox/miny}" />
+													<input type="hidden" disabled="disabled" name="dis_miny"
+														size="8" value="{gridForm/projectionBox/miny}" />														
 													<br />
 													<span>miny</span>
 												</div>
@@ -299,9 +315,13 @@
 												<label class="sized">Starting:</label>
 												<input type="text" name="time_start" size="21"
 													value="{gridForm/TimeSpan/begin}" />
+												<input type="hidden" disabled="disabled" name="dis_time_start" size="21"
+													value="{gridForm/TimeSpan/begin}" />													
 												<label class="sized">Ending:  </label>
 												<input type="text" name="time_end" size="21"
 													value="{gridForm/TimeSpan/end}" />
+												<input type="hidden" disabled="disabled" name="dis_time_end" size="21"
+													value="{gridForm/TimeSpan/end}" />													
 												<label class="sized">Stride:</label>
 												<input type="text" name="timeStride" size="5" value="1" />
 												<br />

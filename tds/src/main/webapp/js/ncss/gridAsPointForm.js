@@ -1,5 +1,5 @@
 
-Ncss.changeSpatialSubsetType = function(){
+/*Ncss.changeSpatialSubsetType = function(){
 		
 	var latlonTab =$('#inputLatLonSubset');
 	var coordTab = $('#inputCoordSubset');	
@@ -49,7 +49,7 @@ Ncss.changeSpatialSubsetType = function(){
 				
 	}
 		
-};
+};*/
 
 
 
@@ -63,14 +63,14 @@ Ncss.initGridAsPointForm = function(){
 	$('#inputTimeRange').click(Ncss.changeTemporalSubsetting);
 	$('#inputSingleTime').click(Ncss.changeTemporalSubsetting);
 	
-	var fullTimeExt ={
-			time_start : $('input[name=time_start]').val(),
-			time_end : $('input[name=time_end]').val()
+	Ncss.fullTimeExt ={
+			time_start : $('input[name=dis_time_start]').val(),
+			time_end   : $('input[name=dis_time_end]').val()
 	};
 	
 	$('#resetTimeRange').click(function(){
-		$('input[name=time_start]').val(fullTimeExt.time_start);
-		$('input[name=time_end]').val(fullTimeExt.time_end);
+		$('input[name=time_start]').val(Ncss.fullTimeExt.time_start);
+		$('input[name=time_end]').val(Ncss.fullTimeExt.time_end);
 	});
 		
 	Ncss.log("initGridAsPointForm...(ends)");

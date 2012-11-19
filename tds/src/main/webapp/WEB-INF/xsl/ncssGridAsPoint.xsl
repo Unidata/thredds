@@ -270,9 +270,13 @@
 												<label class="sized">Starting:</label>
 												<input type="text" name="time_start" size="21"
 													value="{gridForm/TimeSpan/begin}" />
+												<input type="hidden" disabled="disabled" name="dis_time_start" size="21"
+													value="{gridForm/TimeSpan/begin}" />													
 												<label class="sized">Ending:  </label>
 												<input type="text" name="time_end" size="21"
 													value="{gridForm/TimeSpan/end}" />
+												<input type="hidden" disabled="disabled" name="dis_time_end" size="21"
+													value="{gridForm/TimeSpan/end}" />													
 												<!-- label class="sized">Stride:</label>
 												<input type="text" name="timeStride" size="5" value="1" /-->
 												<br />
