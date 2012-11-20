@@ -16,31 +16,39 @@
   <resources>
     <j2se version="1.6+" max-heap-size="1024m"/>
     <jar href="netcdfUI.jar"/>
-    <jar href="bdb.jar"/>
     <jar href="bounce.jar"/>
     <jar href="bufr.jar"/>
-    <jar href="codec.jar"/>
+    <jar href="c3p0.jar"/>
+    <jar href="cdm.jar"/>
+    <jar href="commons-codec.jar"/>
+    <jar href="commons-httpclient.jar"/>
+    <jar href="commons-logging.jar"/>
     <jar href="ehcache.jar"/>
+    <jar href="forms.jar"/>
     <jar href="grib.jar"/>
-    <jar href="httpclient.jar"/>
-    <jar href="httplogging.jar"/>
+    <jar href="jcip-annotations.jar"/>
+    <jar href="jcl-over-slf4j.jar"/>
+    <jar href="jcommon.jar"/>
     <jar href="jdom.jar"/>
-    <jar href="jgoodies.jar"/>
-    <jar href="joda.jar"/>
-    <jar href="loggingAPI.jar"/>
-    <jar href="logging.jar"/>
+    <jar href="je.jar"/>
+    <jar href="jfreechart.jar"/>
+    <jar href="jna.jar"/>
+    <jar href="joda-time.jar"/>
+    <jar href="jsoup.jar"/>
+    <jar href="lucene.jar"/>
     <jar href="opendap.jar"/>
-    <jar href="protobuf.jar"/>
+    <jar href="protobuf-java.jar"/>
     <jar href="quartz.jar"/>
     <jar href="resourcesOptional.jar"/>
+    <jar href="slf4j-api.jar"/>
     <jar href="spring-aop.jar"/>
     <jar href="spring-asm.jar"/>
-    <jar href="spring-aop.jar"/>
     <jar href="spring-beans.jar"/>
     <jar href="spring-context.jar"/>
     <jar href="spring-core.jar"/>
     <jar href="spring-expression.jar"/>
-    <jar href="visadCdm.jar"/>
+    <jar href="udunits.jar"/>
+    <jar href="visad.jar"/>
   </resources>
 
   <application-desc main-class="ucar.nc2.ui.ToolsUI"/>

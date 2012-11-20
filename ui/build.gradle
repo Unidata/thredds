@@ -1,7 +1,7 @@
 jar {
-    manifest {
-        attributes 'Implementation-Title': 'toolsUI'
-    }
+  manifest {
+    attributes 'Implementation-Title': 'toolsUI'
+  }
 }
 
 dependencies {
@@ -18,34 +18,87 @@ dependencies {
   compile 'org.springframework:spring-context:3.1.1.RELEASE'
 }
 
-workDir = "build/signed"
+/* following properties should be in gradle.properties:
+   keystore=name of keystore file
+   keystoreAlias=idv
+   keystorePassword=password of keystore file
+   webdir:parent of conan content directory
+ */
+task releaseWebstart() << {
+  workDir = "build/signed"  // working directory
+  ant.delete(dir: workDir)
+  ant.mkdir(dir: workDir)
 
-task copyAndSign() << {
-  ant.delete(dir:workDir)
-  ant.mkdir(dir:workDir)
-
-  println "before"
-
-  copyJnlp
-
-  println "after"
-
-  /* for (file in configurations.runtime.resolve()) {
-    println file
-    ant.signjar(destDir:workDir, jar:file, alias:keystoreAlias, keystore:keystore, storepass:keystorePassword,
-              preservelastmodified:"true")
-  }  */
-
-  /* webstartDir = webdir + "/content/software/netcdf-java/v4.3/webstartg"
-  copyTask(type: Copy) {
-      from workDir
-      into webstartDir
-  } */
-}
-
-task copyJnlp(type: Copy) <<  {
-    println "copyJnlp calleed"
+  copy {
+    println "copyJnlp"
     from 'netCDFtools.jnlp'
     from 'netCDFtoolsExtraJars.jnlp'
     into workDir
+  }
+
+  println "signjar"
+  ant.signjar(jar: "build/libs/ui-" + version + ".jar", signedjar: workDir + "/netcdfUI.jar",
+          alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
+          preservelastmodified: "true")
+  for (file in configurations.runtime.resolve()) {
+    println " " + file
+    ant.signjar(destDir: workDir, jar: file, alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
+            preservelastmodified: "true")
+  }
+
+  webstartDir = webdir + "/content/software/netcdf-java/v4.3/webstart"
+  copy {
+    println "copy2web"
+    from(workDir) {
+      exclude "visad.jar"
+    }
+    rename { String fileName ->
+      pos = fileName.lastIndexOf('-');
+      fileName2 = (pos >= 0) ? fileName.substring(0, pos) + ".jar" : fileName
+      println " " + fileName + " -> " + fileName2
+      fileName2
+    }
+    into webstartDir
+  }
 }
+
+
+task copy2web() << {
+  workDir = "build/signed"  // working directory
+  webstartDir = webdir + "/content/software/netcdf-java/v4.3/webstart"
+
+  copy {
+    println "copyJnlp"
+    from 'netCDFtools.jnlp'
+    from 'netCDFtoolsExtraJars.jnlp'
+    into webstartDir
+  }
+
+}
+
+/* task testRename() << {
+
+  println workDir
+  work = file(workDir)
+  println work.class
+  collection = files { work.listFiles() }
+
+  for (f in collection) {
+    print f.name
+    fileName = f.name
+    pos = fileName.lastIndexOf('-');
+    String fileName2 = (pos >= 0) ? fileName.substring(0,pos) + ".jar" : fileName
+    print " -> "
+    println fileName2
+  }
+}
+
+task testJarname() << {
+  //println Project.path
+  println name
+  println Project.name
+  println version
+}    */
+
+
+
