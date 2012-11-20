@@ -37,6 +37,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayInt;
@@ -84,6 +87,8 @@ import ucar.unidata.geoloc.Station;
  * @since Nov 09, 2012
  */
 class WriterCFStationCollection  extends CFPointWriter {
+	
+	  static private Logger log = LoggerFactory.getLogger(WriterCFStationCollection.class);
 	
 	  private static final String stationDimName = "station";
 	  private static final String idName = "station_id";
@@ -447,6 +452,17 @@ class WriterCFStationCollection  extends CFPointWriter {
 		    
 		  }	  
 	  
+		void writeEnsCoord(int ensIdx, double ensCoord) throws IOException{
+			
+			ArrayDouble.D1 tmpArray = new ArrayDouble.D1(1);
+			tmpArray.setDouble(0, ensCoord);
+			int[] idx = new int[]{ensIdx};
+			try {			
+				writer.write( ensVar , idx, tmpArray );
+			}catch(InvalidRangeException ire){
+				log.error("Error writing data: "+ire); 
+			}		
+		}
 	  
 
 	  private LatLonRect getBoundingBox(List stnList) {

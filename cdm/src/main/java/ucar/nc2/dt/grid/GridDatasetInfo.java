@@ -53,6 +53,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
@@ -212,12 +213,24 @@ public class GridDatasetInfo {
     for (int i = 0; i < grids.size(); i++) {
       GeoGrid grid = (GeoGrid) grids.get(i);
       GridCoordSystem gcs = grid.getCoordinateSystem();
+      
+     
       CoordinateAxis time = gcs.getTimeAxis();
       CoordinateAxis vert = gcs.getVerticalAxis();
 
       /* System.out.println(" grid "+grid.getName()
               +" time="+(time == null ? " null" : time.hashCode())
               +" vert="+(vert == null ? " null" : vert.hashCode())); */
+      
+      //Assuming all variables in dataset has ensemble dim if one has
+      if(i==0){
+    	  CoordinateAxis1D ens = gcs.getEnsembleAxis();
+    	  if(ens != null){
+    		  Element ensAxisEl = writeAxis2(ens, "ensemble");    		  
+    		  rootElem.addContent(ensAxisEl);
+    	  }
+    		  
+      }
 
       if ((i == 0) || !compareAxis(time, currentTime)) {
         timeElem = new Element("timeSet");

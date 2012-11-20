@@ -163,8 +163,27 @@
 						<table class="simple">
 							<tr valign="top">
 								<td class="leftCol">
+									<xsl:if test="count(/gridForm/ensemble) &gt; 0">
+										
+										<xsl:variable name="ensVals">
+											<xsl:value-of select="/gridForm/ensemble/values" />
+										</xsl:variable>										
+										<xsl:variable name="tokenizedEnsVals" select="tokenize($ensVals,' ')"/>
+										<h1>Ensemble members (<xsl:value-of select="count($tokenizedEnsVals)"/>):</h1>
+										<xsl:for-each select="$tokenizedEnsVals">
+											<xsl:variable name="innerCounter" select="position()" />
+      										<xsl:value-of select="."/>
+      										<xsl:if test="$innerCounter!=count($tokenizedEnsVals)">
+      											<xsl:text>, </xsl:text>
+      										</xsl:if>
+      										
+    									</xsl:for-each>
+    									<br />
+    									<span>(Subsetting on ensemble dimensions is not yet supported and all members will be returned)</span> 																													
+										<br />																			
+									</xsl:if>								
+									<br />								
 									You must select at least one Variable and a Lat/Lon location.
-
 									<h3>Select Variable(s):</h3>
 
 									<xsl:for-each select="gridForm/timeSet">

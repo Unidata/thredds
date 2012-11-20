@@ -122,10 +122,17 @@ public final class WriterCFStationCollectionWrapper implements CFPointWriterWrap
 
 		
 		try{
-
+			
+			int ensIdx =0;
 			for(double ensCoord : ensCoords){
+				
+				if(ensCoord >=0){
+					writerCFStationCollection.writeEnsCoord(ensIdx, ensCoord);
+					ensIdx++;
+				}				
+				
 				//int cont =0;
-				// Iterating vars		
+				// Iterating vars											
 				Iterator<String> itVars = vars.iterator();				
 				while (itVars.hasNext()) {
 					String varName = itVars.next();
