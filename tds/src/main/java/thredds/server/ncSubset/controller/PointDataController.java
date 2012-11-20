@@ -47,7 +47,8 @@ class PointDataController extends AbstratNcssDataRequestController{
 	static private final Logger log = LoggerFactory.getLogger(PointDataController.class);
 
 	
-	@RequestMapping(value = "**", params = { "latitude", "longitude", "var" })
+	//@RequestMapping(value = "**", params = { "latitude", "longitude", "var" })
+	@RequestMapping(value = "**", params = {})
 	void getPointData(@Valid PointDataRequestParamsBean params, BindingResult  validationResult, HttpServletResponse response ) throws ParseException, NcssException, IOException{
 
 		if( validationResult.hasErrors() ){

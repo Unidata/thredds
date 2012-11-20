@@ -24,6 +24,10 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 
 		//Check allow
 		boolean allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
+		
+		//if( ((HandlerMethod) handler).getBean() instanceof  AbstractNcssController){
+		if( handler instanceof  HandlerMethod ){					
+		
 		AbstractNcssController hm =  (AbstractNcssController)((HandlerMethod) handler).getBean();
 		// pathInfo is the string containing any additional path information, that is, anything following the servlet path and preceding the query string.
 		// For Spring, as the DispatcherServlet is mapped into "/" the servletPath is everything preceding the query string so the request.getPathInfo() 
@@ -44,6 +48,10 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 	    
 		//Check dataset ??		
 		return allow && ( gds != null );
+		
+		}
+		
+		return true;
 	}
 
 	@Override
@@ -97,7 +105,10 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
 	}
 	
 	private void closeGridDataset(Object handler){
-		AbstractNcssController hm =  (AbstractNcssController)((HandlerMethod) handler).getBean();
+		
+		if(handler instanceof HandlerMethod){
+		
+		AbstractNcssController hm =  (AbstractNcssController)((HandlerMethod) handler).getBean();				
 		GridDataset gds = hm.getGridDataset();
 		
 		//Check dataset is closed ??
@@ -111,6 +122,8 @@ public class NcssInterceptor extends HandlerInterceptorAdapter {
         
         hm.setRequestPathInfo(null);
         hm.setGridDataset(null);
+        
+		}
         
 	}
 

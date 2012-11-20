@@ -29,8 +29,8 @@ public class TestNc4IospReading {
 
   @Before
   public void setLibrary() {
-    //Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
-    Nc4Iosp.setLibraryAndPath("C:/cdev/lib", "netcdf");
+    Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+    //Nc4Iosp.setLibraryAndPath("C:/cdev/lib", "netcdf");
     System.out.printf("Nc4Iosp.isClibraryPresent = %s%n", Nc4Iosp.isClibraryPresent());
   }
 
@@ -58,7 +58,7 @@ public class TestNc4IospReading {
     return v.read(section) ;
   }
 
-  @Test
+  //@Test
   public void problem() throws IOException {
     doCompare("Q:\\cdmUnitTest\\formats\\netcdf4\\files\\tst_strings.nc", true, true, true);
   }

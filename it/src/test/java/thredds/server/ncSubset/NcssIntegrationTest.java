@@ -42,7 +42,19 @@ public class NcssIntegrationTest {
 	  public void checkBadRequest() {
 		  
 		assertBadRequest( response );
-	  } 	  
+	  }
+	  
+	  @HttpTest( method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var="  )	  
+	  public void checkBadGridRequestWhenNoVarParam() {
+		  
+		assertBadRequest( response );
+	  }	  
+	  
+	  @HttpTest( method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?latitude=40.019&longitude=-105.293")	  
+	  public void checkBadGridAsPointRequestWhenNoVarParam() {
+		  
+		assertBadRequest( response );
+	  }	  
 	  
 	  @HttpTest( method = Method.GET, path = "/thredds/ncss/grid/ncss_tests/files/GFS_CONUS_80km_20120229_1200.grib1?var=Temperature_isobaric&latitude=40&longitude=-102&vertCoord=225" )	  
 	  public void checkGoodRequest() throws JDOMException, IOException {  

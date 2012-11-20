@@ -18,7 +18,7 @@ public class VarParamsValidator implements ConstraintValidator<VarParamConstrain
 
 		boolean isValid = true;
 		
-		if( vars.isEmpty() ){
+		if( vars == null || vars.isEmpty() ){
 			constraintValidatorContext
 			.buildConstraintViolationWithTemplate("{thredds.server.ncSubset.validation.ncssvarparamsvalidator}")
 			.addConstraintViolation();

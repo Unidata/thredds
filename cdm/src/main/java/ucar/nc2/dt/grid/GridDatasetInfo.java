@@ -53,6 +53,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
@@ -212,12 +213,24 @@ public class GridDatasetInfo {
     for (int i = 0; i < grids.size(); i++) {
       GeoGrid grid = (GeoGrid) grids.get(i);
       GridCoordSystem gcs = grid.getCoordinateSystem();
+      
+     
       CoordinateAxis time = gcs.getTimeAxis();
       CoordinateAxis vert = gcs.getVerticalAxis();
 
       /* System.out.println(" grid "+grid.getName()
               +" time="+(time == null ? " null" : time.hashCode())
               +" vert="+(vert == null ? " null" : vert.hashCode())); */
+      
+      //Assuming all variables in dataset has ensemble dim if one has
+      if(i==0){
+    	  CoordinateAxis1D ens = gcs.getEnsembleAxis();
+    	  if(ens != null){
+    		  Element ensAxisEl = writeAxis2(ens, "ensemble");    		  
+    		  rootElem.addContent(ensAxisEl);
+    	  }
+    		  
+      }
 
       if ((i == 0) || !compareAxis(time, currentTime)) {
         timeElem = new Element("timeSet");
@@ -304,15 +317,16 @@ public class GridDatasetInfo {
 	    Element grids = new Element("Grid");
 	    grids.addContent(new Element("accept").addContent("netcdf"));
 	    //Check if netcdf4 is available
-	    try{
-	    	if( Nc4Iosp.isClibraryPresent() ){
-	    		grids.addContent(new Element("accept").addContent("netcdf4"));
-	    		//Not yet...
+	    //Not yet...
+	    //try{
+	    //	if( Nc4Iosp.isClibraryPresent() ){
+	    //		grids.addContent(new Element("accept").addContent("netcdf4"));
+	    //		
 	    		//gridAsPoint.addContent(new Element("accept").addContent("netcdf4"));
-	    	}    
-	    }catch(UnsatisfiedLinkError e){
+	    //	}    
+	    //}catch(UnsatisfiedLinkError e){
 	    	//So far swallowing the exception...
-	    }
+	    //}
 	    
 	    elem.addContent(gridAsPoint);
 	    elem.addContent(grids);	  

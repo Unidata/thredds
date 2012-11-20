@@ -92,7 +92,8 @@ class GridDataController extends AbstratNcssDataRequestController {
   private File netcdfResult;
   private long maxFileDownloadSize = -1L;
 
-  @RequestMapping(value = "**", params = {"!latitude", "!longitude", "var"})
+  //@RequestMapping(value = "**", params = {"!latitude", "!longitude", "var"})
+  @RequestMapping(value = "**", params = {"!latitude", "!longitude"})
   void getGridSubset(@Valid GridDataRequestParamsBean params, BindingResult validationResult, HttpServletResponse response)
           throws UnsupportedResponseFormatException, RequestTooLargeException, OutOfBoundariesException, VariableNotContainedInDatasetException, InvalidBBOXException, InvalidRangeException, ParseException, IOException, UnsupportedOperationException, TimeOutOfWindowException {
 

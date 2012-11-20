@@ -193,6 +193,7 @@ public abstract class AbstractNcssController implements LastModified{
 	protected void handleValidationErrorsResponse(HttpServletResponse response, int status, BindingResult  validationResult){
 		
 		List<ObjectError> errors = validationResult.getAllErrors();
+		response.setStatus(status);
 		//String responseStr="Validation errors: ";
 		StringBuffer responseStr = new StringBuffer();
 		responseStr.append("Validation errors: ");

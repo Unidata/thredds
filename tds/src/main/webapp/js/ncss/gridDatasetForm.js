@@ -130,17 +130,17 @@ Ncss.initGridDatasetForm = function(){
 	$('#inputCoordSubset' ).click( Ncss.changeSpatialSubsetType);
 	
 	Ncss.fullLatLonExt ={
-			north: $('input[name=north]').val(),
-			south: $('input[name=south]').val(),
-			west: $('input[name=west]').val(),
-			east: $('input[name=east]').val()
+			north: $('input[name=dis_north]').val(),
+			south: $('input[name=dis_south]').val(),
+			west: $('input[name=dis_west]').val(),
+			east: $('input[name=dis_east]').val()
 	} ;
 	
 	Ncss.fullProjExt ={
-			maxy: $('input[name=maxy]').val(),
-			miny: $('input[name=miny]').val(),
-			minx: $('input[name=minx]').val(),
-			maxx: $('input[name=maxx]').val()
+			maxy: $('input[name=dis_maxy]').val(),
+			miny: $('input[name=dis_miny]').val(),
+			minx: $('input[name=dis_minx]').val(),
+			maxx: $('input[name=dis_maxx]').val()
 	} ;	
 	
 	$('#resetLatLonbbox').click(function(){
@@ -164,14 +164,14 @@ Ncss.initGridDatasetForm = function(){
 	$('#inputTimeRange').click(Ncss.changeTemporalSubsetting);
 	$('#inputSingleTime').click(Ncss.changeTemporalSubsetting);
 	
-	var fullTimeExt ={
-			time_start : $('input[name=time_start]').val(),
-			time_end : $('input[name=time_end]').val()
+	Ncss.fullTimeExt ={
+			time_start : $('input[name=dis_time_start]').val(),
+			time_end : $('input[name=dis_time_end]').val()
 	};
 	
 	$('#resetTimeRange').click(function(){
-		$('input[name=time_start]').val(fullTimeExt.time_start);
-		$('input[name=time_end]').val(fullTimeExt.time_end);
+		$('input[name=time_start]').val(Ncss.fullTimeExt.time_start);
+		$('input[name=time_end]').val(Ncss.fullTimeExt.time_end);
 	});
 	
 	//Add events to vertical subset selectors	
