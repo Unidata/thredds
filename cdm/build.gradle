@@ -4,6 +4,14 @@ jar {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            exclude 'ucar/nc2/util/reflect/*.java'
+        }
+    }
+}
+
 dependencies {
   compile project(':udunits')
   compile 'commons-httpclient:commons-httpclient:3.1'

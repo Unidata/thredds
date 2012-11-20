@@ -105,6 +105,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   /**
    * set the path and name of the netcdf c library.
+   * must be called before load() is called.
    *
    * @param jna_path path
    * @param libname  library name
@@ -175,6 +176,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int ret = nc4.nc_close(ncid);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     isClosed = true;
+    // System.out.printf("%s closed%n", ncfile.getLocation());
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {

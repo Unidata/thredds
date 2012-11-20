@@ -145,6 +145,7 @@ public class NetcdfFileWriter {
    * writing, using the provided IOSP and RAF.
    * This allows specialized writers.
    *
+   * @param version which kind of file to write, if null, use netcdf3
    * @param iospw IO service provider to use, if null use standard
    * @param raf Random access file to use, may be null if iospw is, otherwise must be opened read/write
    * @param location open a new file at this location
@@ -155,7 +156,8 @@ public class NetcdfFileWriter {
   protected NetcdfFileWriter(Version version, IOServiceProviderWriter iospw, ucar.unidata.io.RandomAccessFile raf,
           String location, boolean isExisting, Nc4Chunking chunker) throws IOException {
 
-    this.version = version == null ? Version.netcdf3 : version;
+    if (version == null) version = Version.netcdf3;
+    this.version = version;
     this.location = location;
 
     if (isExisting) {

@@ -26,7 +26,7 @@ public class TestNc4IospWriting {
 
   @Before
   public void setLibrary() {
-    Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");
+    Nc4Iosp.setLibraryAndPath("/home/mhermida/opt/lib", "netcdf");   // jenkins testing on spock; works locally when netcdf.dll is in pth
     //FileWriter2.setDebugFlags(new DebugFlagsImpl("ncfileWriter2/debug"));
   }
 
@@ -72,8 +72,8 @@ public class TestNc4IospWriting {
 
     @Override
     public boolean accept(File pathname) {
-      //if (pathname.getName().equals("tst_string_data.nc")) return false;
-      //if (pathname.getName().equals("tst_strings.nc")) return false;
+      if (pathname.getName().equals("tst_opaque_data.nc4")) return false;
+      if (pathname.getName().equals("tst_opaques.nc4")) return false;
       return true;
     }
   }
@@ -86,7 +86,7 @@ public class TestNc4IospWriting {
      NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
      FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null);
      NetcdfFile ncfileOut = writer2.write();
-     compare(ncfileIn, ncfileOut, true, false, false);
+     compare(ncfileIn, ncfileOut, true, false, true);
      ncfileIn.close();
      ncfileOut.close();
      // System.out.println("NetcdfFile written = " + ncfileOut);

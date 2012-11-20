@@ -1,10 +1,56 @@
 jar {
-    manifest {
-        attributes 'Implementation-Title': 'visadCdm'
-    }
+  manifest {
+    attributes 'Implementation-Title': 'visadCdm'
+  }
+
+  FileTree zip = zipTree('../lib/external/visad.jar')
+  FileTree filtered = zip.matching {
+    exclude 'dods/**'
+    exclude 'gnu/**'
+    exclude 'Jama/**'
+    exclude 'HTTPClient/**'
+    exclude 'loci/**'
+    exclude 'ncsa/**'
+    exclude 'ucar/**'
+    exclude 'visad/bom/**'
+    exclude 'visad/cluster/**'
+    exclude 'visad/install/**'
+    exclude 'visad/python/**'
+  }
+
+  from filtered
 }
+
+/* task testFiles {
+  FileTree zip = zipTree('../lib/external/visad.jar')
+  // FileTree zip = zipTree('edu.wisc.ssec:visad:2.0-20120411')
+
+  // Iterate over the contents of a tree
+  // zip.each { File file ->
+  //  println file.path
+  //}
+
+  FileTree filtered = zip.matching {
+    exclude 'dods/**'
+    exclude 'gnu/**'
+    exclude 'Jama/**'
+    exclude 'HTTPClient/**'
+    exclude 'loci/**'
+    exclude 'ncsa/**'
+    exclude 'nom/**'
+    exclude 'ucar/**'
+
+  }
+
+  // Iterate over the contents of a tree
+  filtered.each {File file ->
+    println file
+  }
+
+} */
 
 dependencies {
   compile project(':cdm')
-  compile 'edu.wisc.ssec:visad:2.0-20120411'
+  // compile 'edu.wisc.ssec:visad:2.0-20120411'
+  compile files('../lib/external/visad.jar')
 }

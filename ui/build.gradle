@@ -11,9 +11,41 @@ dependencies {
   compile project(':opendap')
   compile project(':visad')
   compile 'com.jgoodies:forms:1.0.7'
-  compile 'jfree:jcommon:1.0.15'
-  compile 'jfree:jfreechart:1.0.13'
+  compile 'jfree:jcommon:1.0.15'   // 17
+  compile 'jfree:jfreechart:1.0.13'    // 14
   compile 'lucene:lucene:1.4.3'
   compile 'org.bounce:bounce:0.14'
   compile 'org.springframework:spring-context:3.1.1.RELEASE'
+}
+
+workDir = "build/signed"
+
+task copyAndSign() << {
+  ant.delete(dir:workDir)
+  ant.mkdir(dir:workDir)
+
+  println "before"
+
+  copyJnlp
+
+  println "after"
+
+  /* for (file in configurations.runtime.resolve()) {
+    println file
+    ant.signjar(destDir:workDir, jar:file, alias:keystoreAlias, keystore:keystore, storepass:keystorePassword,
+              preservelastmodified:"true")
+  }  */
+
+  /* webstartDir = webdir + "/content/software/netcdf-java/v4.3/webstartg"
+  copyTask(type: Copy) {
+      from workDir
+      into webstartDir
+  } */
+}
+
+task copyJnlp(type: Copy) <<  {
+    println "copyJnlp calleed"
+    from 'netCDFtools.jnlp'
+    from 'netCDFtoolsExtraJars.jnlp'
+    into workDir
 }
