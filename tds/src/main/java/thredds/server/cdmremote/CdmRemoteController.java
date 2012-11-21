@@ -141,6 +141,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
         case form: // LOOK could do a ncss style form
         case cdl:
           res.setContentType("text/plain");
+          ncfile.setLocation(path); // hide where the file is stored
           String cdl = ncfile.toString();
           res.setContentLength(cdl.length());
           byte[] b = cdl.getBytes("UTF-8");
