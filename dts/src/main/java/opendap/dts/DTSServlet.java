@@ -390,9 +390,6 @@ public class DTSServlet extends AbstractServlet
       printThrowable(pe);
     }
 
-    //log.debug(pe);
-    //pe.printStackTrace();
-
     try {
       BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
       response.setHeader("Content-Description", "dods-error");
@@ -607,8 +604,8 @@ public class DTSServlet extends AbstractServlet
       OutputStream Out = new BufferedOutputStream(rs.getResponse().getOutputStream());
 
       DAS myDAS = ds.getDAS();
-      myDAS.print(Out);
       rs.getResponse().setStatus(HttpServletResponse.SC_OK);
+      myDAS.print(Out);
       if(Debug.isSet("showResponse")) {
         log.debug("DAS=\n");
         myDAS.print(System.out);

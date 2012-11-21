@@ -6,18 +6,28 @@
   <display-name>DTS OPeNDAP Test Server</display-name>
 
   <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>/WEB-INF/log4j.xml</param-value>
+  </context-param>
+  <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>dts.root</param-value>
+  </context-param>
+  <context-param>
     <param-name>ContextPath</param-name>
     <param-value>/dts</param-value>
   </context-param>
   <!-- Turn on some more targeted debugging. -->
+<!--
   <context-param>
     <param-name>DebugOn</param-name>
     <param-value> </param-value>
   </context-param>
+-->
 
   <servlet>
     <servlet-name>dts</servlet-name>
-    <servlet-class>opendap.test.dts.DTSServlet</servlet-class>
+    <servlet-class>opendap.dts.DTSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
 
     <!-- The following directory paths should be
