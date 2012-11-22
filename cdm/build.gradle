@@ -22,7 +22,9 @@ dependencies {
   compile 'net.jcip:jcip-annotations:1.0'
   compile 'net.sf.ehcache:ehcache:1.6.0'
   compile 'org.jdom:jdom:1.1'
-  compile 'org.quartz-scheduler:quartz:2.1.5'
+  compile ('org.quartz-scheduler:quartz:2.1.5') {   // eliminate c3p0
+    transitive = false
+  }
   compile 'org.slf4j:slf4j-api:1.6.4'
   testCompile group: 'junit', name: 'junit', version: '4.8.2'
   testCompile 'org.slf4j:slf4j-jdk14:1.6.4'

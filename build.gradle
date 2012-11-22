@@ -15,15 +15,28 @@ subprojects {
     manifest {
       attributes 'Implementation-Version': version,
               'Implementation-Vendor': 'UCAR/Unidata',
-              'Implementation-Vendor-Id': 'edu.ucar'
+              'Implementation-Vendor-Id': 'edu.ucar',
+              'Built-On': new Date()
     }
   }
 
-  uploadArchives {
+  /* uploadArchives {
     repositories {
       flatDir {
         dirs 'repos'
       }
     }
+  } */
+
+  // import fatJar
+  buildscript {
+      repositories {
+          mavenCentral()
+      }
+
+      dependencies {
+          classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
+      }
   }
+
 }
