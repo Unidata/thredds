@@ -70,7 +70,7 @@ static public boolean getAllowSelfSigned()
 static public void set(String key, String value)
 {
     // TODO: think about the rc properties naming hierarchy
-    assert(key != null && value != null);
+    assert(key != null);
     if("ucar.nc2.cdm.usegroups".equals(key)) {
         useGroups = booleanize(value);
     } else if("ucar.nc2.net.verifyserver".equals(key)) {
@@ -86,7 +86,7 @@ booleanize(String value)
     // canonical boolean values
     if(value == null || "0".equals(value) || "false".equalsIgnoreCase(value))
         return false;
-    if("1".equals(value) || "true".equalsIgnoreCase(value))
+    if(value.length() == 0 || "1".equals(value) || "true".equalsIgnoreCase(value))
         return true;
     return value != null; // any non-null value?
 }
@@ -215,6 +215,7 @@ static synchronized public void initialize()
         initialized = true;
         RC.loadDefaults();
         RC.setWellKnown();
+        RC.loadFromJava();
     }
 }
 
@@ -271,9 +272,10 @@ loadDefaults()
 {
     RC rc0 = new RC();
     String[] locations = new String[] {
-	System.getProperty("user.home"),
-        System.getProperty("user.dir")
-    } ;
+    	System.getProperty("user.home"),
+            System.getProperty("user.dir"),
+        };
+
     boolean found1 = false;
     for(String loc: locations) {
 	if(loc == null) continue;
@@ -287,6 +289,22 @@ loadDefaults()
     if(!found1)
       if(showlog) log.debug("No .rc file found");
     dfaltRC = rc0;
+}
+
+static void
+loadFromJava()
+{
+  String[] flags = new String[] {
+        "ucar.nc2.cdm.usegroups",
+        "ucar.nc2.net.verifyserver",
+        "ucar.nc2.net.allowselfsigned"
+        };
+  for(String flag: flags) {
+      String value = System.getProperty(flag);
+      if(value != null) {
+          set(flag,value);
+      }
+  }
 }
 
 static RC getDefault()

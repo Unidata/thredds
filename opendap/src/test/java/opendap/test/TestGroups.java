@@ -113,7 +113,7 @@ public class TestGroups extends UnitTestCommon
       System.out.println("url: " + result.url);
       boolean pass = process1(result);
       if (!pass) {
-        //assertTrue("Testing " + result.title, pass);
+        assertTrue("Testing " + result.title, pass);
       }
     }
   }
