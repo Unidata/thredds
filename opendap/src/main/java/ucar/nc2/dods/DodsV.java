@@ -515,6 +515,30 @@ class DodsV implements Comparable {
     return dodsV;
   }
 
+  // Additions to help support RC.getUseGroups
+    /**
+     * Return number of children
+     * @return |children|
+     */
+    int getChildCount()
+    {
+        return children.size();
+    }
+
+    /**
+     * Return a child by index
+     * @param index return index'th child
+     * @return index'th child or null if index is too large
+     */
+    DodsV findByIndex(int index)
+    {
+        if(children.size() <= index) return null;
+        return children.get(index);
+    }
+
+    public BaseType getBaseType() {return bt;}
+
+
   private static void doit(String urlName) throws IOException, DAP2Exception, ParseException {
     System.out.println("DODSV read ="+urlName);
     DConnect2 dodsConnection = new DConnect2(urlName, true);

@@ -50,7 +50,7 @@ import net.jcip.annotations.Immutable;
 
 @Immutable
 public class Attribute {
-  private final String name;
+  private String name;
   private String svalue; // optimization for common case of String valued attribute
   private DataType dataType;
   private int nelems; // can be 0 or greater
@@ -65,7 +65,15 @@ public class Attribute {
   public String getName() {
     return name;
   }
-
+  /**
+   * Set the name of this Attribute.
+   * Attribute names are unique within a NetcdfFile's global set, and within a Variable's set.
+   *
+   * @param name
+   */
+  public synchronized void setName(String name) {
+      this.name = name;
+  }
   /**
    * Get the data type of the Attribute value.
    *

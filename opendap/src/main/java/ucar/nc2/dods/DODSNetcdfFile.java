@@ -73,6 +73,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   static public boolean debugCached = false;
   static public boolean debugOpenTime = false;
 
+  // Define a utility class to decompse names
+  private static class NamePieces
+  {
+      String prefix = null;
+      String var = null;
+      String name = null;
+  }
+
   /**
    * Set whether to allow sessions by allowing cookies. This only affects requests to the TDS.
    * Setting this to true can eliminate consistency problems for datasets that are being updated.
@@ -285,8 +293,17 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     if (cancelTask != null && cancelTask.isCancel()) return;
     finish();
 
-    parseGlobalAttributes(das, rootDodsV);
+    parseGlobalAttributes(das, rootDodsV, this);
     if (cancelTask != null && cancelTask.isCancel()) return;
+
+    if(RC.getUseGroups()) {
+        try {
+            reGroup();
+        } catch (DAP2Exception dodsE) {
+            dodsE.printStackTrace(System.err);
+            throw new IOException(dodsE);
+        }
+    }
 
     /* look for coordinate variables
     for (Variable v : variables) {
@@ -493,7 +510,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     }
   } */
 
-  private void parseGlobalAttributes(DAS das, DodsV root) {
+  private void parseGlobalAttributes(DAS das, DodsV root, DODSNetcdfFile dodsfile) {
 
     List<DODSAttribute> atts = root.attributes;
     for (DODSAttribute ncatt : atts) {
@@ -545,6 +562,141 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         addAttributes(attTable.getName(), attTable);
       } */
     }
+  }
+
+  protected void reGroup()
+    throws opendap.dap.DAP2Exception
+  {
+      assert(RC.getUseGroups());
+      Group rootgroup = this.getRootGroup();
+
+      // Start by moving global attributes
+      // An issue to be addressed is that some attributes that should be attached
+      // to variables, instead get made global with name var.att.
+      Object[] gattlist = rootgroup.getAttributes().toArray();
+      for(Object att: gattlist) {
+        DODSAttribute ncatt = (DODSAttribute) att;
+      	String aname = ncatt.getName();
+        NamePieces pieces = parseName(aname);
+        if(pieces.var != null) { // Figure out which variable to which this should be moved
+            // Locate the varname; should be in variables because we have not
+            // processed variable names yet.
+            String searchname = pieces.var;
+            if(pieces.prefix != null) searchname = pieces.prefix + '/' + searchname;
+            Variable v = rootgroup.findVariable(searchname);
+            if(v == null)
+                throw new DAP2Exception("Internal error: cannot find variable:"+pieces.var);
+            // move attribute
+            rootgroup.remove(ncatt);
+            v.addAttribute(ncatt);
+            // change attribute name
+            String newname = pieces.name;
+            if(pieces.prefix != null) newname = pieces.prefix + '/' + pieces.name;
+            ncatt.setName(newname);
+            continue;
+        }
+        // We have a true global name to move to proper group
+      	if(pieces.prefix != null) {
+      	    // convert prefix to an actual group
+            Group g = rootgroup.makeRelativeGroup(this,aname,true);
+            rootgroup.remove(ncatt);
+            g.addAttribute(ncatt);
+            ncatt.setName(pieces.name);
+      	}
+      }
+
+      // Now move variables
+      Object[] varlist = rootgroup.getVariables().toArray();
+      for(Object var: varlist) {
+        DODSVariable ncvar = (DODSVariable) var;
+        String vname = ncvar.getShortName();
+        NamePieces pieces = parseName(vname);
+        if(pieces.prefix != null) {
+          // convert prefix to an actual group
+          Group gnew = rootgroup.makeRelativeGroup(this,vname,true);
+          // Get current group for the variable
+          Group gold = ncvar.getParentGroup();
+          if(gnew != gold) {
+            gold.remove(ncvar);
+            ncvar.setParentGroup(gnew);
+            gnew.addVariable(ncvar);
+            ncvar.setName(pieces.name);
+          }
+        }
+      }
+
+      // In theory, we should be able to fix variable attributes
+      // by just removing the group prefix. However, their is the issue
+      // that attribute names have as a suffix, sometimes, varname.attname,
+      // So, we should use that to adjust the attribute to attach to that
+      // variable.
+      for(Object var: varlist) {
+        DODSVariable ncvar = (DODSVariable) var;
+        String vname = ncvar.getShortName();
+        Object[] attlist = ncvar.getAttributes().toArray();
+        Group vgroup = ncvar.getParentGroup();
+        for(Object att: attlist) {
+            DODSAttribute ncatt = (DODSAttribute)att;
+            String aname = ncatt.getName();
+            NamePieces pieces = parseName(aname);
+            Group agroup = null;
+            if(pieces.prefix != null) {
+              // convert prefix to an actual group
+              agroup = rootgroup.makeRelativeGroup(this,aname,true);
+            } else
+              agroup = vgroup;
+            // If the attribute group is different from the variable group,
+            // then we have some kind of inconsistency; presumably from
+            // the original dds+das
+            if(agroup != vgroup)
+                throw new DAP2Exception("Attribute group versus Variable group mismatch: "
+                                         +agroup.getName()+"::"+vgroup.getName());
+            if(pieces.var != null && !pieces.var.equals(vname)) {
+                // move the attribute to the correct variable
+                DODSVariable newvar = (DODSVariable)agroup.findVariable(pieces.var);
+                if(newvar == null)
+                  throw new DAP2Exception("Variable in attribute name does not exist in group: "+aname);
+                // move the attribute
+                newvar.addAttribute(ncatt);
+                ncvar.remove(ncatt);
+            }
+            if(pieces.prefix != null) {// rename the attribute
+                 // Rename the attribute to its shortname
+                 ncatt.setName(pieces.name);
+            }
+        }
+      }
+  }
+
+  // Utility to decompose a name
+  NamePieces parseName(String name)
+  {
+      NamePieces pieces = new NamePieces();
+      int dotpos = name.lastIndexOf('.');
+      int slashpos = name.lastIndexOf('/');
+      if(slashpos < 0 && dotpos < 0) {
+          pieces.name = name;
+      } else if(slashpos >=0 && dotpos < 0) {
+          pieces.prefix = name.substring(0,slashpos);
+          pieces.name = name.substring(slashpos+1,name.length());
+      } else if(slashpos < 0 && dotpos >= 0) {
+          pieces.var = name.substring(0,dotpos);
+          pieces.name = name.substring(dotpos+1,name.length());
+      } else {//slashpos >= 0 && dotpos >= 0)
+          if(slashpos > dotpos) {
+              pieces.prefix = name.substring(0,slashpos);
+              pieces.name = name.substring(slashpos+1,name.length());
+          } else {//slashpos < dotpos)
+              pieces.prefix = name.substring(0,slashpos);
+              pieces.var = name.substring(slashpos+1,dotpos);
+              pieces.name = name.substring(dotpos+1,name.length());
+          }
+      }
+      // fixup
+      if(pieces.prefix != null && pieces.prefix.length()==0) pieces.prefix = null;
+      if(pieces.var != null && pieces.var.length()==0) pieces.var = null;
+      if(pieces.name != null && pieces.name.length()==0) pieces.name = null;
+      return pieces;
   }
 
   ///////////////////////////////////////////////////////////////////
@@ -631,6 +783,34 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     // then do the grids
     for (DodsV dodsV : topVariables) {
       if (dodsV.isDone) continue;
+      // If using groups, then if the grid does not have a group name
+      // and its array does, then transfer the group name.
+      if(RC.getUseGroups() && dodsV.bt instanceof DGrid) {
+          DodsV array = dodsV.findByIndex(0);
+          if(array != null) {
+              String arrayname = array.getClearName();
+              String gridname = dodsV.getClearName();
+              int ai = arrayname.lastIndexOf('/');
+              int gi = gridname.lastIndexOf('/');
+              if(gi >= 0 && ai < 0) {
+                String gpath = gridname.substring(0,gi);
+                arrayname = gpath + "/" + arrayname;
+                array.getBaseType().setClearName(arrayname);
+              } else if(gi < 0 && ai >= 0) {
+                  String apath = arrayname.substring(0,ai);
+                  gridname = apath + "/" + gridname;
+                  dodsV.getBaseType().setClearName(gridname);
+              } else if(gi >= 0 && ai >= 0) {
+                  String apath = arrayname.substring(0,ai);
+                  String gpath = gridname.substring(0,gi);
+                  if(gpath != apath) {// choose gridpath over the array path
+                      String arraysuffix = arrayname.substring(gi+1,arrayname.length());
+                      arrayname = gpath + "/" + arraysuffix;
+                      array.getBaseType().setClearName(arrayname);
+                  }
+              }  // else gi < 0 && ai < 0
+          }
+      }
       addVariable(rootGroup, null, dodsV);
       if (cancelTask != null && cancelTask.isCancel()) return;
     }
@@ -657,11 +837,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   {
       if(parentGroup == null)
           parentGroup = getRootGroup();
-      if(RC.getUseGroups()) {
+      if(false && RC.getUseGroups()) {   // see if reGroup can do this
           // If the shortname has '/' in it, then we need to insert
           // this variable into the proper group and rename it. However,
           // if this variable is within a structure, we cannot do it.
           if(v.getParentStructure() == null)  {
+              // HACK: Since only the array is substituted for the Grid in converting
+              // to netcdf-3, we look for group info on the array.
               String name = v.getShortName();
               int sindex = name.indexOf('/');
               if(sindex >= 0) {
