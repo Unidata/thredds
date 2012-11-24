@@ -43,7 +43,7 @@ ext {
   webstartDir = webdir + "webstart"
 }
 
-fatJar {
+fatJar {  // does not inherit from parent jar
   archiveName = toolsUIjar
   manifest {
     attributes 'Implementation-Title': toolsUIjar,
@@ -53,7 +53,7 @@ fatJar {
      'Built-On': new Date(),
      'Main-Class': 'ucar.nc2.ui.ToolsUI'
   }
-  exclude 'DATE'
+  exclude 'DATE'    // crap from other packages
   exclude 'JDOM*'
   exclude '*.html'
   exclude 'META-INF/*.DSA'
@@ -63,10 +63,6 @@ fatJar {
   exclude 'META-INF/INDEX.LIST'
   exclude 'META-INF/LICENSE*'
   exclude 'META-INF/NOTICE'
-}
-
-task myJavadocs(type: Javadoc) {
-  source = sourceSets.main.allJava
 }
 
 task releaseWebstart << {
@@ -110,12 +106,36 @@ task releaseWebstart << {
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
-//task releaseCdm(dependsOn: ['fatJar', 'releaseWebstart']) << {
-task releaseCdm(dependsOn: ['fatJar']) << {
+task releaseCdm(dependsOn: ['fatJar', 'releaseWebstart']) << {
   println "copy " + toolsUIjar + " to " + ftpdir
-  copy {
+  copy { // does not give error message
     from 'build/libs/' + toolsUIjar
     into ftpdir
+  }
+}
+
+///////////////////////////////////////////////////////
+
+javadoc {
+  source = fileTree(dir: '../bufr/src/main/java', include: '**/*.java')
+  source = source.plus(fileTree(dir: '../cdm/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../grib/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../opendap/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../udunits/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../ui/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../visad/src/main/java', include: '**/*.java'))
+}
+
+task releaseDocs(dependsOn: javadoc) << {
+  releaseDir = webdir + "javadocAll"
+
+  ant.delete(dir: releaseDir)
+  ant.mkdir(dir: releaseDir)
+
+  copy {
+    println "copyDocs to " + releaseDir
+    from("build/docs/javadoc")
+    into releaseDir
   }
 }
 
