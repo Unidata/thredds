@@ -117,6 +117,7 @@ task releaseCdm(dependsOn: ['fatJar', 'releaseWebstart']) << {
 ///////////////////////////////////////////////////////
 
 javadoc {
+  title = 'All javadoc for netcdf-java version ' + version
   source = fileTree(dir: '../bufr/src/main/java', include: '**/*.java')
   source = source.plus(fileTree(dir: '../cdm/src/main/java', include: '**/*.java'))
   source = source.plus(fileTree(dir: '../grib/src/main/java', include: '**/*.java'))

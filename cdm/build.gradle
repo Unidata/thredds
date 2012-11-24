@@ -32,6 +32,7 @@ dependencies {
 }
 
 javadoc {
+  title = 'Public javadoc for netcdf-java version ' + version
   source = fileTree(dir: 'src/main/java').matching {
     include 'thredds/catalog/*.java'
     include 'ucar/ma2/*.java'
