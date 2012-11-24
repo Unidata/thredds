@@ -51,10 +51,15 @@ static public org.slf4j.Logger log
 //////////////////////////////////////////////////
 // Predefined flags
 // To add a new flag:
-// 1. Define the protected static field with default value
-// 2. Define a get function
-// 3. Add an arm to the set function
-// 4. Add any usefull utilities like booleanize()
+// 1. choose a name for the flag
+// 2. Define the protected static field with default value
+// 3. Define a get function
+// 4. Add an arm to the set function
+// 5. Add any usefull utilities like booleanize()
+
+static final public String USEGROUPSKEY = "ucar.nc2.cdm.usegroups";
+static final public String VERIFYSERVERKEY = "ucar.nc2.net.verifyserver";
+static final public String ALLOWSELFSIGNEDKEY = "ucar.nc2.net.allowselfsigned";
 
 static protected boolean useGroups = true;
 static protected boolean verifyServer = false;
@@ -71,11 +76,11 @@ static public void set(String key, String value)
 {
     // TODO: think about the rc properties naming hierarchy
     assert(key != null);
-    if("ucar.nc2.cdm.usegroups".equals(key)) {
+    if(USEGROUPSKEY.equals(key)) {
         useGroups = booleanize(value);
-    } else if("ucar.nc2.net.verifyserver".equals(key)) {
+    } else if(VERIFYSERVERKEY.equals(key)) {
         verifyServer = booleanize(value);
-    } else if("ucar.nc2.net.allowselfsigned".equals(key)) {
+    } else if(ALLOWSELFSIGNEDKEY.equals(key)) {
         allowSelfSigned = booleanize(value);
     }
 }
@@ -295,9 +300,9 @@ static void
 loadFromJava()
 {
   String[] flags = new String[] {
-        "ucar.nc2.cdm.usegroups",
-        "ucar.nc2.net.verifyserver",
-        "ucar.nc2.net.allowselfsigned"
+	USEGROUPSKEY,
+	VERIFYSERVERKEY,
+        ALLOWSELFSIGNEDKEY
         };
   for(String flag: flags) {
       String value = System.getProperty(flag);
