@@ -18,7 +18,6 @@
     <jar href="netcdfUI.jar"/>
     <jar href="bounce.jar"/>
     <jar href="bufr.jar"/>
-    <jar href="c3p0.jar"/>
     <jar href="cdm.jar"/>
     <jar href="commons-codec.jar"/>
     <jar href="commons-httpclient.jar"/>
@@ -35,7 +34,6 @@
     <jar href="jna.jar"/>
     <jar href="joda-time.jar"/>
     <jar href="jsoup.jar"/>
-    <jar href="lucene.jar"/>
     <jar href="opendap.jar"/>
     <jar href="protobuf-java.jar"/>
     <jar href="quartz.jar"/>

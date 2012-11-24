@@ -1,57 +1,94 @@
-jar {
-  manifest {
-    attributes 'Implementation-Title': 'toolsUI'
-  }
+apply plugin: 'fatjar'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/java'
+            exclude 'thredds/ui/catalog/search/**'   // eliminate lucene
+       }
+   }
 }
 
 dependencies {
   compile project(':cdm')
   compile project(':bufr')
   compile project(':grib')
-  compile project(':opendap')
-  compile project(':visad')
-  compile 'com.jgoodies:forms:1.0.7'
-  compile 'jfree:jcommon:1.0.15'   // 17
-  compile 'jfree:jfreechart:1.0.13'    // 14
-  compile 'lucene:lucene:1.4.3'
-  compile 'org.bounce:bounce:0.14'
-  compile 'org.springframework:spring-context:3.1.1.RELEASE'
+  compile (project(':opendap'))  { // eliminate servlet
+      transitive = false
+    }
+  compile (project(':visad')) {   // eliminate original visad.jar
+    transitive = false
+  }
+  compile ('com.jgoodies:forms:1.0.7')
+  compile ('jfree:jcommon:1.0.15')   // 17
+  compile ('jfree:jfreechart:1.0.13') {  // eliminate crap
+    transitive = false
+  }
+  compile ('org.bounce:bounce:0.14')
+  compile ('org.springframework:spring-context:3.1.1.RELEASE')
+  runtime ('org.slf4j:slf4j-jdk14:1.6.4')
 }
 
-/* following properties should be in gradle.properties:
-   keystore=name of keystore file
-   keystoreAlias=idv
-   keystorePassword=password of keystore file
-   webdir:parent of conan content directory
- */
-task releaseWebstart() << {
-  workDir = "build/signed"  // working directory
-  ant.delete(dir: workDir)
-  ant.mkdir(dir: workDir)
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'toolsUI'
+  }
+}
+
+//////////////////////////////////////////////////////////
+
+ext {
+  toolsUIjar = 'toolsUI-'+version+'.jar'
+  webstartWorkingDir = "build/signed"
+  webstartDir = webdir + "webstart"
+}
+
+fatJar {  // does not inherit from parent jar
+  archiveName = toolsUIjar
+  manifest {
+    attributes 'Implementation-Title': toolsUIjar,
+     'Implementation-Version': version,
+     'Implementation-Vendor': 'UCAR/Unidata',
+     'Implementation-Vendor-Id': 'edu.ucar',
+     'Built-On': new Date(),
+     'Main-Class': 'ucar.nc2.ui.ToolsUI'
+  }
+  exclude 'DATE'    // crap from other packages
+  exclude 'JDOM*'
+  exclude '*.html'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.SF'
+  exclude 'META-INF/*.txt'
+  exclude 'META-INF/*.xml'
+  exclude 'META-INF/INDEX.LIST'
+  exclude 'META-INF/LICENSE*'
+  exclude 'META-INF/NOTICE'
+}
+
+task releaseWebstart << {
+  ant.delete(dir: webstartWorkingDir)
+  ant.mkdir(dir: webstartWorkingDir)
 
   copy {
     println "copyJnlp"
     from 'netCDFtools.jnlp'
     from 'netCDFtoolsExtraJars.jnlp'
-    into workDir
+    into webstartWorkingDir
   }
 
   println "signjar"
-  ant.signjar(jar: "build/libs/ui-" + version + ".jar", signedjar: workDir + "/netcdfUI.jar",
+  ant.signjar(jar: "build/libs/ui-" + version + ".jar", signedjar: webstartWorkingDir + "/netcdfUI.jar",
           alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
           preservelastmodified: "true")
   for (file in configurations.runtime.resolve()) {
     println " " + file
-    ant.signjar(destDir: workDir, jar: file, alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
+    ant.signjar(destDir: webstartWorkingDir, jar: file, alias: keystoreAlias, keystore: keystore, storepass: keystorePassword,
             preservelastmodified: "true")
   }
 
-  webstartDir = webdir + "/content/software/netcdf-java/v4.3/webstart"
   copy {
     println "copy2web"
-    from(workDir) {
-      exclude "visad.jar"
-    }
+    from(webstartWorkingDir)
     rename { String fileName ->
       pos = fileName.lastIndexOf('-');
       fileName2 = (pos >= 0) ? fileName.substring(0, pos) + ".jar" : fileName
@@ -62,43 +99,55 @@ task releaseWebstart() << {
   }
 }
 
+/* following properties should be in gradle.properties:
+   keystore=name of keystore file
+   keystoreAlias=idv
+   keystorePassword=password of keystore file
+   webdir:parent of conan content directory
+   ftpdir:ftp directory
+ */
+task releaseCdm(dependsOn: ['fatJar', 'releaseWebstart']) << {
+  println "copy " + toolsUIjar + " to " + ftpdir
+  copy { // does not give error message
+    from 'build/libs/' + toolsUIjar
+    into ftpdir
+  }
+}
 
-task copy2web() << {
-  workDir = "build/signed"  // working directory
-  webstartDir = webdir + "/content/software/netcdf-java/v4.3/webstart"
+///////////////////////////////////////////////////////
+
+javadoc {
+  source = fileTree(dir: '../bufr/src/main/java', include: '**/*.java')
+  source = source.plus(fileTree(dir: '../cdm/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../grib/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../opendap/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../udunits/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../ui/src/main/java', include: '**/*.java'))
+  source = source.plus(fileTree(dir: '../visad/src/main/java', include: '**/*.java'))
+}
+
+task releaseDocs(dependsOn: javadoc) << {
+  releaseDir = webdir + "javadocAll"
+
+  ant.delete(dir: releaseDir)
+  ant.mkdir(dir: releaseDir)
 
   copy {
-    println "copyJnlp"
-    from 'netCDFtools.jnlp'
-    from 'netCDFtoolsExtraJars.jnlp'
-    into webstartDir
-  }
-
-}
-
-/* task testRename() << {
-
-  println workDir
-  work = file(workDir)
-  println work.class
-  collection = files { work.listFiles() }
-
-  for (f in collection) {
-    print f.name
-    fileName = f.name
-    pos = fileName.lastIndexOf('-');
-    String fileName2 = (pos >= 0) ? fileName.substring(0,pos) + ".jar" : fileName
-    print " -> "
-    println fileName2
+    println "copyDocs to " + releaseDir
+    from("build/docs/javadoc")
+    into releaseDir
   }
 }
 
-task testJarname() << {
-  //println Project.path
-  println name
-  println Project.name
-  println version
-}    */
+///////////////////////////////////////////////////////
+
+task showDependencies << {
+  for (file in configurations.runtime.resolve()) {
+     println " " + file
+   }
+}
+
+
 
 
 
