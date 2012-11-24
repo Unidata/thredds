@@ -59,7 +59,6 @@ public class TestDatasetEnhancer1
     InvDatasetImpl dataset = new InvDatasetImpl( null, "2005061512_NAM.wmo" );
     adder.addMetadata( dataset);
 
-    // Date text <2005-06-15 12:00:00Z> not as expected <2005-06-15T12:00:00>
     String expectedDateText = "2005-06-15T12:00:00";
     String dateText = dataset.getTimeCoverage().getStart().getText();
     assertTrue( "Date text <" + dateText + "> not as expected <" + expectedDateText + ">.",
