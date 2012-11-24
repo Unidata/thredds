@@ -33,19 +33,19 @@
 package ucar.nc2.iosp.adde;
 
 import ucar.ma2.*;
-import ucar.nc2.dt.image.ImageArrayAdapter;
+//import ucar.nc2.dt.image.ImageArrayAdapter;
 import java.util.*;
 
 public class AddeImage {
   private static int initialCapacity = 100;
-  private static LinkedHashMap hash = new LinkedHashMap(initialCapacity, 0.75f, true); // LRU cache
+  private static Map<String, AddeImage> hash = new LinkedHashMap<String, AddeImage>(initialCapacity, 0.75f, true); // LRU cache
   private static double memUsed = 0.0; // bytes
   private static int maxCacheSize = 30; // MB
   private static boolean debugCache = false;
 
-  public static AddeImage factory( String urlName) throws java.io.IOException, java.net.MalformedURLException {
+  public static AddeImage factory( String urlName) throws java.io.IOException {
     //debugCache = Debug.isSet("ADDE/AddeImage/ShowCache");
-    AddeImage image = (AddeImage) hash.get( urlName);
+    AddeImage image = hash.get( urlName);
     if (image == null) {
       if (debugCache) System.out.println("ADDE/AddeImage/ShowCache: cache miss "+urlName);
       image = new AddeImage( urlName);
@@ -82,15 +82,14 @@ public class AddeImage {
 
   private String urlName;
   private int nelems = 0, nlines = 0;
-  private java.awt.image.BufferedImage image = null;
+  // private java.awt.image.BufferedImage image = null;
   private Array ma;
-  private boolean debug = false;
 
   public AddeImage( String urlName) throws java.io.IOException, java.net.MalformedURLException {
     this.urlName = urlName;
 
     long timeStart = System.currentTimeMillis();
-    debug = false; // Debug.isSet("ADDE/AddeImage/MA");
+    boolean debug = false;
 
     AreaFile3 areaFile2 = new AreaFile3( urlName);
     ma = areaFile2.getData();
@@ -121,12 +120,12 @@ public class AddeImage {
     return new java.awt.Dimension(nelems, nlines);
   }
 
-  public java.awt.image.BufferedImage getImage() {
+  /* public java.awt.image.BufferedImage getImage() {
     if (image == null) {
       image = ImageArrayAdapter.makeGrayscaleImage( ma);
     }
     return image;
-  }
+  } */
 
   public String getName() {
     return urlName;
@@ -153,17 +152,6 @@ public class AddeImage {
     g.clearRect(0, 0, bounds.width, bounds.height);
     g.dispose();
   } */
-
-
-
-  private class LRUCache extends java.util.LinkedHashMap {
-    public LRUCache(int maxsize) {
-	    super(maxsize*4/3 + 1, 0.75f, true);
-	    this.maxsize = maxsize;
-    }
-    protected int maxsize;
-    protected boolean removeEldestEntry() { return size() > maxsize; }
-  }
 
 
 }
