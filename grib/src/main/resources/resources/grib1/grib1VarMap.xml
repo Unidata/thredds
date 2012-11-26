@@ -48,8 +48,8 @@
   </dataset>
   <dataset name="GFS_CONUS_80km_20100513_0600.grib1">
     <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_7-0-2-41_L100" />
-    <param oldName="Convective_Available_Potential_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
-    <param oldName="Convective_Available_Potential_Energy_surface" newName="Convective_Available_Potential_Energy_surface" varId="VAR_7-0-2-157_L1" />
+    <param oldName="Convective_Avail_Pot_Energy" newName="Convective_Available_Potential_Energy_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-157_L116_layer" />
+    <param oldName="Convective_Avail_Pot_Energy_surface" newName="Convective_Available_Potential_Energy_surface" varId="VAR_7-0-2-157_L1" />
     <param oldName="Convective_inhibition" newName="Convective_inhibition_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-156_L116_layer" />
     <param oldName="Convective_inhibition_surface" newName="Convective_inhibition_surface" varId="VAR_7-0-2-156_L1" />
     <param oldName="Geopotential_height" newName="Geopotential_height_isobaric" varId="VAR_7-0-2-7_L100" />
@@ -69,7 +69,7 @@
     <param oldName="Temperature_tropopause" newName="Temperature_tropopause" varId="VAR_7-0-2-11_L7" />
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-61_L1_Imixed_S4" />
     <param oldName="Vertical_speed_shear" newName="Vertical_speed_shear_tropopause" varId="VAR_7-0-2-136_L7" />
-    <param oldName="Vertical_velocity_pressure" newName="Vertical_velocity_pressure_isobaric" varId="VAR_7-0-2-39_L100" />
+    <param oldName="Pressure_vertical_velocity" newName="Vertical_velocity_pressure_isobaric" varId="VAR_7-0-2-39_L100" />
     <param oldName="u-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_7-0-2-33_L100" />
     <param oldName="u-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_7-0-2-33_L105" />
     <param oldName="u-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="u-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-33_L116_layer" />
