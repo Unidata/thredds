@@ -2216,8 +2216,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public void updateAttribute(Variable v2, Attribute att) throws IOException {
-    Vinfo vinfo = (Vinfo) v2.getSPobject();
-    writeAttribute(vinfo.grpid, vinfo.varid, att, v2);
+    if (v2 == null)
+      writeAttribute(ncid, Nc4prototypes.NC_GLOBAL, att, null);
+    else {
+      Vinfo vinfo = (Vinfo) v2.getSPobject();
+      writeAttribute(vinfo.grpid, vinfo.varid, att, v2);
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////
