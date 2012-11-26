@@ -1,0 +1,75 @@
+apply plugin: 'fatjar'
+
+dependencies {
+  compile project(':cdm')
+  compile project(':bufr')
+  compile project(':grib')
+  compile (project(':opendap'))  { // eliminate servlet
+      transitive = false
+    }
+  compile (project(':visad')) {   // eliminate original visad.jar
+    transitive = false
+  }
+  runtime ('org.slf4j:slf4j-jdk14:1.6.4')
+}
+
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'toolsUI'
+  }
+}
+
+//////////////////////////////////////////////////////////
+
+ext {
+  ncIdvJar = 'ncIdv-'+version+'.jar'
+  webstartWorkingDir = "build/signed"
+  webstartDir = webdir + "webstart"
+}
+
+fatJar {  // does not inherit from parent jar
+  archiveName = ncIdvJar
+  manifest {
+    attributes 'Implementation-Title': ncIdvJar,
+     'Implementation-Version': version,
+     'Implementation-Vendor': 'UCAR/Unidata',
+     'Implementation-Vendor-Id': 'edu.ucar',
+     'Built-On': new Date()
+  }
+  exclude 'DATE'    // crap from other packages
+  exclude 'JDOM*'
+  exclude '*.html'
+  exclude 'META-INF/*.txt'
+  exclude 'META-INF/*.xml'
+  exclude 'nom/**'
+  exclude 'edu/wisc/**'
+  exclude 'visad/**'
+}
+
+/* following properties should be in gradle.properties:
+   keystore=name of keystore file
+   keystoreAlias=idv
+   keystorePassword=password of keystore file
+   webdir:parent of conan content directory
+   ftpdir:ftp directory
+ */
+task releaseCdm(dependsOn: ['fatJar']) << {
+  println "copy " + ncIdvJar + " to " + ftpdir
+  copy { // does not give error message
+    from 'build/libs/' + ncIdvJar
+    into ftpdir
+  }
+}
+
+///////////////////////////////////////////////////////
+
+task showDependencies << {
+  for (file in configurations.runtime.resolve()) {
+     println " " + file
+   }
+}
+
+
+
+
+

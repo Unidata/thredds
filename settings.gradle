@@ -1,1 +1,1 @@
-include 'udunits', 'cdm', 'bufr', 'grib', 'opendap', 'visad', 'ui'
+include 'udunits', 'cdm', 'bufr', 'grib', 'opendap', 'visad', 'ui', 'release'
