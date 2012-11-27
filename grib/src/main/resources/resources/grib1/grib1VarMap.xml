@@ -70,14 +70,14 @@
     <param oldName="Total_precipitation" newName="Total_precipitation_surface_Mixed_intervals_Accumulation" varId="VAR_7-0-2-61_L1_Imixed_S4" />
     <param oldName="Vertical_speed_shear" newName="Vertical_speed_shear_tropopause" varId="VAR_7-0-2-136_L7" />
     <param oldName="Pressure_vertical_velocity" newName="Vertical_velocity_pressure_isobaric" varId="VAR_7-0-2-39_L100" />
-    <param oldName="u-component_of_wind" newName="u-component_of_wind_isobaric" varId="VAR_7-0-2-33_L100" />
-    <param oldName="u-component_of_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_7-0-2-33_L105" />
-    <param oldName="u-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="u-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-33_L116_layer" />
-    <param oldName="u-component_of_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_7-0-2-33_L7" />
-    <param oldName="v-component_of_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
-    <param oldName="v-component_of_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_7-0-2-34_L105" />
-    <param oldName="v-component_of_wind_layer_between_two_pressure_difference_from_ground" newName="v-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-34_L116_layer" />
-    <param oldName="v-component_of_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_7-0-2-34_L7" />
+    <param oldName="u_wind" newName="u-component_of_wind_isobaric" varId="VAR_7-0-2-33_L100" />
+    <param oldName="u_wind_height_above_ground" newName="u-component_of_wind_height_above_ground" varId="VAR_7-0-2-33_L105" />
+    <param oldName="u_wind_layer_between_two_pressure_difference_from_ground" newName="u-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-33_L116_layer" />
+    <param oldName="u_wind_tropopause" newName="u-component_of_wind_tropopause" varId="VAR_7-0-2-33_L7" />
+    <param oldName="v_wind" newName="v-component_of_wind_isobaric" varId="VAR_7-0-2-34_L100" />
+    <param oldName="v_wind_height_above_ground" newName="v-component_of_wind_height_above_ground" varId="VAR_7-0-2-34_L105" />
+    <param oldName="v_wind_layer_between_two_pressure_difference_from_ground" newName="v-component_of_wind_layer_between_two_pressure_difference_from_ground_layer" varId="VAR_7-0-2-34_L116_layer" />
+    <param oldName="v_wind_tropopause" newName="v-component_of_wind_tropopause" varId="VAR_7-0-2-34_L7" />
   </dataset>
   <dataset name="GFS_CONUS_95km_20100506_0600.grib1">
     <param oldName="Absolute_vorticity" newName="Absolute_vorticity_isobaric" varId="VAR_7-0-2-41_L100" />
