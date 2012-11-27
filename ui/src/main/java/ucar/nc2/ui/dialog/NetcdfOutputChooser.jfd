@@ -9,8 +9,8 @@ new FormModel {
 				name: "dialogPane"
 				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
-					"$horizontalGroup": "par l {seq {par l {seq {comp label1:::p::p, space :::p, comp outputFilename::::466:x}, seq {comp label2:::p::p, space u:::p, comp netcdfVersion:::p:243:p, space :0:222:x}}, space :::p}}"
-					"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp outputFilename::b:p::p}, space s:::p, par b {comp label2::b:p::p, comp netcdfVersion::b:p::p}, space ::28:x}}"
+					"$horizontalGroup": "par l {seq {par l {seq {comp label1:::p::p, space :::p, comp outputFilename::::466:x}, seq {par l {seq {space :p:18:p, comp label2:::p::p, space u:::p, comp netcdfVersion:::p:243:p}, seq l {space :p:33:p, comp panel1:::p:383:p}}, space :0:143:x}}, space :::p}}"
+					"$verticalGroup": "par l {seq l {space :::p, par b {comp label1::b:p::p, comp outputFilename::b:p::p}, space s:::p, par b {comp label2::b:p::p, comp netcdfVersion::b:p::p}, space s:::p, comp panel1:::p:86:p, space ::14:x}}"
 				} ) {
 					name: "contentPanel"
 					add( new FormComponent( "javax.swing.JLabel" ) {
@@ -29,6 +29,40 @@ new FormModel {
 						auxiliary() {
 							"JavaCodeGenerator.customCreateCode": "new JComboBox(NetcdfFileWriter.Version.values());"
 						}
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+						"$columnSpecs": "0, 0:1.0"
+						"$rowSpecs": "0, 0, 0:1.0"
+						"$alignTop": true
+						"$alignLeft": true
+					} ) {
+						name: "panel1"
+						"border": new javax.swing.border.TitledBorder( null, "netCDF4 options", 2, 0 )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label3"
+							"text": "Chunking:"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "chunking"
+							auxiliary() {
+								"JavaCodeGenerator.customCreateCode": "new JComboBox(Nc4Chunking.Standard.values());"
+							}
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "deflate"
+							"text": "deflate"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridy": 1
+						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "shuffle"
+							"text": "shuffle"
+						}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+							"gridx": 1
+							"gridy": 1
+						} )
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "Center"
@@ -64,7 +98,7 @@ new FormModel {
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 605, 195 )
+			"size": new java.awt.Dimension( 605, 285 )
 		} )
 	}
 }

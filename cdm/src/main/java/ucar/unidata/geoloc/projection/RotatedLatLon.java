@@ -97,11 +97,11 @@ public class RotatedLatLon extends ProjectionImpl {
     addParameter(GRID_SOUTH_POLE_ANGLE, southPoleAngle);
   }
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new RotatedLatLon(latpole, lonpole, polerotate);
+    ProjectionImpl result =  new RotatedLatLon(latpole, lonpole, polerotate);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

@@ -1282,11 +1282,12 @@ public class H5header {
     if (vinfo.isChunked) {// make the data btree, but entries are not read in
       vinfo.btree = new DataBTree(this, dataAddress, v.getShape(), vinfo.storageSize);
 
-      // add an attribute describing the chunk size
-      List<Integer> chunksize = new ArrayList<Integer>();
-      for (int i=0; i<vinfo.storageSize.length-1; i++)  // skip last one - its the element size
-        chunksize.add(vinfo.storageSize[i]);
-      v.addAttribute(new Attribute(CDM.CHUNK_SIZE, chunksize));
+      if (vinfo.isChunked) {  // add an attribute describing the chunk size
+        List<Integer> chunksize = new ArrayList<Integer>();
+        for (int i=0; i<vinfo.storageSize.length-1; i++)  // skip last one - its the element size
+          chunksize.add(vinfo.storageSize[i]);
+        v.addAttribute(new Attribute(CDM.CHUNK_SIZE, chunksize));
+      }
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference

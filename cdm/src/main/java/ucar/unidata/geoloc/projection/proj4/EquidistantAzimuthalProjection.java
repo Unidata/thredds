@@ -87,7 +87,9 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    return new EquidistantAzimuthalProjection(lat0, lon0, falseEasting, falseNorthing, earth);
+    ProjectionImpl result = new EquidistantAzimuthalProjection(lat0, lon0, falseEasting, falseNorthing, earth);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   private void initialize() {

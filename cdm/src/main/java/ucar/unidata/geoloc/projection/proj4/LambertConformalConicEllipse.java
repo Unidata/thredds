@@ -71,12 +71,12 @@ public class LambertConformalConicEllipse extends ProjectionImpl {
   // spherical vs ellipsoidal
   private boolean isSpherical;
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new LambertConformalConicEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
+    ProjectionImpl result =  new LambertConformalConicEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
             getFalseEasting(), getFalseNorthing(), getEarth());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

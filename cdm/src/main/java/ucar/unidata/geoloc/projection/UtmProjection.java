@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -33,6 +33,7 @@
 package ucar.unidata.geoloc.projection;
 
 import ucar.nc2.constants.CF;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 
 /**
@@ -70,11 +71,11 @@ public class UtmProjection extends ProjectionImpl {
 
   private SaveParams save = null; // needed for constructCopy
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return (save == null) ? new UtmProjection(getZone(), isNorth()) : new UtmProjection(save.a, save.f, getZone(), isNorth());
+    ProjectionImpl result = (save == null) ? new UtmProjection(getZone(), isNorth()) : new UtmProjection(save.a, save.f, getZone(), isNorth());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**
@@ -125,7 +126,7 @@ public class UtmProjection extends ProjectionImpl {
   /**
    * Get the zone number = [1,60]
    *
-   * @return _more_
+   * @return zone number
    */
   public int getZone() {
     return convert2latlon.getZone();
@@ -134,7 +135,7 @@ public class UtmProjection extends ProjectionImpl {
   /**
    * Get whether in North or South Hemisphere.
    *
-   * @return _more_
+   * @return true if north
    */
   public boolean isNorth() {
     return convert2latlon.isNorth();
@@ -155,7 +156,7 @@ public class UtmProjection extends ProjectionImpl {
    */
   public double getCentralMeridian() {
     return convert2xy.getCentralMeridian();
-  } 
+  }
 
   /**
    * Get the parameters as a String
@@ -189,7 +190,7 @@ public class UtmProjection extends ProjectionImpl {
     }
 
     UtmProjection op = (UtmProjection) proj;
-    return op.getZone() == getZone(); // LOOK
+    return op.getZone() == getZone();
   }
 
 
@@ -200,47 +201,36 @@ public class UtmProjection extends ProjectionImpl {
    * @param result the object to write to
    * @return the given result
    */
-  public ProjectionPoint latLonToProj(LatLonPoint latLon,
-                                      ProjectionPointImpl result) {
+  public ProjectionPoint latLonToProj(LatLonPoint latLon, ProjectionPointImpl result) {
     double fromLat = latLon.getLatitude();
     double fromLon = latLon.getLongitude();
 
     return convert2xy.latLonToProj(fromLat, fromLon, result);
   }
 
-  public double[][] latLonToProj(double[][] from, double[][] to,
-                                 int latIndex, int lonIndex) {
+  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
     if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
-              + "null array argument or wrong dimension (from)");
+      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:null array argument or wrong dimension (from)");
     }
     if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
-              + "null array argument or wrong dimension (to)");
+      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:null array argument or wrong dimension (to)");
     }
-
     if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
-              + "from array not same length as to array");
+      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:from array not same length as to array");
     }
 
     return convert2xy.latLonToProj(from, to, latIndex, lonIndex);
   }
 
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex,
-                                int lonIndex) {
+  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
     if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
-              + "null array argument or wrong dimension (from)");
+      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:null array argument or wrong dimension (from)");
     }
     if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
-              + "null array argument or wrong dimension (to)");
+      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:null array argument or wrong dimension (to)");
     }
-
     if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:"
-              + "from array not same length as to array");
+      throw new IllegalArgumentException("ProjectionImpl.latLonToProj:from array not same length as to array");
     }
 
     return convert2xy.latLonToProj(from, to, latIndex, lonIndex);
@@ -272,17 +262,14 @@ public class UtmProjection extends ProjectionImpl {
    */
   public float[][] projToLatLon(float[][] from, float[][] to) {
     if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
-              + "null array argument or wrong dimension (from)");
+      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:null array argument or wrong dimension (from)");
     }
     if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
-              + "null array argument or wrong dimension (to)");
+      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:null array argument or wrong dimension (to)");
     }
 
     if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
-              + "from array not same length as to array");
+      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:from array not same length as to array");
     }
 
     return convert2latlon.projToLatLon(from, to);
@@ -290,17 +277,14 @@ public class UtmProjection extends ProjectionImpl {
 
   public double[][] projToLatLon(double[][] from, double[][] to) {
     if ((from == null) || (from.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
-              + "null array argument or wrong dimension (from)");
+      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:null array argument or wrong dimension (from)");
     }
     if ((to == null) || (to.length != 2)) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
-              + "null array argument or wrong dimension (to)");
+      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:null array argument or wrong dimension (to)");
     }
 
     if (from[0].length != to[0].length) {
-      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:"
-              + "from array not same length as to array");
+      throw new IllegalArgumentException("ProjectionImpl.projToLatLon:from array not same length as to array");
     }
 
     return convert2latlon.projToLatLon(from, to);
@@ -321,19 +305,13 @@ parameters read from the projectionimpl, I get {{26.685132668190793},
 {-80.21802662821469}} which appears to be MUCH more accurate when I plot
 them on a map.
    */
-    public static void main(String arg[]) {
-      UtmProjection utm = new UtmProjection(17, true);
-      LatLonPointImpl ll = utm.projToLatLon(577.8000000000001, 2951.8);
-      System.out.printf("%15.12f %15.12f%n",ll.getLatitude(), ll.getLongitude());
-      assert closeEnough(ll.getLongitude(), -80.21802662821469, 1.0e-8);
-      assert closeEnough(ll.getLatitude(), 26.685132668190793, 1.0e-8);
-    }
-
-  private static boolean closeEnough( double v1, double v2, double tol) {
-     double diff = (v2 == 0.0) ? Math.abs(v1-v2) : Math.abs(v1/v2-1);
-     return diff < tol;
-   }
-
+  public static void main(String arg[]) {
+    UtmProjection utm = new UtmProjection(17, true);
+    LatLonPointImpl ll = utm.projToLatLon(577.8000000000001, 2951.8);
+    System.out.printf("%15.12f %15.12f%n", ll.getLatitude(), ll.getLongitude());
+    assert Misc.closeEnough(ll.getLongitude(), -80.21802662821469, 1.0e-8);
+    assert Misc.closeEnough(ll.getLatitude(), 26.685132668190793, 1.0e-8);
+  }
 
 }
 

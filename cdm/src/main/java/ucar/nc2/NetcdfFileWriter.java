@@ -99,10 +99,14 @@ public class NetcdfFileWriter {
     return new NetcdfFileWriter(null, location, true);  // dont know the version yet
   }
 
+  static public NetcdfFileWriter createNew(Version version, String location) throws IOException {
+    return new NetcdfFileWriter(version, null, null, location, false, null);
+  }
+
   /**
    * Create a new Netcdf file, with fill mode true.
    *
-   * @param version netcdf3 or 4
+   * @param version netcdf-3 or 4
    * @param location name of new file to open; if it exists, will overwrite it.
    * @param chunker used only for netcdf4, or null for default
    * @return new NetcdfFileWriter

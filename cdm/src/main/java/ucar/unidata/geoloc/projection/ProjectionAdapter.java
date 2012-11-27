@@ -64,11 +64,11 @@ public class ProjectionAdapter extends ProjectionImpl {
     return new ProjectionAdapter(proj);
   }
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new ProjectionAdapter(proj);
+    ProjectionImpl result =  new ProjectionAdapter(proj);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

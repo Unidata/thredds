@@ -76,11 +76,11 @@ public class FlatEarth extends ProjectionImpl {
    */
   //private LatLonPointImpl origin;  // why are we keeping this?
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new FlatEarth(getOriginLat(), getOriginLon(), getRotationAngle());
+    ProjectionImpl result = new FlatEarth(getOriginLat(), getOriginLon(), getRotationAngle());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

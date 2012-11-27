@@ -415,6 +415,8 @@ public class PolyconicProjection extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    return new PolyconicProjection(getOriginLatitude(), getOriginLongitude(), getFalseEasting(), getFalseNorthing(), getEarth());
+    ProjectionImpl result =  new PolyconicProjection(getOriginLatitude(), getOriginLongitude(), getFalseEasting(), getFalseNorthing(), getEarth());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 }

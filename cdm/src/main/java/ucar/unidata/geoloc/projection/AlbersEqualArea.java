@@ -65,8 +65,10 @@ public class AlbersEqualArea extends ProjectionImpl {
    * copy constructor - avoid clone !!
    */
   public ProjectionImpl constructCopy() {
-    return new AlbersEqualArea(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
+    ProjectionImpl result = new AlbersEqualArea(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
             getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

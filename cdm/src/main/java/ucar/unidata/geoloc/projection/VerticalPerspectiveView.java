@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2012 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -61,11 +61,11 @@ public class VerticalPerspectiveView extends ProjectionImpl {
   private double cosLat0, sinLat0;
   private double maxR, maxR2; // square of "map limit" circle of this radius from the origin, p 173
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new VerticalPerspectiveView(getOriginLat(), getOriginLon(), R, getHeight(), false_east, false_north);
+    ProjectionImpl result =  new VerticalPerspectiveView(getOriginLat(), getOriginLon(), R, getHeight(), false_east, false_north);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

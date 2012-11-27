@@ -307,8 +307,10 @@ public class StereographicAzimuthalProjection extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    return new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
+    ProjectionImpl result =  new StereographicAzimuthalProjection(Math.toDegrees(projectionLatitude), Math.toDegrees(projectionLongitude),
             scaleFactor, Math.toDegrees(trueScaleLatitude), falseEasting, falseNorthing, earth);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   @Override

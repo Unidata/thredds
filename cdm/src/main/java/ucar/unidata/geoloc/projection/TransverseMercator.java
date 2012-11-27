@@ -53,15 +53,12 @@ public class TransverseMercator extends ProjectionImpl {
   private double lat0, lon0, scale, earthRadius;
   private final double falseEasting, falseNorthing;
 
-  /**
-   * copy constructor - avoid clone !!
-   *
-   * @return _more_
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new TransverseMercator(getOriginLat(), getTangentLon(),
-            getScale(), getFalseEasting(),
-            getFalseNorthing(), getEarthRadius());
+    ProjectionImpl result =  new TransverseMercator(getOriginLat(), getTangentLon(),
+            getScale(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

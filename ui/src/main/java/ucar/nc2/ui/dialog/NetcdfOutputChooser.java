@@ -5,13 +5,14 @@
 package ucar.nc2.ui.dialog;
 
 import java.awt.event.*;
+
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.jni.netcdf.Nc4Chunking;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 import javax.swing.border.*;
-import ucar.util.prefs.ui.*;
 
 /**
  * @author John Caron
@@ -46,24 +47,34 @@ public class NetcdfOutputChooser extends JDialog {
   }
 
   public class Data {
-     public String outputFilename;
-     public NetcdfFileWriter.Version version;
+    public String outputFilename;
+    public NetcdfFileWriter.Version version;
+    public Nc4Chunking.Standard chunkerType;
+    public int deflate;
+    public boolean shuffle;
 
-     private Data(String outputFilename, NetcdfFileWriter.Version version) {
-       this.outputFilename = outputFilename;
-       this.version = version;
-     }
-   }
+    private Data(String outputFilename, NetcdfFileWriter.Version version, Nc4Chunking.Standard chunkerType,
+                 boolean deflate, boolean shuffle) {
+      this.outputFilename = outputFilename;
+      this.version = version;
+      this.chunkerType = chunkerType;
+      this.deflate = deflate ? 5 : 0;
+      this.shuffle = shuffle;
+    }
+  }
 
-   private void okButtonActionPerformed(ActionEvent e) {
-     Data data =  new Data( outputFilename.getText(), (NetcdfFileWriter.Version) netcdfVersion.getSelectedItem() );
-     firePropertyChange("OK", null, data);
-     setVisible(false);
-   }
+  private void okButtonActionPerformed(ActionEvent e) {
+    Data data = new Data(outputFilename.getText(),
+            (NetcdfFileWriter.Version) netcdfVersion.getSelectedItem(),
+            (Nc4Chunking.Standard) chunking.getSelectedItem(),
+            deflate.isSelected(), shuffle.isSelected());
+    firePropertyChange("OK", null, data);
+    setVisible(false);
+  }
 
-   private void createUIComponents() {
-     // TODO: add custom component creation code here
-   }
+  private void createUIComponents() {
+    // TODO: add custom component creation code here
+  }
 
 
   private void initComponents() {
@@ -75,6 +86,11 @@ public class NetcdfOutputChooser extends JDialog {
     outputFilename = new JTextField();
     label2 = new JLabel();
     netcdfVersion = new JComboBox(NetcdfFileWriter.Version.values());
+    panel1 = new JPanel();
+    label3 = new JLabel();
+    chunking = new JComboBox(Nc4Chunking.Standard.values());
+    deflate = new JCheckBox();
+    shuffle = new JCheckBox();
     buttonBar = new JPanel();
     okButton = new JButton();
     cancelButton = new JButton();
@@ -97,6 +113,37 @@ public class NetcdfOutputChooser extends JDialog {
         //---- label2 ----
         label2.setText("NetCDF Format:");
 
+        //======== panel1 ========
+        {
+          panel1.setBorder(new TitledBorder(null, "netCDF4 options", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION));
+          panel1.setLayout(new GridBagLayout());
+          ((GridBagLayout)panel1.getLayout()).columnWidths = new int[] {0, 0, 0};
+          ((GridBagLayout)panel1.getLayout()).rowHeights = new int[] {0, 0, 0, 0};
+          ((GridBagLayout)panel1.getLayout()).columnWeights = new double[] {0.0, 1.0, 1.0E-4};
+          ((GridBagLayout)panel1.getLayout()).rowWeights = new double[] {0.0, 0.0, 1.0, 1.0E-4};
+
+          //---- label3 ----
+          label3.setText("Chunking:");
+          panel1.add(label3, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets(0, 0, 0, 0), 0, 0));
+          panel1.add(chunking, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets(0, 0, 0, 0), 0, 0));
+
+          //---- deflate ----
+          deflate.setText("deflate");
+          panel1.add(deflate, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets(0, 0, 0, 0), 0, 0));
+
+          //---- shuffle ----
+          shuffle.setText("shuffle");
+          panel1.add(shuffle, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets(0, 0, 0, 0), 0, 0));
+        }
+
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
         contentPanelLayout.setHorizontalGroup(
@@ -108,10 +155,16 @@ public class NetcdfOutputChooser extends JDialog {
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(outputFilename, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE))
                 .addGroup(contentPanelLayout.createSequentialGroup()
-                  .addComponent(label2)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addComponent(netcdfVersion, GroupLayout.PREFERRED_SIZE, 243, GroupLayout.PREFERRED_SIZE)
-                  .addGap(0, 222, Short.MAX_VALUE)))
+                  .addGroup(contentPanelLayout.createParallelGroup()
+                    .addGroup(contentPanelLayout.createSequentialGroup()
+                      .addGap(18, 18, 18)
+                      .addComponent(label2)
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                      .addComponent(netcdfVersion, GroupLayout.PREFERRED_SIZE, 243, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(contentPanelLayout.createSequentialGroup()
+                      .addGap(33, 33, 33)
+                      .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 383, GroupLayout.PREFERRED_SIZE)))
+                  .addGap(0, 143, Short.MAX_VALUE)))
               .addContainerGap())
         );
         contentPanelLayout.setVerticalGroup(
@@ -125,7 +178,9 @@ public class NetcdfOutputChooser extends JDialog {
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(label2)
                 .addComponent(netcdfVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-              .addContainerGap(28, Short.MAX_VALUE))
+              .addGap(18, 18, 18)
+              .addComponent(panel1, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
+              .addContainerGap(14, Short.MAX_VALUE))
         );
       }
       dialogPane.add(contentPanel, BorderLayout.CENTER);
@@ -171,6 +226,11 @@ public class NetcdfOutputChooser extends JDialog {
   private JTextField outputFilename;
   private JLabel label2;
   private JComboBox netcdfVersion;
+  private JPanel panel1;
+  private JLabel label3;
+  private JComboBox chunking;
+  private JCheckBox deflate;
+  private JCheckBox shuffle;
   private JPanel buttonBar;
   private JButton okButton;
   private JButton cancelButton;

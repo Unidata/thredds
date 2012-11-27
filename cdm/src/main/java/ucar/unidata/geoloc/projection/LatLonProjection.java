@@ -59,11 +59,10 @@ public class LatLonProjection extends ProjectionImpl {
    */
   private double centerLon = 0.0;
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
     ProjectionImpl result = new LatLonProjection(getName(), getDefaultMapArea());
+    result.setDefaultMapArea(defaultMapArea);
     return result;
   }
 

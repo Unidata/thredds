@@ -362,12 +362,11 @@ public class MSGnavigation extends ProjectionImpl {
     return (0);
   }
 
-  /**
-   * copy constructor - avoid clone !!
-   */
   @Override
   public ProjectionImpl constructCopy() {
-    return new MSGnavigation(lat0, lon0, 1000 * major_axis, 1000 * minor_axis, 1000 * sat_height, scale_x, scale_y);
+    ProjectionImpl result =  new MSGnavigation(lat0, lon0, 1000 * major_axis, 1000 * minor_axis, 1000 * sat_height, scale_x, scale_y);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   @Override

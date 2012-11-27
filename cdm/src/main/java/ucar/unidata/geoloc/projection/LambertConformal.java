@@ -60,9 +60,12 @@ public class LambertConformal extends ProjectionImpl {
   private double earthRadiusTimesF;// Earth's radius time F
   private double lon0Degrees; // lon naught ??
 
+  @Override
   public ProjectionImpl constructCopy() {
-    return new LambertConformal(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
+    ProjectionImpl result =  new LambertConformal(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
             getFalseEasting(), getFalseNorthing(), earth_radius);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

@@ -40,9 +40,8 @@ import java.util.Map;
 
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.iosp.dmsp.DMSPHeader;
 import ucar.nc2.jni.netcdf.Nc4Chunking;
-import ucar.nc2.jni.netcdf.Nc4ChunkingDefault;
+import ucar.nc2.jni.netcdf.Nc4ChunkingImpl;
 
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 disk file.
@@ -88,7 +87,7 @@ public class FileWriter2 {
   private final List<Variable> varList = new ArrayList<Variable>();        // old Vars
   private final Map<String, Dimension> gdimHash = new HashMap<String, Dimension>(); // name, newDim : global dimensions (classic mode)
 
-  private Nc4Chunking chunker = new Nc4ChunkingDefault();
+  private Nc4Chunking chunker = new Nc4ChunkingImpl();
 
   /**
    * Use this constructor to copy entire file. Use this.write() to do actual copy.
@@ -316,8 +315,10 @@ public class FileWriter2 {
       if (debug) System.out.println("add var= " + v);
 
       // set chunking using the oldVar
-      long[] chunk = chunker.computeChunking(oldVar);
-      v.addAttribute(new Attribute(CDM.CHUNK_SIZE, Array.factory(chunk)));
+      if (chunker.isChunked(oldVar)) {
+        long[] chunk = chunker.computeChunking(oldVar);
+        v.addAttribute(new Attribute(CDM.CHUNK_SIZE, Array.factory(chunk)));
+      }
 
       // attributes
       for (Attribute att : oldVar.getAttributes())

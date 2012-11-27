@@ -9,7 +9,14 @@ import ucar.nc2.Variable;
  * @since 11/14/12
  */
 public interface Nc4Chunking {
+  public enum Standard { unlimited, grib }
+
+  public boolean isChunked(Variable v);
 
   public long[] computeChunking(Variable v);
+
+  public int getDeflateLevel(Variable v);
+
+  public boolean isShuffle(Variable v);
 
 }

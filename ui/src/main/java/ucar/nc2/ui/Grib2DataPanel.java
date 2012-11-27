@@ -32,6 +32,11 @@
 
 package ucar.nc2.ui;
 
+import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import thredds.inventory.MFileCollectionManager;
 import thredds.inventory.MFile;
 import ucar.ma2.DataType;
@@ -46,6 +51,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
 
@@ -56,6 +62,7 @@ import ucar.util.prefs.ui.BeanTableSorted;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.metal.MetalTheme;
 
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.BAMutil;
@@ -63,8 +70,11 @@ import ucar.nc2.ui.widget.BAMutil;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.List;
+import java.util.zip.Deflater;
 
 /**
  * Grib2 data reading
@@ -232,6 +242,19 @@ public class Grib2DataPanel extends JPanel {
           } catch (IOException e1) {
             e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
           }
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Compute Scale/offset of data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          calcData(bean, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -775,6 +798,127 @@ public class Grib2DataPanel extends JPanel {
     }
     f.format("%n%n#bits on = %d%n", bits);
   }
+
+  void calcData(Grib2RecordBean bean1, Formatter f) {
+    float[] data;
+    try {
+      data = bean1.readData();
+    } catch (IOException e) {
+      f.format("IOException %s", e.getMessage());
+      return;
+    }
+
+    // calc scale/offset
+
+    int nbits = bean1.getNBits();
+    //int width = (2 << nbits) - 1;
+    int width2 = (2 << (nbits-1)) - 1;
+    f.format(" nbits = %d%n", nbits);
+    //f.format(" width = %d (0x%s) %n", width, Long.toHexString(width));
+    f.format(" width = %d (0x%s) %n", width2, Long.toHexString(width2));
+
+    float dataMin = Float.MAX_VALUE;
+    float dataMax = -Float.MAX_VALUE;
+    for (float fd : data) {
+      dataMin = Math.min(dataMin, fd);
+      dataMax = Math.max(dataMax, fd);
+    }
+    f.format(" dataMin = %f%n", dataMin);
+    f.format(" dataMax = %f%n", dataMax);
+    f.format(" range = %f%n", (dataMax - dataMin));
+
+    // scale_factor =(dataMax - dataMin) / (2^n - 1)
+    // add_offset = dataMin + 2^(n-1) * scale_factor
+
+    float scale_factor = (dataMax - dataMin) / width2;
+    float add_offset = dataMin + width2 * scale_factor / 2;
+
+    f.format(" scale_factor = %f%n", scale_factor);
+    f.format(" add_offset = %f%n", add_offset);
+
+    // unpacked_data_value = packed_data_value * scale_factor + add_offset
+    // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
+
+    int n = data.length;
+
+    ByteBuffer bb = ByteBuffer.allocate(2*n);
+    ShortBuffer sb = bb.asShortBuffer();
+    float diffMax = -Float.MAX_VALUE;
+    float diffTotal = 0;
+    float diffTotal2 = 0;
+    for (float fd : data) {
+      short packed_data = (short) Math.round((fd - add_offset) / scale_factor);
+      float unpacked_data = packed_data * scale_factor + add_offset;
+      float diff = Math.abs(fd-unpacked_data);
+      if (diff > 100)
+        f.format("   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+
+      diffMax = Math.max(diffMax, diff);
+      diffTotal += diff;
+      diffTotal2 += diff*diff;
+      sb.put(packed_data);
+    }
+
+    f.format("%n max_diff = %f%n", diffMax);
+    f.format(" avg_diff = %f%n", diffTotal/data.length);
+
+    // Math.sqrt( sumsq/n - avg * avg)
+    float mean = diffTotal/n;
+    float var = (diffTotal2/n - mean * mean);
+    f.format(" std_diff = %f%n", Math.sqrt(var));
+
+    f.format("%nCompression%n");
+    f.format(" number of values = %d%n", n);
+    f.format(" uncompressed as floats = %d%n", n*4);
+    f.format(" uncompressed packed = %d%n", n*nbits/8);
+    f.format(" grib compressed = %d%n",  bean1.getDataLength());
+
+    f.format("%ndeflate%n");
+    Deflater deflater = new Deflater();
+    deflater.setInput(bb.array());
+    deflater.finish();
+    int compressedSize = deflater.deflate(new byte[10*n]);
+    deflater.end();
+
+    f.format(" compressedSize = %d%n", compressedSize);
+    f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+    f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+
+    try {
+      f.format("%nbzip2%n");
+      ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
+      BZip2CompressorOutputStream zipper = new BZip2CompressorOutputStream(out);
+      InputStream fin = new ByteArrayInputStream(bb.array());
+      IO.copy(fin, zipper);
+      zipper.close();
+      compressedSize = out.size();
+      f.format(" compressedSize = %d%n", compressedSize);
+      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
+
+    try {
+      f.format("%nLZMA2%n");
+      ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
+      XZCompressorOutputStream zipper = new XZCompressorOutputStream(out);
+      InputStream fin = new ByteArrayInputStream(bb.array());
+      IO.copy(fin, zipper);
+      zipper.close();
+      compressedSize = out.size();
+      f.format(" compressedSize = %d%n", compressedSize);
+      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
+
+  }
+
+
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 

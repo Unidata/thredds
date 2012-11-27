@@ -236,7 +236,9 @@ public class TransverseMercatorProjection extends ProjectionImpl {
 
   @Override
   public ProjectionImpl constructCopy() {
-    return new TransverseMercatorProjection(ellipsoid, Math.toDegrees(projectionLongitude), Math.toDegrees(projectionLatitude), scaleFactor, falseEasting, falseNorthing);
+    ProjectionImpl result =  new TransverseMercatorProjection(ellipsoid, Math.toDegrees(projectionLongitude), Math.toDegrees(projectionLatitude), scaleFactor, falseEasting, falseNorthing);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   @Override

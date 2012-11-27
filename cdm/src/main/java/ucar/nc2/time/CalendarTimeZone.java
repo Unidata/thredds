@@ -31,7 +31,6 @@ public class CalendarTimeZone {
     * be specified. The form <code>[+-]hh:mm</code> can be used.
     *
     * @param id  the ID of the datetime zone, null means default
-    * @return the DateTimeZone object for the ID
     * @throws IllegalArgumentException if the ID is not recognised
     */
   public CalendarTimeZone(String id) {

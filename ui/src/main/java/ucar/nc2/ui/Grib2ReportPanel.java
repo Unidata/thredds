@@ -649,6 +649,7 @@ public class Grib2ReportPanel extends JPanel {
     Counter template = new Counter("DRS template");
     Counter bitmapRepeat = new Counter("BMS indicator");
     Counter prob = new Counter("DRS template 40 signed problem");
+    Counter nbitsC = new Counter("Number of Bits");
 
     for (MFile mfile : dcm.getFiles()) {
       if (eachFile) {
@@ -661,11 +662,12 @@ public class Grib2ReportPanel extends JPanel {
       if (useIndex)
         doDrsSummaryIndex(f, mfile, extra, template, bitmapRepeat, prob);
       else
-        doDrsSummaryScan(f, mfile, extra, template, bitmapRepeat, prob);
+        doDrsSummaryScan(f, mfile, extra, template, bitmapRepeat, prob, nbitsC);
 
       if (eachFile) {
         template.show(f);
         bitmapRepeat.show(f);
+        if (!useIndex) nbitsC.show(f);
         if (extra) prob.show(f);
         f.format("%n");
       }
@@ -674,6 +676,7 @@ public class Grib2ReportPanel extends JPanel {
     if (!eachFile) {
       template.show(f);
       bitmapRepeat.show(f);
+      if (!useIndex) nbitsC.show(f);
       if (extra) prob.show(f);
     }
   }
@@ -706,23 +709,27 @@ public class Grib2ReportPanel extends JPanel {
     raf.close();
   }
 
-  private void doDrsSummaryScan(Formatter f, MFile mf, boolean extra, Counter templateC, Counter bitmapRepeat, Counter probC) throws IOException {
+  private void doDrsSummaryScan(Formatter f, MFile mf, boolean extra, Counter templateC, Counter bitmapRepeat, Counter probC, Counter nbitsC) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(mf.getPath(), "r");
     Grib2RecordScanner scan = new Grib2RecordScanner(raf);
     while (scan.hasNext()) {
       ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
-      doDrsSummary(gr, raf, extra, templateC, bitmapRepeat, probC);
+      doDrsSummary(gr, raf, extra, templateC, bitmapRepeat, probC, nbitsC);
     }
     raf.close();
   }
 
-  private void doDrsSummary(ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, boolean extra, Counter templateC, Counter bitmapRepeat, Counter probC) throws IOException {
+  private void doDrsSummary(ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, boolean extra, Counter templateC,
+                            Counter bitmapRepeat, Counter probC, Counter nbitsC) throws IOException {
     Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
     int template = drss.getDataTemplate();
     templateC.count(template);
 
     //Grib2SectionBitMap bms = gr.getBitmapSection();
     bitmapRepeat.count(gr.repeat);
+
+    Grib2Drs gdrs = drss.getDrs(raf);
+    nbitsC.count(gdrs.getNBits());
 
     if (extra && template == 40) {  // expensive
       Grib2Drs.Type40 drs40 = gr.readDataTest(raf);

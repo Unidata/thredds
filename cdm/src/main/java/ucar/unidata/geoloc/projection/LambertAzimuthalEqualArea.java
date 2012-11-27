@@ -57,11 +57,11 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
   private double lat0, lon0; // center lat/lon in degrees
   private final double falseEasting, falseNorthing;
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new LambertAzimuthalEqualArea(getOriginLat(), getOriginLon(), getFalseEasting(), getFalseNorthing(), R);
+    ProjectionImpl result =  new LambertAzimuthalEqualArea(getOriginLat(), getOriginLon(), getFalseEasting(), getFalseNorthing(), R);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

@@ -58,11 +58,11 @@ public class Orthographic extends ProjectionImpl {
   private double cosLat0, sinLat0;
 
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new Orthographic(getOriginLat(), getOriginLon(), R);
+    ProjectionImpl result =  new Orthographic(getOriginLat(), getOriginLon(), R);
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

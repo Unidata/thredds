@@ -137,11 +137,11 @@ public class RotatedPole extends ProjectionImpl {
     return (Point2D.Double) northPole.clone();
   }
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new RotatedPole(northPole.getY(), northPole.getX());
+    ProjectionImpl result =  new RotatedPole(northPole.getY(), northPole.getX());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   public String paramsToString() {

@@ -173,7 +173,7 @@ public class GridAsPointDataset {
    * @param zCoord
    * @param lat
    * @param lon
-   * @return
+   * @return Point matching lat/lon for this grid
    * @throws java.io.IOException
    */
   public Point readData(GridDatatype grid, CalendarDate date, double ensCoord, double zCoord, double lat, double lon)  throws java.io.IOException {

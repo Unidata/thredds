@@ -74,11 +74,11 @@ public class Mercator extends ProjectionImpl {
   private double par_r; // standard parallel in radians
   private double A;
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new Mercator(getOriginLon(), getParallel(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    ProjectionImpl result =  new Mercator(getOriginLon(), getParallel(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

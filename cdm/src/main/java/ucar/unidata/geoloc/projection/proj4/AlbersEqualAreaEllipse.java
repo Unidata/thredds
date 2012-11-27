@@ -77,12 +77,12 @@ public class AlbersEqualAreaEllipse extends ProjectionImpl {
   private double n2;
   private double rho0;
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new AlbersEqualAreaEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
+    ProjectionImpl result = new AlbersEqualAreaEllipse(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
             getFalseEasting(), getFalseNorthing(), getEarth());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**

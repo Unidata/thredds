@@ -70,11 +70,11 @@ public class Stereographic extends ProjectionImpl {
   private boolean isNorth = false;
   private boolean isPolar = false;
 
-  /**
-   * copy constructor - avoid clone !!
-   */
+  @Override
   public ProjectionImpl constructCopy() {
-    return new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    ProjectionImpl result =  new Stereographic(getTangentLat(), getTangentLon(), getScale(), getFalseEasting(), getFalseNorthing(), getEarthRadius());
+    result.setDefaultMapArea(defaultMapArea);
+    return result;
   }
 
   /**
