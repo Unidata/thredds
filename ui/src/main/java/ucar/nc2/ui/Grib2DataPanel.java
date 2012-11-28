@@ -6,7 +6,7 @@
  * Access and use of this software shall impose the following obligations
  * and understandings on the user. The user is granted the right, without
  * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
+ * this software, and any derivative works thereof, and its supporting                                                             2
  * documentation for any purpose whatsoever, provided that this entire
  * notice appears in all copies of the software, derivative works and
  * supporting documentation.  Further, UCAR requests that the user credit
@@ -32,9 +32,6 @@
 
 package ucar.nc2.ui;
 
-import org.apache.commons.compress.compressors.CompressorOutputStream;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
 import thredds.inventory.MFileCollectionManager;
@@ -62,7 +59,6 @@ import ucar.util.prefs.ui.BeanTableSorted;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.metal.MetalTheme;
 
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.BAMutil;
@@ -883,6 +879,22 @@ public class Grib2DataPanel extends JPanel {
     f.format(" compressedSize = %d%n", compressedSize);
     f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
     f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+
+    /* try {
+      f.format("%nbzip2%n");
+      ByteArrayOutputStream out = new ByteArrayOutputStream(2*compressedSize);
+      org.itadaki.bzip2.BZip2OutputStream zipper = new org.itadaki.bzip2.BZip2OutputStream(out);
+      InputStream fin = new ByteArrayInputStream(bb.array());
+      IO.copy(fin, zipper);
+      zipper.close();
+      compressedSize = out.size();
+      f.format(" compressedSize = %d%n", compressedSize);
+      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());
+
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }  */
 
     try {
       f.format("%nbzip2%n");

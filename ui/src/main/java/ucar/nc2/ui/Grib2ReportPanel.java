@@ -1,5 +1,6 @@
 package ucar.nc2.ui;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
@@ -25,6 +26,7 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
@@ -32,6 +34,8 @@ import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.List;
 
@@ -43,7 +47,8 @@ import java.util.List;
  */
 public class Grib2ReportPanel extends JPanel {
   public static enum Report {
-    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord, rename, renameCheck
+    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsTemplate, pdsSummary, idProblems, timeCoord,
+    rename, renameCheck, copyCompress
   }
 
   private PreferencesExt prefs;
@@ -152,6 +157,9 @@ public class Grib2ReportPanel extends JPanel {
         case renameCheck:
           doRenameCheck(f, dcm, useIndex);
           break;
+        case copyCompress:
+          doCopyCompress(f, dcm, useIndex, eachFile, extra);
+          break;
       }
     }
 
@@ -160,6 +168,113 @@ public class Grib2ReportPanel extends JPanel {
   }
 
   ///////////////////////////////////////////////
+  String dir = "C:/tmp/bzip/";
+
+  private void doCopyCompress(Formatter f, CollectionManager dcm, boolean useIndex, boolean eachFile, boolean extra) throws IOException {
+    f.format("Copy and Compress selected files%n");
+    Counter nbitsC = new Counter("Number of Bits");
+    long totalOrg = 0;
+    long totalZip = 0;
+
+    for (MFile mfile : dcm.getFiles()) {
+      f.format("------- %s%n", mfile.getPath());
+      long orgSize = mfile.getLength();
+      totalOrg += orgSize;
+
+      RandomAccessFile raf = new RandomAccessFile(mfile.getPath(), "r");
+
+      File fileOut = new File(dir+mfile.getName()+".bzip2");
+      FileOutputStream fout = new FileOutputStream(fileOut);
+
+      Grib2RecordScanner scan = new Grib2RecordScanner(raf);
+      while (scan.hasNext()) {
+        ucar.nc2.grib.grib2.Grib2Record gr = scan.next();
+        doCopyCompress(f, gr, raf, fout, nbitsC);
+      }
+      raf.close();
+      fout.close();
+      long zipSize = fileOut.length();
+      totalZip += zipSize;
+      double r = ((double) zipSize) / orgSize;
+      f.format("  org=%d zip=%d ratio=%f%n", orgSize, zipSize, r);
+    }
+    double r = ((double) totalZip) / totalOrg;
+    f.format("  org=%d zip=%d ratio=%f%n", totalOrg, totalZip, r);
+
+    nbitsC.show(f);
+  }
+
+  private void doCopyCompress(Formatter f, ucar.nc2.grib.grib2.Grib2Record gr, RandomAccessFile raf, OutputStream out, Counter nbitsC) throws IOException {
+    float[] data = gr.readData(raf);
+
+    Grib2SectionDataRepresentation drss = gr.getDataRepresentationSection();
+    Grib2Drs drs = drss.getDrs(raf);
+
+    // calc scale/offset
+    int nbits = drs.getNBits();
+    nbitsC.count(nbits);
+
+    //int width = (2 << nbits) - 1;
+    int width2 = (2 << (nbits-1)) - 1;
+    //f.format(" nbits = %d%n", nbits);
+    //f.format(" width = %d (0x%s) %n", width2, Long.toHexString(width2));
+
+    float dataMin = Float.MAX_VALUE;
+    float dataMax = -Float.MAX_VALUE;
+    for (float fd : data) {
+      dataMin = Math.min(dataMin, fd);
+      dataMax = Math.max(dataMax, fd);
+    }
+    //f.format(" dataMin = %f%n", dataMin);
+    //f.format(" dataMax = %f%n", dataMax);
+    // f.format(" range = %f%n", (dataMax - dataMin));
+
+    // scale_factor =(dataMax - dataMin) / (2^n - 1)
+    // add_offset = dataMin + 2^(n-1) * scale_factor
+
+    float scale_factor = (dataMax - dataMin) / width2;
+    float add_offset = dataMin + width2 * scale_factor / 2;
+
+    //f.format(" scale_factor = %f%n", scale_factor);
+    //f.format(" add_offset = %f%n", add_offset);
+
+    // unpacked_data_value = packed_data_value * scale_factor + add_offset
+    // packed_data_value = nint((unpacked_data_value - add_offset) / scale_factor)
+
+    int n = data.length;
+
+    ByteBuffer bb = ByteBuffer.allocate(2*n);
+    ShortBuffer sb = bb.asShortBuffer();
+    float diffMax = -Float.MAX_VALUE;
+    float diffTotal = 0;
+    float diffTotal2 = 0;
+    for (float fd : data) {
+      short packed_data = (short) Math.round((fd - add_offset) / scale_factor);
+      float unpacked_data = packed_data * scale_factor + add_offset;
+      float diff = Math.abs(fd-unpacked_data);
+      if (diff > 100)
+        f.format("   org=%f, packed_data=%d unpacked=%f diff = %f%n",fd, packed_data, unpacked_data, diff);
+
+      diffMax = Math.max(diffMax, diff);
+      diffTotal += diff;
+      diffTotal2 += diff*diff;
+      sb.put(packed_data);
+    }
+
+      f.format("%nbzip2%n");
+      BZip2CompressorOutputStream zipper = new BZip2CompressorOutputStream(out);
+      InputStream fin = new ByteArrayInputStream(bb.array());
+      IO.copy(fin, zipper);
+      zipper.finish();
+      /* compressedSize = out.size();
+      f.format(" compressedSize = %d%n", compressedSize);
+      f.format(" compressedRatio = %f%n", (float) compressedSize / (n*nbits/8));
+      f.format(" ratio with grib = %f%n", (float) compressedSize / bean1.getDataLength());  */
+  }
+
+
+  ///////////////////////////////////////////////
+
 
   private void doCheckTables(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
     f.format("Check Grib-2 Parameter Tables%n");
