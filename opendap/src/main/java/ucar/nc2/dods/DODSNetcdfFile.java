@@ -595,19 +595,20 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
             NamePieces pieces = parseName(aname);
             if (pieces.var != null) { // Figure out which variable to which this should be moved
                 // Locate the varname; should be in variables because we have not
-                // processed variable names yet.
+                // processed variable names yet. In the event that there is no matching
+                // variable, then keep the attribute as is.
                 String searchname = pieces.var;
                 if (pieces.prefix != null) searchname = pieces.prefix + '/' + searchname;
                 Variable v = rootgroup.findVariable(searchname);
-                if (v == null)
-                    throw new DAP2Exception("Internal error: cannot find variable:" + pieces.var);
-                // move attribute
-                rootgroup.remove(ncatt);
-                v.addAttribute(ncatt);
-                // change attribute name
-                String newname = pieces.name;
-                if (pieces.prefix != null) newname = pieces.prefix + '/' + pieces.name;
-                ncatt.setName(newname);
+                if (v != null) {
+                    // move attribute
+                    rootgroup.remove(ncatt);
+                    v.addAttribute(ncatt);
+                    // change attribute name
+                    String newname = pieces.name;
+                    if (pieces.prefix != null) newname = pieces.prefix + '/' + pieces.name;
+                    ncatt.setName(newname);
+                }
                 continue;
             }
             // We have a true global name to move to proper group
@@ -668,7 +669,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
         String vname = ncvar.getShortName();
         Object[] attlist = ncvar.getAttributes().toArray();
         for (Object att : attlist) {
-            DODSAttribute ncatt = (DODSAttribute) att;
+            Attribute ncatt = (Attribute) att;
             String aname = ncatt.getName();
             NamePieces pieces = parseName(aname);
             Group agroup = null;
@@ -679,18 +680,17 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile
                 agroup = vgroup;
             // If the attribute group is different from the variable group,
             // then we have some kind of inconsistency; presumably from
-            // the original dds+das
+            // the original dds+das; in any case, use the variable's group
             if (agroup != vgroup)
-                throw new DAP2Exception("Attribute group versus Variable group mismatch: "
-                        + agroup.getName() + "::" + vgroup.getName());
+                agroup = vgroup;
             if (pieces.var != null && !pieces.var.equals(vname)) {
                 // move the attribute to the correct variable
                 Variable newvar = (Variable) agroup.findVariable(pieces.var);
-                if (newvar == null)
-                    throw new DAP2Exception("Variable in attribute name does not exist in group: " + aname);
-                // move the attribute
-                newvar.addAttribute(ncatt);
-                ncvar.remove(ncatt);
+                if (newvar != null) {// if not found leave the attribute as is
+                    // otherwise, move the attribute
+                    newvar.addAttribute(ncatt);
+                    ncvar.remove(ncatt);
+                }
             }
             if (pieces.prefix != null) {// rename the attribute
                 // Rename the attribute to its shortname
