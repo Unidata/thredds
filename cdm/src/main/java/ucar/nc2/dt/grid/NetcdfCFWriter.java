@@ -323,43 +323,41 @@ public class NetcdfCFWriter {
       // make subset if needed
       Range timeRange = makeTimeRange(dateRange, timeAxis, stride_time);
 
+      CoordinateAxis1D xAxis = (CoordinateAxis1D) gcsOrg.getXHorizAxis();
+      double[] xCoords = xAxis.getCoordValues();
+      
+      CoordinateAxis1D yAxis = (CoordinateAxis1D) gcsOrg.getYHorizAxis();
+      double[] yCoords = yAxis.getCoordValues();
+      
+      
+      ProjectionRect fullBB = new ProjectionRect(xCoords[0], yCoords[0], xCoords[xCoords.length-1], yCoords[yCoords.length-1]);
+      
+      if( !llbb.intersects(fullBB) ){
+    	  throw new InvalidRangeException("BBOX must intersect grid BBOX, minx="+xCoords[0]+", miny="+yCoords[0]+", maxx="+xCoords[xCoords.length-1]+", maxy="+yCoords[yCoords.length-1]);    	  
+      }
+      
+      ProjectionRect.intersect(fullBB, llbb, llbb);
+
       ProjectionPoint lowerLeft = llbb.getLowerLeftPoint();
       ProjectionPoint upperRigth = llbb.getUpperRightPoint();
       double minx = lowerLeft.getX();
       double miny = lowerLeft.getY();
       double maxx = upperRigth.getX();
-      double maxy = upperRigth.getY();
-
-      //y_range
-      CoordinateAxis1D yAxis = (CoordinateAxis1D) gcsOrg.getYHorizAxis();
+      double maxy = upperRigth.getY();      
+      
+      //y_range      
       int minyCoord = yAxis.findCoordElement(miny);
-      if (minyCoord < 0) {
-        throw new InvalidRangeException("miny=" + miny + " must be within (" + yAxis.getMinValue() + ", " + yAxis.getMaxValue() + ")");
-      }
-      int maxyCoord = yAxis.findCoordElement(maxy);
-      if (maxyCoord < 0) {
-        throw new InvalidRangeException("maxy=" + maxy + " must be within (" + yAxis.getMinValue() + ", " + yAxis.getMaxValue() + ")");
-      }
-      Range y_range = new Range(minyCoord, maxyCoord, horizStride);
+      int maxyCoord = yAxis.findCoordElement(maxy);     
 
-      //y_range
-      CoordinateAxis1D xAxis = (CoordinateAxis1D) gcsOrg.getXHorizAxis();
-      int minxCoord = xAxis.findCoordElement(minx);
-      if (minxCoord < 0) {
-        throw new InvalidRangeException("minx=" + minx + " must be within (" + xAxis.getMinValue() + ", " + xAxis.getMaxValue() + ")");
-      }
+      //x_range
+      int minxCoord = xAxis.findCoordElement(minx);      
       int maxxCoord = xAxis.findCoordElement(maxx);
-      if (maxxCoord < 0) {
-        throw new InvalidRangeException("maxx=" + maxx + " must be within (" + xAxis.getMinValue() + ", " + xAxis.getMaxValue() + ")");
-      }
+      
+      
+      Range y_range = new Range(minyCoord, maxyCoord, horizStride);
       Range x_range = new Range(minxCoord, maxxCoord, horizStride);
 
       Range zRangeUse = makeVerticalRange(zRange, vertAxis);
-      /*Range zRangeUse = (zRange != null) && (vertAxis != null) && (vertAxis.getSize() > 1) ? zRange : null;
-      
-      if(zRangeUse !=null){
-    	  zRangeUse=makeVerticalRange(vertAxis, zRangeUse.stride() );
-      }*/
 
       if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
         grid = grid.subset(timeRange, zRangeUse, y_range, x_range);

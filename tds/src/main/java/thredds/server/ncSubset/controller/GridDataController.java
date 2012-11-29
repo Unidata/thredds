@@ -34,7 +34,6 @@ package thredds.server.ncSubset.controller;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -69,10 +68,10 @@ import thredds.servlet.ThreddsConfig;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
-	
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.time.CalendarDate;
@@ -138,7 +137,9 @@ class GridDataController extends AbstratNcssDataRequestController {
             !ucar.nc2.util.Misc.closeEnough(requestedBB.getUpperRightPoint().getLongitude(), maxBB.getUpperRightPoint().getLongitude()) ||
             !ucar.nc2.util.Misc.closeEnough(requestedBB.getLowerLeftPoint().getLongitude(), maxBB.getLowerLeftPoint().getLongitude());
 
-    if (checkBB(maxBB, requestedBB)) {
+    //Don't check this...
+    //if (checkBB(maxBB, requestedBB)) {
+    
       Range zRange = null;
       //Request with zRange --> adds a limitation: only variables with the same vertical level???
       if (params.getVertCoord() != null || params.getVertStride() > 1)
@@ -161,7 +162,7 @@ class GridDataController extends AbstratNcssDataRequestController {
              
             
       makeGridFile(writer, getGridDataset(), params.getVar(), hasBB ? requestedBB : null, params.getHorizStride(), zRange, wantedDateRange, params.getTimeStride(), params.isAddLatLon(), version);
-    }
+    //}
   }
 
 
@@ -193,6 +194,7 @@ class GridDataController extends AbstratNcssDataRequestController {
     }
 
     ProjectionRect rect = new ProjectionRect(minx, miny, maxx, maxy);
+    
     Range zRange = null;
     //Request with zRange --> adds a limitation: only variables with the same vertical level???
     if (params.getVertCoord() != null || params.getVertStride() > 1)
@@ -299,7 +301,9 @@ class GridDataController extends AbstratNcssDataRequestController {
     }
     return spatialSubset;
   }
-
+ 
+  
+  
   private boolean checkBB(LatLonRect maxBB, LatLonRect requestedBB) throws OutOfBoundariesException {
 
     boolean isInBB = true;

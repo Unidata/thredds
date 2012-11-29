@@ -70,10 +70,17 @@ public class GridDataParameters {
 		projectionRect.add(new double[]{-600, -600, 600, 600 });//15x16
 		projectionRect.add(new double[]{-4226.106971141345, 4268.6456816654545, 3250.825028858655, 4368.6456816654545 });//2x93
 		
+		projectionRect.add(new double[]{-4264.248291015625, -872.8428344726562, 3293.955078125, 4409.772216796875 });//Full range
+		projectionRect.add(new double[]{-4864.248291015625, -1272.8428344726562, 0, 0 });//Intersects
+		
+		//projectionRect.add(new double[]{-6464.248291015625, -1892.8428344726562, -4064.248291015625, -972.8428344726562 }); //DOES NOT INTERSECT
+		
 		latlonRect = new ArrayList<double[]>();
 		latlonRect.add(new double[]{-153.5889, 11.7476, -48.5984,57.4843 });
 		latlonRect.add(new double[]{-160.5889, 40.7476, -106.93, 64.65 });
-		latlonRect.add(new double[]{-99.171226, 57.659579, -94.967505, 61.196857 });
+		latlonRect.add(new double[]{-99.171226, 57.659579, -94.967505, 61.196857 }); //Intersects the Grid but not the declared bounding box
+		
+		latlonRect.add(new double[]{40.0 , -40.0, 50.0, -30.0 }); //Does not intersect
 	}
 	
 	public static List<List<String>>  getVars(){

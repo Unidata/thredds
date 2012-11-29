@@ -93,7 +93,8 @@ public class CoordinateSpaceSubsettingTest {
 				{ new int[][]{ {1,1,16,15}, {1,1,16,15} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(1), GridDataParameters.getProjectionRect().get(1)}, //Same vertical level (one level)
 				{ new int[][]{ {1,29,2,93}, {1,29,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(2), GridDataParameters.getProjectionRect().get(2) }, //Same vertical level (multiple level)
 				{ new int[][]{ {1,2,93}, {1,29,2,93}, {1,1,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(3), GridDataParameters.getProjectionRect().get(2)}, //No vertical levels and vertical levels
-				{ new int[][]{ {1,1,2,93}, {1,29,2,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(2)} //Different vertical levels							
+				{ new int[][]{ {1,1,65,93}, {1,29,65,93} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(3)}, //Full extension
+				{ new int[][]{ {1,1,11,53}, {1,29,11,53} }, PathInfoParams.getPatInfo().get(3), GridDataParameters.getVars().get(4), GridDataParameters.getProjectionRect().get(4)}  //Intersection				
 			});	
 	
 	}
