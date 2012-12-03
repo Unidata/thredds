@@ -317,6 +317,8 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
     if (Double.compare(that.projectionLatitude, projectionLatitude) != 0) return false;
     if (Double.compare(that.projectionLongitude, projectionLongitude) != 0) return false;
     if (earth != null ? !earth.equals(that.earth) : that.earth != null) return false;
+    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
 
     return true;
   }

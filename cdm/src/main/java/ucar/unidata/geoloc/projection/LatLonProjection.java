@@ -124,9 +124,11 @@ public class LatLonProjection extends ProjectionImpl {
       return false;
     }
     LatLonProjection that = (LatLonProjection) p;
-    return that.defaultMapArea.equals(this.defaultMapArea)
-        && (Double.doubleToLongBits(that.centerLon)
-        == Double.doubleToLongBits(this.centerLon));
+    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+
+    return (Double.doubleToLongBits(that.centerLon)
+         == Double.doubleToLongBits(this.centerLon));
   }
 
   /**

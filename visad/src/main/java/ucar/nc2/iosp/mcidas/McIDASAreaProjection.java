@@ -420,6 +420,9 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
             return false;
         }
         McIDASAreaProjection that = (McIDASAreaProjection) obj;
+        if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+        if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
+
         return (this == that)
                || (anav.equals(that.anav) && (this.lines == that.lines)
                    && (this.elements == that.elements));

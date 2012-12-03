@@ -304,13 +304,15 @@ public class TransverseMercatorProjection extends ProjectionImpl {
     }
 
     TransverseMercatorProjection oo = (TransverseMercatorProjection) proj;
-    return ((this.projectionLatitude == oo.projectionLatitude)
-            && (this.projectionLongitude == oo.projectionLongitude)
-            && (this.scaleFactor == oo.scaleFactor)
-            && (this.falseEasting == oo.falseEasting)
-            && (this.falseNorthing == oo.falseNorthing)
-            && this.ellipsoid.equals(oo.ellipsoid));
+    if ((this.getDefaultMapArea() == null) != (oo.defaultMapArea == null)) return false; // common case is that these are null
+    if (this.getDefaultMapArea() != null && !this.defaultMapArea.equals(oo.defaultMapArea)) return false;
 
+    return ((this.projectionLatitude == oo.projectionLatitude)
+          && (this.projectionLongitude == oo.projectionLongitude)
+          && (this.scaleFactor == oo.scaleFactor)
+          && (this.falseEasting == oo.falseEasting)
+          && (this.falseNorthing == oo.falseNorthing)
+          && this.ellipsoid.equals(oo.ellipsoid));
   }
 
   @Override

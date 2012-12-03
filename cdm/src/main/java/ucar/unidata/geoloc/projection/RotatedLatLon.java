@@ -198,6 +198,8 @@ public class RotatedLatLon extends ProjectionImpl {
     if (Double.compare(that.latpole, latpole) != 0) return false;
     if (Double.compare(that.lonpole, lonpole) != 0) return false;
     if (Double.compare(that.polerotate, polerotate) != 0) return false;
+    if ((defaultMapArea == null) != (that.defaultMapArea == null)) return false; // common case is that these are null
+    if (defaultMapArea != null && !that.defaultMapArea.equals(defaultMapArea)) return false;
 
     return true;
   }

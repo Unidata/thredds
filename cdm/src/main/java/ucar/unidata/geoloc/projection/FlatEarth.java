@@ -144,6 +144,8 @@ public class FlatEarth extends ProjectionImpl {
     if (Double.compare(flatEarth.lon0, lon0) != 0) return false;
     if (Double.compare(flatEarth.radius, radius) != 0) return false;
     if (Double.compare(flatEarth.rotAngle, rotAngle) != 0) return false;
+    if ((defaultMapArea == null) != (flatEarth.defaultMapArea == null)) return false; // common case is that these are null
+    if (defaultMapArea != null && !flatEarth.defaultMapArea.equals(defaultMapArea)) return false;
 
     return true;
   }
